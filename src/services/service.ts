@@ -2,9 +2,13 @@ import { get, post } from './api';
 import { ACCESS_TYPE_MAP, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
+import { ModuleNameMap } from '../components/v2/devtronStackManager/DevtronStackManager.utils';
+import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
+import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
+import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
 
 
 export function getAppConfigStatus(appId: number): Promise<any> {
@@ -278,6 +282,33 @@ export function isGitopsConfigured(): Promise<ResponseType> {
     return get(URL);
 }
 
+export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
+    return getModuleInfo(ModuleNameMap.ARGO_CD)
+        .then((response) => {
+            if (response.result?.status === ModuleStatus.INSTALLED) {
+                return isGitopsConfigured()
+            } else {
+                return {
+                    code: response.code,
+                    status: response.status,
+                    result: { isInstalled: false, isConfigured: false, noInstallationStatus: true },
+                }
+            }
+        })
+        .then((response) => {
+            if (response.result.noInstallationStatus) {
+                delete response.result.noInstallationStatus
+                return response
+            } else {
+                return {
+                    code: response.code,
+                    status: response.status,
+                    result: { isInstalled: true, isConfigured: response.result.exists },
+                }
+            }
+        })
+}
+
 export function getChartReferences(appId: number): Promise<ResponseType> {
     const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`;
     return get(URL);
@@ -384,4 +415,17 @@ export function dashboardAccessed() {
 
 export function dashboardLoggedIn() {
   return get(Routes.DASHBOARD_LOGGEDIN);
+}
+
+
+export function getLoginData() : Promise<LoginCountType>  {
+  return get(`${Routes.ATTRIBUTES_USER}/${Routes.GET}?key=${LOGIN_COUNT}`)
+}
+
+export function updateLoginCount(payload): Promise<LoginCountType>  {
+    return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
+}
+
+export function updatePostHogEvent(payload): Promise<ResponseType> {
+    return post(Routes.TELEMETRY_EVENT, payload)
 }

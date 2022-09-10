@@ -1227,7 +1227,19 @@ button.anchor {
     filter: grayscale(1);
 }
 
-.dc__no-decor {
+.capitalize {
+    text-transform: lowercase;
+
+    &::first-letter {
+        text-transform: uppercase;
+    }
+}
+
+.dc__underline{
+  text-decoration: underline;
+}
+
+.no-decor {
     text-decoration: none;
 
     &:hover {
@@ -1438,6 +1450,11 @@ button.anchor {
     color: var(--B500);
 }
 
+.btn-confirm {
+    text-decoration: none !important;
+    margin-left: 12px;
+}
+
 .dc__link:hover {
     color: var(--B500);
 }
@@ -1554,6 +1571,46 @@ button.anchor {
     margin-left: auto;
 }
 
+.lh-20 {
+    line-height: 20px;
+}
+
+.dc__lh-22 {
+  line-height: 22px;
+}
+
+.lh-32 {
+    line-height: 32px;
+}
+
+.lh-36 {
+    line-height: 36px !important;
+}
+
+.lh-16 {
+    line-height: 16px;
+}
+
+.lh-18 {
+    line-height: 18px;
+}
+
+.mh-28 {
+    min-height: 28px;
+}
+
+.lh-28 {
+    line-height: 28px;
+}
+
+.h-28 {
+    height: 28px !important;
+}
+
+.pl-16 {
+    padding-left: 16px !important;
+}
+
 .dc__text__subtitle {
     font-size: 13px;
     font-weight: 600;
@@ -1563,6 +1620,66 @@ button.anchor {
 
 .dc__text-center {
   text-align: center;
+}
+
+.lh-n {
+    line-height: normal !important;
+}
+
+.h-8 {
+    height: 8px;
+}
+
+.h-18 {
+    height: 18px;
+}
+
+.h-20 {
+    height: 20px !important;
+}
+
+.h-22 {
+    height: 22px !important;
+}
+
+.h-32 {
+    height: 32px !important;
+}
+
+.w-32 {
+    width: 32px !important;
+}
+
+.h-36 {
+    height: 36px !important;
+}
+
+.h-44 {
+    height: 44px !important;
+}
+
+.h-48 {
+    height: 48px !important;
+}
+
+.mh-48 {
+  min-height: 48px;
+}
+
+.mw-48 {
+  min-width: 48px;
+}
+
+.dc__mxw-300 {
+    max-width: 300px;
+}
+
+.h-44 {
+    height: 44px !important;
+}
+
+.h-60 {
+    height: 60px !important;
 }
 
 .fw-n {
@@ -1738,7 +1855,7 @@ textarea {
 
 // Text Transform
 .dc__lowercase {
-  text-transform: dc__lowercase;
+  text-transform: lowercase;
 }
 
 .dc__uppercase {
@@ -2004,6 +2121,43 @@ height: 100%;
   margin-bottom: 4px !important;
 }
 
+.href__link{
+  color: var(--N900);
+}
+
+.href__link:hover{
+  color: var(--N900);
+}
+.h-300 {
+  min-height: 300px;
+}
+
+.mt-120 {
+  margin-top: 120px;
+}
+
+.dc__no-svg-fill {
+  path {
+      fill: none !important;
+  }
+}
+
 .mb-16-imp {
   margin-bottom: 16px !important;
+}
+
+.dc__window-bg{
+  background: var(--window-bg);
+}
+
+.dc__overflow-hidden {
+    overflow: hidden !important;
+}
+
+.dc__overflow-scroll {
+    overflow: scroll !important;
+}
+
+.no-margin-left {
+  margin-left: 0px !important;
 }

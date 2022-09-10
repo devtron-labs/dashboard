@@ -2,19 +2,12 @@ import React from 'react'
 import { ReactComponent as Forward } from '../../assets/icons/ic-arrow-forward.svg'
 import { Select, noop, Toggle, Pencil } from '../common'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
-import { ChartGroupEntry, ChartSummaryHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
+import { ChartGroupEntry, ChartSummaryHelpers, ChartValuesNativeType, ChartVersionType, MultiChartSummaryProps } from './charts.types'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as EmptyFolder } from '../../assets/icons/img-folder-empty.svg'
 import DropDownFilled from '../../assets/icons/ic-dropdown-filled.svg'
-
-interface MultiChartSummaryProps extends ChartSummaryHelpers {
-    charts: ChartGroupEntry[]
-    configureChartIndex: number
-    hideDeployedValues?: boolean
-    name?: string
-    setChartDetailsUpdate?: React.Dispatch<React.SetStateAction<boolean>>
-}
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     charts,
@@ -30,32 +23,51 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     name,
     setChartDetailsUpdate,
 }) => {
+
+    const removeAllCharts = (): void => {
+        removeChart(0,true)
+    }
+
+    const updateChartDetails = (): void => {
+        setChartDetailsUpdate(true)
+    }
+
     return (
         <div className="chart-group--summary">
             {chartListing && (
                 <>
-                    {name && <div className="flex column left dc__border-bottom mb-20">
-                        <span className="flex flex-justify w-100 fs-14 cn-9">
-                            Group name
-                            <Pencil className="pointer" onClick={(e) => setChartDetailsUpdate(true)} />
-                        </span>
-                        <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
-                    </div>}
-                    <div
-                        className={`selected-chart-widget p-12 select-chart cursor ${
-                            typeof configureChartIndex !== 'number' ? 'active' : ''
-                        }`}
-                        style={{ gridTemplateColumns: '40px 1fr 24px' }}
-                        onClick={chartListing}
-                    >
-                        <Forward className="rotate anchor" style={{ ['--rotateBy' as any]: '180deg' }} />
-                        <div className="anchor ml-18">Select Charts</div>
-                        <span />
-                    </div>
-
-                    <div className="chart-count flex left column">
+                    {name && (
+                        <div className="flex column left border-bottom mb-20">
+                            <span className="flex flex-justify w-100 fs-14 cn-9">
+                                Group name
+                                <Pencil className="pointer" onClick={updateChartDetails} />
+                            </span>
+                            <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
+                        </div>
+                    )}
+                    <div className="pb-16 flex left column">
                         <b>{charts.length} charts selected</b>
                         <span>Set default chart version and values for each chart.</span>
+                    </div>
+                    <div className="flexbox mb-12">
+                        {typeof configureChartIndex === 'number' && (
+                            <div
+                                className="cb-5 fcb-5 bcn-0 en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100 mr-10"
+                                onClick={chartListing}
+                            >
+                                <Add className="icon-dim-16 mr-8" />
+                                Add Charts
+                            </div>
+                        )}
+                        {charts.length > 0 && (
+                            <div
+                                className="cr-5 scr-5 bcn-0 en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100"
+                                onClick={removeAllCharts}
+                            >
+                                <Trash className="icon-dim-16 mr-8" />
+                                Remove all
+                            </div>
+                        )}
                     </div>
                 </>
             )}
@@ -256,7 +268,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                                         <Select.Button arrowAsset={DropDownFilled}>
                                             Values:
                                             <span
-                                                className="ml-5 select-button__selected-option dc__ellipsis-right"
+                                                className="ml-5 select-button__selected-option ellipsis-right"
                                                 style={{ maxWidth: '95px' }}
                                             >
                                                 {selectedChartValue.name} {selectedChartValue.chartVersion}

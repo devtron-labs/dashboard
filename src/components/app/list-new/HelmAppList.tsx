@@ -10,7 +10,6 @@ import {
     Pagination,
     LazyImage,
     handleUTCTime,
-    useEventSource,
 } from '../../common';
 import { Host, SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
 import { AppListViewType } from '../config';

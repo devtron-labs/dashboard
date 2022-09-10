@@ -11,7 +11,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
 import { useThrottledEffect } from '../common';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import './terminal.css';
 
 interface TerminalViewProps {

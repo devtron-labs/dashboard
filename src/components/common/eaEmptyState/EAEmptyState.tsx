@@ -4,6 +4,7 @@ import securityEmpty from '../../../assets/img/ic-empty-ea--security.png'
 import { URLS } from '../../../config'
 import './eaEmptyState.css'
 import { NavLink } from 'react-router-dom'
+import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 
 export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',
@@ -24,7 +25,7 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                 <div className="fs-20 fw-6 mb-8">{title}</div>
                 <div className="fs-14 dc__m-auto w-600">{msg}</div>
                 <div className="pt-20">
-                    <NavLink to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}>
+                    <NavLink to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}>
                         <button type="button" className="cta empty__install-btn">
                             View Integration
                         </button>

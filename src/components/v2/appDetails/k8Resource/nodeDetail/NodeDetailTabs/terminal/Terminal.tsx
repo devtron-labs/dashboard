@@ -7,11 +7,11 @@ import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
 import { get } from '../../../../../../../services/api';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
-import { elementDidMount } from '../../../../../../common';
+import { elementDidMount, useOnline } from '../../../../../../common';
 
 interface TerminalViewProps {
     nodeName: string;
@@ -32,6 +32,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [isReconnection, setIsReconnection] = useState(false);
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
     const [popupText, setPopupText] = useState<boolean>(false);
+    const isOnline = useOnline();
 
     useEffect(() => {
         if (!popupText) return;
@@ -134,32 +135,32 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onclose = function (evt) {
             disableInput();
-            terminalViewProps.setSocketConnection('DISCONNECTED');
+            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
         };
 
         _socket.onerror = function (evt) {
             disableInput();
-            terminalViewProps.setSocketConnection('DISCONNECTED');
+            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
         };
     };
 
     const reconnect = () => {
-        terminalViewProps.setSocketConnection('DISCONNECTING');
+        terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING);
         terminal?.reset();
 
         setTimeout(() => {
-            terminalViewProps.setSocketConnection('CONNECTING');
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING);
         }, 100);
     };
 
     useEffect(() => {
-        if (terminalViewProps.socketConnection === 'DISCONNECTING') {
+        if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
             if (socket) {
                 socket.close();
                 socket = undefined;
             }
         }
-        if (terminalViewProps.socketConnection === 'CONNECTING') {
+        if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession();
         }
     }, [terminalViewProps.socketConnection]);
@@ -206,7 +207,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (firstMessageReceived) {
             fitAddon.fit();
             terminal.setOption('cursorBlink', true);
-            terminalViewProps.setSocketConnection('CONNECTED');
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED);
         }
     }, [firstMessageReceived]);
 
@@ -221,7 +222,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 (window.location.port ? ':' + window.location.port : '');
         }
 
-        terminalViewProps.setSocketConnection('CONNECTING');
+        terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING);
 
         ReactGA.event({
             category: 'Terminal',
@@ -292,52 +293,73 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             });
     };
 
-    return (
-        <div className="terminal-view h-100 w-100">
+    const onClickResume = (e) => {
+        e.stopPropagation()
+        terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
+        setIsReconnection(true)
+    }
+
+    const renderConnectionStrip = () => {
+        return !isOnline ? (
+            <div className="terminal-strip capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
+                You’re offline. Please check your internet connection.
+            </div>
+        ) : (
             <div
-                style={{ zIndex: 4, textTransform: 'capitalize' }}
-                className={`${
-                    terminalViewProps.socketConnection !== 'CONNECTED'
-                        ? `${terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'}  pl-20`
+                className={`terminal-strip capitalize ${
+                    terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
+                        ? `${
+                              terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                  ? 'bcy-2'
+                                  : 'bcr-7'
+                          }  pl-20`
                         : 'pb-10'
-                } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
+                } ${
+                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
+                } m-0 pl-20 w-100`}
             >
-                {terminalViewProps.socketConnection !== 'CONNECTED' && (
-                    <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'dc__loading-dots' : ''}>
+                {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && (
+                    <span
+                        className={
+                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                ? 'loading-dots'
+                                : ''
+                        }
+                    >
                         {terminalViewProps.socketConnection?.toLowerCase()}
                     </span>
                 )}
-                {terminalViewProps.socketConnection === 'DISCONNECTED' && (
+                {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
                     <React.Fragment>
                         <span>.&nbsp;</span>
                         <button
                             type="button"
-                            onClick={(e) => {
-                                console.log('Resume clicked');
-                                e.stopPropagation();
-                                terminalViewProps.setSocketConnection('CONNECTING');
-                                setIsReconnection(true);
-                            }}
-                            className="cursor dc__transparent dc__inline-block"
-                            style={{ textDecoration: 'underline' }}
+                            onClick={onClickResume}
+                            className="cursor transparent inline-block dc__underline"
                         >
                             Resume
                         </button>
                     </React.Fragment>
                 )}
             </div>
+        )
+    }
+
+    return (
+        <div className="terminal-view h-100 w-100">
+            {renderConnectionStrip()}
 
             <div id="terminal-id" className="terminal-container ml-20">
                 <CopyToast showCopyToast={popupText} />
             </div>
 
-            {terminalViewProps.socketConnection === 'CONNECTED' && (
-                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__capitalize cg-4`}>
+            {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
+                <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}
         </div>
-    );
+    )
 }
 
 export default TerminalView;

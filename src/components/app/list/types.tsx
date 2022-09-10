@@ -1,3 +1,4 @@
+import React from 'react';
 import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps } from 'react-router';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
@@ -58,6 +59,10 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;
     updateLastDataSync : () => void;
+    appListCount: number
+    isSuperAdmin: boolean
+    openDevtronAppCreateModel: (event) => void
+    setAppCount: React.Dispatch<React.SetStateAction<number>>
 }
 
 export interface AppListResponse {
@@ -112,3 +117,7 @@ export const SortBy = {
     ENVIRONMENT: "environmentSort",
 }
 
+export interface AppListPropType {
+  isSuperAdmin: boolean
+  appListCount: number
+}

@@ -5,6 +5,7 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
+    DOCUMENTATION,
     DEFAULT_STATUS,
 } from '../../../../config';
 import {
@@ -47,7 +48,7 @@ import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-ale
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import Tippy from '@tippyjs/react';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import Select, { components } from 'react-select';
 import { SourceInfo } from './SourceInfo'
 import {
@@ -176,7 +177,7 @@ export const Details: React.FC<{
         })
     let deploymentStatusTimer = null
     const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
-    const interval = 30000;
+    const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
@@ -463,11 +464,11 @@ export const Details: React.FC<{
                                 subtitle={
                                     <p>
                                         Pods for this application will be
-                                        <b>
+                                        <b className='mr-4 ml-4'>
                                             scaled
                                             {hibernateConfirmationModal === 'hibernate'
-                                                ? 'down to 0'
-                                                : ' upto its original count'}
+                                                ? ' down to 0 '
+                                                : ' upto its original count '}
                                             on {appDetails.environmentName}
                                         </b>
                                         environment.
@@ -965,7 +966,7 @@ export function AppNotConfigured({
                 <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle :
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
-                    <a href="https://docs.devtron.ai/devtron/user-guide/creating-application" target="_blank">
+                    <a href={DOCUMENTATION.APP_CREATE} target="_blank">
                         Need help?
                     </a></>}
                 </p>

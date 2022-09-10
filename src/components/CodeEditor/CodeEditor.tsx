@@ -7,7 +7,7 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import 'monaco-editor';
 // @ts-ignore

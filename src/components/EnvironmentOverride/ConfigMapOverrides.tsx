@@ -2,10 +2,13 @@ import React, { useEffect, useState, useReducer, useRef, memo } from 'react'
 import { overRideConfigMap, deleteConfigMap } from './service'
 import { getAppChartRefForAppAndEnv, getEnvironmentConfigs } from '../../services/service'
 import { useParams } from 'react-router'
-import addIcon from '../../assets/icons/ic-add.svg'
-import fileIcon from '../../assets/icons/ic-file.svg'
-import keyIcon from '../../assets/icons/ic-key.svg'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as FileIcon } from '../../assets/icons/ic-file.svg'
+import { ReactComponent as KeyIcon } from '../../assets/icons/ic-key.svg'
+import { ReactComponent as ArrowTriangle } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import {
     showError,
     Progressing,
@@ -26,9 +29,9 @@ import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
-import { getAppChartRef } from '../../services/service'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import './environmentOverride.scss'
+import { ComponentStates, ConfigMapOverridesProps } from './EnvironmentOverrides.type'
 
 const ConfigMapContext = React.createContext(null)
 
@@ -40,26 +43,26 @@ function useConfigMapContext() {
     return context
 }
 
-export default function ConfigMapOverrides({ parentState, setParentState, ...props }) {
+export default function ConfigMapOverrides({ parentState, setParentState }: ConfigMapOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
-    const [configmapList, setConfigmapList] = useState<{ id: number; configData: any[]; appId: number }>()
-    const [configmapLoading, setConfigmapLoading] = useState(true)
+    const [configMapList, setConfigMapList] = useState<{ id: number; configData: any[]; appId: number }>()
+    const [configMapLoading, setConfigMapLoading] = useState(true)
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
 
     useEffect(() => {
-        if (!configmapLoading && configmapList) {
-            setParentState('loaded')
+        if (!configMapLoading && configMapList) {
+            setParentState(ComponentStates.loaded)
         }
-    }, [configmapLoading])
+    }, [configMapLoading])
 
     useEffect(() => {
         async function initialise() {
-            setConfigmapLoading(true)
+            setConfigMapLoading(true)
             try {
                 const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
                 const configmapRes = await getEnvironmentConfigs(appId, envId)
-                setConfigmapList({
+                setConfigMapList({
                     appId: configmapRes.result.appId,
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
@@ -70,10 +73,10 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
                 }
                 setAppChartRef(appChartRefRes.result)
             } catch (error) {
-                setParentState('failed')
+                setParentState(ComponentStates.failed)
                 showError(error)
             } finally {
-                setConfigmapLoading(false)
+                setConfigMapLoading(false)
             }
         }
         initialise()
@@ -82,27 +85,27 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
     async function reload() {
         try {
             const configmapRes = await getEnvironmentConfigs(appId, envId)
-            setConfigmapList({
+            setConfigMapList({
                 appId: configmapRes.result.appId,
                 id: configmapRes.result.id,
                 configData: configmapRes.result.configData || [],
             })
         } catch (error) {}
     }
-    if (parentState === 'loading' || !configmapList) return null
+    if (parentState === ComponentStates.loading || !configMapList)
+        return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
-    if (configmapLoading && !configmapList) {
+    if (configMapLoading && !configMapList) {
         return null
     }
 
     let configData = [{ id: null, name: null, defaultData: undefined, data: undefined }].concat(
-        configmapList?.configData,
+        configMapList?.configData,
     )
 
     return (
         <section className="config-map-overrides">
-            <label className="form__label dc__bold">ConfigMaps</label>
-            <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
+            <ConfigMapContext.Provider value={{ configMapList, id: configMapList.id, reload }}>
                 {configData.map(({ name, defaultData, data }) => (
                     <ListComponent
                         key={name || Math.random().toString(36).substr(2, 5)}
@@ -119,20 +122,33 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
 
 export function ListComponent({ name = '', type, label = '', appChartRef, reload = null }) {
     const [isCollapsed, toggleCollapse] = useState(true)
+
+    const handleOverrideListClick = () => {
+        toggleCollapse(!isCollapsed)
+    }
+
     return (
-        <div className="white-card white-card--list">
-            <div className="environment-override-list pointer left flex" onClick={(e) => toggleCollapse(!isCollapsed)}>
-                <img src={name ? (type === 'config-map' ? fileIcon : keyIcon) : addIcon} alt="list-icon icon" />
+        <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
+            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick}>
+                {name ? (
+                    type === 'config-map' ? (
+                        <FileIcon className="icon-dim-24" />
+                    ) : (
+                        <KeyIcon className="icon-dim-24" />
+                    )
+                ) : (
+                    <AddIcon className="icon-dim-24 fcb-5" />
+                )}
                 <div className={`flex left ${!name ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}>
                     {name || `Add ${type === 'secret' ? 'Secret' : 'ConfigMap'}`}
                 </div>
                 {label && <div className="flex tag">{label}</div>}
-                <img
-                    className={`pointer rotate`}
-                    style={{ ['--rotateBy' as any]: `${Number(!isCollapsed) * 180}deg` }}
-                    src={arrowTriangle}
-                    alt="arrow"
-                />
+                {name && (
+                    <ArrowTriangle
+                        className="icon-dim-24 rotate ml-auto"
+                        style={{ ['--rotateBy' as any]: `${Number(!isCollapsed) * 180}deg` }}
+                    />
+                )}
             </div>
             {!isCollapsed && type !== 'config-map' && (
                 <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />
@@ -161,8 +177,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     appChartRef,
     toggleCollapse,
 }) {
-    const { configmapList, id, reload } = useConfigMapContext()
-    const configmap = configmapList.configData.find((cm) => cm.name === name)
+    const { configMapList, id, reload } = useConfigMapContext()
+    const configmap = configMapList.configData.find((cm) => cm.name === name)
     const {
         data = null,
         defaultData = {},
@@ -447,11 +463,11 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         </div>
                     </div>
                     {!name && external ? (
-                        <div className="dc__info-container mb-24">
+                        <div className="info__container mb-24">
                             <Info />
                             <div className="flex column left">
-                                <div className="dc__info-title">Using External Configmaps</div>
-                                <div className="dc__info-subtitle">
+                                <div className="info__title">Using External Configmaps</div>
+                                <div className="info__subtitle">
                                     Configmap will not be created by system. However, they will be used inside the pod.
                                     Please make sure that configmap with the same name is present in the environment.
                                 </div>
@@ -515,7 +531,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                         <span className="cn-7 ml-5">Learn more about </span>
                                         <a
-                                            href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
                                             rel="noreferrer noopener"
                                             target="_blank"
                                         >
@@ -557,7 +573,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                             <span className="cn-7 ml-5">Learn more about </span>
                                             <a
-                                                href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                                href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
                                                 rel="noreferrer noopener"
                                                 target="_blank"
                                             >
@@ -586,7 +602,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     ) : null}
                     {!external && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 dc__bold">Data*</b>
+                            <b className="mr-5 bold">Data*</b>
                             <RadioGroup
                                 className="gui-yaml-switch"
                                 name="yaml-mode"
@@ -654,7 +670,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         </>
                     )}
                     {state.duplicate && !yamlMode && (
-                        <span className="dc__bold anchor pointer" onClick={(e) => dispatch({ type: 'add-param' })}>
+                        <span className="bold anchor pointer" onClick={(e) => dispatch({ type: 'add-param' })}>
                             +Add params
                         </span>
                     )}
@@ -711,27 +727,36 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
 
 export function Override({ external, overridden, onClick, loading = false, type = 'ConfigMap' }) {
     return (
-        <div className="override-container mb-24">
-            <Info />
+        <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
+            {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
                 <div className="override-title">
                     {external
                         ? 'Nothing to override'
                         : overridden
-                        ? 'Restore default configuration'
-                        : 'Override default configuration'}
+                        ? 'Base configurations are overridden'
+                        : 'Inheriting base configurations'}
                 </div>
                 <div className="override-subtitle">
                     {external
                         ? `This ${type} does not have any overridable values.`
                         : overridden
-                        ? 'Restoring will discard the current overrides and application default configuration will be applied.'
-                        : `Overriding will fork the ${type} for this environment. Updating the default values will no longer affect this configuration.`}
+                        ? 'Restoring will discard the current overrides and base configuration will be applicable to this environment.'
+                        : `Overriding will fork the ${type} for this environment. Updating the base values will no longer affect this configuration.`}
                 </div>
             </div>
             {!external && (
-                <button className="cta ghosted override-button" onClick={onClick}>
-                    {loading ? <Progressing /> : overridden ? 'Delete override' : 'Allow override'}
+                <button className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`} onClick={onClick}>
+                    {loading ? (
+                        <Progressing />
+                    ) : overridden ? (
+                        <>
+                            <DeleteIcon className="icon-dim-16 mr-8" />
+                            <span>Delete override</span>
+                        </>
+                    ) : (
+                        'Allow override'
+                    )}
                 </button>
             )}
         </div>

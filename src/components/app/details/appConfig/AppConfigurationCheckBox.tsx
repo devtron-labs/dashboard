@@ -1,8 +1,8 @@
-import React from 'react';
-import { CustomNavItemsType } from './AppConfig';
+import React from 'react'
+import { CustomNavItemsType } from './appConfig.type'
 
 interface HelpBoxType {
-    selectedNav: CustomNavItemsType;
+    selectedNav: CustomNavItemsType
 }
 
 export default function HelpBox({ selectedNav }: HelpBoxType) {
@@ -24,5 +24,5 @@ export default function HelpBox({ selectedNav }: HelpBoxType) {
                 </a>
             </div>
         </div>
-    );
+    )
 }

@@ -4,6 +4,9 @@
     display: grid;
     grid-template-columns: 64px 1fr;
     overflow-y: hidden;
+    &.no-nav{
+      grid-template-columns: 1fr;
+    }
 }
 
 .main {
@@ -255,9 +258,9 @@
 
 .help-card {
     display: grid;
-    grid-template-rows: 36px 1px 36px 36px 1px 36px auto;
+    grid-template-rows: 36px 36px 1px 36px 1px 36px 1px 36px auto;
     align-items: center;
-
+    z-index: var(--modal-index);
     .help-card__option {
         padding: 6px 12px;
         height: 36px;

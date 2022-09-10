@@ -146,6 +146,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             state.pageSize = request.size;
             this.setState(state);
             this.abortController = null;
+            this.props.setAppCount(response.result.appCount)
         }).catch((errors: ServerErrors) => {
             if (errors.code) {
                 showError(errors);
@@ -182,6 +183,9 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             clearAll={this.props.clearAllFilters}
             changePage={this.changePage}
             changePageSize={this.changePageSize}
+            isSuperAdmin={this.props.isSuperAdmin}
+            appListCount={this.props.appListCount}
+            openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
         />
     }
 }

@@ -1,29 +1,42 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Link, Switch, Route, NavLink } from 'react-router-dom'
-import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common'
+import {
+    Progressing,
+    Filter,
+    showError,
+    FilterOption,
+    Modal,
+    ErrorScreenManager,
+    handleUTCTime,
+    useAsync,
+} from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
-import InstallDevtronFullImage from '../../../assets/img/install-devtron-full@2x.png'
-import EmptyState from '../../EmptyState/EmptyState'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import * as queryString from 'query-string'
-import { OrderBy, SortBy } from '../list/types'
+import { AppListPropType, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
+import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
+import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
+import { FILE_NAMES } from '../../common/ExportToCsv/constants'
+import { getAppList } from '../service'
+import moment from 'moment'
+import { getUserRole } from '../../userGroups/userGroup.service'
 
-export default function AppList() {
+export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -34,7 +47,6 @@ export default function AppList() {
     const [lastDataSync, setLastDataSync] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
-
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
@@ -57,11 +69,13 @@ export default function AppList() {
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
+    const [appCount, setAppCount] = useState(0)
+    const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
 
     // on page load
     useEffect(() => {
         let _currentTab =
-            params.appType == AppListConstants.AppType.DEVTRON_APPS
+            params.appType === AppListConstants.AppType.DEVTRON_APPS
                 ? AppListConstants.AppTabs.DEVTRON_APPS
                 : AppListConstants.AppTabs.HELM_APPS
         setCurrentTab(_currentTab)
@@ -86,7 +100,7 @@ export default function AppList() {
                 setEnvironmentListRes(initData.environmentListRes)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
-                if (serverMode == SERVER_MODE.EA_ONLY) {
+                if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
                 }
             })
@@ -597,6 +611,82 @@ export default function AppList() {
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
+    const getAppListDataToExport = () => {
+        return getAppList(
+            typeof parsedPayloadOnUrlChange === 'object'
+                ? {
+                      ...parsedPayloadOnUrlChange,
+                      appNameSearch: searchString || '',
+                      sortBy: 'appNameSort',
+                      sortOrder: 'ASC',
+                      size: appCount,
+                  }
+                : {
+                      environments: [],
+                      teams: [],
+                      namespaces: [],
+                      appNameSearch: '',
+                      sortBy: 'appNameSort',
+                      sortOrder: 'ASC',
+                      offset: 0,
+                      hOffset: 0,
+                      size: appCount,
+                  },
+        ).then(({ result }) => {
+            if (result.appContainers) {
+                const _appDataList = []
+                for (let _app of result.appContainers) {
+                    if (_app.environments) {
+                        for (let _env of _app.environments) {
+                            const _clusterId =
+                                _env.clusterName &&
+                                masterFilters.clusters.find((_cluster) => {
+                                    return _cluster.label === _env.clusterName
+                                })?.key
+
+                            _appDataList.push({
+                                appId: _env.appId,
+                                appName: _env.appName,
+                                projectId: _env.teamId,
+                                projectName: _env.teamName,
+                                environmentId: (_env.environmentName && _env.environmentId) || '-',
+                                environmentName: _env.environmentName || '-',
+                                clusterId: `${(_clusterId ?? _clusterId) || '-'}`,
+                                clusterName: _env.clusterName || '-',
+                                namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
+                                namespace: _env.namespace || '-',
+                                status: _env.status || '-',
+                                lastDeployedTime: _env.lastDeployedTime
+                                    ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
+                                    : '-',
+                            })
+                        }
+                    } else {
+                        _appDataList.push({
+                            appId: _app.appId,
+                            appName: _app.appName,
+                            projectId: _app.projectId,
+                            projectName:
+                                masterFilters.projects.find((_proj) => _proj.id === _app.projectId)?.name || '-',
+                            environmentId: '-',
+                            environmentName: '-',
+                            clusterId: '-',
+                            clusterName: '-',
+                            namespaceId: '-',
+                            namespace: '-',
+                            status: '-',
+                            lastDeployedTime: '-',
+                        })
+                    }
+                }
+
+                return _appDataList
+            }
+
+            return []
+        })
+    }
+
     const renderActionButtons = () => {
         return (
             serverMode === SERVER_MODE.FULL && (
@@ -619,6 +709,11 @@ export default function AppList() {
 
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
+        const showExportCsvButton =
+            userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
+            currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
+            serverMode !== SERVER_MODE.EA_ONLY
+
         return (
             <div className="search-filter-section">
                 <form style={{ display: 'inline' }} onSubmit={searchApp}>
@@ -639,13 +734,12 @@ export default function AppList() {
                         />
                         {searchApplied && (
                             <button className="search__clear-button" type="button" onClick={clearSearch}>
-                                <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
+                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                             </button>
                         )}
                     </div>
                 </form>
-                <div className="filters">
-                    <span className="filters__label">Filter By</span>
+                <div className="app-list-filters filters">
                     <Filter
                         list={masterFilters.projects}
                         labelKey="label"
@@ -687,6 +781,8 @@ export default function AppList() {
                         showPulsatingDot={showPulsatingDot}
                     />
                     <Filter
+                        rootClassName="no-margin-left"
+                        position={showExportCsvButton ? 'left' : 'right'}
                         list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
                         labelKey="label"
                         searchKey="actualName"
@@ -705,6 +801,17 @@ export default function AppList() {
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
                     />
+                    {showExportCsvButton && (
+                        <>
+                            <span className="filter-divider"></span>
+                            <ExportToCsv
+                                className="ml-10"
+                                apiPromise={getAppListDataToExport}
+                                fileName={FILE_NAMES.Apps}
+                                disabled={!appCount}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         )
@@ -714,7 +821,7 @@ export default function AppList() {
         let count = 0
         let keys = Object.keys(masterFilters)
         let appliedFilters = (
-            <div className="saved-filters__wrap dc__position-rel">
+            <div className="saved-filters__wrap position-rel">
                 {keys.map((key) => {
                     let filterType = ''
                     let _filterKey = ''
@@ -799,7 +906,7 @@ export default function AppList() {
                     {serverMode === SERVER_MODE.EA_ONLY && (
                         <li className="tab-list__tab">
                             <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
+                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
                                 className={`tab-list__tab-link ${
                                     currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
                                 }`}
@@ -903,64 +1010,70 @@ export default function AppList() {
 
     return (
         <div>
-            {dataStateType == AppListViewType.LOADING && (
-                <div className="dc__loading-wrapper">
+            {dataStateType === AppListViewType.LOADING && (
+                <div className="loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
-            {dataStateType == AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
+            {dataStateType === AppListViewType.ERROR && (
+                <div className="loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
-            {dataStateType == AppListViewType.LIST && (
+            {dataStateType === AppListViewType.LIST && (
                 <>
                     {renderPageHeader()}
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
-                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
-                        <DevtronAppListContainer
-                            payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                            appCheckListRes={appCheckListRes}
-                            clearAllFilters={removeAllFilters}
-                            sortApplicationList={sortApplicationList}
-                            updateLastDataSync={updateLastDataSync}
-                        />
-                    )}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY && (
-                        <div style={{ height: 'calc(100vh - 250px)' }}>
-                            <EAEmptyState
-                                title={'Create, build, deploy and debug custom apps'}
-                                msg={
-                                    'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
-                                }
-                                stateType={EAEmptyStateType.DEVTRONAPPS}
-                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                            />
-                        </div>
-                    )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS && (
+                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
                         <>
-                            <HelmAppList
-                                serverMode={serverMode}
-                                payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                sortApplicationList={sortApplicationList}
-                                clearAllFilters={removeAllFilters}
-                                fetchingExternalApps={fetchingExternalApps}
-                                setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                updateLastDataSync={updateLastDataSync}
-                                setShowPulsatingDotState={setShowPulsatingDotState}
-                                masterFilters={masterFilters}
-                            />
-                            {fetchingExternalApps && (
-                                <div className="mt-16">
-                                    <Progressing size={32} />
-                                </div>
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.FULL && (
+                                    <DevtronAppListContainer
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        appCheckListRes={appCheckListRes}
+                                        clearAllFilters={removeAllFilters}
+                                        sortApplicationList={sortApplicationList}
+                                        updateLastDataSync={updateLastDataSync}
+                                        appListCount={appListCount}
+                                        isSuperAdmin={isSuperAdmin}
+                                        openDevtronAppCreateModel={openDevtronAppCreateModel}
+                                        setAppCount={setAppCount}
+                                    />
+                                )}
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.EA_ONLY && (
+                                    <div style={{ height: 'calc(100vh - 250px)' }}>
+                                        <EAEmptyState
+                                            title='Create, build, deploy and debug custom apps'
+                                            msg='Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
+                                            stateType={EAEmptyStateType.DEVTRONAPPS}
+                                            knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                                        />
+                                    </div>
+                                )}
+                            {params.appType === AppListConstants.AppType.HELM_APPS && (
+                                <>
+                                    <HelmAppList
+                                        serverMode={serverMode}
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        sortApplicationList={sortApplicationList}
+                                        clearAllFilters={removeAllFilters}
+                                        fetchingExternalApps={fetchingExternalApps}
+                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                        updateLastDataSync={updateLastDataSync}
+                                        setShowPulsatingDotState={setShowPulsatingDotState}
+                                        masterFilters={masterFilters}
+                                    />
+                                    {fetchingExternalApps && (
+                                        <div className="mt-16">
+                                            <Progressing size={32} />
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </>
-                    )}
                 </>
             )}
         </div>

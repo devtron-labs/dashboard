@@ -41,10 +41,13 @@ export default function DeploymentStatusDetailModal({
                                     </>
                                 ) : (
                                     <span className="fs-13">
-                                        {moment(
-                                            deploymentStatusDetailsBreakdownData.deploymentEndTime,
-                                            'YYYY-MM-DDTHH:mm:ssZ',
-                                        ).format(Moment12HourFormat)}
+                                        {deploymentStatusDetailsBreakdownData.deploymentEndTime !==
+                                        '0001-01-01T00:00:00Z'
+                                            ? moment(
+                                                  deploymentStatusDetailsBreakdownData.deploymentEndTime,
+                                                  'YYYY-MM-DDTHH:mm:ssZ',
+                                              ).format(Moment12HourFormat)
+                                            : '-'}
                                     </span>
                                 )}
                             </div>

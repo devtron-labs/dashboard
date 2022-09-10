@@ -19,28 +19,206 @@
     margin-bottom: -1px;
 }
 
-.white-card__deployment-config {
-    padding: 16px;
-    margin-bottom: 16px;
-    .select-button {
-        padding-left: 8px;
-        height: 40px;
-    }
-}
-
 #opt-metrics {
     margin-bottom: 8px;
     padding: 0;
     overflow: hidden;
 }
 
-.form__row--code-editor-container {
-    height: 500px;
-    border: 1px solid var(--N200);
+.app-compose__deployment-config {
+    min-width: 960px;
+
+    &.full-view {
+        position: absolute;
+        left: 64px;
+        width: calc(100% - 64px);
+        height: calc(100% - 75px);
+
+        .white-card__deployment-config {
+            grid-template-rows: 48px auto;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: 'tab tab' 'readme editor';
+
+            &.comparison-view {
+                grid-template-areas: 'tab' 'editor';
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .deployment-template-override-form {
+            grid-template-rows: 60px 48px auto;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: 'override override' 'tab tab' 'readme editor';
+
+            &.comparison-view {
+                grid-template-areas: 'override' 'tab' 'editor';
+                grid-template-columns: 1fr;
+            }
+
+            .dt-readme {
+                .dt-readme-markdown {
+                    height: calc(100vh - 216px);
+                    overflow: scroll;
+                }
+            }
+        }
+
+        .white-card__deployment-config,
+        .deployment-template-override-form {
+            display: grid;
+
+            &.comparison-view {
+                .form__row--code-editor-container {
+                    .code-editor__header {
+                        display: grid;
+                        grid-template-columns: 48.5% 51.5%;
+                    }
+                }
+            }
+
+            .form__row--code-editor-container {
+                height: 100%;
+                border: none;
+
+                .code-editor__header {
+                    height: 32px;
+                    border: none;
+                }
+            }
+        }
+    }
+
+    .white-card__deployment-config {
+        .select-button {
+            padding-left: 8px;
+            height: 40px;
+        }
+    }
+
+    .form-cta-section {
+        height: 76px;
+
+        .form-app-metrics-cta {
+            width: 88%;
+        }
+
+        .form-submit-cta.cta.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--B500);
+            color: var(--white);
+            border: 1px solid transparent;
+
+            .loader .loader__svg {
+                path {
+                    fill: white
+                }
+            }
+        }
+    }
+
+    .dt-readme {
+        grid-area: readme;
+
+        .code-editor__header {
+            height: 32px;
+            padding: 0 12px;
+            border-bottom: none;
+        }
+
+        .dt-readme-markdown {
+            height: calc(100vh - 162px);
+            overflow: scroll;
+        }
+    }
+
+    .dt-options-tab-container {
+        grid-area: tab;
+        height: 48px;
+
+        .dt-view-option {
+            padding: 4px 8px;
+
+            &.disabled {
+                opacity: 0.5;
+                user-select: none;
+                cursor: not-allowed;
+            }
+
+            &.opened,
+            &:hover {
+                background-color: var(--N100);
+                border-radius: 4px;
+            }
+
+            .option-open-icon path {
+                stroke: var(--N700);
+            }
+
+            .option-close-icon use {
+                fill: var(--N700);
+            }
+        }
+    }
+
+    .compare-template-values-select__group {
+        padding-top: 0;
+        padding-bottom: 0;
+
+        .compare-template-values-select__group-heading {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: none;
+            color: var(--N900);
+            background-color: var(--window-bg);
+            padding: 4px 10px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin: 0;
+        }
+    }
+}
+
+.chart-type-version-options {
     display: grid;
-    grid-template-rows: 40px 1fr;
-    border-radius: 4px;
+    grid-template-columns: auto auto;
+    column-gap: 16px;
+
+    .chart-type-options,
+    .chart-version-options {
+        display: grid;
+        align-items: center;
+    }
+
+    .chart-type-options {
+        grid-template-columns: 75px 1fr;
+    }
+
+    .chart-version-options {
+        grid-template-columns: 94px 1fr;
+    }
+}
+
+.form__row--code-editor-container {
+    height: calc(100% - 124px);
+    display: grid;
+    grid-template-rows: 32px 1fr;
     overflow: hidden;
+    grid-area: editor;
+
+    &.form__row {
+        margin-bottom: 0;
+    }
+
+    .code-editor__warning {
+        height: 32px;
+        color: var(--N900);
+        background-color: var(--Y100);
+
+        .code-editor__information-info-icon path:nth-child(2) {
+            fill: var(--Y700);
+        }
+    }
 }
 
 .deploymentConfig__warning {
@@ -133,6 +311,25 @@
     .upload-icon-stroke {
         path {
             stroke: var(--B500);
+        }
+    }
+}
+
+.deployment-template-override {
+    .app-compose__deployment-config {
+        min-width: 1024px;
+    }
+
+    .deployment-template-override-form {
+        .form__row--code-editor-container {
+            height: calc(100% - 184px);
+        }
+
+        .override-container {
+            grid-area: override;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
         }
     }
 }

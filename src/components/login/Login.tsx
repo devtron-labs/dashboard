@@ -62,6 +62,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 })
                 .catch((errors) => {})
         }
+
     }
 
     handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -91,6 +92,12 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         return !isValid
     }
 
+    onClickSSO = (): void => {
+        if (typeof Storage !== 'undefined') {
+            localStorage.setItem('isSSOLogin', 'true')
+        }
+    }
+
     login(e): void {
         e.preventDefault()
         let data = this.state.form
@@ -101,7 +108,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     this.setState({ loading: false })
                     let queryString = this.props.location.search.split('continue=')[1]
                     let url = queryString ? `${queryString}` : URLS.APP
-                    this.props.history.push(`${url}`)
+                    this.props.history.push(url)
+                    localStorage.setItem('isAdminLogin', 'true')
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -124,6 +132,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             <a
                                 href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`}
                                 className="login__google flex"
+                                onClick={this.onClickSSO}
                             >
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
                                     <use href={`${LoginIcons}#${item.name}`}></use>
@@ -147,7 +156,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
-                <form className="login-dt__form" autocomplete="on" onSubmit={this.login}>
+                <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <input
                         type="text"
                         className="form__input fs-14 mb-24"

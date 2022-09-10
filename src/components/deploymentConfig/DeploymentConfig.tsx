@@ -1,128 +1,51 @@
 import React, { useEffect, useState } from 'react'
-import {
-    getDeploymentTemplate,
-    updateDeploymentTemplate,
-    saveDeploymentTemplate,
-    toggleAppMetrics as updateAppMetrics,
-} from './service'
-import { getChartReferences } from '../../services/service'
-import {
-    Toggle,
-    Progressing,
-    ConfirmationDialog,
-    VisibleModal,
-    useJsonYaml,
-    isVersionLessThanOrEqualToTarget,
-    sortObjectArrayAlphabetically,
-} from '../common'
-import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
-import ReadmeConfig from './ReadmeConfig'
-import { useParams } from 'react-router'
+import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { Option } from '../v2/common/ReactSelect.utils'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
+import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
+import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync } from '../common'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as ArrowSquareOut } from '../../assets/icons/misc/arrowSquareOut.svg'
-import ReactSelect, { components } from 'react-select'
-import { DOCUMENTATION, URLS } from '../../config'
-import './deploymentConfig.scss'
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
-import { MODES } from '../../../src/config/constants'
+import {
+    DeploymentConfigFormCTA,
+    DeploymentTemplateEditorView,
+    DeploymentTemplateOptionsTab,
+} from './DeploymentTemplateView'
+import { DeploymentChartVersionType, DeploymentConfigProps } from './types'
+import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
-import { NavLink } from 'react-router-dom'
-import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
-import { ROLLOUT_DEPLOYMENT } from '../../config'
+import './deploymentConfig.scss'
 
-export function OptApplicationMetrics({
-    currentChart,
-    onChange,
-    opted,
-    focus = false,
-    loading,
-    className = '',
-    disabled = false,
-}: {
-    currentChart: { id: number; version: string; name: string }
-    onChange
-    opted: boolean
-    focus?: boolean
-    loading: boolean
-    className?: string
-    disabled?: boolean
-}) {
-    let isUnSupportedChartVersion =
-        currentChart.name === ROLLOUT_DEPLOYMENT && isVersionLessThanOrEqualToTarget(currentChart.version, [3, 7, 0])
-
-    return (
-        <div
-            id="opt-metrics"
-            className={`flex column left white-card ${focus ? 'animate-background' : ''} ${className}`}
-        >
-            <div className="p-lr-20 m-tb-20 flex left" style={{ justifyContent: 'space-between', width: '100%' }}>
-                <div className="flex column left">
-                    <b style={{ marginBottom: '8px' }}>Show application metrics</b>
-                    <div>
-                        Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput
-                        and latency).
-                    </div>
-                </div>
-                <div style={{ height: '20px', width: '32px' }}>
-                    {loading ? (
-                        <Progressing />
-                    ) : (
-                        <Toggle disabled={disabled || isUnSupportedChartVersion} onSelect={onChange} selected={opted} />
-                    )}
-                </div>
-            </div>
-            {isUnSupportedChartVersion && (
-                <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%' }}>
-                    <img />
-                    <span>
-                        Application metrics is not supported for the selected chart version. Update to the latest chart
-                        version and re-deploy the application to view metrics.
-                    </span>
-                </div>
-            )}
-        </div>
-    )
-}
-
-export default function DeploymentConfig({ respondOnSuccess, isUnSet }) {
-    return (
-        <div className="form__app-compose">
-            <h3 className="form__title form__title--artifatcs">Deployment Template</h3>
-            <p className="form__subtitle">
-                Required to execute deployment pipelines for this application.&nbsp;
-                <a
-                    rel="noreferrer noopener"
-                    className="dc__link"
-                    href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
-                    target="_blank"
-                >
-                    Learn more
-                </a>
-            </p>
-            <DeploymentConfigForm respondOnSuccess={respondOnSuccess} isUnSet={isUnSet} />
-        </div>
-    )
-}
-
-function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
-    const [charts, setCharts] = useState<{ id: number; version: string; name: string }[]>([])
+export default function DeploymentConfig({
+    respondOnSuccess,
+    isUnSet,
+    navItems,
+    isCiPipeline,
+    environments,
+    setEnvironments,
+}: DeploymentConfigProps) {
+    const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
     const [selectedChartRefId, selectChartRefId] = useState(0)
-    const [selectedChart, selectChart] = useState<{ id: number; version: string; name: string }>(null)
+    const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
     const [template, setTemplate] = useState('')
     const [schemas, setSchema] = useState()
     const [loading, setLoading] = useState(false)
-    const [appMetricsLoading, setAppMetricsLoading] = useState(false)
     const [chartConfig, setChartConfig] = useState(null)
-    const [isAppMetricsEnabled, toggleAppMetrics] = useState(null)
+    const [isAppMetricsEnabled, setAppMetricsEnabled] = useState(false)
     const [tempFormData, setTempFormData] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true)
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [showReadme, setShowReadme] = useState(false)
+    const [openComparison, setOpenComparison] = useState(false)
     const [readme, setReadme] = useState('')
+    const history = useHistory()
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
+    const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
+    const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
+        () => getAppOtherEnvironment(appId),
+        [appId],
+        !!appId,
+    )
 
     useEffect(() => {
         initialise()
@@ -132,21 +55,11 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         fetchDeploymentTemplate()
     }, [selectedChart])
 
-    const { appId, envId } = useParams<{ appId: string; envId: string }>()
-
-    async function saveAppMetrics(appMetricsEnabled) {
-        try {
-            setAppMetricsLoading(true)
-            await updateAppMetrics(+appId, {
-                isAppMetricsEnabled: appMetricsEnabled,
-            })
-            toast.success(`Successfully ${appMetricsEnabled ? 'subscribed' : 'unsubscribed'}.`, { autoClose: null })
-            initialise()
-        } catch (err) {
-            showError(err)
-            setAppMetricsLoading(false)
+    useEffect(() => {
+        if (!environmentsLoading && environmentResult?.result) {
+            setEnvironments(environmentResult.result)
         }
-    }
+    }, [environmentsLoading, environmentResult])
 
     async function initialise() {
         setChartConfigLoading(true)
@@ -181,20 +94,17 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         schema,
                     },
                 },
-            } = await getDeploymentTemplate(+appId, selectedChart.id)
+            } = await getDeploymentTemplate(+appId, +selectedChart.id)
             setTemplate(defaultAppOverride)
             setSchema(schema)
             setReadme(readme)
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
-            toggleAppMetrics(isAppMetricsEnabled)
+            setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
         } catch (err) {
             showError(err)
         } finally {
             setChartConfigLoading(false)
-            if (appMetricsLoading) {
-                setAppMetricsLoading(false)
-            }
         }
     }
 
@@ -207,7 +117,9 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         if (chartConfig.id) {
             //update flow, might have overridden
             toggleConfirmation(true)
-        } else save()
+        } else {
+            save()
+        }
     }
 
     async function save() {
@@ -222,15 +134,22 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 isAppMetricsEnabled,
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
-            const { result } = await api(requestBody)
+            await api(requestBody)
+            reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
+            setFetchedValues({})
             toast.success(
                 <div className="toast">
                     <div className="toast__title">{chartConfig.id ? 'Updated' : 'Saved'}</div>
                     <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                 </div>,
             )
+
+            if (!isCiPipeline) {
+                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.DEPLOYMENT_TEMPLATE)
+                history.push(navItems[stageIndex + 1].href)
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -239,222 +158,85 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         }
     }
 
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
-    const uniqueChartsByDevtron = new Map<string, boolean>()
-    const uniqueCustomCharts = new Map<string, boolean>()
-    let devtronCharts = []
-    let customCharts = []
-    const chartLength = charts.length
-    for (let i = 0; i < chartLength; i++) {
-        const chartName = charts[i].name
-        if (charts[i]['userUploaded']) {
-            if (!uniqueCustomCharts.get(chartName)) {
-                uniqueCustomCharts.set(chartName, true)
-                customCharts.push(charts[i])
-            }
-        } else if (!uniqueChartsByDevtron.get(chartName)) {
-            uniqueChartsByDevtron.set(chartName, true)
-            devtronCharts.push(charts[i])
+    const toggleAppMetrics = () => {
+        setAppMetricsEnabled(!isAppMetricsEnabled)
+    }
+
+    const closeConfirmationDialog = () => {
+        toggleConfirmation(false)
+    }
+
+    const editorOnChange = (str: string): void => {
+        setTempFormData(str)
+    }
+
+    const handleReadMeClick = () => {
+        setShowReadme(!showReadme)
+
+        if (openComparison) {
+            setOpenComparison(false)
         }
     }
-    customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
-    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
-    const groupedChartOptions = [
-        {
-            label: 'Charts by Devtron',
-            options: devtronCharts,
-        },
-        {
-            label: 'Custom charts',
-            options: customCharts.length === 0 ? [{ name: 'No options' }] : customCharts,
-        },
-    ]
-    let filteredCharts = selectedChart
-        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => b.id - a.id)
-        : []
 
-    const chartMenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <NavLink
-                    to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                    className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor dc__bottom-radius-4"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                >
-                    <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom  upload-icon-stroke" />
-                    Upload custom chart
-                </NavLink>
-            </components.MenuList>
-        )
+    const handleComparisonClick = () => {
+        setOpenComparison(!openComparison)
+
+        if (showReadme) {
+            setShowReadme(false)
+        }
     }
-    return (
-        <>
-            <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gridColumnGap: '16px',
-                        marginBottom: '4px',
-                    }}
-                >
-                    <div className="flex left column">
-                        <label className="form__label">Chart type</label>
-                        {isUnSet ? (
-                            <ReactSelect
-                                options={groupedChartOptions}
-                                isMulti={false}
-                                getOptionLabel={(option) => `${option.name}`}
-                                getOptionValue={(option) => `${option.name}`}
-                                value={selectedChart}
-                                classNamePrefix="chart_select"
-                                isOptionDisabled={(option) => !option.id}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option,
-                                    MenuList: chartMenuList,
-                                }}
-                                styles={{
-                                    control: (base, state) => ({
-                                        ...base,
-                                        boxShadow: 'none',
-                                    }),
-                                    option: (base, state) => {
-                                        return {
-                                            ...base,
-                                            color: 'var(--N900)',
-                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                        }
-                                    },
-                                    container: (base, state) => {
-                                        return {
-                                            ...base,
-                                            width: '100%',
-                                        }
-                                    },
-                                    menuList: (base) => {
-                                        return {
-                                            ...base,
-                                            position: 'relative',
-                                            paddingBottom: '0px',
-                                            maxHeight: '250px',
-                                        }
-                                    },
-                                }}
-                                onChange={(selected) => {
-                                    let filteredCharts = charts.filter((chart) => chart.name == selected.name)
-                                    let selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
-                                    if (selectedChart) {
-                                        selectChart(selectedChart)
-                                    } else {
-                                        let sortedFilteredCharts = filteredCharts.sort((a, b) => a.id - b.id)
-                                        selectChart(
-                                            sortedFilteredCharts[
-                                                sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0
-                                            ],
-                                        )
-                                    }
-                                }}
-                            />
-                        ) : (
-                            <input autoComplete="off" value={selectedChart?.name} className="form__input" disabled />
-                        )}
-                    </div>
-                    <div className="flex left column">
-                        <div className="form__label">Chart version</div>
-                        <ReactSelect
-                            options={filteredCharts}
-                            isMulti={false}
-                            getOptionLabel={(option) => `${option.version}`}
-                            getOptionValue={(option) => `${option.id}`}
-                            value={selectedChart}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                            }}
-                            styles={{
-                                control: (base, state) => ({
-                                    ...base,
-                                    boxShadow: 'none',
-                                }),
-                                option: (base, state) => {
-                                    return {
-                                        ...base,
-                                        color: 'var(--N900)',
-                                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                    }
-                                },
-                                container: (base, state) => {
-                                    return {
-                                        ...base,
-                                        width: '100%',
-                                    }
-                                },
-                            }}
-                            onChange={(selected) =>
-                                selectChart(selected as { id: number; version: string; name: string })
-                            }
-                        />
-                    </div>
-                </div>
-                <div className="deploymentConfig__warning flex fs-12 left pt-4 mb-16-imp">
-                    {isUnSet && (
-                        <>
-                            <Warn className="icon-dim-16 mr-4 " />
-                            Chart type cannot be changed once saved.
-                        </>
-                    )}
-                </div>
-                <div className="form__row form__row--code-editor-container">
-                    <CodeEditor
-                        value={tempFormData}
-                        onChange={(resp) => {
-                            setTempFormData(resp)
-                        }}
-                        mode={MODES.YAML}
-                        validatorSchema={schemas}
-                        loading={chartConfigLoading || !tempFormData}
-                    >
-                        <div className="readme-container">
-                            <CodeEditor.Header>
-                                <h5>{MODES.YAML.toUpperCase()}</h5>
-                                <CodeEditor.ValidationError />
-                            </CodeEditor.Header>
-                            {readme && (
-                                <div
-                                    className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px "
-                                    onClick={(e) => setShowReadme(true)}
-                                >
-                                    README
-                                    <ArrowSquareOut className="icon-dim-18 scb-5 rotateBy--90 ml-5" />
-                                </div>
-                            )}
-                        </div>
-                    </CodeEditor>
-                </div>
-                <div className="form__buttons">
-                    <button className="cta" type="submit">
-                        {loading ? <Progressing /> : 'Save'}
-                    </button>
-                </div>
-            </form>
-            {showReadme && (
-                <VisibleModal className="">
-                    <ReadmeConfig
-                        value={tempFormData}
-                        schema={schemas}
-                        onChange={(resp) => {
-                            setTempFormData(resp)
-                        }}
-                        readme={chartConfig.readme}
-                        handleClose={(e) => setShowReadme(false)}
-                        loading={chartConfigLoading}
-                    />
-                </VisibleModal>
-            )}
 
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+
+    return (
+        <div className={`app-compose__deployment-config ${openComparison || showReadme ? 'full-view' : 'h-100'}`}>
+            <form
+                action=""
+                className={`white-card__deployment-config p-0 bcn-0 h-100 ${openComparison ? 'comparison-view' : ''}`}
+                onSubmit={handleSubmit}
+            >
+                <DeploymentTemplateOptionsTab
+                    isComparisonAvailable={environments.length > 0}
+                    openComparison={openComparison}
+                    handleComparisonClick={handleComparisonClick}
+                    chartConfigLoading={chartConfigLoading}
+                    isReadMeAvailable={!!readme}
+                    openReadMe={showReadme}
+                    handleReadMeClick={handleReadMeClick}
+                    isUnSet={isUnSet}
+                    charts={charts}
+                    selectedChart={selectedChart}
+                    selectChart={selectChart}
+                    selectedChartRefId={selectedChartRefId}
+                />
+                <DeploymentTemplateEditorView
+                    appId={appId}
+                    envId={envId}
+                    isUnSet={isUnSet}
+                    openComparison={openComparison}
+                    showReadme={showReadme}
+                    chartConfigLoading={chartConfigLoading}
+                    readme={readme}
+                    value={tempFormData}
+                    editorOnChange={editorOnChange}
+                    schemas={schemas}
+                    charts={charts || []}
+                    selectedChart={selectedChart}
+                    environments={environments || []}
+                    fetchedValues={fetchedValues}
+                    setFetchedValues={setFetchedValues}
+                />
+                {!openComparison && !showReadme && (
+                    <DeploymentConfigFormCTA
+                        loading={loading || chartConfigLoading}
+                        showAppMetricsToggle={charts && selectedChart && appMetricsEnvironmentVariableEnabled}
+                        isAppMetricsEnabled={isAppMetricsEnabled}
+                        isCiPipeline={isCiPipeline}
+                        currentChart={selectedChart}
+                        toggleAppMetrics={toggleAppMetrics}
+                    />
+                )}
+            </form>
             {showConfirmation && (
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warningIcon} />
@@ -462,23 +244,15 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     <p>Changes will only be applied to environments using default configuration.</p>
                     <p>Environments using overriden configurations will not be updated.</p>
                     <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel" onClick={(e) => toggleConfirmation(false)}>
+                        <button type="button" className="cta cancel" onClick={closeConfirmationDialog}>
                             Cancel
                         </button>
-                        <button type="button" className="cta" onClick={(e) => save()}>
+                        <button type="button" className="cta" onClick={save}>
                             {loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
-            {charts && selectedChart && appMetricsEnvironmentVariableEnabled && (
-                <OptApplicationMetrics
-                    currentChart={selectedChart}
-                    onChange={(e) => saveAppMetrics(!isAppMetricsEnabled)}
-                    opted={isAppMetricsEnabled}
-                    loading={appMetricsLoading}
-                />
-            )}
-        </>
+        </div>
     )
 }

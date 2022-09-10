@@ -8,6 +8,23 @@
     z-index: 1;
 }
 
+.app-list-filters.filters .filter {
+    min-width: unset;
+    flex-basis: unset;
+}
+
+.app-list-filters.filters .filter .filter__trigger {
+    padding: 1px 12px;
+} 
+
+.app-list-filters.filters .filter .filter__menu {
+    min-width: 200px;
+}
+
+.app-list-filters.filters .filter button .filter-icon {
+    margin-left: 10px;
+}
+
 .filters {
     flex: 1 1;
     display: flex;
@@ -464,4 +481,8 @@
 .ea-fetch-error-message {
     background-color: var(--R100);
     border: solid 1px var(--R200);
+}
+
+.first-app-container {
+    margin-top: 60px;
 }

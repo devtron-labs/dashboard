@@ -180,18 +180,23 @@ function NodeComponent({
     };
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
+        let _currentNodeHeader = ''
         return nodes.map((node, index) => {
-            const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
+            const nodeName = `${node.name}.${node.namespace} : { portnumber }`
+
+            // Only render node kind header when it's the first node or it's a different kind header
+            _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+
             return (
                 <React.Fragment key={'grt' + index}>
-                    {showHeader && (
-                        <div className="fw-6 pt-10 pb-10 pl-16 dc__border-bottom">
+                    {showHeader && !!_currentNodeHeader && (
+                        <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                             <span>{node.kind}</span>
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
-                            <div className="flex dc__align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
+                            <div className="flex align-start">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -321,13 +326,11 @@ function NodeComponent({
     return (
         <>
             {selectedNodes && (
-                <div
-                    className="node-container-fluid"
-                >
+                <div className="node-container-fluid">
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header dc__border-bottom pt-10 pb-10">
+                        <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
                             <div className="pl-16 fw-6 fs-14 text-capitalize">
                                 <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                                 <span>({selectedNodes?.length})</span>
@@ -338,7 +341,7 @@ function NodeComponent({
                         </div>
                     )}
 
-                    <div className="node-row dc__border-bottom fw-6 m-0">
+                    <div className="node-row border-bottom fw-6 m-0">
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div
@@ -352,7 +355,11 @@ function NodeComponent({
                             )
                         })}
                     </div>
-
+                    {params.nodeType === NodeType.Pod.toLowerCase() && containerLevelExternalLinks.length > 0 && (
+                        <div className="fs-12 fw-4 cn-9 bcn-1 lh-16 pt-4 pb-4 pl-32 pr-32">
+                            Expand pods to view external links for containers.
+                        </div>
+                    )}
                     {selectedNodes.length > 0 ? (
                         makeNodeTree(selectedNodes)
                     ) : (

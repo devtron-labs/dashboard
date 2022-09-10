@@ -11,7 +11,7 @@ import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
-import { URLS } from '../../config'
+import { DOCUMENTATION, URLS } from '../../config'
 import { OptionType } from '../app/types'
 import {
     AddExternalLinkType,
@@ -681,7 +681,7 @@ export const AddExternalLinkDialog = ({
                         <li>{`{containerName}`}</li>
                     </ul>
                     <a
-                        href="https://docs.devtron.ai/devtron/setup/global-configurations/external-links"
+                        href={DOCUMENTATION.EXTERNAL_LINKS}
                         target="_blank"
                         rel="noreferrer noopener"
                     >

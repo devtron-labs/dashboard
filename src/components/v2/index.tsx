@@ -72,7 +72,7 @@ function RouterComponent({ envType }) {
         _getAndSetAppDetail();
         initTimer = setTimeout(() => {
             _init();
-        }, 30000);
+        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL ||30000);
     }
 
     const _getAndSetAppDetail = async () => {

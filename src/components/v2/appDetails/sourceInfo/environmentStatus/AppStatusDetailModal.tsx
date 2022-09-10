@@ -150,7 +150,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
                         <thead>
                             <tr className="dc__border-bottom cn-7">
                                 {['name', 'status', 'message'].map((n, index) => (
-                                    <th className="pl-20 pt-8 pb-8" key={`header_${index}`}>
+                                    <th className={`pl-20 pt-8 pb-8 ${n === 'message' ? 'pr-20' : ''}`} key={`header_${index}`}>
                                         {n.toUpperCase()}
                                     </th>
                                 ))}
@@ -184,7 +184,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
                                                             ? nodeDetails.health.status
                                                             : ''}
                                                     </td>
-                                                    <td valign="top" className="pl-20 pt-12 pb-12">
+                                                    <td valign="top" className="pl-20 pt-12 pb-12 pr-20">
                                                         <div>
                                                             {getNodeMessage(kind, nodeDetails.name) && (
                                                                 <div>{getNodeMessage(kind, nodeDetails.name)}</div>
