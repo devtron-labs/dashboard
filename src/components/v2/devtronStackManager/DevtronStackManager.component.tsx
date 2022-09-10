@@ -813,7 +813,7 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
                         exact
                         to={configNoteDetail.link}
                         activeClassName="active"
-                        className="mt-8 no-decor fs-13 fw-6"
+                        className="mt-8 dc__no-decor fs-13 fw-6"
                     >
                         {configNoteDetail.linkText}
                     </NavLink>
@@ -836,7 +836,7 @@ const UpgradeNote = (): JSX.Element => {
                         exact
                         to={URLS.STACK_MANAGER_ABOUT}
                         activeClassName="active"
-                        className="mt-8 no-decor fs-13 fw-6"
+                        className="mt-8 dc__no-decor fs-13 fw-6"
                     >
                         Check for Devtron updates
                     </NavLink>

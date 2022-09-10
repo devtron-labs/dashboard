@@ -341,7 +341,7 @@ export default function AppConfig() {
                             <Link
                                 onClick={(e) => setState((state) => ({ ...state, showDeleteConfirm: false }))}
                                 to={redirectToWorkflowEditor()}
-                                className="cta ml-12 no-decor"
+                                className="cta ml-12 dc__no-decor"
                             >
                                 View Workflows
                             </Link>

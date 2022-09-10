@@ -87,7 +87,7 @@ function OnboardingGuide({
                         >
                             <NavLink
                                 to={`${match.path}/${URLS.GUIDE}`}
-                                className="no-decor fw-6 cursor cn-9"
+                                className="dc__no-decor fw-6 cursor cn-9"
                                 activeClassName="active"
                             >
                                 <img
@@ -104,7 +104,7 @@ function OnboardingGuide({
                         <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <NavLink
                                 to={redirectDeployCardToCICD()}
-                                className="no-decor fw-6 cursor cn-9"
+                                className="dc__no-decor fw-6 cursor cn-9"
                                 activeClassName="active"
                                 onClick={onClickedCICD}
                             >
@@ -122,7 +122,7 @@ function OnboardingGuide({
                     <div className="fs-14 mt-40 mb-20 flex column">
                         <NavLink
                             to={`${URLS.APP}/${URLS.APP_LIST}`}
-                            className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                            className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                         >
                             Skip and explore Devtron on your own
                         </NavLink>

@@ -56,7 +56,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
-                    className="help-card__option no-decor help-card__link flex left cn-9"
+                    className="help-card__option dc__no-decor help-card__link flex left cn-9"
                     activeClassName="active"
                     onClick={onClickGettingStarted}
                 >
@@ -69,7 +69,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                         <Fragment key={option.name}>
                             <a
                                 key={option.name}
-                                className="no-decor help-card__option help-card__link flex left cn-9"
+                                className="dc__no-decor help-card__option help-card__link flex left cn-9"
                                 href={option.link}
                                 target="_blank"
                                 rel="noreferrer noopener"

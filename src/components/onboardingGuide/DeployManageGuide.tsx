@@ -84,7 +84,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 <NavLink
                                     to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
                                     activeClassName="active"
-                                    className="no-decor fw-6 cursor cn-9 flex"
+                                    className="dc__no-decor fw-6 cursor cn-9 flex"
                                     onClick={onClickViewApplication}
                                 >
                                     <img
@@ -106,7 +106,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                             <NavLink
                                 to={URLS.CHARTS_DISCOVER}
                                 activeClassName="active"
-                                className="no-decor fw-6 cursor cn-9 flex"
+                                className="dc__no-decor fw-6 cursor cn-9 flex"
                                 onClick={onClickHelmChart}
                             >
                                 <img
@@ -126,7 +126,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                             <NavLink
                                 to={URLS.GLOBAL_CONFIG_CLUSTER}
                                 activeClassName="active"
-                                className="no-decor fw-6 cursor cn-9 flex"
+                                className="dc__no-decor fw-6 cursor cn-9 flex"
                                 onClick={onClickCluster}
                             >
                                 <img
@@ -146,7 +146,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                             <NavLink
                                 to={URLS.GLOBAL_CONFIG_CHART}
                                 activeClassName="active"
-                                className="no-decor fw-6 cursor cn-9 flex"
+                                className="dc__no-decor fw-6 cursor cn-9 flex"
                                 onClick={onClickChartCard}
                             >
                                 <img
@@ -166,7 +166,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                     <div className="fs-14 flex column mt-40 mb-20">
                         <NavLink
                             to={`${URLS.APP}/${URLS.APP_LIST}`}
-                            className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                            className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                         >
                             Skip and explore Devtron on your own
                         </NavLink>
