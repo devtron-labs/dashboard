@@ -549,7 +549,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         }
         try {
             let json = YAML.parse(yaml)
-            if (!json) {
+            if (!json || !Object.keys(json).length) {
                 setSecretData([])
                 setSecretStore(null)
                 return
