@@ -29,7 +29,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                 <p className="fs-14 cn-7">{renderSubTitle()}</p>
             </div>
 
-            <div className="guide-body flex position-rel">
+            <div className="guide-body flex dc__position-rel">
                 <div className="guide-cards__wrap">
                     <div className="guide-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <div className="dc__no-decor fw-6 cursor" onClick={openDevtronAppCreateModel}>

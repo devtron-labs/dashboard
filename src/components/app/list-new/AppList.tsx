@@ -821,7 +821,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         let count = 0
         let keys = Object.keys(masterFilters)
         let appliedFilters = (
-            <div className="saved-filters__wrap position-rel">
+            <div className="saved-filters__wrap dc__position-rel">
                 {keys.map((key) => {
                     let filterType = ''
                     let _filterKey = ''

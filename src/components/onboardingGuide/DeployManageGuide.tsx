@@ -76,7 +76,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                 onClickCloseButton={redirectToAppList}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
-            <div className="deploy-manage__body bcn-0 flex position-rel">
+            <div className="deploy-manage__body bcn-0 flex dc__position-rel">
                 <div className="deploy-manage__abs">
                     <div className="deploy-manage-cards__wrap">
                         {devtronHelmCount > 0 && (

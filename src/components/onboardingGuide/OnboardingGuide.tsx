@@ -63,7 +63,7 @@ function OnboardingGuide({
                 onClickCloseButton={onClickCloseButton}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
-            <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
+            <div className="bcn-0 onboarding__bottom flex dc__position-rel cn-9">
                 <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
                         <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
