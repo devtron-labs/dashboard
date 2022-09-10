@@ -229,7 +229,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
-                                isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}}
+                                isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}
                             />
                         </Route>
                     )}
