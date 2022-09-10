@@ -78,7 +78,7 @@ export default function CDDetails() {
 
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
-    const { push, replace } = useHistory()
+    const { replace } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
     const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
