@@ -37,7 +37,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
             {chartListing && (
                 <>
                     {name && (
-                        <div className="flex column left border-bottom mb-20">
+                        <div className="flex column left dc__border-bottom mb-20">
                             <span className="flex flex-justify w-100 fs-14 cn-9">
                                 Group name
                                 <Pencil className="pointer" onClick={updateChartDetails} />
