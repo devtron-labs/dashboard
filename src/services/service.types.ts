@@ -88,6 +88,7 @@ export interface AppEnvironment {
     appMetrics: boolean;
     infraMetrics: boolean;
     prod: boolean;
+    chartRefId?: number
 }
 
 export interface AppOtherEnvironment extends ResponseType {
