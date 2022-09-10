@@ -292,7 +292,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                 />
 
                 {this.props.socketConnection === 'CONNECTED' && <p style={{ position: 'relative', bottom: '10px' }}
-                    className={`dc__ff-monospace pt-2 fs-13 pb-2 m-0 capitalize cg-4`} >
+                    className={`dc__ff-monospace pt-2 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`} >
                     {this.props.socketConnection}
                 </p>}
                 <CopyToast showCopyToast={this.state.popupText} />

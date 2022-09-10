@@ -45,7 +45,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             </Tippy>
                         </div>
 
-                        <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
+                        <div className={`f-${status.toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}>
                             <span>{status}</span>
                             <figure
                                 className={`${
@@ -74,7 +74,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                         <div
                             className={`f-${appDetails.additionalData[
                                 'status'
-                            ].toLowerCase()} text-capitalize fw-6 fs-14 flex left`}
+                            ].toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}
                         >
                             <span>{appDetails.additionalData['status']}</span>
                             <figure

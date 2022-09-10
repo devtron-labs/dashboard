@@ -331,7 +331,7 @@ function NodeComponent({
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
                         <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
-                            <div className="pl-16 fw-6 fs-14 text-capitalize">
+                            <div className="pl-16 fw-6 fs-14 dc__capitalize">
                                 <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                                 <span>({selectedNodes?.length})</span>
                             </div>

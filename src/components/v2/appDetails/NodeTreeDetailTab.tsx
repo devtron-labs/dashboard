@@ -147,7 +147,7 @@ function NodeTreeDetailTab({
                                                                         tab.name !== AppDetailsTabs.k8s_Resources &&
                                                                         tab.name !== AppDetailsTabs.log_analyzer
                                                                             ? 'mr-8'
-                                                                            : 'ml-8 text-capitalize '
+                                                                            : 'ml-8 dc__capitalize '
                                                                     } fs-12 `}
                                                                 >
                                                                     {tab.name}

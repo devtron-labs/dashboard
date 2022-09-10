@@ -645,7 +645,7 @@ function EnvironmentOverrideRouter() {
 
     return (
         <div className="h-100">
-            <div className="border-bottom-n1 mt-8 mb-8" />
+            <div className="dc__border-bottom-n1 mt-8 mb-8" />
             <div className="app-compose__nav-item routes-container-header flex dc__uppercase no-hover">
                 Environment Overrides
             </div>

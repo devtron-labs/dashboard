@@ -43,7 +43,7 @@ const PrometheusWarningInfo = () => {
             <div className="flex left dc__align-start">
                 <Warning className="icon-dim-20 fcr-7" />
                 <div className="ml-8 fs-13">
-                    <span className="fw-6 text-capitalize">Warning: </span>Prometheus configuration will be removed and
+                    <span className="fw-6 dc__capitalize">Warning: </span>Prometheus configuration will be removed and
                     you won’t be able to see metrics for applications deployed in this cluster.
                 </div>
             </div>

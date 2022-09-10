@@ -1227,14 +1227,6 @@ button.anchor {
     filter: grayscale(1);
 }
 
-.capitalize {
-    text-transform: lowercase;
-
-    &::first-letter {
-        text-transform: uppercase;
-    }
-}
-
 .dc__underline{
   text-decoration: underline;
 }
@@ -1863,6 +1855,10 @@ textarea {
 }
 
 .dc__capitalize {
+  text-transform: capitalize;
+}
+
+.dc__first-letter-capitalize {
   text-transform: lowercase;
 
   &::first-letter {

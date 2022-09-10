@@ -78,7 +78,7 @@ export const StatusFilterButton: React.FC<{ status: string; count?: number }> = 
                 className="pointer ml-8 br-4 flex left p-6"
             >
                 {status !== 'All' && <div className={`dc__app-summary__icon icon-dim-16 mr-6 ${status.toLowerCase()} ${status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
-                <span className="dc__capitalize">{count || status}</span>
+                <span className="dc__first-letter-capitalize">{count || status}</span>
             </div>
         </Tippy>
     );

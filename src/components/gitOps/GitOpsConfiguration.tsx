@@ -82,7 +82,7 @@ const GitInfoTab: React.FC<{ tab: string, gitLink: string, gitProvider: string, 
         <div className="flex left ">
             <Info className="icon-dim-20" style={{ marginTop: 1 }} />
             <div className="ml-8 fs-13">
-                <span className="fw-6 text-capitalize">Recommended: </span>Create a new {gitProvider} {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing your source code.
+                <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider} {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing your source code.
        </div>
         </div>
         <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">How to create {gitProviderGroupAlias} in {gitProvider} ?</a>
