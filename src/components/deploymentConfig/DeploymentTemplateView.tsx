@@ -638,7 +638,7 @@ export const DeploymentTemplateEditorView = ({
     return (
         <>
             {showReadme && (
-                <div className="dt-readme border-right">
+                <div className="dt-readme dc__border-right">
                     <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
                     {chartConfigLoading ? (
                         <Progressing pageLoader />
@@ -672,7 +672,7 @@ export const DeploymentTemplateEditorView = ({
                     {openComparison && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <>
-                                <div className="flex left fs-12 fw-6 cn-9 border-right h-32">
+                                <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32">
                                     <span style={{ width: '85px' }}>Compare with: </span>
                                     <CompareWithDropdown
                                         isEnvOverride={isEnvOverride}
@@ -738,7 +738,11 @@ export const DeploymentConfigFormCTA = ({
                     <div className="flex column left">
                         <div className="fs-13 mb-4">
                             <b className="fw-6 cn-9 mr-8">Show application metrics</b>
-                            <a href={DOCUMENTATION.APP_METRICS} target="_blank" className="fw-4 cb-5 text-underline">
+                            <a
+                                href={DOCUMENTATION.APP_METRICS}
+                                target="_blank"
+                                className="fw-4 cb-5 dc__text-underline"
+                            >
                                 Learn more
                             </a>
                         </div>
