@@ -193,7 +193,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: UserGroup,
             isAvailableInEA: true,
         },
-        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
+        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, moduleName: ModuleNameMap.NOTIFICATION },
     ]
     let showError =
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
@@ -201,6 +201,7 @@ function NavItem({ hostURLConfig, serverMode }) {
 
     useEffect(() => {
         getGitOpsModuleStatus()
+        getNotificationModuleStatus()
     }, [])
 
     async function getGitOpsModuleStatus() {
@@ -211,6 +212,16 @@ function NavItem({ hostURLConfig, serverMode }) {
             }
         } catch (error) {}
     }
+
+    const getNotificationModuleStatus = async (): Promise<void> => {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.NOTIFICATION)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setInstalledModule([...installedModule, ModuleNameMap.NOTIFICATION])
+            }
+        } catch (error) {}
+    }
+
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
         return (
             <NavLink
