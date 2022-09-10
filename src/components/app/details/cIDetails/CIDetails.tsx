@@ -1003,7 +1003,7 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
     return (
         <div
             style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-            className="element-scroller"
+            className="dc__element-scroller"
         >
             <Tippy className="default-tt" arrow={false} content="Scroll to Top">
                 <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>

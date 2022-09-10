@@ -241,7 +241,7 @@ function BulkActionsList({ apps }) {
                 <tbody>
                     {apps.map(({ appId, appName, environments }) => environments.map(({ environmentId, environmentName, cdStageStatus, lastDeployedTime, preStageStatus, postStageStatus }) =>{
                         const newRoute = getAppTriggerURL(appId);
-                        return <tr key={appId} className="pointer striped-row">
+                        return <tr key={appId} className="pointer dc__striped-row">
                             <Td to={newRoute}>{appName}</Td>
                             <Td to={newRoute}><MultiStatus {...{ pre: preStageStatus, post: postStageStatus, deploy: cdStageStatus }} /></Td>
                             <Td to={newRoute}>{environmentName}</Td>

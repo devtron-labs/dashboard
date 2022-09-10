@@ -325,7 +325,7 @@ const DeploymentCard: React.FC<{
                     }}
                 >
                     <div
-                        className={`app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     />
@@ -337,14 +337,14 @@ const DeploymentCard: React.FC<{
                                     ? `${triggerDetails.stage}-deploy`
                                     : triggerDetails.stage}
                             </div>
-                            <span className="bullet bullet--d2 ml-4 mr-4"></span>
+                            <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
                             {triggerDetails.artifact && (
-                                <div className="app-commit__hash app-commit__hash--no-bg">
+                                <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
                                     <img src={docker} className="commit-hash__icon grayscale" />
                                     {triggerDetails.artifact.split(':')[1].slice(-12)}
                                 </div>
                             )}
-                            <span className="bullet bullet--d2 ml-4 mr-4"></span>
+                            <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
                             <div className="cn-7 fs-12">
                                 {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
                             </div>

@@ -225,7 +225,7 @@ function ChartDeploymentHistory({
                                         </div>
                                         <div className="flex left cn-7 fs-12">
                                             {deployment.dockerImages && (
-                                                <div className="dc__app-commit__hash app-commit__hash--no-bg">
+                                                <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
                                                     <img src={docker} className="commit-hash__icon grayscale" />
                                                     <span className="ml-3">
                                                         {deployment.dockerImages[0].split(':')[1] ||

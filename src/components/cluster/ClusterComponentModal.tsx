@@ -7,7 +7,7 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
 
     renderStatus() {
         if (this.props.agentInstallationStage === 0) {
-            return <p className="m-0 fw-6 fs-14 app-status-icon not-triggered">
+            return <p className="m-0 fw-6 fs-14 dc__app-status-icon not-triggered">
                 Not Triggered
                 <button type="button" className="cluster-create-status__button ml-16" onClick={this.props.callRetryClusterInstall}>Install</button>
             </p>

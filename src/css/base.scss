@@ -829,9 +829,7 @@ button.anchor {
     }
 }
 
-//Shivani
-
-.element-scroller {
+.dc__element-scroller {
     width: 40px;
     height: 80px;
     border-radius: 50px;
@@ -878,11 +876,11 @@ button.anchor {
     }
 }
 
-.app-status-icon {
+.dc__app-status-icon {
     background-repeat: no-repeat;
 }
 
-@mixin app-status-icon($background) {
+@mixin dc__app-status-icon($background) {
     height: 24px;
     width: 24px;
     z-index: 2;
@@ -958,38 +956,38 @@ button.anchor {
     }
 }
 
-@mixin striped-row($background) {
+@mixin dc__striped-row($background) {
     background-color: $background;
 }
 
-.striped-row {
+.dc__striped-row {
     &:nth-child(odd) {
-        @include striped-row(var(--window-bg));
+        @include dc__striped-row(var(--window-bg));
 
         .app-status__icon {
-            @include app-status-icon(var(--window-bg));
+            @include dc__app-status-icon(var(--window-bg));
         }
     }
 
     &:nth-child(even) {
-        @include striped-row(white);
+        @include dc__striped-row(white);
 
         .app-status__icon {
-            @include app-status-icon(white);
+            @include dc__app-status-icon(white);
         }
     }
 
     &:hover {
-        @include striped-row(var(--B100));
+        @include dc__striped-row(var(--B100));
 
         .app-status__icon {
-            @include app-status-icon(var(--B100));
+            @include dc__app-status-icon(var(--B100));
         }
     }
 }
 
 .dc__app-summary__icon {
-    @include app-status-icon(transparent);
+    @include dc__app-status-icon(transparent);
 
     &.icon-dim-20 {
         width: 20px;
@@ -1004,7 +1002,7 @@ button.anchor {
 
 .ci-details__build-card {
     .app-status__icon {
-        @include app-status-icon(transparent);
+        @include dc__app-status-icon(transparent);
     }
 }
 
@@ -1159,10 +1157,6 @@ button.anchor {
     overflow: auto;
 }
 
-.dc__app-commit {
-    display: flex;
-}
-
 .dc__app-commit__hash {
     font-size: 12px;
     border-radius: 4px;
@@ -1174,7 +1168,7 @@ button.anchor {
     font-family: monospace;
     border: none;
 
-    &.app-commit__hash--no-bg {
+    &.dc__app-commit__hash--no-bg {
         background-color: unset;
         padding: 0;
     }
@@ -1208,7 +1202,7 @@ button.anchor {
     background: var(--N700);
     border-radius: 50%;
 
-    &.bullet--d2 {
+    &.dc__bullet--d2 {
         width: 2px;
         height: 2px;
     }

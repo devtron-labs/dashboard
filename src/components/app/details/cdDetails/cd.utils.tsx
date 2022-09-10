@@ -56,7 +56,7 @@ export function Option(props) {
                 <div>
                     <div className="cn-9 fs-13"> {props.label}</div>
                     <div className="cn-7 flex left">
-                        <span className="dc__capitalize">Deploy</span> <div className="dc__bullet ml-4 bullet--d2 mr-4" />{' '}
+                        <span className="dc__capitalize">Deploy</span> <div className="dc__bullet ml-4 dc__bullet--d2 mr-4" />{' '}
                         {props.data.author === 'system' ? 'auto-triggered' : props.data.author}
                     </div>
                 </div>
