@@ -127,7 +127,7 @@ const ChartMenuList = (props) => {
                 target="_blank"
                 rel="noreferrer noopener"
             >
-                <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom  upload-icon-stroke" />
+                <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom upload-icon-stroke" />
                 Upload custom chart
             </NavLink>
         </components.MenuList>
@@ -334,7 +334,7 @@ export const DeploymentTemplateOptionsTab = ({
     disableVersionSelect,
 }: DeploymentTemplateOptionsTabProps) => {
     return (
-        <div className="dt-options-tab-container flex content-space pl-16 pr-16 pt-8 pb-8">
+        <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16 pt-8 pb-8">
             {!openComparison && !openReadMe ? (
                 <ChartTypeVersionOptions
                     isUnSet={isUnSet}
@@ -366,7 +366,7 @@ export const DeploymentTemplateOptionsTab = ({
 const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">
+            <span className="w-100 dc__ellipsis-right">
                 {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
         </div>
@@ -714,7 +714,7 @@ export const DeploymentConfigFormCTA = ({
     return (
         <div
             className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
-                showAppMetricsToggle ? 'content-space' : 'right'
+                showAppMetricsToggle ? 'dc__content-space' : 'right'
             }`}
         >
             {showAppMetricsToggle && (

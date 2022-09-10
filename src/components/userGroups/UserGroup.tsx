@@ -545,7 +545,7 @@ const UserGroupList: React.FC<{
         <div id="auth-page__body" className="auth-page__body-users__list-container">
             {renderHeaders(type)}
             {result.length > 0 && (
-                <div className="flex content-space">
+                <div className="flex dc__content-space">
                     <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
                         <Search className="search__icon icon-dim-18" />
                         <input
@@ -1450,7 +1450,7 @@ export function GroupRow({ name, description, removeRow }) {
     return (
         <>
             <div className="anchor">{name}</div>
-            <div className="ellipsis-right">{description}</div>
+            <div className="dc__ellipsis-right">{description}</div>
             <CloseIcon onClick={removeRow} className="pointer" />
         </>
     )

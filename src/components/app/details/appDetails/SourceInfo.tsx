@@ -189,7 +189,7 @@ export function SourceInfo({
                                         </span>
                                         {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
                                     </div>
-                                    <div className="fw-4 fs-12 cn-9 ellipsis-right" style={{ maxWidth: 'inherit' }}>
+                                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right" style={{ maxWidth: 'inherit' }}>
                                         by {triggeredBy || '-'}
                                     </div>
                                 </div>

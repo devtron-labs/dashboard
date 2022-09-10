@@ -478,7 +478,7 @@ function DiscoverChartList() {
                                             type="button"
                                             disabled={state.charts.length === 0}
                                             onClick={handleAdvancedButtonClick}
-                                            className="cta cancel ellipsis-right"
+                                            className="cta cancel dc__ellipsis-right"
                                         >
                                             Advanced Options
                                         </button>
@@ -501,7 +501,7 @@ function DiscoverChartList() {
                                         type="button"
                                         disabled={state.charts.length === 0}
                                         onClick={handleDeployButtonClick}
-                                        className="cta ellipsis-right"
+                                        className="cta dc__ellipsis-right"
                                     >
                                         {installing ? (
                                             <Progressing />
@@ -676,7 +676,7 @@ export function ChartGroupListMin({
                         Use chart groups to preconfigure and deploy frequently used charts together. Learn more about
                         chart groups
                     </p>
-                    <div className="flex content-space">
+                    <div className="flex dc__content-space">
                         {renderCreateGroupButton()}
                         <div className="cb-5 fw-6 fs-13 flex fcb-5 cursor" onClick={redirectToGroup}>
                             View all chart groups
