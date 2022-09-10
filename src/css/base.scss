@@ -1614,46 +1614,6 @@ button.anchor {
   text-align: center;
 }
 
-.lh-n {
-    line-height: normal !important;
-}
-
-.h-8 {
-    height: 8px;
-}
-
-.h-18 {
-    height: 18px;
-}
-
-.h-20 {
-    height: 20px !important;
-}
-
-.h-22 {
-    height: 22px !important;
-}
-
-.h-32 {
-    height: 32px !important;
-}
-
-.w-32 {
-    width: 32px !important;
-}
-
-.h-36 {
-    height: 36px !important;
-}
-
-.h-44 {
-    height: 44px !important;
-}
-
-.h-48 {
-    height: 48px !important;
-}
-
 .mh-48 {
   min-height: 48px;
 }
@@ -1917,7 +1877,6 @@ textarea {
 
   @include tab-container(#2c3354, white);
 }
-
 
 // Width in pixels
 .w-0 {

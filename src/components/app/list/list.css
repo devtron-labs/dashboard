@@ -15,7 +15,7 @@
 
 .app-list-filters.filters .filter .filter__trigger {
     padding: 1px 12px;
-} 
+}
 
 .app-list-filters.filters .filter .filter__menu {
     min-width: 200px;
@@ -420,10 +420,6 @@
 
 .app-create-model-wrapper .app-create-child:hover {
     background-color: #edf1f5;
-}
-
-.c-pointer {
-    cursor: pointer;
 }
 
 .app-tabs-wrapper {

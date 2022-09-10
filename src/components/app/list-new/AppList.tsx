@@ -921,7 +921,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
                             (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
                             <span>
-                                {lastDataSyncTimeString}{' '}
+                                {lastDataSyncTimeString}
                                 <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
                                     Sync now
                                 </button>
@@ -985,7 +985,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                 {serverMode == SERVER_MODE.FULL &&
                     appCheckListRes.result?.appChecklist &&
                     Object.values(appCheckListRes.result.appChecklist).every((check) => check) && (
-                        <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
+                        <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
                             <AddIcon className="icon-dim-20 fcn-9" />
                             <div className="ml-8">
                                 <strong>Custom app</strong>
@@ -995,7 +995,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                             </div>
                         </div>
                     )}
-                <div className="app-create-child c-pointer" onClick={redirectToHelmAppDiscover}>
+                <div className="app-create-child cursor" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
                         <strong>From Chart store</strong>
