@@ -4,8 +4,8 @@ export interface TerminalViewProps {
   containerName: string;
   socketConnection: SocketConnectionType;
   terminalCleared: boolean;
-  setTerminalCleared: (flag: boolean) => void;
-  setSocketConnection: (flag: SocketConnectionType) => void;
+  setTerminalCleared: (terminalCleared: boolean) => void;
+  setSocketConnection: (socketConnection: SocketConnectionType) => void;
 }
 
 export enum SocketConnectionType {
