@@ -601,11 +601,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         </div>
                     </div>
                     {externalType === 'KubernetesSecret' ? (
-                        <div className="info__container mb-24">
+                        <div className="dc__info-container mb-24">
                             <Info />
                             <div className="flex column left">
-                                <div className="info__title">Using External Secrets</div>
-                                <div className="info__subtitle">
+                                <div className="dc__info-title">Using External Secrets</div>
+                                <div className="dc__info-subtitle">
                                     Secrets will not be created by system. However, they will be used inside the pod.
                                     Please make sure that secret with the same name is present in the environment.
                                 </div>
