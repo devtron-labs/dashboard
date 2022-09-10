@@ -910,7 +910,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             ) : null}
             {isExternalValues && (
                 <div className="flex left mb-16">
-                    <b className="mr-5 bold">Data*</b>
+                    <b className="mr-5 dc__bold">Data*</b>
                     {!isESO && <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
@@ -1021,7 +1021,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             )}
             {!secretMode && isExternalValues && !yamlMode && (
                 <div
-                    className="add-parameter bold pointer flex left anchor"
+                    className="add-parameter dc__bold pointer flex left anchor"
                     onClick={(event) => {
                         if (isHashiOrAWS) {
                             setSecretData((secretData) => [

@@ -230,7 +230,7 @@ function DiscoverChartList() {
 
     function renderCreateGroupButton() {
         return (
-            <div className="page-header__cta-container flex">
+            <div className="dc__page-header__cta-container flex">
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"

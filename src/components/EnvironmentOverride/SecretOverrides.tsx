@@ -755,7 +755,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ) : null}
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 bold">Data*</b>
+                            <b className="mr-5 dc__bold">Data*</b>
                             {!isESO && <RadioGroup
                                 className="gui-yaml-switch"
                                 name="yaml-mode"
@@ -901,7 +901,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     )}
                     {!state.locked && !yamlMode && (
                         <span
-                            className="bold anchor pointer"
+                            className="dc__bold anchor pointer"
                             onClick={(event) => {
                                 if (isHashiOrAWS)
                                     setSecretData((secretDataValue) => [
