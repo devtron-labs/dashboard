@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, DOCUMENTATION } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -51,6 +51,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { renderConfigurationError } from '../cdDetails/cd.utils'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -119,7 +120,7 @@ export default function CIDetails() {
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
     const [securityModuleStatusLoading, securityModuleStatus, securityModuleStatusError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
-    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -228,7 +229,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
-                                isBlobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || true}
+                                isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}}
                             />
                         </Route>
                     )}

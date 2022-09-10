@@ -44,8 +44,7 @@ import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { renderConfigurationError } from './cd.utils'
-import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -78,7 +77,7 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
-    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     const { push } = useHistory()
@@ -237,7 +236,7 @@ export default function CDDetails() {
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
                                         deploymentAppType={deploymentAppType}
-                                        isBlobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || true}
+                                        isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}
                                     />
                                 </Route>
                             )}

@@ -162,7 +162,9 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
-    TELEMETRY_EVENT: 'telemetry/event'
+    TELEMETRY_EVENT: 'telemetry/event',
+    DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    BLOB_STORAGE_CONFIGURED: 'module/config',
 }
 
 export const ViewType = {
@@ -547,4 +549,5 @@ export const ModuleNameMap = {
   ARGO_CD: 'argo-cd',
   CICD: 'cicd',
   SECURITY: 'security.clair',
+  BLOB_STORAGE: 'blob-storage',
 }

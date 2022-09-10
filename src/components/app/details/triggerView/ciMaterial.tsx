@@ -8,9 +8,10 @@ import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from
 import { TriggerViewContext } from './TriggerView'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, SourceTypeMap } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
@@ -41,17 +42,14 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     async getSecurityModuleStatus(): Promise<void> {
-      this.setState((prevState) => ({
-        isBobStorageConfigured: true,
-      }))
-      // try {
-      //     const { result } = await isGitopsConfigured()
-      //     if (result?.exist) {
-      //         this.setState((prevState) => ({
-      //             isBobStorageConfigured: true,
-      //         }))
-      //     }
-      // } catch (error) {}
+      try {
+          const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
+          if (result?.enabled) {
+              this.setState((prevState) => ({
+                  isBobStorageConfigured: true,
+              }))
+          }
+      } catch (error) {}
     }
 
     onClickStopPropagation = (e): void => {
