@@ -180,7 +180,7 @@ export interface DeploymentTemplateEditorViewProps {
 export interface EsoData {
     secretKey: string
     key: string
-    property: string
+    property?: string
 }
 
 export interface SecretData {
