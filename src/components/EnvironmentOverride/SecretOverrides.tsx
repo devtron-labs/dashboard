@@ -191,14 +191,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         }
     }
 
-    let tempSecretData = secretData || []
-    if (tempSecretData.length === 0 && defaultSecretData) {
-        tempSecretData = defaultSecretData
-    }
+    let tempSecretData = (secretData || []).length === 0 && defaultSecretData ? defaultSecretData : secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
-
+    
     let jsonForSecretDataYaml: any[] =
        secretData ? secretData : []
     if (jsonForSecretDataYaml.length === 0 && defaultSecretData) {
@@ -231,10 +228,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         }
     }
 
-    let tempEsoSecretData = esoSecretData
-    if (!tempEsoSecretData?.esoData && defaultESOSecretData) {
-        tempEsoSecretData = defaultESOSecretData
-    }
+    let tempEsoSecretData = (esoSecretData?.esoData || []).length === 0 && defaultESOSecretData ? defaultESOSecretData : esoSecretData
 
     const [roleARN, setRoleARN] = useState(secrets.has(name) ? secrets.get(name)?.roleARN : '')
     const [secretDataValue, setSecretData] = useState(tempSecretData)
@@ -340,9 +334,9 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 })
                 setSecretData(json)
             }
-            if(configData[0].esoSecretData.esoData) {
-                setEsoData(configData[0].esoSecretData?.esoData)
-                setSecretStore(configData[0].esoSecretData?.secretStore)
+            if(configData[0].esoSecretData?.esoData) {
+                setEsoData(configData[0].esoSecretData.esoData)
+                setSecretStore(configData[0].esoSecretData.secretStore)
                 setEsoYaml(YAML.stringify(configData[0].esoSecretData))
             }
         } catch (err) {
@@ -408,16 +402,16 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             }
             if (isHashiOrAWS || isESO) {
                 let isValid = true
-                if (!isESO) {
-                    isValid = secretDataValue.reduce((isValid, s) => {
-                        isValid = isValid && !!s.fileName && !!s.name
-                        return isValid
-                    }, !!secretDataValue.length)
-                } else {
+                if (isESO) {
                     isValid = esoDataSecret?.reduce((isValid, s) => {
                         isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
                         return isValid
                     }, !!secretStore && !!esoDataSecret?.length)
+                } else {
+                    isValid = secretDataValue.reduce((isValid, s) => {
+                        isValid = isValid && !!s.fileName && !!s.name
+                        return isValid
+                    }, !!secretDataValue.length)
                 }
     
                 if (!isValid) {
@@ -582,7 +576,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 setSecretData(json)
             }
             if(isESO && Array.isArray(json?.esoData)){
-                setEsoData(json?.esoData)
+                setEsoData(json.esoData)
             }
         } catch (error) {
         }

@@ -37,7 +37,7 @@ import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
 import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty } from './secret.utils'
-import { SecretFormProps } from '../deploymentConfig/types'
+import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -304,7 +304,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         return temp
     })
     const isEsoSecretData = props.esoSecretData?.secretStore && props.esoSecretData?.esoData.length > 0
-    const [esoSecretData, setEsoData] = useState<any[]>(props?.esoSecretData?.esoData)
+    const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
@@ -474,16 +474,16 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
         if (isHashiOrAWS || isESO) {
             let isValid = true
-            if (!isESO) {
-                isValid = secretData.reduce((isValid, s) => {
-                    isValid = isValid && !!s.fileName && !!s.name
-                    return isValid
-                }, !!secretData.length)
-            } else {
+            if (isESO) {
                 isValid = esoSecretData?.reduce((isValid, s) => {
                     isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
                     return isValid
                 }, !!secretStore && !!esoSecretData?.length)
+            } else {
+                isValid = secretData.reduce((isValid, s) => {
+                    isValid = isValid && !!s.fileName && !!s.name
+                    return isValid
+                }, !!secretData.length)
             }
 
             if (!isValid) {
@@ -602,11 +602,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setSecretDataYaml(secretYaml)
     }
 
-    const onClickCloseDelete = (): void => {
+    const closeDelete = (): void => {
         setShowDeleteModal(false)
     }
 
-    const onClickShowDelete = (): void => {
+    const showDelete = (): void => {
         setShowDeleteModal(true)
     }
 
@@ -615,7 +615,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <DeleteDialog
                 title={`Delete Secret '${props.name}' ?`}
                 description={`'${props.name}' will not be used in future deployments. Are you sure?`}
-                closeDelete={onClickCloseDelete}
+                closeDelete={closeDelete}
                 delete={handleDelete}
             />
         )
@@ -706,7 +706,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 {!envId && <div>{props.isUpdate ? `Edit Secret` : `Add Secret`}</div>}
                 <div className="uncollapse__delete flex">
                     {props.isUpdate && !secretMode && (
-                        <Trash className="icon-n4 cursor icon-delete" onClick={onClickShowDelete} />
+                        <Trash className="icon-n4 cursor icon-delete" onClick={showDelete} />
                     )}
                     {typeof props.collapse === 'function' && !envId && (
                         <img
