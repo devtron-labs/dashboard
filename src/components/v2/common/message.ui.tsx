@@ -77,12 +77,9 @@ const MessageUI: React.FC<MsgUIProps> = ({
             </div>
             {isShowActionButton && (
                 <div
-                    className="cursor"
+                    className="cursor dc__underline fs-14 cb-3"
                     onClick={onActionButtonClick}
                     style={{
-                        fontSize: '14px',
-                        textDecoration: 'underline',
-                        color: 'var(--B300)',
                         ...actionButtonStyle,
                     }}
                 >

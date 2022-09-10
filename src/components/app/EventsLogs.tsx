@@ -476,8 +476,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                                     Stopped printing logs.{' '}
                                     <span
                                         onClick={(e) => handleLogPause(false)}
-                                        className="pointer"
-                                        style={{ textDecoration: 'underline' }}
+                                        className="pointer dc__underline"
                                     >
                                         Resume ( Ctrl+c )
                                     </span>
@@ -488,8 +487,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                                     Disconnected.{' '}
                                     <span
                                         onClick={(e) => fetchLogs()}
-                                        className="pointer"
-                                        style={{ textDecoration: 'underline' }}
+                                        className="pointer dc__underline"
                                     >
                                         Reconnect
                                     </span>

@@ -426,7 +426,7 @@ button.anchor {
     background: transparent;
 }
 
-//Millind
+//Millind start
 .dc__git-logo {
     width: 24px;
     height: 24px;
@@ -828,6 +828,7 @@ button.anchor {
         background-position: 0% 50%;
     }
 }
+//Millind End
 
 .dc__element-scroller {
     width: 40px;
@@ -1220,7 +1221,6 @@ button.anchor {
     }
 }
 
-//Sohel
 .grayscale {
     filter: grayscale(1);
 }
@@ -1229,19 +1229,19 @@ button.anchor {
     text-decoration: underline;
 }
 
+.dc__underline-onhover {
+  text-decoration: none;
+
+  &:hover {
+      text-decoration: underline;
+  }
+}
+
 .dc__no-decor {
     text-decoration: none;
 
     &:hover {
         text-decoration: none;
-    }
-}
-
-.dc__text-underline {
-    text-decoration: none;
-
-    &:hover {
-        text-decoration: underline;
     }
 }
 
@@ -1284,7 +1284,6 @@ button.anchor {
     background-color: var(--N000);
 }
 
-
 .dc__secondary-nav__item {
     padding: 16px;
     max-height: 200px;
@@ -1309,8 +1308,7 @@ button.anchor {
     }
 }
 
-//Sohel
-
+//Sohel starting
 // Start Security CSS
 .dc__fill-pass {
     border-radius: 4px;
@@ -1567,46 +1565,6 @@ button.anchor {
 .dc__align-right {
     text-align: right;
     margin-left: auto;
-}
-
-.lh-20 {
-    line-height: 20px;
-}
-
-.dc__lh-22 {
-    line-height: 22px;
-}
-
-.lh-32 {
-    line-height: 32px;
-}
-
-.lh-36 {
-    line-height: 36px !important;
-}
-
-.lh-16 {
-    line-height: 16px;
-}
-
-.lh-18 {
-    line-height: 18px;
-}
-
-.mh-28 {
-    min-height: 28px;
-}
-
-.lh-28 {
-    line-height: 28px;
-}
-
-.h-28 {
-    height: 28px !important;
-}
-
-.pl-16 {
-    padding-left: 16px !important;
 }
 
 .dc__text__subtitle {
@@ -2005,8 +1963,20 @@ textarea {
     line-height: 16px;
 }
 
+.lh-18 {
+    line-height: 18px;
+}
+
 .lh-20 {
     line-height: 20px;
+}
+
+.lh-22 {
+    line-height: 22px;
+}
+
+.lh-28 {
+    line-height: 28px;
 }
 
 .lh-32 {
@@ -2017,23 +1987,11 @@ textarea {
     line-height: 36px !important;
 }
 
-.lh-18 {
-    line-height: 18px;
-}
-
-.lh-28 {
-    line-height: 28px;
-}
-
 .lh-n {
     line-height: normal !important;
 }
 
-.pl-16 {
-    padding-left: 16px !important;
-}
-
-// Padding
+// Padding in pixels
 .pl-16 {
     padding-left: 16px !important;
 }
@@ -2080,9 +2038,20 @@ textarea {
     margin-bottom: 16px !important;
 }
 
+.ml-0-imp {
+    margin-left: 0px !important;
+}
+
+.mt-120 {
+    margin-top: 120px;
+}
+
+//Window background
 .dc__window-bg {
     background: var(--window-bg);
 }
+
+//Overflow
 
 .dc__overflow-hidden {
     overflow: hidden !important;
@@ -2090,12 +2059,4 @@ textarea {
 
 .dc__overflow-scroll {
     overflow: scroll !important;
-}
-
-.ml-0-imp {
-    margin-left: 0px !important;
-}
-
-.mt-120 {
-    margin-top: 120px;
 }

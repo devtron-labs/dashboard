@@ -741,7 +741,7 @@ export const DeploymentConfigFormCTA = ({
                             <a
                                 href={DOCUMENTATION.APP_METRICS}
                                 target="_blank"
-                                className="fw-4 cb-5 dc__text-underline"
+                                className="fw-4 cb-5 dc__underline-onhover"
                             >
                                 Learn more
                             </a>

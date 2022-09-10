@@ -239,7 +239,7 @@ export const ChartRepoSelector = ({
                         content="Fetch latest charts from connected chart repositories"
                     >
                         <span
-                            className={`refetch-charts cb-5 cursor dc__text-underline ${
+                            className={`refetch-charts cb-5 cursor dc__underline-onhover ${
                                 refetchingCharts ? 'refetching' : ''
                             }`}
                             onClick={refetchCharts}

@@ -94,7 +94,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                         height="150"
                                         alt="Please connect cluster"
                                     />
-                                    <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                    <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                         Check deployed helm apps <br />
                                         <div className="fs-14 cb-5 mt-8">View applications</div>
                                     </div>
@@ -116,7 +116,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                     height="150"
                                     alt="Please connect cluster"
                                 />
-                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                     I want to deploy popular helm charts <br />
                                     <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
                                 </div>
@@ -136,7 +136,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                     height="150"
                                     alt="Please connect cluster"
                                 />
-                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                     I have helm applications in other clusters <br />
                                     <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
                                 </div>
@@ -156,7 +156,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                     height="150"
                                     alt="Please connect cluster"
                                 />
-                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                     I want to connect my own chart repository <br />
                                     <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
                                 </div>

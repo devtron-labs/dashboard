@@ -280,8 +280,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     {this.props.socketConnection === 'DISCONNECTED' && <>
                         <span>.&nbsp;</span>
                         <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
-                            className="cursor dc__transparent dc__inline-block"
-                            style={{ textDecoration: 'underline' }}>Resume
+                            className="cursor dc__transparent dc__inline-block dc__underline"
+                            >Resume
                     </button>
                     </>}
                 </p>

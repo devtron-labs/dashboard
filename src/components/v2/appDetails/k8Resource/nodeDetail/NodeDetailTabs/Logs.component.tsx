@@ -498,8 +498,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                     Stopped printing logs.{' '}
                                     <span
                                         onClick={(e) => handleLogsPause()}
-                                        className="pointer"
-                                        style={{ textDecoration: 'underline' }}
+                                        className="pointer dc__underline"
                                     >
                                         Resume ( Ctrl+c )
                                     </span>
@@ -510,8 +509,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                     Disconnected.{' '}
                                     <span
                                         onClick={(e) => fetchLogs()}
-                                        className="pointer"
-                                        style={{ textDecoration: 'underline' }}
+                                        className="pointer dc__underline"
                                     >
                                         Reconnect
                                     </span>
