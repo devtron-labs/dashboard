@@ -129,24 +129,30 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     }
 
     updateSeverity(action: VulnerabilityAction, policy: SeverityPolicy, envId?: number): void {
+        const actionLowerCase = action.toLowerCase()
+        if (
+            (policy.policy.isOverriden && actionLowerCase === policy.policy.action.toLowerCase()) ||
+            (policy.policy.inherited && actionLowerCase === 'inherit')
+        ) {
+            return
+        }
+
         let payload = {};
         let promise;
 
-        if (action.toLowerCase() === "inherit") { //update
+        if (actionLowerCase === "inherit") { //update
             payload = {
                 id: policy.id,
-                action: action.toLowerCase()
+                action: actionLowerCase
             }
             promise = updatePolicy(payload);
-        }
-        else if (policy.policy.inherited) { //Create if inherited from higher
+        } else if (policy.policy.inherited) { //Create if inherited from higher
             payload = this.createSeverityPayload(this.props.level, policy.severity, action, envId);
             promise = savePolicy(payload);
-        }
-        else {
+        } else {
             payload = {
                 id: policy.id,
-                action: action.toLowerCase()
+                action: actionLowerCase
             }
             promise = updatePolicy(payload);
         }
