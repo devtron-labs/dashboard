@@ -1,4 +1,4 @@
-import { OrderBy } from "../../app/types";
+import { SortingOrder } from "../../app/types";
 
 export function getVersionArr(version: string): number[] {
     if (!version) return [0, 0, 0];
@@ -34,9 +34,9 @@ export function versionComparator(
     a: Record<string, any>,
     b: Record<string, any>,
     compareKey: string,
-    orderBy: OrderBy,
+    orderBy: SortingOrder,
 ) {
-    if (orderBy === OrderBy.DESC) {
+    if (orderBy === SortingOrder.DESC) {
         return b[compareKey].localeCompare(a[compareKey], undefined, { numeric: true })
     }
 
