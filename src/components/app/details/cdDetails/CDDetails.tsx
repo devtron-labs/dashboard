@@ -531,13 +531,8 @@ const TriggerOutput: React.FC<{
                                     : () => cancelPrePostCdTrigger(pipelineId, triggerId)
                             }
                         />
-<<<<<<< HEAD
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && (
-=======
-                        <ul className="pl-20 tab-list tab-list--nodes border-bottom">
-                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType!== DeploymentAppType.helm && (
->>>>>>> main
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
