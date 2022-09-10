@@ -87,6 +87,13 @@ export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
 }
 
+export interface DeploymentStatusDetailModalType{
+  close: () => void
+  appName: string
+  environmentName: string
+  deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+}
+
 export interface ModuleConfigResponse extends ResponseType {
   result?: {
     enabled: boolean
