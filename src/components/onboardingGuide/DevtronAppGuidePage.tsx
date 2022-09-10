@@ -11,7 +11,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
             <>
                 Tip:
                 <a
-                    className="href__link"
+                    className="dc__link-n9"
                     href={DEVTRON_NODE_DEPLOY_VIDEO}
                     rel="noreferrer noopener"
                     target="_blank"
@@ -42,7 +42,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
 
                     <div className="guide-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <a
-                            className="cn-9 dc__no-decor fw-6 cursor href__link"
+                            className="cn-9 dc__no-decor fw-6 cursor dc__link-n9"
                             href={PREVIEW_DEVTRON}
                             rel="noreferrer noopener"
                             target="_blank"

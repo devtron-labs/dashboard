@@ -781,7 +781,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         showPulsatingDot={showPulsatingDot}
                     />
                     <Filter
-                        rootClassName="no-margin-left"
+                        rootClassName="ml-0-imp"
                         position={showExportCsvButton ? 'left' : 'right'}
                         list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
                         labelKey="label"

@@ -116,7 +116,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             <p className="form__subtitle form__subtitle--artifacts">
                 A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.
                 <a
-                    className="href__link"
+                    className="dc__link"
                     rel="noreferer noopener"
                     href={DOCUMENTATION.APP_CREATE_SECRET}
                     target="blank"

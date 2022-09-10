@@ -582,7 +582,7 @@ function ChartListHeader({ charts }) {
             <p className="mb-0 mt-4 pl-20">
                 Select chart to deploy. &nbsp;
                 <a
-                    className="href__link"
+                    className="dc__link"
                     href={DOCUMENTATION.CHART_LIST}
                     rel="noreferrer noopener"
                     target="_blank"
@@ -619,7 +619,7 @@ export function EmptyChartGroup({
                         href={DOCUMENTATION.CHART_DEPLOY}
                         rel="noreferrer noopener"
                         target="_blank"
-                        className="href__link"
+                        className="dc__link"
                     >
                         Learn more about chart groups
                     </a>

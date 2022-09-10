@@ -328,8 +328,8 @@ const DeploymentCard: React.FC<{
                         className={`app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
-                    ></div>
-                    <div className="flex column left ellipsis-right">
+                    />
+                    <div className="flex column left dc__ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="flex left cn-7 fs-12">
                             <div className="capitalize">
