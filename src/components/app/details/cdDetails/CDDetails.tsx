@@ -236,7 +236,7 @@ export default function CDDetails() {
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
                                         deploymentAppType={deploymentAppType}
-                                        isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}
+                                        isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                                     />
                                 </Route>
                             )}
