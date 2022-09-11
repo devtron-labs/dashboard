@@ -921,7 +921,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
                             (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
                             <span>
-                                {lastDataSyncTimeString}
+                                {lastDataSyncTimeString}&nbsp;
                                 <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
                                     Sync now
                                 </button>

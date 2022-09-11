@@ -1308,7 +1308,6 @@ button.anchor {
     }
 }
 
-//Sohel starting
 // Start Security CSS
 .dc__fill-pass {
     border-radius: 4px;
@@ -1504,6 +1503,24 @@ button.anchor {
     justify-content: flex-end !important;
 }
 
+// Text alignment
+.dc__align-start {
+  align-items: flex-start !important;
+}
+
+.dc__align-center {
+  text-align: center !important;
+}
+
+.dc__align-left {
+  text-align: left;
+}
+
+.dc__align-right {
+  text-align: right;
+  margin-left: auto;
+}
+
 .dc__align-baseline {
     align-items: baseline !important;
 }
@@ -1547,24 +1564,6 @@ button.anchor {
 
 .dc__cluster-error {
     border: solid 1px #ffcb5d;
-}
-
-// Text alignment
-.dc__align-start {
-    align-items: flex-start !important;
-}
-
-.dc__align-center {
-    text-align: center !important;
-}
-
-.dc__align-left {
-    text-align: left;
-}
-
-.dc__align-right {
-    text-align: right;
-    margin-left: auto;
 }
 
 .dc__text__subtitle {
@@ -1851,20 +1850,20 @@ textarea {
     width: 200px;
 }
 
-.w-400 {
-    width: 400px;
-}
-
-.w-300 {
-    width: 300px;
-}
-
 .w-250 {
     width: 250px;
 }
 
 .w-280 {
     width: 280px;
+}
+
+.w-300 {
+  width: 300px;
+}
+
+.w-400 {
+  width: 400px;
 }
 
 .w-600 {
@@ -2046,7 +2045,6 @@ textarea {
 }
 
 //Overflow
-
 .dc__overflow-hidden {
     overflow: hidden !important;
 }
