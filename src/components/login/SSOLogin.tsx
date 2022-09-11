@@ -395,7 +395,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />
                     })}
                 </div>
-                <div className="dc__sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
+                <div className="dc__sso-description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
                         <Help className="icon-dim-20 fcb-5 mr-12" />
                         <div>For redirect URL or callback URL use:  {`${window.location.origin}/orchestrator`}/api/dex/callback<br />

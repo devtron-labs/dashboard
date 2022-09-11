@@ -399,7 +399,7 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
                 <button
                     type="button"
                     disabled={isDisabled}
-                    className="cta align-right flex"
+                    className="cta dc__align-right flex"
                     onClick={(event) => {
                         history.push(nextUrl)
                     }}

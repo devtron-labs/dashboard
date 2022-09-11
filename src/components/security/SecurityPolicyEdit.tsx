@@ -301,7 +301,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                         {cves.map((cve) => {
                             //inherited is created at parent level
                             return <tr key={cve.name} className="security-policy__table-row">
-                                <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cel">
+                                <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cell">
                                     <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`} rel="noopener noreferrer" target="_blank">
                                         {cve.name}
                                     </a>

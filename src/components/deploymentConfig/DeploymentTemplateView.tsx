@@ -647,7 +647,7 @@ export const DeploymentTemplateEditorView = ({
                     )}
                 </div>
             )}
-            <div className="form__row form__row--code-editor-container border-top border-bottom">
+            <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
                     defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
                     value={value}

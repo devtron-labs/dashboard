@@ -74,8 +74,8 @@ function OnboardingGuide({
                                 target="_blank"
                                 onClick={onClickPreviewCard}
                             >
-                                <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
-                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                                <img className="onboarding-card__img dc__top-radius-4" src={PreviewImage} />
+                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
                                     Explore a preconfigured Demo app at <span className="cb-5">preview.devtron.ai</span>
                                 </div>
                             </a>
@@ -91,11 +91,11 @@ function OnboardingGuide({
                                 activeClassName="active"
                             >
                                 <img
-                                    className="onboarding-card__img top-radius-4"
+                                    className="onboarding-card__img dc__top-radius-4"
                                     src={HelmCollage}
                                     alt="Deploy and manage helm"
                                 />
-                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
                                     Deploy and manage helm applications
                                 </div>
                             </NavLink>
@@ -109,7 +109,7 @@ function OnboardingGuide({
                                 onClick={onClickedCICD}
                             >
                                 <img
-                                    className="onboarding-card__img top-radius-4"
+                                    className="onboarding-card__img dc__top-radius-4"
                                     src={DeployCICD}
                                     alt="Please connect cluster"
                                 />

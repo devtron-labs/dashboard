@@ -67,7 +67,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                 }}
             >
                 <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle mr-16" />
-                <span className="dc__artifact__add">Add Stage</span>
+                <span className="dc__artifact-add">Add Stage</span>
             </div>
         )
     }

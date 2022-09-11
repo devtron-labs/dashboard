@@ -34,7 +34,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                     <div className="guide-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <div className="dc__no-decor fw-6 cursor" onClick={openDevtronAppCreateModel}>
                             <img className="guide-card__img" src={CreateApp} alt="Please connect cluster" />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
                                 Create an application from scratch
                             </div>
                         </div>
@@ -48,7 +48,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                             target="_blank"
                         >
                             <img className="guide-card__img" src={PreviewImage} alt="Please connect cluster" />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
                                 Explore a preconfigured Demo app at &nbsp;
                                 <span className="cb-5">preview.devtron.ai</span>
                             </div>

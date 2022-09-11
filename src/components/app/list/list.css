@@ -57,15 +57,6 @@
     border-radius: 4px;
     border: solid 1px var(--N200);
     background-color: #f7fafc;
-    text-transform: lowercase;
-    font-size: 12px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N900);
-    cursor: default;
     padding-left: 6px;
     padding-right: 6px;
     user-select: none;

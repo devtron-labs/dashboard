@@ -1228,7 +1228,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                             {securityData.vulnerabilities.map((item) => {
                                 return (
                                     <tr className="security-scan-table__row">
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cel">
+                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
                                             <a
                                                 href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
                                                 target="_blank"

@@ -64,7 +64,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
         return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
             <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
-            <span className="dc__artifact__add">Add Git Repository</span>
+            <span className="dc__artifact-add">Add Git Repository</span>
         </div>
     }
 

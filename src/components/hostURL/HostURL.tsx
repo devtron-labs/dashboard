@@ -101,7 +101,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     renderHostErrorMessage() {
-        return <div className="dc__hosturl__error ml-20 mr-20 mb-16 flex left">
+        return <div className="dc__hosturl-error ml-20 mr-20 mb-16 flex left">
             <Error className="icon-dim-20 mr-8" />
             <div>Saved host URL doesn’t match the domain address in your browser.</div>
         </div>

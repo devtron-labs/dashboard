@@ -332,7 +332,7 @@ const DeploymentCard: React.FC<{
                     <div className="flex column left dc__ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="flex left cn-7 fs-12">
-                            <div className="capitalize">
+                            <div className="dc__capitalize">
                                 {['pre', 'post'].includes(triggerDetails.stage?.toLowerCase())
                                     ? `${triggerDetails.stage}-deploy`
                                     : triggerDetails.stage}

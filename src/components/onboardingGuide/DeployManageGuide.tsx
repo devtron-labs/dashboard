@@ -88,7 +88,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                     onClick={onClickViewApplication}
                                 >
                                     <img
-                                        className="left-radius-4 bcn-1"
+                                        className="dc__left-radius-4 bcn-1"
                                         src={HelmSearch}
                                         width="200"
                                         height="150"
@@ -110,7 +110,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 onClick={onClickHelmChart}
                             >
                                 <img
-                                    className="left-radius-4 bcn-1"
+                                    className="dc__left-radius-4 bcn-1"
                                     src={HelmCollage}
                                     width="200"
                                     height="150"
@@ -130,7 +130,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 onClick={onClickCluster}
                             >
                                 <img
-                                    className="left-radius-4 bcn-1"
+                                    className="dc__left-radius-4 bcn-1"
                                     src={HelmInCluster}
                                     width="200"
                                     height="150"
@@ -150,7 +150,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 onClick={onClickChartCard}
                             >
                                 <img
-                                    className="left-radius-4 bcn-1"
+                                    className="dc__left-radius-4 bcn-1"
                                     src={ChartRepository}
                                     width="200"
                                     height="150"
