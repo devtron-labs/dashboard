@@ -221,10 +221,10 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                             <Dots className="bulk-action__action" />
                         </PopupMenu.Button>
                         <PopupMenu.Body>
-                            <ul className="kebab-menu__list">
+                            <ul className="dc__kebab-menu__list">
                                 <li
                                     key="edit"
-                                    className="kebab-menu__list-item"
+                                    className="dc__kebab-menu__list-item"
                                     onClick={(event) => {
                                         this.redirectToEdit(deploymentGroup)
                                     }}
@@ -233,7 +233,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                                 </li>
                                 <li
                                     key="delete"
-                                    className="kebab-menu__list-item kebab-menu__list-item--delete"
+                                    className="dc__kebab-menu__list-item dc__kebab-menu__list-item--delete"
                                     onClick={(event) => {
                                         this.setState(
                                             { deploymentGroupId: deploymentGroup.id, showGroupDeleteModal: true },
@@ -339,7 +339,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
 function NoDeploymentGroups() {
     return (
-        <div className="no-apps dc__empty-state__no-deploymentgroup">
+        <div className="dc__no-apps dc__empty-state__no-deploymentgroup">
             <div className="empty">
                 <img src={noGroups} width="250" height="200" className="dc__empty__img" alt="no apps found"></img>
                 <h1 className="dc__empty__title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>

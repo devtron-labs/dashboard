@@ -225,7 +225,7 @@ export function Tab({ title, active, onClick }) {
 export function ListComponent({ icon = '', title, subtitle = '', onClick, className = '', collapsible = false }) {
     return (
         <article
-            className={`configuration-list pointer ${className}`}
+            className={`dc__configuration-list pointer ${className}`}
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />

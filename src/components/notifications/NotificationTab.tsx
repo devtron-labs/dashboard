@@ -386,8 +386,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </Tippy>
                     </PopupMenu.Button>
                     <PopupMenu.Body >
-                        <ul className="kebab-menu__list kebab-menu__list--notification-tab ">
-                            <li key="edit" className="kebab-menu__list-item flex-justify"   >
+                        <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
+                            <li key="edit" className="dc__kebab-menu__list-item flex-justify"   >
                                 <span>Trigger</span>
                                 <Checkbox rootClassName=""
                                     isChecked={this.state.triggerCheckbox.isChecked}
@@ -396,7 +396,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     <span></span>
                                 </Checkbox>
                             </li>
-                            <li key="success" className="kebab-menu__list-item flex-justify">
+                            <li key="success" className="dc__kebab-menu__list-item flex-justify">
                                 <span>Success</span>
                                 <Checkbox rootClassName=""
                                     isChecked={this.state.successCheckbox.isChecked}
@@ -405,7 +405,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     <span></span>
                                 </Checkbox>
                             </li>
-                            <li key="failure" className="kebab-menu__list-item flex-justify" >
+                            <li key="failure" className="dc__kebab-menu__list-item flex-justify" >
                                 <span>Failure</span>
                                 <Checkbox rootClassName=""
                                     isChecked={this.state.failureCheckbox.isChecked}

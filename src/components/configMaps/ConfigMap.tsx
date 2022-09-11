@@ -310,7 +310,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 export function ListComponent({ title, name = '', subtitle = '', onClick, className = '', collapsible = false }) {
     return (
         <article
-            className={`configuration-list pointer ${className}`}
+            className={`dc__configuration-list pointer ${className}`}
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             {!name ? (

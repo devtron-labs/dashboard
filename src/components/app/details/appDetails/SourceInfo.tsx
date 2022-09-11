@@ -168,7 +168,7 @@ export function SourceInfo({
                                     <div className="flexbox">
                                         <span
                                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
-                                                deploymentStatus === 'inprogress' ? 'loading-dots' : ''
+                                                deploymentStatus === 'inprogress' ? 'dc__loading-dots' : ''
                                             }`}
                                         >
                                             {deploymentStatusText}

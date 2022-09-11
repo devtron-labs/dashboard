@@ -645,7 +645,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         {row.appliedFilters.length ? (
                                             <>
                                                 <i>All current and future pipelines matching.</i>
-                                                <div className="dc__dc__devtron-tag__container">
+                                                <div className="dc__devtron-tag__container">
                                                     {row.appliedFilters.map((e) => {
                                                         return (
                                                             <span key={e.type + e.name} className="dc__devtron-tag m-2">
