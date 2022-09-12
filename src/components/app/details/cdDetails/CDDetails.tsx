@@ -80,7 +80,7 @@ export default function CDDetails() {
     const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
-    const { push } = useHistory()
+    const { replace } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
     const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
@@ -159,7 +159,7 @@ export default function CDDetails() {
     useEffect(() => {
         if (pipelineId || !envId || pipelines?.length === 0) return
         const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
-        push(generatePath(path, { appId, envId, pipelineId: cdPipelinesMap.get(+envId).id }))
+        replace(generatePath(path, { appId, envId, pipelineId: cdPipelinesMap.get(+envId).id }))
     }, [pipelineId, envId, pipelines])
 
     useEffect(() => {
@@ -179,7 +179,7 @@ export default function CDDetails() {
                 pipelineId,
                 triggerId: deploymentHistoryResult.result[0].id,
             })
-            push(newUrl)
+            replace(newUrl)
         }
     }, [deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
 
@@ -193,7 +193,7 @@ export default function CDDetails() {
     if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
     if (result && !Array.isArray(result[0].result)) return <AppNotConfigured />
     if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured />
-    if (!result || dependencyState[2] !== envId) return null
+    if (!result || (envId && dependencyState[2] !== envId)) return null
 
     return (
         <>
@@ -236,7 +236,7 @@ export default function CDDetails() {
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
                                         deploymentAppType={deploymentAppType}
-                                        isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}
+                                        isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                                     />
                                 </Route>
                             )}
@@ -392,6 +392,7 @@ function NoCDTriggersView({ environmentName }) {
 function Logs({ triggerDetails, isBlobStorageConfigured }) {
     const eventSrcRef = useRef(null)
     const [logs, setLogs] = useState([])
+    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const counter = useRef(0)
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
 
@@ -421,7 +422,10 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
                     counter.current += 1
                 }
             })
-            eventSrcRef.current.addEventListener('error', (event: any) => {})
+            eventSrcRef.current.addEventListener('error', (event: any) => {
+              eventSrcRef.current.close()
+              setLogsNotAvailableError(true)
+            })
           }
         }
         getLogs()
@@ -431,7 +435,7 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
     }, [triggerDetails.id, pipelineId])
 
     if (!triggerDetails) return null
-    return !isBlobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
+    return logsNotAvailableError && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
       renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <>
@@ -709,7 +713,6 @@ const HistoryLogs: React.FC<{
 
 const SelectEnvironment: React.FC<{ environments: AppEnvironment[] }> = ({ environments }) => {
     const params = useParams<{ envId: string; appId: string }>()
-    const { environmentId: previousEnvironmentId, setEnvironmentId } = useAppContext()
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const environmentsMap = mapByKey(environments, 'environmentId')
@@ -720,19 +723,6 @@ const SelectEnvironment: React.FC<{ environments: AppEnvironment[] }> = ({ envir
             push(newUrl)
         }
     }
-
-    const handlePreviousEnvironment = () => {
-        if (params.envId) setEnvironmentId(+params.envId)
-        else {
-            if (previousEnvironmentId && environmentsMap.has(previousEnvironmentId)) {
-                handleEnvironmentChange(previousEnvironmentId)
-            } else {
-                setEnvironmentId(null)
-            }
-        }
-    }
-
-    useEffect(handlePreviousEnvironment, [params.envId, previousEnvironmentId, environmentsMap])
 
     const environment = environmentsMap.get(+params.envId)
     return (

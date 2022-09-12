@@ -58,6 +58,7 @@ let statusSet = new Set(['starting', 'running', 'pending'])
 
 function useCIEventSource(url: string, maxLength?: number) {
     const [data, setData] = useState([])
+    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const [interval, setInterval] = useState(1000)
     const buffer = useRef([])
     const eventSourceRef = useRef(null)
@@ -89,6 +90,15 @@ function useCIEventSource(url: string, maxLength?: number) {
         setInterval(null)
     }
 
+    function handleError(error: any) {
+      console.log(error)
+      setLogsNotAvailableError(true)
+      setData([])
+      buffer.current = []
+      eventSourceRef.current.close()
+      setInterval(null)
+    }
+
     useEffect(() => {
         buffer.current = []
         if(url){
@@ -96,11 +106,12 @@ function useCIEventSource(url: string, maxLength?: number) {
           eventSourceRef.current.addEventListener('message', handleMessage)
           eventSourceRef.current.addEventListener('START_OF_STREAM', handleStreamStart)
           eventSourceRef.current.addEventListener('END_OF_STREAM', handleStreamEnd)
+          eventSourceRef.current.addEventListener('error', handleError)
         }
         return closeEventSource
     }, [url, maxLength])
 
-    return [data, eventSourceRef.current]
+    return [data, eventSourceRef.current, logsNotAvailableError]
 }
 
 interface Pipelines {
@@ -229,7 +240,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
-                                isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}
+                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                             />
                         </Route>
                     )}
@@ -994,11 +1005,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
-    const [logs, eventSource] = useCIEventSource(
-        isBlobStorageConfigured && triggerDetails.blobStorageEnabled
-            ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
-            : null,
-    )
+    const [logs, eventSource, logsNotAvailable] = useCIEventSource(`${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`)
     function createMarkup(log) {
         try {
             log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
@@ -1009,7 +1016,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }
 
-    return !isBlobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
+    return logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
       renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <div className="logs__body">
