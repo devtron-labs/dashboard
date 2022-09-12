@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -91,7 +91,6 @@ function useCIEventSource(url: string, maxLength?: number) {
     }
 
     function handleError(error: any) {
-      console.log(error)
       setLogsNotAvailableError(true)
       setData([])
       buffer.current = []
@@ -1005,7 +1004,9 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
-    const [logs, eventSource, logsNotAvailable] = useCIEventSource(`${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`)
+    const [logs, eventSource, logsNotAvailable] = useCIEventSource(
+      `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
+    )
     function createMarkup(log) {
         try {
             log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
@@ -1030,7 +1031,6 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
             )}
         </div>
     )
-
 }
 
 export function Scroller({ scrollToTop, scrollToBottom, style }) {

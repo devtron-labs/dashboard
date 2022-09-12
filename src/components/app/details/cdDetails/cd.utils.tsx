@@ -68,8 +68,6 @@ export function Option(props) {
     )
 }
 
-
-
 const renderLogsNotAvailable = (subtitle?: string): JSX.Element => {
   return (
       <div className="flexbox dc__content-center flex-align-center dc__height-inherit">

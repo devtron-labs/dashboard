@@ -21,5 +21,5 @@ export function getDeploymentStatusDetail(appId: string, envId: string, triggerI
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {
-  return get(`${Routes.BLOB_STORAGE_CONFIGURED}?name=${moduleName}`)
+  return get(`${Routes.MODULE_CONFIGURED}?name=${moduleName}`)
 }
