@@ -611,7 +611,7 @@ export default function NodeList() {
     }
 
     return (
-        <>
+        <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
             <div className="node-list">
                 {renderClusterSummary()}
@@ -656,6 +656,6 @@ export default function NodeList() {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }

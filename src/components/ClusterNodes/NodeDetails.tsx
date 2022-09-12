@@ -578,7 +578,10 @@ export default function NodeDetails() {
                 }}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
-                    <span className="dc__inline-block dc__ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                    <span
+                        className="dc__inline-block dc__ellipsis-right lh-20"
+                        style={{ maxWidth: 'calc(100% - 20px)' }}
+                    >
                         {columnName}
                     </span>
                 </Tippy>
@@ -877,7 +880,7 @@ export default function NodeDetails() {
     }
 
     return (
-        <>
+        <div>
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}
@@ -885,6 +888,6 @@ export default function NodeDetails() {
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
-        </>
+        </div>
     )
 }

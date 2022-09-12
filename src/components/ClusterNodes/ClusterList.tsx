@@ -166,7 +166,7 @@ export default function ClusterList() {
     }
 
     return (
-        <>
+        <div>
             <PageHeader headerName="Clusters" />
             <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
@@ -199,6 +199,6 @@ export default function ClusterList() {
                     </div>
                 )}
             </div>
-        </>
+        </div>
     )
 }
