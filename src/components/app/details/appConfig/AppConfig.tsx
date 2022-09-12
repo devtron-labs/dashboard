@@ -341,7 +341,7 @@ export default function AppConfig() {
                             <Link
                                 onClick={(e) => setState((state) => ({ ...state, showDeleteConfirm: false }))}
                                 to={redirectToWorkflowEditor()}
-                                className="cta ml-12 no-decor"
+                                className="cta ml-12 dc__no-decor"
                             >
                                 View Workflows
                             </Link>
@@ -360,7 +360,7 @@ export default function AppConfig() {
             <>
                 <div className="app-compose">
                     <div
-                        className={`app-compose__nav flex column left top position-rel dc__overflow-scroll ${
+                        className={`app-compose__nav flex column left top dc__position-rel dc__overflow-scroll ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
                         }`}
                     >
@@ -399,7 +399,7 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
                 <button
                     type="button"
                     disabled={isDisabled}
-                    className="cta align-right flex"
+                    className="cta dc__align-right flex"
                     onClick={(event) => {
                         history.push(nextUrl)
                     }}
@@ -438,7 +438,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline }: AppConfigNavigationPr
                     return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
-            <div className="cta-delete-app flex w-100 position-sticky pt-2 pb-16 bcn-0">
+            <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
                 <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
                     Delete Application
                 </button>
@@ -547,7 +547,7 @@ const EnvOverridesHelpNote = () => {
             Environment overrides allow you to manage environment specific configurations after you’ve created
             deployment pipelines. &nbsp;
             <a
-                className="learn-more__href"
+                className="dc__link"
                 href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
                 rel="noreferrer noopener"
                 target="_blank"
@@ -645,8 +645,8 @@ function EnvironmentOverrideRouter() {
 
     return (
         <div className="h-100">
-            <div className="border-bottom-n1 mt-8 mb-8" />
-            <div className="app-compose__nav-item routes-container-header flex text-uppercase no-hover">
+            <div className="dc__border-bottom-n1 mt-8 mb-8" />
+            <div className="app-compose__nav-item routes-container-header flex dc__uppercase no-hover">
                 Environment Overrides
             </div>
             <div className="flex column left environment-routes-container top">

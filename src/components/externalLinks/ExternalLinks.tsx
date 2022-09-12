@@ -211,13 +211,13 @@ function ExternalLinks() {
                                         onError={onImageLoadError}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name cn-9 fs-13 ellipsis-right">
+                                <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
                                     {link.name}
                                 </div>
-                                <div className="external-links__cell--cluster cn-9 fs-13 ellipsis-right">
+                                <div className="external-links__cell--cluster cn-9 fs-13 dc__ellipsis-right">
                                     {getClusterLabel(link)}
                                 </div>
-                                <div className="external-links__cell--url__template cn-9 fs-13 ellipsis-right">
+                                <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
                                     {link.url}
                                 </div>
                                 <div className="external-link-actions">
@@ -262,7 +262,7 @@ function ExternalLinks() {
                         Learn more
                     </a>
                 </p>
-                <div className="cta-search-filter-container flex content-space mb-16">
+                <div className="cta-search-filter-container flex dc__content-space mb-16">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />
                     {renderSearchFilterWrapper()}
                 </div>

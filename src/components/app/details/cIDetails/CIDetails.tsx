@@ -301,11 +301,11 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
                     }}
                 >
                     <div
-                        className={`app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     ></div>
-                    <div className="flex column left ellipsis-right">
+                    <div className="flex column left dc__ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="cn-7 fs-12">
                             {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
@@ -326,7 +326,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
             <div className="flex column left ">
                 <div className="flex left fs-12 cn-7">
                     <div>{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
-                    <div className="bullet ml-6 mr-6"></div>
+                    <div className="dc__bullet ml-6 mr-6"></div>
                     <div>{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                 </div>
                 {triggerDetails?.ciMaterials?.map((ciMaterial) => {
@@ -346,7 +346,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                         >
                             {sourceType != SourceTypeMap.WEBHOOK && (
                                 <>
-                                    <div className="git-logo"> </div>
+                                    <div className="dc__git-logo"> </div>
                                     <div className="flex left column">
                                         <a
                                             href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)}
@@ -490,7 +490,7 @@ const Details: React.FC<BuildDetails> = ({
                             type="CI"
                             abort={() => cancelCiTrigger({ pipelineId, workflowId: buildId })}
                         />
-                        <ul className="ml-20 tab-list tab-list--borderd mr-20">
+                        <ul className="ml-20 tab-list dc__border-bottom mr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
                                     Logs
@@ -571,7 +571,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         <time className="cn-7 fs-12">
                             {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
-                        <div className="bullet mr-6 ml-6"></div>
+                        <div className="dc__bullet mr-6 ml-6"></div>
                         <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                             {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
                         </div>
@@ -587,7 +587,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                                 rel="noopener noreferer"
                                                 key={ciMaterial.id}
                                                 href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
-                                                className="app-commit__hash mr-12 bcn-1 cn-7"
+                                                className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                             >
                                                 {gitDetail?.Commit?.substr(0, 8)}
                                             </a>
@@ -595,7 +595,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                         {ciMaterial.type == 'WEBHOOK' &&
                                             gitDetail.WebhookData &&
                                             gitDetail.WebhookData.Data && (
-                                                <span className="app-commit__hash">
+                                                <span className="dc__app-commit__hash">
                                                     {gitDetail.WebhookData.EventActionType == 'merged'
                                                         ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
                                                         : gitDetail.WebhookData.Data['target checkout']}
@@ -605,7 +605,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                 )
                             })}
                         {type === 'CD' && (
-                            <div className="app-commit__hash ">
+                            <div className="dc__app-commit__hash ">
                                 <img src={docker} className="commit-hash__icon grayscale" />
                                 {triggerDetails.artifact.split(':')[1]}
                             </div>
@@ -661,7 +661,7 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
                     </time>
                 )}
                 {type === 'CI' && triggerDetails.artifact && (
-                    <div className="app-commit__hash ">
+                    <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
                         {triggerDetails.artifact.split(':')[1]}
                     </div>
@@ -850,12 +850,12 @@ const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
             <label className="form__label">Select Pipeline</label>
             <Select onChange={handlePipelineChange} value={+pipelineId}>
                 <Select.Button rootClassName="select-button--default">
-                    <div className="ellipsis-left w-100 flex right">{pipeline ? pipeline.name : 'Select Pipeline'}</div>
+                    <div className="dc__ellipsis-left w-100 flex right">{pipeline ? pipeline.name : 'Select Pipeline'}</div>
                 </Select.Button>
                 {pipelines.map((item, idx) => {
                     return (
                         <Select.Option key={idx} value={item.id}>
-                            <span className="ellipsis-left">{item.name}</span>
+                            <span className="dc__ellipsis-left">{item.name}</span>
                         </Select.Option>
                     )
                 })}
@@ -1011,7 +1011,7 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
     return (
         <div
             style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-            className="element-scroller"
+            className="dc__element-scroller"
         >
             <Tippy className="default-tt" arrow={false} content="Scroll to Top">
                 <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
@@ -1055,11 +1055,11 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
         <div style={{ padding: '16px' }} className="flex left column">
             <CIListItem type="artifact">
                 <div className="flex column left">
-                    <div className="cn-9 fs-14 flex left visible-hover visible-hover--parent">
+                    <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
                         {triggerDetails.artifact.split(':')[1]}
                         <Tippy content={'Copy to clipboard'}>
                             <CopyIcon
-                                className="pointer visible-hover--child ml-6 icon-dim-16"
+                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
                                 onClick={(e) =>
                                     copyToClipboard(triggerDetails.artifact.split(':')[1], () =>
                                         toast.info('copied to clipboard'),
@@ -1068,11 +1068,11 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                             />
                         </Tippy>
                     </div>
-                    <div className="cn-7 fs-12 flex left visible-hover visible-hover--parent">
+                    <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
                         {triggerDetails.artifact}
                         <Tippy content={'Copy to clipboard'}>
                             <CopyIcon
-                                className="pointer visible-hover--child ml-6 icon-dim-16"
+                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
                                 onClick={(e) =>
                                     copyToClipboard(triggerDetails.artifact, () => toast.info('copied to clipboard'))
                                 }
@@ -1204,16 +1204,16 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                         style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
-                    <div className="security-scan__last-scan ellipsis-right">{securityData.lastExecution}</div>
-                    {total === 0 ? <span className="fill-pass">Passed</span> : null}
+                    <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
+                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
                     {severityCount.critical !== 0 ? (
-                        <span className="fill-critical">{severityCount.critical} Critical</span>
+                        <span className="dc__fill-critical">{severityCount.critical} Critical</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="fill-moderate">{severityCount.moderate} Moderate</span>
+                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="fill-low">{severityCount.low} Low</span>
+                        <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type">post build execution</div>
                 </div>
@@ -1236,7 +1236,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                             {securityData.vulnerabilities.map((item) => {
                                 return (
                                     <tr className="security-scan-table__row">
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve cve-cell">
+                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
                                             <a
                                                 href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
                                                 target="_blank"

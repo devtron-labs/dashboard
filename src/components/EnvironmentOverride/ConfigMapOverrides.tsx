@@ -463,11 +463,11 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         </div>
                     </div>
                     {!name && external ? (
-                        <div className="info__container mb-24">
+                        <div className="dc__info-container mb-24">
                             <Info />
                             <div className="flex column left">
-                                <div className="info__title">Using External Configmaps</div>
-                                <div className="info__subtitle">
+                                <div className="dc__info-title">Using External Configmaps</div>
+                                <div className="dc__info-subtitle">
                                     Configmap will not be created by system. However, they will be used inside the pod.
                                     Please make sure that configmap with the same name is present in the environment.
                                 </div>
@@ -602,7 +602,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     ) : null}
                     {!external && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 bold">Data*</b>
+                            <b className="mr-5 dc__bold">Data*</b>
                             <RadioGroup
                                 className="gui-yaml-switch"
                                 name="yaml-mode"
@@ -670,7 +670,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         </>
                     )}
                     {state.duplicate && !yamlMode && (
-                        <span className="bold anchor pointer" onClick={(e) => dispatch({ type: 'add-param' })}>
+                        <span className="dc__bold anchor pointer" onClick={(e) => dispatch({ type: 'add-param' })}>
                             +Add params
                         </span>
                     )}

@@ -46,7 +46,7 @@ export default function ChartVersionSelectorModal({
                 <div className="fw-4 fs-13 cn-7">
                     <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
                     <a
-                        className="learn-more__href"
+                        className="dc__link"
                         href={cardDetail.helpLink}
                         rel="noreferrer noopener"
                         target="_blank"
@@ -117,9 +117,9 @@ export default function ChartVersionSelectorModal({
 
     const renderInitialHeader = (): JSX.Element => {
         return (
-            <div className="flex content-start">
+            <div className="flex dc__content-start">
                 <div className="h-44 mr-16">
-                    <img src={appIconUrl} onError={onError} className="chart-grid-item__icon" alt="chart icon" />
+                    <img src={appIconUrl} onError={onError} className="dc__chart-grid-item__icon" alt="chart icon" />
                 </div>
                 <div className="h-44">
                     <div className="fw-6 fs-16 cn-9 h-22 mb-2">Deploy {appStoreApplicationName}</div>
@@ -136,8 +136,8 @@ export default function ChartVersionSelectorModal({
 
     const renderListHeader = (): JSX.Element => {
         return (
-            <div className="flex content-start">
-                <button type="button" className="transparent pl-16 pr-16" onClick={togglePageState}>
+            <div className="flex dc__content-start">
+                <button type="button" className="dc__transparent pl-16 pr-16" onClick={togglePageState}>
                     <Back className="icon-dim-20" />
                 </button>
                 <div>
@@ -150,7 +150,7 @@ export default function ChartVersionSelectorModal({
     const renderValueList = (): JSX.Element => {
         return (
             <div style={{ height: 'calc(100vh - 170px)' }}>
-                <div className="chart-value-row fw-6 cn-7 fs-12 border-top border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
+                <div className="chart-value-row fw-6 cn-7 fs-12 dc__border-top dc__border-bottom dc__uppercase pt-8 pr-16 pb-8 pl-16">
                     <div className="pr-16"></div>
                     <div className="pr-16">Name</div>
                     <div>Chart Version</div>
@@ -167,7 +167,7 @@ export default function ChartVersionSelectorModal({
                             }}
                         >
                             <div className="pr-16">
-                                <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                <File className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                             </div>
                             <div className="pr-16">{valueDetail.name}</div>
                             <div>{valueDetail.chartVersion}</div>
@@ -179,7 +179,7 @@ export default function ChartVersionSelectorModal({
     }
     const renderDeployButton = (): JSX.Element => {
         return (
-            <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
+            <div className="pt-20 pr-20 pb-20 pl-20 dc__border-top right-align">
                 <button
                     type="button"
                     className="cta h-36 lh-36"
@@ -187,7 +187,7 @@ export default function ChartVersionSelectorModal({
                     disabled={selectedChartValue === null}
                 >
                     Edit & deploy
-                    <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
+                    <Back className="icon-dim-20 rotate-180 dc__vertical-align-middle ml-5" />
                 </button>
             </div>
         )
@@ -195,13 +195,13 @@ export default function ChartVersionSelectorModal({
     return (
         <VisibleModal className="transition-effect">
             <div
-                className={`modal__body mt-0 no-top-radius chart-version-selector p-0 ${
-                    isListpage ? 'no-bottom-radius' : ''
+                className={`modal__body mt-0 dc__no-top-radius chart-version-selector p-0 ${
+                    isListpage ? 'dc__no-bottom-radius' : ''
                 }`}
             >
                 <div className={`header-container mt-20 mr-20 mb-20 ${isListpage ? '' : 'ml-20'}`}>
                     {isListpage ? renderListHeader() : renderInitialHeader()}
-                    <button type="button" className="transparent" onClick={closePopup}>
+                    <button type="button" className="dc__transparent" onClick={closePopup}>
                         <Close className="icon-dim-20" />
                     </button>
                 </div>

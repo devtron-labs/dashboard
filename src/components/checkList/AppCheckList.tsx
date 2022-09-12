@@ -17,15 +17,15 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                 <p className="m-0 fs-14">To deploy custom application</p>
             </div>
             <div className="fs-13 mb-12">
-                {!hostUrl && <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="no-decor mt-8 flex left" style={{ ['color']: hostUrl ? `#767d84` : `#0066cc` }} >
+                {!hostUrl && <NavLink to={`${URLS.GLOBAL_CONFIG_HOST_URL}`} className="dc__no-decor mt-8 flex left" style={{ ['color']: hostUrl ? `var(--N500)` : `var(--B500)` }} >
                     Add host URL</NavLink>}
-                {!project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor  mt-8 flex left" style={{ ['color']: project ? `#767d84` : `#0066cc` }}>
+                {!project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="dc__no-decor  mt-8 flex left" style={{ ['color']: project ? `var(--N500)` : `var(--B500)` }}>
                     Add project</NavLink>}
-                {!environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor mt-8 flex left" style={{ ['color']: environment ? `#767d84` : `#0066cc` }}>
+                {!environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="dc__no-decor mt-8 flex left" style={{ ['color']: environment ? `var(--N500)` : `var(--B500)` }}>
                     Add cluster & environment</NavLink>}
-                {!git && <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="no-decor mt-8 flex left" style={{ ['color']: git ? `#767d84` : `#0066cc` }}>
+                {!git && <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="dc__no-decor mt-8 flex left" style={{ ['color']: git ? `var(--N500)` : `var(--B500)` }}>
                     Add git account</NavLink>}
-                {!docker && <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="no-decor mt-8 pb-8 flex left" style={{ ['color']: docker ? `#767d84` : `#0066cc` }}>
+                {!docker && <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="dc__no-decor mt-8 pb-8 flex left" style={{ ['color']: docker ? `var(--N500)` : `var(--B500)` }}>
                     Add container registry</NavLink>}
             </div>
         </>

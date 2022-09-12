@@ -373,7 +373,7 @@ export class Command extends Component<CommandProps, CommandState>  {
             let lastArg = this.state.arguments[this.state.arguments.length - 1];
             if (lastArg && lastArg.data.isEOC) {
                 return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8 flex column">
-                    <h4 className="ff-monospace command__control command__control--tab cursor" onClick={this.runCommand}>&crarr; Enter</h4>
+                    <h4 className="dc__ff-monospace command__control command__control--tab cursor" onClick={this.runCommand}>&crarr; Enter</h4>
                     <p className="command-empty-state__subtitle">Hit enter to navigate</p>
                 </div>
             }
@@ -383,24 +383,24 @@ export class Command extends Component<CommandProps, CommandState>  {
                 return <div ref={node => this._menu = node} className="command__suggested-args-container mt-8">
                     <div className="suggested-arguments">
                         {this.state.suggestedArguments.length && this.state.groupName && (groupStart < 0) ? <>
-                            <h6 className="pl-20 pr-20 suggested-arguments__heading text-uppercase mb-0">{this.state.groupName}</h6>
+                            <h6 className="pl-20 pr-20 suggested-arguments__heading dc__uppercase mb-0">{this.state.groupName}</h6>
                             <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">No Environments Configured</div>
                         </> : null}
                         {this.state.suggestedArguments.map((a, index) => {
                             return <>
-                                {this.state.groupName && groupStart === index ? <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading text-uppercase">{this.state.groupName}</h6> : null}
+                                {this.state.groupName && groupStart === index ? <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading dc__uppercase">{this.state.groupName}</h6> : null}
                                 {this.state.groupName && groupEnd === index ? <>
                                     <hr className="m-0"></hr>
                                     <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading">
-                                        <span className="text-uppercase">More in </span> "{this.state.arguments[1].value}"
+                                        <span className="dc__uppercase">More in </span> "{this.state.arguments[1].value}"
                                     </h6>
                                 </> : null}
                                 <button ref={node => a['ref'] = node} key={`${index}-${a.value}`} onMouseOver={(e) => this.setState({ focussedArgument: index })} onClick={(event) => this.selectArgument(a)}
                                     className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor"}>
                                     <span>{a.value}</span>
-                                    <span className="ff-monospace command__control ml-20"
-                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                        <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>expand</span>
+                                    <span className="dc__ff-monospace command__control ml-20"
+                                        style={{ display: this.state.focussedArgument === index ? 'dc__inline-block' : 'none' }}>
+                                        <ArrowRight className="icon-dim-16 dc__vertical-align-middle mr-5" /><span>expand</span>
                                     </span>
                                 </button>
                             </>
@@ -425,7 +425,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     render() {
         if (this.props.isCommandBarActive) {
-            return <div className="transparent-div" onKeyDown={this.disableTab}
+            return <div className="dc__transparent-div" onKeyDown={this.disableTab}
                 onClick={() => {
                     ReactGA.event({
                         category: 'Command Bar',
@@ -446,7 +446,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                 Jump To
                             </label>
                         </div>
-                        <span className="command__press-tab ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
+                        <span className="command__press-tab dc__ff-monospace">Press <span className="command__control command__control--tab">Tab</span> to switch</span>
                     </div>
                     <div className="flex column pl-20 pr-20" style={{ backgroundColor: "var(--window-bg)" }}>
                         <div className="command-arg flex top w-100">
@@ -457,14 +457,14 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         {!arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
                                     </>
                                 })}
-                                {!this.state.arguments[this.state.arguments.length - 1]?.data?.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                {!this.state.arguments[this.state.arguments.length - 1]?.data?.isEOC && <div className="dc__position-rel m-4 flex-1" style={{ height: '22px' }}>
                                     <input ref={this._inputPlaceholder} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
                                     <input ref={this._inputText} type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input"
                                         placeholder="" onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />
                                 </div>}
                             </div>
                             {this.state.arguments?.find(a => a?.data?.url) &&
-                                <span className="ff-monospace command__control p-0 fs-16 mt-4 mb-4 cursor" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }} onClick={this.runCommand} >&crarr;</span>
+                                <span className="dc__ff-monospace command__control p-0 fs-16 mt-4 mb-4 cursor" style={{ lineHeight: "1.1", backgroundColor: "var(--N100)" }} onClick={this.runCommand} >&crarr;</span>
                             }
                         </div>
                     </div>

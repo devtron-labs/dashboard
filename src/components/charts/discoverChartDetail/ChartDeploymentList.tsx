@@ -122,12 +122,12 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         <>
             <tr className="deployment-table-row" >
                 <Td to={link} className="app-detail">
-                    <div className="deployed-app-name ellipsis-right" >{appName}</div>
+                    <div className="deployed-app-name dc__ellipsis-right" >{appName}</div>
                     <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{status.toUpperCase()}</div>
                 </Td>
-                <Td to={link} className="ellipsis-right">{environmentName}</Td>
-                <Td to={link} className="ellipsis-right">{deployedBy}</Td>
-                <Td to={link} className="ellipsis-right">{moment(deployedAt).fromNow()}</Td>
+                <Td to={link} className="dc__ellipsis-right">{environmentName}</Td>
+                <Td to={link} className="dc__ellipsis-right">{deployedBy}</Td>
+                <Td to={link} className="dc__ellipsis-right">{moment(deployedAt).fromNow()}</Td>
                 <Td>
                     <PopupMenu autoClose>
                         <PopupMenu.Button isKebab>

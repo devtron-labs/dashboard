@@ -208,7 +208,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cb-5 fs-16 text-capitalize">devtron apps</span>,
+                    component: <span className="cb-5 fs-16 dc__capitalize">devtron apps</span>,
                     linked: true,
                 },
             },
@@ -253,7 +253,7 @@ export function AppHeader() {
     const renderAppDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right">
+                <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}

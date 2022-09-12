@@ -65,11 +65,11 @@
     font-weight: 600;
 }
 
-.expanded-row:hover .app-commit__hash {
+.expanded-row:hover .dc__app-commit__hash {
     background-color: var(--N000);
     color: var(--N700);
 }
 
-.expanded-row .app-commit__hash:hover {
+.expanded-row .dc__app-commit__hash:hover {
     color: var(--B500);
 }

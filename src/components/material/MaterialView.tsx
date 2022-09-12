@@ -63,8 +63,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             </div>
         }
         return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
-            <Add className="icon-dim-24 mr-5 fcb-5 vertical-align-middle" />
-            <span className="artifact__add">Add Git Repository</span>
+            <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
+            <span className="dc__artifact-add">Add Git Repository</span>
         </div>
     }
 
@@ -93,7 +93,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
                 {(this.props.material).id ? "Edit Git Repository" : "Add Git Repository"}
-                {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
+                {(this.props.material).id ? <button type="button" className="dc__transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
             </div>
@@ -124,10 +124,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             Option: (props) => {
                                 props.selectProps.styles.option = getCustomOptionSelectionStyle()
                                 return <components.Option {...props}>
-                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.url.includes("github") ? <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 vertical-align-middle icon-dim-20" />}
+                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("github") ? <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />}
 
                                     {props.label}
                                 </components.Option>
@@ -135,8 +135,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             MenuList: (props) => {
                                 return <components.MenuList {...props}>
                                     {props.children}
-                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top react-select__bottom bcn-0 p-10 cb-5 block fw-5 anchor cursor no-decor">
-                                        <Add className="icon-dim-20 fcb-5 mr-12 vertical-align-bottom" />
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="dc__border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor dc__no-decor">
+                                        <Add className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom " />
                                         Add Git Account
                                     </NavLink>
                                 </components.MenuList>
@@ -250,7 +250,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             </label>
             <div className={`form__buttons`}>
                     {this.props.material.id && (
-                            <button className="cta delete m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
+                            <button className="cta delete dc__m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
                     )}

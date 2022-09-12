@@ -282,7 +282,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
-                    <div className={'registry-icon mr-5 ' + props.data.registryType}></div>
+                    <div className={'dc__registry-icon mr-5 ' + props.data.registryType}></div>
                     {props.label}
                 </div>
             </components.Option>
@@ -295,10 +295,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 {props.children}
                 <NavLink
                     to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
-                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor bottom-0"
+                    className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
                     style={{ backgroundColor: '#FFF' }}
                 >
-                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
                     Add Container Registry
                 </NavLink>
             </components.MenuList>
@@ -312,7 +312,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         }
         return (
             <components.Control {...props}>
-                <div className={'registry-icon ml-5 ' + value}></div>
+                <div className={'dc__registry-icon ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
         )
@@ -322,15 +322,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
-                {props.data.url.includes('gitlab') && <GitLab className="mr-8 vertical-align-middle icon-dim-20" />}
-                {props.data.url.includes('github') && <GitHub className="mr-8 vertical-align-middle icon-dim-20" />}
+                {props.data.url.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+                {props.data.url.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
                 {props.data.url.includes('bitbucket') && (
-                    <BitBucket className="mr-8 vertical-align-middle icon-dim-20" />
+                    <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
                 )}
                 {props.data.url.includes('gitlab') ||
                 props.data.url.includes('github') ||
                 props.data.url.includes('bitbucket') ? null : (
-                    <Git className="mr-8 vertical-align-middle icon-dim-20" />
+                    <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
                 )}
 
                 {props.label}
@@ -447,10 +447,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIconSrc} />
                 <ConfirmationDialog.Body title="Please ensure you have set valid target platform for the build" />
-                <span className="fs-14 cn-7 block">Custom target platform(s):</span>
+                <span className="fs-14 cn-7 dc__block">Custom target platform(s):</span>
                 {selectedTargetPlatforms.map((targetPlatform) =>
                     targetPlatformMap.get(targetPlatform.value) ? null : (
-                        <span className="fs-13 cn-7 block">{targetPlatform.value}</span>
+                        <span className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
                     ),
                 )}
                 <p className="fs-13 cn-7 lh-1-54 mt-20">
@@ -466,7 +466,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     >
                         Go back
                     </button>
-                    <button onClick={onValidation} className="cta ml-12 no-decor">
+                    <button onClick={onValidation} className="cta ml-12 dc__no-decor">
                         Confirm save
                     </button>
                 </ConfirmationDialog.ButtonGroup>
@@ -485,7 +485,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
                         >
                             {' '}
@@ -588,7 +588,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     placement="top"
                                     content={selectedMaterial.checkoutPath}
                                 >
-                                    <span className="checkout-path-container bcn-1 en-2 bw-1 no-right-border ellipsis-right">{selectedMaterial.checkoutPath}</span>
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">{selectedMaterial.checkoutPath}</span>
                                 </Tippy>
 
                                 <input
@@ -606,7 +606,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         </div>
                     </div>
                     <hr className="mt-0 mb-20" />
-                    <div onClick={toggleCollapse} className="flex content-space cursor mb-20">
+                    <div onClick={toggleCollapse} className="flex dc__content-space cursor mb-20">
                         <div>
                             <div className="fs-14 fw-6 ">Advanced (optional)</div>
                             <div className="form-row__add-parameters">

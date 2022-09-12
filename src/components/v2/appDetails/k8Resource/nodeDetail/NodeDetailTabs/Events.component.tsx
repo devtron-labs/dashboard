@@ -63,7 +63,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                                     <th
                                                         key={`eh_${idx}`}
                                                         className={
-                                                            'cell-style text-uppercase ' +
+                                                            'cell-style dc__uppercase ' +
                                                             head +
                                                             (idx === 0 && ' pad-left-20')
                                                         }

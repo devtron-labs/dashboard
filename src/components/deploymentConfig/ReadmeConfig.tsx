@@ -34,7 +34,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
 
     return (
         <div className="advanced-config-readme pt-24 pb-24 pr-24 pl-24 br-8">
-            <div className="flex content-space ">
+            <div className="flex dc__content-space ">
                 <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mr-10 pt-8 pb-8 pr-16 pl-16">
                     <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
                     Changes made to the yaml will be retained when you exit the README.

@@ -7,7 +7,7 @@ import { ChartSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
 import { get } from '../../../services/api'
 import { handleUTCTime } from '../../common'
-import './header.css'
+import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import PageHeader from '../../common/header/PageHeader'
 
@@ -72,7 +72,7 @@ function ChartHeaderComponent() {
             <div className="m-0 flex left ">
                 <Link
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="devtron-breadcrumb__item"
+                    className="dc__devtron-breadcrumb__item"
                 >
                     <span className="cb-5 fs-16">Helm Apps </span>
                 </Link>
@@ -85,7 +85,7 @@ function ChartHeaderComponent() {
     const renderHelmDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right fs-13">
+                <li className="tab-list__tab dc__ellipsis-right fs-13">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
@@ -135,7 +135,7 @@ function ChartHeaderComponent() {
     }
 
     return (
-        <div className="helm-app-page-header">
+        <div className="header helm-app-page-header">
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}

@@ -12,7 +12,7 @@ export default function AboutAppInfoModal({ onClose, appMetaResult, isLoading, l
     const renderAboutModalInfoHeader = () => {
         return <div className="modal__header">
             <div className="fs-20 cn-9 fw-6">About</div>
-            <button className="transparent" onClick={() => onClose(false)}>
+            <button className="dc__transparent" onClick={() => onClose(false)}>
                 <Close className="icon-dim-24 cursor" />
             </button>
         </div>

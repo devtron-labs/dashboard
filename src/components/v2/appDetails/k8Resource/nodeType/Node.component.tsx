@@ -19,12 +19,12 @@ import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/Exte
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 import { NoPod } from '../../../../app/ResourceTreeNodes';
 
-function NodeComponent({ 
+function NodeComponent({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp
-}: { 
+}: {
     handleFocusTabs: () => void,
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
@@ -50,7 +50,7 @@ function NodeComponent({
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp;
-    
+
     useEffect(() => {
         if (externalLinks.length > 0) {
             const _podLevelExternalLinks = []
@@ -196,13 +196,13 @@ function NodeComponent({
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && !!_currentNodeHeader && (
-                        <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
+                        <div className="fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
                             <span>{node.kind}</span>
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
-                            <div className="flex align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
+                            <div className="flex dc__align-start">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -336,8 +336,8 @@ function NodeComponent({
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
-                            <div className="pl-16 fw-6 fs-14 text-capitalize">
+                        <div className="node-detail__sticky-header dc__border-bottom-n1 pt-10 pb-10">
+                            <div className="pl-16 fw-6 fs-14 dc__capitalize">
                                 <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                                 <span>({selectedNodes?.length})</span>
                             </div>
@@ -347,7 +347,7 @@ function NodeComponent({
                         </div>
                     )}
 
-                    <div className="node-row border-bottom fw-6 m-0">
+                    <div className="node-row dc__border-bottom-n1 fw-6 m-0">
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div

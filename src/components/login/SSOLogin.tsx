@@ -60,9 +60,9 @@ const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
 }
 
 const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
-    return <label className="tertiary-tab__radio">
+    return <label className="dc__tertiary-tab__radio">
         <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
-        <span className="tertiary-tab sso-icons">
+        <span className="dc__tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><SSOTabIcons SSOName={SSOName} /></aside>
             <aside className="login__text-alignment">{SSOName}</aside>
             <label>
@@ -386,7 +386,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return <section className="global-configuration__component">
             <h2 className="form__title">SSO Login Services</h2>
             <h5 className="form__subtitle">Configure and manage login service for your organization.
-              <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_SSO}> Learn more about SSO Login</a> </span>
+              <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_SSO}> Learn more about SSO Login</a> </span>
             </h5>
 
             <div className="bcn-0 bw-1 en-2 br-8 pb-22">
@@ -395,7 +395,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         return <SSOLoginTab value={item.provider} SSOName={item.SSOName} checked={this.state.sso === item.provider} handleSSOClick={this.handleSSOClick} lastActiveSSO={this.state.lastActiveSSO} />
                     })}
                 </div>
-                <div className="sso__description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
+                <div className="dc__sso-description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
                     <div className="flexbox">
                         <Help className="icon-dim-20 fcb-5 mr-12" />
                         <div>For redirect URL or callback URL use:  {`${window.location.origin}/orchestrator`}/api/dex/callback<br />

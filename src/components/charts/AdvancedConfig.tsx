@@ -132,7 +132,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
         chartValuesDropDown = chartValuesDropDown.filter(arr => arr.kind !== "DEPLOYED");
     }
 
-    //TODO: use default state for variables, so that you don't have to apply ?. before every object. 
+    //TODO: use default state for variables, so that you don't have to apply ?. before every object.
     let warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version;
 
     return (
@@ -183,7 +183,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                             <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
                                 {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
                                 <Select.Button rootClassName="select-button--default">
-                                    <span className="ml-5 select-button__selected-option ellipsis-right" style={{ "width": "100%" }}>
+                                    <span className="ml-5 select-button__selected-option dc__ellipsis-right" style={{ "width": "100%" }}>
                                         {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
                                     </span>
                                 </Select.Button>
@@ -364,7 +364,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                                 {DEPLOYED?.map(value =>
                                     <Select.Option key={value.id} value={"DEPLOYED" + "--" + value.id} id={value.id}>
                                         <div className="flex column left">
-                                            <div className="ellipsis-right">{value.name}{value.chartVersion}</div>
+                                            <div className="dc__ellipsis-right">{value.name}{value.chartVersion}</div>
                                             <div>ENV: {value.environmentName}</div>
                                         </div>
                                     </Select.Option>

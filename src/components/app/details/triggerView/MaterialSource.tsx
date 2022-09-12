@@ -26,7 +26,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
             return (
                 <div className="material-last-update">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div className="material__error ellipsis-right">
+                    <div className="material__error dc__ellipsis-right">
                         {material.isRepoError
                             ? material.repoErrorMsg
                             : material.isBranchError

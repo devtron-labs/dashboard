@@ -6,9 +6,6 @@ import { GlobalConfigCheckListState, GlobalConfigCheckListProps } from './checkl
 import { GlobalAllCheckModal } from './GlobalAllCheckModal';
 import { GlobalChartsCheck } from './GlobalChartCheck';
 import './checklist.css';
-import SampleAppDeploy from './SampleAppDeploy';
-import CustomAppDeploy from './CustomAppDeploy';
-
 export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps, GlobalConfigCheckListState> {
 
     constructor(props) {
@@ -54,7 +51,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
             return <GlobalAllCheckModal />
         }
         else {
-            //app incomplete, chart complete 
+            //app incomplete, chart complete
             return <div>
                 <img src={Checklist} className="applist__checklist-img" />
                 <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>

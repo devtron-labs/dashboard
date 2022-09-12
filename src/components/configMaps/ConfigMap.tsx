@@ -82,7 +82,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
                 for different modules in a distributed system into one object.&nbsp;
                 <a
                     rel="noreferrer noopener"
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.APP_CREATE_CONFIG_MAP}
                     target="blank"
                 >
@@ -298,7 +298,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}
-            className={`resizable-textarea ${className}`}
+            className={`dc__resizable-textarea ${className}`}
             onChange={handleChange}
             style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
             spellCheck={false}
@@ -311,7 +311,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 export function ListComponent({ title, name = '', subtitle = '', onClick, className = '', collapsible = false }) {
     return (
         <article
-            className={`configuration-list pointer ${className}`}
+            className={`dc__configuration-list pointer ${className}`}
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             {!name ? (
@@ -671,11 +671,11 @@ export function ConfigMapForm({
                 </div>
             </div>
             {isExternalValues && (
-                <div className="info__container mb-24">
+                <div className="dc__info-container mb-24">
                     <Info />
                     <div className="flex column left">
-                        <div className="info__title">Using External Configmaps</div>
-                        <div className="info__subtitle">
+                        <div className="dc__info-title">Using External Configmaps</div>
+                        <div className="dc__info-subtitle">
                             Configmap will not be created by system. However, they will be used inside the pod. Please
                             make sure that configmap with the same name is present in the environment.
                         </div>
@@ -837,7 +837,7 @@ export function ConfigMapForm({
             )}
             {!isExternalValues && (
                 <div className="flex left mb-16">
-                    <b className="mr-5 bold">Data*</b>
+                    <b className="mr-5 dc__bold">Data*</b>
                     <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
@@ -851,10 +851,10 @@ export function ConfigMapForm({
                 </div>
             )}
             {!isExternalValues && yamlMode && (
-                <div className="info__container info__container--configmap mb-16">
+                <div className="dc__info-container info__container--configmap mb-16">
                     <Info />
                     <div className="flex column left">
-                        <div className="info__subtitle">GUI Recommended for multi-line data.</div>
+                        <div className="dc__info-subtitle">GUI Recommended for multi-line data.</div>
                     </div>
                 </div>
             )}
@@ -901,7 +901,7 @@ export function ConfigMapForm({
                                 />
                             ))}
                             <div
-                                className="add-parameter bold pointer flex left"
+                                className="add-parameter dc__bold pointer flex left"
                                 onClick={(e) =>
                                     setExternalValues((externalValues) => [
                                         ...externalValues,

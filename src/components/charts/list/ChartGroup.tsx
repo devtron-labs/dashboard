@@ -35,7 +35,7 @@ function ChartGroupList() {
 
     const renderCreateGroupButton = () => {
         return (
-            <div className="page-header__cta-container flex ">
+            <div className="dc__page-header__cta-container flex ">
                 <Link className="flex cta h-32" to={`${url}/create`}>
                     <Add className="icon-dim-18 mr-5" /> Create Group
                 </Link>

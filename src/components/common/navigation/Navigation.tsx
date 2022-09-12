@@ -153,7 +153,7 @@ export default class Navigation extends Component<
             <button
                 type="button"
                 key={`side-nav-${item.title}`}
-                className="transparent pl-0"
+                className="dc__transparent pl-0"
                 onClick={(e) => {
                     if (!this.state.isCommandBarActive) {
                         ReactGA.event({

@@ -24,15 +24,15 @@ span.form__label {
     color: #404040;
 }
 
-.info__container--create-app {
+.info-container--create-app {
     padding: 10px 12px;
     align-items: start;
     grid-template-columns: 20px 1fr auto;
     grid-column-gap: 12px;
-}
 
-.info__title {
-    display: inline;
+    .dc__info-title {
+      display: inline;
+    }
 }
 
 .form-row {

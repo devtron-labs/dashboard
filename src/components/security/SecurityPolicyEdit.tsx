@@ -91,7 +91,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     updateCVE(action: string, cve: CvePolicy, envId?: number): void {
         let payload = {};
         let promise;
-        if (cve.policy.inherited) { //create 
+        if (cve.policy.inherited) { //create
             payload = this.createCVEPayload(this.props.level, cve.name, action, envId);
             promise = savePolicy(payload)
         }
@@ -301,7 +301,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                         {cves.map((cve) => {
                             //inherited is created at parent level
                             return <tr key={cve.name} className="security-policy__table-row">
-                                <td className="security-policy__data-cell security-policy__cve-cell cve-cell">
+                                <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cell">
                                     <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`} rel="noopener noreferrer" target="_blank">
                                         {cve.name}
                                     </a>
@@ -333,10 +333,10 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                                         arrow={false}
                                         placement="top"
                                         content="Delete Override">
-                                        <Close className="icon-dim-20 align-right cursor" onClick={(event) => { this.deleteCve(cve.id) }} />
+                                        <Close className="icon-dim-20 dc__align-right cursor" onClick={(event) => { this.deleteCve(cve.id) }} />
                                     </Tippy> :
                                      */}
-                                    <Delete className={`icon-dim-20 align-right ${this.props.level === cve.policyOrigin ? 'cursor scn-4' : 'scn-2'}`}
+                                    <Delete className={`icon-dim-20 dc__align-right ${this.props.level === cve.policyOrigin ? 'cursor scn-4' : 'scn-2'}`}
                                         onClick={() => { if (this.props.level === cve.policyOrigin) this.deleteCve(cve.id) }} />
                                 </td>
                             </tr>

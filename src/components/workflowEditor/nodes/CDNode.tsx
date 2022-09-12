@@ -24,13 +24,13 @@ export class CDNode extends Component<CDNodeProps> {
     renderCardContent() {
     return (
         <>
-            <Link to={this.props.to} className="no-decor">
+            <Link to={this.props.to} className="dc__no-decor">
                 <div className="workflow-node cursor">
                     <div className="workflow-node__trigger-type workflow-node__trigger-type--create">{this.props.triggerType}</div>
                     <div className="workflow-node__title flex">
                         <div className="workflow-node__full-width-minus-Icon">
                             <span className="workflow-node__text-light">{this.props.title}</span>
-                            <span className="ellipsis-right">{this.props.environmentName}</span>
+                            <span className="dc__ellipsis-right">{this.props.environmentName}</span>
                         </div>
                         <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                     </div>
