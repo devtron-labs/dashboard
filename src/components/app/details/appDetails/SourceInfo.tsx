@@ -63,7 +63,7 @@ export function SourceInfo({
         <div className="flex left w-100 column source-info-container">
             <div className="flex left w-100 mb-16">
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-                <Tippy
+                {appDetails?.deploymentAppType && <Tippy
                     className="default-tt"
                     arrow={false}
                     placement="top"
@@ -76,7 +76,7 @@ export function SourceInfo({
                     ) : (
                         <Helm className="icon-dim-32 ml-16" />
                     )}
-                </Tippy>
+                </Tippy>}
                 <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
                     {showCommitInfo && (
                         <button

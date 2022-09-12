@@ -12,6 +12,7 @@ import {
     CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
+    DeleteDialog,
 } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
@@ -407,6 +408,7 @@ export function ConfigMapForm({
         value: data ? Object.keys(data).join(',') : '',
         error: '',
     })
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     function setKeyValueArray(arr) {
         tempArray.current = arr
     }
@@ -607,6 +609,26 @@ export function ConfigMapForm({
         }
         toggleYamlMode(not)
     }
+
+    const closeDeleteCMModal = (): void => {
+        setShowDeleteModal(false)
+    }
+
+    const showDeleteCMModal = (): void => {
+        setShowDeleteModal(true)
+    }
+
+    const renderDeleteCMModal = () => {
+        return (
+            <DeleteDialog
+                title={`Delete ConfigMap '${name}' ?`}
+                description={`'${name}' will not be used in future deployments. Are you sure?`}
+                closeDelete={closeDeleteCMModal}
+                delete={handleDelete}
+            />
+        )
+    }
+
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
         active: data.title === selectedTab,
@@ -617,7 +639,7 @@ export function ConfigMapForm({
             <div className="white-card__header">
                 {!envId && <div>{isUpdate ? `Edit ConfigMap` : `Add ConfigMap`}</div>}
                 <div className="uncollapse__delete flex">
-                    {isUpdate && <Trash className="cursor icon-delete icon-n4" onClick={handleDelete} />}
+                    {isUpdate && <Trash className="cursor icon-delete icon-n4" onClick={showDeleteCMModal} />}
                     {typeof collapse === 'function' && !envId && (
                         <img
                             onClick={collapse}
@@ -899,6 +921,7 @@ export function ConfigMapForm({
                     {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
                 </button>
             </div>
+            {showDeleteModal && renderDeleteCMModal()}
         </div>
     )
 }

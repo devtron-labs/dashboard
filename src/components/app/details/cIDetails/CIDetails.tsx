@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -48,6 +48,8 @@ import ReactGA from 'react-ga4'
 import './ciDetails.scss'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -113,6 +115,7 @@ export default function CIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
+    const [securityLoading, securityModuleStatus, securityModuleError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -220,6 +223,7 @@ export default function CIDetails() {
                                 pipeline={pipeline}
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
+                                isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
                             />
                         </Route>
                     )}
@@ -390,6 +394,7 @@ interface BuildDetails {
     fullScreenView: boolean
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     synchroniseState: (triggerId: number, triggerDetails: History) => void
+    isSecurityModuleInstalled: boolean
 }
 const BuildDetails: React.FC<BuildDetails> = ({
     triggerHistory,
@@ -397,6 +402,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
     fullScreenView,
     setFullScreenView,
     synchroniseState,
+    isSecurityModuleInstalled
 }) => {
     const { buildId, appId, pipelineId, envId } = useParams<{
         appId: string
@@ -421,6 +427,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
             setFullScreenView={setFullScreenView}
             synchroniseState={synchroniseState}
             triggerHistory={triggerHistory}
+            isSecurityModuleInstalled={isSecurityModuleInstalled}
         />
     )
 }
@@ -431,6 +438,7 @@ const Details: React.FC<BuildDetails> = ({
     setFullScreenView,
     synchroniseState,
     triggerHistory,
+    isSecurityModuleInstalled
 }) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -508,7 +516,7 @@ const Details: React.FC<BuildDetails> = ({
                                     Artifacts
                                 </NavLink>
                             </li>
-                            <li className="tab-list__tab">
+                           {isSecurityModuleInstalled && <li className="tab-list__tab">
                                 <NavLink
                                     replace
                                     className="tab-list__tab-link"
@@ -517,7 +525,7 @@ const Details: React.FC<BuildDetails> = ({
                                 >
                                     Security
                                 </NavLink>
-                            </li>
+                            </li>}
                         </ul>
                     </>
                 )}

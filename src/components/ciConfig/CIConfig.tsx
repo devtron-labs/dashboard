@@ -27,6 +27,7 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { OptionType } from '../app/types'
+import Tippy from '@tippyjs/react'
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
@@ -581,7 +582,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 Docker file path (relative)*
                             </label>
                             <div className="docker-flie-container">
-                                <span className="checkout-path-container">{selectedMaterial.checkoutPath}</span>
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={selectedMaterial.checkoutPath}
+                                >
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">{selectedMaterial.checkoutPath}</span>
+                                </Tippy>
+
                                 <input
                                     tabIndex={4}
                                     type="text"

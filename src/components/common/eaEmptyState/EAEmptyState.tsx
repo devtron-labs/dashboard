@@ -1,10 +1,9 @@
 import React from 'react'
 import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png'
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png'
-import { URLS } from '../../../config'
+import { ModuleNameMap, URLS } from '../../../config'
 import './eaEmptyState.css'
 import { NavLink } from 'react-router-dom'
-import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 
 export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',

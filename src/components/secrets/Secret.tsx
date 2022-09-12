@@ -278,7 +278,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
-
     let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -316,7 +315,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         active: data.title === selectedTab,
     }))
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
 
     function setKeyValueArray(arr) {

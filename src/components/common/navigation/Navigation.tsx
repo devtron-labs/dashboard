@@ -1,12 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
-import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
+import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -15,14 +10,14 @@ import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-cod
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
 import { getLoginInfo } from '../index'
-import { getRandomColor } from '../helpers/Helpers'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
-import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 const NavigationList = [
     {
@@ -55,7 +50,7 @@ const NavigationList = [
         href: URLS.SECURITY,
         iconClass: 'nav-security',
         icon: SecurityIcon,
-        isAvailableInEA: false,
+        moduleName: ModuleNameMap.SECURITY
     },
     {
         title: 'Clusters',
@@ -90,32 +85,6 @@ const NavigationStack = {
     icon: StackManagerIcon,
     href: URLS.STACK_MANAGER,
 }
-
-const HelpOptions = [
-    {
-        name: 'View documentation',
-        link: DOCUMENTATION.HOME_PAGE,
-        icon: File,
-        showSeparator: true,
-    },
-    {
-        name: 'Chat with support',
-        link: 'https://discord.devtron.ai/',
-        icon: Chat,
-    },
-    {
-        name: 'Join discord community',
-        link: 'https://discord.devtron.ai/',
-        icon: Discord,
-        showSeparator: true,
-    },
-    {
-        name: 'Raise an issue/request',
-        link: 'https://github.com/devtron-labs/devtron/issues/new/choose',
-        icon: Edit,
-    },
-]
-
 interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
     fetchingServerInfo: boolean
@@ -130,6 +99,7 @@ export default class Navigation extends Component<
         showHelpCard: boolean
         showMoreOptionCard: boolean
         isCommandBarActive: boolean
+        installedModule: string[]
     }
 > {
     constructor(props) {
@@ -140,11 +110,25 @@ export default class Navigation extends Component<
             showHelpCard: false,
             showMoreOptionCard: false,
             isCommandBarActive: false,
+            installedModule: []
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
         this.toggleCommandBar = this.toggleCommandBar.bind(this)
+        this.getSecurityModuleStatus()
+    }
+
+    async getSecurityModuleStatus(): Promise<void> {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                this.setState((prevState) => ({
+                    ...prevState,
+                    installedModule: [...prevState.installedModule, ModuleNameMap.SECURITY],
+                }))
+            }
+        } catch (error) {}
     }
 
     toggleLogoutCard() {
@@ -251,8 +235,9 @@ export default class Navigation extends Component<
                         </NavLink>
                         {NavigationList.map((item, index) => {
                             if (
-                                this.props.serverMode === SERVER_MODE.FULL ||
-                                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA)
+                                (this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
+                                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                                (this.state.installedModule.indexOf(item.moduleName)!==-1)
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)

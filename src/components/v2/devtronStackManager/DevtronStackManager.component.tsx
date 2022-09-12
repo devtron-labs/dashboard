@@ -38,7 +38,7 @@ import {
 } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
@@ -46,7 +46,6 @@ import {
     DEVTRON_UPGRADE_MESSAGE,
     handleAction,
     isLatestVersionAvailable,
-    ModuleNameMap,
     ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
@@ -90,36 +89,46 @@ const ModuleDetailsCard = ({
     handleModuleCardClick,
     fromDiscoverModules,
 }: ModuleDetailsCardType): JSX.Element => {
-    return (
-        <div
-            className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
-            {...(handleModuleCardClick && {
-                onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
-            })}
-        >
-            {getInstallationStatusLabel(moduleDetails.installationStatus)}
-            <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-            <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
-            <div className="module-details__card-info fs-13 fw-4 cn-7 lh-20">
-                {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
-                    <>
-                        You can&nbsp;
-                        <a
-                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
-                            className="cb-5 fw-6"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
-                            submit a ticket
-                        </a>
-                        &nbsp;to request an integration
-                    </>
-                ) : (
-                    moduleDetails.info
-                )}
-            </div>
-        </div>
-    )
+  const handleOnClick = (): void => {
+      if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
+          toast.error(
+              <ToastBody
+                  title="Unknown integration status"
+                  subtitle="There was an error fetching the integration status. Please try again later."
+              />,
+          )
+      } else if (handleModuleCardClick) {
+          handleModuleCardClick(moduleDetails, fromDiscoverModules)
+      }
+  }
+  return (
+      <div
+          className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
+          onClick={handleOnClick}
+      >
+          {getInstallationStatusLabel(moduleDetails.installationStatus)}
+          <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
+          <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
+          <div className="module-details__card-info fs-13 fw-4 cn-7 lh-20">
+              {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
+                  <>
+                      You can&nbsp;
+                      <a
+                          href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                          className="cb-5 fw-6"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                      >
+                          submit a ticket
+                      </a>
+                      &nbsp;to request an integration
+                  </>
+              ) : (
+                  moduleDetails.info
+              )}
+          </div>
+      </div>
+  )
 }
 
 export const ModulesListingView = ({

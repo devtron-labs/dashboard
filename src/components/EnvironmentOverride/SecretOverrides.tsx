@@ -413,7 +413,6 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         return isValid
                     }, !!secretDataValue.length)
                 }
-
                 if (!isValid) {
                     !isESO
                         ? toast.error('Please check key and name')

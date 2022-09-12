@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouteMatch, useParams, useHistory } from 'react-router';
 import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
@@ -32,6 +32,7 @@ function NodeComponent({
 }) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
+    const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
     const [copied, setCopied] = useState(false);
@@ -140,15 +141,19 @@ function NodeComponent({
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
             if (node.name === nodeName) {
-                node.isSelected = !node.isSelected;
+                node.isSelected = !node.isSelected
+                markedNodes.current.set(
+                    node.name,
+                    markedNodes.current.has(node.name) ? !markedNodes.current.get(node.name) : node.isSelected,
+                )
             } else if (node.childNodes?.length > 0) {
-                markNodeSelected(node.childNodes, nodeName);
+                markNodeSelected(node.childNodes, nodeName)
             }
 
-            return node;
-        });
+            return node
+        })
 
-        return updatedNodes;
+        setSelectedNodes(updatedNodes)
     };
 
     const describeNode = (name: string, containerName: string) => {
@@ -183,6 +188,7 @@ function NodeComponent({
         let _currentNodeHeader = ''
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
+            const _isSelected = markedNodes.current.get(node.name)
 
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
@@ -200,13 +206,13 @@ function NodeComponent({
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
-                                        setSelectedNodes(markNodeSelected(selectedNodes, node.name));
+                                        markNodeSelected(selectedNodes, node.name);
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
                                         <DropDown
-                                            className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
                                         />
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
@@ -313,7 +319,7 @@ function NodeComponent({
                         </div>
                     </div>
 
-                    {node.childNodes?.length > 0 && node.isSelected && (
+                    {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
