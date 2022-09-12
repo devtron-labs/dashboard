@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { SERVER_MODE, URLS } from '../../../config'
+import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import {
     ErrorBoundary,
     ErrorScreenManager,
@@ -33,7 +33,6 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
-import { ModuleNameMap } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -100,7 +99,7 @@ export default function DevtronStackManager({
             getLatestInfo()
             queryParams.delete('actionTriggered')
             history.push(`${location.pathname}?${queryParams.toString()}`)
-        } else if (location.pathname.includes('/details') && selectedModule) {
+        } else if (location.pathname.includes(URLS.DETAILS) && selectedModule) {
             const moduleId = queryParams.get('id')
             if (moduleId && selectedModule.name.toLowerCase() !== moduleId.toLowerCase()) {
                 const _selectedModule = stackDetails.discoverModulesList.find(
@@ -114,7 +113,6 @@ export default function DevtronStackManager({
         }
     }, [location.search])
 
-
     /**
      * To update the installation status for seleted module after fetching latest details
      * when on module details view
@@ -126,7 +124,7 @@ export default function DevtronStackManager({
                 stackDetails.installedModulesList.length === 0
             ) {
                 history.push(URLS.STACK_MANAGER_INSTALLED_MODULES)
-            } else if (location.pathname.includes('/details') && queryParams.get('id')) {
+            } else if (location.pathname.includes(URLS.DETAILS) && queryParams.get('id')) {
                 const _selectedModule = stackDetails.discoverModulesList.find(
                     (module) => module.name.toLowerCase() === queryParams.get('id').toLowerCase(),
                 )
@@ -219,10 +217,7 @@ export default function DevtronStackManager({
 
     const _getGitOpsConfigurationStatus = async (): Promise<void> => {
         try {
-            if (
-                location.pathname.includes('/details') &&
-                queryParams.get('id') === ModuleNameMap.ARGO_CD
-            ) {
+            if (location.pathname.includes(URLS.DETAILS) && queryParams.get('id') === ModuleNameMap.ARGO_CD) {
                 const { result } = await isGitopsConfigured()
                 const currentModule = stackDetails.discoverModulesList.find(
                     (_module) => _module.name === ModuleNameMap.ARGO_CD,
@@ -251,9 +246,13 @@ export default function DevtronStackManager({
 
         Promise.allSettled(_moduleDetailsPromiseList)
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
-                responses.forEach((res) => {
+                responses.forEach((res, index) => {
                     if (!res.value && res.reason) {
-                        console.error('Error in fetching module details')
+                        const _moduleDetails: ModuleDetails = {
+                            ..._modulesList[index],
+                            installationStatus: ModuleStatus.UNKNOWN,
+                        }
+                        _discoverModulesList.push(_moduleDetails)
                     } else {
                         const result: ModuleInfo = res.value?.result
                         const currentModule = _modulesList?.find((_module) => _module.name === result?.name)

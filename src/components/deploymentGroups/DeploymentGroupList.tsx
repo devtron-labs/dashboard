@@ -276,6 +276,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     closeCDModal={() => {
                         this.setState({ showCDModal: false })
                     }}
+                    isFromDeploymentGroup={true} // adding this for now as implementation of tabs are not available here. will be fixed in coming sprint
                 />
             )
         }

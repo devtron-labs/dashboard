@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
-import { BuildStageVariable, BuildTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, ModuleNameMap, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -34,6 +34,8 @@ import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export const ciPipelineContext = createContext(null)
 
@@ -74,6 +76,7 @@ export default function CIPipeline({
     }>({ preBuildStage: [], postBuildStage: [] })
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
+    const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -124,6 +127,7 @@ export default function CIPipeline({
 
     useEffect(() => {
         setPageState(ViewType.LOADING)
+        getSecurityModuleStatus()
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((response) => {
@@ -165,6 +169,7 @@ export default function CIPipeline({
                 })
         }
     }, [])
+
     useEffect(() => {
         getGlobalVariable(Number(appId))
             .then((response) => {
@@ -193,6 +198,15 @@ export default function CIPipeline({
                 showError(error)
             })
     }, [])
+
+    const getSecurityModuleStatus = async(): Promise<void> => {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+              setSecurityModuleInstalled(true)
+            }
+        } catch (error) {}
+    }
 
     function processPluginList(pluginList: PluginDetailType[]): void {
         const _presetPlugin = []
@@ -339,7 +353,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.PreBuild, formData)
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
-        const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+        const scanValidation = isSecurityModuleInstalled && (formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING)
         if (!scanValidation) {
             setLoadingData(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -726,6 +740,7 @@ export default function CIPipeline({
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
                                     ciPipelineId={ciPipeline.id}
+                                    isSecurityModuleInstalled={isSecurityModuleInstalled}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
