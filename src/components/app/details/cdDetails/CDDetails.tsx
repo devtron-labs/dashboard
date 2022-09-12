@@ -77,7 +77,10 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
-    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(
+        () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+        [appId],
+    )
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     const { replace } = useHistory()
@@ -408,23 +411,23 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
 
     useEffect(() => {
         function getLogs() {
-          let url = `${Host}/app/cd-pipeline/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
-          eventSrcRef.current = new EventSource(url, { withCredentials: true })
-          eventSrcRef.current.addEventListener('message', (event: any) => {
-              if (event.data.toString().indexOf('START_OF_STREAM') !== -1) {
-                  setLogs([])
-                  counter.current = 0
-              } else if (event.data.toString().indexOf('END_OF_STREAM') !== -1) {
-                  eventSrcRef.current.close()
-              } else {
-                  setLogs((logs) => logs.concat({ text: event.data, index: counter.current + 1 }))
-                  counter.current += 1
-              }
-          })
-          eventSrcRef.current.addEventListener('error', (event: any) => {
-              eventSrcRef.current.close()
-              setLogsNotAvailableError(true)
-          })
+            let url = `${Host}/app/cd-pipeline/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
+            eventSrcRef.current = new EventSource(url, { withCredentials: true })
+            eventSrcRef.current.addEventListener('message', (event: any) => {
+                if (event.data.toString().indexOf('START_OF_STREAM') !== -1) {
+                    setLogs([])
+                    counter.current = 0
+                } else if (event.data.toString().indexOf('END_OF_STREAM') !== -1) {
+                    eventSrcRef.current.close()
+                } else {
+                    setLogs((logs) => logs.concat({ text: event.data, index: counter.current + 1 }))
+                    counter.current += 1
+                }
+            })
+            eventSrcRef.current.addEventListener('error', (event: any) => {
+                eventSrcRef.current.close()
+                setLogsNotAvailableError(true)
+            })
         }
         getLogs()
         return () => {

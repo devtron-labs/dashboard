@@ -553,3 +553,7 @@ export const ModuleNameMap = {
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
 }
+
+export const BUILD_STATUS = {
+  NOT_TRIGGERED: 'not triggered'
+}

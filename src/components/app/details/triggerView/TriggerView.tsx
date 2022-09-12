@@ -17,7 +17,7 @@ import { Workflow } from './workflow/Workflow'
 import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
-import { URLS, ViewType, SourceTypeMap } from '../../../../config'
+import { URLS, ViewType, SourceTypeMap, BUILD_STATUS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -854,7 +854,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         getWorkflows={this.getWorkflows}
                         loader={this.state.loader}
                         setLoader={this.setLoader}
-                        isFirstTrigger={nd?.status?.toLowerCase()==='not triggered'}
+                        isFirstTrigger={nd?.status?.toLowerCase()=== BUILD_STATUS.NOT_TRIGGERED}
                         isCacheAvailable={nd?.storageConfigured}
                     />
                 </>
