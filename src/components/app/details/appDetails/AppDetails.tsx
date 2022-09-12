@@ -432,6 +432,14 @@ export const Details: React.FC<{
                             environmentName={appDetails.environmentName}
                         />
                     )}
+                     {deploymentDetailedStatus && (
+                        <DeploymentStatusDetailModal
+                            close={hideDeploymentDetailModal}
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        />
+                    )}
                     {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}
