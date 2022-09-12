@@ -25,12 +25,10 @@ function TerminalComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
     const { url } = useRouteMatch();
     const containers = IndexStore.getAllContainersForPod(params.podName);
-    const [logsPaused, toggleLogStream] = useState(false);
     const [selectedContainerName, setSelectedContainerName] = useState(containers ? containers[0] : '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
-
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>('CONNECTING');
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING);
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url);
@@ -45,31 +43,27 @@ function TerminalComponent({ selectedTab, isDeleted }) {
     //     selectedTab(NodeDetailTabs.TERMINAL)
     // }, [])
 
-    function handleLogsPause(paused: boolean) {
-        toggleLogStream(paused);
-    }
-
     return isDeleted || !(selectedContainerName.length ) ? (
         <div>
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
         <div className="terminal-view-container">
-            <div className="flex left bcn-0 pt-4 pb-4 pl-20 border-top">
+            <div className="flex left bcn-0 pt-4 pb-4 pl-20 dc__border-top">
                 <Tippy
                     className="default-tt"
                     arrow={false}
                     placement="bottom"
                     content={
-                        socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED' ? 'Disconnect' : 'Connect'
+                        socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED ? 'Disconnect' : 'Connect'
                     }
                 >
-                    {socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED' ? (
+                    {socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED ? (
                         <span>
                             <Disconnect
                                 className="icon-dim-20 mr-5"
                                 onClick={(e) => {
-                                    setSocketConnection('DISCONNECTING');
+                                    setSocketConnection(SocketConnectionType.DISCONNECTING);
                                 }}
                             />
                         </span>
@@ -78,14 +72,14 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                             <Connect
                                 className="icon-dim-20 mr-5"
                                 onClick={(e) => {
-                                    setSocketConnection('CONNECTING');
+                                    setSocketConnection(SocketConnectionType.CONNECTING);
                                 }}
                             />
                         </span>
                     )}
                 </Tippy>
 
-                <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
+                <Tippy className="default-tt" arrow={false} placement="bottom" content='Clear'>
                     <div>
                         <Abort
                             className="icon-dim-20"
@@ -96,7 +90,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                     </div>
                 </Tippy>
 
-                <span className="cn-2 mr-8 ml-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+                <span className="bcn-2 mr-8 ml-8" style={{ width: '1px', height: '16px' }} />
 
                 <div className="cn-6 ml-8 mr-10">Container </div>
 
@@ -135,7 +129,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                     />
                 </div>
 
-                <span className="cn-2 ml-8 mr-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
+                <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
 
                 <div style={{ minWidth: '145px' }}>
                     <Select
@@ -145,7 +139,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         onChange={(selected) => {
                             setSelectedtTerminalType(selected as any);
                             setTerminalCleared(true);
-                            setSocketConnection('DISCONNECTING');
+                            setSocketConnection(SocketConnectionType.DISCONNECTING);
                         }}
                         styles={{
                             ...multiSelectStyles,

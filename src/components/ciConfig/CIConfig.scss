@@ -38,9 +38,10 @@
             .docker-flie-container {
                 display: flex;
                 .checkout-path-container {
-                    padding: 10px;
-                    background: #d0d4d9;
+                    padding: 8px 10px;
                     border-radius: 4px 0 0 4px;
+                    max-width: 200px;
+                    min-width: 30px;
                 }
                 .file-name {
                     border-radius: 0 4px 4px 0;

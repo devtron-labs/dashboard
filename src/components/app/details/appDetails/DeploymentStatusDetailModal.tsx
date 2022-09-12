@@ -16,8 +16,8 @@ export default function DeploymentStatusDetailModal({
     return (
         <Drawer position="right" width="50%">
             <div className="deployment-status-breakdown-modal-container bcn-0">
-                <div className="box-shadow pb-12 pt-12 mb-20 bcn-0">
-                    <div className="title flex content-space pl-20 pr-20 ">
+                <div className="dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
+                    <div className="title flex dc__content-space pl-20 pr-20 ">
                         <div>
                             <div className="cn-9 fs-16 fw-6">
                                 Deployment status: {appName} / {environmentName}
@@ -28,7 +28,7 @@ export default function DeploymentStatusDetailModal({
                                 >
                                     {deploymentStatusDetailsBreakdownData.deploymentStatusText}
                                 </span>
-                                <span className="bullet mr-8 ml-8 mt-10"></span>
+                                <span className="dc__bullet mr-8 ml-8 mt-10"></span>
                                 {deploymentStatusDetailsBreakdownData.deploymentStatus === 'inprogress' ? (
                                     <>
                                         <Timer className="icon-dim-16 mt-3 mr-5 timer-icon" />
@@ -41,10 +41,13 @@ export default function DeploymentStatusDetailModal({
                                     </>
                                 ) : (
                                     <span className="fs-13">
-                                        {moment(
-                                            deploymentStatusDetailsBreakdownData.deploymentEndTime,
-                                            'YYYY-MM-DDTHH:mm:ssZ',
-                                        ).format(Moment12HourFormat)}
+                                        {deploymentStatusDetailsBreakdownData.deploymentEndTime !==
+                                        '0001-01-01T00:00:00Z'
+                                            ? moment(
+                                                  deploymentStatusDetailsBreakdownData.deploymentEndTime,
+                                                  'YYYY-MM-DDTHH:mm:ssZ',
+                                              ).format(Moment12HourFormat)
+                                            : '-'}
                                     </span>
                                 )}
                             </div>

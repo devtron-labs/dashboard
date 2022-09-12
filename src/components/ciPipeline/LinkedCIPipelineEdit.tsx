@@ -157,7 +157,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Create linked build pipeline</h2>
                 <button
                     type="button"
-                    className="transparent flex icon-dim-24"
+                    className="dc__transparent flex icon-dim-24"
                     onClick={() => {
                         this.props.close()
                     }}
@@ -170,12 +170,12 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     renderInfoDialog() {
         return (
-            <div className="dc__info__container fs-13 pt-12 pb-12 pl-16 pr-16 info__container--linked-ci">
+            <div className="dc__info-container mb-16 fs-13 pt-12 pb-12 pl-16 pr-16 info__container--linked-ci">
                 <Info className="icon-dim-20" />
                 <div className="flex column left">
-                    <div className="dc__info__title">
+                    <div className="dc__info-title">
                         Info: &nbsp;
-                        <span className="dc__info__subtitle">
+                        <span className="dc__info-subtitle">
                             Use Linked CI Pipelines to refer to an existing CI Pipeline.
                         </span>
                     </div>
@@ -294,7 +294,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     render() {
         return (
             <VisibleModal className="">
-                <div className="modal__body modal__body--ci-mt-0 modal__body--p-0 no-top-radius">
+                <div className="modal__body modal__body--ci-mt-0 modal__body--p-0 dc__no-top-radius">
                     {this.renderHeader()}
                     <hr className="divider m-0" />
                     <div className="pl-20 pr-20 pt-20">

@@ -105,7 +105,7 @@ export function CiPipelineSourceConfig({
 
     return (
         <div className={showTooltip ? 'branch-name' : ''}>
-            {loading && showIcons && <span className="loading-dots">loading</span>}
+            {loading && showIcons && <span className="dc__loading-dots">loading</span>}
             {!loading && (
                 <>
                     {showIcons && (
@@ -120,7 +120,7 @@ export function CiPipelineSourceConfig({
                             <div>
                                 {!baseText && (
                                     <div className="flex left">
-                                        <div className="ellipsis-right">{sourceValueBase}</div>
+                                        <div className="dc__ellipsis-right">{sourceValueBase}</div>
                                         <Info className="icon-dim-12 fcn-5 ml-4" />
                                     </div>
                                 )}
@@ -134,7 +134,7 @@ export function CiPipelineSourceConfig({
                     )}
                     {!showTooltip && (
                         <>
-                            <span className="ellipsis-right">{sourceValueAdv}</span>
+                            <span className="dc__ellipsis-right">{sourceValueAdv}</span>
                         </>
                     )}
                 </>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CDMaterialProps } from './types';
+import { CDMaterialProps, CDMaterialState } from './types';
 import { GitTriggers } from '../cIDetails/types';
 import close from '../../../../assets/icons/ic-close.svg';
 import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg';
@@ -12,8 +12,30 @@ import { EmptyStateCdMaterial } from './EmptyStateCdMaterial';
 import { getCDModalHeader, CDButtonLabelMap } from './config';
 import { CDModalTab } from '../../service';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service';
+import { ModuleNameMap } from '../../../../config';
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type';
 
-export class CDMaterial extends Component<CDMaterialProps> {
+export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
+  constructor(props: CDMaterialProps) {
+    super(props)
+    this.state = {
+      isSecurityModuleInstalled: false
+    }
+  }
+
+  componentDidMount() {
+    this.getSecurityModuleStatus()
+  }
+
+  async getSecurityModuleStatus(): Promise<void> {
+    try {
+        const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+        if (result?.status === ModuleStatus.INSTALLED) {
+          this.setState({ isSecurityModuleInstalled: true })
+        }
+    } catch (error) {}
+  }
 
   renderGitMaterialInfo(matInfo) {
     return <>
@@ -114,49 +136,50 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   renderMaterial() {
-    let tabClasses = "transparent tab-list__tab-link tab-list__tab-link--vulnerability";
+    let tabClasses = "dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability";
     return this.props.material.map((mat, index) => {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
 
         {this.renderSequentialCDCardTitle(mat)}
 
-        <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+        <div className={`material-history__top ${!this.state.isSecurityModuleInstalled && mat.showSourceInfo?  'dc__border-bottom': ''}`} style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
-          <div>  
+          <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
            {this.props.stageType !== 'CD' && mat.latest  ? <span className="last-deployed-status">Last Run</span> : null}
-         </div>  
+         </div>
           {this.props.materialType === "none" ? null : <div className="material-history__info">
             <span className="trigger-modal__small-text">Deployed at:</span> <span>{mat.deployedTime}</span>
           </div>}
           <div className="material-history__select-text">
             {mat.vulnerable ? <span className="material-history__scan-error">Security Issues Found</span>
-              : mat.isSelected ? <Check className="align-right icon-dim-24" /> : "Select"}
+              : mat.isSelected ? <Check className="dc__align-right icon-dim-24" /> : "Select"}
           </div>
         </div>
-        {mat.showSourceInfo ? <>
-          <ul className="tab-list tab-list--vulnerability">
-            <li className="tab-list__tab">
-              <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Changes) }}
-                className={mat.tab === CDModalTab.Changes ? `${tabClasses} active` : `${tabClasses}`}>
-                Changes
-              </button>
-            </li>
-            <li className="tab-list__tab">
-              <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Security); }}
-                className={mat.tab === CDModalTab.Security ? `${tabClasses} active` : `${tabClasses}`}>
-                Security  {mat.vulnerabilitiesLoading ? `` : `(${mat.vulnerabilities.length})`}
-              </button>
-            </li>
-          </ul>
-          {mat.tab === CDModalTab.Changes ? this.renderGitMaterialInfo(mat.materialInfo) : this.renderVulnerabilities(mat)}
-        </>
-          : null}
-        <button type="button" className="material-history__changes-btn" onClick={(event) => { event.stopPropagation(); this.props.toggleSourceInfo(index) }}>
-          {mat.showSourceInfo ? "Hide Source Info" : "Show Source Info"}
-          <img src={arrow} alt="" style={{ 'transform': `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }} />
-        </button>
+        {!this.props.isFromDeploymentGroup && <>
+        {mat.showSourceInfo && <>
+            {this.state.isSecurityModuleInstalled && <ul className="tab-list tab-list--vulnerability">
+              <li className="tab-list__tab">
+                <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Changes) }}
+                  className={mat.tab === CDModalTab.Changes ? `${tabClasses} active` : `${tabClasses}`}>
+                  Changes
+                </button>
+              </li>
+              <li className="tab-list__tab">
+                <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Security); }}
+                  className={mat.tab === CDModalTab.Security ? `${tabClasses} active` : `${tabClasses}`}>
+                  Security  {mat.vulnerabilitiesLoading ? `` : `(${mat.vulnerabilities.length})`}
+                </button>
+              </li>
+            </ul>}
+            {mat.tab === CDModalTab.Changes ? this.renderGitMaterialInfo(mat.materialInfo) : this.renderVulnerabilities(mat)}
+          </>}
+          <button type="button" className="material-history__changes-btn" onClick={(event) => { event.stopPropagation(); this.props.toggleSourceInfo(index) }}>
+            {mat.showSourceInfo ? "Hide Source Info" : "Show Source Info"}
+            <img src={arrow} alt="" style={{ 'transform': `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }} />
+          </button>
+        </>}
       </div >
     })
   }
@@ -173,7 +196,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
     return <>
       <div className="trigger-modal__header">
         <h1 className="modal__title">{header}</h1>
-        <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
+        <button type="button" className="dc__transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
       </div>
       <div className="trigger-modal__body">
         <div className="material-list__title">Select Image</div>
@@ -194,13 +217,13 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   render() {
-    let header = getCDModalHeader(this.props.stageType, this.props.envName);    
+    let header = getCDModalHeader(this.props.stageType, this.props.envName);
     return <VisibleModal className="" close={this.props.closeCDModal}>
       <div className="modal-body--cd-material" onClick={(e) => e.stopPropagation()}>
         {this.props.material.length > 0 ? this.renderCDModal()
           : <><div className="trigger-modal__header">
             <h1 className="modal__title">{header}</h1>
-            <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
+            <button type="button" className="dc__transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
           </div>
             <EmptyStateCdMaterial materialType={this.props.materialType} />
           </>}

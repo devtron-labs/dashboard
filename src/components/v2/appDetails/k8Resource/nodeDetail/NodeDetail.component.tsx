@@ -75,7 +75,7 @@ function NodeDetailComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTer
                                             : 'cn-7'
                                     } pt-6 pb-6 cursor pl-8 pr-8`}
                                 >
-                                    <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left">
+                                    <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
                                         <span
                                             className={`${
                                                 tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'

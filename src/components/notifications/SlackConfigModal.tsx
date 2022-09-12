@@ -147,10 +147,10 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
 
     renderWithBackdrop(body) {
         return <VisibleModal className="">
-            <div className="modal__body modal__body--w-600 modal__body--p-0 no-top-radius mt-0">
+            <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
                 <div className="modal__header m-24">
                     <h1 className="modal__title">Configure Slack</h1>
-                    <button type="button" className="transparent" onClick={this.props.closeSlackConfigModal}>
+                    <button type="button" className="dc__transparent" onClick={this.props.closeSlackConfigModal}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -193,7 +193,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                     Learn how to setup slack webhooks
                                 </a>
                             }>
-                            <Help className="ml-5 vertical-align-middle icon-dim-16 cursor" />
+                            <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
                         </Tippy>
                     </span>
                     <input className="form__input" type="text" name="app-name"
@@ -210,7 +210,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                     <label className="form__label">Project*
                         <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true} placement="top" content="Required to control user Acccess">
-                            <Help className="ml-5 vertical-align-middle icon-dim-16 cursor" />
+                            <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
                         </Tippy>
                     </label>
                     <Select value={this.state.form.projectId} onChange={this.handleProjectChange} tabIndex={3} rootClassName="select-button--default">

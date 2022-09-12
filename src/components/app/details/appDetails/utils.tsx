@@ -126,7 +126,7 @@ export class SecurityVulnerabilitites extends Component<SecurityVulnerabilitites
         if (total !== 0) {
             return <div className="security-vulnerabilities cursor" onClick={this.props.onClick}>
                 <div>
-                    <Bug className="icon-dim-20 vertical-align-middle mr-8 fcy-7" />
+                    <Bug className="icon-dim-20 dc__vertical-align-middle mr-8 fcy-7" />
                     {total} Security Vulnerabilities
                     <span className="security-vulnerabilities__count">
                         {critical ? `${critical} critical, ` : ``}
@@ -392,7 +392,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
           GIT_COMMIT: {
               icon: '',
-              displayText: 'Git commit',
+              displayText: 'GitOps commit',
               displaySubText: '',
               time: '',
           },
@@ -410,7 +410,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
       },
   }
-  if (data) {
+  if (data?.timelines?.length) {
       for (let index = data.timelines.length - 1; index >= 0; index--) {
           const element = data.timelines[index]
           if (element['status'] === 'HEALTHY' || element['status'] === 'DEGRADED') {
@@ -420,10 +420,12 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   element['status'] === 'HEALTHY' ? ': Healthy' : ': Degraded'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
+              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
           } else if (element['status'] === 'FAILED') {
               deploymentData.deploymentStatus = 'failed'
               deploymentData.deploymentStatusText = 'Failed'
-              deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'failed'
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
               deploymentData.deploymentError = element['statusDetail']
           } else if (element['status'].includes('KUBECTL_APPLY')) {
               if (
@@ -434,19 +436,24 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   if (deploymentData.deploymentStatus === 'failed') {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                   } else {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
                   }
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon =
-                      deploymentData.deploymentStatus === 'failed' ? 'Unknown' : 'inprogress'
               } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+
                   if (deploymentData.deploymentStatus === 'inprogress') {
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
+                  } else if(deploymentData.deploymentStatus  === 'failed'){
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'failed'
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
                   }
               }
           } else if (element['status'].includes('GIT_COMMIT')) {

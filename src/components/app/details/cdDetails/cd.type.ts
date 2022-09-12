@@ -1,3 +1,5 @@
+import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
+
 export interface DeploymentHistorySingleValue {
     displayName: string
     value: string
@@ -74,4 +76,9 @@ export interface DeploymentHistoryParamsType {
 export interface DeploymentHistorySidebarType {
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+}
+
+export interface DeploymentDetailStepsType{
+  deploymentStatus: string
+  deploymentAppType?: DeploymentAppType
 }

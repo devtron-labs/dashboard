@@ -44,7 +44,7 @@ export default function DeploymentHistoryConfigList({
                 onClick={() => {
                     setShowTemplate(true)
                 }}
-                className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex content-space cursor lh-20"
+                className="bcb-1 dc__no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex dc__content-space cursor lh-20"
             >
                 {childComponentName ? childComponentName : currentComponent.DISPLAY_NAME}
                 <RightArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '180deg' }} />

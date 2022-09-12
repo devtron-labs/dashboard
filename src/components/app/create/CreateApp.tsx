@@ -381,7 +381,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 ) : null}
                             </span>
                         </div>
-                        <div className="form__row clone-apps inline-block">
+                        <div className="form__row clone-apps dc__inline-block">
                             <RadioGroup
                                 className="no-border"
                                 value={this.state.form.appCreationType}
@@ -395,7 +395,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </RadioGroup>
                         </div>
                         {this.state.form.appCreationType === AppCreationType.Existing && (
-                            <div className="form__row clone-apps inline-block">
+                            <div className="form__row clone-apps dc__inline-block">
                                 <span className="form__label">Select an app to clone*</span>
                                 <AsyncSelect
                                     loadOptions={appListOptions}
@@ -420,11 +420,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </div>
                         )}
                         {this.state.form.appCreationType === AppCreationType.Existing && (
-                            <div className="dc__info__container info__container--create-app eb-2 mb-16">
+                            <div className="dc__info-container info-container--create-app eb-2 mb-16">
                                 <Info />
                                 <div className="flex column left">
                                     <div>
-                                        <div className="dc__info__title">Important: </div>Do not forget to modify git
+                                        <div className="dc__info-title">Important: </div>Do not forget to modify git
                                         repositories, corresponding branches and container registries to be used for
                                         each CI Pipeline if required.
                                     </div>

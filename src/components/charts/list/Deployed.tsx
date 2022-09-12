@@ -134,10 +134,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     </div>
                 }
             </div>
-            <div className="chart-grid-item__title ellipsis-right">{appName}</div>
-            <div className="chart-grid-item__light-text ellipsis-right">{chartName}/{appStoreApplicationName}</div>
+            <div className="chart-grid-item__title dc__ellipsis-right">{appName}</div>
+            <div className="chart-grid-item__light-text dc__ellipsis-right">{chartName}/{appStoreApplicationName}</div>
             <div className="chart-grid-item__env"><span className="env-badge">ENV</span>{environmentName}</div>
-            <div className="chart-grid-item__light-text ellipsis-right">{deployedAt}</div>
+            <div className="chart-grid-item__light-text dc__ellipsis-right">{deployedAt}</div>
         </Link>
     }
 

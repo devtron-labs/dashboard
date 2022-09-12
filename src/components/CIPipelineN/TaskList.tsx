@@ -131,7 +131,7 @@ export function TaskList() {
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            <span className="w-80 ellipsis-right">{taskDetail.name}</span>
+                            <span className="w-80 dc__ellipsis-right">{taskDetail.name}</span>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
                                     <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />

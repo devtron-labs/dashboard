@@ -170,10 +170,10 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     renderWithBackdrop(body) {
         return (
             <VisibleModal className="">
-                <div className="modal__body modal__body--w-600 modal__body--p-0 no-top-radius mt-0">
+                <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
                     <div className="modal__header m-24">
                         <h1 className="modal__title">Modify Recipients</h1>
-                        <button type="button" className="transparent" onClick={this.props.closeModifyRecipientsModal}>
+                        <button type="button" className="dc__transparent" onClick={this.props.closeModifyRecipientsModal}>
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
@@ -201,7 +201,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         <div className="form__input form__input--textarea">
                             {this.state.savedRecipients.map((p) => {
                                 return (
-                                    <div className="devtron-tag mr-5">
+                                    <div className="dc__devtron-tag mr-5">
                                         {p.dest === 'ses' || p.dest === '' ? (
                                             <Email className="icon-dim-20 mr-5" />
                                         ) : null}
@@ -209,7 +209,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                         {p.recipient ? p.recipient : p.name}
                                         <button
                                             type="button"
-                                            className="transparent"
+                                            className="dc__transparent"
                                             onClick={(event) => {
                                                 this.removeRecipient(p)
                                             }}

@@ -15,7 +15,7 @@ export function CustomPassword({ name, value, error, onChange, label, disabled =
                 onChange={e => { e.persist(); onChange(e) }}
                 value={value}
                 disabled={disabled} />
-            <button type="button" className="transparent custom-password__show-btn" onClick={(e) => setShowPassword(!showPassword)} style={{bottom: error ? 28 : 7}}>
+            <button type="button" className="dc__transparent custom-password__show-btn" onClick={(e) => setShowPassword(!showPassword)} style={{bottom: error ? 28 : 7}}>
                 <Show className={`icon-dim-24 ${showPassword ? 'icon-n5' : 'icon-n3'}`} />
             </button>
         </div>

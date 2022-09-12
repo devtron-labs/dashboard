@@ -145,7 +145,7 @@ export default function DeploymentHistoryHeader({
         )
     }
     return (
-        <div className="border-bottom pl-20 pr-20 flex left bcn-0">
+        <div className="dc__border-bottom pl-20 pr-20 flex left bcn-0">
             {renderGoBackToConfiguration()}
             {renderCompareDeploymentConfig()}
             {renderBaseDeploymentConfig()}

@@ -12,11 +12,13 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { Routes, SERVER_MODE } from '../../config/constants'
+import { ModuleNameMap, Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -112,7 +114,7 @@ export default function GlobalConfiguration(props) {
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode} />
+                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode}/>
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
@@ -133,6 +135,7 @@ export default function GlobalConfiguration(props) {
 
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
+    const [installedModule, setInstalledModule] = useState([])
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
@@ -145,7 +148,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: HostURLConfiguration,
             isAvailableInEA: false,
         },
-        { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration, isAvailableInEA: false },
+        { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration, moduleName: ModuleNameMap.ARGO_CD },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
             name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
@@ -196,6 +199,18 @@ function NavItem({ hostURLConfig, serverMode }) {
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
+    useEffect(() => {
+        getGitOpsModuleStatus()
+    }, [])
+
+    async function getGitOpsModuleStatus() {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
+            }
+        } catch (error) {}
+    }
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
         return (
             <NavLink
@@ -274,7 +289,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && renderNavItem(route),
+                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
@@ -285,7 +300,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                             <NavLink
                                 key={`nav_item_${index}`}
                                 to={route.href}
-                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
+                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex dc__content-space`}
                                 onClick={(e) => {
                                     handleGroupCollapsedState(e, route)
                                 }}
@@ -550,7 +565,7 @@ export function ProtectedInput({
             <label htmlFor="" className={`form__label ${labelClassName}`}>
                 {label}
             </label>
-            <div className="position-rel w-100">
+            <div className="dc__position-rel w-100">
                 <input
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}

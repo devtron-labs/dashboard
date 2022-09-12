@@ -288,7 +288,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                         <div className="flexbox flex-justify mb-16 w-100">
                             <div className="flex">
                                 <h3 className="graph-modal__title mt-0  mb-0 mr-16">
-                                    <GraphIcon className="mr-8 fcn-7 vertical-align-middle icon-dim-20" />
+                                    <GraphIcon className="mr-8 fcn-7 dc__vertical-align-middle icon-dim-20" />
                                     {ChartNames[this.state.mainChartName]}
                                 </h3>
                                 {this.state.mainChartName === "status" &&
@@ -298,13 +298,13 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                             </div>
                             <div className="flex">
                                 <div className="mr-16">
-                                    <label className="tertiary-tab__radio">
+                                    <label className="dc__tertiary-tab__radio">
                                         <input type="radio" value={'aggregate'} checked={this.state.tab === AppMetricsTab.Aggregate} onChange={this.handleTabChange} />
-                                        <span className="tertiary-tab">Aggregate</span>
+                                        <span className="dc__tertiary-tab">Aggregate</span>
                                     </label>
-                                    <label className="tertiary-tab__radio">
+                                    <label className="dc__tertiary-tab__radio">
                                         <input type="radio" value={'pod'} checked={this.state.tab === AppMetricsTab.Pod} onChange={this.handleTabChange} />
-                                        <span className="tertiary-tab">Per Pod</span>
+                                        <span className="dc__tertiary-tab">Per Pod</span>
                                     </label>
                                 </div>
                                 <DateRangePicker calendar={this.state.calendar}
@@ -324,7 +324,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                     </div>
                 </section>
                 <div className="modal__body-bottom pt-12 pb-12 pl-12 pr-12">
-                    <button className="cta cancel align-right cursor" onClick={this.props.close}>Done</button>
+                    <button className="cta cancel dc__align-right cursor" onClick={this.props.close}>Done</button>
                 </div>
             </div>
         </VisibleModal>

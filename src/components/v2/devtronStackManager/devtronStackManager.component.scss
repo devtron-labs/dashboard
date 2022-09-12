@@ -9,7 +9,6 @@
         position: absolute;
         top: 20px;
         right: 20px;
-        text-transform: uppercase;
 
         &.installing {
             color: var(--B500);
@@ -33,7 +32,6 @@
     }
 
     .module-details__card-icon {
-        width: 56px;
         height: 56px;
     }
 
@@ -52,11 +50,18 @@
             font-weight: 400;
         }
     }
+    &.dependent-module__card {
+        margin-right: 0;
+        width: inherit;
+    }
 }
 
 .module-details__view-container {
     max-width: 960px;
     margin: 0 auto;
+    .module-details__carousel{
+      min-height: 400px;
+    }
 
     .module-details__view-wrapper {
         display: grid;
@@ -66,6 +71,10 @@
         .module-details__feature-wrapper {
             .deploy-chart__readme-markdown {
                 padding: 0;
+            }
+
+            .module-details__feature-icon {
+                height: 56px;
             }
 
             .module-details__feature-heading {
@@ -96,7 +105,7 @@
     .module-details__install-button {
         width: 100%;
         height: 36px;
-        
+
         &.cta {
             text-transform: none;
         }
@@ -109,6 +118,10 @@
             path {
                 fill: none;
             }
+        }
+        &.disabled-state {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     }
     .module-details__installtion-status {
@@ -178,7 +191,7 @@
         text-decoration: none;
 
         a {
-            height: 36px;
+            height: 24px;
 
             &.module-details__help-guide {
                 svg path {

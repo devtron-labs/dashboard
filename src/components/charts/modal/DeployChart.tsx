@@ -13,7 +13,7 @@ import { getChartValuesURL } from '../charts.helper';
 import { styles, menuList, DropdownIndicator } from '../charts.util';
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import ReactSelect, { components } from 'react-select';
 import './DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
@@ -446,7 +446,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         <div className={`deploy-chart-container ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'} ${isUpdate ? '' : 'update_deploy-chart-container_header'}`}>
             <div className="header-container flex column">
                 <div className="title">{chartName}/ {name}</div>
-                <div className="border" />
+                <div className="dc__border" />
             </div>
             <ReadmeColumn readmeCollapsed={readmeCollapsed} toggleReadmeCollapsed={toggleReadmeCollapsed} readme={readme} />
             <div className="deploy-chart-body">
@@ -596,7 +596,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 mode="yaml"
                                 onChange={value => { setTextRef(value) }}>
                                 <CodeEditor.Header>
-                                    <span className="bold">values.yaml</span>
+                                    <span className="dc__bold">values.yaml</span>
                                 </CodeEditor.Header>
                                 {hasChartChanged() &&
                                     <CodeEditor.Information

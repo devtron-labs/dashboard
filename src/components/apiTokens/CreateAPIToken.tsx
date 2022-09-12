@@ -286,7 +286,7 @@ function CreateAPIToken({
                                 {PermissionType.map(({ label, value }) => (
                                     <RadioGroupItem value={value}>
                                         <span
-                                            className={`no-text-transform ${
+                                            className={`dc__no-text-transform ${
                                                 adminPermission === value ? 'fw-6' : 'fw-4'
                                             }`}
                                         >

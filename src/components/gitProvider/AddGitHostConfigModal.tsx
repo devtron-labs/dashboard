@@ -53,7 +53,7 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
         return (<div className=" modal__body modal__body--p-0 ">
             <div className="modal__header pt-20 pl-20 pr-20 ">
                 <h1 className=" modal__title__fs-16 fs-16 fw-6 cn-9">Add git host</h1>
-                <button type="button" className="transparent p-0" onClick={this.props.closeGitConfigModal} >
+                <button type="button" className="dc__transparent p-0" onClick={this.props.closeGitConfigModal} >
                     <Close className="icon-dim-20" />
                 </button>
             </div>

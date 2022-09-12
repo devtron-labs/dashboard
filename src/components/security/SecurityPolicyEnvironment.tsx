@@ -51,7 +51,7 @@ export class SecurityPolicyEnvironment extends Component<RouteComponentProps<{ e
             <tbody>
                 <tr>
                     <td className="security-policy-cluster__title w-100">
-                        <div className="search-with-dropdown">
+                        <div className="dc__search-with-dropdown">
                             <Search className="icon-dim-20 ml-8" />
                             <input type="text" className="search-with-dropdown__search" onChange={this.handleSearchChange} autoFocus placeholder="Search Environment" />
                         </div>

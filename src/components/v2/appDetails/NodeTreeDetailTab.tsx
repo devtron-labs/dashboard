@@ -94,13 +94,13 @@ function NodeTreeDetailTab({
                                         <li
                                             key={index + 'tab'}
                                             id={`${params.nodeType}_${tab.name}`}
-                                            className="flex left ellipsis-right "
+                                            className="flex left dc__ellipsis-right "
                                         >
                                             <Tippy
                                                 className={`${
                                                     tab.name === AppDetailsTabs.log_analyzer ||
                                                     tab.name === AppDetailsTabs.k8s_Resources
-                                                        ? 'hide-section'
+                                                        ? 'dc__hide-section'
                                                         : ''
                                                 } default-tt `}
                                                 arrow={false}
@@ -119,7 +119,7 @@ function NodeTreeDetailTab({
                                                     >
                                                         <NavLink
                                                             to={`${tab.url}`}
-                                                            className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
+                                                            className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor `}
                                                         >
                                                             <div
                                                                 className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
@@ -147,7 +147,7 @@ function NodeTreeDetailTab({
                                                                         tab.name !== AppDetailsTabs.k8s_Resources &&
                                                                         tab.name !== AppDetailsTabs.log_analyzer
                                                                             ? 'mr-8'
-                                                                            : 'ml-8 text-capitalize '
+                                                                            : 'ml-8 dc__capitalize '
                                                                     } fs-12 `}
                                                                 >
                                                                     {tab.name}

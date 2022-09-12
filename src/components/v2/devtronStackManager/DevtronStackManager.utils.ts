@@ -4,7 +4,7 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { URLS } from '../../../config'
+import { ModuleNameMap, URLS } from '../../../config'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
 import {
@@ -104,4 +104,18 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
     }
 
     return currentVersionLevels.length >= newVersionLevels.length ? false : true
+}
+
+export const DEVTRON_UPGRADE_MESSAGE =
+    'Devtron needs to be updated to the latest version before you can install integrations.'
+
+export const PENDING_DEPENDENCY_MESSAGE =
+    'Some pre-requisite integrations need to be installed before you can install this integration. Please intall the pre-requisite integration and come back.'
+
+export const MODULE_CONFIGURATION_DETAIL_MAP = {
+    [ModuleNameMap.ARGO_CD]: {
+        title: 'GitOps is not configured',
+        linkText: 'Configure GitOps',
+        link: URLS.GLOBAL_CONFIG_GITOPS,
+    },
 }

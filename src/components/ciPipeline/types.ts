@@ -431,3 +431,11 @@ export interface WebhookCIProps {
     onWebhookConditionSelectorValueChange: (index: number, value: string) => void
     copyToClipboard: (text: string, callback) => void
 }
+
+export interface BuildType {
+    showFormError: boolean
+    isAdvanced: boolean
+    ciPipelineId: number
+    pageState: string
+    isSecurityModuleInstalled: boolean
+}

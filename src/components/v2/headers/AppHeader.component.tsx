@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { BreadCrumb, useBreadcrumb } from '../../common'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { AppSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { getAppMetaInfo } from '../../app/service'
 import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState'
-import './header.css'
+import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import PageHeader from '../../common/header/PageHeader'
 
@@ -72,7 +72,7 @@ function AppHeaderComponent() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cn-5 fs-16 lowercase">apps</span>,
+                    component: <span className="cn-5 fs-16 dc__lowercase">apps</span>,
                     linked: true,
                 },
             },
@@ -87,7 +87,7 @@ function AppHeaderComponent() {
     const renderHelmDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right fs-13">
+                <li className="tab-list__tab dc__ellipsis-right fs-13">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/env/${envDetails.envId}`}
@@ -122,12 +122,14 @@ function AppHeaderComponent() {
     }
 
     return (
+      <div className="header">
         <PageHeader
             isBreadcrumbs={true}
             breadCrumbs={renderBreadcrumbs}
             showTabs={true}
             renderHeaderTabs={renderHelmDetailsTabs}
         />
+        </div>
     )
 }
 

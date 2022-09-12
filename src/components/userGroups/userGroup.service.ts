@@ -144,9 +144,23 @@ interface UserRole extends ResponseType {
 }
 
 export function getUserRole(): Promise<UserRole> {
-    return get(`user/check/roles`);
+    return get(Routes.USER_CHECK_ROLE);
+}
+export interface UsersDataToExportResponse extends ResponseType {
+    result?: CreateUser[]
+}
+export interface GroupsDataToExportResponse extends ResponseType {
+    result?: CreateGroup[]
 }
 
 export function getEnvironmentListHelmApps(): Promise<any> {
     return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
+}
+
+export function getUsersDataToExport(): Promise<UsersDataToExportResponse> {
+    return get(Routes.ALL_USERS_LIST)
+}
+
+export function getGroupsDataToExport(): Promise<GroupsDataToExportResponse> {
+    return get(Routes.ALL_GROUPS_LIST)
 }

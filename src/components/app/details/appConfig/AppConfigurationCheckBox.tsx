@@ -1,8 +1,8 @@
-import React from 'react';
-import { CustomNavItemsType } from './AppConfig';
+import React from 'react'
+import { CustomNavItemsType } from './appConfig.type'
 
 interface HelpBoxType {
-    selectedNav: CustomNavItemsType;
+    selectedNav: CustomNavItemsType
 }
 
 export default function HelpBox({ selectedNav }: HelpBoxType) {
@@ -15,7 +15,7 @@ export default function HelpBox({ selectedNav }: HelpBoxType) {
             <div className="fs-13 font-weight-600">{selectedNav?.title}</div>
             <div className="need-help font-weight-600">
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={selectedNav?.supportDocumentURL}
                     target="_blank"
                     rel="noreferrer noopener"
@@ -24,5 +24,5 @@ export default function HelpBox({ selectedNav }: HelpBoxType) {
                 </a>
             </div>
         </div>
-    );
+    )
 }

@@ -20,7 +20,7 @@ import { CDMaterial } from './cdMaterial'
 import { URLS, ViewType, SourceTypeMap } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { withRouter, NavLink } from 'react-router-dom'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
@@ -930,7 +930,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     <div className="cn-9 fs-13">
                         Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
                         &nbsp;
-                        <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
                             Review and update
                         </NavLink>
                     </div>

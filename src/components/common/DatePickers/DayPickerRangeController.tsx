@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import CustomizableCalendarDay from "react-dates/lib/components/CustomizableCalendarDay.js";
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import moment, { Moment } from 'moment';
 import { isInclusivelyBeforeDay } from 'react-dates';
 import { DayPickerRangeController } from 'react-dates';
@@ -137,10 +137,10 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                 <p className="mb-16 fw-6">Pick timerange</p>
                 <div>
                     <label className="w-100 mb-16">From
-                    <input type="text" className="block w-100" value={this.props.calendarInputs.startDate} onChange={(event) => { this.props.handleDateInput('startDate', event.target.value) }} />
+                    <input type="text" className="dc__block w-100" value={this.props.calendarInputs.startDate} onChange={(event) => { this.props.handleDateInput('startDate', event.target.value) }} />
                     </label>
                     <label className="w-100 mb-16">To
-                     <input type="text" className="block w-100" value={this.props.calendarInputs.endDate} onChange={(event) => { this.props.handleDateInput('endDate', event.target.value) }} />
+                     <input type="text" className="dc__block w-100" value={this.props.calendarInputs.endDate} onChange={(event) => { this.props.handleDateInput('endDate', event.target.value) }} />
                     </label>
                     <button type="button" className="cta small" onClick={() => { this.setState({ showCalendar: false }); this.props.handleApply() }}>Apply Time Range</button>
                 </div>
@@ -182,7 +182,7 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                 <p className="cursor" style={{ marginBottom: '0', height: '32px', padding: '5px' }}>
                     {this.props.calendarValue}
                 </p>
-                <ArrowDown className="icon-dim-20 inline-block fcn-6" />
+                <ArrowDown className="icon-dim-20 dc__inline-block fcn-6" />
             </div>
             {this.state.showCalendar && (<DayPickerRangeController focused
                 startDate={this.props.calendar.startDate}

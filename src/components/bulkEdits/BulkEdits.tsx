@@ -18,7 +18,7 @@ import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
 import ReactSelect from 'react-select'
 import { DropdownIndicator } from '../charts/charts.util'
-import './bulkEdit.css'
+import './bulkEdit.scss'
 import { multiSelectStyles } from './bulkedit.utils'
 import { Option } from '../../components/v2/common/ReactSelect.utils'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
@@ -40,7 +40,7 @@ const STATUS = {
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
     return (
-        <label className="tertiary-tab__radio flex fs-13">
+        <label className="dc__tertiary-tab__radio flex fs-13">
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
             <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
         </label>
@@ -117,7 +117,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>
                         Run scripts to bulk edit configurations for multiple devtron components.
                         <a
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.BULK_UPDATE}
                             rel="noreferrer noopener"
                             target="_blank"
@@ -221,7 +221,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm">
                 <button
                     type="button"
-                    className="bulk-run-button cta ellipsis-right pl-12 pr-12 flex mr-12 "
+                    className="bulk-run-button cta dc__ellipsis-right pl-12 pr-12 flex mr-12 "
                     onClick={(e) => this.handleRunButton(e)}
                 >
                     <span>
@@ -285,7 +285,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     }}
                 ></CodeEditor>
                 <div className="bulk-output-drawer bcn-0 fs-13">
-                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 border-top border-btm bcn-0">
+                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top border-btm bcn-0">
                         <OutputTabs
                             handleOutputTabs={(e) => this.handleOutputTab(e, 'output')}
                             outputName={this.state.outputName}
@@ -692,7 +692,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkCodeEditor = () => {
         return (
-            <div className="border-right">
+            <div className="dc__border-right">
                 {this.renderCodeEditorHeader()}
                 <div className="code-editor-body">{this.renderCodeEditorBody()}</div>
             </div>

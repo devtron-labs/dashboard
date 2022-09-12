@@ -6,7 +6,7 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing, showError, Toggle } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
-import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType, WebhookCIProps } from '../ciPipeline/types'
+import { BuildType, CiPipelineSourceTypeOption, FormErrorObjectType, FormType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -18,12 +18,8 @@ export function Build({
     isAdvanced,
     ciPipelineId,
     pageState,
-}: {
-    showFormError: boolean
-    isAdvanced: boolean
-    ciPipelineId: number
-    pageState: string
-}) {
+    isSecurityModuleInstalled
+}: BuildType) {
     const {
         formData,
         setFormData,
@@ -234,7 +230,7 @@ export function Build({
                                 <div className="flexbox justify-space" key={`build-${index}`}>
                                     <div className="mt-8 w-100">
                                         <input
-                                            className="w-100 top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                            className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                             autoComplete="off"
                                             placeholder="Key"
                                             type="text"
@@ -244,7 +240,7 @@ export function Build({
                                             }}
                                         />
                                         <textarea
-                                            className="build__value w-100 bottom-radius-4 no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                            className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                             value={arg.value}
                                             onChange={(event) => {
                                                 handleDockerArgChange(event, index, 'value')
@@ -333,7 +329,7 @@ export function Build({
             {renderBasicCI()}
             {isAdvanced && (
                 <>
-                    {renderScanner()}
+                    {isSecurityModuleInstalled && renderScanner()}
                     {renderDockerArgs()}
                 </>
             )}

@@ -245,6 +245,7 @@ export interface ChartValuesViewState {
     invalidaEnvironment: boolean
     invalidProject: boolean
     formValidationError: Record<string, boolean>
+    showNoGitOpsWarning: boolean
 }
 
 export enum ChartValuesViewActionTypes {
@@ -293,6 +294,7 @@ export enum ChartValuesViewActionTypes {
     deploymentHistoryArr = 'deploymentHistoryArr',
     formValidationError = 'formValidationError',
     multipleOptions = 'multipleOptions',
+    showNoGitOpsWarning= 'showNoGitOpsWarning'
 }
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes

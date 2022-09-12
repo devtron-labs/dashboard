@@ -52,7 +52,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
         target.src = placeHolder
     }
 
-    let classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card position-rel`
+    let classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card dc__position-rel`
 
     const addchartTab = (e): void => {
         e.stopPropagation()
@@ -83,7 +83,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
         >
             <div className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}>
                 <LazyImage
-                    className={`${showDescription ? 'list-icon' : ''} dc__chart-grid-item__icon`}
+                    className={`${showDescription ? 'dc__list-icon' : ''} dc__chart-grid-item__icon`}
                     src={chart.icon}
                     onError={handleImageError}
                 />
@@ -108,7 +108,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                         )}
                     >
                         <button
-                            className={'devtron-stepper__item transparent p-0 cursor'}
+                            className={'devtron-stepper__item dc__transparent p-0 cursor'}
                             disabled={selectedCount <= 0}
                             onClick={removeChartTab}
                         >
@@ -131,7 +131,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                             </Tippy>
                         )}
                     >
-                        <button className={'devtron-stepper__item transparent p-0 cursor'} onClick={addchartTab}>
+                        <button className={'devtron-stepper__item dc__transparent p-0 cursor'} onClick={addchartTab}>
                             <Add className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>
@@ -147,7 +147,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                 />
             )}
             <div>
-                <div className="chart-grid-item__title ellipsis-right mb-4">
+                <div className="chart-grid-item__title dc__ellipsis-right mb-4">
                     <span className="chart-grid-item__title-repo">{chart.chart_name}</span>
                     <span>/{chart.name}</span>
                 </div>

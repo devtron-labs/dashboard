@@ -187,9 +187,9 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                 {materials?.map((mat, idx) => {
                     return (
                         <p key={idx} className="deployment-group__repo-list">
-                            <span className="icon-dim-18 git inline-block mr-5"></span>
+                            <span className="icon-dim-18 git dc__inline-block mr-5"></span>
                             <span className="deployment-group__repo-name mr-5"> {mat.name}/</span>
-                            <span className="icon-dim-16 inline-block mr-5">
+                            <span className="icon-dim-16 dc__inline-block mr-5">
                                 {mat.type === SourceTypeMap.BranchFixed ? <Branch className="hw-100" /> : null}
                             </span>
                             <span className="deployment-group__branch-name">{mat.value}</span>
@@ -207,7 +207,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     <Tippy className="default-tt" content="Select Image to deploy">
                         <button
                             type="button"
-                            className="transparent deployment-group__deploy mr-16"
+                            className="dc__transparent deployment-group__deploy mr-16"
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.getCDMaterialList(deploymentGroup)
@@ -217,14 +217,14 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                         </button>
                     </Tippy>
                     <PopupMenu autoClose>
-                        <PopupMenu.Button rootClassName="inline-block" isKebab={true}>
+                        <PopupMenu.Button rootClassName="dc__inline-block" isKebab={true}>
                             <Dots className="bulk-action__action" />
                         </PopupMenu.Button>
                         <PopupMenu.Body>
-                            <ul className="kebab-menu__list">
+                            <ul className="dc__kebab-menu__list">
                                 <li
                                     key="edit"
-                                    className="kebab-menu__list-item"
+                                    className="dc__kebab-menu__list-item"
                                     onClick={(event) => {
                                         this.redirectToEdit(deploymentGroup)
                                     }}
@@ -233,7 +233,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                                 </li>
                                 <li
                                     key="delete"
-                                    className="kebab-menu__list-item kebab-menu__list-item--delete"
+                                    className="dc__kebab-menu__list-item dc__kebab-menu__list-item--delete"
                                     onClick={(event) => {
                                         this.setState(
                                             { deploymentGroupId: deploymentGroup.id, showGroupDeleteModal: true },
@@ -276,6 +276,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     closeCDModal={() => {
                         this.setState({ showCDModal: false })
                     }}
+                    isFromDeploymentGroup={true} // adding this for now as implementation of tabs are not available here. will be fixed in coming sprint
                 />
             )
         }
@@ -339,14 +340,14 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
 function NoDeploymentGroups() {
     return (
-        <div className="no-apps empty-state__no-deploymentgroup">
+        <div className="dc__no-apps dc__empty-state__no-deploymentgroup">
             <div className="empty">
-                <img src={noGroups} width="250" height="200" className="empty__img" alt="no apps found"></img>
-                <h1 className="empty__title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                <img src={noGroups} width="250" height="200" className="dc__empty__img" alt="no apps found"></img>
+                <h1 className="dc__empty-title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                     No Deployment Groups
                 </h1>
-                <p className="empty__message">Use deployment groups to deploy multiple applications at once.</p>
-                <Link to={`${URLS.DEPLOYMENT_GROUPS}/0/edit`} className="cta no-decor cta--create-group flex">
+                <p className="dc__empty__message">Use deployment groups to deploy multiple applications at once.</p>
+                <Link to={`${URLS.DEPLOYMENT_GROUPS}/0/edit`} className="cta dc__no-decor cta--create-group flex">
                     <Add className="icon-dim-20 mr-5" />
                     Create Group
                 </Link>

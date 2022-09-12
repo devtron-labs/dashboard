@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouteMatch, useParams, useHistory } from 'react-router';
 import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
@@ -19,12 +19,12 @@ import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/Exte
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 import { NoPod } from '../../../../app/ResourceTreeNodes';
 
-function NodeComponent({ 
+function NodeComponent({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp
-}: { 
+}: {
     handleFocusTabs: () => void,
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
@@ -32,6 +32,7 @@ function NodeComponent({
 }) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
+    const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
     const [copied, setCopied] = useState(false);
@@ -49,7 +50,7 @@ function NodeComponent({
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp;
-    
+
     useEffect(() => {
         if (externalLinks.length > 0) {
             const _podLevelExternalLinks = []
@@ -140,15 +141,19 @@ function NodeComponent({
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
             if (node.name === nodeName) {
-                node.isSelected = !node.isSelected;
+                node.isSelected = !node.isSelected
+                markedNodes.current.set(
+                    node.name,
+                    markedNodes.current.has(node.name) ? !markedNodes.current.get(node.name) : node.isSelected,
+                )
             } else if (node.childNodes?.length > 0) {
-                markNodeSelected(node.childNodes, nodeName);
+                markNodeSelected(node.childNodes, nodeName)
             }
 
-            return node;
-        });
+            return node
+        })
 
-        return updatedNodes;
+        setSelectedNodes(updatedNodes)
     };
 
     const describeNode = (name: string, containerName: string) => {
@@ -180,28 +185,34 @@ function NodeComponent({
     };
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
+        let _currentNodeHeader = ''
         return nodes.map((node, index) => {
-            const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
+            const nodeName = `${node.name}.${node.namespace} : { portnumber }`
+            const _isSelected = markedNodes.current.get(node.name)
+
+            // Only render node kind header when it's the first node or it's a different kind header
+            _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+
             return (
                 <React.Fragment key={'grt' + index}>
-                    {showHeader && (
-                        <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
+                    {showHeader && !!_currentNodeHeader && (
+                        <div className="fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
                             <span>{node.kind}</span>
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
-                            <div className="flex align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
+                            <div className="flex dc__align-start">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
-                                        setSelectedNodes(markNodeSelected(selectedNodes, node.name));
+                                        markNodeSelected(selectedNodes, node.name);
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
                                         <DropDown
-                                            className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
                                         />
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
@@ -308,7 +319,7 @@ function NodeComponent({
                         </div>
                     </div>
 
-                    {node.childNodes?.length > 0 && node.isSelected && (
+                    {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
@@ -321,14 +332,12 @@ function NodeComponent({
     return (
         <>
             {selectedNodes && (
-                <div
-                    className="node-container-fluid"
-                >
+                <div className="node-container-fluid">
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
-                            <div className="pl-16 fw-6 fs-14 text-capitalize">
+                        <div className="node-detail__sticky-header dc__border-bottom-n1 pt-10 pb-10">
+                            <div className="pl-16 fw-6 fs-14 dc__capitalize">
                                 <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                                 <span>({selectedNodes?.length})</span>
                             </div>
@@ -338,7 +347,7 @@ function NodeComponent({
                         </div>
                     )}
 
-                    <div className="node-row border-bottom fw-6 m-0">
+                    <div className="node-row dc__border-bottom-n1 fw-6 m-0">
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div
@@ -352,7 +361,11 @@ function NodeComponent({
                             )
                         })}
                     </div>
-
+                    {params.nodeType === NodeType.Pod.toLowerCase() && containerLevelExternalLinks.length > 0 && (
+                        <div className="fs-12 fw-4 cn-9 bcn-1 lh-16 pt-4 pb-4 pl-32 pr-32">
+                            Expand pods to view external links for containers.
+                        </div>
+                    )}
                     {selectedNodes.length > 0 ? (
                         makeNodeTree(selectedNodes)
                     ) : (

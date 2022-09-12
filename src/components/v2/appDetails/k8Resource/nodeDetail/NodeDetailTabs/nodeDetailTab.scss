@@ -120,7 +120,7 @@
 .cancel-change {
     line-height: 16px;
     border-radius: 4px;
-    border: solid 1px #d0d4d9;
+    border: solid 1px var(--N200);
     font-size: 12px;
     background-color: #ffffff;
     color: #0b0f22;
@@ -135,9 +135,6 @@
     font-family: monospace;
     font-size: 13px;
     margin: 8px;
-    .capitalize {
-        text-transform: capitalize;
-    }
     .cell-style {
         padding: 8px 10px;
         border: none;

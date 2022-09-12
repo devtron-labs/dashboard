@@ -18,6 +18,11 @@ export interface CDMaterialProps {
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
+    isFromDeploymentGroup?: boolean
+}
+
+export interface CDMaterialState{
+  isSecurityModuleInstalled: boolean
 }
 
 export interface CDMaterialType {
@@ -468,4 +473,7 @@ export interface BranchRegexModalProps {
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
+}
+export interface AppDetailsProps {
+    isV2: boolean
 }

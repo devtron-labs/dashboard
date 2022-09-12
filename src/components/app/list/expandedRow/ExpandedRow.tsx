@@ -27,7 +27,7 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                 <div className="app-list__cell app-list__cell--time">
                     {env.lastDeployedTime &&
                         <Tippy className="default-tt" arrow={true} placement="top" content={env.lastDeployedTime}>
-                            <p className="truncate-text m-0">{handleUTCTime(env.lastDeployedTime, true)}</p>
+                            <p className="dc__truncate-text  m-0">{handleUTCTime(env.lastDeployedTime, true)}</p>
                         </Tippy>
                     }
                 </div>
