@@ -122,7 +122,7 @@ function AppHeaderComponent() {
     }
 
     return (
-      <div className="header">
+      <div className="app-header-wrapper">
         <PageHeader
             isBreadcrumbs={true}
             breadCrumbs={renderBreadcrumbs}

@@ -78,7 +78,7 @@ function EAHeaderComponent() {
         )
     }
     return (
-        <div className="header helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
+        <div className="app-header-wrapper helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}
