@@ -7,7 +7,7 @@ import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-med
 export const Option = props => {
     const { selectOption, data } = props
     return (
-        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}>
+        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             <input checked={props.isSelected} onChange={e => selectOption(data)} type="checkbox" style={{ height: '16px', width: '16px', flex: '0 0 16px' }} className="mr-8" />
             <components.Option {...props} />
         </div>
@@ -19,7 +19,7 @@ export const SingleSelectOption = (props) => {
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
     const onClick = (e) => selectOption(data);
     return (
-        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}>
+        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             {props.isSelected ? (
                 <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
             ) : (

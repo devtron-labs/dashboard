@@ -111,7 +111,7 @@ function EnvironmentSelectorComponent() {
                                         control: (base, state) => ({
                                             ...base,
                                             border: '0px',
-                                            backgroundColor: 'dc__transparent',
+                                            backgroundColor: 'transparent',
                                             minHeight: '24px !important',
                                         }),
                                         singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),

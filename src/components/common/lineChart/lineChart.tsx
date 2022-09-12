@@ -154,9 +154,9 @@ export default class LineChart extends Component<LineChartProps>{
             .attr("y", 0)
             .attr("width", function (data) { return data.width })
             .attr("height", height)
-            .attr("stroke", "dc__transparent")
+            .attr("stroke", "transparent")
             .attr("stroke-opacity", "1")
-            .attr("fill", "dc__transparent")
+            .attr("fill", "transparent")
 
         hoverElement.append("circle")
             .attr("cx", function (d, i) { return xScale(d.time) })

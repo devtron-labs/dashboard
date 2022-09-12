@@ -375,7 +375,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             <div
                 onClick={(e) => selectOption(data)}
                 className="flex left pl-12"
-                style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}
+                style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
             >
                 {!data.__isNew__ && (
                     <input
