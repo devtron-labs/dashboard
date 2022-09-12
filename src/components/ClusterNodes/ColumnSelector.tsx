@@ -94,7 +94,7 @@ export default function ColumnSelector() {
     }
     return (
         <ReactSelect
-            menuIsOpen={true}
+            menuIsOpen={isMenuOpen}
             name="columns"
             value={selectedColumns}
             options={columnOptions}
