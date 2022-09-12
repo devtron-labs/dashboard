@@ -7,7 +7,7 @@ import { ChartSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
 import { get } from '../../../services/api'
 import { handleUTCTime } from '../../common'
-import './header.css'
+import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import PageHeader from '../../common/header/PageHeader'
 
@@ -135,7 +135,7 @@ function ChartHeaderComponent() {
     }
 
     return (
-        <div className="helm-app-page-header">
+        <div className="header helm-app-page-header">
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}

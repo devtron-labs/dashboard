@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom'
 import { URLS, AppListConstants } from '../../../config'
 import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch, useHistory } from 'react-router'
-import './header.css'
+import './header.scss'
 import PageHeader from '../../common/header/PageHeader'
 
 function EAHeaderComponent() {
@@ -78,7 +78,7 @@ function EAHeaderComponent() {
         )
     }
     return (
-        <div className="helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
+        <div className="header helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}

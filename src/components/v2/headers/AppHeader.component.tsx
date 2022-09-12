@@ -8,7 +8,7 @@ import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 
 import { getAppMetaInfo } from '../../app/service'
 import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState'
-import './header.css'
+import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import PageHeader from '../../common/header/PageHeader'
 
@@ -122,12 +122,14 @@ function AppHeaderComponent() {
     }
 
     return (
+      <div className="header">
         <PageHeader
             isBreadcrumbs={true}
             breadCrumbs={renderBreadcrumbs}
             showTabs={true}
             renderHeaderTabs={renderHelmDetailsTabs}
         />
+        </div>
     )
 }
 
