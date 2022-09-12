@@ -583,13 +583,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             </label>
                             <div className="docker-flie-container">
                                 <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={selectedMaterial.checkoutPath}
-                            >
-                                <span className="checkout-path-container bcn-1 en-2 bw-1 no-right-border">{selectedMaterial.checkoutPath}</span>
-                            </Tippy>
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={selectedMaterial.checkoutPath}
+                                >
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 no-right-border ellipsis-right">{selectedMaterial.checkoutPath}</span>
+                                </Tippy>
 
                                 <input
                                     tabIndex={4}
