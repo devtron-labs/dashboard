@@ -392,6 +392,7 @@ function NoCDTriggersView({ environmentName }) {
 function Logs({ triggerDetails, isBlobStorageConfigured }) {
     const eventSrcRef = useRef(null)
     const [logs, setLogs] = useState([])
+    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const counter = useRef(0)
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
 
@@ -421,7 +422,10 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
                     counter.current += 1
                 }
             })
-            eventSrcRef.current.addEventListener('error', (event: any) => {})
+            eventSrcRef.current.addEventListener('error', (event: any) => {
+              eventSrcRef.current.close()
+              setLogsNotAvailableError(true)
+            })
           }
         }
         getLogs()
@@ -431,7 +435,7 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
     }, [triggerDetails.id, pipelineId])
 
     if (!triggerDetails) return null
-    return !isBlobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
+    return logsNotAvailableError && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
       renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <>
