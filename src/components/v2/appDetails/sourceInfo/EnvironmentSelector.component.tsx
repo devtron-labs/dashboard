@@ -137,7 +137,7 @@ function EnvironmentSelectorComponent() {
                             )}
                         </div>
                     </div>
-                    <Tippy
+                    {appDetails?.deploymentAppType && <Tippy
                         className="default-tt"
                         arrow={false}
                         placement="top"
@@ -150,7 +150,7 @@ function EnvironmentSelectorComponent() {
                         ) : (
                             <Helm className="icon-dim-32 ml-16" />
                         )}
-                    </Tippy>
+                    </Tippy>}
                 </div>
             </div>
             {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (

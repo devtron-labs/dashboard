@@ -1,11 +1,10 @@
 import { get, post } from './api';
-import { ACCESS_TYPE_MAP, Routes } from '../config';
+import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
-import { ModuleNameMap } from '../components/v2/devtronStackManager/DevtronStackManager.utils';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
