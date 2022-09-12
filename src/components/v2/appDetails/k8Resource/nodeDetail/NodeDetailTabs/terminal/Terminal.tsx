@@ -337,7 +337,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                             <button
                                 type="button"
                                 onClick={onClickResume}
-                                className="cursor transparent dc__inline-block dc__underline"
+                                className="cursor dc_transparent dc__inline-block dc__underline"
                             >
                                 Resume
                             </button>
