@@ -110,7 +110,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     renderBlankHostField() {
         return <div className="flex left pt-4">
             <img src={TriangleAlert} alt="" className="icon-dim-16 mr-8" />
-            <div className="dc__deprecated-warn__text fs-11">Please enter host url</div>
+            <div className="dc__deprecated-warn-text fs-11">Please enter host url</div>
         </div>
     }
 

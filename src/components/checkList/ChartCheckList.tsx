@@ -17,9 +17,9 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                     <div className="fs-14">To deploy chart</div>
                 </div>
                 <div className="fs-13">
-                    {!this.props.chartChecklist.project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="dc__no-decor  mt-8 flex left" style={{ ['color']: project ? `#767d84` : `#0066cc` }}>
+                    {!this.props.chartChecklist.project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="dc__no-decor  mt-8 flex left" style={{ ['color']: project ? `var(--N500)` : `var(--B500)` }}>
                     Add project</NavLink>}
-                    {!this.props.chartChecklist.environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="dc__no-decor mt-8 pb-8 flex left" style={{ ['color']: environment ? `#767d84` : `#0066cc` }}>
+                    {!this.props.chartChecklist.environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="dc__no-decor mt-8 pb-8 flex left" style={{ ['color']: environment ? `var(--N500)` : `var(--B500)` }}>
                     Add cluster & environment</NavLink>}
                 </div>
             </>

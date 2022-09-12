@@ -298,10 +298,6 @@
     border-bottom: 1px solid var(--N100);
 }
 
-.dc__uppercase {
-    text-transform: uppercase;
-}
-
 .no-border {
     border: none;
     display: inline-block;

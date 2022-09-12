@@ -106,7 +106,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
                                 <div>{payload.failedFiltersCount}</div>
-                                <div className={payload.matchedFilters == false ? `dc__deprecated-warn__text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
+                                <div className={payload.matchedFilters == false ? `dc__deprecated-warn-text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
                             </div>
                         )}
                     </>}
@@ -168,7 +168,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div >{selectedData?.selectorName}</div>
                                 <div>{selectedData?.selectorValue}</div>
                                 <div>{selectedData?.selectorCondition}</div>
-                                <div className={selectedData?.match == false ? `dc__deprecated-warn__text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
+                                <div className={selectedData?.match == false ? `dc__deprecated-warn-text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
                             </div>
                         })}
                     </div>

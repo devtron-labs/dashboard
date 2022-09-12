@@ -43,17 +43,15 @@
     border-top: 1px solid var(--N200);
 }
 
-.dc__border-right {
-    border-right: 1px solid var(--N200);
-}
-
 .bulk-output-drawer {
     height: 280px;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .tertiary-output-tab {
-    color: var(--B500);
-    border-bottom: solid 2px var(--B500);
+.bulk-output-drawer {
+    .dc__tertiary-tab__radio input:checked ~ .tertiary-output-tab {
+        color: var(--B500);
+        border-bottom: solid 2px var(--B500);
+    }
 }
 
 .height {

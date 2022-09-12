@@ -343,7 +343,7 @@ function NoDeploymentGroups() {
         <div className="dc__no-apps dc__empty-state__no-deploymentgroup">
             <div className="empty">
                 <img src={noGroups} width="250" height="200" className="dc__empty__img" alt="no apps found"></img>
-                <h1 className="dc__empty__title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                <h1 className="dc__empty-title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                     No Deployment Groups
                 </h1>
                 <p className="dc__empty__message">Use deployment groups to deploy multiple applications at once.</p>
