@@ -829,7 +829,6 @@ const HistoryLogs: React.FC<{
                                 <Artifacts
                                     triggerDetails={triggerDetails}
                                     getArtifactPromise={() => getArtifact(pipelineId, buildId)}
-                                    isBlobStorageConfigured={isBlobStorageConfigured}
                                 />
                             )}
                         />
@@ -1053,10 +1052,9 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
     )
 }
 
-export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any>, isBlobStorageConfigured: boolean }> = ({
+export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any>}> = ({
     triggerDetails,
-    getArtifactPromise,
-    isBlobStorageConfigured
+    getArtifactPromise
 }) => {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [downloading, setDownloading] = useState(false)
@@ -1108,7 +1106,7 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                     </div>
                 </div>
             </CIListItem>
-            {isBlobStorageConfigured && triggerDetails.blobStorageEnabled && getArtifactPromise && (
+            {triggerDetails.blobStorageEnabled && getArtifactPromise && (
                 <CIListItem type="report">
                     <div className="flex column left">
                         <div className="cn-9 fs-14">Reports.zip</div>
