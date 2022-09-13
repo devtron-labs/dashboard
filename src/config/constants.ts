@@ -552,4 +552,5 @@ export const ModuleNameMap = {
   CICD: 'cicd',
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
+  GRAFANA: 'monitoring.grafana'
 }
