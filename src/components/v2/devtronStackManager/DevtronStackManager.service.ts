@@ -1,4 +1,4 @@
-import { FullRoutes, Routes } from '../../../config'
+import { Routes } from '../../../config'
 import { get, post } from '../../../services/api'
 import {
     AllModuleInfoResponse,
@@ -30,11 +30,11 @@ export const executeServerAction = (serverActionRequest: ModuleActionRequest): P
 }
 
 export const getAllModules = (): Promise<AllModuleInfoResponse> => {
-    return fetch(`${FullRoutes.CENTRAL}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) => res.json())
+    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) => res.json())
 }
 
 export const getReleasesNotes = (): Promise<ReleaseNotesResponse> => {
-    return fetch(`${FullRoutes.CENTRAL}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
+    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
 }
 
 export const getLogPodName = (): Promise<LogPodNameResponse> => {
