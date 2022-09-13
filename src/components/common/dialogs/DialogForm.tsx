@@ -49,7 +49,7 @@ export class DialogForm extends Component<DialogFormProps> {
                     <div className={`modal__body ${this.props.className || ''}`}>
                         <div className={`modal__header ${this.props.headerClassName || ''}`}>
                             <h1 className="modal__title">{this.props.title}</h1>
-                            <button type="button" className="transparent" onClick={this.props.close}>
+                            <button type="button" className="dc__transparent" onClick={this.props.close}>
                                 {' '}
                                 <img src={close} alt="close" />
                             </button>
@@ -84,7 +84,7 @@ export class DialogFormSubmit extends Component<{ tabIndex: number }> {
             <DialogFormContext.Consumer>
                 {(context) => {
                     return (
-                        <button type="submit" className="cta align-right" tabIndex={this.props.tabIndex}>
+                        <button type="submit" className="cta dc__align-right" tabIndex={this.props.tabIndex}>
                             {context.isLoading ? <Progressing /> : this.props.children}
                         </button>
                     );

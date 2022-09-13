@@ -83,7 +83,7 @@ export default function CustomChartList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
+            <a className="dc__no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
                 Learn more
             </a>
         )
@@ -96,12 +96,12 @@ export default function CustomChartList() {
                     {subtitleText}&nbsp;
                     {renderLearnMoreLink()}
                 </p>
-                <div className="flexbox content-space">
+                <div className="flexbox dc__content-space">
                     {renderUploadButton()}
                     {false && (
                         <form
                             onSubmit={(e) => handleFilterChanges(e, 'search')}
-                            className="search position-rel margin-right-0 en-2 bw-1 br-4"
+                            className="search dc__position-rel margin-right-0 en-2 bw-1 br-4"
                         >
                             <Search className="search__icon icon-dim-18" />
                             <input
@@ -119,7 +119,7 @@ export default function CustomChartList() {
                                     type="button"
                                     onClick={(e) => handleFilterChanges(e, 'clear')}
                                 >
-                                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                    <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                                 </button>
                             ) : null}
                         </form>
@@ -153,15 +153,15 @@ export default function CustomChartList() {
                 <div className="cn-9 fw-6 fs-16">Custom charts</div>
                 {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
-                    <div className="chart-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 text-uppercase">
+                    <div className="chart-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                         <div>Name</div>
                         <div>Version</div>
                         <div>Description</div>
                     </div>
                     {chartList?.map((chartData) => (
-                        <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
+                        <div className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
                             <div className="flexbox">
-                                <span className="cn-9">{chartData.name}</span>
+                                <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
                             </div>
                             <div>
                                 {chartData.version}
@@ -169,7 +169,7 @@ export default function CustomChartList() {
                                     {chartData.count > 0 ? `+${chartData.count} more` : ''}
                                 </span>
                             </div>
-                            <div className="ellipsis-right">{chartData.chartDescription}</div>
+                            <div className="dc__ellipsis-right">{chartData.chartDescription}</div>
                         </div>
                     ))}
                 </div>

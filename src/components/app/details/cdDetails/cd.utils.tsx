@@ -1,7 +1,7 @@
 import React from 'react'
 import { components } from 'react-select'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-filled.svg'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { DOCUMENTATION } from '../../../../config'
 import { multiSelectStyles } from '../../../common'
@@ -52,14 +52,14 @@ export function Option(props) {
         <components.Option {...props}>
             <div className={`flex left pt-8 pb-8 pl-8 pr-8 ${props.isSelected ? 'bcb-1' : ''}`}>
                 <div
-                    className={`app-summary__icon icon-dim-22 ${props.data.status
+                    className={`dc__app-summary__icon icon-dim-22 ${props.data.status
                         .toLocaleLowerCase()
                         .replace(/\s+/g, '')} mr-8`}
                 ></div>
                 <div>
                     <div className="cn-9 fs-13"> {props.label}</div>
                     <div className="cn-7 flex left">
-                        <span className="text-capitalize">Deploy</span> <div className="bullet ml-4 bullet--d2 mr-4" />{' '}
+                        <span className="dc__capitalize">Deploy</span> <div className="dc__bullet ml-4 dc__bullet--d2 mr-4" />{' '}
                         {props.data.author === 'system' ? 'auto-triggered' : props.data.author}
                     </div>
                 </div>
@@ -67,8 +67,6 @@ export function Option(props) {
         </components.Option>
     )
 }
-
-
 
 const renderLogsNotAvailable = (subtitle?: string): JSX.Element => {
   return (
@@ -87,7 +85,7 @@ const renderBlobNotConfigured = (): JSX.Element => {
       <>
           {renderLogsNotAvailable('Logs are available only at runtime.')}
           <div className="flexbox configure-blob-container pt-8 pr-12 pb-8 pl-12 bcv-1 br-4">
-              <Question className="icon-dim-20" />
+              <Question className="icon-dim-20 fcv-5" />
               <span className="fs-13 fw-4 mr-8 ml-8">Want to store logs to view later?</span>
               <a className="fs-13 fw-6 cb-5 no-decor" href={DOCUMENTATION.ADMIN_PASSWORD} target="_blank">
                   Configure blob storage

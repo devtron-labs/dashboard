@@ -160,10 +160,6 @@
     margin-right: 10px;
 }
 
-.info__container.info__container--linked-ci {
-    margin-bottom: 16px;
-}
-
 .script-container {
     border: 1px solid #d6dbdf;
     padding: 8px 0;
@@ -300,10 +296,6 @@
 
 .sidebar-action-container-border {
     border-bottom: 1px solid var(--N100);
-}
-
-.text-uppercase {
-    text-transform: uppercase;
 }
 
 .no-border {

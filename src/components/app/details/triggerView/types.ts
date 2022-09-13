@@ -90,7 +90,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
 export interface CIMaterialState {
     regexValue: Record<number, { value: string; isInvalid: boolean }>
     selectedCIPipeline?: any
-    isBobStorageConfigured?: boolean
+    isBlobStorageConfigured?: boolean
 }
 
 export interface NodeAttr {

@@ -433,7 +433,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             </Select.Button>
                             {this.state[emailConfigAgentOptions].map((config) => (
                                 <Select.Option key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
-                                    <span className="ellipsis-left">{config.configName}</span>
+                                    <span className="dc__ellipsis-left">{config.configName}</span>
                                 </Select.Option>
                             ))}
                             <div className="select__sticky-bottom" onClick={this.openAddEmailConfigPopup}>
@@ -506,21 +506,21 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             }
         }
         return (
-            <div className="position-rel">
+            <div className="dc__position-rel">
                 <div
                     className="form__input pipeline-filter__select-pipeline"
                     onClick={() => this.setState({ openSelectPipeline: true })}
                 >
-                    <Filter className="icon-dim-20 mr-5 vertical-align-middle" />
+                    <Filter className="icon-dim-20 mr-5 dc__vertical-align-middle" />
                     {this.state.appliedFilters
                         .filter((p) => p.value)
                         .map((p) => {
                             return (
-                                <span key={p.label} className="devtron-tag m-2">
+                                <span key={p.label} className="dc__devtron-tag m-2">
                                     {`${p.type}:${' '}${p.label}`}
                                     <button
                                         type="button"
-                                        className="transparent ml-5"
+                                        className="dc__transparent ml-5"
                                         onClick={(event) => this.clearFilter(p)}
                                     >
                                         <i className="fa fa-times-circle" aria-hidden="true"></i>
@@ -533,7 +533,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         <input
                             autoComplete="off"
                             type="text"
-                            className="pipeline-filter__search transparent flex-1"
+                            className="pipeline-filter__search dc__transparent flex-1"
                             autoFocus
                             onKeyDown={this.handleFilterTag}
                             placeholder={
@@ -551,7 +551,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     )}
                 </div>
                 {this.state.openSelectPipeline ? (
-                    <div className="transparent-div" onClick={this.toggleSelectPipeline}></div>
+                    <div className="dc__transparent-div" onClick={this.toggleSelectPipeline}></div>
                 ) : null}
                 {this.state.openSelectPipeline ? (
                     options.length > 0 ? (
@@ -599,8 +599,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         } else if (!this.state.pipelineList.length) {
             return (
                 <div className="pipeline-list__empty-state">
-                    <Folder className="block margin-auto" />
-                    <p className="empty__subtitle margin-auto">Apply filters to find matching pipelines</p>
+                    <Folder className="dc__block dc__m-auto" />
+                    <p className="dc__empty__subtitle dc__m-auto">Apply filters to find matching pipelines</p>
                 </div>
             )
         } else {
@@ -613,7 +613,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
                             <th className="pipeline-list__type fw-6">Type</th>
                             <th className="pipeline-list__environment fw-6">Env/Branch</th>
-                            <th className="pipeline-list__stages block fw-6">Events</th>
+                            <th className="pipeline-list__stages dc__block fw-6">Events</th>
                         </tr>
                         {this.state.pipelineList.map((row, rowIndex) => {
                             let _isCi = row.branch && row.type === 'CI'
@@ -645,10 +645,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         {row.appliedFilters.length ? (
                                             <>
                                                 <i>All current and future pipelines matching.</i>
-                                                <div className="devtron-tag__container">
+                                                <div className="dc__devtron-tag__container">
                                                     {row.appliedFilters.map((e) => {
                                                         return (
-                                                            <span key={e.type + e.name} className="devtron-tag m-2">
+                                                            <span key={e.type + e.name} className="dc__devtron-tag m-2">
                                                                 {e?.type}: {e?.name}
                                                             </span>
                                                         )
@@ -804,7 +804,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 <div className="form__button-group-bottom flex right">
                     <Link
                         to={`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`}
-                        className="cta cancel mr-16 no-decor"
+                        className="cta cancel mr-16 dc__no-decor"
                         tabIndex={8}
                     >
                         Cancel

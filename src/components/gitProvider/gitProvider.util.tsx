@@ -45,4 +45,4 @@ export function DropdownIndicator(props) {
     return <components.DropdownIndicator {...props}>
         <ArrowDown className="icon-dim-20 icon-n5" />
     </components.DropdownIndicator>
-} 
+}

@@ -51,10 +51,10 @@ function RegeneratedModal({
 
     const renderModalHeader = () => {
         return (
-            <div className="modal__header p-16 border-bottom w-100 mb-0">
-                <h2 className="modal__title fs-16 flex content-space w-100">
+            <div className="modal__header p-16 dc__border-bottom w-100 mb-0">
+                <h2 className="modal__title fs-16 flex dc__content-space w-100">
                     <span>Regenerate API token</span>
-                    <button type="button" className=" transparent" onClick={close}>
+                    <button type="button" className=" dc__transparent" onClick={close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </h2>

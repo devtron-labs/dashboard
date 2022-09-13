@@ -26,11 +26,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
-            return <div className="cd-trigger-status" style={{ color: statusColor[status] }}>
+            return <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
                 <span>{this.props.status}</span>
             </div>
-        else return <div className="cd-trigger-status" style={{ color: statusColor[status] }}>
-            <span className={`cd-trigger-status__icon ${statusIcon[status]}`}></span>
+        else return <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+            <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`}></span>
             <span>{this.props.status}</span>
             <span className="mr-5 ml-5">/</span>
             <Link to={url} className="workflow-node__details-link">Details</Link>
@@ -47,7 +47,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
                             <div className="workflow-node__full-width-minus-Icon">
                                 <span className="workflow-node__text-light">Deploy: {this.props.deploymentStrategy}</span>
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.environmentName}>
-                                    <span className="ellipsis-right" >{this.props.environmentName}</span>
+                                    <span className="dc__ellipsis-right" >{this.props.environmentName}</span>
                                 </Tippy>
                             </div>
                             <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon"/>
@@ -56,7 +56,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
                         <div className="workflow-node__btn-grp">
                             <Tippy className="default-tt" arrow={true} placement="bottom" content={"Rollback"}>
                                 <button className="workflow-node__rollback-btn" onClick={(event) => context.onClickRollbackMaterial(this.props.id)}>
-                                    <Rollback className="icon-dim-20 vertical-align-middle" />
+                                    <Rollback className="icon-dim-20 dc__vertical-align-middle" />
                                 </button>
                             </Tippy>
                             <button className="workflow-node__deploy-btn" onClick={(event) => { event.stopPropagation(); context.onClickCDMaterial(this.props.id, this.props.type) }}>Select Image</button>

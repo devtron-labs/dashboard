@@ -42,7 +42,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
 }: MsgUIProps) => {
     return (
         <div
-            className={`text-center ${theme || 'dark'}-background w-100 `}
+            className={`dc__text-center ${theme || 'dark'}-background w-100 `}
             style={{ paddingTop: '200px', minHeight: '600px', flex: '1', ...bodyStyle }}
         >
             <div>
@@ -77,12 +77,9 @@ const MessageUI: React.FC<MsgUIProps> = ({
             </div>
             {isShowActionButton && (
                 <div
-                    className="cursor"
+                    className="cursor dc__underline fs-14 cb-3"
                     onClick={onActionButtonClick}
                     style={{
-                        fontSize: '14px',
-                        textDecoration: 'underline',
-                        color: 'var(--B300)',
                         ...actionButtonStyle,
                     }}
                 >

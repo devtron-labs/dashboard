@@ -166,7 +166,7 @@ const MenuList = (props: any): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
-            <div className="flex react-select__bottom bcn-0 p-8">
+            <div className="flex dc__react-select__bottom bcn-0 p-8">
                 <button className="flex cta apply-filter" onClick={props.handleFilterQueryChanges}>
                     Apply Filter
                 </button>
@@ -222,7 +222,7 @@ export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.
             />
             {searchApplied && (
                 <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                    <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                 </button>
             )}
         </div>
@@ -275,7 +275,7 @@ export const NoMatchingResults = (): JSX.Element => {
 const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">{option.label}</span>
+            <span className="w-100 dc__ellipsis-right">{option.label}</span>
             {option.value === '*' && (
                 <>
                     <small className="cn-6">All existing and future clusters</small>
@@ -289,7 +289,7 @@ const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
 const getErrorLabel = (field: string): JSX.Element => {
     const errorLabel = (label: string): JSX.Element => {
         return (
-            <div className="error-label flex left align-start fs-11 mt-4">
+            <div className="error-label flex left dc__align-start fs-11 mt-4">
                 <div className="error-label-icon">
                     <Error className="icon-dim-20" />
                 </div>
@@ -326,7 +326,7 @@ const customOption = (data: OptionTypeWithIcon, className = '') => {
                 }}
                 onError={onImageLoadError}
             />
-            <span className="ellipsis-right">{data.label}</span>
+            <span className="dc__ellipsis-right">{data.label}</span>
         </div>
     )
 }
@@ -782,7 +782,7 @@ export const AddExternalLinkDialog = ({
                     <h3 className="modal__title fs-16">{selectedLink ? 'Update link' : 'Add link'}</h3>
                     <button
                         type="button"
-                        className={`transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
+                        className={`dc__transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
                         onClick={handleDialogVisibility}
                         disabled={savingLinks}
                     >
@@ -875,7 +875,7 @@ export const AppliedFilterChips = ({
     }
 
     return (
-        <div className="saved-filters__wrap position-rel pl-0 pr-20 mb-10">
+        <div className="saved-filters__wrap dc__position-rel pl-0 pr-20 mb-10">
             {appliedClusters.map((filter) => {
                 return (
                     <div key={filter.label} className="saved-filter">
@@ -943,7 +943,7 @@ export const AppLevelExternalLinks = ({
                     className="external-link-chip flex left br-4"
                 >
                     <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
-                    <span className="ellipsis-right">{linkOption.label}</span>
+                    <span className="dc__ellipsis-right">{linkOption.label}</span>
                 </a>
             </Tippy>
         )
@@ -983,7 +983,7 @@ export const NodeLevelExternalLinks = ({
                     className="external-link-option flex left br-4"
                 >
                     <img src={data.icon} alt={data.label} onError={onImageLoadError} />
-                    <span className="ellipsis-right">{data.label}</span>
+                    <span className="dc__ellipsis-right">{data.label}</span>
                 </a>
             </Tippy>
         )

@@ -436,7 +436,7 @@ function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer })
                 <span className={`status testcase-status ${testCaseDetail?.status || ''}`}>
                     {testCaseDetail?.status}
                 </span>
-                <h1 className="ellipsis-right">{testCaseDetail?.name || 'unnamed'}</h1>
+                <h1 className="dc__ellipsis-right">{testCaseDetail?.name || 'unnamed'}</h1>
                 <Cross className="pointer" onClick={handleClose} />
             </div>
             <div className="testcase--body">

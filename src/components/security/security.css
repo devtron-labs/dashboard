@@ -5,7 +5,7 @@
     top: 0;
 }
 
-.search-with-dropdown {
+.dc__search-with-dropdown {
     width: 100%;
     border: solid 1px var(--N200);
     display: flex;
@@ -44,7 +44,7 @@
     justify-content: space-between;
 }
 
-.security-scan__filter {
+.dc__security-scan__filter {
     width: 155px;
     height: 36px;
     margin-right: 12px;
@@ -54,7 +54,7 @@
     width: 185px;
 }
 
-.security-scan__filter:last-child {
+.dc__security-scan__filter:last-child {
     margin-right: 0px;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .table__row-head {
-    border-bottom: 1px solid #d0d4d9;
+    border-bottom: 1px solid var(--N200);
 }
 
 .table__row {
@@ -290,7 +290,7 @@
 }
 
 .vulnerability-exp-table__title {
-    border-bottom: 1px solid #d0d4d9;
+    border-bottom: 1px solid var(--N200);
     cursor: default;
     width: 30%;
     text-transform: uppercase;

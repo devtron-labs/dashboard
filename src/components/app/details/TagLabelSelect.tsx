@@ -20,7 +20,7 @@ export default function TagLabelSelect({ validateTags, labelTags, onInputChange,
         },
         control: (base, state) => ({
             ...base,
-            border: state.isFocused ? '1px solid #06c' : '1px solid #d0d4d9', // default border color
+            border: state.isFocused ? '1px solid #06c' : '1px solid var(--N200)', // default border color
             boxShadow: 'none', // no box-shadow
             minHeight: '72px',
             alignItems: "end",

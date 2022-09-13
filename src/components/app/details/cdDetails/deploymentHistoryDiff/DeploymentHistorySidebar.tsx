@@ -26,7 +26,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
                 <NavLink
                     to={configURL}
                     activeClassName="active"
-                    className="historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280"
+                    className="historical-name dc__inline-block dc__no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280"
                 >
                     {currentComponent.DISPLAY_NAME + childComponentDetail}
                 </NavLink>
@@ -35,7 +35,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
     }
 
     return (
-        <div className="pt-8 pb-8 bcn-0 border-right h-100">
+        <div className="pt-8 pb-8 bcn-0 dc__border-right h-100">
             {deploymentHistoryList?.map((historicalComponent, index) => {
                 return historicalComponent.childList?.length > 0
                     ? historicalComponent.childList.map((historicalComponentName, childIndex) =>

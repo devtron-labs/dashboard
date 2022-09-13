@@ -45,7 +45,7 @@ export function Sidebar() {
                 <div className="sidebar-action-container sidebar-action-container-border">
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            <div className="text-uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
+                            <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
                             <TaskList />
                         </>
                     )}
@@ -53,7 +53,7 @@ export function Sidebar() {
             )}
             {activeStageName === BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border pr-20">
-                    <div className="text-uppercase fw-6 fs-12 cn-6 mb-12">Trigger BUILD PIPELINE</div>
+                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">Trigger BUILD PIPELINE</div>
                     <div>
                         <RadioGroup
                             className="no-border"
@@ -73,7 +73,7 @@ export function Sidebar() {
                 <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
                 <div>
                     <a
-                        className="learn-more__href fw-6"
+                        className="dc__link fw-6"
                         href={helpData.docLink}
                         target="_blank"
                         rel="noreferrer noopener"

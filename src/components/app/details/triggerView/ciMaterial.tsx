@@ -33,7 +33,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         this.state = {
             regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
-            isBobStorageConfigured: false
+            isBlobStorageConfigured: false
         }
     }
 
@@ -46,7 +46,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
           const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
           if (result?.enabled) {
               this.setState((prevState) => ({
-                  isBobStorageConfigured: true,
+                  isBlobStorageConfigured: true,
               }))
           }
       } catch (error) {}
@@ -71,7 +71,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else if (!this.state.isBobStorageConfigured) {
+        } else if (!this.state.isBlobStorageConfigured) {
             return (
                 <div className="flexbox flex-align-center">
                     <Storage className="icon-dim-24 mr-8" />

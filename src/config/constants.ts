@@ -164,7 +164,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
-    BLOB_STORAGE_CONFIGURED: 'module/config',
+    MODULE_CONFIGURED: 'module/config',
 }
 
 export const ViewType = {
@@ -553,4 +553,8 @@ export const ModuleNameMap = {
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
   NOTIFICATION: 'notifier'
+}
+
+export const BUILD_STATUS = {
+  NOT_TRIGGERED: 'not triggered'
 }

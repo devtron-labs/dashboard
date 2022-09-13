@@ -681,7 +681,7 @@ export default function CIPipeline({
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{title}</h2>
                     <button
                         type="button"
-                        className="transparent flex icon-dim-24"
+                        className="dc__transparent flex icon-dim-24"
                         onClick={() => {
                             close()
                         }}

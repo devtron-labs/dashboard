@@ -115,7 +115,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
                         >
                             {' '}
@@ -142,7 +142,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className="learn-more__href"
+                            className="dc__link"
                             href={AppListConstants.SAMPLE_NODE_REPO_URL}
                         >
                             Check git repository for a simple Node.js application

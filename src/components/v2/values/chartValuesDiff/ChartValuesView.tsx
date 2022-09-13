@@ -974,7 +974,7 @@ function ChartValuesView({
 
     const renderValuesTabsContainer = () => {
         return (
-            <div className="chart-values-view__tabs-container flex content-space">
+            <div className="chart-values-view__tabs-container flex dc__content-space">
                 {renderValuesTabs()}
                 <div className="flex">
                     {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && (
@@ -1364,13 +1364,13 @@ function ChartValuesView({
 
     if (commonState.isLoading) {
         return (
-            <div className="loading-wrapper">
+            <div className="dc__loading-wrapper">
                 <Progressing pageLoader />
             </div>
         )
     } else if (commonState.errorResponseCode) {
         return (
-            <div className="loading-wrapper">
+            <div className="dc__loading-wrapper">
                 <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )

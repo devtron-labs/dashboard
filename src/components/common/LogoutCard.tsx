@@ -22,8 +22,8 @@ function LogoutCard({ className, userFirstLetter, setShowLogOutCard, showLogOutC
             <div className={`logout-card ${className}`}>
                 <div className="flexbox flex-justify p-16">
                     <div className="logout-card-user ">
-                        <p className="logout-card__name ellipsis-right">{userFirstLetter}</p>
-                        <p className="logout-card__email ellipsis-right">{userFirstLetter}</p>
+                        <p className="logout-card__name dc__ellipsis-right">{userFirstLetter}</p>
+                        <p className="logout-card__email dc__ellipsis-right">{userFirstLetter}</p>
                     </div>
                     <p
                         className="logout-card__initial fs-16 icon-dim-32 mb-0"

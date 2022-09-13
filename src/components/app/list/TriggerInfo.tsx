@@ -95,7 +95,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             {headerDescription}
                         </p>
                     </div>
-                    <button type="button" className="transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>
+                    <button type="button" className="dc__transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>
                 </div>
                 {body}
             </div>

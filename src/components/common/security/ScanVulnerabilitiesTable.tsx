@@ -18,10 +18,10 @@ interface ScanVulnerabilitiesTableProps {
 export class ScanVulnerabilitiesTable extends Component<ScanVulnerabilitiesTableProps> {
 
     renderRow(vulnerability) {
-        return <tr className="security-tab__table-row cursor" onClick={(e) => {
+        return <tr className="dc__security-tab__table-row cursor" onClick={(e) => {
             window.open(`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${vulnerability.name}`, '_blank');
         }}>
-            <td className="security-tab__cell-cve cve-cell">
+            <td className="security-tab__cell-cve dc__cve-cell">
                 <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${vulnerability.name}`} rel="noopener noreferrer" target="_blank">
                     {vulnerability.name}
                 </a>

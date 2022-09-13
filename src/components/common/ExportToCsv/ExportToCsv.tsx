@@ -70,7 +70,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
 
     const renderModalCTA = () => {
         return (
-            <div className="modal__CTA flex right border-top">
+            <div className="modal__CTA flex right dc__border-top">
                 <button type="button" className="flex cta cancel h-32" onClick={handleCancelAction}>
                     {exportingData ? 'Cancel' : 'Close'}
                 </button>
@@ -99,7 +99,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                     <div className="export-error bcn-0 flex column cn-9 h-100">
                         <Error className="icon-dim-32" />
                         <span className="fs-14 fw-6 mt-8">Unable to export data</span>
-                        <span className="fs-13 fw-4 align-center">
+                        <span className="fs-13 fw-4 dc__align-center">
                             Encountered an error while trying to export. Please try again. If error persists then try
                             after some time.
                         </span>
@@ -146,7 +146,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
             {showExportingModal && (
                 <VisibleModal className="export-to-csv-modal">
                     <div className="modal__body">
-                        <h2 className="cn-9 fw-6 fs-16 m-0 border-bottom">Export to CSV</h2>
+                        <h2 className="cn-9 fw-6 fs-16 m-0 dc__border-bottom">Export to CSV</h2>
                         {renderExportStatus()}
                         {renderModalCTA()}
                     </div>

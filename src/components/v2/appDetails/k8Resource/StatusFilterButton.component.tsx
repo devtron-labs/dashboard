@@ -61,15 +61,15 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
                                     }}
                                     className={`${
                                         filter.isSelected ? 'bcb-1' : ''
-                                    } p-6 pointer border-right cn-9 pr-6 fw-6 no-decor flex left`}
+                                    } p-6 pointer dc__border-right cn-9 pr-6 fw-6 dc__no-decor flex left`}
                                 >
                                     {index !== 0 && (
                                         <span
-                                            className={`app-summary__icon icon-dim-16 mr-6 ${filter.status.toLowerCase()} ${filter.status.toLowerCase()}--node`}
+                                            className={`dc__app-summary__icon icon-dim-16 mr-6 ${filter.status.toLowerCase()} ${filter.status.toLowerCase()}--node`}
                                             style={{ zIndex: 'unset' }}
                                         />
                                     )}
-                                    <span className="capitalize">{filter.status.toLowerCase()}</span>
+                                    <span className="dc__first-letter-capitalize">{filter.status.toLowerCase()}</span>
                                     <span className="pl-4">({filter.count})</span>
                                 </a>
                             )}

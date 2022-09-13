@@ -51,7 +51,7 @@ export default function Docker({ ...props }) {
             <h5 className="form__subtitle">
                 Manage your organization’s container registries.&nbsp;
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
                     rel="noopener noreferrer"
                     target="_blank"
@@ -88,7 +88,7 @@ function CollapsedList({
     const setToggleCollapse = () => {
         toggleCollapse(false)
     }
-    
+
     const closeDropdown = (e) => {
         e.stopPropagation()
         toggleCollapse((t) => !t)
@@ -99,12 +99,12 @@ function CollapsedList({
             <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
                 {id && (
                     <List.Logo>
-                        <div className={'registry-icon ' + registryType}></div>
+                        <div className={'dc__registry-icon ' + registryType}></div>
                     </List.Logo>
                 )}
                 {!id && collapsed && (
                     <List.Logo>
-                        <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+                        <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
                     </List.Logo>
                 )}
 
@@ -247,7 +247,7 @@ function DockerForm({
             }));
         }
     }
-    
+
 
     function fetchAWSRegion(): string {
         const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
@@ -425,7 +425,7 @@ function DockerForm({
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
-                    <div className={'registry-icon git-logo mr-5 ' + props.data.value}></div>
+                    <div className={'dc__registry-icon dc__git-logo mr-5 ' + props.data.value}></div>
                     {props.label}
                 </div>
             </components.Option>
@@ -438,7 +438,7 @@ function DockerForm({
         }
         return (
             <components.Control {...props}>
-                <div className={'registry-icon git-logo ml-5 ' + value}></div>
+                <div className={'dc__registry-icon dc__git-logo ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
         );
@@ -481,7 +481,7 @@ function DockerForm({
                         Registry type*
                     </label>
                     <ReactSelect
-                        className="m-0 w100"
+                        className="m-0 w-100"
                         tabIndex={1}
                         isMulti={false}
                         isClearable={false}
@@ -723,7 +723,7 @@ function DockerForm({
             </div>
             <div className={`flex right mb-20`}>
                 {id && (
-                    <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
+                    <button className="cta delete dc__m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}

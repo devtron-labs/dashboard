@@ -58,7 +58,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return <div>
             <div className="cn-9 fs-14 pt-20 pb-8 fw-6 flex left">
                 Configured filters
-                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
+                <button type="button" className="mr-20 dc__transparent dc__align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
                     <Edit className=" icon-dim-24" />
                 </button> </div>
             <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
@@ -87,15 +87,15 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return <div className="pt-20 pb-8">
             <div className="fs-14 cn-9 fw-6 mb-8">
                 All incoming webhook payloads for
-            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /{repo}</a>
+            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="dc__link" > /{repo}</a>
             </div>
             <div>
                 {webhookPayloads?.payloads == null ? <div className="bcn-1 empty-payload flex column mt-20 mr-20">
                     <InfoOutlined className="fcn-5 " />
                     <div>Payload data not available</div>
                 </div> : <>
-                        <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div>Received at <button className="transparent filter-icon" ><i className="fa fa-caret-down"></i></button></div>
+                        <div className="cn-5 fw-6 pt-8 pb-8 dc__border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
+                            <div>Received at <button className="dc__transparent filter-icon" ><i className="fa fa-caret-down"></i></button></div>
                             <div>Filters matched</div>
                             <div>Filters failed</div>
                             <div>Result</div>
@@ -106,7 +106,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
                                 <div>{payload.failedFiltersCount}</div>
-                                <div className={payload.matchedFilters == false ? `deprecated-warn__text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
+                                <div className={payload.matchedFilters == false ? `dc__deprecated-warn-text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
                             </div>
                         )}
                     </>}
@@ -117,14 +117,14 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
     const renderTimeStampDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
             <div className="flex left">
-                <button type="button" className="transparent flex" onClick={() => { setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
+                <button type="button" className="dc__transparent flex" onClick={() => { setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
                     <Back />
                 </button>
                 <h1 className="modal__title fs-16 pl-16 flex left">All incoming webhook payloads
                 <Right className="rotate icon-dim-24 ml-16 mr-16" style={{ ['--rotateBy' as any]: '-180deg' }} />
                     {webhookPayloads.payloads.filter((payload, index, array) => payload.parsedDataId == parsedDataId).map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
             </div>
-            <button type="button" className="transparent" onClick={() => { onClose(); setExpandedIncomingPayload(false) }}>
+            <button type="button" className="dc__transparent" onClick={() => { onClose(); setExpandedIncomingPayload(false) }}>
                 <Close />
             </button>
         </div>
@@ -147,12 +147,12 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                     </button>
                     <div className="cn-9 fw-6 fs-14 flex left">
                         Filter matching results
-                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
+                                <button type="button" className="mr-20 dc__transparent dc__align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
                             <Edit className=" icon-dim-24" />
                         </button>
                     </div>
                     <div>
-                        <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
+                        <div className="cn-5 fw-6 pt-8 pb-8 dc__border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
                             <div className="pl-8">Selector/Key</div>
                             <div>Selector value in payload</div>
                             <div>Configured filter</div>
@@ -168,7 +168,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div >{selectedData?.selectorName}</div>
                                 <div>{selectedData?.selectorValue}</div>
                                 <div>{selectedData?.selectorCondition}</div>
-                                <div className={selectedData?.match == false ? `deprecated-warn__text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
+                                <div className={selectedData?.match == false ? `dc__deprecated-warn-text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
                             </div>
                         })}
                     </div>

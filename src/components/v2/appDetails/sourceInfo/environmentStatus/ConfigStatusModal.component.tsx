@@ -9,8 +9,8 @@ function ConfigStatusModalComponent({ close, status }) {
               <Drawer position="right" width="50%" onClose={close} >
                 <div className="app-status-detail-modal bcn-0 pt-12">
 
-                    <div className="app-status-detail__header box-shadow pb-12">
-                        <div className="title flex content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
+                    <div className="app-status-detail__header dc__box-shadow pb-12">
+                        <div className="title flex dc__content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
                             Config apply: mrinalinin-test  default_cluster/devtroncd
                      <span className="cursor" onClick={close} ><Close className="icon-dim-24" /></span>
                         </div>
