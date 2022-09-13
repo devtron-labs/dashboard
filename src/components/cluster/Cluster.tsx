@@ -39,11 +39,11 @@ import {
 
 const PrometheusWarningInfo = () => {
     return (
-        <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 cluster-error mb-40">
-            <div className="flex left align-start">
+        <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
+            <div className="flex left dc__align-start">
                 <Warning className="icon-dim-20 fcr-7" />
                 <div className="ml-8 fs-13">
-                    <span className="fw-6 text-capitalize">Warning: </span>Prometheus configuration will be removed and
+                    <span className="fw-6 dc__capitalize">Warning: </span>Prometheus configuration will be removed and
                     you won’t be able to see metrics for applications deployed in this cluster.
                 </div>
             </div>
@@ -54,7 +54,7 @@ const PrometheusWarningInfo = () => {
 const PrometheusRequiredFieldInfo = () => {
     return (
         <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
-            <div className="flex left align-start">
+            <div className="flex left dc__align-start">
                 <Error className="icon-dim-20" />
                 <div className="ml-8 fs-13">
                     Fill all the required fields OR turn off the above switch to skip configuring prometheus.
@@ -186,7 +186,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     <h5 className="form__subtitle">
                         Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
                         <a
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
                             rel="noopener noreferer"
                             target="_blank"
@@ -286,12 +286,12 @@ function Cluster({
                         <List key={clusterId} onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}>
                             {!clusterId && (
                                 <List.Logo>
-                                    <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+                                    <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
                                 </List.Logo>
                             )}
                             <div className="flex left">
                                 {clusterId ? (
-                                    <ClusterIcon className="cluster-icon icon-dim-24 vertical-align-middle mr-16" />
+                                    <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
                                 ) : null}
                                 <List.Title
                                     title={cluster_name || 'Add cluster'}
@@ -596,7 +596,7 @@ function ClusterForm({
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
             <div className="flex left mb-20">
                 {id && (
-                    <Pencil color="#363636" className="icon-dim-24 vertical-align-middle mr-8" />
+                    <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />
                 )}
                 <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
             </div>
@@ -627,7 +627,7 @@ function ClusterForm({
                 </label>
                 <div className="bearer-token">
                     <ResizableTextarea
-                        className="resizable-textarea__with-max-height"
+                        className="dc__resizable-textarea__with-max-height"
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
@@ -644,7 +644,7 @@ function ClusterForm({
                 <>
                     <hr></hr>
                     <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
-                        <div className="content-space flex">
+                        <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
                             <div className="" style={{ width: '32px', height: '20px' }}>
                                 <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
@@ -711,7 +711,7 @@ function ClusterForm({
                     <div className="form__row">
                         <span className="form__label">TLS Key</span>
                         <ResizableTextarea
-                            className="resizable-textarea__with-max-height w-100"
+                            className="dc__resizable-textarea__with-max-height w-100"
                             name="tlsClientKey"
                             value={state.tlsClientKey.value}
                             onChange={handleOnChange}
@@ -720,7 +720,7 @@ function ClusterForm({
                     <div className="form__row">
                         <span className="form__label">TLS Certificate</span>
                         <ResizableTextarea
-                            className="resizable-textarea__with-max-height w-100"
+                            className="dc__resizable-textarea__with-max-height w-100"
                             name="tlsClientCert"
                             value={state.tlsClientCert.value}
                             onChange={handleOnChange}
@@ -852,7 +852,7 @@ function Environment({
                 <div className="form__row">
                     <div className="flex left">
                         <div className="form__title">{id ? 'Update Environment' : 'New Environment'}</div>
-                        <Close className="icon-dim-24 align-right cursor" onClick={(e) => handleClose(false)} />
+                        <Close className="icon-dim-24 dc__align-right cursor" onClick={(e) => handleClose(false)} />
                     </div>
                 </div>
                 <div className="form__row">
@@ -887,7 +887,7 @@ function Environment({
                                 }}
                                 checked={ignore}
                             />
-                            <div className="form__label bold">Ignore namespace</div>
+                            <div className="form__label dc__bold">Ignore namespace</div>
                         </div>
                         <div className="form__row form__row--warn">
                             If left empty, you won't be able to add more environments to this cluster
@@ -927,7 +927,7 @@ function Environment({
                 <div className={`form__buttons`}>
                     {id && (
                         <button
-                            className="cta delete m-auto ml-0"
+                            className="cta delete dc__m-auto ml-0"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >

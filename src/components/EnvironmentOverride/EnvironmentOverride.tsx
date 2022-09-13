@@ -111,7 +111,7 @@ export default function EnvironmentOverride({ environments, setEnvironments }: E
                         <div className="form__subtitle">
                             {headingData.subtitle}&nbsp;
                             <a
-                                className="learn-more__href"
+                                className="dc__link"
                                 rel="noreferre noopener"
                                 href={headingData.learnMoreLink}
                                 target="blank"

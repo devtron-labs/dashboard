@@ -242,7 +242,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 <>
                     <div className="bcn-0">
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
-                            <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
+                            <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
                                         (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
@@ -258,7 +258,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                             <div
                                                 className={`${
                                                     tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
-                                                } bw-1 pl-6 pr-6 br-4 en-2 no-decor flex left`}
+                                                } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
                                                 onClick={() => handleTabClick(tab)}
                                             >
                                                 {tab.name}
@@ -322,9 +322,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                                 {activeTab === 'Compare' && (
                                     <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                        <div className="split-header">
-                                            <div className="left-pane">Helm generated manifest </div>
-                                            <div className="right-pane">Live manifest</div>
+                                        <div className="dc__split-header">
+                                            <div className="dc__left-pane">Helm generated manifest </div>
+                                            <div className="dc__right-pane">Live manifest</div>
                                         </div>
                                     </CodeEditor.Header>
                                 )}

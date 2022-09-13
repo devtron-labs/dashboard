@@ -4,7 +4,7 @@ import './table.css';
 function TableUtil({table, bodyFont="",}) {
     return (
         <div className="node-container-fluid generic-table" style={{minHeight: '600px'}}>
-            <div className="row border-bottom">
+            <div className="row dc__border-bottom">
                 {
                     table.tHead.map((cell, index) => {
                         return (

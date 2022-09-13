@@ -43,7 +43,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             if (!lowercaseRegex.test(event.target.value)) {
                 errors.push('Use only lowercase alphanumeric characters "-" or "."')
             }
- 
+
             if (!startAndEndAlphanumericRegex.test(event.target.value) && !(event.target.value.length ==1)) {
                 errors.push('Start and end with an alphanumeric character only')
             }
@@ -56,7 +56,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 errors.push('Must not exceed 30 characters')
             }
         }
-        
+
         this.setState({
             name: {
                 ...this.state.name,
@@ -142,7 +142,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         : null} */}
                 </span>
             </label>
-            <button type="button" className="cta align-right" onClick={this.saveChartGroup}>
+            <button type="button" className="cta dc__align-right" onClick={this.saveChartGroup}>
                 {this.state.loading ? <Progressing /> : this.props.chartGroupId ? 'Update Group' : 'Create Group'}
             </button>
         </DialogForm >

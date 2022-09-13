@@ -324,7 +324,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                         return conditionDetail.conditionType === conditionType ? (
                             <Fragment key={`condtion__${index}`}>
                                 <div className="condition-container">
-                                    <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
+                                    <div className="tp-4 fs-13 lh-32 fw-4 dc__uppercase mr-10">
                                         {conditionDetail.conditionType} If
                                     </div>
                                     <div className="tp-4 fs-13 fw-4 mr-10">

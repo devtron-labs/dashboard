@@ -48,7 +48,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         throughput: "",
         latency: "",
     })
-    const addSpace: string = addExtraSpace ? 'mb-16':''; 
+    const addSpace: string = addExtraSpace ? 'mb-16':'';
     let pod = podMap?.values().next().value;
     let newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash'];
 
@@ -222,13 +222,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 </span>
                     <div className="flex">
                         <div className="mr-16">
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={tab === AppMetricsTab.Aggregate} value={AppMetricsTab.Aggregate} onChange={handleTabChange} />
-                                <span className="tertiary-tab">Aggregate</span>
+                                <span className="dc__tertiary-tab">Aggregate</span>
                             </label>
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={tab === AppMetricsTab.Pod} value={AppMetricsTab.Pod} onChange={handleTabChange} />
-                                <span className="tertiary-tab">Per Pod</span>
+                                <span className="dc__tertiary-tab">Per Pod</span>
                             </label>
                             {chartName ? <GraphModal appId={appId}
                                 envId={envId}
@@ -412,7 +412,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
                                 <>
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
                                     <a
-                                        className="learn-more__href cta small text pl-0"
+                                        className="dc__link cta small text pl-0"
                                         href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
                                         target="_blank"
                                         style={{ paddingLeft: '0' }}

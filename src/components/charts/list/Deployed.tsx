@@ -119,12 +119,12 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     renderCard(chart) {
         let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId, deprecated } = chart;
-        return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" 
+        return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed"
         to={`deployments/${installedAppId}/env/${environmentId}/${URLS.APP_DETAILS}`}
         >
             <div className="chart-grid-item__flexbox">
-                <div className="chart-grid-item__icon-wrapper">
-                    <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />
+                <div className="dc__chart-grid-item__icon-wrapper">
+                    <LazyImage className="dc__chart-grid-item__icon" src={icon} onError={this.handleImageError} />
                 </div>
                 {
                     deprecated &&
@@ -134,10 +134,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     </div>
                 }
             </div>
-            <div className="chart-grid-item__title ellipsis-right">{appName}</div>
-            <div className="chart-grid-item__light-text ellipsis-right">{chartName}/{appStoreApplicationName}</div>
+            <div className="chart-grid-item__title dc__ellipsis-right">{appName}</div>
+            <div className="chart-grid-item__light-text dc__ellipsis-right">{chartName}/{appStoreApplicationName}</div>
             <div className="chart-grid-item__env"><span className="env-badge">ENV</span>{environmentName}</div>
-            <div className="chart-grid-item__light-text ellipsis-right">{deployedAt}</div>
+            <div className="chart-grid-item__light-text dc__ellipsis-right">{deployedAt}</div>
         </Link>
     }
 
@@ -320,7 +320,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                       <ChartEmptyState
                             onClickViewChartButton={this.handleViewAllCharts}
                             heightToDeduct={160}
-                            /> 
+                            />
                 </div>
             }
         }
@@ -343,7 +343,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                 <div className="chart-grid">
                     {this.state.installedCharts.map((chart) => {
                         return this.renderCard(chart);
-                        
+
                     })}
                 </div>
             </div>

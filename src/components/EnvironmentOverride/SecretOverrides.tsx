@@ -195,7 +195,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     tempSecretData = tempSecretData.map((s) => {
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
-    
+
     let jsonForSecretDataYaml: any[] =
        secretData ? secretData : []
     if (jsonForSecretDataYaml.length === 0 && defaultSecretData) {
@@ -268,7 +268,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
         isChartRef3090OrBelow(appChartRef.id)
 
-        
+
     useEffect(() => {
         if(isESO){
             toggleYamlMode(true)
@@ -413,7 +413,6 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         return isValid
                     }, !!secretDataValue.length)
                 }
-    
                 if (!isValid) {
                     !isESO
                         ? toast.error('Please check key and name')
@@ -601,11 +600,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         </div>
                     </div>
                     {externalType === 'KubernetesSecret' ? (
-                        <div className="info__container mb-24">
+                        <div className="dc__info-container mb-24">
                             <Info />
                             <div className="flex column left">
-                                <div className="info__title">Using External Secrets</div>
-                                <div className="info__subtitle">
+                                <div className="dc__info-title">Using External Secrets</div>
+                                <div className="dc__info-subtitle">
                                     Secrets will not be created by system. However, they will be used inside the pod.
                                     Please make sure that secret with the same name is present in the environment.
                                 </div>
@@ -755,7 +754,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ) : null}
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 bold">Data*</b>
+                            <b className="mr-5 dc__bold">Data*</b>
                             {!isESO && <RadioGroup
                                 className="gui-yaml-switch"
                                 name="yaml-mode"
@@ -901,7 +900,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     )}
                     {!state.locked && !yamlMode && (
                         <span
-                            className="bold anchor pointer"
+                            className="dc__bold anchor pointer"
                             onClick={(event) => {
                                 if (isHashiOrAWS)
                                     setSecretData((secretDataValue) => [

@@ -126,7 +126,7 @@ export class SecurityVulnerabilitites extends Component<SecurityVulnerabilitites
         if (total !== 0) {
             return <div className="security-vulnerabilities cursor" onClick={this.props.onClick}>
                 <div>
-                    <Bug className="icon-dim-20 vertical-align-middle mr-8 fcy-7" />
+                    <Bug className="icon-dim-20 dc__vertical-align-middle mr-8 fcy-7" />
                     {total} Security Vulnerabilities
                     <span className="security-vulnerabilities__count">
                         {critical ? `${critical} critical, ` : ``}

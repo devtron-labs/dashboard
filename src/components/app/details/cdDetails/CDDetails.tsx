@@ -331,26 +331,26 @@ const DeploymentCard: React.FC<{
                     }}
                 >
                     <div
-                        className={`app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
-                    ></div>
-                    <div className="flex column left ellipsis-right">
+                    />
+                    <div className="flex column left dc__ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="flex left cn-7 fs-12">
-                            <div className="capitalize">
+                            <div className="dc__capitalize">
                                 {['pre', 'post'].includes(triggerDetails.stage?.toLowerCase())
                                     ? `${triggerDetails.stage}-deploy`
                                     : triggerDetails.stage}
                             </div>
-                            <span className="bullet bullet--d2 ml-4 mr-4"></span>
+                            <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
                             {triggerDetails.artifact && (
-                                <div className="app-commit__hash app-commit__hash--no-bg">
+                                <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
                                     <img src={docker} className="commit-hash__icon grayscale" />
                                     {triggerDetails.artifact.split(':')[1].slice(-12)}
                                 </div>
                             )}
-                            <span className="bullet bullet--d2 ml-4 mr-4"></span>
+                            <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
                             <div className="cn-7 fs-12">
                                 {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
                             </div>
@@ -545,7 +545,7 @@ const TriggerOutput: React.FC<{
                                     : () => cancelPrePostCdTrigger(pipelineId, triggerId)
                             }
                         />
-                        <ul className="pl-20 tab-list tab-list--nodes border-bottom">
+                        <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType!== DeploymentAppType.helm && (
                                 <li className="tab-list__tab">
                                     <NavLink
@@ -730,7 +730,7 @@ const SelectEnvironment: React.FC<{ environments: AppEnvironment[] }> = ({ envir
             <label className="form__label">Select Environment</label>
             <Select onChange={(event) => handleEnvironmentChange(+event.target.value)} value={+params.envId}>
                 <Select.Button rootClassName="select-button--default">
-                    <div className="ellipsis-left w-100 flex right">
+                    <div className="dc__ellipsis-left w-100 flex right">
                         {environment ? environment.environmentName : 'Select environment'}
                     </div>
                 </Select.Button>
@@ -739,7 +739,7 @@ const SelectEnvironment: React.FC<{ environments: AppEnvironment[] }> = ({ envir
                         .sort((a, b) => a.environmentName.localeCompare(b.environmentName))
                         .map((p) => (
                             <Select.Option key={p.environmentId} value={p.environmentId}>
-                                <span className="ellipsis-left">{p.environmentName}</span>
+                                <span className="dc__ellipsis-left">{p.environmentName}</span>
                             </Select.Option>
                         ))}
             </Select>

@@ -211,14 +211,14 @@ export const RangeSlider = (props: SliderPropsType) => {
                     autoComplete="off"
                     min={props.sliderMin || 0}
                     max={props.sliderMax}
-                    className="slider-input-box h-32 en-2 bw-1 left-radius-4"
+                    className="slider-input-box h-32 en-2 bw-1 dc__left-radius-4"
                     value={sliderInputValue}
                     onChange={handleSliderInputValue}
                     onBlur={onValueInputBlur}
                     onKeyDown={handleKeyDown}
                 />
                 {props.sliderUnit && (
-                    <span className="slider-input-unit flex fs-13 fw-4 cn-9 h-32 en-2 bw-1 right-radius-4">
+                    <span className="slider-input-unit flex fs-13 fw-4 cn-9 h-32 en-2 bw-1 dc__right-radius-4">
                         {props.sliderUnit}
                     </span>
                 )}

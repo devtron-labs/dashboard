@@ -369,7 +369,7 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters. <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
+                                filters. <a className="dc__link cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
                             </span>
                         </div>
                     </div>
@@ -385,7 +385,7 @@ export default function HelmAppList({
                                 </span>
                                 <span>{externalHelmListFetchError}</span>
                                 <CloseIcon
-                                    className="icon-dim-24 align-right cursor"
+                                    className="icon-dim-24 dc__align-right cursor"
                                     onClick={() => _removeExternalAppFetchError(index)}
                                 />
                             </div>
@@ -400,27 +400,27 @@ export default function HelmAppList({
                             <Link to={_buildAppDetailUrl(app)} className="app-list__row">
                                 <div className="app-list__cell--icon">
                                     <LazyImage
-                                        className="chart-grid-item__icon icon-dim-24"
+                                        className="dc__chart-grid-item__icon icon-dim-24"
                                         src={app.chartAvatar}
                                         onError={handleImageError}
                                     />
                                 </div>
                                 <div className="app-list__cell app-list__cell--name flex column left">
-                                    <div className="truncate-text m-0 value">{app.appName}</div>
-                                    <div className="truncate-text m-0">{app.chartName}</div>
+                                    <div className="dc__truncate-text  m-0 value">{app.appName}</div>
+                                    <div className="dc__truncate-text  m-0">{app.chartName}</div>
                                 </div>
                                 <div className="app-list__cell app-list__cell--env">
-                                    <p className="truncate-text m-0">
+                                    <p className="dc__truncate-text  m-0">
                                         {app.environmentDetail.environmentName
                                             ? app.environmentDetail.environmentName
                                             : app.environmentDetail.clusterName + "__" + app.environmentDetail.namespace}
                                     </p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--cluster">
-                                    <p className="truncate-text m-0"> {app.environmentDetail.clusterName}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.environmentDetail.clusterName}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--namespace">
-                                    <p className="truncate-text m-0"> {app.environmentDetail.namespace}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.environmentDetail.namespace}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--time">
                                     {app.lastDeployedAt && (
@@ -430,7 +430,7 @@ export default function HelmAppList({
                                             placement="top"
                                             content={handleUTCTime(app.lastDeployedAt, false)}
                                         >
-                                            <p className="truncate-text m-0">
+                                            <p className="dc__truncate-text  m-0">
                                                 {handleUTCTime(app.lastDeployedAt, true)}
                                             </p>
                                         </Tippy>
@@ -597,12 +597,12 @@ export default function HelmAppList({
     return (
         <>
             {dataStateType == AppListViewType.LOADING && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
             {dataStateType == AppListViewType.ERROR && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

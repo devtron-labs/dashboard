@@ -28,7 +28,7 @@ function Button({ children }) {
 
 const Loading: React.FC<{ text: string }> = function (props) {
     return <>
-        <Progressing className="block empty-state__loader" />
+        <Progressing className="dc__block empty-state__loader" />
         <p className="empty-state__loading-text">{props.text}</p>
     </>
 }

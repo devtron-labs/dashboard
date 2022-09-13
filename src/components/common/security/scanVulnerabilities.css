@@ -23,7 +23,7 @@
     color: var(--N500);
 }
 
-.security-tab__table-row {
+.dc__security-tab__table-row {
     font-size: 13px;
     font-weight: normal;
     line-height: 1.54;

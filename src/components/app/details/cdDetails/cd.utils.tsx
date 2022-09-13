@@ -52,14 +52,14 @@ export function Option(props) {
         <components.Option {...props}>
             <div className={`flex left pt-8 pb-8 pl-8 pr-8 ${props.isSelected ? 'bcb-1' : ''}`}>
                 <div
-                    className={`app-summary__icon icon-dim-22 ${props.data.status
+                    className={`dc__app-summary__icon icon-dim-22 ${props.data.status
                         .toLocaleLowerCase()
                         .replace(/\s+/g, '')} mr-8`}
                 ></div>
                 <div>
                     <div className="cn-9 fs-13"> {props.label}</div>
                     <div className="cn-7 flex left">
-                        <span className="text-capitalize">Deploy</span> <div className="bullet ml-4 bullet--d2 mr-4" />{' '}
+                        <span className="dc__capitalize">Deploy</span> <div className="dc__bullet ml-4 dc__bullet--d2 mr-4" />{' '}
                         {props.data.author === 'system' ? 'auto-triggered' : props.data.author}
                     </div>
                 </div>

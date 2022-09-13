@@ -116,7 +116,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             <p className="form__subtitle form__subtitle--artifacts">
                 A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     rel="noreferer noopener"
                     href={DOCUMENTATION.APP_CREATE_SECRET}
                     target="blank"
@@ -225,7 +225,7 @@ export function Tab({ title, active, onClick }) {
 export function ListComponent({ icon = '', title, subtitle = '', onClick, className = '', collapsible = false }) {
     return (
         <article
-            className={`configuration-list pointer ${className}`}
+            className={`dc__configuration-list pointer ${className}`}
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />
@@ -278,7 +278,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
-    
     let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -316,9 +315,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         active: data.title === selectedTab,
     }))
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-  
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
-    
+
     function setKeyValueArray(arr) {
         tempArray.current = arr
     }
@@ -721,7 +719,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
-                    <ReactSelect 
+                    <ReactSelect
                     placeholder="Select Secret Type"
                     options={getTypeGroups()}
                     defaultValue={externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]}
@@ -736,11 +734,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 </div>
             </div>
             {externalType === 'KubernetesSecret' ? (
-                <div className="info__container mb-24">
+                <div className="dc__info-container mb-24">
                     <Info className="icon-dim-20" />
                     <div className="flex column left">
-                        <div className="info__title">Using External Secrets</div>
-                        <div className="info__subtitle">
+                        <div className="dc__info-title">Using External Secrets</div>
+                        <div className="dc__info-subtitle">
                             Secret will not be created by system. However, they will be used inside the pod. Please make
                             sure that secret with the same name is present in the environment.
                         </div>
@@ -910,7 +908,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             ) : null}
             {isExternalValues && (
                 <div className="flex left mb-16">
-                    <b className="mr-5 bold">Data*</b>
+                    <b className="mr-5 dc__bold">Data*</b>
                     {!isESO && <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
@@ -1021,7 +1019,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             )}
             {!secretMode && isExternalValues && !yamlMode && (
                 <div
-                    className="add-parameter bold pointer flex left anchor"
+                    className="add-parameter dc__bold pointer flex left anchor"
                     onClick={(event) => {
                         if (isHashiOrAWS) {
                             setSecretData((secretData) => [

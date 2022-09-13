@@ -17,7 +17,7 @@ export default function SampleAppDeploy({ parentClassName, imageClassName }: Sam
                     href={AppListConstants.SAMPLE_NODE_REPO_URL}
                     target="_blank"
                     rel="noopener noreferer"
-                    className="no-decor cb-5 fw-6"
+                    className="dc__no-decor cb-5 fw-6"
                 >
                     Visit git repo
                 </a>

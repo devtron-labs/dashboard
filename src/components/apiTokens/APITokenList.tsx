@@ -43,14 +43,14 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
             <p className="fs-12 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
-            <div className="flex content-space mb-16">
+            <div className="flex dc__content-space mb-16">
                 <button className="flex cta h-32" onClick={() => handleGenerateRowActionButton('create')}>
                     Generate new token
                 </button>
                 {renderSearchToken()}
             </div>
             <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                <div className="api-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 text-uppercase">
+                <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                     <div></div>
                     <div>Name</div>
                     <div>Last Used On</div>
@@ -69,7 +69,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                         >
                             <button
                                 type="button"
-                                className="transparent cursor flex"
+                                className="dc__transparent cursor flex"
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
                                 <Key
@@ -82,9 +82,9 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 className={`flexbox cb-5 cursor`}
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
-                                <span className="ellipsis-right">{list.name}</span>
+                                <span className="dc__ellipsis-right">{list.name}</span>
                             </div>
-                            <div className="ellipsis-right">
+                            <div className="dc__ellipsis-right">
                                 {list.lastUsedAt ? moment(list.lastUsedAt).format(MomentDateFormat) : 'Never used'}
                             </div>
                             <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
@@ -101,12 +101,12 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                             <div className="api__row-actions flex right">
                                 <button
                                     type="button"
-                                    className="transparent mr-18"
+                                    className="dc__transparent mr-18"
                                     onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                 >
                                     <Edit className="icon-dim-20" />
                                 </button>
-                                <button type="button" className="transparent" onClick={() => handleDeleteButton(list)}>
+                                <button type="button" className="dc__transparent" onClick={() => handleDeleteButton(list)}>
                                     <Trash className="scn-6 icon-dim-20" />
                                 </button>
                             </div>
