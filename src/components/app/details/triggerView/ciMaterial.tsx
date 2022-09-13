@@ -45,9 +45,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
       try {
           const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
           if (result?.enabled) {
-              this.setState((prevState) => ({
-                  isBlobStorageConfigured: true,
-              }))
+              this.setState({ isBlobStorageConfigured: true })
           }
       } catch (error) {}
     }
@@ -80,7 +78,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         <div className="fw-4 fs-12 flexbox">
                             <span>Want to reduce build time?</span>
                             <a
-                                className="fs-12 fw-6 cb-5 no-decor ml-4"
+                                className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                 href={DOCUMENTATION.ADMIN_PASSWORD}
                                 target="_blank"
                             >
