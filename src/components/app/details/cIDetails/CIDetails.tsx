@@ -1021,7 +1021,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
     ) : (
         <div className="logs__body">
             {logs.map((log, index) => {
-                return <p className="mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(log)} />
+                return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
             })}
             {eventSource && eventSource.readyState <= 1 && (
                 <div className="flex left event-source-status">
