@@ -557,3 +557,20 @@ export const ModuleNameMap = {
 export const BUILD_STATUS = {
   NOT_TRIGGERED: 'not triggered'
 }
+
+export const EVENT_STREAM_EVENTS_MAP = {
+  MESSAGE: 'message',
+  START_OF_STREAM: 'START_OF_STREAM',
+  END_OF_STREAM: 'END_OF_STREAM',
+  ERROR: 'error'
+}
+
+export const TERMINAL_STATUS_MAP = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    RUNNING: 'running',
+    PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    FAILED: 'failed',
+    ERROR: 'error',
+}

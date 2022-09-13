@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, EVENT_STREAM_EVENTS_MAP, TERMINAL_STATUS_MAP } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -102,10 +102,10 @@ function useCIEventSource(url: string, maxLength?: number) {
         buffer.current = []
         if(url){
           eventSourceRef.current = new EventSource(url, { withCredentials: true })
-          eventSourceRef.current.addEventListener('message', handleMessage)
-          eventSourceRef.current.addEventListener('START_OF_STREAM', handleStreamStart)
-          eventSourceRef.current.addEventListener('END_OF_STREAM', handleStreamEnd)
-          eventSourceRef.current.addEventListener('error', handleError)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, handleMessage)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM, handleStreamStart)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM, handleStreamEnd)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, handleError)
         }
         return closeEventSource
     }, [url, maxLength])
@@ -640,16 +640,16 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                 </div>
                 {
                     {
-                        succeeded: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        healthy: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        running: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        progressing: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        starting: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        failed: <Failed triggerDetails={triggerDetails} type={type} />,
-                        error: <Failed triggerDetails={triggerDetails} type={type} />,
+                      [TERMINAL_STATUS_MAP.SUCCEEDED]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.HEALTHY]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.RUNNING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.PROGRESSING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.STARTING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[triggerDetails.status.toLowerCase()]
                 }
-                {!['succeeded', 'healthy', 'running', 'progressing', 'starting', 'failed', 'error'].includes(
+                {!Object.values(TERMINAL_STATUS_MAP).includes(
                     triggerDetails.status.toLowerCase(),
                 ) && <Generic triggerDetails={triggerDetails} type={type} />}
             </div>
