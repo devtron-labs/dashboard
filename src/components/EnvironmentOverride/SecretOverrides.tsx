@@ -26,11 +26,13 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION } from '../../config'
+import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, ModuleNameMap } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -267,6 +269,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         appChartRef.name === ROLLOUT_DEPLOYMENT &&
         isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
         isChartRef3090OrBelow(appChartRef.id)
+    const [ , esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
 
     useEffect(() => {
@@ -595,7 +598,15 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
-                                <Select.Button>{externalType ? getTypeGroups(externalType).label : getTypeGroups()[0].options[0].label}</Select.Button>
+                                <Select.Button>
+                                    {externalType
+                                        ? getTypeGroups(
+                                              esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
+                                              externalType,
+                                          ).label
+                                        : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
+                                              .options[0].label}
+                                </Select.Button>
                             </Select>
                         </div>
                     </div>
@@ -755,16 +766,18 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
                             <b className="mr-5 dc__bold">Data*</b>
-                            {!isESO && <RadioGroup
-                                className="gui-yaml-switch"
-                                name="yaml-mode"
-                                initialTab={yamlMode ? 'yaml' : 'gui'}
-                                disabled={false}
-                                onChange={changeEditorMode}
-                            >
-                                <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                            </RadioGroup>}
+                            {!isESO && (
+                                <RadioGroup
+                                    className="gui-yaml-switch"
+                                    name="yaml-mode"
+                                    initialTab={yamlMode ? 'yaml' : 'gui'}
+                                    disabled={false}
+                                    onChange={changeEditorMode}
+                                >
+                                    <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
+                                    <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                                </RadioGroup>
+                            )}
                             {state.locked && (
                                 <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={unlockSecrets}>
                                     <Pencil />
@@ -859,7 +872,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                 height={350}
                                 onChange={handleSecretDataYamlChange}
                                 readOnly={state.locked || codeEditorRadio === 'sample'}
-                                shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeaders[externalType] || dataHeaders['default']}
+                                shebang={
+                                    codeEditorRadio === 'data'
+                                        ? '#Check sample for usage.'
+                                        : dataHeaders[externalType] || dataHeaders['default']
+                                }
                             >
                                 <CodeEditor.Header>
                                     <RadioGroup
