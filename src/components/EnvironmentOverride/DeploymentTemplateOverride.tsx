@@ -8,7 +8,7 @@ import {
     chartRefAutocomplete,
 } from './service'
 import { Override } from './ConfigMapOverrides'
-import { showError, not, Progressing, ConfirmationDialog, useEffectAfterMount, useJsonYaml } from '../common'
+import { showError, not, Progressing, ConfirmationDialog, useEffectAfterMount, useJsonYaml, useAsync } from '../common'
 import { toast } from 'react-toastify'
 import '../deploymentConfig/deploymentConfig.scss'
 import warningIcon from '../../assets/img/warning-medium.svg'
@@ -20,6 +20,9 @@ import {
 } from '../deploymentConfig/DeploymentTemplateView'
 import { DeploymentChartVersionType } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleNameMap } from '../../config'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export default function DeploymentTemplateOverride({
     parentState,
@@ -30,7 +33,7 @@ export default function DeploymentTemplateOverride({
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, setLoading] = useState(false)
     const [chartRefLoading, setChartRefLoading] = useState(null)
-
+    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const initialState = {
         showReadme: false,
         openComparison: false,
@@ -209,6 +212,7 @@ export default function DeploymentTemplateOverride({
                     initialise={initialise}
                     handleAppMetrics={handleAppMetrics}
                     handleDelete={handleDelete}
+                    isGrafanaModuleInstalled= {grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
                 />
             )}
         </div>
@@ -225,6 +229,7 @@ function DeploymentTemplateOverrideForm({
     handleAppMetrics,
     handleDelete,
     chartRefLoading,
+    isGrafanaModuleInstalled
 }) {
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
@@ -400,7 +405,7 @@ function DeploymentTemplateOverrideForm({
                         disableButton={!state.duplicate}
                         disableCheckbox={!state.duplicate}
                         showAppMetricsToggle={
-                            state.charts && state.selectedChart && appMetricsEnvironmentVariableEnabled
+                            state.charts && state.selectedChart && appMetricsEnvironmentVariableEnabled && isGrafanaModuleInstalled
                         }
                         isAppMetricsEnabled={state.data.appMetrics}
                         currentChart={state.selectedChart}
