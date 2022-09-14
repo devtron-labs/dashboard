@@ -1,5 +1,5 @@
 import { post, put, get } from '../../services/api';
-import { FullRoutes } from '../../config';
+import { Routes } from '../../config';
 
 export function getSSOConfigList(): Promise<any> {
     const URL = `sso/list`;
@@ -7,7 +7,7 @@ export function getSSOConfigList(): Promise<any> {
 }
 
 export function loginAsAdmin(payload): Promise<any> {
-    return post(FullRoutes.LOGIN, payload);
+    return post(Routes.LOGIN, payload);
 }
 
 export function getSSOConfig(name: string): Promise<any> {

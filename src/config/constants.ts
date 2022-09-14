@@ -187,10 +187,6 @@ export const AppConfigStatus = {
     END: 10,
 }
 
-export const FullRoutes = {
-    LOGIN: `${Routes.LOGIN}`
-}
-
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
     APP_NAME: '^[a-z][a-z0-9-.]*[a-z0-9]$/*',
