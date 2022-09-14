@@ -165,6 +165,10 @@ export const Routes = {
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
     MODULE_CONFIGURED: 'module/config',
+    SSO: 'sso',
+    SSO_LIST: 'sso/list',
+    SSO_CREATE: 'sso/create',
+    SSO_UPDATE: 'sso/update',
 }
 
 export const ViewType = {
