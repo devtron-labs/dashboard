@@ -551,6 +551,7 @@ export const ModuleNameMap = {
   CICD: 'cicd',
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
+  ESO: 'eso',
   NOTIFICATION: 'notifier'
 }
 
