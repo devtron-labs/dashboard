@@ -1495,6 +1495,10 @@ button.anchor {
     justify-content: space-between !important;
 }
 
+.dc__content-center {
+    justify-content: center !important;
+}
+
 .dc__content-start {
     justify-content: flex-start !important;
 }
@@ -1896,6 +1900,11 @@ textarea {
 }
 
 // Height in pixels
+
+.dc__height-inherit {
+  height: inherit;
+}
+
 .h-0 {
     height: 0px;
 }
