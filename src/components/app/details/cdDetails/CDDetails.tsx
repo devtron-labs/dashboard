@@ -77,7 +77,7 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
-    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [, blobStorageConfiguration, ] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     const { push } = useHistory()
@@ -236,7 +236,7 @@ export default function CDDetails() {
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
                                         deploymentAppType={deploymentAppType}
-                                        isBlobStorageConfigured={blobStorageConfiguration.result?.enabled || false}
+                                        isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                                     />
                                 </Route>
                             )}
@@ -426,7 +426,9 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
         }
         getLogs()
         return () => {
+          if(eventSrcRef.current){
             eventSrcRef.current.close()
+          }
         }
     }, [triggerDetails.id, pipelineId])
 
