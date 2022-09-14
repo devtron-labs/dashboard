@@ -11,7 +11,7 @@ export interface CDMaterialProps {
     redirectToCD?: () => void
     stageType: string
     changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType) => void
-    triggerDeploy: (stageType: string) => void
+    triggerDeploy: (stageType: string, deploymentWithConfig?: string, wfrId?: number) => void
     selectImage: (index: number, materialType: string) => void
     toggleSourceInfo: (materialIndex: number) => void
     closeCDModal: () => void
@@ -19,10 +19,33 @@ export interface CDMaterialProps {
     parentPipelineType?: string
     parentEnvironmentName?: string
     isFromDeploymentGroup?: boolean
+    appId?: number
+    pipelineId?: number
 }
 
-export interface CDMaterialState{
-  isSecurityModuleInstalled: boolean
+export enum DeploymentWithConfigType {
+    LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
+    LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
+    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG'
+}
+
+export interface ConfigToDeployOptionType {
+    label: string,
+    value: DeploymentWithConfigType,
+    infoText: string,
+}
+
+export interface CDMaterialState {
+    isSecurityModuleInstalled: boolean
+    checkingDiff: boolean
+    diffFound: boolean
+    showConfigDiffView: boolean
+    selectedConfigToDeploy: ConfigToDeployOptionType
+    isRollbackTrigger: boolean
+    recentDeploymentConfig: any
+    latestDeploymentConfig: any
+    specificDeploymentConfig: any
+    selectedMaterial: CDMaterialType
 }
 
 export interface CDMaterialType {
@@ -44,6 +67,8 @@ export interface CDMaterialType {
     vulnerabilities: VulnerabilityType[]
     vulnerable: boolean
     deployedTime: string
+    deployedBy?: string
+    wfrId?: number
     buildTime: string
     image: string
     isSelected: boolean

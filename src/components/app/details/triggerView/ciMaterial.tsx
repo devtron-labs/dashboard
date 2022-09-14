@@ -65,7 +65,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <Question className="icon-dim-20" />
                 </Tippy>
                 <ButtonWithLoader
-                    rootClassName="cta-with-img cta-with-img--trigger-btn"
+                    rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                     loaderColor="#ffffff"
                     disabled={!canTrigger}
                     isLoading={this.props.isLoading}

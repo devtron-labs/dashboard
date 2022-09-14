@@ -225,8 +225,8 @@ export function getCDMaterialList(cdMaterialId, stageType: 'PRECD' | 'CD' | 'POS
     })
 }
 
-export function getRollbackMaterialList(cdMaterialId): Promise<ResponseType> {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback`
+export function getRollbackMaterialList(cdMaterialId, offset: number, size: number): Promise<ResponseType> {
+    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
     return get(URL).then((response) => {
         return {
             code: response.code,
@@ -245,6 +245,8 @@ function cdMaterialListModal(artifacts) {
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
                 : 'Not Deployed',
+            deployedBy: material.deployedBy,
+            wfrId: material.wfrId,
             tab: CDModalTab.Changes,
             image: material.image.split(':')[1],
             showChanges: false,
@@ -291,19 +293,36 @@ export const cancelPrePostCdTrigger = (pipelineId, workflowRunner) => {
     return trash(URL)
 }
 
+export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {
+    return get(`${Routes.RECENT_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
+}
+
+export const getLatestDeploymentConfig = (appId: number, pipelineId: number) => {
+    return get(`${Routes.LATEST_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
+}
+
+export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, wfrId: number) => {
+    return get(`${Routes.SPECIFIC_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}/${wfrId}`)
+}
+
 export const triggerCINode = (request) => {
     let URL = `${Routes.CI_PIPELINE_TRIGGER}`
     return post(URL, request)
 }
 // stageType: 'PRECD' | 'CD' | 'POSTCD'
-export const triggerCDNode = (pipelineId, ciArtifactId, appId, stageType: string) => {
-    let URL = `${Routes.CD_TRIGGER_POST}`
-    return post(URL, {
+export const triggerCDNode = (pipelineId, ciArtifactId, appId, stageType: string, deploymentWithConfig?: string, wfrId?: number) => {
+    const request = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
-    })
+    }
+
+    if (deploymentWithConfig) {
+        request['deploymentWithConfig'] = deploymentWithConfig
+        request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
+    }
+    return post(Routes.CD_TRIGGER_POST, request)
 }
 
 export const getPrePostCDTriggerStatus = (params) => {

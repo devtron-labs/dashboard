@@ -1688,6 +1688,10 @@ button.anchor {
     border-bottom-right-radius: 4px;
 }
 
+.dc__border-radius-24 {
+    border-radius: 24px;
+}
+
 .dc__no-top-border {
     border-top: 0px !important;
 }
@@ -1895,6 +1899,10 @@ textarea {
     width: 100%;
 }
 
+.w-auto {
+    width: auto;
+}
+
 // Height in pixels
 .h-0 {
     height: 0px;
@@ -1926,6 +1934,10 @@ textarea {
 
 .h-36 {
     height: 36px !important;
+}
+
+.h-42 {
+    height: 42px !important;
 }
 
 .h-44 {
@@ -2057,4 +2069,8 @@ textarea {
     path {
         fill: none !important;
     }
+}
+
+.dc__column-gap-24 {
+    column-gap: 24px;
 }

@@ -442,7 +442,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             category: 'Trigger View',
             action: 'Select Rollback Material Clicked',
         })
-        getRollbackMaterialList(cdNodeId)
+        getRollbackMaterialList(cdNodeId, 1, 20)
             .then((response) => {
                 let workflows = this.state.workflows.map((workflow) => {
                     let nodes = workflow.nodes.map((node) => {
@@ -476,7 +476,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     // stageType'PRECD' | 'CD' | 'POSTCD'
-    onClickTriggerCDNode = (nodeType: string): void => {
+    onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
         ReactGA.event({
             category: 'Trigger View',
             action: `${nodeType} Triggered`,
@@ -494,7 +494,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let key = this.state.materialType
         ciArtifact = node[key].find((artifact) => artifact.isSelected == true)
         if (appId && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType)
+            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
                         let msg = key == 'rollbackMaterialList' ? 'Rollback Initiated' : 'Deployment Initiated'
@@ -880,6 +880,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
             return (
                 <CDMaterial
+                    appId={Number(this.props.match.params.appId)}
+                    pipelineId={this.state.cdNodeId}
                     stageType={this.state.nodeType}
                     material={material}
                     materialType={this.state.materialType}
