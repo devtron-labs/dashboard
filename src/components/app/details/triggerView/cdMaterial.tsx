@@ -157,9 +157,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
               : mat.isSelected ? <Check className="dc__align-right icon-dim-24" /> : "Select"}
           </div>
         </div>
-        {!this.props.isFromDeploymentGroup && <>
         {mat.showSourceInfo && <>
-            {this.state.isSecurityModuleInstalled && <ul className="tab-list tab-list--vulnerability">
+            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && <ul className="tab-list tab-list--vulnerability">
               <li className="tab-list__tab">
                 <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Changes) }}
                   className={mat.tab === CDModalTab.Changes ? `${tabClasses} active` : `${tabClasses}`}>
@@ -179,7 +178,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             {mat.showSourceInfo ? "Hide Source Info" : "Show Source Info"}
             <img src={arrow} alt="" style={{ 'transform': `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }} />
           </button>
-        </>}
       </div >
     })
   }
