@@ -214,35 +214,31 @@ export const getTypeGroups = (isESOModuleInstalled: boolean, typeValue?: string)
         ]
 
     if (isESOModuleInstalled) {
-      if (typeValue) {
-          return [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
-      } else {
-          return [
-              {
-                  label: '',
-                  options: noGroups,
-              },
-              {
-                  label: 'External Secret Operator (ESO)',
-                  options: esoGroups,
-              },
-              {
-                  label: 'Kubernetes External Secret (KES)',
-                  options: ksoGroups,
-              },
-          ]
-      }
+        return typeValue
+            ? [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
+            : [
+                  {
+                      label: '',
+                      options: noGroups,
+                  },
+                  {
+                      label: 'External Secret Operator (ESO)',
+                      options: esoGroups,
+                  },
+                  {
+                      label: 'Kubernetes External Secret (KES)',
+                      options: ksoGroups,
+                  },
+              ]
     } else {
-      if (typeValue) {
-          return noGroups
-      } else {
-          return [
-              {
-                  label: '',
-                  options: noGroups,
-              },
-          ]
-      }
+        return typeValue
+            ? noGroups
+            : [
+                  {
+                      label: '',
+                      options: noGroups,
+                  },
+              ]
     }
 }
 
