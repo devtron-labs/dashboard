@@ -7,6 +7,8 @@ import { multiSelectStyles } from '../common'
 import { NavLink } from 'react-router-dom'
 import { ModuleNameMap, URLS } from '../../config'
 
+export const CODE_EDITOR_RADIO_STATE = {DATA: 'data'}
+
 export const sampleJSONs = {
     ESO_GoogleSecretsManager: {
         secretStore: {

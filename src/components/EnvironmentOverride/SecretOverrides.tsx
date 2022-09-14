@@ -28,7 +28,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, ModuleNameMap } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty } from '../secrets/secret.utils'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -235,7 +235,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [roleARN, setRoleARN] = useState(secrets.has(name) ? secrets.get(name)?.roleARN : '')
     const [secretDataValue, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [codeEditorRadio, setCodeEditorRadio] = useState('data')
+    const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isHashiOrAWS = hasHashiOrAWS(externalType)
     const isESO = hasESO(externalType)
     const memoisedReducer = React.useCallback(reducer, [appId, envId])
@@ -443,7 +443,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 })
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
-                payload['data'] = dataArray.reduce((agg, { k, v }) => {
+                payload[CODE_EDITOR_RADIO_STATE.DATA] = dataArray.reduce((agg, { k, v }) => {
                     agg[k] = externalType === '' ? btoa(v || '') : v || ''
                     return agg
                 }, {})
@@ -543,7 +543,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== 'data') return
+        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
         if(isESO){
             setEsoYaml(yaml)
         }else {
@@ -873,7 +873,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                 onChange={handleSecretDataYamlChange}
                                 readOnly={state.locked || codeEditorRadio === 'sample'}
                                 shebang={
-                                    codeEditorRadio === 'data'
+                                    codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
                                         ? '#Check sample for usage.'
                                         : dataHeaders[externalType] || dataHeaders['default']
                                 }

@@ -37,7 +37,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList, CODE_EDITOR_RADIO_STATE } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
@@ -312,7 +312,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
     const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
-    const [codeEditorRadio, setCodeEditorRadio] = useState('data')
+    const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
@@ -525,7 +525,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 })
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
-                payload['data'] = data
+                payload[CODE_EDITOR_RADIO_STATE.DATA] = data
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
@@ -548,7 +548,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     const externalSubpathKey = externalSubpathValues.value.replace(/\s+/g, '').split(',')
                     const secretKeys = {}
                     externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
-                    payload['data'] = secretKeys
+                    payload[CODE_EDITOR_RADIO_STATE.DATA] = secretKeys
                 }
             }
 
@@ -644,7 +644,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== 'data') return
+        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
         if (isESO) {
             setEsoYaml(yaml)
         } else {
@@ -999,7 +999,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         onChange={handleSecretDataYamlChange}
                         readOnly={secretMode && codeEditorRadio === 'sample'}
                         shebang={
-                            codeEditorRadio === 'data'
+                            codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
                                 ? '#Check sample for usage.'
                                 : dataHeaders[externalType] || dataHeaders['default']
                         }
