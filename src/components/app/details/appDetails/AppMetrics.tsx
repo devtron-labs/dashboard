@@ -8,7 +8,7 @@ import { DatePickerType2 as DateRangePicker, Progressing, not, useAsync } from '
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap } from '../../../../config';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
@@ -369,8 +369,14 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
                     APPLICATION METRICS
                 </span>
                 <span className="fw-4 fs-13 cn-7">
-                View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this app.&nbsp;
-                <a href="">Learn more</a>
+                    View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
+                    app.&nbsp;
+                    <NavLink
+                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                        className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
+                    >
+                        Learn more
+                    </NavLink>
                 </span>
             </div>
         </div>
