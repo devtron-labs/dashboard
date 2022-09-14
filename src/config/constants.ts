@@ -165,6 +165,10 @@ export const Routes = {
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
     MODULE_CONFIGURED: 'module/config',
+    SSO: 'sso',
+    SSO_LIST: 'sso/list',
+    SSO_CREATE: 'sso/create',
+    SSO_UPDATE: 'sso/update',
 }
 
 export const ViewType = {
@@ -185,11 +189,6 @@ export const AppConfigStatus = {
     SECRETS: 6,
     ENV_OVERRIDE: 7,
     END: 10,
-}
-
-export const FullRoutes = {
-    LOGIN: `${Routes.LOGIN}`,
-    CENTRAL: 'https://api-stage.devtron.ai',
 }
 
 export const PATTERNS = {
@@ -553,8 +552,26 @@ export const ModuleNameMap = {
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
   ESO: 'eso',
+  NOTIFICATION: 'notifier'
 }
 
 export const BUILD_STATUS = {
   NOT_TRIGGERED: 'not triggered'
+}
+
+export const EVENT_STREAM_EVENTS_MAP = {
+  MESSAGE: 'message',
+  START_OF_STREAM: 'START_OF_STREAM',
+  END_OF_STREAM: 'END_OF_STREAM',
+  ERROR: 'error'
+}
+
+export const TERMINAL_STATUS_MAP = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    RUNNING: 'running',
+    PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    FAILED: 'failed',
+    ERROR: 'error',
 }

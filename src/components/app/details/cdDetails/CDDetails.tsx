@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { Host, ModuleNameMap, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, Host, ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -413,18 +413,18 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
         function getLogs() {
             let url = `${Host}/app/cd-pipeline/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
             eventSrcRef.current = new EventSource(url, { withCredentials: true })
-            eventSrcRef.current.addEventListener('message', (event: any) => {
-                if (event.data.toString().indexOf('START_OF_STREAM') !== -1) {
+            eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, (event: any) => {
+                if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM) !== -1) {
                     setLogs([])
                     counter.current = 0
-                } else if (event.data.toString().indexOf('END_OF_STREAM') !== -1) {
+                } else if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM) !== -1) {
                     eventSrcRef.current.close()
                 } else {
                     setLogs((logs) => logs.concat({ text: event.data, index: counter.current + 1 }))
                     counter.current += 1
                 }
             })
-            eventSrcRef.current.addEventListener('error', (event: any) => {
+            eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, (event: any) => {
                 eventSrcRef.current.close()
                 setLogsNotAvailableError(true)
             })
