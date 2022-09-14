@@ -93,7 +93,7 @@ interface Breadcrumbs {
     className?: string;
 };
 
-export const BreadCrumb: React.FC<Breadcrumbs> = ({ breadcrumbs, sep = "/", className = "devtron-breadcrumb__item" }) => {
+export const BreadCrumb: React.FC<Breadcrumbs> = ({ breadcrumbs, sep = "/", className = "dc__devtron-breadcrumb__item" }) => {
     const { url } = useRouteMatch()
     const filteredCrumbs = breadcrumbs.filter(crumb => !!crumb.name)
     return <React.Fragment>

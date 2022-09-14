@@ -211,7 +211,7 @@ export const ChartRepoSelector = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex react-select__bottom bcn-0">
+                <div className="flex dc__react-select__bottom bcn-0">
                     <div className="sticky-information__bottom">
                         <div className="sticky-information__icon mt-2">
                             <Info className="icon-dim-16" />
@@ -231,7 +231,7 @@ export const ChartRepoSelector = ({
     return (
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
-                <div className="flex content-space">
+                <div className="flex dc__content-space">
                     <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart</span>
                     <Tippy
                         className="default-tt "
@@ -239,7 +239,7 @@ export const ChartRepoSelector = ({
                         content="Fetch latest charts from connected chart repositories"
                     >
                         <span
-                            className={`refetch-charts cb-5 cursor text-underline ${
+                            className={`refetch-charts cb-5 cursor dc__underline-onhover ${
                                 refetchingCharts ? 'refetching' : ''
                             }`}
                             onClick={refetchCharts}
@@ -409,7 +409,7 @@ export const ActiveReadmeColumn = ({
 const formatOptionLabel = (option: { label: string; value: number; info: string; version?: string }): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">
+            <span className="w-100 dc__ellipsis-right">
                 {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
             {option.info && <small className="cn-6">{option.info}</small>}
@@ -822,7 +822,7 @@ export const ChartValuesEditor = ({
                 customLoader={
                     <DetailsProgressing size={32}>
                         {manifestView && !comparisonView && (
-                            <span className="fs-13 fw-4 cn-7 mt-8 align-center">
+                            <span className="fs-13 fw-4 cn-7 mt-8 dc__align-center">
                                 Generating the manifest. <br /> Please wait...
                             </span>
                         )}
@@ -841,13 +841,13 @@ export const ChartValuesEditor = ({
                 )}
                 {!manifestView && showInfoText && hasChartChanged && (
                     <CodeEditor.Warning
-                        className="ellipsis-right"
+                        className="dc__ellipsis-right"
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
                     />
                 )}
                 {manifestView && showInfoText && (
                     <CodeEditor.Information
-                        className="ellipsis-right"
+                        className="dc__ellipsis-right"
                         text="Manifest is generated locally from the YAML."
                     >
                         <Tippy
@@ -923,7 +923,7 @@ export const AppNotLinkedDialog = ({
                     </button>
                     <button
                         type="button"
-                        className="cta ml-12 no-decor"
+                        className="cta ml-12 dc__no-decor"
                         onClick={() => {
                             close()
                             update(true)
@@ -939,7 +939,7 @@ export const AppNotLinkedDialog = ({
 
 const renderValidationErrorLabel = (message?: string): JSX.Element => {
     return (
-        <div className="error-label flex left align-start fs-11 fw-4 mt-6">
+        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
             <div className="error-label-icon">
                 <Error className="icon-dim-16" />
             </div>

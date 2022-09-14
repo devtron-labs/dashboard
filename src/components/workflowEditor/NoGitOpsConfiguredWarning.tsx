@@ -16,12 +16,12 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
     return (
         <VisibleModal2 className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
-                <div className="flexbox content-space mb-20">
+                <div className="flexbox dc__content-space mb-20">
                     <WarningIcon className="h-48 mw-48" />
                     <Close className="icon-dim-24 cursor" onClick={closePopupDoNothing} />
                 </div>
                 <div className="flex left column ">
-                    <h3 className="confirmation-dialog__title lh-1-25 break-word w-100">GitOps is not configured</h3>
+                    <h3 className="confirmation-dialog__title lh-1-25 dc__break-word w-100">GitOps is not configured</h3>
                     <p className="fs-14 fw-4">
                         Since GitOps is not configured, the deployment pipeline will use helm to create deployments.
                     </p>

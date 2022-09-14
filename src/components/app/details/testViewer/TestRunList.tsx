@@ -20,7 +20,7 @@ export default function TestRunList(){
         endDate: moment().add(1, 'days'),
     });
     const [focusedDate, setFocusedDate] = useState(null)
-    
+
     if(ciPipelinesLoading) return <div className="w-100" style={{height:'100%'}}><Progressing pageLoader/></div>
     if(!ciPipelinesLoading && (!ciPipelinesResult?.result || ciPipelinesResult?.result?.length === 0)){
         return (
@@ -75,7 +75,7 @@ const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
     const ciPipelinesMap = mapByKey(pipelines, 'id');
     const ciPipelineName = ciPipelinesMap.has(+params.pipelineId) ? ciPipelinesMap.get(+params.pipelineId)?.name : null;
     const {url, path} = useRouteMatch()
-    
+
     return (
         <div style={{ width: '250px' }} className="mb-16">
             <Select
@@ -197,17 +197,17 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
                     <tbody>
                         {(triggerList?.result?.result || []).map((triggerDetails) => (
                             <tr className="pointer hover-trigger" key={triggerDetails.triggerId}>
-                                <Td to={`${url}/${triggerDetails.triggerId}`} className="flex left cn-9 no-decor">
+                                <Td to={`${url}/${triggerDetails.triggerId}`} className="flex left cn-9 dc__no-decor">
                                     {moment(triggerDetails?.createdOn).format('ddd, DD MMM YYYY, HH:mma')}
                                     <DropdownIcon
                                         className="hover-only rotate"
                                         style={{ ['--rotateBy' as any]: '-90deg' }}
                                     />
                                 </Td>
-                                <Td to={`${url}/${triggerDetails.triggerId}`} className="cn-9 no-decor">
+                                <Td to={`${url}/${triggerDetails.triggerId}`} className="cn-9 dc__no-decor">
                                     {triggerDetails.testCount}
                                 </Td>
-                                <Td to={`${url}/${triggerDetails.triggerId}`} className="cn-9 no-decor">
+                                <Td to={`${url}/${triggerDetails.triggerId}`} className="cn-9 dc__no-decor">
                                     {[
                                         'disabledCount',
                                         'errorCount',
@@ -249,7 +249,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
     const [selectedType, setSelectedType] = useState<'testsuite' | 'package' | 'classname' | 'method'>(null)
     const [selectedNames, setSelectedNames] = useState<SelectedNames>(
         {
-            testsuite: [], 
+            testsuite: [],
             package: [],
             classname: [],
             method: []
@@ -291,7 +291,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         return {testsuite, package: packageName, classname, method}
 
     }, [result])
-    
+
 
     function handleChange(selected, change){
         const {action, name, option} = change
@@ -314,7 +314,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
         setSelectedType(null)
         setSelectionState('type')
     }
-    
+
 
 
     const {options, value }  = useMemo(()=>{
@@ -325,7 +325,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
                   type: selectedType,
               }))
             : [];
-        
+
         const namesValue: any[] = Object.entries(selectedNames).reduce((agg, curr) => {
             const [category, names] = curr;
             return [...agg, ...names.map((name) => ({ label: `${category}: ${name}`, value: name, type: category }))];

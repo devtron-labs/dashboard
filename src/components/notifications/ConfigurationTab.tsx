@@ -144,8 +144,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 <table className="w-100">
                     <thead>
                         <tr className="configuration-tab__table-header">
-                            <td className="slack-config-table__name truncate-text">Name</td>
-                            <td className="slack-config-table__webhook truncate-text">Webhook URL</td>
+                            <td className="slack-config-table__name dc__truncate-text ">Name</td>
+                            <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
                             <td className="slack-config-table__action"></td>
                         </tr>
                     </thead>
@@ -154,17 +154,17 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                             {this.state.slackConfigurationList.map((slackConfig) => {
                                 return (
                                     <td key={slackConfig.id} className="configuration-tab__table-row">
-                                        <div className="slack-config-table__name truncate-text">
+                                        <div className="slack-config-table__name dc__truncate-text ">
                                             {slackConfig.slackChannel}
                                         </div>
-                                        <div className="slack-config-table__webhook truncate-text">
+                                        <div className="slack-config-table__webhook dc__truncate-text ">
                                             {slackConfig.webhookUrl}
                                         </div>
                                         <div className="slack-config-table__action">
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right mr-16"
+                                                    className="dc__transparent dc__align-right mr-16"
                                                     onClick={(event) => {
                                                         this.setState({
                                                             showSlackConfigModal: true,
@@ -183,7 +183,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right"
+                                                    className="dc__transparent dc__align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             slackConfig.id,
@@ -327,9 +327,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 <table className="w-100">
                     <thead>
                         <tr className="configuration-tab__table-header">
-                            <th className="ses-config-table__name truncate-text">Name</th>
-                            <th className="ses-config-table__access-key truncate-text">Access key Id</th>
-                            <th className="ses-config-table__email truncate-text">Sender's Email</th>
+                            <th className="ses-config-table__name dc__truncate-text ">Name</th>
+                            <th className="ses-config-table__access-key dc__truncate-text ">Access key Id</th>
+                            <th className="ses-config-table__email dc__truncate-text ">Sender's Email</th>
                             <th className="ses-config-table__action"></th>
                         </tr>
                     </thead>
@@ -338,21 +338,21 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                             {this.state.sesConfigurationList.map((sesConfig) => {
                                 return (
                                     <td key={sesConfig.id} className="configuration-tab__table-row">
-                                        <div className="ses-config-table__name truncate-text">
+                                        <div className="ses-config-table__name dc__truncate-text ">
                                             {sesConfig.name}
                                             {sesConfig.isDefault ? (
-                                                <span className="ses_config-table__tag">Default</span>
+                                                <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="ses-config-table__access-key truncate-text">
+                                        <div className="ses-config-table__access-key dc__truncate-text ">
                                             {sesConfig.accessKeyId}
                                         </div>
-                                        <div className="ses-config-table__email truncate-text">{sesConfig.email}</div>
+                                        <div className="ses-config-table__email dc__truncate-text ">{sesConfig.email}</div>
                                         <div className="ses-config-table__action">
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right mr-16"
+                                                    className="dc__transparent dc__align-right mr-16"
                                                     onClick={(event) => {
                                                         this.setState({
                                                             showSESConfigModal: true,
@@ -371,7 +371,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right"
+                                                    className="dc__transparent dc__align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             sesConfig.id,
@@ -414,10 +414,10 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 <table className="w-100">
                     <thead>
                         <tr className="configuration-tab__table-header">
-                            <th className="ses-config-table__name truncate-text">Name</th>
-                            <th className="smtp-config-table__host truncate-text">Host</th>
-                            <th className="smtp-config-table__port truncate-text">Port</th>
-                            <th className="smtp-config-table__email truncate-text">Sender's Email</th>
+                            <th className="ses-config-table__name dc__truncate-text ">Name</th>
+                            <th className="smtp-config-table__host dc__truncate-text ">Host</th>
+                            <th className="smtp-config-table__port dc__truncate-text ">Port</th>
+                            <th className="smtp-config-table__email dc__truncate-text ">Sender's Email</th>
                             <th className="ses-config-table__action"></th>
                         </tr>
                     </thead>
@@ -426,20 +426,20 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                             {this.state.smtpConfigurationList.map((smtpConfig) => {
                                 return (
                                     <td key={smtpConfig.id} className="configuration-tab__table-row">
-                                        <div className="ses-config-table__name truncate-text">
+                                        <div className="ses-config-table__name dc__truncate-text ">
                                             {smtpConfig.name}
                                             {smtpConfig.isDefault ? (
-                                                <span className="ses_config-table__tag">Default</span>
+                                                <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="smtp-config-table__host truncate-text">{smtpConfig.host}</div>
-                                        <div className="smtp-config-table__port truncate-text">{smtpConfig.port}</div>
-                                        <div className="smtp-config-table__email truncate-text">{smtpConfig.email}</div>
+                                        <div className="smtp-config-table__host dc__truncate-text ">{smtpConfig.host}</div>
+                                        <div className="smtp-config-table__port dc__truncate-text ">{smtpConfig.port}</div>
+                                        <div className="smtp-config-table__email dc__truncate-text ">{smtpConfig.email}</div>
                                         <div className="ses-config-table__action">
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right mr-16"
+                                                    className="dc__transparent dc__align-right mr-16"
                                                     onClick={() => {
                                                         this.setState({
                                                             showSMTPConfigModal: true,
@@ -458,7 +458,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right"
+                                                    className="dc__transparent dc__align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             smtpConfig.id,

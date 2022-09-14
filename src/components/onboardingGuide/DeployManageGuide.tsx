@@ -76,7 +76,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                 onClickCloseButton={redirectToAppList}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
-            <div className="deploy-manage__body bcn-0 flex position-rel">
+            <div className="deploy-manage__body bcn-0 flex dc__position-rel">
                 <div className="deploy-manage__abs">
                     <div className="deploy-manage-cards__wrap">
                         {devtronHelmCount > 0 && (
@@ -84,17 +84,17 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 <NavLink
                                     to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
                                     activeClassName="active"
-                                    className="no-decor fw-6 cursor cn-9 flex"
+                                    className="dc__no-decor fw-6 cursor cn-9 flex"
                                     onClick={onClickViewApplication}
                                 >
                                     <img
-                                        className="left-radius-4 bcn-1"
+                                        className="dc__left-radius-4 bcn-1"
                                         src={HelmSearch}
                                         width="200"
                                         height="150"
                                         alt="Please connect cluster"
                                     />
-                                    <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                    <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                         Check deployed helm apps <br />
                                         <div className="fs-14 cb-5 mt-8">View applications</div>
                                     </div>
@@ -106,17 +106,17 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                             <NavLink
                                 to={URLS.CHARTS_DISCOVER}
                                 activeClassName="active"
-                                className="no-decor fw-6 cursor cn-9 flex"
+                                className="dc__no-decor fw-6 cursor cn-9 flex"
                                 onClick={onClickHelmChart}
                             >
                                 <img
-                                    className="left-radius-4 bcn-1"
+                                    className="dc__left-radius-4 bcn-1"
                                     src={HelmCollage}
                                     width="200"
                                     height="150"
                                     alt="Please connect cluster"
                                 />
-                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                     I want to deploy popular helm charts <br />
                                     <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
                                 </div>
@@ -126,17 +126,17 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                             <NavLink
                                 to={URLS.GLOBAL_CONFIG_CLUSTER}
                                 activeClassName="active"
-                                className="no-decor fw-6 cursor cn-9 flex"
+                                className="dc__no-decor fw-6 cursor cn-9 flex"
                                 onClick={onClickCluster}
                             >
                                 <img
-                                    className="left-radius-4 bcn-1"
+                                    className="dc__left-radius-4 bcn-1"
                                     src={HelmInCluster}
                                     width="200"
                                     height="150"
                                     alt="Please connect cluster"
                                 />
-                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                     I have helm applications in other clusters <br />
                                     <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
                                 </div>
@@ -146,17 +146,17 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                             <NavLink
                                 to={URLS.GLOBAL_CONFIG_CHART}
                                 activeClassName="active"
-                                className="no-decor fw-6 cursor cn-9 flex"
+                                className="dc__no-decor fw-6 cursor cn-9 flex"
                                 onClick={onClickChartCard}
                             >
                                 <img
-                                    className="left-radius-4 bcn-1"
+                                    className="dc__left-radius-4 bcn-1"
                                     src={ChartRepository}
                                     width="200"
                                     height="150"
                                     alt="Please connect cluster"
                                 />
-                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                     I want to connect my own chart repository <br />
                                     <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
                                 </div>
@@ -166,7 +166,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                     <div className="fs-14 flex column mt-40 mb-20">
                         <NavLink
                             to={`${URLS.APP}/${URLS.APP_LIST}`}
-                            className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                            className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                         >
                             Skip and explore Devtron on your own
                         </NavLink>

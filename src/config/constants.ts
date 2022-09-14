@@ -164,7 +164,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
-    BLOB_STORAGE_CONFIGURED: 'module/config',
+    MODULE_CONFIGURED: 'module/config',
 }
 
 export const ViewType = {
@@ -189,7 +189,7 @@ export const AppConfigStatus = {
 
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
-    CENTRAL: 'https://api-stage.devtron.ai',
+    CENTRAL: 'https://api.devtron.ai',
 }
 
 export const PATTERNS = {
@@ -553,4 +553,25 @@ export const ModuleNameMap = {
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
   GRAFANA: 'monitoring.grafana'
+}
+
+export const BUILD_STATUS = {
+  NOT_TRIGGERED: 'not triggered'
+}
+
+export const EVENT_STREAM_EVENTS_MAP = {
+  MESSAGE: 'message',
+  START_OF_STREAM: 'START_OF_STREAM',
+  END_OF_STREAM: 'END_OF_STREAM',
+  ERROR: 'error'
+}
+
+export const TERMINAL_STATUS_MAP = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    RUNNING: 'running',
+    PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    FAILED: 'failed',
+    ERROR: 'error',
 }

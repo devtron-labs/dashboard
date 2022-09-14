@@ -123,11 +123,11 @@ const ChartMenuList = (props) => {
             {props.children}
             <NavLink
                 to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 no-decor bottom-radius-4"
+                className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor dc__bottom-radius-4"
                 target="_blank"
                 rel="noreferrer noopener"
             >
-                <Upload className="icon-dim-16 mr-8 vertical-align-bottom upload-icon-stroke" />
+                <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom upload-icon-stroke" />
                 Upload custom chart
             </NavLink>
         </components.MenuList>
@@ -334,7 +334,7 @@ export const DeploymentTemplateOptionsTab = ({
     disableVersionSelect,
 }: DeploymentTemplateOptionsTabProps) => {
     return (
-        <div className="dt-options-tab-container flex content-space pl-16 pr-16 pt-8 pb-8">
+        <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16 pt-8 pb-8">
             {!openComparison && !openReadMe ? (
                 <ChartTypeVersionOptions
                     isUnSet={isUnSet}
@@ -366,7 +366,7 @@ export const DeploymentTemplateOptionsTab = ({
 const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">
+            <span className="w-100 dc__ellipsis-right">
                 {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
         </div>
@@ -638,7 +638,7 @@ export const DeploymentTemplateEditorView = ({
     return (
         <>
             {showReadme && (
-                <div className="dt-readme border-right">
+                <div className="dt-readme dc__border-right">
                     <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
                     {chartConfigLoading ? (
                         <Progressing pageLoader />
@@ -647,7 +647,7 @@ export const DeploymentTemplateEditorView = ({
                     )}
                 </div>
             )}
-            <div className="form__row form__row--code-editor-container border-top border-bottom">
+            <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
                     defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
                     value={value}
@@ -672,7 +672,7 @@ export const DeploymentTemplateEditorView = ({
                     {openComparison && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <>
-                                <div className="flex left fs-12 fw-6 cn-9 border-right h-32">
+                                <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32">
                                     <span style={{ width: '85px' }}>Compare with: </span>
                                     <CompareWithDropdown
                                         isEnvOverride={isEnvOverride}
@@ -714,7 +714,7 @@ export const DeploymentConfigFormCTA = ({
     return (
         <div
             className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
-                showAppMetricsToggle ? 'content-space' : 'right'
+                showAppMetricsToggle ? 'dc__content-space' : 'right'
             }`}
         >
             {showAppMetricsToggle && (
@@ -738,7 +738,11 @@ export const DeploymentConfigFormCTA = ({
                     <div className="flex column left">
                         <div className="fs-13 mb-4">
                             <b className="fw-6 cn-9 mr-8">Show application metrics</b>
-                            <a href={DOCUMENTATION.APP_METRICS} target="_blank" className="fw-4 cb-5 text-underline">
+                            <a
+                                href={DOCUMENTATION.APP_METRICS}
+                                target="_blank"
+                                className="fw-4 cb-5 dc__underline-onhover"
+                            >
                                 Learn more
                             </a>
                         </div>

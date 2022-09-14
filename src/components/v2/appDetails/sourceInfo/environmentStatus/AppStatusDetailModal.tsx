@@ -112,8 +112,8 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
     return (
         <Drawer position="right" width="50%">
             <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
-                <div className="app-status-detail__header box-shadow pb-12 pt-12 mb-20 bcn-0">
-                    <div className="title flex content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
+                <div className="app-status-detail__header dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
+                    <div className="title flex dc__content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
                         App status detail
                         <span className="cursor" onClick={close}>
                             <Close className="icon-dim-24" />
@@ -148,7 +148,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
                     )}
                     <table>
                         <thead>
-                            <tr className="border-bottom cn-7">
+                            <tr className="dc__border-bottom cn-7">
                                 {['name', 'status', 'message'].map((n, index) => (
                                     <th className={`pl-20 pt-8 pb-8 ${n === 'message' ? 'pr-20' : ''}`} key={`header_${index}`}>
                                         {n.toUpperCase()}
@@ -167,7 +167,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
                                                     <td className="pl-20 pt-12 pb-12" valign="top">
                                                         <div className="kind-name">
                                                             <div className="fw-6">{nodeDetails.kind}/</div>
-                                                            <div className="ellipsis-left">{nodeDetails.name}</div>
+                                                            <div className="dc__ellipsis-left">{nodeDetails.name}</div>
                                                         </div>
                                                     </td>
                                                     <td

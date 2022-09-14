@@ -49,7 +49,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
         </div>
     ) : (
         <div className="terminal-view-container">
-            <div className="flex left bcn-0 pt-4 pb-4 pl-20 border-top">
+            <div className="flex left bcn-0 pt-4 pb-4 pl-20 dc__border-top">
                 <Tippy
                     className="default-tt"
                     arrow={false}

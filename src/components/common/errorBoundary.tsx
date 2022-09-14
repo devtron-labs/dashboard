@@ -48,7 +48,7 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
                     <h2 style={{ marginBottom: '20px' }}>We encountered an error.</h2>
                     <a
                         href="https://discord.devtron.ai/"
-                        className="cta flex no-decor"
+                        className="cta flex dc__no-decor"
                         target="_blank"
                         onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}
                     >

@@ -23,10 +23,6 @@
     padding-right: 20px !important;
 }
 
-.text-capitalize {
-    text-transform: capitalize;
-}
-
 .f-healthy,
 .f-deployed,
 .f-synced,
@@ -72,7 +68,7 @@
     grid-template-columns: auto 1fr;
     grid-template-rows: 1fr;
 
-    .ellipsis-left {
+    .dc__ellipsis-left {
         text-align: left;
     }
 }

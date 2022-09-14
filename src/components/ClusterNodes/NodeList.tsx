@@ -361,11 +361,11 @@ export default function NodeList() {
         if (clusterErrorList.length === 0) return
         return (
             <div
-                className={`pl-20 pr-20 pt-12 bcr-1 border-top border-bottom ${
+                className={`pl-20 pr-20 pt-12 bcr-1 dc__border-top dc__border-bottom ${
                     collapsedErrorSection ? ' pb-12 ' : ' pb-8'
                 }`}
             >
-                <div className={`flexbox content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
+                <div className={`flexbox dc__content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
                     <span
                         className="flexbox pointer"
                         onClick={(event) => {
@@ -427,7 +427,7 @@ export default function NodeList() {
     const renderClusterSummary = (): JSX.Element => {
         return (
             <>
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
+                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     <div className="fw-6 fs-14 cn-9">Resource allocation and usage</div>
                     <div className="fs-13">
                         {lastDataSyncTimeString && (
@@ -440,52 +440,52 @@ export default function NodeList() {
                         )}
                     </div>
                 </div>
-                <div className="flexbox content-space pl-20 pr-20 pb-20">
-                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
+                <div className="flexbox dc__content-space pl-20 pr-20 pb-20">
+                    <div className="flexbox dc__content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Usage</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.usagePercentage}
                             </div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Capacity</div>
-                            <div className="align-center fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Capacity</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Requests</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Requests</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.requestPercentage}
                             </div>
                         </div>
                         <div className="w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Limits</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Limits</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.limitPercentage}
                             </div>
                         </div>
                     </div>
 
-                    <div className="flexbox content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
+                    <div className="flexbox dc__content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Usage</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.usagePercentage}
                             </div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Capacity</div>
-                            <div className="align-center fs-24 fw-4 cn-9">{clusterCapacityData?.memory?.capacity}</div>
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Capacity</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">{clusterCapacityData?.memory?.capacity}</div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Requests</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Requests</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.requestPercentage}
                             </div>
                         </div>
                         <div className="w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Limits</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Limits</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.limitPercentage}
                             </div>
                         </div>
@@ -499,9 +499,9 @@ export default function NodeList() {
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
         return (
             <div
-                className={`h-36 list-title inline-block mr-16 pt-8 pb-8 ${
+                className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
                     column.label === 'Node'
-                        ? `${fixedNodeNameColumn ? 'bcn-0 position-sticky sticky-column border-right' : ''} w-280 pl-20`
+                        ? `${fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''} w-280 pl-20`
                         : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
@@ -511,9 +511,9 @@ export default function NodeList() {
                 }}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
-                    <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
-                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 position-rel sort-icon" />}
+                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />}
             </div>
         )
     }
@@ -548,28 +548,28 @@ export default function NodeList() {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 border-bottom-n1 pr-20 hover-class h-44"
+                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44"
                 style={{ width: 'max-content', minWidth: '100%' }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
-                            className={`w-280 inline-block ellipsis-right mr-16 pl-20 pt-12 pb-12${
-                                fixedNodeNameColumn ? ' bcn-0 position-sticky sticky-column border-right' : ''
+                            className={`w-280 dc__inline-block dc__ellipsis-right mr-16 pl-20 pt-12 pb-12${
+                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
                             <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
                         </div>
                     ) : (
                         <div
-                            className={`w-100-px inline-block ellipsis-right mr-16 pt-12 pb-12 ${
+                            className={`w-100-px dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
                                 column.value === 'status' ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7' : ''
                             }`}
                         >
                             {column.value === 'errorCount' ? (
                                 nodeData['errorCount'] > 0 && (
                                     <>
-                                        <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
                                         <span className="cr-5">{nodeData['errorCount'] || '-'}</span>{' '}
                                     </>
                                 )
@@ -611,7 +611,7 @@ export default function NodeList() {
     }
 
     return (
-        <>
+        <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
             <div className="node-list">
                 {renderClusterSummary()}
@@ -642,7 +642,7 @@ export default function NodeList() {
                         <>
                             <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
                                 <div
-                                    className=" fw-6 cn-7 fs-12 border-bottom pr-20 text-uppercase"
+                                    className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
                                     style={{ width: 'max-content', minWidth: '100%' }}
                                 >
                                     {appliedColumns.map((column) => renderNodeListHeader(column))}
@@ -656,6 +656,6 @@ export default function NodeList() {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }

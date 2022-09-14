@@ -37,7 +37,7 @@ export default function DeploymentStatusDetailBreakdown({
                         {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].displayText +
                             deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].displaySubText}
                     </span>
-                    <span className="align-right cn-7">
+                    <span className="dc__align-right cn-7">
                         {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].time !== ''
                             ? moment(
                                   deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].time,

@@ -296,7 +296,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
     ) : (
         <React.Fragment>
             <div className="node-container-fluid bcn-0">
-                <div className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'border-top' : ''}`}>
+                <div className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}>
                     <div className="col-6 flexbox flex-align-center">
                         <Tippy
                             className="default-tt"
@@ -498,8 +498,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                     Stopped printing logs.{' '}
                                     <span
                                         onClick={(e) => handleLogsPause()}
-                                        className="pointer"
-                                        style={{ textDecoration: 'underline' }}
+                                        className="pointer dc__underline"
                                     >
                                         Resume ( Ctrl+c )
                                     </span>
@@ -510,8 +509,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                     Disconnected.{' '}
                                     <span
                                         onClick={(e) => fetchLogs()}
-                                        className="pointer"
-                                        style={{ textDecoration: 'underline' }}
+                                        className="pointer dc__underline"
                                     >
                                         Reconnect
                                     </span>
@@ -534,11 +532,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             }`}
                         >
                             {readyState === 0 && (
-                                <div className="readyState loading-dots" style={{ color: 'orange' }}>
+                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }}>
                                     Connecting
                                 </div>
                             )}
-                            {readyState === 1 && <div className="readyState loading-dots cg-5 pl-20">Connected</div>}
+                            {readyState === 1 && <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>}
                         </div>
                     </div>
                 )}

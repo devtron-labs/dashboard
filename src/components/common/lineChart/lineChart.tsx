@@ -21,7 +21,7 @@ export default class LineChart extends Component<LineChartProps>{
 
         const tooltip = this.props.tooltipRef;
 
-        const svg = d3.select(this.props.svgRef) 
+        const svg = d3.select(this.props.svgRef)
             .insert("g", "line")
             .attr("transform", `translate(${offset},${offset})`)
 
@@ -30,7 +30,7 @@ export default class LineChart extends Component<LineChartProps>{
         data.sort(function (x, y) {
             return d3.ascending(x.time, y.time)
         })
-        
+
         let display: number[] = data.map(function (element) {
             return element.display;
         })
@@ -165,8 +165,8 @@ export default class LineChart extends Component<LineChartProps>{
             .attr("stroke-width", "1")
             .attr("stroke", "rgb(236, 122, 8)")
             .attr("fill", "rgb(236, 122, 8)")
-            
-        
+
+
         hoverElement.on("mouseover", function (d) {
 
             d3.select(this).select("circle")

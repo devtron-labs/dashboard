@@ -33,7 +33,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         this.state = {
             regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
-            isBobStorageConfigured: false
+            isBlobStorageConfigured: false
         }
     }
 
@@ -45,9 +45,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
       try {
           const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
           if (result?.enabled) {
-              this.setState((prevState) => ({
-                  isBobStorageConfigured: true,
-              }))
+              this.setState({ isBlobStorageConfigured: true })
           }
       } catch (error) {}
     }
@@ -71,7 +69,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else if (!this.state.isBobStorageConfigured) {
+        } else if (!this.state.isBlobStorageConfigured) {
             return (
                 <div className="flexbox flex-align-center">
                     <Storage className="icon-dim-24 mr-8" />
@@ -80,7 +78,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         <div className="fw-4 fs-12 flexbox">
                             <span>Want to reduce build time?</span>
                             <a
-                                className="fs-12 fw-6 cb-5 no-decor ml-4"
+                                className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                 href={DOCUMENTATION.ADMIN_PASSWORD}
                                 target="_blank"
                             >

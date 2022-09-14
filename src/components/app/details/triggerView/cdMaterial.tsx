@@ -136,14 +136,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
   }
 
   renderMaterial() {
-    let tabClasses = "transparent tab-list__tab-link tab-list__tab-link--vulnerability";
+    let tabClasses = "dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability";
     return this.props.material.map((mat, index) => {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
 
         {this.renderSequentialCDCardTitle(mat)}
 
-        <div className={`material-history__top ${!this.state.isSecurityModuleInstalled && mat.showSourceInfo?  'dc__border-bottom-n2': ''}`} style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+        <div className={`material-history__top ${!this.state.isSecurityModuleInstalled && mat.showSourceInfo?  'dc__border-bottom': ''}`} style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
           <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
@@ -154,7 +154,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
           </div>}
           <div className="material-history__select-text">
             {mat.vulnerable ? <span className="material-history__scan-error">Security Issues Found</span>
-              : mat.isSelected ? <Check className="align-right icon-dim-24" /> : "Select"}
+              : mat.isSelected ? <Check className="dc__align-right icon-dim-24" /> : "Select"}
           </div>
         </div>
         {!this.props.isFromDeploymentGroup && <>
@@ -196,7 +196,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     return <>
       <div className="trigger-modal__header">
         <h1 className="modal__title">{header}</h1>
-        <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
+        <button type="button" className="dc__transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
       </div>
       <div className="trigger-modal__body">
         <div className="material-list__title">Select Image</div>
@@ -223,7 +223,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         {this.props.material.length > 0 ? this.renderCDModal()
           : <><div className="trigger-modal__header">
             <h1 className="modal__title">{header}</h1>
-            <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
+            <button type="button" className="dc__transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
           </div>
             <EmptyStateCdMaterial materialType={this.props.materialType} />
           </>}

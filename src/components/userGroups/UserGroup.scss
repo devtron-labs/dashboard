@@ -141,7 +141,7 @@
     margin-left: -40px;
     position: absolute;
     top: 52px;
-    border-bottom: 1px solid #d0d4d9;
+    border-bottom: 1px solid var(--N200);
 }
 
 .option-label-padding {
@@ -149,7 +149,7 @@
 }
 
 .select__group {
-    border-bottom: 1px solid #d0d4d9;
+    border-bottom: 1px solid var(--N200);
     .select__group-heading {
         font-size: 12px;
         font-weight: 600;

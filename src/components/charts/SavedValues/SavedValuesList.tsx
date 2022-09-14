@@ -121,7 +121,7 @@ export default function SavedValuesList() {
     }
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel margin-right-0 en-2 bw-1 br-4 h-32">
+            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -135,7 +135,7 @@ export default function SavedValuesList() {
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
             </div>
@@ -172,7 +172,7 @@ export default function SavedValuesList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener">
+            <a className="dc__no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener">
                 Learn more
             </a>
         )
@@ -185,7 +185,7 @@ export default function SavedValuesList() {
                     {subtitleText}&nbsp;
                     {renderLearnMoreLink()}
                 </p>
-                <div className="flexbox content-space">
+                <div className="flexbox dc__content-space">
                     {renderUploadButton()}
                     {renderSearch()}
                 </div>
@@ -243,7 +243,7 @@ export default function SavedValuesList() {
                         renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-20 pb-8 pl-20">
+                            <div className="preset-values-row fw-6 cn-7 fs-12 dc__border-bottom dc__uppercase pt-8 pr-20 pb-8 pl-20">
                                 <div />
                                 <div>Name</div>
                                 <div>Version</div>
@@ -254,13 +254,13 @@ export default function SavedValuesList() {
                                 {filteredSavedValueList.map((chartData, index) => (
                                     <div
                                         key={`saved-value-${index}`}
-                                        className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
+                                        className="preset-values-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
                                     >
                                         <div className="icon-dim-18">
-                                            <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                            <File className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                                         </div>
                                         <div
-                                            className="cb-5 pointer ellipsis-right"
+                                            className="cb-5 pointer dc__ellipsis-right"
                                             onClick={() => redirectToChartValuePage(chartData.id)}
                                         >
                                             {chartData.name}
@@ -276,7 +276,7 @@ export default function SavedValuesList() {
                                                 content={'Use value to deploy'}
                                             >
                                                 <Launch
-                                                    className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon scn-6"
+                                                    className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon scn-6"
                                                     onClick={() => redirectToChartValuePage(chartData.id, true)}
                                                 />
                                             </Tippy>
@@ -287,7 +287,7 @@ export default function SavedValuesList() {
                                                 content={'Edit value'}
                                             >
                                                 <Edit
-                                                    className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
+                                                    className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon"
                                                     onClick={() => redirectToChartValuePage(chartData.id)}
                                                 />
                                             </Tippy>
@@ -298,7 +298,7 @@ export default function SavedValuesList() {
                                                 content={'Delete value'}
                                             >
                                                 <Delete
-                                                    className="icon-dim-18 vertical-align-middle pointer action-icon"
+                                                    className="icon-dim-18 dc__vertical-align-middle pointer action-icon"
                                                     onClick={() => onDeleteButtonClick(chartData)}
                                                 />
                                             </Tippy>
