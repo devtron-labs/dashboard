@@ -2,7 +2,21 @@ import React from 'react'
 import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { multiSelectStyles } from '../common'
+import { NavLink } from 'react-router-dom'
+import { ModuleNameMap, URLS } from '../../config'
+
+export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
+
+export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
+
+export const DATA_HEADER_MAP = { DEFAULT: 'default' }
+
+export const VIEW_MODE = {
+    YAML: 'yaml',
+    GUI: 'gui',
+}
 
 export const sampleJSONs = {
     ESO_GoogleSecretsManager: {
@@ -193,7 +207,7 @@ export const dataHeaders = {
     ),
 }
 
-export const getTypeGroups = (typeValue?: string) => {
+export const getTypeGroups = (isESOModuleInstalled: boolean, typeValue?: string) => {
     const noGroups: any[] = [
             { value: '', label: 'Kubernetes Secret' },
             { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
@@ -210,23 +224,33 @@ export const getTypeGroups = (typeValue?: string) => {
             { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
         ]
 
-    const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
-
-    if (typeValue) return externalType
-    return [
-        {
-            label: '',
-            options: noGroups,
-        },
-        {
-            label: 'External Secret Operator (ESO)',
-            options: esoGroups,
-        },
-        {
-            label: 'Kubernetes External Secret (KES)',
-            options: ksoGroups,
-        },
-    ]
+    if (isESOModuleInstalled) {
+        return typeValue
+            ? [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
+            : [
+                  {
+                      label: '',
+                      options: noGroups,
+                  },
+                  {
+                      label: 'External Secret Operator (ESO)',
+                      options: esoGroups,
+                  },
+                  {
+                      label: 'Kubernetes External Secret (KES)',
+                      options: ksoGroups,
+                  },
+              ]
+    } else {
+        return typeValue
+            ? noGroups
+            : [
+                  {
+                      label: '',
+                      options: noGroups,
+                  },
+              ]
+    }
 }
 
 export function SecretOptions(props) {
@@ -297,4 +321,32 @@ export const hasESO = (externalType): boolean => {
 
 export const hasProperty = (externalType): boolean => {
     return externalType === 'ESO_AWSSecretsManager'
-} 
+}
+
+export const esoModuleInstallMenuList = (props): JSX.Element => {
+    return (
+        <components.MenuList {...props}>
+            {props.children}
+            <div className="flexbox pt-10 pr-12 pb-10 pl-12 bcv-1 m-8 br-4">
+                <HelpIcon className="icon-dim-20 mr-5 fcv-5" />
+                <div>
+                    <div className="fs-13 fw-4 cn-9">Looking to use External Secrets?</div>
+                    <NavLink
+                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.ESO}`}
+                        className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
+                    >
+                        Install External secret integration
+                    </NavLink>
+                </div>
+            </div>
+        </components.MenuList>
+    )
+}
+
+export const esoMenuList = (props): JSX.Element => {
+  return (
+      <components.MenuList {...props}>
+          {props.children}
+      </components.MenuList>
+  )
+}

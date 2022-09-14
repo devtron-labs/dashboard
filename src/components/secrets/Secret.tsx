@@ -13,6 +13,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
     DeleteDialog,
+    useAsync,
 } from '../common'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
@@ -27,7 +28,7 @@ import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, MODES, ModuleNameMap, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -36,8 +37,10 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -308,14 +311,15 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
     const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
-    const [codeEditorRadio, setCodeEditorRadio] = useState('data')
+    const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
+    const [ , esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -520,7 +524,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 })
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
-                payload['data'] = data
+                payload[CODE_EDITOR_RADIO_STATE.DATA] = data
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
@@ -543,7 +547,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     const externalSubpathKey = externalSubpathValues.value.replace(/\s+/g, '').split(',')
                     const secretKeys = {}
                     externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
-                    payload['data'] = secretKeys
+                    payload[CODE_EDITOR_RADIO_STATE.DATA] = secretKeys
                 }
             }
 
@@ -639,7 +643,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== 'data') return
+        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
         if (isESO) {
             setEsoYaml(yaml)
         } else {
@@ -720,16 +724,28 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
-                    placeholder="Select Secret Type"
-                    options={getTypeGroups()}
-                    defaultValue={externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]}
-                    onChange={onChange}
-                    styles={groupStyle()}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: SecretOptions,
-                        GroupHeading
-                    }}
+                        placeholder="Select Secret Type"
+                        options={getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)}
+                        defaultValue={
+                            externalType && externalType !== ''
+                                ? getTypeGroups(
+                                      esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
+                                      externalType,
+                                  )
+                                : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
+                                      .options[0]
+                        }
+                        onChange={onChange}
+                        styles={groupStyle()}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: SecretOptions,
+                            GroupHeading,
+                            MenuList:
+                                esoModuleStatus?.result?.status === ModuleStatus.INSTALLED
+                                    ? esoMenuList
+                                    : esoModuleInstallMenuList,
+                        }}
                     />
                 </div>
             </div>
@@ -909,16 +925,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isExternalValues && (
                 <div className="flex left mb-16">
                     <b className="mr-5 dc__bold">Data*</b>
-                    {!isESO && <RadioGroup
-                        className="gui-yaml-switch"
-                        name="yaml-mode"
-                        initialTab={yamlMode ? 'yaml' : 'gui'}
-                        disabled={false}
-                        onChange={changeEditorMode}
-                    >
-                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                    </RadioGroup>}
+                    {!isESO && (
+                        <RadioGroup
+                            className="gui-yaml-switch"
+                            name="yaml-mode"
+                            initialTab={yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                            disabled={false}
+                            onChange={changeEditorMode}
+                        >
+                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                        </RadioGroup>
+                    )}
                 </div>
             )}
             {externalType === '' && (
@@ -927,7 +945,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         <div className="yaml-container">
                             <CodeEditor
                                 value={secretMode ? lockedYaml : yaml}
-                                mode="yaml"
+                                mode={MODES.YAML}
                                 inline
                                 height={350}
                                 onChange={handleYamlChange}
@@ -973,13 +991,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {(isHashiOrAWS || isESO) && yamlMode ? (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={codeEditorRadio === 'sample' ? sample : isESO ? esoSecretYaml: secretDataYaml}
+                        value={codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE ? sample : isESO ? esoSecretYaml : secretDataYaml}
                         mode="yaml"
                         inline
                         height={350}
                         onChange={handleSecretDataYamlChange}
-                        readOnly={secretMode && codeEditorRadio === 'sample'}
-                        shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeaders[externalType] || dataHeaders['default']}
+                        readOnly={secretMode && codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                        shebang={
+                            codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
+                                ? '#Check sample for usage.'
+                                : dataHeaders[externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT]
+                        }
                     >
                         <CodeEditor.Header>
                             <RadioGroup
@@ -991,8 +1013,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                                     setCodeEditorRadio(event.target.value)
                                 }}
                             >
-                                <RadioGroup.Radio value="data">Data</RadioGroup.Radio>
-                                <RadioGroup.Radio value="sample">Sample</RadioGroup.Radio>
+                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>{CODE_EDITOR_RADIO_STATE_VALUE.DATA}</RadioGroup.Radio>
+                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>{CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}</RadioGroup.Radio>
                             </RadioGroup>
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>
