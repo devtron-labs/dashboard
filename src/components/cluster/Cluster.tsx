@@ -514,7 +514,7 @@ function ClusterForm({
 
     async function onValidation() {
         let payload = getClusterPayload()
-
+        state.url.value = state.url.value.trim()
         if (state.url.value.endsWith('/')) {
             payload['server_url'] = state.url.value.slice(0, -1)
         } else {
@@ -788,7 +788,7 @@ function Environment({
                     { error: 'Environment name is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
                     { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
-                    { error: 'Minimum 3 and Maximum 16 characters required', regex: /^.{3,16}$/ },
+                    { error: 'Minimum 1 and Maximum 16 characters required', regex: /^.{1,16}$/ },
                 ],
             },
             namespace: {

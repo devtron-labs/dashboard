@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TriggerType, ViewType } from '../../config'
+import { PATTERNS, TriggerType, ViewType } from '../../config'
 import { ServerErrors } from '../../modals/commonTypes'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
@@ -1025,7 +1025,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let envId = this.state.pipelineConfig.environmentId
         let selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
         let namespaceEditable = false
-        let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
+        let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace,PATTERNS.NAME_SPACE)
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         return (
             <>
