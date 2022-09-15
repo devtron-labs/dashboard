@@ -5,7 +5,7 @@
     flex-basis: 200px;
 }
 
-.transparent-div {
+.dc__transparent-div {
     position: fixed;
     background: transparent;
     top: 0px;
@@ -217,7 +217,7 @@
     right: -6px;
     border-radius: 50%;
     animation-name: pulse;
-    animation-duration: 2s; 
+    animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
