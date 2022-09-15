@@ -25,6 +25,6 @@ export class ValidationRules {
     }
 
     namespace = (name: string): { isValid: boolean, message: string } => {
-        return this.name(name,PATTERNS.NAME_SPACE)
+        return this.name(name,PATTERNS.NAMESPACE)
     }
 } 

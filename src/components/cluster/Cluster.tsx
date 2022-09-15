@@ -514,11 +514,11 @@ function ClusterForm({
 
     async function onValidation() {
         let payload = getClusterPayload()
-        state.url.value = state.url.value.trim()
-        if (state.url.value.endsWith('/')) {
-            payload['server_url'] = state.url.value.slice(0, -1)
+        const urlValue = state.url.value.trim()
+        if (urlValue.endsWith('/')) {
+            payload['server_url'] = urlValue.slice(0, -1)
         } else {
-            payload['server_url'] = state.url.value
+            payload['server_url'] = urlValue
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
