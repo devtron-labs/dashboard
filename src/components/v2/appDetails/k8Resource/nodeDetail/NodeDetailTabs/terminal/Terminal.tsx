@@ -303,12 +303,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 You’re offline. Please check your internet connection.
             </div>
         ) : (
-            <div className="terminal-strip dc__capitalize">
+            <div className="terminal-strip dc__first-letter-capitalize">
                 {errorMessage && errorMessage.length > 0 ? (
                     <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
                 ) : (
                     <div
-                        className={`dc__capitalize ${
+                        className={`dc__first-letter-capitalize ${
                             terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
                                 ? `${
                                       terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
@@ -358,7 +358,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__capitalize cg-4`}>
+                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}
