@@ -23,5 +23,8 @@ export class ValidationRules {
         if ((material.gitProviderId)) return { isValid: true, message: '' };
         else return { isValid: false, message: 'This is a required field' };
     }
-    namespace = this.name;
+
+    namespace = (name: string): { isValid: boolean, message: string } => {
+        return this.name(name,PATTERNS.NAME_SPACE)
+    }
 } 
