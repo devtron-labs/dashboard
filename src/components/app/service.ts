@@ -410,6 +410,5 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
 }
 
 export const createAppLabels = (request) => {
-    let URL = `${Routes.APP_LABELS}`
-    return post(URL, request)
+    return post(Routes.APP_LABELS, request)
 }

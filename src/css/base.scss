@@ -1669,8 +1669,8 @@ button.anchor {
 }
 
 .dc__no-top-radius {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
 }
 
 .dc__no-bottom-radius {
@@ -2033,6 +2033,10 @@ textarea {
 
 .ml-0-imp {
     margin-left: 0px !important;
+}
+
+.mt-0-imp {
+    margin-top: 0px !important;
 }
 
 .mt-120 {
