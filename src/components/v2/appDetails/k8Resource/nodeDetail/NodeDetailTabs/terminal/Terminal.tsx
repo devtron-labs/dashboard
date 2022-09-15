@@ -299,51 +299,52 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const renderConnectionStrip = () => {
         return !isOnline ? (
-            <div className="terminal-strip dc__capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
+            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
                 You’re offline. Please check your internet connection.
             </div>
         ) : (
-            <div className='terminal-strip dc__capitalize'>
-                {errorMessage && (
+            <div className="terminal-strip dc__first-letter-capitalize">
+                {errorMessage && errorMessage.length > 0 ? (
                     <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
-                )}
-                <div
-                    className={` ${
-                        terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
-                            ? `${
-                                  terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                      ? 'bcy-2'
-                                      : 'bcr-7'
-                              }  pl-20`
-                            : 'pb-10'
-                    } ${
-                        terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
-                    } m-0 pl-20 w-100`}
-                >
-                    {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && (
-                        <span
-                            className={
-                                terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                    ? 'dc__loading-dots'
-                                    : ''
-                            }
-                        >
-                            {terminalViewProps.socketConnection?.toLowerCase()}
-                        </span>
-                    )}
-                    {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
-                        <React.Fragment>
-                            <span>.&nbsp;</span>
-                            <button
-                                type="button"
-                                onClick={onClickResume}
-                                className="cursor dc_transparent dc__inline-block dc__underline"
+                ) : (
+                    <div
+                        className={`dc__first-letter-capitalize ${
+                            terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
+                                ? `${
+                                      terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                          ? 'bcy-2'
+                                          : 'bcr-7'
+                                  }  pl-20`
+                                : 'pb-10'
+                        } ${
+                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
+                        } m-0 pl-20 w-100`}
+                    >
+                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && (
+                            <span
+                                className={
+                                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                        ? 'dc__loading-dots'
+                                        : ''
+                                }
                             >
-                                Resume
-                            </button>
-                        </React.Fragment>
-                    )}
-                </div>
+                                {terminalViewProps.socketConnection?.toLowerCase()}
+                            </span>
+                        )}
+                        {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
+                            <React.Fragment>
+                                <span>.&nbsp;</span>
+                                <button
+                                    type="button"
+                                    onClick={onClickResume}
+                                    className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                                >
+                                    Resume
+                                </button>
+                            </React.Fragment>
+                        )}
+                    </div>
+                )}
             </div>
         )
     }
@@ -357,7 +358,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__capitalize cg-4`}>
+                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}
