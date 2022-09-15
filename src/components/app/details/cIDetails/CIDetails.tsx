@@ -1018,7 +1018,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }
 
-    return logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
+    return triggerDetails.podStatus !== POD_STATUS.PENDING && logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
       renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <div className="logs__body">

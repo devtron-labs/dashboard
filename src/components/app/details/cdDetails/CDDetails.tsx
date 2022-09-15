@@ -432,10 +432,10 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
             eventSrcRef.current.close()
           }
         }
-    }, [triggerDetails.id, pipelineId])
+    }, [triggerDetails.id, pipelineId, triggerDetails.podStatus])
 
     if (!triggerDetails) return null
-    return logsNotAvailableError && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
+    return triggerDetails.podStatus!== POD_STATUS.PENDING && logsNotAvailableError && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
       renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <>
