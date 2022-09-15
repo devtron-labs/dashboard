@@ -233,7 +233,7 @@ export default function DeploymentConfig({
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA
                         loading={loading || chartConfigLoading}
-                        showAppMetricsToggle={charts && selectedChart && appMetricsEnvironmentVariableEnabled && (grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED || false)}
+                        showAppMetricsToggle={charts && selectedChart && appMetricsEnvironmentVariableEnabled && grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                         isAppMetricsEnabled={isAppMetricsEnabled}
                         isCiPipeline={isCiPipeline}
                         currentChart={selectedChart}

@@ -387,7 +387,7 @@ function Cluster({
                                 prometheus_url,
                                 prometheusAuth,
                                 defaultClusterComponent,
-                                isGrafanaModuleInstalled: grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
+                                isGrafanaModuleInstalled: grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
                             }}
                         />
                     </>
