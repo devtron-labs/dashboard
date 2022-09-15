@@ -10,6 +10,7 @@ import { getTeamListMin } from '../../../services/service'
 import ReactSelect from 'react-select'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
+import { NumberOptionType } from '../types'
 
 export default function AboutAppInfoModal({
     appId,
@@ -25,8 +26,8 @@ export default function AboutAppInfoModal({
     submitting,
 }) {
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamListMin(), [appId])
-    const [projectsOptions, setProjectsOption] = useState([])
-    const [selectedProject, setSelectedProject] = useState(null)
+    const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
+    const [selectedProject, setSelectedProject] = useState<NumberOptionType>(null)
 
     useEffect(() => {
         if (!fetchingProjects && projectsListRes?.result && appMetaResult) {

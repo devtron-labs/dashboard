@@ -12,7 +12,7 @@ import './app.css'
 import Tippy from '@tippyjs/react'
 import { getAppMetaInfo, createAppLabels } from '../service'
 import { toast } from 'react-toastify'
-import { OptionType } from '../types'
+import { NumberOptionType, OptionType } from '../types'
 import AboutAppInfoModal from './AboutAppInfoModal'
 import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } from '../appLabelCommon'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
@@ -151,7 +151,7 @@ export function AppHeader() {
         })
     }
 
-    async function handleSubmit(e, projectMetadata) {
+    async function handleSubmit(e: any, projectMetadata: NumberOptionType) {
         const validForm = validateForm()
         if (!validForm) {
             return
