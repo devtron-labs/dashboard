@@ -981,19 +981,17 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                 rootClassName="app-create-model-wrapper"
                 onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
             >
-                {serverMode == SERVER_MODE.FULL &&
-                    appCheckListRes.result?.appChecklist &&
-                    Object.values(appCheckListRes.result.appChecklist).every((check) => check) && (
-                        <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
-                            <AddIcon className="icon-dim-20 fcn-9" />
-                            <div className="ml-8">
-                                <strong>Custom app</strong>
-                                <div>
-                                    Connect a git repository to deploy <br /> a custom application
-                                </div>
+                {serverMode == SERVER_MODE.FULL && (
+                    <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
+                        <AddIcon className="icon-dim-20 fcn-9" />
+                        <div className="ml-8">
+                            <strong>Custom app</strong>
+                            <div>
+                                Connect a git repository to deploy <br /> a custom application
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
                 <div className="app-create-child cursor" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
