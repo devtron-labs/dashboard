@@ -174,20 +174,24 @@ export function AppHeader() {
         const payload = {
             id: parseInt(appId),
             labels: _optionTypes,
-            teamId: projectMetadata.value
+            teamId: projectMetadata.value,
         }
 
         try {
             await createAppLabels(payload)
+            setShowInfoModal(false)
             if (result.projectName === projectMetadata.label) {
                 toast.success('Successfully saved')
             } else {
-                await getAppMetaInfoRes()
                 toast.success(`Application '${result.appName}' is moved to project '${projectMetadata.label}'`)
+                await getAppMetaInfoRes()
             }
-            setShowInfoModal(false)
         } catch (err) {
-            showError(err)
+            if (err['code'] === 403 && result.projectName !== projectMetadata.label) {
+                toast.error(`You don't have the required access to the target project ${projectMetadata.label}`)
+            } else {
+                showError(err)
+            }
         } finally {
             setSubmitting(false)
         }
