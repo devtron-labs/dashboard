@@ -552,7 +552,7 @@ export const ModuleNameMap = {
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
   GRAFANA: 'monitoring.grafana',
-  ESO: 'eso',
+  ESO: 'external-secrets',
   NOTIFICATION: 'notifier'
 }
 
