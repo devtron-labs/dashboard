@@ -192,9 +192,9 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     useEffect(() => {
-        let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
-        if(str !== calendarValue){
-          setCalendarValue(str);
+        const inputCalendarValue: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
+        if(inputCalendarValue !== calendarValue){
+          setCalendarValue(inputCalendarValue);
         }
         if(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED){
           checkDatasource();
