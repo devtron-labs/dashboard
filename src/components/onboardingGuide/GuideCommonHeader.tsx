@@ -18,7 +18,7 @@ function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, is
         <div className="common-guide__container">
             <div className={`deploy-manage__header h-300 dc__window-bg bcn-1`}>
                 {showCloseIcon && (
-                    <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
+                    <button type="button" className="w-100 flex right dc__transparent p-20" onClick={onClickCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 )}
