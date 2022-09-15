@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { EVENT_STREAM_EVENTS_MAP, Host, ModuleNameMap, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, Host, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -426,7 +426,7 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
                 setLogsNotAvailableError(true)
             })
         }
-        getLogs()
+        triggerDetails.podStatus!== POD_STATUS.PENDING && getLogs()
         return () => {
           if(eventSrcRef.current){
             eventSrcRef.current.close()
@@ -458,7 +458,7 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
                             <p className="log mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(text)} />
                         ))}
                     </div>
-                    {eventSrcRef.current && eventSrcRef.current.readyState <= 1 && (
+                    {(triggerDetails.podStatus=== POD_STATUS.PENDING || (eventSrcRef.current && eventSrcRef.current.readyState <= 1)) && (
                         <div className="flex left event-source-status">
                             <Progressing />
                         </div>

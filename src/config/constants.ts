@@ -576,3 +576,7 @@ export const TERMINAL_STATUS_MAP = {
     FAILED: 'failed',
     ERROR: 'error',
 }
+
+export const POD_STATUS = {
+  PENDING: 'Pending'
+}
