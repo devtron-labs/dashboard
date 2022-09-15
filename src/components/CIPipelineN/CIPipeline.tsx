@@ -353,7 +353,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.PreBuild, formData)
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
-        const scanValidation = isSecurityModuleInstalled && (formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING)
+        const scanValidation = !isSecurityModuleInstalled || (formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING)
         if (!scanValidation) {
             setLoadingData(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -370,7 +370,7 @@ export default function CIPipeline({
         }
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
         saveCIPipeline(
-            formData,
+            {...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled: false },
             ciPipeline,
             formData.materials,
             +appId,
