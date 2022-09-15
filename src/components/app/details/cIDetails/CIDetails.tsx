@@ -129,8 +129,8 @@ export default function CIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
-    const [securityModuleStatusLoading, securityModuleStatus, securityModuleStatusError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
-    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [, securityModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [, blobStorageConfiguration, ] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
