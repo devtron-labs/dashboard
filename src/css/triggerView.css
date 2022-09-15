@@ -150,7 +150,7 @@
 
 .material-history__top {
     display: grid;
-    grid-template-columns: 180px 220px auto 1fr;
+    grid-template-columns: repeat(3, auto) 1fr;
     grid-column-gap: 16px;
     justify-content: space-between;
     align-items: center;
@@ -162,7 +162,6 @@
 
 .material-history__info {
     font-family: 'open sans';
-    width: 220px;
 }
 
 .material-history__select-text {
@@ -521,7 +520,7 @@
     align-items: center;
     justify-content: center;
     height: calc(100vh - 72px);
-    width: 800px;
+    width: 100%;
 }
 
 .cd-material__img {

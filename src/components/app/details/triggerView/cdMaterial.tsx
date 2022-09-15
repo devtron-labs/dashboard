@@ -49,7 +49,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
                 infoText: 'Use configuration deployed with selected image',
             },
-            selectedMaterial: this.props.material?.find((_mat) => _mat.isSelected),
+            selectedMaterial: props.material.find((_mat) => _mat.isSelected),
             isRollbackTrigger: props.materialType === 'rollbackMaterialList',
             recentDeploymentConfig: null,
             latestDeploymentConfig: null,
@@ -63,7 +63,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     componentDidMount() {
         this.getSecurityModuleStatus()
 
-        if (this.props.materialType === 'rollbackMaterialList') {
+        if (
+            this.props.materialType === 'rollbackMaterialList' &&
+            this.state.selectedMaterial &&
+            this.props.material.length > 0
+        ) {
             this.getDeploymentConfigDetails()
         }
     }
@@ -429,9 +433,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     canReviewConfig() {
         return (
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                this.state.specificDeploymentConfig) ||
+                this.state.specificDeploymentConfig?.deploymentTemplate) ||
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
-                this.state.recentDeploymentConfig)
+                this.state.recentDeploymentConfig?.deploymentTemplate)
         )
     }
 
@@ -534,7 +538,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     onClick={this.deployTrigger}
                 >
                     {this.props.stageType === 'CD' ? (
-                        <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                        <DeployIcon
+                            className={`icon-dim-16 dc__no-svg-fill mr-8 ${
+                                !selectedImage || (this.state.isRollbackTrigger && this.state.checkingDiff)
+                                    ? 'scn-4'
+                                    : 'scn-0'
+                            }`}
+                        />
                     ) : (
                         <img src={play} alt="trigger" className="trigger-btn__icon" />
                     )}
