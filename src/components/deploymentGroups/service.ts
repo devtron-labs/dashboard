@@ -1,5 +1,6 @@
 import { Routes } from '../../config';
 import { get, post, trash, put } from '../../services/api';
+import { CDModalTab } from '../app/service';
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
 
 export function deploymentGroupList() {
@@ -23,30 +24,41 @@ export function deleteDeploymentGroup(deploymentGroupId: number | string) {
 }
 
 export function getCDMaterialList(deploymentGroupId) {
-    const url = `${Routes.DEPLOYMENT_GROUP_MATERIAL}/${deploymentGroupId}`;
+    const url = `${Routes.DEPLOYMENT_GROUP_MATERIAL}/${deploymentGroupId}`
     return get(url).then((response) => {
-        let list = response.result.ci_artifacts ? response.result.ci_artifacts.map((material, index) => {
-            return {
-                id: material.id,
-                deployedTime: material.deployed_time && material.deployed_time.length ? handleUTCTime(material.deployed_time, true) : "Not Deployed",
-                materialInfo: material.material_info ? material.material_info.map((mat) => {
-                    return {
-                        modifiedTime: mat.modifiedTime ? ISTTimeModal(mat.modifiedTime) : "",
-                        commitLink: createGitCommitUrl(mat.url, mat.revision),
-                        author: mat.author || "",
-                        message: mat.message || "",
-                        revision: mat.revision || "",
-                        tag: mat.tag || "",
-                    }
-                }) : [],
-                image: material.image.split(':')[1],
-                buildTime: material.build_time || "",
-                isSelected: index == 0,
-                showSourceInfo: false,
-                deployed: material.deployed || false,
-                latest: material.latest || false
-            }
-        }) : [];
+        let list = response.result.ci_artifacts
+            ? response.result.ci_artifacts.map((material, index) => {
+                  return {
+                      id: material.id,
+                      deployedTime:
+                          material.deployed_time && material.deployed_time.length
+                              ? handleUTCTime(material.deployed_time, true)
+                              : 'Not Deployed',
+                      tab: CDModalTab.Changes,
+                      image: material.image.split(':')[1],
+                      vulnerabilities: [],
+                      buildTime: material.build_time || '',
+                      isSelected: index === 0,
+                      showSourceInfo: false,
+                      deployed: material.deployed || false,
+                      latest: material.latest || false,
+                      materialInfo: material.material_info
+                          ? material.material_info.map((mat) => {
+                                return {
+                                    modifiedTime: mat.modifiedTime ? ISTTimeModal(mat.modifiedTime) : '',
+                                    commitLink: createGitCommitUrl(mat.url, mat.revision),
+                                    author: mat.author || '',
+                                    message: mat.message || '',
+                                    revision: mat.revision || '',
+                                    tag: mat.tag || '',
+                                    webhookData: mat.webhookData || '',
+                                    url: mat.url || '',
+                                }
+                            })
+                          : [],
+                  }
+              })
+            : []
         return {
             code: response.code,
             result: list,
