@@ -323,11 +323,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial() {
-        let tabClasses = 'dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability'
         return this.props.material.map((mat, index) => {
-            const classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`
             return (
-                <div key={`material-history-${index}`} className={classes}>
+                <div
+                    key={`material-history-${index}`}
+                    className={`material-history material-history--cd ${
+                        mat.isSelected ? 'material-history-selected' : ''
+                    }`}
+                >
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
                         className={`material-history__top ${
@@ -343,43 +346,46 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     >
                         {this.renderMaterialInfo(mat)}
                     </div>
-                    {mat.showSourceInfo ? (
+                    {mat.showSourceInfo && (
                         <>
-                            <ul className="tab-list tab-list--vulnerability">
-                                <li className="tab-list__tab">
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
-                                        }}
-                                        className={
-                                            mat.tab === CDModalTab.Changes ? `${tabClasses} active` : `${tabClasses}`
-                                        }
-                                    >
-                                        Changes
-                                    </button>
-                                </li>
-                                <li className="tab-list__tab">
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
-                                        }}
-                                        className={
-                                            mat.tab === CDModalTab.Security ? `${tabClasses} active` : `${tabClasses}`
-                                        }
-                                    >
-                                        Security {mat.vulnerabilitiesLoading ? `` : `(${mat.vulnerabilities.length})`}
-                                    </button>
-                                </li>
-                            </ul>
+                            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
+                                <ul className="tab-list tab-list--vulnerability">
+                                    <li className="tab-list__tab">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
+                                            }}
+                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                mat.tab === CDModalTab.Changes ? 'active' : ''
+                                            }`}
+                                        >
+                                            Changes
+                                        </button>
+                                    </li>
+                                    <li className="tab-list__tab">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
+                                            }}
+                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                mat.tab === CDModalTab.Security ? 'active' : ''
+                                            }`}
+                                        >
+                                            Security
+                                            {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
+                                        </button>
+                                    </li>
+                                </ul>
+                            )}
                             {mat.tab === CDModalTab.Changes
                                 ? this.renderGitMaterialInfo(mat.materialInfo)
                                 : this.renderVulnerabilities(mat)}
                         </>
-                    ) : null}
+                    )}
                     <button
                         type="button"
                         className="material-history__changes-btn"
@@ -499,7 +505,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="dc__border-left mr-16 ml-16 h-100" />
                         <div className="trigger-modal__config-diff-status flex">
                             <div
-                                className={`flex mr-12 pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 cn-0 ${
+                                className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 cn-0 ${
                                     this.state.checkingDiff ? 'bcb-5' : this.state.diffFound ? 'bcr-5' : 'bcg-5'
                                 }`}
                             >
@@ -523,7 +529,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 )}
                             </div>
                             {!this.state.checkingDiff && this.canReviewConfig() && this.state.specificDeploymentConfig && (
-                                <span className="dc__uppercase cb-5 pointer" onClick={this.reviewConfig}>
+                                <span className="dc__uppercase cb-5 pointer ml-12" onClick={this.reviewConfig}>
                                     REVIEW
                                 </span>
                             )}

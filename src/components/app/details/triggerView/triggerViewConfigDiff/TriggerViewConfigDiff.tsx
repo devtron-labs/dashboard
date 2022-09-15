@@ -70,7 +70,6 @@ export default function TriggerViewConfigDiff({
                         },
                     )}
             </div>
-
             <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
                 <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0">
                     {baseTemplateConfiguration?.codeEditorValue?.['displayName']}

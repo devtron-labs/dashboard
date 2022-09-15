@@ -18,7 +18,7 @@ export interface CDMaterialProps {
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
-    isFromDeploymentGroup?: boolean
+    hideInfoTabsContainer?: boolean
     appId?: number
     pipelineId?: number
 }

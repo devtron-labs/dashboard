@@ -39,7 +39,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
                         Okay
                     </button>
                     <button
-                        className="br-4 token__dont-show en-0 bw-1 transparent pl-8 pr-8 pt-3 pb-3"
+                        className="br-4 token__dont-show en-0 bw-1 dc__transparent pl-8 pr-8 pt-3 pb-3"
                         data-posthog={POSTHOG_EVENT_ONBOARDING.TOOLTIP_DONT_SHOW_AGAIN}
                         onClick={onClickedDontShowAgain}
                     >
