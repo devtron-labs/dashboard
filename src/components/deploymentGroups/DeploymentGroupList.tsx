@@ -47,6 +47,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
         this.selectImage = this.selectImage.bind(this)
         this.toggleSourceInfo = this.toggleSourceInfo.bind(this)
         this.triggerDeploy = this.triggerDeploy.bind(this)
+        this.closeCDModal = this.closeCDModal.bind(this)
     }
 
     componentDidMount() {
@@ -137,6 +138,10 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
             }
         })
         this.setState({ materials })
+    }
+
+    closeCDModal() {
+        this.setState({ showCDModal: false })
     }
 
     redirectToEdit(deploymentGroup) {
@@ -273,10 +278,8 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     triggerDeploy={this.triggerDeploy}
                     toggleSourceInfo={this.toggleSourceInfo}
                     selectImage={this.selectImage}
-                    closeCDModal={() => {
-                        this.setState({ showCDModal: false })
-                    }}
-                    isFromDeploymentGroup={true} // adding this for now as implementation of tabs are not available here. will be fixed in coming sprint
+                    closeCDModal={this.closeCDModal}
+                    hideInfoTabsContainer={true}
                 />
             )
         }
