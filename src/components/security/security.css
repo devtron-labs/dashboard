@@ -42,10 +42,11 @@
     padding: 16px 24px 0px 24px;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .dc__security-scan__filter {
-    width: 155px;
+    min-width: 155px;
     height: 36px;
     margin-right: 12px;
 }

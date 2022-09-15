@@ -731,7 +731,7 @@ button.anchor {
     font-weight: 600;
     padding: 6px 12px;
 
-     &:hover {
+    &:hover {
         background-color: var(--B500);
         color: var(--white);
     }
@@ -1230,11 +1230,11 @@ button.anchor {
 }
 
 .dc__underline-onhover {
-  text-decoration: none;
+    text-decoration: none;
 
-  &:hover {
-      text-decoration: underline;
-  }
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .dc__no-decor {
@@ -1392,6 +1392,16 @@ button.anchor {
     user-select: none;
 }
 
+.dc__saved-filter__close-btn {
+    font-size: 14px;
+    line-height: 1;
+    margin-left: 10px;
+    color: #72767a;
+    border: none;
+    padding: 1px;
+    background-color: #f7fafc;
+}
+
 .saved-filter__clear-btn {
     font-size: 13px;
     line-height: 1;
@@ -1505,20 +1515,20 @@ button.anchor {
 
 // Text alignment
 .dc__align-start {
-  align-items: flex-start !important;
+    align-items: flex-start !important;
 }
 
 .dc__align-center {
-  text-align: center !important;
+    text-align: center !important;
 }
 
 .dc__align-left {
-  text-align: left;
+    text-align: left;
 }
 
 .dc__align-right {
-  text-align: right;
-  margin-left: auto;
+    text-align: right;
+    margin-left: auto;
 }
 
 .dc__align-baseline {
@@ -1552,6 +1562,10 @@ button.anchor {
 
 .dc__border-right-n1 {
     border-right: solid 1px var(--N100);
+}
+
+.dc__no-border{
+  border: none
 }
 
 .dc__box-shadow {
@@ -1859,11 +1873,11 @@ textarea {
 }
 
 .w-300 {
-  width: 300px;
+    width: 300px;
 }
 
 .w-400 {
-  width: 400px;
+    width: 400px;
 }
 
 .w-600 {
@@ -2039,9 +2053,13 @@ textarea {
     margin-top: 120px;
 }
 
-//Window background
+// background
 .dc__window-bg {
     background: var(--window-bg);
+}
+
+.dc__no-background {
+    background: none;
 }
 
 //Overflow
