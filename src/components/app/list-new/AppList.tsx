@@ -51,7 +51,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
 
     // API master data
-    const [appCheckListRes, setAppCheckListRes] = useState({ result: null })
     const [projectListRes, setProjectListRes] = useState({ result: [] })
     const [environmentListRes, setEnvironmentListRes] = useState({ result: [] })
 
@@ -94,7 +93,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         // fetch master filters data and some master data
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
-                setAppCheckListRes(initData.appCheckListRes)
                 setProjectListRes(initData.projectsRes)
                 setEnvironmentListRes(initData.environmentListRes)
                 setMasterFilters(initData.filters)
@@ -1029,7 +1027,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                                 serverMode === SERVER_MODE.FULL && (
                                     <DevtronAppListContainer
                                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        appCheckListRes={appCheckListRes}
                                         clearAllFilters={removeAllFilters}
                                         sortApplicationList={sortApplicationList}
                                         updateLastDataSync={updateLastDataSync}
