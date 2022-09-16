@@ -305,7 +305,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
                 (route, index) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
+                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) &&
                     (route.group ? (
                         <>
                             <NavLink
