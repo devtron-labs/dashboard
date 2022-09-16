@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, EVENT_STREAM_EVENTS_MAP, TERMINAL_STATUS_MAP } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, EVENT_STREAM_EVENTS_MAP, TERMINAL_STATUS_MAP, POD_STATUS } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -1004,7 +1004,9 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(
-      `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
+        triggerDetails.podStatus &&
+            triggerDetails.podStatus !== POD_STATUS.PENDING &&
+            `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
     )
     function createMarkup(log) {
         try {
@@ -1016,14 +1018,14 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }
 
-    return logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
+    return triggerDetails.podStatus !== POD_STATUS.PENDING && logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
       renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <div className="logs__body">
             {logs.map((log, index) => {
                 return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
             })}
-            {eventSource && eventSource.readyState <= 1 && (
+            {(triggerDetails.podStatus === POD_STATUS.PENDING || (eventSource && eventSource.readyState <= 1)) && (
                 <div className="flex left event-source-status">
                     <Progressing />
                 </div>
