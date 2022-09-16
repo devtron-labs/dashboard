@@ -319,7 +319,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }))
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
-    const [ , esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
+    const [ esoModuleLoading, esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -701,7 +701,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const onChange = (e) => {
         setExternalType(e.value)
     }
-
+    if(esoModuleLoading)
+      return <Progressing></Progressing>
     return (
         <div className="white-card__config-map">
             <div className="white-card__header">
@@ -726,15 +727,13 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     <ReactSelect
                         placeholder="Select Secret Type"
                         options={getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)}
-                        defaultValue={
-                            externalType && externalType !== ''
-                                ? getTypeGroups(
-                                      esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
-                                      externalType,
-                                  )
-                                : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
-                                      .options[0]
-                        }
+                        defaultValue={externalType && externalType !== ''
+                        ? getTypeGroups(
+                              esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
+                              externalType,
+                          )
+                        : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
+                              .options[0]}
                         onChange={onChange}
                         styles={groupStyle()}
                         components={{
