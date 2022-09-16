@@ -1,4 +1,4 @@
-import { Routes } from '../../../config'
+import { ModuleNameMap, Routes } from '../../../config'
 import { get, post } from '../../../services/api'
 import {
     AllModuleInfoResponse,
@@ -6,11 +6,23 @@ import {
     ModuleActionRequest,
     ModuleActionResponse,
     ModuleInfoResponse,
+    ModuleStatus,
     ReleaseNotesResponse,
     ServerInfoResponse,
 } from './DevtronStackManager.type'
 
 export const getModuleInfo = (moduleName: string): Promise<ModuleInfoResponse> => {
+  if(moduleName === ModuleNameMap.ESO){
+    return Promise.resolve({
+      status: 'asdas',
+      code: 0,
+      result: {
+        id: 1,
+        name: ModuleNameMap.GRAFANA,
+        status: ModuleStatus.NOT_INSTALLED
+    }
+    })
+  }
     return get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
 }
 

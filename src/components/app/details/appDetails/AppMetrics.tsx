@@ -7,6 +7,7 @@ import { GraphModal } from './GraphsModal';
 import { DatePickerType2 as DateRangePicker, Progressing, not, useAsync } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap } from '../../../../config';
 import { Link, NavLink } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
@@ -366,18 +367,24 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
             <div className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cv-5 flex left mr-16">
                     <GraphIcon className="mr-8 fcv-5 icon-dim-20" />
-                    APPLICATION METRICS
+                    MONITORING
                 </span>
-                <span className="fw-4 fs-13 cn-7">
-                    View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
-                    app.&nbsp;
-                    <NavLink
-                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
-                        className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
-                    >
-                        Learn more
-                    </NavLink>
-                </span>
+                <div className="fw-4 fs-13 cn-7 flexbox">
+                    <span>
+                        View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
+                        app.&nbsp;
+                    </span>
+                    <span>
+                        <NavLink
+                            to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                            className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
+                            target="_blank"
+                        >
+                            Learn more
+                        </NavLink>
+                    </span>
+                    <OpenInNew className="mt-2 ml-4" />
+                </div>
             </div>
         </div>
     )
