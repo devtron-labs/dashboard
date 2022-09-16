@@ -1004,9 +1004,9 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(
-      triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING
-            ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
-            : '',
+        triggerDetails.podStatus &&
+            triggerDetails.podStatus !== POD_STATUS.PENDING &&
+            `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
     )
     function createMarkup(log) {
         try {
