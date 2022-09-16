@@ -441,7 +441,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
                 this.state.specificDeploymentConfig?.deploymentTemplate) ||
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
-                this.state.recentDeploymentConfig?.deploymentTemplate)
+                this.state.recentDeploymentConfig?.deploymentTemplate) ||
+            (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
+                this.state.latestDeploymentConfig?.deploymentTemplate)
         )
     }
 
@@ -575,6 +577,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
+    getBaseTemplateConfiguration() {
+        return this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LAST_SAVED_CONFIG
+            ? this.state.latestDeploymentConfig
+            : this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
+            ? this.state.recentDeploymentConfig
+            : this.state.specificDeploymentConfig
+    }
+
     renderCDModal() {
         return (
             <>
@@ -601,15 +611,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     </button>
                 </div>
                 <div
-                    className="trigger-modal__body"
+                    className={`trigger-modal__body ${
+                        this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
+                    }`}
                     style={{
                         height: this.state.showConfigDiffView ? 'calc(100vh - 73px)' : 'calc(100vh - 49px)',
                     }}
                 >
                     {this.state.showConfigDiffView && this.canReviewConfig() ? (
                         <TriggerViewConfigDiff
-                            currentConfiguration={this.state.recentDeploymentConfig.deploymentTemplate}
-                            baseTemplateConfiguration={this.state.specificDeploymentConfig.deploymentTemplate}
+                            currentConfiguration={this.state.recentDeploymentConfig}
+                            baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
                         />
                     ) : (
                         <>

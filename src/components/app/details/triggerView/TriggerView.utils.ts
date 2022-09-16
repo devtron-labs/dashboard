@@ -3,6 +3,29 @@ import { showError } from '../../../common'
 import { prepareHistoryData } from '../cdDetails/service'
 import { DeploymentWithConfigType } from './types'
 
+export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
+    DEPLOYMENT_TEMPLATE: {
+        key: 'deploymentTemplate',
+        displayName: 'Deployment template',
+        isMulti: false
+    },
+    PIPELINE_STRATEGY: {
+        key: 'pipelineStrategy',
+        displayName: 'Pipeline configurations',
+        isMulti: false
+    },
+    CONFIGMAP: {
+        key: 'configMap',
+        displayName: 'ConfigMaps',
+        isMulti: true
+    },
+    SECRET: {
+        key: 'secret',
+        displayName: 'Secrets',
+        isMulti: true
+    },
+}
+
 export const getDeployConfigOptions = () => {
     return [
         {
