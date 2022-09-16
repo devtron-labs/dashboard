@@ -4,7 +4,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as OpenInNew } from '../../assets/icons/ic-open-in-new.svg'
-import { multiSelectStyles } from '../common'
+import { multiSelectStyles, Progressing } from '../common'
 import { NavLink } from 'react-router-dom'
 import { ModuleNameMap, URLS } from '../../config'
 
@@ -356,4 +356,15 @@ export const esoMenuList = (props): JSX.Element => {
           {props.children}
       </components.MenuList>
   )
+}
+
+export const esoMenuListLoading = (props): JSX.Element => {
+    return (
+        <components.MenuList {...props}>
+            {props.children}
+            <div className="h-36">
+                <Progressing />
+            </div>
+        </components.MenuList>
+    )
 }

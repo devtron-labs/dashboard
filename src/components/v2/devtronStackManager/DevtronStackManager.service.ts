@@ -11,7 +11,7 @@ import {
 } from './DevtronStackManager.type'
 
 export const getModuleInfo = (moduleName: string): Promise<ModuleInfoResponse> => {
-  return get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
+    return get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
 }
 
 export const executeModuleAction = (
