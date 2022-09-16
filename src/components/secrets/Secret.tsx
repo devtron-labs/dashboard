@@ -153,7 +153,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                             update={update}
                             index={idx}
                             initialise={initialise}
-                            isESOModuleInstalled={false}
+                            isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                         />
                     ))}
         </div>
