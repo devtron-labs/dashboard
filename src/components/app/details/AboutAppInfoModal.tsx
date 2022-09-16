@@ -6,7 +6,7 @@ import { Progressing, useAsync } from '../../common'
 import TagLabelSelect from './TagLabelSelect'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { validateTags } from '../appLabelCommon'
-import { getTeamListMin } from '../../../services/service'
+import { getTeamList } from '../../../services/service'
 import ReactSelect from 'react-select'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
@@ -25,7 +25,7 @@ export default function AboutAppInfoModal({
     handleSubmit,
     submitting,
 }) {
-    const [fetchingProjects, projectsListRes] = useAsync(() => getTeamListMin(), [appId])
+    const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>(null)
 
