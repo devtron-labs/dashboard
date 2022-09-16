@@ -215,4 +215,5 @@ export interface SecretFormProps {
     update: (...args) => void
     collapse: (...args) => void
     initialise?: () => void
+    isESOModuleInstalled: boolean
 }

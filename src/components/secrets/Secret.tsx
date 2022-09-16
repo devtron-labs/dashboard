@@ -46,6 +46,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
+    const [ esoModuleLoading, esoModuleStatus ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     useEffect(() => {
         initialise()
@@ -112,7 +113,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         } catch (err) {}
     }
 
-    if (secretLoading) return <Progressing pageLoader />
+    if (secretLoading || esoModuleLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
@@ -135,6 +136,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 appChartRef={appChartRef}
                 update={update}
                 initialise={initialise}
+                isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
             />
             {list &&
                 Array.isArray(list.configData) &&
@@ -150,6 +152,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                             update={update}
                             index={idx}
                             initialise={initialise}
+                            isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                         />
                     ))}
         </div>
@@ -175,6 +178,7 @@ export function CollapsedSecretForm({
     filePermission = '',
     subPath = false,
     esoSecretData= null,
+    isESOModuleInstalled,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -210,6 +214,7 @@ export function CollapsedSecretForm({
                     subPath={subPath}
                     filePermission={filePermission}
                     esoSecretData={esoSecretData}
+                    isESOModuleInstalled={isESOModuleInstalled}
                 />
             )}
         </section>
@@ -319,7 +324,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }))
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
-    const [ esoModuleLoading, esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -701,8 +705,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const onChange = (e) => {
         setExternalType(e.value)
     }
-    if(esoModuleLoading)
-      return <Progressing></Progressing>
     return (
         <div className="white-card__config-map">
             <div className="white-card__header">
@@ -726,13 +728,13 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
-                        options={getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)}
+                        options={getTypeGroups(props.isESOModuleInstalled)}
                         defaultValue={externalType && externalType !== ''
                         ? getTypeGroups(
-                              esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
+                              props.isESOModuleInstalled,
                               externalType,
                           )
-                        : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
+                        : getTypeGroups(props.isESOModuleInstalled)[0]
                               .options[0]}
                         onChange={onChange}
                         styles={groupStyle()}
@@ -741,7 +743,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             Option: SecretOptions,
                             GroupHeading,
                             MenuList:
-                                esoModuleStatus?.result?.status === ModuleStatus.INSTALLED
+                                props.isESOModuleInstalled
                                     ? esoMenuList
                                     : esoModuleInstallMenuList,
                         }}
