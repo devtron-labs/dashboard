@@ -370,20 +370,16 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
                     MONITORING
                 </span>
                 <div className="fw-4 fs-13 cn-7 flexbox">
-                    <span>
-                        View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
-                        app.&nbsp;
-                    </span>
-                    <span>
-                        <NavLink
-                            to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
-                            className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
-                            target="_blank"
-                        >
-                            Learn more
-                        </NavLink>
-                    </span>
-                    <OpenInNew className="mt-2 ml-4" />
+                    View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
+                    app.&nbsp;
+                    <NavLink
+                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                        className="cb-5 fs-13 fw-6 anchor w-auto dc__no-decor flex"
+                        target="_blank"
+                    >
+                        Learn more &nbsp;
+                        <OpenInNew />
+                    </NavLink>
                 </div>
             </div>
         </div>

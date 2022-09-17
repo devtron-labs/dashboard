@@ -332,17 +332,15 @@ export const esoModuleInstallMenuList = (props): JSX.Element => {
                 <HelpIcon className="icon-dim-20 mr-8 fcv-5" />
                 <div>
                     <div className="fs-13 fw-4 cn-9">Looking to use External Secrets?</div>
-                    <div className="flexbox">
-                        <span>
-                            <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.ESO}`}
-                                className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
-                                target="_blank"
-                            >
-                                Install External secret integration
-                            </NavLink>
-                        </span>
-                        <OpenInNew className="mt-2 ml-4" />
+                    <div>
+                        <NavLink
+                            to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.ESO}`}
+                            className="cb-5 fs-13 fw-6 anchor flex dc__no-decor"
+                            target="_blank"
+                        >
+                            Install External secret integration &nbsp;
+                            <OpenInNew />
+                        </NavLink>
                     </div>
                 </div>
             </div>
