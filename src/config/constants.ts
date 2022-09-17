@@ -238,6 +238,7 @@ export const DOCUMENTATION = {
     APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/environment-overrides`,
     BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/bulk-update`,
     CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart`,
+    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/chart-group`,
     CHART_LIST: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts`,
     CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts#custom-values`,
     SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/security-features`,

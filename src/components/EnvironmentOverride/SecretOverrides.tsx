@@ -47,6 +47,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
+    const [ esoModuleLoading, esoModuleStatus ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     useEffect(() => {
         async function callGetAppChartRef() {
@@ -62,7 +63,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
         }
     }, [loading])
 
-    if (loading && !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    if ((loading && !result) || esoModuleLoading) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     if (error) {
         setParentState(ComponentStates.failed)
         showError(error)
@@ -90,6 +91,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
                                     name={name}
                                     type="secret"
                                     label={global ? (data || esoSecretData.secretStore || secretData ? 'modified' : '') : 'env'}
+                                    isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                                 />
                             )
                         })}
@@ -98,7 +100,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
     )
 }
 
-export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
+export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOModuleInstalled }) {
     const { secrets, id, reload } = useSecretContext()
     const {
         data = null,
@@ -269,8 +271,6 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         appChartRef.name === ROLLOUT_DEPLOYMENT &&
         isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
         isChartRef3090OrBelow(appChartRef.id)
-    const [ , esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
-
 
     useEffect(() => {
         if(isESO){
@@ -601,10 +601,10 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                 <Select.Button>
                                     {externalType
                                         ? getTypeGroups(
-                                              esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
+                                          isESOModuleInstalled,
                                               externalType,
                                           ).label
-                                        : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
+                                        : getTypeGroups(isESOModuleInstalled)[0]
                                               .options[0].label}
                                 </Select.Button>
                             </Select>
@@ -972,6 +972,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     initialise={() => {}}
                     filePermission={filePermission}
                     subPath={subPath}
+                    isESOModuleInstalled={isESOModuleInstalled}
                 />
             )}
             {state.dialog && (

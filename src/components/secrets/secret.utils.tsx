@@ -3,7 +3,8 @@ import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { multiSelectStyles } from '../common'
+import { ReactComponent as OpenInNew } from '../../assets/icons/ic-open-in-new.svg'
+import { multiSelectStyles, Progressing } from '../common'
 import { NavLink } from 'react-router-dom'
 import { ModuleNameMap, URLS } from '../../config'
 
@@ -328,15 +329,19 @@ export const esoModuleInstallMenuList = (props): JSX.Element => {
         <components.MenuList {...props}>
             {props.children}
             <div className="flexbox pt-10 pr-12 pb-10 pl-12 bcv-1 m-8 br-4">
-                <HelpIcon className="icon-dim-20 mr-5 fcv-5" />
+                <HelpIcon className="icon-dim-20 mr-8 fcv-5" />
                 <div>
                     <div className="fs-13 fw-4 cn-9">Looking to use External Secrets?</div>
-                    <NavLink
-                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.ESO}`}
-                        className="cb-5 fs-13 fw-6 anchor w-100 dc__no-decor"
-                    >
-                        Install External secret integration
-                    </NavLink>
+                    <div>
+                        <NavLink
+                            to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.ESO}`}
+                            className="cb-5 fs-13 fw-6 anchor flex dc__no-decor"
+                            target="_blank"
+                        >
+                            Install External secret integration &nbsp;
+                            <OpenInNew />
+                        </NavLink>
+                    </div>
                 </div>
             </div>
         </components.MenuList>
@@ -349,4 +354,15 @@ export const esoMenuList = (props): JSX.Element => {
           {props.children}
       </components.MenuList>
   )
+}
+
+export const esoMenuListLoading = (props): JSX.Element => {
+    return (
+        <components.MenuList {...props}>
+            {props.children}
+            <div className="h-36">
+                <Progressing />
+            </div>
+        </components.MenuList>
+    )
 }

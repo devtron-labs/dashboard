@@ -37,15 +37,17 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, esoMenuListLoading } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import AsyncSelect from 'react-select/async';
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
+    const [ esoModuleLoading, esoModuleStatus ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     useEffect(() => {
         initialise()
@@ -112,7 +114,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         } catch (err) {}
     }
 
-    if (secretLoading) return <Progressing pageLoader />
+    if (secretLoading || esoModuleLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
@@ -135,6 +137,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 appChartRef={appChartRef}
                 update={update}
                 initialise={initialise}
+                isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
             />
             {list &&
                 Array.isArray(list.configData) &&
@@ -150,6 +153,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                             update={update}
                             index={idx}
                             initialise={initialise}
+                            isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                         />
                     ))}
         </div>
@@ -175,6 +179,7 @@ export function CollapsedSecretForm({
     filePermission = '',
     subPath = false,
     esoSecretData= null,
+    isESOModuleInstalled,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -210,6 +215,7 @@ export function CollapsedSecretForm({
                     subPath={subPath}
                     filePermission={filePermission}
                     esoSecretData={esoSecretData}
+                    isESOModuleInstalled={isESOModuleInstalled}
                 />
             )}
         </section>
@@ -278,6 +284,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         error: '',
     })
 
+    const [optionLoading, setOptionLoading] = useState(false)
+    const [isESOModuleInstalled, setESOModuleInstalled] = useState(props.isESOModuleInstalled)
+    const [secretTypeOptions, setSecretTypeOptions] = useState(getTypeGroups(props.isESOModuleInstalled))
+    const secretTypeValue =
+        externalType && externalType !== '' ? getTypeGroups(true, externalType) : getTypeGroups(true)[0].options[0]
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
@@ -319,7 +330,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }))
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
-    const [ , esoModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -345,10 +355,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }, [])
 
     useEffect(() => {
-        if(isESO){
+        if (isESO) {
             toggleYamlMode(true)
         }
-    },[isESO,yamlMode])
+    }, [isESO, yamlMode])
 
     function handleRoleARNChange(event) {
         setRoleARN({ value: event.target.value, error: '' })
@@ -528,7 +538,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
-                    esoData: esoSecretData
+                    esoData: esoSecretData,
                 }
             }
 
@@ -678,8 +688,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 })
                 setSecretData(json)
             }
-        } catch (error) {
-        }
+        } catch (error) {}
     }
 
     function handleDeleteParam(e, idx: number): void {
@@ -700,6 +709,24 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
     const onChange = (e) => {
         setExternalType(e.value)
+    }
+
+    const checkIsModuleStatus = async () => {
+        if (!isESOModuleInstalled) {
+            setOptionLoading(true)
+            try {
+                const { result } = await getModuleInfo(ModuleNameMap.ESO)
+                if (result?.status === ModuleStatus.INSTALLED) {
+                    setSecretTypeOptions(getTypeGroups(true))
+                    setESOModuleInstalled(true)
+                } else {
+                    setSecretTypeOptions(getTypeGroups(false))
+                }
+                setOptionLoading(false)
+            } catch (error) {
+                setOptionLoading(false)
+            }
+        }
     }
 
     return (
@@ -725,26 +752,20 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
-                        options={getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)}
-                        defaultValue={
-                            externalType && externalType !== ''
-                                ? getTypeGroups(
-                                      esoModuleStatus?.result?.status === ModuleStatus.INSTALLED,
-                                      externalType,
-                                  )
-                                : getTypeGroups(esoModuleStatus?.result?.status === ModuleStatus.INSTALLED)[0]
-                                      .options[0]
-                        }
+                        options={secretTypeOptions}
+                        defaultValue={secretTypeValue}
                         onChange={onChange}
                         styles={groupStyle()}
+                        onMenuOpen={checkIsModuleStatus}
                         components={{
                             IndicatorSeparator: null,
                             Option: SecretOptions,
                             GroupHeading,
-                            MenuList:
-                                esoModuleStatus?.result?.status === ModuleStatus.INSTALLED
-                                    ? esoMenuList
-                                    : esoModuleInstallMenuList,
+                            MenuList: isESOModuleInstalled
+                                ? esoMenuList
+                                : optionLoading
+                                ? esoMenuListLoading
+                                : esoModuleInstallMenuList,
                         }}
                     />
                 </div>
@@ -991,7 +1012,13 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {(isHashiOrAWS || isESO) && yamlMode ? (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE ? sample : isESO ? esoSecretYaml : secretDataYaml}
+                        value={
+                            codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
+                                ? sample
+                                : isESO
+                                ? esoSecretYaml
+                                : secretDataYaml
+                        }
                         mode="yaml"
                         inline
                         height={350}
@@ -1013,8 +1040,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                                     setCodeEditorRadio(event.target.value)
                                 }}
                             >
-                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>{CODE_EDITOR_RADIO_STATE_VALUE.DATA}</RadioGroup.Radio>
-                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>{CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}</RadioGroup.Radio>
+                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                    {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                                </RadioGroup.Radio>
+                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                    {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                                </RadioGroup.Radio>
                             </RadioGroup>
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>

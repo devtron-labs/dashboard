@@ -102,6 +102,7 @@ export default class Navigation extends Component<
         installedModule: string[]
     }
 > {
+    securityModuleStatusTimer = null
     constructor(props) {
         super(props)
         this.state = {
@@ -110,16 +111,22 @@ export default class Navigation extends Component<
             showHelpCard: false,
             showMoreOptionCard: false,
             isCommandBarActive: false,
-            installedModule: []
+            installedModule: [],
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
         this.toggleCommandBar = this.toggleCommandBar.bind(this)
-        this.getSecurityModuleStatus()
+        this.getSecurityModuleStatus(3)
     }
 
-    async getSecurityModuleStatus(): Promise<void> {
+    componentWillUnmount() {
+        if (this.securityModuleStatusTimer) {
+            clearTimeout(this.securityModuleStatusTimer)
+        }
+    }
+
+    async getSecurityModuleStatus(retryOnError: number): Promise<void> {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
@@ -127,8 +134,16 @@ export default class Navigation extends Component<
                     ...prevState,
                     installedModule: [...prevState.installedModule, ModuleNameMap.SECURITY],
                 }))
+            } else if (result?.status === ModuleStatus.INSTALLING) {
+                this.securityModuleStatusTimer = setTimeout(() => {
+                    this.getSecurityModuleStatus(3)
+                }, 30000)
             }
-        } catch (error) {}
+        } catch (error) {
+            if (retryOnError >= 0) {
+                this.getSecurityModuleStatus(retryOnError--)
+            }
+        }
     }
 
     toggleLogoutCard() {
@@ -237,7 +252,7 @@ export default class Navigation extends Component<
                             if (
                                 (this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
                                 (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                (this.state.installedModule.indexOf(item.moduleName)!==-1)
+                                this.state.installedModule.indexOf(item.moduleName) !== -1
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
