@@ -137,7 +137,7 @@ export default class Navigation extends Component<
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(3)
-                }, 10000)
+                }, 30000)
             }
         } catch (error) {
             if (retryOnError >= 0) {
