@@ -110,6 +110,11 @@ export const getCommonConfigSelectStyles = (stylesOverride = {}) => {
             boxShadow: 'none',
             minHeight: '32px',
             cursor: 'pointer',
+            borderRadius: '4px 0 0 4px',
+            padding: '7px 16px 7px 0px',
+            '&:hover': {
+                backgroundColor: 'var(--N100)',
+            },
         }),
         option: (base, state) => ({
             ...base,

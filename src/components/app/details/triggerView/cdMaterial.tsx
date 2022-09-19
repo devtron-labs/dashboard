@@ -8,9 +8,9 @@ import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circl
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
+import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
-import botIcon from '../../../../assets/icons/ic-bot.png'
 import {
     VisibleModal,
     ScanVulnerabilitiesTable,
@@ -287,7 +287,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__deployed-by flex left">
                         {mat.deployedBy === 'system' ? (
                             <>
-                                <img className="icon-dim-20 mr-8" src={botIcon} alt="auto triggered" />
+                                <BotIcon className="icon-dim-16 mr-6" />
                                 <span className="fs-13 fw-4">Auto triggered</span>
                             </>
                         ) : (
@@ -434,9 +434,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     reviewConfig() {
-        this.setState((prevState) => ({
-            showConfigDiffView: !prevState.showConfigDiffView,
-        }))
+        if (this.canReviewConfig()) {
+            this.setState((prevState) => ({
+                showConfigDiffView: !prevState.showConfigDiffView,
+            }))
+        }
     }
 
     isConfigPresent() {
@@ -492,15 +494,21 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderConfigDiffStatus() {
+        const _canReviewConfig = this.canReviewConfig()
         const statusColorClasses = this.state.checkingDiff
             ? 'cn-0 bcb-5'
-            : !this.canReviewConfig()
+            : !_canReviewConfig
             ? 'cn-9 bcn-1'
             : this.state.diffFound
             ? 'cn-0 bcr-5'
             : 'cn-0 bcg-5'
         return (
-            <div className="trigger-modal__config-diff-status flex">
+            <div
+                className={`trigger-modal__config-diff-status flex pt-7 pb-7 pl-16 pr-16 dc__right-radius-4 ${
+                    _canReviewConfig ? 'cursor' : 'config-not-found'
+                }`}
+                onClick={this.reviewConfig}
+            >
                 <div
                     className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
                 >
@@ -514,7 +522,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 }}
                             />
                         </>
-                    ) : !this.canReviewConfig() ? (
+                    ) : !_canReviewConfig ? (
                         <>
                             <WarningIcon className="no-config-found-icon icon-dim-16" />
                             &nbsp; Config not found
@@ -528,10 +536,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         'No config diff from LAST DEPLOYED'
                     )}
                 </div>
-                {!this.state.checkingDiff && this.canReviewConfig() && (
-                    <span className="dc__uppercase cb-5 pointer ml-12" onClick={this.reviewConfig}>
-                        REVIEW
-                    </span>
+                {!this.state.checkingDiff && _canReviewConfig && (
+                    <span className="dc__uppercase cb-5 pointer ml-12">REVIEW</span>
                 )}
             </div>
         )
@@ -554,7 +560,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 }`}
             >
                 {this.state.isRollbackTrigger && !this.state.showConfigDiffView && (
-                    <div className="flex left dc__border br-4 pr-16 h-42">
+                    <div className="flex left dc__border br-4 h-42">
                         <div className="flex">
                             <ReactSelect
                                 options={getDeployConfigOptions()}
@@ -581,7 +587,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 onChange={this.handleConfigSelection}
                             />
                         </div>
-                        <span className="dc__border-left mr-16 ml-16 h-100" />
+                        <span className="dc__border-left h-100" />
                         {this.renderConfigDiffStatus()}
                     </div>
                 )}
