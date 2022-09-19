@@ -200,40 +200,23 @@ function NavItem({ hostURLConfig, serverMode }) {
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
-      getGitOpsModuleStatus(3)
-      getNotificationModuleStatus(3)
+      getModuleStatus(ModuleNameMap.ARGO_CD, 3)
+      getModuleStatus(ModuleNameMap.NOTIFICATION, 3)
     }, [])
 
-    const getGitOpsModuleStatus = async (retryOnError: number): Promise<void> => {
+    const getModuleStatus = async (moduleName: string, retryOnError: number): Promise<void> => {
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
+            const { result } = await getModuleInfo(moduleName)
             if (result?.status === ModuleStatus.INSTALLED) {
-                setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
+                setInstalledModule([...installedModule, moduleName])
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 moduleStatusTimer = setTimeout(() => {
-                    getGitOpsModuleStatus(3)
+                    getModuleStatus(moduleName, 3)
                 }, 15000)
             }
         } catch (error) {
             if (retryOnError >= 0) {
-                getGitOpsModuleStatus(retryOnError--)
-            }
-        }
-    }
-
-    const getNotificationModuleStatus = async (retryOnError: number): Promise<void> => {
-        try {
-            const { result } = await getModuleInfo(ModuleNameMap.NOTIFICATION)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                setInstalledModule([...installedModule, ModuleNameMap.NOTIFICATION])
-            } else if (result?.status === ModuleStatus.INSTALLING) {
-                moduleStatusTimer = setTimeout(() => {
-                  getNotificationModuleStatus(3)
-                }, 15000)
-            }
-        } catch (error) {
-            if (retryOnError >= 0) {
-              getNotificationModuleStatus(retryOnError--)
+                getModuleStatus(moduleName, retryOnError--)
             }
         }
     }

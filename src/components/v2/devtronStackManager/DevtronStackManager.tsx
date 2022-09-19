@@ -172,6 +172,14 @@ export default function DevtronStackManager({
             .catch((errors) => {})
     }, [location])
 
+    const handleModuleInInstallingState = (moduleName: string, moduleStatus: ModuleStatus) => {
+        if (moduleStatus === ModuleStatus.INSTALLING) {
+            setModuleInInstallingState(moduleName)
+        } else if (moduleInInstallingState === moduleName) {
+            setModuleInInstallingState('')
+        }
+    }
+
     /**
      * 1. If query params has 'id' then module installation action has been triggered
      * so fetch the specific module info.
@@ -190,11 +198,7 @@ export default function DevtronStackManager({
                         ...currentModule,
                         installationStatus: result.status,
                     })
-                    if (result.status === ModuleStatus.INSTALLING) {
-                        setModuleInInstallingState(result.name)
-                    } else if (moduleInInstallingState === result.name) {
-                        setModuleInInstallingState('')
-                    }
+                    handleModuleInInstallingState(result.name, result.status)
                 }
             } else {
                 getCurrentServerInfo()
@@ -279,11 +283,7 @@ export default function DevtronStackManager({
                             }
                             _installedModulesList.push(_moduleDetails)
                         }
-                        if (result.status === ModuleStatus.INSTALLING) {
-                            setModuleInInstallingState(_moduleDetails.name)
-                        } else if (moduleInInstallingState === _moduleDetails.name) {
-                            setModuleInInstallingState('')
-                        }
+                        handleModuleInInstallingState(result.name, result.status)
                     }
                 })
 
