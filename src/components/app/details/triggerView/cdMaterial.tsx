@@ -18,6 +18,7 @@ import {
     getRandomColor,
     showError,
     shallowEqual,
+    ConditionalWrap,
 } from '../../../common'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
@@ -34,6 +35,7 @@ import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManage
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import { getDeployConfigOptions, processResolvedPromise } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
+import Tippy from '@tippyjs/react'
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     constructor(props: CDMaterialProps) {
@@ -501,7 +503,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const statusColorClasses = this.state.checkingDiff
             ? 'cn-0 bcb-5'
             : !_canReviewConfig
-            ? 'cn-9 bcn-1'
+            ? 'cn-9 bcn-1 cursor-not-allowed'
             : this.state.diffFound
             ? 'cn-0 bcr-5'
             : 'cn-0 bcg-5'
@@ -553,6 +555,32 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    getTippyContent() {
+        if (
+            this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+            (!this.state.specificDeploymentConfig?.deploymentTemplate ||
+                !this.state.specificDeploymentConfig.pipelineStrategy)
+        ) {
+            return (
+                <>
+                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not found!</h2>
+                    <p className="fs-12 fw-4 lh-18 m-0">Please select a different image or configuration to deploy</p>
+                </>
+            )
+        } else if (
+            this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+            (!this.state.recentDeploymentConfig?.deploymentTemplate ||
+                !this.state.recentDeploymentConfig.pipelineStrategy)
+        ) {
+            return (
+                <>
+                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not found!</h2>
+                    <p className="fs-12 fw-4 lh-18 m-0">Please select a different configuration to deploy</p>
+                </>
+            )
+        }
+    }
+
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
 
@@ -591,26 +619,54 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             />
                         </div>
                         <span className="dc__border-left h-100" />
-                        {this.renderConfigDiffStatus()}
+                        <ConditionalWrap
+                            condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                            wrap={(children) => (
+                                <Tippy
+                                    className="default-tt w-200"
+                                    arrow={false}
+                                    placement="top"
+                                    content={this.getTippyContent()}
+                                >
+                                    {children}
+                                </Tippy>
+                            )}
+                        >
+                            {this.renderConfigDiffStatus()}
+                        </ConditionalWrap>
                     </div>
                 )}
-                <button
-                    className={`cta flex h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
-                    onClick={this.deployTrigger}
-                >
-                    {this.props.isLoading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            {this.props.stageType === 'CD' ? (
-                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                            ) : (
-                                <img src={play} alt="trigger" className="trigger-btn__icon" />
-                            )}
-                            {buttonLabel}
-                        </>
+                <ConditionalWrap
+                    condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                    wrap={(children) => (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top"
+                            content={this.getTippyContent()}
+                        >
+                            {children}
+                        </Tippy>
                     )}
-                </button>
+                >
+                    <button
+                        className={`cta flex h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
+                        onClick={this.deployTrigger}
+                    >
+                        {this.props.isLoading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                {this.props.stageType === 'CD' ? (
+                                    <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                                ) : (
+                                    <img src={play} alt="trigger" className="trigger-btn__icon" />
+                                )}
+                                {buttonLabel}
+                            </>
+                        )}
+                    </button>
+                </ConditionalWrap>
             </div>
         )
     }
@@ -713,7 +769,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             </div>
                             {this.renderMaterial()}
                             {this.state.isRollbackTrigger && !this.state.noMoreImages && (
-                                <button className="show-older-images-cta cta ghosted flex h-32" onClick={this.loadOlderImages}>
+                                <button
+                                    className="show-older-images-cta cta ghosted flex h-32"
+                                    onClick={this.loadOlderImages}
+                                >
                                     {this.state.loadingMore ? (
                                         <Progressing styles={{ height: '32px' }} />
                                     ) : (

@@ -184,14 +184,14 @@ export default function TriggerViewConfigDiff({
         let _currentValues, _baseValues
         if (activeSideNavOption.includes('/')) {
             const navParentChildKeys = activeSideNavOption.split('/')
-            _currentValues = currentConfiguration[navParentChildKeys[0]]?.find(
+            _currentValues = currentConfiguration?.[navParentChildKeys[0]]?.find(
                 (_config) => _config.componentName === navParentChildKeys[1],
             )?.values
             _baseValues = baseTemplateConfiguration?.[navParentChildKeys[0]]?.find(
                 (_config) => _config.componentName === navParentChildKeys[1],
             )?.values
         } else {
-            _currentValues = currentConfiguration[activeSideNavOption]?.values
+            _currentValues = currentConfiguration?.[activeSideNavOption]?.values
             _baseValues = baseTemplateConfiguration?.[activeSideNavOption]?.values
         }
 
