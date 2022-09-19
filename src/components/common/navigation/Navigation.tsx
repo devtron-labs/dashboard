@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
-import { ModuleNameMap, MODULE_STATUS_RETRY_COUNT, SERVER_MODE, URLS } from '../../../config'
+import { ModuleNameMap, MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -147,7 +147,7 @@ export default class Navigation extends Component<
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
-                }, MODULE_STATUS_RETRY_COUNT)
+                }, MODULE_STATUS_POLLING_INTERVAL)
             }
         } catch (error) {
             if (retryOnError >= 0) {

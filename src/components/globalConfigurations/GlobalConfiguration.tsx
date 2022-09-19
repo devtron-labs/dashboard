@@ -12,7 +12,7 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { ModuleNameMap, MODULE_STATUS_RETRY_COUNT, Routes, SERVER_MODE } from '../../config/constants'
+import { ModuleNameMap, MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
@@ -212,7 +212,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 moduleStatusTimer = setTimeout(() => {
                     getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
-                }, MODULE_STATUS_RETRY_COUNT)
+                }, MODULE_STATUS_POLLING_INTERVAL)
             }
         } catch (error) {
             if (retryOnError >= 0) {
