@@ -133,10 +133,7 @@ export default function TriggerViewConfigDiff({
 
     const renderAvailableDiffColumn = () => {
         return (
-            <div className="trigger-view-config-diff__side-nav pb-8 bcn-0 dc__border-right h-100 dc__overflow-scroll">
-                <h2 className="fs-13 fw-6 lh-20 cn-9 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-bottom">
-                    Deployment configuration
-                </h2>
+            <div className="trigger-view-config-diff__side-nav pt-8 pb-8 bcn-0 dc__border-right h-100 dc__overflow-scroll">
                 {Object.values(DEPLOYMENT_CONFIGURATION_NAV_MAP).map((navOption) => {
                     if (navOption.isMulti) {
                         const options = getNavOptions(navOption.key)
@@ -267,50 +264,59 @@ export default function TriggerViewConfigDiff({
         )
     }
 
+    const renderConfigDiffViewHeader = () => {
+        return (
+            <div className="trigger-view-config-diff__tabs dc__border-bottom">
+                <div className="fs-13 fw-6 lh-20 cn-9 bcn-0 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-right">
+                    Deployment configuration
+                </div>
+                <div className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 bcn-0 dc__border-right">
+                    Currently deployed configuration
+                </div>
+                <div className="flex left bcn-0">
+                    <ReactSelect
+                        options={getDeployConfigOptions()}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                            ValueContainer: customValueContainer,
+                        }}
+                        isSearchable={false}
+                        formatOptionLabel={formatOptionLabel}
+                        classNamePrefix="deploy-config-select"
+                        placeholder="Select Config"
+                        menuPlacement="bottom"
+                        value={selectedConfigToDeploy}
+                        styles={getCommonConfigSelectStyles({
+                            valueContainer: (base, state) => ({
+                                ...base,
+                                minWidth: '135px',
+                                cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                            }),
+                            control: (base) => ({
+                                ...base,
+                                backgroundColor: 'white',
+                                border: 'none',
+                                boxShadow: 'none',
+                                minHeight: '32px',
+                                cursor: 'pointer',
+                                borderRadius: '0px',
+                                padding: '7px 16px',
+                            }),
+                        })}
+                        onChange={handleConfigSelection}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="trigger-view-config-diff__container dc__overflow-hidden">
-            {renderAvailableDiffColumn()}
-            <div>
-                <div className="trigger-view-config-diff__tabs dc__border-bottom">
-                    <span className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 bcn-0 dc__border-right">
-                        Currently deployed configuration
-                    </span>
-                    <div className="flex left bcn-0">
-                        <ReactSelect
-                            options={getDeployConfigOptions()}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option,
-                                ValueContainer: customValueContainer,
-                            }}
-                            isSearchable={false}
-                            formatOptionLabel={formatOptionLabel}
-                            classNamePrefix="deploy-config-select"
-                            placeholder="Select Config"
-                            menuPlacement="bottom"
-                            value={selectedConfigToDeploy}
-                            styles={getCommonConfigSelectStyles({
-                                valueContainer: (base, state) => ({
-                                    ...base,
-                                    minWidth: '135px',
-                                    cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                }),
-                                control: (base) => ({
-                                    ...base,
-                                    backgroundColor: 'white',
-                                    border: 'none',
-                                    boxShadow: 'none',
-                                    minHeight: '32px',
-                                    cursor: 'pointer',
-                                    borderRadius: '0px',
-                                    padding: '7px 16px',
-                                }),
-                            })}
-                            onChange={handleConfigSelection}
-                        />
-                    </div>
-                </div>
+            {renderConfigDiffViewHeader()}
+            <div className="trigger-view-config-diff__wrapper">
+                {renderAvailableDiffColumn()}
                 <div className="p-16 dc__overflow-scroll">
                     {renderConfigValuesDiff()}
                     <div className="en-2 bw-1 br-4">

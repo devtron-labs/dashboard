@@ -43,6 +43,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             checkingDiff: false,
             diffFound: false,
             showConfigDiffView: false,
+            loadingMore: false,
+            showOlderImages: true,
+            noMoreImages: false,
             selectedConfigToDeploy: {
                 label: 'Config deployed with selected image',
                 value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
@@ -57,16 +60,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
         this.reviewConfig = this.reviewConfig.bind(this)
+        this.loadOlderImages = this.loadOlderImages.bind(this)
+        this.handleOlderImagesLoading = this.handleOlderImagesLoading.bind(this)
     }
 
     componentDidMount() {
         this.getSecurityModuleStatus()
 
-        if (
-            this.props.materialType === 'rollbackMaterialList' &&
-            this.state.selectedMaterial &&
-            this.props.material.length > 0
-        ) {
+        if (this.state.isRollbackTrigger && this.state.selectedMaterial && this.props.material.length > 0) {
             this.getDeploymentConfigDetails()
         }
     }
@@ -326,7 +327,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial() {
-        return this.props.material.map((mat, index) => {
+        const materialList =
+            this.state.isRollbackTrigger && this.state.showOlderImages ? [this.props.material[0]] : this.props.material
+        return materialList.map((mat, index) => {
             return (
                 <div
                     key={`material-history-${index}`}
@@ -639,6 +642,28 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             : this.state.specificDeploymentConfig
     }
 
+    handleOlderImagesLoading(loadingMore: boolean, noMoreImages?: boolean) {
+        this.setState({
+            loadingMore,
+            noMoreImages,
+        })
+    }
+
+    loadOlderImages() {
+        if (this.props.onClickRollbackMaterial && !this.state.loadingMore) {
+            this.props.onClickRollbackMaterial(
+                this.props.pipelineId,
+                this.props.material.length + 1,
+                20,
+                this.handleOlderImagesLoading,
+            )
+            this.setState({
+                showOlderImages: false,
+                loadingMore: true,
+            })
+        }
+    }
+
     renderCDModal() {
         return (
             <>
@@ -669,7 +694,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
                     }`}
                     style={{
-                        height: this.state.showConfigDiffView ? 'calc(100vh - 73px)' : 'calc(100vh - 49px)',
+                        height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
                     }}
                 >
                     {this.state.showConfigDiffView && this.canReviewConfig() ? (
@@ -687,6 +712,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     : 'Select Image'}
                             </div>
                             {this.renderMaterial()}
+                            {this.state.isRollbackTrigger && !this.state.noMoreImages && (
+                                <button className="show-older-images-cta cta ghosted flex h-32" onClick={this.loadOlderImages}>
+                                    {this.state.loadingMore ? (
+                                        <Progressing styles={{ height: '32px' }} />
+                                    ) : (
+                                        'Show older images'
+                                    )}
+                                </button>
+                            )}
                         </>
                     )}
                 </div>

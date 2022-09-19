@@ -437,17 +437,32 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickRollbackMaterial = (cdNodeId) => {
-        ReactGA.event({
-            category: 'Trigger View',
-            action: 'Select Rollback Material Clicked',
-        })
-        getRollbackMaterialList(cdNodeId, 1, 20)
+    onClickRollbackMaterial = (
+        cdNodeId: any,
+        offset?: number,
+        size?: number,
+        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+    ) => {
+        if (!offset && !size) {
+            ReactGA.event({
+                category: 'Trigger View',
+                action: 'Select Rollback Material Clicked',
+            })
+        }
+
+        const _offset = offset || 1
+        const _size = size || 20
+
+        getRollbackMaterialList(cdNodeId, _offset, _size)
             .then((response) => {
                 let workflows = this.state.workflows.map((workflow) => {
                     let nodes = workflow.nodes.map((node) => {
-                        if (node.type === 'CD' && +node.id == cdNodeId) {
-                            node.rollbackMaterialList = response.result
+                        if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            if (!offset && !size) {
+                                node.rollbackMaterialList = response.result
+                            } else {
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                            }
                         }
                         return node
                     })
@@ -468,10 +483,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         this.getWorkflowStatus()
                     },
                 )
+
+                if (callback && response.result) {
+                    callback(false, response.result.length < 20)
+                }
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 this.setState({ code: errors.code })
+
+                if (callback) {
+                    callback(false)
+                }
             })
     }
 
@@ -889,6 +912,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isLoading={this.state.isLoading}
                     changeTab={this.changeTab}
                     triggerDeploy={this.onClickTriggerCDNode}
+                    onClickRollbackMaterial={this.onClickRollbackMaterial}
                     closeCDModal={this.closeCDModal}
                     selectImage={this.selectImage}
                     toggleSourceInfo={this.toggleSourceInfo}

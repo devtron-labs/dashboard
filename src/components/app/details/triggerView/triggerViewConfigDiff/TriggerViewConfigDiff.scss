@@ -1,23 +1,24 @@
 .trigger-view-config-diff__container {
-    display: grid;
-    grid-template-columns: 280px auto;
-    height: calc(100vh - 141px);
-
-    .trigger-view-config-diff__side-nav {
+    .trigger-view-config-diff__wrapper {
         display: grid;
-        grid-auto-rows: max-content;
-        height: calc(100vh - 73px);
+        grid-template-columns: 280px auto;
+        height: calc(100vh - 186px);
+    
+        .trigger-view-config-diff__side-nav {
+            display: grid;
+            grid-auto-rows: max-content;
+        }
+    
+        .trigger-view-config-diff__values {
+            display: grid;
+            grid-template-columns: 50% 50%;
+            grid-template-rows: auto;
+        }
     }
 
     .trigger-view-config-diff__tabs {
         display: grid;
-        grid-template-columns: 50% 50%;
-    }
-
-    .trigger-view-config-diff__values {
-        display: grid;
-        grid-template-columns: 50% 50%;
-        grid-template-rows: auto;
+        grid-template-columns: 280px 1fr 1fr;
     }
 
     .deploy-config-select__menu {

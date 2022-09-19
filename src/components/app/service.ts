@@ -221,7 +221,7 @@ export const getCIMaterialList = (params) => {
 export function getCDMaterialList(cdMaterialId, stageType: 'PRECD' | 'CD' | 'POSTCD') {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
     return get(URL).then((response) => {
-        return cdMaterialListModal(response.result.ci_artifacts)
+        return cdMaterialListModal(response.result.ci_artifacts, true)
     })
 }
 
@@ -231,12 +231,12 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
         return {
             code: response.code,
             status: response.status,
-            result: cdMaterialListModal(response?.result.ci_artifacts),
+            result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
         }
     })
 }
 
-function cdMaterialListModal(artifacts) {
+function cdMaterialListModal(artifacts: any[], markFirstSelected: boolean) {
     if (!artifacts || !artifacts.length) return []
 
     let materials = artifacts.map((material, index) => {
@@ -252,7 +252,7 @@ function cdMaterialListModal(artifacts) {
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
-            isSelected: !material.vulnerable && index === 0,
+            isSelected: markFirstSelected ? !material.vulnerable && index === 0 : false,
             showSourceInfo: false,
             deployed: material.deployed || false,
             latest: material.latest || false,
@@ -277,9 +277,7 @@ function cdMaterialListModal(artifacts) {
                 : [],
         }
     })
-    materials.sort((a, b) => {
-        sortCallback('id', a, b)
-    })
+    materials.sort((a, b) => sortCallback('id', a, b))
     return materials
 }
 

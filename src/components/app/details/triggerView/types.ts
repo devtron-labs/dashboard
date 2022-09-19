@@ -15,6 +15,12 @@ export interface CDMaterialProps {
     selectImage: (index: number, materialType: string) => void
     toggleSourceInfo: (materialIndex: number) => void
     closeCDModal: () => void
+    onClickRollbackMaterial?: (
+        cdNodeId: any,
+        offset?: number,
+        size?: number,
+        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+    ) => void
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
@@ -40,6 +46,9 @@ export interface CDMaterialState {
     checkingDiff: boolean
     diffFound: boolean
     showConfigDiffView: boolean
+    loadingMore: boolean
+    showOlderImages: boolean
+    noMoreImages: boolean
     selectedConfigToDeploy: ConfigToDeployOptionType
     isRollbackTrigger: boolean
     recentDeploymentConfig: any
