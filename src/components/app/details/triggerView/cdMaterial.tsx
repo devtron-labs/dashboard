@@ -530,10 +530,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ) : this.state.diffFound ? (
                         <>
                             <WarningIcon className="config-diff-found-icon icon-dim-16" />
-                            &nbsp; Config diff from LAST DEPLOYED
+                            &nbsp; <span className="config-diff-status">Config diff</span>
                         </>
                     ) : (
-                        'No config diff from LAST DEPLOYED'
+                        <span className="config-diff-status">No config diff</span>
                     )}
                 </div>
                 {!this.state.checkingDiff && _canReviewConfig && (
@@ -676,6 +676,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <TriggerViewConfigDiff
                             currentConfiguration={this.state.recentDeploymentConfig}
                             baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
+                            selectedConfigToDeploy={this.state.selectedConfigToDeploy}
+                            handleConfigSelection={this.handleConfigSelection}
                         />
                     ) : (
                         <>

@@ -6,10 +6,40 @@
     .trigger-view-config-diff__side-nav {
         display: grid;
         grid-auto-rows: max-content;
+        height: calc(100vh - 73px);
     }
+
+    .trigger-view-config-diff__tabs {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
     .trigger-view-config-diff__values {
         display: grid;
         grid-template-columns: 50% 50%;
         grid-template-rows: auto;
+    }
+
+    .deploy-config-select__menu {
+        z-index: 99;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .deploy-config-select__group {
+        padding-top: 4px;
+        padding-bottom: 4px;
+
+        .deploy-config-select__group-heading {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: none;
+            color: var(--N900);
+            background-color: var(--window-bg);
+            padding: 4px 10px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin: 0;
+        }
     }
 }

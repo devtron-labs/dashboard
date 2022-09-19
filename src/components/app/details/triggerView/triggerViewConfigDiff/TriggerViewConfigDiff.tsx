@@ -1,10 +1,13 @@
-import React, { Fragment, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { DeploymentHistoryDetail, DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
 import YAML from 'yaml'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { MODES } from '../../../../../config'
 import './TriggerViewConfigDiff.scss'
-import { DEPLOYMENT_CONFIGURATION_NAV_MAP } from '../TriggerView.utils'
+import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../TriggerView.utils'
+import ReactSelect, { components } from 'react-select'
+import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
+import { getCommonConfigSelectStyles } from '../config'
 
 interface TriggerViewDeploymentConfigType {
     configMap: DeploymentHistoryDetail
@@ -16,11 +19,15 @@ interface TriggerViewDeploymentConfigType {
 interface TriggerViewConfigDiffProps {
     currentConfiguration: TriggerViewDeploymentConfigType
     baseTemplateConfiguration: TriggerViewDeploymentConfigType
+    selectedConfigToDeploy
+    handleConfigSelection: (selected) => void
 }
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
     baseTemplateConfiguration,
+    selectedConfigToDeploy,
+    handleConfigSelection,
 }: TriggerViewConfigDiffProps) {
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
@@ -41,12 +48,25 @@ export default function TriggerViewConfigDiff({
             '',
     })
 
+    useEffect(() => {
+        if (activeSideNavOption.includes('/')) {
+            const navParentChildKeys = activeSideNavOption.split('/')
+
+            if (!getNavOptions(navParentChildKeys[0]).includes(navParentChildKeys[1])) {
+                setActiveSideNavOption(DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
+                handleNavOptionSelection(null, DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
+            } else {
+                handleNavOptionSelection(null, activeSideNavOption)
+            }
+        }
+    }, [selectedConfigToDeploy])
+
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             <CodeEditor
                 value={editorValues.value}
                 defaultValue={editorValues.defaultValue}
-                height="500px"
+                height="488px"
                 diffView={true}
                 readOnly={true}
                 noParsing
@@ -58,14 +78,14 @@ export default function TriggerViewConfigDiff({
     const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue) => {
         return (
             <div className={parentClassName}>
-                <div className="cn-6 pt-8 pl-16 pr-16 lh-16">{singleValue.displayName}</div>
-                <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28">{singleValue.value}</div>
+                <div className="fs-12 fw-4 lh-16 cn-6 pt-8 pl-16 pr-16 lh-16">{singleValue.displayName}</div>
+                <div className="fs-13 fw-4 lh-20 cn-9 fs-13 pb-8 pl-16 pr-16 mh-28">{singleValue.value}</div>
             </div>
         )
     }
 
-    const handleNavOptionSelection = (e) => {
-        const dataValue = e?.target?.dataset?.value
+    const handleNavOptionSelection = (e, navConfigKey?: string) => {
+        const dataValue = navConfigKey || e?.target?.dataset?.value
         if (dataValue) {
             setActiveSideNavOption(dataValue)
 
@@ -113,7 +133,10 @@ export default function TriggerViewConfigDiff({
 
     const renderAvailableDiffColumn = () => {
         return (
-            <div className="trigger-view-config-diff__side-nav pt-8 pb-8 bcn-0 dc__border-right h-100">
+            <div className="trigger-view-config-diff__side-nav pb-8 bcn-0 dc__border-right h-100 dc__overflow-scroll">
+                <h2 className="fs-13 fw-6 lh-20 cn-9 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-bottom">
+                    Deployment configuration
+                </h2>
                 {Object.values(DEPLOYMENT_CONFIGURATION_NAV_MAP).map((navOption) => {
                     if (navOption.isMulti) {
                         const options = getNavOptions(navOption.key)
@@ -197,7 +220,7 @@ export default function TriggerViewConfigDiff({
         }
 
         return (
-            <div className="trigger-view-config-diff__values en-2 bw-1 br-4 bcn-0 mt-16 mb-16 mr-20 ml-20 pt-2 pb-2">
+            <div className="trigger-view-config-diff__values en-2 bw-1 br-4 bcn-0 mb-16 pt-2 pb-2">
                 {configValuesOptions.keys.map((configKey, index) => {
                     const currentValue = configValuesOptions.currentValues[configKey]
                     const baseValue = configValuesOptions.baseValues[configKey]
@@ -221,16 +244,81 @@ export default function TriggerViewConfigDiff({
         )
     }
 
+    const formatOptionLabel = (option) => {
+        return (
+            <div className="flex left column w-100">
+                <span className="dc__ellipsis-right">{option.label}</span>
+                <small className="cn-6">{option.infoText}</small>
+                <div className="dc__border-bottom" />
+            </div>
+        )
+    }
+
+    const customValueContainer = (props) => {
+        return (
+            <components.ValueContainer {...props}>
+                <div className="fs-13 fw-4 cn-9">
+                    Deploy:&nbsp; <span className="cb-5 fw-6">{props.selectProps.value?.label}</span>
+                </div>
+                {React.cloneElement(props.children[1], {
+                    style: { position: 'absolute' },
+                })}
+            </components.ValueContainer>
+        )
+    }
+
     return (
-        <div className="trigger-view-config-diff__container">
+        <div className="trigger-view-config-diff__container dc__overflow-hidden">
             {renderAvailableDiffColumn()}
             <div>
-                {renderConfigValuesDiff()}
-                <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
-                    <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0">
-                        {editorValues.displayName}
+                <div className="trigger-view-config-diff__tabs dc__border-bottom">
+                    <span className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 bcn-0 dc__border-right">
+                        Currently deployed configuration
+                    </span>
+                    <div className="flex left bcn-0">
+                        <ReactSelect
+                            options={getDeployConfigOptions()}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option,
+                                ValueContainer: customValueContainer,
+                            }}
+                            isSearchable={false}
+                            formatOptionLabel={formatOptionLabel}
+                            classNamePrefix="deploy-config-select"
+                            placeholder="Select Config"
+                            menuPlacement="bottom"
+                            value={selectedConfigToDeploy}
+                            styles={getCommonConfigSelectStyles({
+                                valueContainer: (base, state) => ({
+                                    ...base,
+                                    minWidth: '135px',
+                                    cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                                }),
+                                control: (base) => ({
+                                    ...base,
+                                    backgroundColor: 'white',
+                                    border: 'none',
+                                    boxShadow: 'none',
+                                    minHeight: '32px',
+                                    cursor: 'pointer',
+                                    borderRadius: '0px',
+                                    padding: '7px 16px',
+                                }),
+                            })}
+                            onChange={handleConfigSelection}
+                        />
                     </div>
-                    {editorValues.defaultValue && renderDeploymentDiffViaCodeEditor()}
+                </div>
+                <div className="p-16 dc__overflow-scroll">
+                    {renderConfigValuesDiff()}
+                    <div className="en-2 bw-1 br-4">
+                        <div className="code-editor-header-value flex left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
+                            {editorValues.displayName}
+                        </div>
+                        {renderDeploymentDiffViaCodeEditor()}
+                    </div>
                 </div>
             </div>
         </div>

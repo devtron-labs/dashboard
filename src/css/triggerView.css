@@ -621,6 +621,10 @@
     background-color: var(--N100);
 }
 
+.trigger-modal__config-diff-status:not(.config-not-found):hover .config-diff-status::after {
+    content: " from LAST DEPLOYED";
+}
+
 .trigger-modal__config-diff-status svg.loader__svg path,
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
     fill: white;
