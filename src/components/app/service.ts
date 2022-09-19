@@ -5,7 +5,7 @@ import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback } from '.
 import moment from 'moment-timezone'
 import { ServerErrors } from '../../modals/commonTypes'
 import { History } from './details/cIDetails/types'
-import { AppDetails } from './types'
+import { AppDetails, CreateAppLabelsRequest } from './types'
 import { CDMdalTabType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
@@ -409,7 +409,6 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
 }
 
-export const createAppLabels = (request) => {
-    let URL = `${Routes.APP_LABELS}`
-    return post(URL, request)
+export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
+    return post(Routes.APP_LABELS, request)
 }
