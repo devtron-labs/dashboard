@@ -190,10 +190,10 @@ export default function DevtronStackManager({
                         ...currentModule,
                         installationStatus: result.status,
                     })
-                    if(moduleInInstallingState === result.name && result.status !== ModuleStatus.INSTALLING){
-                      setModuleInInstallingState('')
-                    } else if(result.status === ModuleStatus.INSTALLING){
-                      setModuleInInstallingState(result.name)
+                    if (result.status === ModuleStatus.INSTALLING) {
+                        setModuleInInstallingState(result.name)
+                    } else if (moduleInInstallingState === result.name) {
+                        setModuleInInstallingState('')
                     }
                 }
             } else {
