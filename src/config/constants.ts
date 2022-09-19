@@ -45,7 +45,7 @@ export const Routes = {
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
-    APP_LABELS: 'app/labels',
+    APP_LABELS: 'app/edit',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
