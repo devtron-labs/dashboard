@@ -12,7 +12,7 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { ModuleNameMap, Routes, SERVER_MODE } from '../../config/constants'
+import { ModuleNameMap, MODULE_STATUS_RETRY_COUNT, Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
@@ -200,8 +200,8 @@ function NavItem({ hostURLConfig, serverMode }) {
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
-      getModuleStatus(ModuleNameMap.ARGO_CD, 3)
-      getModuleStatus(ModuleNameMap.NOTIFICATION, 3)
+        getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
+        getModuleStatus(ModuleNameMap.NOTIFICATION, MODULE_STATUS_RETRY_COUNT)
     }, [])
 
     const getModuleStatus = async (moduleName: string, retryOnError: number): Promise<void> => {
@@ -211,8 +211,8 @@ function NavItem({ hostURLConfig, serverMode }) {
                 setInstalledModule([...installedModule, moduleName])
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 moduleStatusTimer = setTimeout(() => {
-                    getModuleStatus(moduleName, 3)
-                }, 15000)
+                    getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
+                }, MODULE_STATUS_RETRY_COUNT)
             }
         } catch (error) {
             if (retryOnError >= 0) {

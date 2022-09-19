@@ -581,3 +581,6 @@ export const TERMINAL_STATUS_MAP = {
 export const POD_STATUS = {
   PENDING: 'Pending'
 }
+
+export const MODULE_STATUS_RETRY_COUNT = 3;
+export const MODULE_STATUS_POLLING_INTERVAL = 15000;
