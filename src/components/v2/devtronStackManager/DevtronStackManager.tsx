@@ -279,11 +279,10 @@ export default function DevtronStackManager({
                             }
                             _installedModulesList.push(_moduleDetails)
                         }
-                        if(moduleInInstallingState === _moduleDetails.name && result.status !== ModuleStatus.INSTALLING){
-                          setModuleInInstallingState('')
-                        }
                         if (result.status === ModuleStatus.INSTALLING) {
                             setModuleInInstallingState(_moduleDetails.name)
+                        } else if (moduleInInstallingState === _moduleDetails.name) {
+                            setModuleInInstallingState('')
                         }
                     }
                 })
