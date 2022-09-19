@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import './infoColourBar.scss'
 
 interface InfoColourBarType {
@@ -10,6 +10,7 @@ interface InfoColourBarType {
     renderActionButton?: () => JSX.Element
     linkText?: string
     redirectToLink?: () => void
+    styles?: CSSProperties
 }
 
 function InfoColourBar({
@@ -21,10 +22,14 @@ function InfoColourBar({
     renderActionButton,
     redirectToLink,
     linkText,
+    styles,
 }: InfoColourBarType) {
     return (
         <div className="info-bar-container">
-            <div className={`${classname} info_text flex dc__content-space pt-10 pb-10 pl-16 pr-16 br-4 top fs-13 fw-4`}>
+            <div
+                className={`${classname} info_text flex dc__content-space pt-10 pb-10 pl-16 pr-16 br-4 top fs-13 fw-4`}
+                style={styles}
+            >
                 <span className="flex top">
                     <div className={`icon-dim-${iconSize ?? '20'} mr-10`}>
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass} mr-8`} />
