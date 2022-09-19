@@ -7,22 +7,22 @@ export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
         key: 'deploymentTemplate',
         displayName: 'Deployment template',
-        isMulti: false
+        isMulti: false,
     },
     PIPELINE_STRATEGY: {
         key: 'pipelineStrategy',
         displayName: 'Pipeline configurations',
-        isMulti: false
+        isMulti: false,
     },
     CONFIGMAP: {
         key: 'configMap',
         displayName: 'ConfigMaps',
-        isMulti: true
+        isMulti: true,
     },
     SECRET: {
         key: 'secret',
         displayName: 'Secrets',
-        isMulti: true
+        isMulti: true,
     },
 }
 
@@ -56,9 +56,10 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
         return {
             configMap:
                 resp.value?.result?.configMap &&
-                resp.value.result.configMap.map((_configMap) => {
-                    prepareHistoryData(_configMap.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE)
-                }),
+                resp.value.result.configMap.map((_configMap) => ({
+                    componentName: _configMap.componentName,
+                    ...prepareHistoryData(_configMap.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE),
+                })),
             deploymentTemplate:
                 resp.value?.result?.deploymentTemplate &&
                 prepareHistoryData(
@@ -73,9 +74,11 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
                 ),
             secret:
                 resp.value?.result?.secret &&
-                resp.value.result.secret.map((_secret) => {
-                    prepareHistoryData(_secret.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE)
-                }),
+                resp.value.result.secret.map((_secret) => ({
+                    componentName: _secret.componentName,
+                    ...prepareHistoryData(_secret.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE),
+                })),
+            wfrId: resp.value?.result?.wfrId
         }
     }
 

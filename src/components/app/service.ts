@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { ServerErrors } from '../../modals/commonTypes'
 import { History } from './details/cIDetails/types'
 import { AppDetails } from './types'
-import { CDMdalTabType } from './details/triggerView/types'
+import { CDMdalTabType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
@@ -309,8 +309,9 @@ export const triggerCINode = (request) => {
     let URL = `${Routes.CI_PIPELINE_TRIGGER}`
     return post(URL, request)
 }
+
 // stageType: 'PRECD' | 'CD' | 'POSTCD'
-export const triggerCDNode = (pipelineId, ciArtifactId, appId, stageType: string, deploymentWithConfig?: string, wfrId?: number) => {
+export const triggerCDNode = (pipelineId: any, ciArtifactId: any, appId: string, stageType: string, deploymentWithConfig?: string, wfrId?: number) => {
     const request = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
@@ -319,8 +320,14 @@ export const triggerCDNode = (pipelineId, ciArtifactId, appId, stageType: string
     }
 
     if (deploymentWithConfig) {
-        request['deploymentWithConfig'] = deploymentWithConfig
-        request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
+        request['deploymentWithConfig'] =
+            deploymentWithConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
+                ? deploymentWithConfig
+                : DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+
+        if (deploymentWithConfig !== DeploymentWithConfigType.LAST_SAVED_CONFIG) {
+            request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
+        }
     }
     return post(Routes.CD_TRIGGER_POST, request)
 }

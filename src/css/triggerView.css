@@ -133,8 +133,6 @@
 
 .material-history--cd {
     width: 100%;
-    min-width: 952px;
-    max-width: 1072px;
     background-color: transparent;
     padding: 0px;
     margin: 0 0 12px;
@@ -346,7 +344,7 @@
     position: absolute;
     width: 100%;
     bottom: 0px;
-    z-index: 2;
+    z-index: 9;
 }
 
 .trigger-modal__trigger.trigger-modal__trigger--empty-state {
@@ -482,10 +480,6 @@
     letter-spacing: normal;
 }
 
-.material-history:nth-child(2) {
-    /* margin-top: 0px; */
-}
-
 .material-history:last-child {
     margin-bottom: 92px;
 }
@@ -495,13 +489,17 @@
 }
 
 .modal-body--cd-material {
-    width: 100%;
-    min-width: 992px;
-    max-width: 1112px;
+    width: 800px;
     position: fixed;
     right: 0;
     background: var(--N000);
     top: 0;
+}
+
+.modal-body--cd-material.contains-diff-view:not(.no-material) {
+    width: 100%;
+    min-width: 992px;
+    max-width: 1112px;
 }
 
 .modal-body--ci-material {
@@ -519,7 +517,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: calc(100vh - 72px);
+    height: calc(100vh - 50px);
     width: 100%;
 }
 
@@ -626,4 +624,16 @@
 
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:last-of-type {
     fill: var(--R500);
+}
+
+.trigger-modal__config-diff-status svg.no-config-found-icon path:nth-of-type(2) {
+    fill: var(--Y500);
+}
+
+.code-editor-green-diff {
+    background: var(--code-editor-green);
+}
+
+.code-editor-red-diff {
+    background: var(--code-editor-red);
 }
