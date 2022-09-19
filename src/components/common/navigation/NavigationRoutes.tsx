@@ -60,6 +60,7 @@ export default function NavigationRoutes() {
     const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
+    const [moduleInInstallingState, setModuleInInstallingState] = useState('')
 
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
@@ -226,7 +227,9 @@ export default function NavigationRoutes() {
                     showGettingStartedCard,
                     setShowGettingStartedCard,
                     isGettingStartedClicked,
-                    setGettingStartedClicked
+                    setGettingStartedClicked,
+                    moduleInInstallingState,
+                    setModuleInInstallingState,
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -239,6 +242,7 @@ export default function NavigationRoutes() {
                             fetchingServerInfo={currentServerInfo.fetchingServerInfo}
                             serverInfo={currentServerInfo.serverInfo}
                             getCurrentServerInfo={getCurrentServerInfo}
+                            moduleInInstallingState={moduleInInstallingState}
                         />
                     )}
 
@@ -284,7 +288,10 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide isGettingStartedClicked={isGettingStartedClicked} loginCount={loginCount}/>
+                                            <DeployManageGuide
+                                                isGettingStartedClicked={isGettingStartedClicked}
+                                                loginCount={loginCount}
+                                            />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
@@ -297,7 +304,11 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                                            <RedirectUserWithSentry
+                                                isFirstLoginUser={
+                                                    isSuperAdmin && loginCount === 0 && appListCount === 0
+                                                }
+                                            />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>

@@ -90,6 +90,7 @@ interface NavigationType extends RouteComponentProps<{}> {
     fetchingServerInfo: boolean
     serverInfo: ServerInfo
     getCurrentServerInfo: (section: string) => Promise<void>
+    moduleInInstallingState: string
 }
 export default class Navigation extends Component<
     NavigationType,
@@ -126,6 +127,15 @@ export default class Navigation extends Component<
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (
+            this.props.moduleInInstallingState !== prevProps.moduleInInstallingState &&
+            this.props.moduleInInstallingState === ModuleNameMap.SECURITY
+        ) {
+            this.getSecurityModuleStatus(3)
+        }
+    }
+
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
@@ -137,7 +147,7 @@ export default class Navigation extends Component<
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(3)
-                }, 30000)
+                }, 15000)
             }
         } catch (error) {
             if (retryOnError >= 0) {

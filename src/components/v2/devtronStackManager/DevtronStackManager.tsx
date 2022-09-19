@@ -41,7 +41,7 @@ export default function DevtronStackManager({
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
 }) {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode, setModuleInInstallingState } = useContext(mainContext)
     const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -190,6 +190,9 @@ export default function DevtronStackManager({
                         ...currentModule,
                         installationStatus: result.status,
                     })
+                    if(result.status === ModuleStatus.INSTALLING){
+                      setModuleInInstallingState(result.name)
+                    }
                 }
             } else {
                 getCurrentServerInfo()
@@ -273,6 +276,9 @@ export default function DevtronStackManager({
                                 _getGitOpsConfigurationStatus()
                             }
                             _installedModulesList.push(_moduleDetails)
+                        }
+                        if (result.status === ModuleStatus.INSTALLING) {
+                            setModuleInInstallingState(_moduleDetails.name)
                         }
                     }
                 })

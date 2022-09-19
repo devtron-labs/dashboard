@@ -43,7 +43,7 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
-    const { serverMode, setServerMode } = useContext(mainContext)
+    const { serverMode } = useContext(mainContext)
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -140,7 +140,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
-
+    let moduleStatusTimer = null
     const ConfigRequired = [
         {
             name: 'Host URL',
@@ -200,26 +200,42 @@ function NavItem({ hostURLConfig, serverMode }) {
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
-        getGitOpsModuleStatus()
-        getNotificationModuleStatus()
+      getGitOpsModuleStatus(3)
+      getNotificationModuleStatus(3)
     }, [])
 
-    async function getGitOpsModuleStatus() {
+    const getGitOpsModuleStatus = async (retryOnError: number): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
             if (result?.status === ModuleStatus.INSTALLED) {
                 setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
+            } else if (result?.status === ModuleStatus.INSTALLING) {
+                moduleStatusTimer = setTimeout(() => {
+                    getGitOpsModuleStatus(3)
+                }, 15000)
             }
-        } catch (error) {}
+        } catch (error) {
+            if (retryOnError >= 0) {
+                getGitOpsModuleStatus(retryOnError--)
+            }
+        }
     }
 
-    const getNotificationModuleStatus = async (): Promise<void> => {
+    const getNotificationModuleStatus = async (retryOnError: number): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.NOTIFICATION)
             if (result?.status === ModuleStatus.INSTALLED) {
                 setInstalledModule([...installedModule, ModuleNameMap.NOTIFICATION])
+            } else if (result?.status === ModuleStatus.INSTALLING) {
+                moduleStatusTimer = setTimeout(() => {
+                  getNotificationModuleStatus(3)
+                }, 15000)
             }
-        } catch (error) {}
+        } catch (error) {
+            if (retryOnError >= 0) {
+              getNotificationModuleStatus(retryOnError--)
+            }
+        }
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
