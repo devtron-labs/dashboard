@@ -24,6 +24,7 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
 import { AppDetailsTabs } from '../../../appDetails.store';
 import { replaceLastOddBackslash } from '../../../../../../util/Util';
+import { flatContainers } from '../nodeDetail.util';
 
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
@@ -177,7 +178,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
         let containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name);
 
         let podsWithContainers = pods
-            .flatMap((_pod) => _pod.containers.map((_c) => [_pod.name, _c]))
+            .flatMap((_pod) => flatContainers(_pod).map((_c) => [_pod.name, _c]))
             .filter((_pwc) => containers.includes(_pwc[1]));
 
         let urls = podsWithContainers.map((_pwc) => {
@@ -327,7 +328,6 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             className="cn-2 ml-8 mr-8 "
                             style={{ width: '1px', height: '16px', background: '#0b0f22' }}
                         >
-                            {' '}
                         </div>
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <React.Fragment>
@@ -600,7 +600,7 @@ function getPodContainerOptions(
         let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
         let containers = IndexStore.getAllPods()
             .filter((_pod) => _pod.name == params.podName)
-            .flatMap((_pod) => _pod.containers)
+            .flatMap((_pod) => flatContainers(_pod))
             .sort();
 
         if (containers.length == 0 || (containers.length === 1 && !containers[0])) {
@@ -656,7 +656,7 @@ function getPodContainerOptions(
 
         //build container Options
         let _allSelectedPods = getSelectedPodList(logState.selectedPodOption);
-        const containers = (_allSelectedPods[0]?.containers ?? []).sort();
+        const containers = (flatContainers(_allSelectedPods[0]) && []).sort();
         const containerOptions = containers.map((_container, index) => {
             return { name: _container, selected: index == 0 };
         });
@@ -681,7 +681,7 @@ function getInitialPodContainerSelection(
         let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
         let containers = IndexStore.getAllPods()
             .filter((_pod) => _pod.name == params.podName)
-            .flatMap((_pod) => _pod.containers)
+            .flatMap((_pod) => flatContainers(_pod))
             .sort();
 
         if (containers.length == 0) {
@@ -715,7 +715,7 @@ function getInitialPodContainerSelection(
             };
         }
 
-        let containers = new Set(_allSelectedPods.flatMap((_po) => _po.containers ?? []));
+        let containers = new Set(_allSelectedPods.flatMap((_po) => flatContainers(_po) ?? []));
         const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0) ?? '';
         return {
             selectedContainerOption: _selectedContainerOption,
