@@ -656,7 +656,7 @@ function getPodContainerOptions(
 
         //build container Options
         let _allSelectedPods = getSelectedPodList(logState.selectedPodOption);
-        const containers = (flatContainers(_allSelectedPods[0]) && []).sort();
+        const containers = (flatContainers(_allSelectedPods[0]) ?? []).sort();
         const containerOptions = containers.map((_container, index) => {
             return { name: _container, selected: index == 0 };
         });
