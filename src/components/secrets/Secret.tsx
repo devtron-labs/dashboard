@@ -28,7 +28,7 @@ import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, MODES, ModuleNameMap, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -275,11 +275,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         value: props.data ? Object.keys(props.data).join(',') : '',
         error: '',
     })
-
-    const [optionLoading, setOptionLoading] = useState(false)
-    const [secretTypeOptions, setSecretTypeOptions] = useState(getTypeGroups())
-    const secretTypeValue =
-        externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
@@ -725,8 +720,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
-                        options={secretTypeOptions}
-                        defaultValue={secretTypeValue}
+                        options={getTypeGroups()}
+                        defaultValue={externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]}
                         onChange={onChange}
                         styles={groupStyle()}
                         components={{
