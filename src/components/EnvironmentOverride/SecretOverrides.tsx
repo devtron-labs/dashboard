@@ -26,13 +26,11 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, ModuleNameMap, MODES } from '../../config'
+import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, MODES } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -47,7 +45,6 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
-    const [ esoModuleLoading, esoModuleStatus ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     useEffect(() => {
         async function callGetAppChartRef() {
@@ -63,7 +60,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
         }
     }, [loading])
 
-    if ((loading && !result) || esoModuleLoading) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    if (loading && !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     if (error) {
         setParentState(ComponentStates.failed)
         showError(error)
@@ -91,7 +88,6 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
                                     name={name}
                                     type="secret"
                                     label={global ? (data || esoSecretData.secretStore || secretData ? 'modified' : '') : 'env'}
-                                    isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                                 />
                             )
                         })}
@@ -100,7 +96,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
     )
 }
 
-export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOModuleInstalled }) {
+export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const { secrets, id, reload } = useSecretContext()
     const {
         data = null,
@@ -600,12 +596,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOMod
                             <Select disabled onChange={(e) => {}}>
                                 <Select.Button>
                                     {externalType
-                                        ? getTypeGroups(
-                                          isESOModuleInstalled,
-                                              externalType,
-                                          ).label
-                                        : getTypeGroups(isESOModuleInstalled)[0]
-                                              .options[0].label}
+                                        ? getTypeGroups(externalType).label
+                                        : getTypeGroups()[0].options[0].label}
                                 </Select.Button>
                             </Select>
                         </div>
@@ -774,8 +766,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOMod
                                     disabled={false}
                                     onChange={changeEditorMode}
                                 >
-                                    <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
-                                    <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                                    <RadioGroup.Radio value={VIEW_MODE.GUI}>
+                                        {VIEW_MODE.GUI.toUpperCase()}
+                                    </RadioGroup.Radio>
+                                    <RadioGroup.Radio value={VIEW_MODE.YAML}>
+                                        {VIEW_MODE.YAML.toUpperCase()}
+                                    </RadioGroup.Radio>
                                 </RadioGroup>
                             )}
                             {state.locked && (
@@ -866,7 +862,13 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOMod
                     {(isHashiOrAWS || isESO) && yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
-                                value={codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE ? sample : isESO ? esoSecretYaml : secretDataYaml}
+                                value={
+                                    codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
+                                        ? sample
+                                        : isESO
+                                        ? esoSecretYaml
+                                        : secretDataYaml
+                                }
                                 mode={MODES.YAML}
                                 inline
                                 height={350}
@@ -888,8 +890,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOMod
                                             setCodeEditorRadio(event.target.value)
                                         }}
                                     >
-                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>{CODE_EDITOR_RADIO_STATE_VALUE.DATA}</RadioGroup.Radio>
-                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>{CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}</RadioGroup.Radio>
+                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                                        </RadioGroup.Radio>
+                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                                        </RadioGroup.Radio>
                                     </RadioGroup>
                                     <CodeEditor.Clipboard />
                                 </CodeEditor.Header>
@@ -972,7 +978,6 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isESOMod
                     initialise={() => {}}
                     filePermission={filePermission}
                     subPath={subPath}
-                    isESOModuleInstalled={isESOModuleInstalled}
                 />
             )}
             {state.dialog && (

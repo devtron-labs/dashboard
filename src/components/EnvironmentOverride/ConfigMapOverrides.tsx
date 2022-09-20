@@ -120,7 +120,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
     )
 }
 
-export function ListComponent({ name = '', type, label = '', appChartRef, reload = null, isESOModuleInstalled = false }) {
+export function ListComponent({ name = '', type, label = '', appChartRef, reload = null }) {
     const [isCollapsed, toggleCollapse] = useState(true)
 
     const handleOverrideListClick = () => {
@@ -151,12 +151,7 @@ export function ListComponent({ name = '', type, label = '', appChartRef, reload
                 )}
             </div>
             {!isCollapsed && type !== 'config-map' && (
-                <OverrideSecretForm
-                    name={name}
-                    appChartRef={appChartRef}
-                    toggleCollapse={toggleCollapse}
-                    isESOModuleInstalled={isESOModuleInstalled}
-                />
+                <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />
             )}
             {!isCollapsed && type !== 'secret' && (
                 <OverrideConfigMapForm

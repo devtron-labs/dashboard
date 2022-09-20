@@ -37,17 +37,13 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, esoMenuListLoading } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import AsyncSelect from 'react-select/async';
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
-    const [ esoModuleLoading, esoModuleStatus ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     useEffect(() => {
         initialise()
@@ -114,7 +110,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         } catch (err) {}
     }
 
-    if (secretLoading || esoModuleLoading) return <Progressing pageLoader />
+    if (secretLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
@@ -137,7 +133,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 appChartRef={appChartRef}
                 update={update}
                 initialise={initialise}
-                isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
             />
             {list &&
                 Array.isArray(list.configData) &&
@@ -153,7 +148,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                             update={update}
                             index={idx}
                             initialise={initialise}
-                            isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                         />
                     ))}
         </div>
@@ -179,7 +173,6 @@ export function CollapsedSecretForm({
     filePermission = '',
     subPath = false,
     esoSecretData= null,
-    isESOModuleInstalled,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -215,7 +208,6 @@ export function CollapsedSecretForm({
                     subPath={subPath}
                     filePermission={filePermission}
                     esoSecretData={esoSecretData}
-                    isESOModuleInstalled={isESOModuleInstalled}
                 />
             )}
         </section>
@@ -285,10 +277,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     })
 
     const [optionLoading, setOptionLoading] = useState(false)
-    const [isESOModuleInstalled, setESOModuleInstalled] = useState(props.isESOModuleInstalled)
-    const [secretTypeOptions, setSecretTypeOptions] = useState(getTypeGroups(props.isESOModuleInstalled))
+    const [secretTypeOptions, setSecretTypeOptions] = useState(getTypeGroups())
     const secretTypeValue =
-        externalType && externalType !== '' ? getTypeGroups(true, externalType) : getTypeGroups(true)[0].options[0]
+        externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
@@ -711,24 +702,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setExternalType(e.value)
     }
 
-    const checkIsModuleStatus = async () => {
-        if (!isESOModuleInstalled) {
-            setOptionLoading(true)
-            try {
-                const { result } = await getModuleInfo(ModuleNameMap.ESO)
-                if (result?.status === ModuleStatus.INSTALLED) {
-                    setSecretTypeOptions(getTypeGroups(true))
-                    setESOModuleInstalled(true)
-                } else {
-                    setSecretTypeOptions(getTypeGroups(false))
-                }
-                setOptionLoading(false)
-            } catch (error) {
-                setOptionLoading(false)
-            }
-        }
-    }
-
     return (
         <div className="white-card__config-map">
             <div className="white-card__header">
@@ -756,16 +729,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         defaultValue={secretTypeValue}
                         onChange={onChange}
                         styles={groupStyle()}
-                        onMenuOpen={checkIsModuleStatus}
                         components={{
                             IndicatorSeparator: null,
                             Option: SecretOptions,
                             GroupHeading,
-                            MenuList: isESOModuleInstalled
-                                ? esoMenuList
-                                : optionLoading
-                                ? esoMenuListLoading
-                                : esoModuleInstallMenuList,
                         }}
                     />
                 </div>
