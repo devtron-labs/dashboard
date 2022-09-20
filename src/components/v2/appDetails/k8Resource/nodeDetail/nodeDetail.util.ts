@@ -21,6 +21,6 @@ export const getNodeDetailTabs = (nodeType: NodeType) => {
 
 }
 
-export const flatContainers = (pod:PodMetaData): string[] => {
-    return [...pod?.containers,...pod?.initContainers]
+export const flatContainers = (pod: PodMetaData): string[] => {
+    return [...(pod?.containers || []), ...(pod?.initContainers || [])]
 }
