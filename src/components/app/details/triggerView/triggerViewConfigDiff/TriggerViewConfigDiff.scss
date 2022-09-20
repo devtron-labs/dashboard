@@ -27,6 +27,11 @@
         border-top-right-radius: 0;
     }
 
+    .deploy-config-select__option--is-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
     .deploy-config-select__group {
         padding-top: 4px;
         padding-bottom: 4px;

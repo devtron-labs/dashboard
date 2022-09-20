@@ -8,6 +8,8 @@ import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../Tri
 import ReactSelect, { components } from 'react-select'
 import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
 import { getCommonConfigSelectStyles } from '../config'
+import Tippy from '@tippyjs/react'
+import { ConditionalWrap } from '../../../../common'
 
 interface TriggerViewDeploymentConfigType {
     configMap: DeploymentHistoryDetail
@@ -21,6 +23,7 @@ interface TriggerViewConfigDiffProps {
     baseTemplateConfiguration: TriggerViewDeploymentConfigType
     selectedConfigToDeploy
     handleConfigSelection: (selected) => void
+    isConfigAvailable: (optionValue) => boolean
 }
 
 export default function TriggerViewConfigDiff({
@@ -28,6 +31,7 @@ export default function TriggerViewConfigDiff({
     baseTemplateConfiguration,
     selectedConfigToDeploy,
     handleConfigSelection,
+    isConfigAvailable,
 }: TriggerViewConfigDiffProps) {
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
@@ -243,11 +247,32 @@ export default function TriggerViewConfigDiff({
 
     const formatOptionLabel = (option) => {
         return (
-            <div className="flex left column w-100">
-                <span className="dc__ellipsis-right">{option.label}</span>
-                <small className="cn-6">{option.infoText}</small>
-                <div className="dc__border-bottom" />
-            </div>
+            <ConditionalWrap
+                condition={!isConfigAvailable(option.value)}
+                wrap={(children) => (
+                    <Tippy
+                        className="default-tt w-200 mr-6"
+                        arrow={false}
+                        placement="left"
+                        content={
+                            <>
+                                <h2 className="fs-12 fw-6 lh-18 m-0">Config not available!</h2>
+                                <p className="fs-12 fw-4 lh-18 m-0">
+                                    Please select a different image or configuration to deploy
+                                </p>
+                            </>
+                        }
+                    >
+                        {children}
+                    </Tippy>
+                )}
+            >
+                <div className="flex left column w-100">
+                    <span className="dc__ellipsis-right">{option.label}</span>
+                    <small className="cn-6">{option.infoText}</small>
+                    <div className="dc__border-bottom" />
+                </div>
+            </ConditionalWrap>
         )
     }
 
@@ -262,6 +287,10 @@ export default function TriggerViewConfigDiff({
                 })}
             </components.ValueContainer>
         )
+    }
+
+    const isOptionDisabled = (option) => {
+        return !isConfigAvailable(option.value)
     }
 
     const renderConfigDiffViewHeader = () => {
@@ -282,6 +311,7 @@ export default function TriggerViewConfigDiff({
                             Option,
                             ValueContainer: customValueContainer,
                         }}
+                        isOptionDisabled={isOptionDisabled}
                         isSearchable={false}
                         formatOptionLabel={formatOptionLabel}
                         classNamePrefix="deploy-config-select"

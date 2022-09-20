@@ -64,6 +64,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.reviewConfig = this.reviewConfig.bind(this)
         this.loadOlderImages = this.loadOlderImages.bind(this)
         this.handleOlderImagesLoading = this.handleOlderImagesLoading.bind(this)
+        this.isConfigAvailable = this.isConfigAvailable.bind(this)
     }
 
     componentDidMount() {
@@ -99,14 +100,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 value?: any
                 reason?: any
             }[]) => {
+                const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes)
+                const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
+
                 this.setState({
-                    recentDeploymentConfig: processResolvedPromise(recentDeploymentConfigRes),
+                    recentDeploymentConfig: _recentDeploymentConfig,
                     latestDeploymentConfig: processResolvedPromise(latestDeploymentConfigRes),
-                    specificDeploymentConfig: processResolvedPromise(specificDeploymentConfigRes),
-                    diffFound: !shallowEqual(
-                        recentDeploymentConfigRes.value?.result,
-                        specificDeploymentConfigRes.value?.result,
-                    ),
+                    specificDeploymentConfig: _specificDeploymentConfig,
+                    diffFound: !shallowEqual(_recentDeploymentConfig, _specificDeploymentConfig),
                     checkingDiff: false,
                 })
             },
@@ -530,7 +531,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ) : !_canReviewConfig ? (
                         <>
                             <WarningIcon className="no-config-found-icon icon-dim-16" />
-                            &nbsp; Config not found
+                            &nbsp; Config not available
                         </>
                     ) : this.state.diffFound ? (
                         <>
@@ -563,7 +564,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         ) {
             return (
                 <>
-                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not found!</h2>
+                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
                     <p className="fs-12 fw-4 lh-18 m-0">Please select a different image or configuration to deploy</p>
                 </>
             )
@@ -574,7 +575,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         ) {
             return (
                 <>
-                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not found!</h2>
+                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
                     <p className="fs-12 fw-4 lh-18 m-0">Please select a different configuration to deploy</p>
                 </>
             )
@@ -672,7 +673,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     handleConfigSelection(selected) {
-        this.setState({ selectedConfigToDeploy: selected })
+        this.setState({
+            selectedConfigToDeploy: selected,
+            diffFound: !shallowEqual(this.state.recentDeploymentConfig, this.getBaseTemplateConfiguration()),
+        })
     }
 
     deployTrigger(e) {
@@ -720,6 +724,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
+    isConfigAvailable(optionValue: string) {
+        if (
+            (optionValue === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+                (!this.state.specificDeploymentConfig?.deploymentTemplate ||
+                    !this.state.specificDeploymentConfig.pipelineStrategy)) ||
+            (optionValue === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+                (!this.state.recentDeploymentConfig?.deploymentTemplate ||
+                    !this.state.recentDeploymentConfig.pipelineStrategy)) ||
+            (optionValue === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
+                (!this.state.latestDeploymentConfig?.deploymentTemplate ||
+                    !this.state.latestDeploymentConfig.pipelineStrategy))
+        ) {
+            return false
+        }
+
+        return true
+    }
+
     renderCDModal() {
         return (
             <>
@@ -759,6 +781,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
                             selectedConfigToDeploy={this.state.selectedConfigToDeploy}
                             handleConfigSelection={this.handleConfigSelection}
+                            isConfigAvailable={this.isConfigAvailable}
                         />
                     ) : (
                         <>

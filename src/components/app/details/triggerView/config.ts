@@ -116,11 +116,6 @@ export const getCommonConfigSelectStyles = (stylesOverride = {}) => {
                 backgroundColor: 'var(--N100)',
             },
         }),
-        option: (base, state) => ({
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--B100)' : 'white',
-        }),
         menu: (base) => ({
             ...base,
             marginTop: '2px',
