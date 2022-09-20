@@ -31,7 +31,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import './environmentOverride.scss'
-import { ComponentStates, ConfigMapOverridesProps } from './EnvironmentOverrides.type'
+import { ComponentStates, ConfigMapOverridesProps, ListComponentType } from './EnvironmentOverrides.type'
 
 const ConfigMapContext = React.createContext(null)
 
@@ -120,7 +120,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
     )
 }
 
-export function ListComponent({ name = '', type, label = '', appChartRef, reload = null, isESOModuleInstalled = false }) {
+export function ListComponent({ name = '', type, label = '', appChartRef }: ListComponentType) {
     const [isCollapsed, toggleCollapse] = useState(true)
 
     const handleOverrideListClick = () => {
@@ -151,19 +151,13 @@ export function ListComponent({ name = '', type, label = '', appChartRef, reload
                 )}
             </div>
             {!isCollapsed && type !== 'config-map' && (
-                <OverrideSecretForm
-                    name={name}
-                    appChartRef={appChartRef}
-                    toggleCollapse={toggleCollapse}
-                    isESOModuleInstalled={isESOModuleInstalled}
-                />
+                <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />
             )}
             {!isCollapsed && type !== 'secret' && (
                 <OverrideConfigMapForm
                     name={name}
                     appChartRef={appChartRef}
                     toggleCollapse={toggleCollapse}
-                    reload={reload}
                 />
             )}
         </div>
@@ -174,7 +168,6 @@ interface ConfigMapProps {
     name?: string
     appChartRef: { id: number; version: string; name: string }
     toggleCollapse: any
-    reload: any
 }
 
 const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({
