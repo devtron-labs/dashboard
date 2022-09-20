@@ -135,7 +135,7 @@ export default function GlobalConfiguration(props) {
 
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
-    const [installedModule, setInstalledModule] = useState([])
+    const {installedModuleMap} = useContext(mainContext)
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
@@ -205,20 +205,23 @@ function NavItem({ hostURLConfig, serverMode }) {
     }, [])
 
     const getModuleStatus = async (moduleName: string, retryOnError: number): Promise<void> => {
-        try {
-            const { result } = await getModuleInfo(moduleName)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                setInstalledModule([...installedModule, moduleName])
-            } else if (result?.status === ModuleStatus.INSTALLING) {
-                moduleStatusTimer = setTimeout(() => {
-                    getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
-                }, MODULE_STATUS_POLLING_INTERVAL)
-            }
-        } catch (error) {
-            if (retryOnError >= 0) {
-                getModuleStatus(moduleName, retryOnError--)
-            }
-        }
+      if (installedModuleMap.current?.[moduleName]) {
+          return
+      }
+      try {
+          const { result } = await getModuleInfo(moduleName)
+          if (result?.status === ModuleStatus.INSTALLED) {
+              installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
+          } else if (result?.status === ModuleStatus.INSTALLING) {
+              moduleStatusTimer = setTimeout(() => {
+                  getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
+              }, MODULE_STATUS_POLLING_INTERVAL)
+          }
+      } catch (error) {
+          if (retryOnError >= 0) {
+              getModuleStatus(moduleName, retryOnError--)
+          }
+      }
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
@@ -299,12 +302,12 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
+                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
                 (route, index) =>
-                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) &&
+                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) &&
                     (route.group ? (
                         <>
                             <NavLink

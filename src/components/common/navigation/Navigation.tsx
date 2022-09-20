@@ -91,6 +91,7 @@ interface NavigationType extends RouteComponentProps<{}> {
     serverInfo: ServerInfo
     getCurrentServerInfo: (section: string) => Promise<void>
     moduleInInstallingState: string
+    installedModuleMap: React.MutableRefObject<Record<string, boolean>>
 }
 export default class Navigation extends Component<
     NavigationType,
@@ -100,7 +101,6 @@ export default class Navigation extends Component<
         showHelpCard: boolean
         showMoreOptionCard: boolean
         isCommandBarActive: boolean
-        installedModule: string[]
     }
 > {
     securityModuleStatusTimer = null
@@ -112,13 +112,12 @@ export default class Navigation extends Component<
             showHelpCard: false,
             showMoreOptionCard: false,
             isCommandBarActive: false,
-            installedModule: [],
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
         this.toggleCommandBar = this.toggleCommandBar.bind(this)
-        this.getSecurityModuleStatus(3)
+        this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
     }
 
     componentWillUnmount() {
@@ -137,13 +136,16 @@ export default class Navigation extends Component<
     }
 
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
+        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY]) {
+            return
+        }
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
-                this.setState((prevState) => ({
-                    ...prevState,
-                    installedModule: [...prevState.installedModule, ModuleNameMap.SECURITY],
-                }))
+                this.props.installedModuleMap.current = {
+                    ...this.props.installedModuleMap.current,
+                    [ModuleNameMap.SECURITY]: true,
+                }
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
@@ -262,7 +264,7 @@ export default class Navigation extends Component<
                             if (
                                 (this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
                                 (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                this.state.installedModule.indexOf(item.moduleName) !== -1
+                                this.props.installedModuleMap.current?.[item.moduleName]
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)

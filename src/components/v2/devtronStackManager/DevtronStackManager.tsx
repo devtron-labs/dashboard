@@ -41,7 +41,7 @@ export default function DevtronStackManager({
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
 }) {
-    const { serverMode,  moduleInInstallingState, setModuleInInstallingState } = useContext(mainContext)
+    const { serverMode,  moduleInInstallingState, setModuleInInstallingState, installedModuleMap } = useContext(mainContext)
     const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -172,11 +172,14 @@ export default function DevtronStackManager({
             .catch((errors) => {})
     }, [location])
 
-    const handleModuleInInstallingState = (moduleName: string, moduleStatus: ModuleStatus) => {
+    const setModuleStatusInContext = (moduleName: string, moduleStatus: ModuleStatus) => {
         if (moduleStatus === ModuleStatus.INSTALLING) {
             setModuleInInstallingState(moduleName)
         } else if (moduleInInstallingState === moduleName) {
             setModuleInInstallingState('')
+            if(moduleStatus === ModuleStatus.INSTALLED){
+              installedModuleMap.current = {...installedModuleMap.current, [moduleName]: true}
+            }
         }
     }
 
@@ -198,7 +201,7 @@ export default function DevtronStackManager({
                         ...currentModule,
                         installationStatus: result.status,
                     })
-                    handleModuleInInstallingState(result.name, result.status)
+                    setModuleStatusInContext(result.name, result.status)
                 }
             } else {
                 getCurrentServerInfo()
@@ -283,7 +286,7 @@ export default function DevtronStackManager({
                             }
                             _installedModulesList.push(_moduleDetails)
                         }
-                        handleModuleInInstallingState(result.name, result.status)
+                        setModuleStatusInContext(result.name, result.status)
                     }
                 })
 
