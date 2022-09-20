@@ -1,7 +1,7 @@
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M15.0904 11.5567L13.565 16.272L18.2803 17.7973" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M14.927 2.99911C16.3259 3.45163 17.5783 4.24977 18.5259 5.29259C19.4734 6.33541 20.0735 7.57607 20.2502 8.8577C20.427 10.1393 20.1725 11.4043 19.5189 12.4928C18.8654 13.5812 17.8421 14.4442 16.5785 14.9726L13.5667 16.232" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="4" y="4.03125" width="6.23077" height="3.46154" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="4" y="10.2617" width="6.23077" height="3.46154" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="4" y="16.4922" width="6.23077" height="3.46154" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="4" y="4.03125" width="6.23077" height="3.46154" fill="#596168" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="4" y="10.2617" width="6.23077" height="3.46154" fill="#596168" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="4" y="16.4922" width="6.23077" height="3.46154" fill="#596168" stroke="#596168" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
