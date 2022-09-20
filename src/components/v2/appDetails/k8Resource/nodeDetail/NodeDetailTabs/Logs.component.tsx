@@ -715,7 +715,7 @@ function getInitialPodContainerSelection(
             };
         }
 
-        let containers = new Set(_allSelectedPods.flatMap((_po) => flatContainers(_po) ?? []));
+        let containers = new Set(_allSelectedPods.flatMap((_pod) => flatContainers(_pod) ?? []));
         const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0) ?? '';
         return {
             selectedContainerOption: _selectedContainerOption,
