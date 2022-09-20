@@ -28,17 +28,20 @@ import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
 import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { NavLink } from 'react-router-dom'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -697,6 +700,29 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setExternalType(e.value)
     }
 
+    const ExternalSecretHelpNote = () => {
+        return (
+            <div className="fs-13 fw-4 lh-18">
+                <NavLink
+                    to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
+                    className="dc__link"
+                    target="_blank"
+                >
+                    External Secrets Operator
+                </NavLink>
+                &nbsp;should be installed in the target cluster.&nbsp;
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.EXTERNAL_SECRET}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    Learn more
+                </a>
+            </div>
+        )
+    }
+
     return (
         <div className="white-card__config-map">
             <div className="white-card__header">
@@ -721,7 +747,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     <ReactSelect
                         placeholder="Select Secret Type"
                         options={getTypeGroups()}
-                        defaultValue={externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]}
+                        defaultValue={
+                            externalType && externalType !== ''
+                                ? getTypeGroups(externalType)
+                                : getTypeGroups()[0].options[0]
+                        }
                         onChange={onChange}
                         styles={groupStyle()}
                         components={{
@@ -731,6 +761,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         }}
                     />
                 </div>
+                {isESO && <InfoColourBar
+                    classname="info_bar cn-9 mt-16 lh-20"
+                    message={<ExternalSecretHelpNote />}
+                    Icon={InfoIcon}
+                    iconSize={20}
+                />}
             </div>
             {externalType === 'KubernetesSecret' ? (
                 <div className="dc__info-container mb-24">
