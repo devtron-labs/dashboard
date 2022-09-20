@@ -402,6 +402,14 @@ a:focus {
     white-space: nowrap;
 }
 
+.dc__ellipsis-right__2nd-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
 .dc__ellipsis-left {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1503,6 +1511,10 @@ button.anchor {
     justify-content: space-between !important;
 }
 
+.dc__content-center {
+    justify-content: center !important;
+}
+
 .dc__content-start {
     justify-content: flex-start !important;
 }
@@ -1907,7 +1919,16 @@ textarea {
     width: 100%;
 }
 
+.w-auto {
+    width: auto;
+}
+
 // Height in pixels
+
+.dc__height-inherit {
+  height: inherit;
+}
+
 .h-0 {
     height: 0px;
 }

@@ -12,7 +12,7 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { ModuleNameMap, Routes, SERVER_MODE } from '../../config/constants'
+import { ModuleNameMap, MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
@@ -43,7 +43,7 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
-    const { serverMode, setServerMode } = useContext(mainContext)
+    const { serverMode } = useContext(mainContext)
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -135,12 +135,12 @@ export default function GlobalConfiguration(props) {
 
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
-    const [installedModule, setInstalledModule] = useState([])
+    const {installedModuleMap} = useContext(mainContext)
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
-
+    let moduleStatusTimer = null
     const ConfigRequired = [
         {
             name: 'Host URL',
@@ -193,24 +193,37 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: UserGroup,
             isAvailableInEA: true,
         },
-        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
+        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, moduleName: ModuleNameMap.NOTIFICATION },
     ]
     let showError =
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
-        getGitOpsModuleStatus()
+        getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
+        getModuleStatus(ModuleNameMap.NOTIFICATION, MODULE_STATUS_RETRY_COUNT)
     }, [])
 
-    async function getGitOpsModuleStatus() {
-        try {
-            const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
-            }
-        } catch (error) {}
+    const getModuleStatus = async (moduleName: string, retryOnError: number): Promise<void> => {
+      if (installedModuleMap.current?.[moduleName]) {
+          return
+      }
+      try {
+          const { result } = await getModuleInfo(moduleName)
+          if (result?.status === ModuleStatus.INSTALLED) {
+              installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
+          } else if (result?.status === ModuleStatus.INSTALLING) {
+              moduleStatusTimer = setTimeout(() => {
+                  getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
+              }, MODULE_STATUS_POLLING_INTERVAL)
+          }
+      } catch (error) {
+          if (retryOnError >= 0) {
+              getModuleStatus(moduleName, retryOnError--)
+          }
+      }
     }
+
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
         return (
             <NavLink
@@ -289,12 +302,12 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
+                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
                 (route, index) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
+                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) &&
                     (route.group ? (
                         <>
                             <NavLink

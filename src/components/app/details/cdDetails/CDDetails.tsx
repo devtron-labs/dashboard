@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { Host, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, Host, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -43,6 +43,8 @@ import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHis
 import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
+import { renderConfigurationError } from './cd.utils'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -75,7 +77,7 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
-
+    const [, blobStorageConfiguration, ] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     const { replace } = useHistory()
@@ -234,6 +236,7 @@ export default function CDDetails() {
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
                                         deploymentAppType={deploymentAppType}
+                                        isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                                     />
                                 </Route>
                             )}
@@ -386,9 +389,10 @@ function NoCDTriggersView({ environmentName }) {
     )
 }
 
-function Logs({ triggerDetails }) {
+function Logs({ triggerDetails, isBlobStorageConfigured }) {
     const eventSrcRef = useRef(null)
     const [logs, setLogs] = useState([])
+    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const counter = useRef(0)
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
 
@@ -406,27 +410,34 @@ function Logs({ triggerDetails }) {
         function getLogs() {
             let url = `${Host}/app/cd-pipeline/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
             eventSrcRef.current = new EventSource(url, { withCredentials: true })
-            eventSrcRef.current.addEventListener('message', (event: any) => {
-                if (event.data.toString().indexOf('START_OF_STREAM') !== -1) {
+            eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, (event: any) => {
+                if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM) !== -1) {
                     setLogs([])
                     counter.current = 0
-                } else if (event.data.toString().indexOf('END_OF_STREAM') !== -1) {
+                } else if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM) !== -1) {
                     eventSrcRef.current.close()
                 } else {
                     setLogs((logs) => logs.concat({ text: event.data, index: counter.current + 1 }))
                     counter.current += 1
                 }
             })
-            eventSrcRef.current.addEventListener('error', (event: any) => {})
+            eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, (event: any) => {
+                eventSrcRef.current.close()
+                setLogsNotAvailableError(true)
+            })
         }
-        getLogs()
+        triggerDetails.podStatus!== POD_STATUS.PENDING && getLogs()
         return () => {
+          if(eventSrcRef.current){
             eventSrcRef.current.close()
+          }
         }
-    }, [triggerDetails.id, pipelineId])
+    }, [triggerDetails.id, pipelineId, triggerDetails.podStatus])
 
     if (!triggerDetails) return null
-    return (
+    return triggerDetails.podStatus!== POD_STATUS.PENDING && logsNotAvailableError && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
+      renderConfigurationError(isBlobStorageConfigured)
+    ) : (
         <>
             {triggerDetails.id === 0 ? (
                 <EmptyState>
@@ -447,7 +458,7 @@ function Logs({ triggerDetails }) {
                             <p className="log mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(text)} />
                         ))}
                     </div>
-                    {eventSrcRef.current && eventSrcRef.current.readyState <= 1 && (
+                    {(triggerDetails.podStatus=== POD_STATUS.PENDING || (eventSrcRef.current && eventSrcRef.current.readyState <= 1)) && (
                         <div className="flex left event-source-status">
                             <Progressing />
                         </div>
@@ -466,6 +477,7 @@ const TriggerOutput: React.FC<{
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
+    isBlobStorageConfigured: boolean
 }> = ({
     fullScreenView,
     syncState,
@@ -473,7 +485,8 @@ const TriggerOutput: React.FC<{
     setShowTemplate,
     setDeploymentHistoryList,
     deploymentHistoryList,
-    deploymentAppType
+    deploymentAppType,
+    isBlobStorageConfigured
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -602,6 +615,7 @@ const TriggerOutput: React.FC<{
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
                 deploymentAppType={deploymentAppType}
+                isBlobStorageConfigured={isBlobStorageConfigured}
             />
         </>
     )
@@ -614,7 +628,8 @@ const HistoryLogs: React.FC<{
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
-}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType }) => {
+    isBlobStorageConfigured: boolean
+}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType, isBlobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
@@ -637,7 +652,7 @@ const HistoryLogs: React.FC<{
                         {triggerDetails.stage !== 'DEPLOY' && (
                             <Route path={`${path}/logs`}>
                                 <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                    <Logs triggerDetails={triggerDetails} />
+                                    <Logs triggerDetails={triggerDetails} isBlobStorageConfigured={isBlobStorageConfigured}/>
                                 </div>
                             </Route>
                         )}

@@ -41,7 +41,7 @@ export default function DevtronStackManager({
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
 }) {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode,  moduleInInstallingState, setModuleInInstallingState, installedModuleMap } = useContext(mainContext)
     const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -172,6 +172,17 @@ export default function DevtronStackManager({
             .catch((errors) => {})
     }, [location])
 
+    const setModuleStatusInContext = (moduleName: string, moduleStatus: ModuleStatus) => {
+        if (moduleStatus === ModuleStatus.INSTALLING) {
+            setModuleInInstallingState(moduleName)
+        } else if (moduleInInstallingState === moduleName) {
+            setModuleInInstallingState('')
+            if(moduleStatus === ModuleStatus.INSTALLED){
+              installedModuleMap.current = {...installedModuleMap.current, [moduleName]: true}
+            }
+        }
+    }
+
     /**
      * 1. If query params has 'id' then module installation action has been triggered
      * so fetch the specific module info.
@@ -190,6 +201,7 @@ export default function DevtronStackManager({
                         ...currentModule,
                         installationStatus: result.status,
                     })
+                    setModuleStatusInContext(result.name, result.status)
                 }
             } else {
                 getCurrentServerInfo()
@@ -274,6 +286,7 @@ export default function DevtronStackManager({
                             }
                             _installedModulesList.push(_moduleDetails)
                         }
+                        setModuleStatusInContext(result.name, result.status)
                     }
                 })
 
