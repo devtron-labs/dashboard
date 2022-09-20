@@ -110,7 +110,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 >
                     <div className="mr-5">
                         <div className="fs-13 fw-6">Ignore Cache</div>
-                        <div className="fs-12 fw-4">Ignore CacheIgnoring cache will lead to longer build time.</div>
+                        <div className="fs-12 fw-4">Ignoring cache will lead to longer build time.</div>
                     </div>
                 </Checkbox>
             )
