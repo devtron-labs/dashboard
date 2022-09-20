@@ -136,7 +136,7 @@ export default function GlobalConfiguration(props) {
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
     const {installedModuleMap} = useContext(mainContext)
-    const [, setForceUpdate] = useState(Date.now())
+    const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
@@ -213,7 +213,7 @@ function NavItem({ hostURLConfig, serverMode }) {
           const { result } = await getModuleInfo(moduleName)
           if (result?.status === ModuleStatus.INSTALLED) {
               installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
-              setForceUpdate(Date.now())
+              setForceUpdateTime(Date.now())
           } else if (result?.status === ModuleStatus.INSTALLING) {
               moduleStatusTimer = setTimeout(() => {
                   getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)

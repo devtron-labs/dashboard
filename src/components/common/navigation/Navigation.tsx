@@ -101,7 +101,7 @@ export default class Navigation extends Component<
         showHelpCard: boolean
         showMoreOptionCard: boolean
         isCommandBarActive: boolean
-        checkingSecurityNav: boolean
+        forceUpdateTime: number
     }
 > {
     securityModuleStatusTimer = null
@@ -113,7 +113,7 @@ export default class Navigation extends Component<
             showHelpCard: false,
             showMoreOptionCard: false,
             isCommandBarActive: false,
-            checkingSecurityNav: false
+            forceUpdateTime: Date.now()
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
@@ -141,7 +141,6 @@ export default class Navigation extends Component<
         if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY]) {
             return
         }
-        this.setState({checkingSecurityNav: true})
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
@@ -149,14 +148,13 @@ export default class Navigation extends Component<
                     ...this.props.installedModuleMap.current,
                     [ModuleNameMap.SECURITY]: true,
                 }
+                this.setState({forceUpdateTime: Date.now()})
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
                 }, MODULE_STATUS_POLLING_INTERVAL)
             }
-            this.setState({checkingSecurityNav: false})
         } catch (error) {
-          this.setState({checkingSecurityNav: false})
             if (retryOnError >= 0) {
                 this.getSecurityModuleStatus(retryOnError--)
             }
