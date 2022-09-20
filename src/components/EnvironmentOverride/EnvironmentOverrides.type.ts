@@ -48,3 +48,9 @@ export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverri
     environments: AppEnvironment[]
     environmentName: string
 }
+export interface ListComponentType {
+    name: string
+    type: string
+    label: string
+    appChartRef: { id: number; version: string; name: string }
+}

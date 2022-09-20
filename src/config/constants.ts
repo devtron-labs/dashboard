@@ -263,6 +263,8 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
+    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/resources/devtron-troubleshoot#21.-configure-blob-storage`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -553,7 +555,6 @@ export const ModuleNameMap = {
   SECURITY: 'security.clair',
   BLOB_STORAGE: 'blob-storage',
   GRAFANA: 'monitoring.grafana',
-  ESO: 'external-secrets',
   NOTIFICATION: 'notifier'
 }
 
@@ -581,3 +582,6 @@ export const TERMINAL_STATUS_MAP = {
 export const POD_STATUS = {
   PENDING: 'Pending'
 }
+
+export const MODULE_STATUS_RETRY_COUNT = 3;
+export const MODULE_STATUS_POLLING_INTERVAL = 15000;

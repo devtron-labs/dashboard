@@ -28,26 +28,25 @@ import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, MODES, ModuleNameMap, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, esoModuleInstallMenuList, esoMenuList, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, esoMenuListLoading } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import AsyncSelect from 'react-select/async';
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { NavLink } from 'react-router-dom'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
-    const [ esoModuleLoading, esoModuleStatus ] = useAsync(() => getModuleInfo(ModuleNameMap.ESO), [])
 
     useEffect(() => {
         initialise()
@@ -114,7 +113,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         } catch (err) {}
     }
 
-    if (secretLoading || esoModuleLoading) return <Progressing pageLoader />
+    if (secretLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
             <h1 className="form__title form__title--artifacts">Secrets</h1>
@@ -137,7 +136,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 appChartRef={appChartRef}
                 update={update}
                 initialise={initialise}
-                isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
             />
             {list &&
                 Array.isArray(list.configData) &&
@@ -153,7 +151,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                             update={update}
                             index={idx}
                             initialise={initialise}
-                            isESOModuleInstalled={esoModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                         />
                     ))}
         </div>
@@ -179,7 +176,6 @@ export function CollapsedSecretForm({
     filePermission = '',
     subPath = false,
     esoSecretData= null,
-    isESOModuleInstalled,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -215,7 +211,6 @@ export function CollapsedSecretForm({
                     subPath={subPath}
                     filePermission={filePermission}
                     esoSecretData={esoSecretData}
-                    isESOModuleInstalled={isESOModuleInstalled}
                 />
             )}
         </section>
@@ -283,12 +278,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         value: props.data ? Object.keys(props.data).join(',') : '',
         error: '',
     })
-
-    const [optionLoading, setOptionLoading] = useState(false)
-    const [isESOModuleInstalled, setESOModuleInstalled] = useState(props.isESOModuleInstalled)
-    const [secretTypeOptions, setSecretTypeOptions] = useState(getTypeGroups(props.isESOModuleInstalled))
-    const secretTypeValue =
-        externalType && externalType !== '' ? getTypeGroups(true, externalType) : getTypeGroups(true)[0].options[0]
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
@@ -711,22 +700,27 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setExternalType(e.value)
     }
 
-    const checkIsModuleStatus = async () => {
-        if (!isESOModuleInstalled) {
-            setOptionLoading(true)
-            try {
-                const { result } = await getModuleInfo(ModuleNameMap.ESO)
-                if (result?.status === ModuleStatus.INSTALLED) {
-                    setSecretTypeOptions(getTypeGroups(true))
-                    setESOModuleInstalled(true)
-                } else {
-                    setSecretTypeOptions(getTypeGroups(false))
-                }
-                setOptionLoading(false)
-            } catch (error) {
-                setOptionLoading(false)
-            }
-        }
+    const ExternalSecretHelpNote = () => {
+        return (
+            <div className="fs-13 fw-4 lh-18">
+                <NavLink
+                    to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
+                    className="dc__link"
+                    target="_blank"
+                >
+                    External Secrets Operator
+                </NavLink>
+                &nbsp;should be installed in the target cluster.&nbsp;
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.EXTERNAL_SECRET}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    Learn more
+                </a>
+            </div>
+        )
     }
 
     return (
@@ -752,23 +746,27 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
-                        options={secretTypeOptions}
-                        defaultValue={secretTypeValue}
+                        options={getTypeGroups()}
+                        defaultValue={
+                            externalType && externalType !== ''
+                                ? getTypeGroups(externalType)
+                                : getTypeGroups()[0].options[0]
+                        }
                         onChange={onChange}
                         styles={groupStyle()}
-                        onMenuOpen={checkIsModuleStatus}
                         components={{
                             IndicatorSeparator: null,
                             Option: SecretOptions,
                             GroupHeading,
-                            MenuList: isESOModuleInstalled
-                                ? esoMenuList
-                                : optionLoading
-                                ? esoMenuListLoading
-                                : esoModuleInstallMenuList,
                         }}
                     />
                 </div>
+                {isESO && <InfoColourBar
+                    classname="info_bar cn-9 mt-16 lh-20"
+                    message={<ExternalSecretHelpNote />}
+                    Icon={InfoIcon}
+                    iconSize={20}
+                />}
             </div>
             {externalType === 'KubernetesSecret' ? (
                 <div className="dc__info-container mb-24">
