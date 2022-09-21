@@ -15,6 +15,7 @@ export const Routes = {
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
+    CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',

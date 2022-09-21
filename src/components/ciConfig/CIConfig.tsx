@@ -9,7 +9,7 @@ import {
 } from '../common'
 import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig } from '../../services/service'
+import { getSourceConfig, getCIConfig, getConfigOverrideDetails } from '../../services/service'
 import { useParams } from 'react-router'
 import { KeyValueInput } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -26,26 +26,69 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { OptionType } from '../app/types'
 import Tippy from '@tippyjs/react'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { CIPipelineDataType } from '../ciPipeline/types'
 
-export default function CIConfig({ respondOnSuccess, ...rest }) {
-    const [dockerRegistries, setDockerRegistries] = useState(null)
-    const [sourceConfig, setSourceConfig] = useState(null)
-    const [ciConfig, setCIConfig] = useState(null)
-    const [loading, setLoading] = useState(true)
+export default function CIConfig({
+    respondOnSuccess,
+    configOverrideView,
+    allowOverride,
+    parentState,
+    setParentState,
+    updateDockerConfigOverride,
+}: {
+    respondOnSuccess: () => void
+    configOverrideView?: boolean
+    allowOverride?: boolean
+    parentState?: {
+        loadingState: ComponentStates
+        selectedCIPipeline: CIPipelineDataType
+        dockerRegistries: any
+        sourceConfig: any
+        ciConfig: any
+    }
+    setParentState?: React.Dispatch<
+        React.SetStateAction<{
+            loadingState: ComponentStates
+            selectedCIPipeline: CIPipelineDataType
+            dockerRegistries: any
+            sourceConfig: any
+            ciConfig: any
+        }>
+    >
+    updateDockerConfigOverride?: (key, value) => void
+}) {
+    const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
+    const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
+    const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
+    const [configOverrides, setConfigOverrides] = useState(null)
+    const [loading, setLoading] = useState(
+        configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
+    )
     const { appId } = useParams<{ appId: string }>()
     useEffect(() => {
-        initialise()
+        if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
+            initialise()
+        }
     }, [])
 
     async function initialise() {
         try {
             setLoading(true)
-            const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([
+            const [
+                { result: dockerRegistries },
+                { result: sourceConfig },
+                { result: ciConfig },
+                { result: configOverrides },
+            ] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
                 getSourceConfig(appId),
                 getCIConfig(+appId),
+                getConfigOverrideDetails(appId),
             ])
             Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id')
             setDockerRegistries(dockerRegistries || [])
@@ -54,8 +97,25 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
             setSourceConfig(sourceConfig)
             setCIConfig(ciConfig)
+            setConfigOverrides(configOverrides)
+
+            if (setParentState) {
+                setParentState({
+                    ...parentState,
+                    loadingState: ComponentStates.loaded,
+                    dockerRegistries: dockerRegistries,
+                    sourceConfig: sourceConfig,
+                    ciConfig: ciConfig,
+                })
+            }
         } catch (err) {
             showError(err)
+            if (setParentState) {
+                setParentState({
+                    ...parentState,
+                    loadingState: ComponentStates.failed,
+                })
+            }
         } finally {
             setLoading(false)
         }
@@ -74,7 +134,15 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
         }
     }
 
-    if (loading) return <Progressing pageLoader />
+    if (loading)
+        return (
+            <Progressing
+                size={configOverrideView ? 24 : 48}
+                styles={{
+                    marginTop: configOverrideView ? '24px' : '0',
+                }}
+            />
+        )
     if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
     return (
         <Form
@@ -83,19 +151,42 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
             ciConfig={ciConfig}
             reload={reload}
             appId={appId}
+            selectedCIPipeline={parentState?.selectedCIPipeline}
+            configOverrides={configOverrides}
+            configOverrideView={configOverrideView}
+            allowOverride={allowOverride}
+            updateDockerConfigOverride={updateDockerConfigOverride}
         />
     )
 }
 
-function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
+function Form({
+    dockerRegistries,
+    sourceConfig,
+    ciConfig,
+    reload,
+    appId,
+    selectedCIPipeline,
+    configOverrides,
+    configOverrideView,
+    allowOverride,
+    updateDockerConfigOverride,
+}) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const _selectedMaterial =
-        ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.gitMaterialId
+        allowOverride && selectedCIPipeline?.isDockerConfigOverridden
+            ? sourceConfig.material.find(
+                  (material) =>
+                      material.id === selectedCIPipeline.dockerConfigOverride?.dockerBuildConfig?.gitMaterialId,
+              )
+            : ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig.dockerBuildConfig.gitMaterialId)
             : sourceConfig.material[0]
     const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
     const _selectedRegistry =
-        ciConfig && ciConfig.dockerRegistry
+        allowOverride && selectedCIPipeline?.isDockerConfigOverridden
+            ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
+            : ciConfig && ciConfig.dockerRegistry
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
             : dockerRegistries.find((reg) => reg.isDefault)
     const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
@@ -104,11 +195,22 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         {
             repository: { value: _selectedMaterial.name, error: '' },
             dockerfile: {
-                value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : 'Dockerfile',
+                value: selectedCIPipeline?.isDockerConfigOverridden
+                    ? selectedCIPipeline.dockerConfigOverride?.dockerBuildConfig?.dockerfileRelativePath
+                    : ciConfig
+                    ? ciConfig.dockerBuildConfig.dockerfileRelativePath
+                    : 'Dockerfile',
                 error: '',
             },
             registry: { value: _selectedRegistry?.id, error: '' },
-            repository_name: { value: ciConfig ? ciConfig.dockerRepository : '', error: '' },
+            repository_name: {
+                value: selectedCIPipeline?.isDockerConfigOverridden
+                    ? selectedCIPipeline.dockerConfigOverride?.dockerRepository
+                    : ciConfig
+                    ? ciConfig.dockerRepository
+                    : '',
+                error: '',
+            },
         },
         {
             repository: {
@@ -251,14 +353,28 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         setIsCollapsed(!isCollapsed)
     }
 
+    const toggleAllowOverride = () => {
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
+        }
+    }
+
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
         repository.value = selectedMaterial.name
+
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride('dockerConfigOverride.dockerBuildConfig.gitMaterialId', selectedMaterial.id)
+        }
     }
 
     const handleRegistryChange = (selectedRegistry): void => {
         setSelectedRegistry(selectedRegistry)
         registry.value = selectedRegistry.id
+
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride('dockerConfigOverride.dockerRegistry', selectedRegistry.id)
+        }
     }
 
     const _multiSelectStyles = {
@@ -293,14 +409,16 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <NavLink
-                    to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
-                    className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
-                    style={{ backgroundColor: '#FFF' }}
-                >
-                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
-                    Add Container Registry
-                </NavLink>
+                {!configOverrideView && (
+                    <NavLink
+                        to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
+                        className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
+                        style={{ backgroundColor: '#FFF' }}
+                    >
+                        <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
+                        Add Container Registry
+                    </NavLink>
+                )}
             </components.MenuList>
         )
     }
@@ -312,7 +430,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         }
         return (
             <components.Control {...props}>
-                <div className={'dc__registry-icon ml-5 ' + value}></div>
+                <div className={'dc__registry-icon ml-10 ' + value}></div>
                 {props.children}
             </components.Control>
         )
@@ -346,10 +464,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
         return (
             <components.Control {...props}>
-                {value.includes('github') && <GitHub className="icon-dim-20 ml-8" />}
-                {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-8" />}
-                {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-8" />}
-                {showGit && <Git className="icon-dim-20 ml-8" />}
+                {value.includes('github') && <GitHub className="icon-dim-20 ml-10" />}
+                {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-10" />}
+                {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-10" />}
+                {showGit && <Git className="icon-dim-20 ml-10" />}
                 {props.children}
             </components.Control>
         )
@@ -474,33 +592,63 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
+    const handleOnChangeConfig = (e) => {
+        handleOnChange(e)
+
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride(
+                `dockerConfigOverride.${
+                    e.target.name === 'dockerfile' ? 'dockerBuildConfig.dockerfileRelativePath' : 'dockerRepository'
+                }`,
+                e.target.value,
+            )
+        }
+    }
+
     const { repository, dockerfile, registry, repository_name, key, value } = state
     return (
         <>
-            <div className="form__app-compose">
-                <h1 className="form__title">Docker build configuration</h1>
-                <p className="form__subtitle">
-                    Required to execute CI pipelines for this application.
-                    <span>
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="dc__link"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+            <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
+                {!configOverrideView && (
+                    <>
+                        <h1 className="form__title">Docker build configuration</h1>
+                        <p className="form__subtitle">
+                            Required to execute CI pipelines for this application.&nbsp;
+                            <a
+                                rel="noreferrer noopener"
+                                target="_blank"
+                                className="dc__link"
+                                href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                            >
+                                Learn more
+                            </a>
+                        </p>
+                    </>
+                )}
+                <div className="white-card white-card__docker-config dc__position-rel">
+                    {configOverrideView && (
+                        <button
+                            className={`allow-config-override flex dc__position-abs h-28 cta ${
+                                allowOverride ? 'delete' : 'ghosted'
+                            }`}
+                            onClick={toggleAllowOverride}
+                            style={{
+                                top: '16px',
+                                right: '16px',
+                            }}
                         >
-                            {' '}
-                            Learn more
-                        </a>{' '}
-                    </span>
-                </p>
-                <div className="white-card white-card__docker-config">
+                            {`${allowOverride ? 'Delete' : 'Allow'} Override`}
+                        </button>
+                    )}
                     <div className="fs-14 fw-6 pb-16">
-                        Selected repository will be used to store container images for this application
+                        {configOverrideView
+                            ? 'Registry to store container images'
+                            : 'Selected repository will be used to store container images for this application'}
                     </div>
                     <div className="mb-4 form-row__docker">
                         <div className="form__field">
                             <label htmlFor="" className="form__label">
-                                Container registry*
+                                Container registry *
                             </label>
                             <ReactSelect
                                 className="m-0"
@@ -510,7 +658,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 options={dockerRegistries}
                                 getOptionLabel={(option) => `${option.id}`}
                                 getOptionValue={(option) => `${option.id}`}
-                                value={selectedRegistry}
+                                value={configOverrideView && !allowOverride ? _selectedRegistry : selectedRegistry}
                                 styles={_multiSelectStyles}
                                 components={{
                                     IndicatorSeparator: null,
@@ -518,15 +666,14 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     MenuList: containerRegistryMenuList,
                                     Control: containerRegistryControls,
                                 }}
-                                onChange={(selected) => {
-                                    handleRegistryChange(selected)
-                                }}
+                                onChange={handleRegistryChange}
+                                isDisabled={configOverrideView && !allowOverride}
                             />
                             {registry.error && <label className="form__error">{registry.error}</label>}
                         </div>
                         <div className="form__field">
                             <label htmlFor="" className="form__label">
-                                Container Repository{' '}
+                                Container Repository&nbsp;
                                 {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
                             </label>
                             <input
@@ -539,10 +686,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     'Enter repository name'
                                 }
                                 name="repository_name"
-                                value={repository_name.value}
-                                onChange={handleOnChange}
+                                value={
+                                    configOverrideView && !allowOverride
+                                        ? ciConfig?.dockerRepository || ''
+                                        : repository_name.value
+                                }
+                                onChange={handleOnChangeConfig}
                                 autoFocus
                                 autoComplete={'off'}
+                                disabled={configOverrideView && !allowOverride}
                             />
                             {repository_name.error && <label className="form__error">{repository_name.error}</label>}
                             {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
@@ -564,7 +716,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 options={sourceConfig.material}
                                 getOptionLabel={(option) => `${option.name}`}
                                 getOptionValue={(option) => `${option.checkoutPath}`}
-                                value={selectedMaterial}
+                                value={configOverrideView && !allowOverride ? _selectedMaterial : selectedMaterial}
                                 styles={_multiSelectStyles}
                                 components={{
                                     IndicatorSeparator: null,
@@ -574,12 +726,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 onChange={(selected) => {
                                     handleFileLocationChange(selected)
                                 }}
+                                isDisabled={configOverrideView && !allowOverride}
                             />
                             {repository.error && <label className="form__error">{repository.error}</label>}
                         </div>
                         <div className="form__field">
                             <label htmlFor="" className="form__label">
-                                Docker file path (relative)*
+                                Docker file path (relative) *
                             </label>
                             <div className="docker-flie-container">
                                 <Tippy
@@ -588,7 +741,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     placement="top"
                                     content={selectedMaterial.checkoutPath}
                                 >
-                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">{selectedMaterial.checkoutPath}</span>
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                        {selectedMaterial.checkoutPath}
+                                    </span>
                                 </Tippy>
 
                                 <input
@@ -597,105 +752,135 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     className="form__input file-name"
                                     placeholder="Dockerfile"
                                     name="dockerfile"
-                                    value={dockerfile.value}
-                                    onChange={handleOnChange}
+                                    value={
+                                        configOverrideView && !allowOverride
+                                            ? ciConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
+                                            : dockerfile.value
+                                    }
+                                    onChange={handleOnChangeConfig}
                                     autoComplete={'off'}
+                                    disabled={configOverrideView && !allowOverride}
                                 />
                             </div>
                             {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
                         </div>
                     </div>
-                    <hr className="mt-0 mb-20" />
-                    <div onClick={toggleCollapse} className="flex dc__content-space cursor mb-20">
-                        <div>
-                            <div className="fs-14 fw-6 ">Advanced (optional)</div>
-                            <div className="form-row__add-parameters">
-                                <span className="fs-13 fw-4 cn-7">
-                                    Set target platform for build, Docker build arguments
+                    {!configOverrideView && (
+                        <>
+                            <InfoColourBar
+                                classname="info_bar mb-24"
+                                Icon={InfoIcon}
+                                iconClass="icon-dim-20"
+                                {...(configOverrides?.workflows?.length > 0
+                                    ? {
+                                          message: 'This configuration is overriden for build pipeline(s) of',
+                                          linkText: `${configOverrides.workflows.length} Workflow(s) >`,
+                                          linkClass: 'flex left',
+                                          linkOnClick: () => {},
+                                      }
+                                    : {
+                                          message:
+                                              'Container registry/docker file location for build pipelines can be overriden. Check advance options in build pipeline.',
+                                          linkText: 'Learn more',
+                                          redirectLink: 'https://docs.devtron.ai',
+                                      })}
+                            />
+                            <hr className="mt-0 mb-20" />
+                            <div onClick={toggleCollapse} className="flex dc__content-space cursor mb-20">
+                                <div>
+                                    <div className="fs-14 fw-6 ">Advanced (optional)</div>
+                                    <div className="form-row__add-parameters">
+                                        <span className="fs-13 fw-4 cn-7">
+                                            Set target platform for build, Docker build arguments
+                                        </span>
+                                    </div>
+                                </div>
+                                <span>
+                                    <Dropdown
+                                        className="icon-dim-32 rotate "
+                                        style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                                    />
                                 </span>
                             </div>
-                        </div>
-                        <span>
-                            <Dropdown
-                                className="icon-dim-32 rotate "
-                                style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
-                            />
-                        </span>
-                    </div>
-                    {isCollapsed && (
-                        <>
-                            <div className="mb-20">
-                                <div className="fs-13 fw-6">Set target platform for the build</div>
-                                <div className="fs-13 fw-4 cn-7 mb-12">
-                                    If target platform is not set, Devtron will build image for architecture and
-                                    operating system of the k8s node on which CI is running
-                                </div>
-                                <CreatableSelect
-                                    value={selectedTargetPlatforms}
-                                    isMulti={true}
-                                    components={{
-                                        ClearIndicator: null,
-                                        IndicatorSeparator: null,
-                                        Option: platformOption,
-                                        MenuList: platformMenuList,
-                                    }}
-                                    styles={tempMultiSelectStyles}
-                                    closeMenuOnSelect={false}
-                                    name="targetPlatform"
-                                    placeholder="Type to select or create"
-                                    options={targetPlatformList}
-                                    className="basic-multi-select mb-4"
-                                    classNamePrefix="target-platform__select"
-                                    onChange={handlePlatformChange}
-                                    hideSelectedOptions={false}
-                                    noOptionsMessage={noMatchingPlatformOptions}
-                                    onBlur={handleCreatableBlur}
-                                    isValidNewOption={() => false}
-                                    onKeyDown={handleKeyDown}
-                                    captureMenuScroll={false}
-                                />
-                                {showCustomPlatformWarning && (
-                                    <span className="flexbox cy-7">
-                                        <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
-                                        You have entered a custom target platform, please ensure it is valid.
-                                    </span>
-                                )}
-                            </div>
-                            <div>
-                                <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
-                                {args &&
-                                    args.map((arg, idx) => (
-                                        <KeyValueInput
-                                            keyLabel={'Key'}
-                                            valueLabel={'Value'}
-                                            {...arg}
-                                            key={idx}
-                                            index={idx}
-                                            onChange={handleArgsChange}
-                                            onDelete={(e) => {
-                                                let argsTemp = [...args]
-                                                argsTemp.splice(idx, 1)
-                                                setArgs(argsTemp)
+                            {isCollapsed && (
+                                <>
+                                    <div className="mb-20">
+                                        <div className="fs-13 fw-6">Set target platform for the build</div>
+                                        <div className="fs-13 fw-4 cn-7 mb-12">
+                                            If target platform is not set, Devtron will build image for architecture and
+                                            operating system of the k8s node on which CI is running
+                                        </div>
+                                        <CreatableSelect
+                                            value={selectedTargetPlatforms}
+                                            isMulti={true}
+                                            components={{
+                                                ClearIndicator: null,
+                                                IndicatorSeparator: null,
+                                                Option: platformOption,
+                                                MenuList: platformMenuList,
                                             }}
-                                            valueType="text"
+                                            styles={tempMultiSelectStyles}
+                                            closeMenuOnSelect={false}
+                                            name="targetPlatform"
+                                            placeholder="Type to select or create"
+                                            options={targetPlatformList}
+                                            className="basic-multi-select mb-4"
+                                            classNamePrefix="target-platform__select"
+                                            onChange={handlePlatformChange}
+                                            hideSelectedOptions={false}
+                                            noOptionsMessage={noMatchingPlatformOptions}
+                                            onBlur={handleCreatableBlur}
+                                            isValidNewOption={() => false}
+                                            onKeyDown={handleKeyDown}
+                                            captureMenuScroll={false}
                                         />
-                                    ))}
-                                <div
-                                    className="add-parameter pointer fs-14 cb-5 mb-20"
-                                    onClick={(e) =>
-                                        setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
-                                    }
-                                >
-                                    <span className="fa fa-plus mr-8"></span>Add parameter
-                                </div>
+                                        {showCustomPlatformWarning && (
+                                            <span className="flexbox cy-7">
+                                                <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
+                                                You have entered a custom target platform, please ensure it is valid.
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
+                                        {args &&
+                                            args.map((arg, idx) => (
+                                                <KeyValueInput
+                                                    keyLabel={'Key'}
+                                                    valueLabel={'Value'}
+                                                    {...arg}
+                                                    key={idx}
+                                                    index={idx}
+                                                    onChange={handleArgsChange}
+                                                    onDelete={(e) => {
+                                                        let argsTemp = [...args]
+                                                        argsTemp.splice(idx, 1)
+                                                        setArgs(argsTemp)
+                                                    }}
+                                                    valueType="text"
+                                                />
+                                            ))}
+                                        <div
+                                            className="add-parameter pointer fs-14 cb-5 mb-20"
+                                            onClick={(e) =>
+                                                setArgs((args) => [
+                                                    { k: '', v: '', keyError: '', valueError: '' },
+                                                    ...args,
+                                                ])
+                                            }
+                                        >
+                                            <span className="fa fa-plus mr-8"></span>Add parameter
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                            <div className="form__buttons mt-12">
+                                <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>
+                                    {loading ? <Progressing /> : 'Save Configuration'}
+                                </button>
                             </div>
                         </>
                     )}
-                    <div className="form__buttons mt-12">
-                        <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>
-                            {loading ? <Progressing /> : 'Save Configuration'}
-                        </button>
-                    </div>
                 </div>
             </div>
             {renderConfirmationModal()}

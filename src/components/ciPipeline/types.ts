@@ -230,6 +230,15 @@ export interface FormType {
     ciPipelineEditable: true
     preBuildStage?: BuildStageType
     postBuildStage?: BuildStageType
+    isDockerConfigOverridden?: boolean
+    dockerConfigOverride?: {
+        dockerRegistry: string
+        dockerRepository: string
+        dockerBuildConfig: {
+            gitMaterialId: number
+            dockerfileRelativePath: string
+        }
+    }
 }
 
 interface ErrorObj {
@@ -280,6 +289,15 @@ export interface CIPipelineDataType {
     name: string
     linkedCount: number
     scanEnabled?: boolean
+    isDockerConfigOverridden?: boolean
+    dockerConfigOverride?: {
+        dockerRegistry: string
+        dockerRepository: string
+        dockerBuildConfig: {
+            gitMaterialId: number
+            dockerfileRelativePath: string
+        }
+    }
 }
 export interface CIPipelineState {
     code: number
@@ -435,7 +453,7 @@ export interface WebhookCIProps {
 export interface BuildType {
     showFormError: boolean
     isAdvanced: boolean
-    ciPipelineId: number
+    ciPipeline: CIPipelineDataType
     pageState: string
     isSecurityModuleInstalled: boolean
 }

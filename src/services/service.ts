@@ -25,6 +25,10 @@ export function getCIConfig(appId: number) {
     return get(URL);
 }
 
+export function getConfigOverrideDetails(appId: string) {
+    return get(`${Routes.CI_CONFIG_OVERRIDE_GET}/${appId}`)
+}
+
 export function getCDConfig(appId: number | string): Promise<CDPipelines> {
     const URL = `${Routes.CD_CONFIG}/${appId}`;
     return get(URL).then(response => response.result);

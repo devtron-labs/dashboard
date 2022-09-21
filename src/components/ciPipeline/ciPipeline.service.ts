@@ -288,6 +288,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 agg[curr.key] = curr.value
                 return agg
             }, {}),
+        isDockerConfigOverridden: formData.isDockerConfigOverridden,
+        dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
     }
     return ci
 }
@@ -297,20 +299,21 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
     const ciMaterialSet = new Set()
 
     if (ciPipeline) {
-        materials = ciPipeline.ciMaterial?.map((mat) => {
-            ciMaterialSet.add(mat.gitMaterialId)
-            return {
-                id: mat.id,
-                gitMaterialId: mat.gitMaterialId,
-                name: mat.gitMaterialName,
-                type: mat.source.type,
-                value: mat.source.value,
-                isSelected: true,
-                gitHostId: gitHost ? gitHost.id : 0,
-                regex: mat.source.regex,
-                isRegex: mat.isRegex,
-            }
-        }) || []
+        materials =
+            ciPipeline.ciMaterial?.map((mat) => {
+                ciMaterialSet.add(mat.gitMaterialId)
+                return {
+                    id: mat.id,
+                    gitMaterialId: mat.gitMaterialId,
+                    name: mat.gitMaterialName,
+                    type: mat.source.type,
+                    value: mat.source.value,
+                    isSelected: true,
+                    gitHostId: gitHost ? gitHost.id : 0,
+                    regex: mat.source.regex,
+                    isRegex: mat.isRegex,
+                }
+            }) || []
     }
 
     if (ciPipeline.parentCiPipeline) {
@@ -470,6 +473,8 @@ function parseCIResponse(
                 ciPipelineEditable: _isCiPipelineEditable,
                 preBuildStage: ciPipeline.preBuildStage || emptyStepsData(),
                 postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
+                isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
+                dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,

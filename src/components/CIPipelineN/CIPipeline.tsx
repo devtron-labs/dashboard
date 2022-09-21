@@ -739,7 +739,7 @@ export default function CIPipeline({
                                     pageState={pageState}
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
-                                    ciPipelineId={ciPipeline.id}
+                                    ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                 />
                             </Route>
