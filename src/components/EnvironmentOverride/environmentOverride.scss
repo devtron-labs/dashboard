@@ -63,11 +63,13 @@
     &:not(:last-child) {
         margin-bottom: 12px;
     }
-    .uncollapse__delete.flex {
-        position: absolute;
-        right: 72px;
-        top: 18px;
-        width: 24px;
+    .uncollapse__delete {
+        &.flex {
+            position: absolute;
+            right: 72px;
+            top: 18px;
+            width: 24px;
+        }
     }
 }
 
@@ -150,16 +152,20 @@ div.override-container {
         }
 
         &.delete {
-            svg path {
-                fill: none;
-                stroke: var(--R500);
+            svg {
+                path {
+                    fill: none;
+                    stroke: var(--R500);
+                }
             }
 
             &:hover,
             &:active,
             &:focus {
-                svg path {
-                    stroke: white;
+                svg {
+                    path {
+                        stroke: white;
+                    }
                 }
             }
         }
@@ -192,21 +198,19 @@ div.override-container {
     transition: transform 0.2s ease;
 }
 
-.list-collapse-enter.active {
-    transform: scaleY(1);
+.list-collapse-enter {
+    &.active {
+        transform: scaleY(1);
+    }
 }
 
 .collapse-enter {
-    // max-height: 66px;
-    // overflow: hidden;
     transform: scaleY(0);
     transform-origin: top;
     transition: transform 0.2s ease;
 }
 
 .collapse-enter-active {
-    // max-height: 1000px;
-    // transition: max-height 0.2s ease-in-out;
     transform: scaleY(1);
 }
 

@@ -10,7 +10,7 @@ import { Option } from '../v2/common/ReactSelect.utils';
 import Tippy from '@tippyjs/react';
 import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, VisibleModal } from '../common';
-import './gitProvider.css';
+import './gitProvider.scss';
 import { GitHostConfigModal } from './AddGitHostConfigModal';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';

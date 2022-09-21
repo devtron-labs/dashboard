@@ -1,4 +1,4 @@
-.hosturl__description{
+.hosturl__description {
     margin: 20px 24px;
     padding: 16px;
     border-radius: 4px;
@@ -7,19 +7,21 @@
     font-size: 14px;
 }
 
-.hosturl__container{
+.hosturl__container {
     color: #404040;
 }
 
-.hosturl__autodetection{
+.hosturl__autodetection {
     color: #6b778c;
 }
 
-.hosturl__url{
+.hosturl__url {
     background: none;
     border: none;
 }
 
-.hosturl__url:focus{ 
-    outline:0; 
+.hosturl__url {
+    &:focus {
+        outline: 0;
+    }
 }

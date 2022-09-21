@@ -17,17 +17,23 @@
     margin-bottom: 20px;
 }
 
-.form__title.form__title--workflow-editor {
-    margin-top: 20px;
+.form__title {
+    &.form__title--workflow-editor {
+        margin-top: 20px;
+    }
 }
 
-.form__subtitle.form__subtitle--workflow-editor {
-    margin-top: 4px;
+.form__subtitle {
+    &.form__subtitle--workflow-editor {
+        margin-top: 4px;
+    }
 }
 
-.white-card__header.white-card__header--pipeline-webhook {
-    font-size: 16px;
-    margin: 16px;
+.white-card__header {
+    &.white-card__header--pipeline-webhook {
+        font-size: 16px;
+        margin: 16px;
+    }
 }
 
 .pipeline-webhook {
@@ -90,8 +96,10 @@
     z-index: 3;
 }
 
-.pipeline-webhook__item:hover {
-    background-color: var(--N100);
+.pipeline-webhook__item {
+    &:hover {
+        background-color: var(--N100);
+    }
 }
 
 .cd-success-icon-container {
@@ -102,6 +110,8 @@
     text-align: right;
 }
 
-.action-card:hover {
-    background: var(--N50);
+.action-card {
+    &:hover {
+        background: var(--N50);
+    }
 }

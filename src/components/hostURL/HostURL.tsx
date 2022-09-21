@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
-import './hosturl.css';
+import './hosturl.scss';
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
     constructor(props) {

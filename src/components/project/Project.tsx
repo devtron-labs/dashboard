@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { ButtonWithLoader, showError } from '../../components/common';
+import { ButtonWithLoader } from '../../components/common';
 import folder from '../../assets/icons/ic-folder.svg';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import DeleteComponent from '../../util/DeleteComponent';
 import { deleteProject } from './service';
-import './project.css'
+import './project.scss'
 import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
 
 export interface ProjectProps {

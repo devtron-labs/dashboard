@@ -12,7 +12,7 @@ import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
 import { useThrottledEffect } from '../common';
 import ReactGA from 'react-ga4';
-import './terminal.css';
+import './terminal.scss';
 
 interface TerminalViewProps {
     appDetails: AppDetails;

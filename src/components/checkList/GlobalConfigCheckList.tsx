@@ -5,7 +5,7 @@ import { ChartCheckList } from './ChartCheckList';
 import { GlobalConfigCheckListState, GlobalConfigCheckListProps } from './checklist.type';
 import { GlobalAllCheckModal } from './GlobalAllCheckModal';
 import { GlobalChartsCheck } from './GlobalChartCheck';
-import './checklist.css';
+import './checklist.scss';
 export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps, GlobalConfigCheckListState> {
 
     constructor(props) {

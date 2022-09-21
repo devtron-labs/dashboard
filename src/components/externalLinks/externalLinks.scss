@@ -1,6 +1,6 @@
 .external-links-container {
     min-width: 720px;
-    padding: 16px 8%  20px;
+    padding: 16px 8% 20px;
 
     &.error-view {
         min-width: 100%;
@@ -38,26 +38,31 @@
         box-shadow: inset 0 -1px 0 0 var(--N200);
     }
 
-    .add-link.cta {
-        width: 108px;
-        height: 36px;
-        font-size: 13px;
-        padding: 0;
+    .add-link {
+        &.cta {
+            width: 108px;
+            height: 36px;
+            font-size: 13px;
+            padding: 0;
 
-        svg {
-            width: 16px;
-            height: 16px;
+            svg {
+                width: 16px;
+                height: 16px;
+            }
         }
     }
 
     .external-links-wrapper {
         max-width: 962px;
         margin: auto;
+
         .cta-search-filter-container {
             margin-top: 20px;
 
-            .add-link.cta {
-                height: 32px;
+            .add-link {
+                .cta {
+                    height: 32px;
+                }
             }
         }
 

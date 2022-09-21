@@ -1,44 +1,48 @@
-.gitops__id{
+.gitops__id {
     color: #404040;
 }
 
-.form__label.form__label--fs-13{
-    font-size: 13px;
+.form__label {
+    &.form__label--fs-13 {
+        font-size: 13px;
+    }
 }
 
-.git_impt{
+.git_impt {
     border: solid 1px #c5bbfa;
 }
 
-.config_failure{
+.config_failure {
     border-bottom: 0px;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
 
-.config_failure-actions{
+.config_failure-actions {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
 }
 
-.access_token{
+.access_token {
     position: absolute;
     margin-left: 148px;
 }
 
-.azure_access_token{
+.azure_access_token {
     position: absolute;
-    margin-left: 180px; 
+    margin-left: 180px;
 }
 
-.onlink{
+.onlink {
     color: var(--B500);
 }
 
-.onlink:hover{
-    color: var(--B500);
+.onlink {
+    &:hover {
+        color: var(--B500);
+    }
 }
 
-.stroke_width{
+.stroke_width {
     stroke-width: 2px;
 }

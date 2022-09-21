@@ -51,8 +51,10 @@
                     align-items: center;
                     color: var(--B500);
 
-                    svg path {
-                        fill: var(--B500);
+                    svg {
+                        path {
+                            fill: var(--B500);
+                        }
                     }
                 }
 
@@ -70,8 +72,12 @@
                             width: 20px;
                             height: 20px;
 
-                            svg g path:nth-of-type(2) {
-                                fill: var(--R500);
+                            svg {
+                                g {
+                                    path:nth-of-type(2) {
+                                        fill: var(--R500);
+                                    }
+                                }
                             }
                         }
                     }
@@ -282,8 +288,10 @@
     }
 }
 
-.data-row:hover {
-    .node-level__external-links {
-        background-color: var(--N100);
+.data-row {
+    &:hover {
+        .node-level__external-links {
+            background-color: var(--N100);
+        }
     }
 }

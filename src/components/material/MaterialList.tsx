@@ -6,7 +6,7 @@ import { withRouter } from 'react-router';
 import { CreateMaterial } from './CreateMaterial';
 import { UpdateMaterial } from './UpdateMaterial';
 import { MaterialListProps, MaterialListState } from './material.types';
-import './material.css';
+import './material.scss';
 import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {

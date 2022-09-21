@@ -144,38 +144,50 @@
     height: 44px;
 }
 
-.icon-n2 .fill-color {
-    fill: var(--N200);
+.icon-n2 {
+    .fill-color {
+        fill: var(--N200);
+    }
+
+    .stroke-color {
+        stroke: var(--N200);
+    }
 }
 
-.icon-n2 .stroke-color {
-    stroke: var(--N200);
+.icon-n3 {
+    .fill-color {
+        fill: var(--N300);
+    }
+
+    .stroke-color {
+        stroke: var(--N300);
+    }
 }
 
-.icon-n3 .fill-color {
-    fill: var(--N300);
+.icon-n4 {
+    .fill-color {
+        fill: var(--N400);
+    }
+
+    .stroke-color {
+        stroke: var(--N400);
+    }
 }
 
-.icon-n3 .stroke-color {
-    stroke: var(--N300);
+.icon-n5 {
+    .fill-color {
+        fill: var(--N500);
+    }
+
+    .stroke-color {
+        stroke: var(--N500);
+    }
 }
 
-.icon-n4 .fill-color {
-    fill: var(--N400);
-}
-
-.icon-n4 .stroke-color {
-    stroke: var(--N400);
-}
-
-.icon-n5 .fill-color {
-    fill: var(--N500);
-}
-
-.icon-n5 .stroke-color {
-    stroke: var(--N500);
-}
-
-.icon-delete:hover .stroke-color {
-    stroke: var(--R500);
+.icon-delete {
+    &:hover {
+        .stroke-color {
+            stroke: var(--R500);
+        }
+    }
 }

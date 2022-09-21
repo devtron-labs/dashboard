@@ -16,13 +16,19 @@
 
     .onboarding__bottom {
         height: calc(100vh - 300px);
-        .onboarding-card a:hover {
-            color: var(--N900);
-            text-decoration: none;
+
+        .onboarding-card a {
+            &:hover {
+                color: var(--N900);
+                text-decoration: none;
+            }
         }
-        .onboarding-card:hover {
-            box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
-            border-radius: 400;
+
+        .onboarding-card {
+            &:hover {
+                box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+                border-radius: 400;
+            }
         }
     }
 
@@ -55,16 +61,22 @@
         flex-wrap: wrap;
         width: 820px;
         justify-content: center;
-        a:hover {
-            color: var(--N900);
+
+        a {
+            &:hover {
+                color: var(--N900);
+            }
         }
     }
 
     .deploy-manage__body {
         height: calc(100vh - 300px);
-        .deploy-card:hover {
-            box-shadow: 0 8px 12px 0 var(--gray);
-            border-radius: 400;
+
+        .deploy-card {
+            &:hover {
+                box-shadow: 0 8px 12px 0 var(--gray);
+                border-radius: 400;
+            }
         }
     }
 
@@ -83,29 +95,35 @@
     }
 }
 
-.guide_skip a:hover {
-    color: var(--B500);
+.guide_skip {
+    a {
+        &:hover {
+            color: var(--B500);
+        }
+    }
 }
 
 .guide-body {
-  height: calc(100vh - 454px);
+    height: calc(100vh - 454px);
 }
 
 .guide-container {
-  .guide-cards__wrap {
-      display: grid;
-      grid-template-columns: 300px 300px;
-      grid-gap: 20px;
-      position: absolute;
-      top: -80px;
-  }
+    .guide-cards__wrap {
+        display: grid;
+        grid-template-columns: 300px 300px;
+        grid-gap: 20px;
+        position: absolute;
+        top: -80px;
+    }
 
-  .guide-card__img {
-      width: 298px;
-      height: 210px;
-  }
+    .guide-card__img {
+        width: 298px;
+        height: 210px;
+    }
 
-  .guide-card:hover{
-    box-shadow: 0 8px 12px 0 var(--gray);
-  }
+    .guide-card {
+        &:hover {
+            box-shadow: 0 8px 12px 0 var(--gray);
+        }
+    }
 }

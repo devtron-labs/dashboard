@@ -21,7 +21,7 @@ import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg';
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg';
 import ReactGA from 'react-ga4';
-import './deploymentMetrics.css';
+import './deploymentMetrics.scss';
 
 interface DeploymentMetricsProps extends RouteComponentProps<{ appId: string; envId: string; }> {
 
