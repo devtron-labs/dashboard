@@ -1,4 +1,4 @@
-import { NodeType } from "../../appDetails.type"
+import { NodeType, PodMetaData } from "../../appDetails.type"
 import { NodeDetailTab } from "./nodeDetail.type"
 
 export const getNodeDetailTabs = (nodeType: NodeType) => {
@@ -19,4 +19,8 @@ export const getNodeDetailTabs = (nodeType: NodeType) => {
         return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
     }
 
+}
+
+export const flatContainers = (pod: PodMetaData): string[] => {
+    return [...(pod?.containers || []), ...(pod?.initContainers || [])]
 }
