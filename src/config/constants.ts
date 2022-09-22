@@ -202,6 +202,7 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$'
 }
 
 export const TriggerType = {
