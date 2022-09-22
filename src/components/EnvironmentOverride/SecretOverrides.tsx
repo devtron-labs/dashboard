@@ -26,9 +26,9 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION } from '../../config'
+import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, MODES } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty } from '../secrets/secret.utils'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
 
@@ -233,7 +233,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [roleARN, setRoleARN] = useState(secrets.has(name) ? secrets.get(name)?.roleARN : '')
     const [secretDataValue, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [codeEditorRadio, setCodeEditorRadio] = useState('data')
+    const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isHashiOrAWS = hasHashiOrAWS(externalType)
     const isESO = hasESO(externalType)
     const memoisedReducer = React.useCallback(reducer, [appId, envId])
@@ -261,13 +261,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [secretStore, setSecretStore] = useState(tempEsoSecretData?.secretStore)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '')
-    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs['default'])
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
     const isChartVersion309OrBelow =
         appChartRef &&
         appChartRef.name === ROLLOUT_DEPLOYMENT &&
         isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
         isChartRef3090OrBelow(appChartRef.id)
-
 
     useEffect(() => {
         if(isESO){
@@ -440,7 +439,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 })
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
-                payload['data'] = dataArray.reduce((agg, { k, v }) => {
+                payload[CODE_EDITOR_RADIO_STATE.DATA] = dataArray.reduce((agg, { k, v }) => {
                     agg[k] = externalType === '' ? btoa(v || '') : v || ''
                     return agg
                 }, {})
@@ -540,7 +539,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== 'data') return
+        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
         if(isESO){
             setEsoYaml(yaml)
         }else {
@@ -595,7 +594,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
-                                <Select.Button>{externalType ? getTypeGroups(externalType).label : getTypeGroups()[0].options[0].label}</Select.Button>
+                                <Select.Button>
+                                    {externalType
+                                        ? getTypeGroups(externalType).label
+                                        : getTypeGroups()[0].options[0].label}
+                                </Select.Button>
                             </Select>
                         </div>
                     </div>
@@ -755,16 +758,22 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
                             <b className="mr-5 dc__bold">Data*</b>
-                            {!isESO && <RadioGroup
-                                className="gui-yaml-switch"
-                                name="yaml-mode"
-                                initialTab={yamlMode ? 'yaml' : 'gui'}
-                                disabled={false}
-                                onChange={changeEditorMode}
-                            >
-                                <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                            </RadioGroup>}
+                            {!isESO && (
+                                <RadioGroup
+                                    className="gui-yaml-switch"
+                                    name="yaml-mode"
+                                    initialTab={yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                                    disabled={false}
+                                    onChange={changeEditorMode}
+                                >
+                                    <RadioGroup.Radio value={VIEW_MODE.GUI}>
+                                        {VIEW_MODE.GUI.toUpperCase()}
+                                    </RadioGroup.Radio>
+                                    <RadioGroup.Radio value={VIEW_MODE.YAML}>
+                                        {VIEW_MODE.YAML.toUpperCase()}
+                                    </RadioGroup.Radio>
+                                </RadioGroup>
+                            )}
                             {state.locked && (
                                 <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={unlockSecrets}>
                                     <Pencil />
@@ -800,7 +809,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                                       { indent: 2 },
                                                   )
                                         }
-                                        mode="yaml"
+                                        mode={MODES.YAML}
                                         inline
                                         height={350}
                                         onChange={handleYamlChange}
@@ -853,13 +862,23 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     {(isHashiOrAWS || isESO) && yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
-                                value={codeEditorRadio === 'sample' ? sample : isESO ? esoSecretYaml : secretDataYaml}
-                                mode="yaml"
+                                value={
+                                    codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
+                                        ? sample
+                                        : isESO
+                                        ? esoSecretYaml
+                                        : secretDataYaml
+                                }
+                                mode={MODES.YAML}
                                 inline
                                 height={350}
                                 onChange={handleSecretDataYamlChange}
-                                readOnly={state.locked || codeEditorRadio === 'sample'}
-                                shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeaders[externalType] || dataHeaders['default']}
+                                readOnly={state.locked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                                shebang={
+                                    codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
+                                        ? '#Check sample for usage.'
+                                        : dataHeaders[externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT]
+                                }
                             >
                                 <CodeEditor.Header>
                                     <RadioGroup
@@ -871,8 +890,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                             setCodeEditorRadio(event.target.value)
                                         }}
                                     >
-                                        <RadioGroup.Radio value="data">Data</RadioGroup.Radio>
-                                        <RadioGroup.Radio value="sample">Sample</RadioGroup.Radio>
+                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                                        </RadioGroup.Radio>
+                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                                        </RadioGroup.Radio>
                                     </RadioGroup>
                                     <CodeEditor.Clipboard />
                                 </CodeEditor.Header>

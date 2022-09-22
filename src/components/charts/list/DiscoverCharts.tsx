@@ -616,7 +616,7 @@ export function EmptyChartGroup({
                 </div>
                 {!removeLearnMore && (
                     <a
-                        href={DOCUMENTATION.CHART_DEPLOY}
+                        href={DOCUMENTATION.CHART_GROUP}
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
@@ -673,8 +673,15 @@ export function ChartGroupListMin({
                 <div className="">
                     <h2 className="chart-grid__title">Chart Groups</h2>
                     <p className="mb-16 mt-4">
-                        Use chart groups to preconfigure and deploy frequently used charts together. Learn more about
-                        chart groups
+                        Use chart groups to preconfigure and deploy frequently used charts together.&nbsp;
+                        <a
+                            href={DOCUMENTATION.CHART_GROUP}
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className="dc__link"
+                        >
+                            Learn more
+                        </a>
                     </p>
                     <div className="flex dc__content-space">
                         {renderCreateGroupButton()}

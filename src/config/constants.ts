@@ -162,7 +162,13 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
-    TELEMETRY_EVENT: 'telemetry/event'
+    TELEMETRY_EVENT: 'telemetry/event',
+    DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    MODULE_CONFIGURED: 'module/config',
+    SSO: 'sso',
+    SSO_LIST: 'sso/list',
+    SSO_CREATE: 'sso/create',
+    SSO_UPDATE: 'sso/update',
 }
 
 export const ViewType = {
@@ -183,11 +189,6 @@ export const AppConfigStatus = {
     SECRETS: 6,
     ENV_OVERRIDE: 7,
     END: 10,
-}
-
-export const FullRoutes = {
-    LOGIN: `${Routes.LOGIN}`,
-    CENTRAL: 'https://api.devtron.ai',
 }
 
 export const PATTERNS = {
@@ -237,6 +238,7 @@ export const DOCUMENTATION = {
     APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/environment-overrides`,
     BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/bulk-update`,
     CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart`,
+    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/chart-group`,
     CHART_LIST: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts`,
     CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts#custom-values`,
     SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/security-features`,
@@ -261,6 +263,8 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
+    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/resources/devtron-troubleshoot#21.-configure-blob-storage`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -549,4 +553,35 @@ export const ModuleNameMap = {
   ARGO_CD: 'argo-cd',
   CICD: 'cicd',
   SECURITY: 'security.clair',
+  BLOB_STORAGE: 'blob-storage',
+  GRAFANA: 'monitoring.grafana',
+  NOTIFICATION: 'notifier'
 }
+
+export const BUILD_STATUS = {
+  NOT_TRIGGERED: 'not triggered'
+}
+
+export const EVENT_STREAM_EVENTS_MAP = {
+  MESSAGE: 'message',
+  START_OF_STREAM: 'START_OF_STREAM',
+  END_OF_STREAM: 'END_OF_STREAM',
+  ERROR: 'error'
+}
+
+export const TERMINAL_STATUS_MAP = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    RUNNING: 'running',
+    PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    FAILED: 'failed',
+    ERROR: 'error',
+}
+
+export const POD_STATUS = {
+  PENDING: 'Pending'
+}
+
+export const MODULE_STATUS_RETRY_COUNT = 3;
+export const MODULE_STATUS_POLLING_INTERVAL = 15000;
