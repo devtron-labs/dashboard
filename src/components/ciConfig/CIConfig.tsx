@@ -12,14 +12,12 @@ import {
 import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig, getConfigOverrideDetails, getWorkflowList } from '../../services/service'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
 import { KeyValueInput } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import './CIConfig.scss'
 import ReactSelect, { components } from 'react-select'
@@ -34,11 +32,12 @@ import { OptionType } from '../app/types'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { CIPipelineDataType } from '../ciPipeline/types'
+import { CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
-import { CiPipelineResult, WorkflowResult, WorkflowType } from '../app/details/triggerView/types'
-import { Workflow } from '../workflowEditor/Workflow'
+import { CiPipelineResult } from '../app/details/triggerView/types'
 import { WorkflowCreate } from '../app/details/triggerView/config'
+import CIConfigDiffView from './CIConfigDiffView'
+import { ProcessedWorkflowsType } from './types'
 
 export default function CIConfig({
     respondOnSuccess,
@@ -57,6 +56,7 @@ export default function CIConfig({
         dockerRegistries: any
         sourceConfig: any
         ciConfig: CiPipelineResult
+        defaultDockerConfigs: DockerConfigOverrideType
     }
     setParentState?: React.Dispatch<
         React.SetStateAction<{
@@ -65,6 +65,7 @@ export default function CIConfig({
             dockerRegistries: any
             sourceConfig: any
             ciConfig: any
+            defaultDockerConfigs: DockerConfigOverrideType
         }>
     >
     updateDockerConfigOverride?: (key, value) => void
@@ -108,11 +109,19 @@ export default function CIConfig({
 
             if (setParentState) {
                 setParentState({
-                    ...parentState,
                     loadingState: ComponentStates.loaded,
+                    selectedCIPipeline: parentState.selectedCIPipeline,
                     dockerRegistries: dockerRegistries,
                     sourceConfig: sourceConfig,
                     ciConfig: ciConfig,
+                    defaultDockerConfigs: {
+                        dockerRegistry: ciConfig.dockerRegistry,
+                        dockerRepository: ciConfig.dockerRepository,
+                        dockerBuildConfig: {
+                            gitMaterialId: ciConfig.dockerBuildConfig.gitMaterialId,
+                            dockerfileRelativePath: ciConfig.dockerBuildConfig.dockerfileRelativePath,
+                        },
+                    },
                 })
             }
         } catch (err) {
@@ -270,18 +279,11 @@ function Form({
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
     const [showCustomPlatformConfirmation, setShowCustomPlatformConfirmation] = useState<boolean>(false)
     const [showConfigOverrideDiff, setShowConfigOverrideDiff] = useState<boolean>(false)
-    const [processedWorkflows, setProcessedWorkflows] = useState<{
-        processing: boolean
-        workflows: WorkflowType[]
-    }>({
+    const [processedWorkflows, setProcessedWorkflows] = useState<ProcessedWorkflowsType>({
         processing: false,
         workflows: [],
     })
-    const history = useHistory()
-    const location = useLocation()
-    const match = useRouteMatch<{
-        appId: string
-    }>()
+    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
 
     useEffect(() => {
         let args = []
@@ -629,152 +631,6 @@ function Form({
         }
     }
 
-    const renderDetailedValue = (parentClassName: string, title: string, value: string) => {
-        return (
-            <div className={parentClassName}>
-                <div className="cn-6 pt-8 pl-16 pr-16 lh-16">{title}</div>
-                <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28">{value}</div>
-            </div>
-        )
-    }
-
-    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
-    const renderConfigDiff = (_configOverridenWorkflows, wfId) => {
-        const _currentWorkflow = _configOverridenWorkflows?.find((_wf) => +wfId === _wf.id)
-        const _currentPipelineOverride = configOverridenPipelines?.find(
-            (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
-        )?.dockerConfigOverride
-        const globalWFConfig = {
-            dockerRegistry: ciConfig?.dockerRegistry,
-            dockerRepository: ciConfig?.dockerRepository,
-            dockerBuildConfig: {
-                gitMaterialId: ciConfig?.dockerBuildConfig?.gitMaterialId,
-                dockerfileRelativePath: ciConfig?.dockerBuildConfig?.dockerfileRelativePath,
-            },
-        }
-        const changedDockerRegistryBGColor = globalWFConfig?.dockerRegistry !== _currentPipelineOverride?.dockerRegistry
-        const changedDockerRepositoryBGColor =
-            globalWFConfig?.dockerRepository !== _currentPipelineOverride?.dockerRepository
-        const changedDockerfileRelativePathBGColor =
-            globalWFConfig?.dockerBuildConfig?.dockerfileRelativePath !==
-            _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath
-
-        return (
-            <div className="config-override-diff__values dc__border dc__no-top-border dc__bottom-radius-4">
-                {globalWFConfig?.dockerRegistry ? (
-                    renderDetailedValue(
-                        changedDockerRegistryBGColor ? 'code-editor-red-diff' : '',
-                        'Container registry',
-                        globalWFConfig.dockerRegistry,
-                    )
-                ) : (
-                    <div />
-                )}
-                {_currentPipelineOverride?.dockerRegistry ? (
-                    renderDetailedValue(
-                        changedDockerRegistryBGColor ? 'code-editor-green-diff' : '',
-                        'Container registry',
-                        _currentPipelineOverride.dockerRegistry,
-                    )
-                ) : (
-                    <div />
-                )}
-                {globalWFConfig?.dockerRepository ? (
-                    renderDetailedValue(
-                        changedDockerRepositoryBGColor ? 'code-editor-red-diff' : '',
-                        'Container Repository',
-                        globalWFConfig.dockerRepository,
-                    )
-                ) : (
-                    <div />
-                )}
-                {_currentPipelineOverride?.dockerRepository ? (
-                    renderDetailedValue(
-                        changedDockerRepositoryBGColor ? 'code-editor-green-diff' : '',
-                        'Container Repository',
-                        _currentPipelineOverride.dockerRepository,
-                    )
-                ) : (
-                    <div />
-                )}
-                {globalWFConfig?.dockerBuildConfig?.dockerfileRelativePath ? (
-                    renderDetailedValue(
-                        changedDockerfileRelativePathBGColor ? 'code-editor-red-diff' : '',
-                        'Container Repository',
-                        globalWFConfig.dockerBuildConfig.dockerfileRelativePath,
-                    )
-                ) : (
-                    <div />
-                )}
-                {_currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath ? (
-                    renderDetailedValue(
-                        changedDockerfileRelativePathBGColor ? 'code-editor-green-diff' : '',
-                        'Container Repository',
-                        _currentPipelineOverride.dockerBuildConfig.dockerfileRelativePath,
-                    )
-                ) : (
-                    <div />
-                )}
-            </div>
-        )
-    }
-
-    const renderConfigOverrideDiffModal = (): JSX.Element | null => {
-        const _configOverridenWorkflows = configOverrides?.workflows?.filter(
-            (_cwf) => !!configOverridenPipelines.find((_ci) => _ci.id === _cwf.ciPipelineId),
-        )
-        const _overridenWorkflows = processedWorkflows.workflows.filter(
-            (_wf) => !!_configOverridenWorkflows.find((_cwf) => _cwf.id === +_wf.id),
-        )
-
-        return (
-            <VisibleModal className="">
-                <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
-                    <div className="flex flex-align-center flex-justify bcn-0 pr-20 dc__border-bottom">
-                        <h2 className="fs-16 fw-6 lh-1-43 m-0 pt-16 pb-16 pl-20 pr-20">Override details</h2>
-                        <button
-                            type="button"
-                            className="dc__transparent flex icon-dim-24"
-                            onClick={toggleConfigOverrideDiffModal}
-                        >
-                            <CloseIcon className="icon-dim-20" />
-                        </button>
-                    </div>
-                    <div className="config-override-diff__view p-20 dc__overflow-scroll">
-                        {processedWorkflows.processing ? (
-                            <Progressing pageLoader />
-                        ) : (
-                            _overridenWorkflows.map((_wf) => (
-                                <div className="mb-20">
-                                    <Workflow
-                                        key={_wf.id}
-                                        id={+_wf.id}
-                                        name={_wf.name}
-                                        startX={_wf.startX}
-                                        startY={_wf.startY}
-                                        height={'238px'}
-                                        width={'100%'}
-                                        nodes={_wf.nodes}
-                                        history={history}
-                                        location={location}
-                                        match={match}
-                                        handleCDSelect={noop}
-                                        handleCISelect={noop}
-                                        openEditWorkflow={noop}
-                                        showDeleteDialog={noop}
-                                        addCIPipeline={noop}
-                                        cdWorkflowList={_configOverridenWorkflows}
-                                    />
-                                    {renderConfigDiff(_configOverridenWorkflows, _wf.id)}
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            </VisibleModal>
-        )
-    }
-
     const handleOnChangeConfig = (e) => {
         handleOnChange(e)
 
@@ -1074,7 +930,15 @@ function Form({
                 </div>
             </div>
             {showCustomPlatformConfirmation && renderConfirmationModal()}
-            {showConfigOverrideDiff && renderConfigOverrideDiffModal()}
+            {showConfigOverrideDiff && (
+                <CIConfigDiffView
+                    ciConfig={ciConfig}
+                    configOverridenPipelines={configOverridenPipelines}
+                    configOverrides={configOverrides}
+                    processedWorkflows={processedWorkflows}
+                    toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
+                />
+            )}
         </>
     )
 }

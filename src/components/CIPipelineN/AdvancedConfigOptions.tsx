@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useState } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import CIConfig from '../ciConfig/CIConfig'
-import { noop } from '../common'
+import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { CIPipelineDataType } from '../ciPipeline/types'
+import { CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
+import { CiPipelineResult } from '../app/details/triggerView/types'
 
-export default function AdvancedConfigOptions({ ciPipeline, formData, setFormData }) {
+export default function AdvancedConfigOptions({ ciPipeline, formData, setFormData, setDockerConfigOverridden }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<{
@@ -17,13 +17,15 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
         selectedCIPipeline: CIPipelineDataType
         dockerRegistries: any
         sourceConfig: any
-        ciConfig: any
+        ciConfig: CiPipelineResult
+        defaultDockerConfigs: DockerConfigOverrideType
     }>({
         loadingState: ComponentStates.loading,
         selectedCIPipeline: ciPipeline,
         dockerRegistries: null,
         sourceConfig: null,
         ciConfig: null,
+        defaultDockerConfigs: null,
     })
 
     const addDockerArg = (): void => {
@@ -85,6 +87,7 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
         }
 
         setFormData(_form)
+        setDockerConfigOverridden(!deepEqual(_form.dockerConfigOverride, parentState.defaultDockerConfigs))
     }
 
     const renderDockerArgs = () => {

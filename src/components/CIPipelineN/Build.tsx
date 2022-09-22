@@ -16,7 +16,14 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 
-export function Build({ showFormError, isAdvanced, ciPipeline, pageState, isSecurityModuleInstalled }: BuildType) {
+export function Build({
+    showFormError,
+    isAdvanced,
+    ciPipeline,
+    pageState,
+    isSecurityModuleInstalled,
+    setDockerConfigOverridden,
+}: BuildType) {
     const {
         formData,
         setFormData,
@@ -242,7 +249,12 @@ export function Build({ showFormError, isAdvanced, ciPipeline, pageState, isSecu
             {isAdvanced && (
                 <>
                     {isSecurityModuleInstalled && renderScanner()}
-                    <AdvancedConfigOptions ciPipeline={ciPipeline} formData={formData} setFormData={setFormData} />
+                    <AdvancedConfigOptions
+                        ciPipeline={ciPipeline}
+                        formData={formData}
+                        setFormData={setFormData}
+                        setDockerConfigOverridden={setDockerConfigOverridden}
+                    />
                 </>
             )}
         </div>

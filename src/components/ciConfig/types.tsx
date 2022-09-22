@@ -1,5 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 import { ServerError } from '../../modals/commonTypes';
+import { WorkflowType } from '../app/details/triggerView/types';
 
 export interface ArgsFieldSetProps {
     args: { key: string, value: string }[];
@@ -51,4 +52,9 @@ export interface CIConfigRouterProps {
 
 export interface CIConfigProps extends RouteComponentProps<CIConfigRouterProps> {
     respondOnSuccess?: () => void;
+}
+
+export interface ProcessedWorkflowsType {
+    processing: boolean
+    workflows: WorkflowType[]
 }

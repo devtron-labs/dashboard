@@ -124,6 +124,7 @@ export default function CIPipeline({
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
+    const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
 
     useEffect(() => {
         setPageState(ViewType.LOADING)
@@ -369,6 +370,12 @@ export default function CIPipeline({
             return
         }
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
+
+        // Reset allow override flag to false if config matches with global
+        if (!isDockerConfigOverridden) {
+            formData.isDockerConfigOverridden = false
+        }
+
         saveCIPipeline(
             {...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled: false },
             ciPipeline,
@@ -741,6 +748,7 @@ export default function CIPipeline({
                                     isAdvanced={isAdvanced}
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
+                                    setDockerConfigOverridden={setDockerConfigOverridden}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

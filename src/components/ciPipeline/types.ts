@@ -1,3 +1,4 @@
+import React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 
@@ -201,6 +202,16 @@ export interface BuildStageType {
     id: number
     steps: StepType[]
 }
+
+export interface DockerConfigOverrideType {
+    dockerRegistry: string
+    dockerRepository: string
+    dockerBuildConfig: {
+        gitMaterialId: number
+        dockerfileRelativePath: string
+    }
+}
+
 export interface FormType {
     name: string
     args: { key: string; value: string }[]
@@ -231,14 +242,7 @@ export interface FormType {
     preBuildStage?: BuildStageType
     postBuildStage?: BuildStageType
     isDockerConfigOverridden?: boolean
-    dockerConfigOverride?: {
-        dockerRegistry: string
-        dockerRepository: string
-        dockerBuildConfig: {
-            gitMaterialId: number
-            dockerfileRelativePath: string
-        }
-    }
+    dockerConfigOverride?: DockerConfigOverrideType
 }
 
 interface ErrorObj {
@@ -290,14 +294,7 @@ export interface CIPipelineDataType {
     linkedCount: number
     scanEnabled?: boolean
     isDockerConfigOverridden?: boolean
-    dockerConfigOverride?: {
-        dockerRegistry: string
-        dockerRepository: string
-        dockerBuildConfig: {
-            gitMaterialId: number
-            dockerfileRelativePath: string
-        }
-    }
+    dockerConfigOverride?: DockerConfigOverrideType
 }
 export interface CIPipelineState {
     code: number
@@ -456,4 +453,5 @@ export interface BuildType {
     ciPipeline: CIPipelineDataType
     pageState: string
     isSecurityModuleInstalled: boolean
+    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
 }
