@@ -112,6 +112,9 @@ export const DEVTRON_UPGRADE_MESSAGE =
 export const PENDING_DEPENDENCY_MESSAGE =
     'Some pre-requisite integrations need to be installed before you can install this integration. Please intall the pre-requisite integration and come back.'
 
+export const OTHER_INSTALLATION_IN_PROGRESS_MESSAGE =
+    'Another integration is being installed. Please try after the installation is complete'
+
 export const MODULE_CONFIGURATION_DETAIL_MAP = {
     [ModuleNameMap.ARGO_CD]: {
         title: 'GitOps is not configured',
