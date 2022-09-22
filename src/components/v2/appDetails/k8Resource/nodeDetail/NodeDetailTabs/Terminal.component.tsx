@@ -13,6 +13,7 @@ import { SocketConnectionType } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
+import { flatContainers } from '../nodeDetail.util';
 
 const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -24,12 +25,13 @@ const shellTypes = [
 function TerminalComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
     const { url } = useRouteMatch();
-    const containers = IndexStore.getAllContainersForPod(params.podName);
+    const podMetaData = IndexStore.getMetaDataForPod(params.podName)
+    const containers = flatContainers(podMetaData).sort()
     const [selectedContainerName, setSelectedContainerName] = useState(containers ? containers[0] : '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING);
-
+    
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url);
         // getTerminalData(appDetails, params.podName, selectedtTerminalType).then((response) => {
