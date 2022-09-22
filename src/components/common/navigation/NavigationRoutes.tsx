@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback } from 'react'
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { URLS, AppListConstants, ViewType, SERVER_MODE } from '../../../config'
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common'
@@ -60,7 +60,8 @@ export default function NavigationRoutes() {
     const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
-
+    const [moduleInInstallingState, setModuleInInstallingState] = useState('')
+    const installedModuleMap = useRef<Record<string, boolean>>({})
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
@@ -226,7 +227,10 @@ export default function NavigationRoutes() {
                     showGettingStartedCard,
                     setShowGettingStartedCard,
                     isGettingStartedClicked,
-                    setGettingStartedClicked
+                    setGettingStartedClicked,
+                    moduleInInstallingState,
+                    setModuleInInstallingState,
+                    installedModuleMap,
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -239,6 +243,8 @@ export default function NavigationRoutes() {
                             fetchingServerInfo={currentServerInfo.fetchingServerInfo}
                             serverInfo={currentServerInfo.serverInfo}
                             getCurrentServerInfo={getCurrentServerInfo}
+                            moduleInInstallingState={moduleInInstallingState}
+                            installedModuleMap={installedModuleMap}
                         />
                     )}
 
@@ -284,7 +290,10 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide isGettingStartedClicked={isGettingStartedClicked} loginCount={loginCount}/>
+                                            <DeployManageGuide
+                                                isGettingStartedClicked={isGettingStartedClicked}
+                                                loginCount={loginCount}
+                                            />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
@@ -297,7 +306,11 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                                            <RedirectUserWithSentry
+                                                isFirstLoginUser={
+                                                    isSuperAdmin && loginCount === 0 && appListCount === 0
+                                                }
+                                            />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>

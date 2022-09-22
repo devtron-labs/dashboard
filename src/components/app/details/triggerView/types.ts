@@ -83,11 +83,14 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     getWorkflows: () => void
     loader: boolean
     setLoader: (isLoading) => void
+    isFirstTrigger?: boolean
+    isCacheAvailable?: boolean
 }
 
 export interface CIMaterialState {
     regexValue: Record<number, { value: string; isInvalid: boolean }>
     selectedCIPipeline?: any
+    isBlobStorageConfigured?: boolean
 }
 
 export interface NodeAttr {
@@ -133,6 +136,7 @@ export interface NodeAttr {
     isRegex?: boolean
     regex?: string
     primaryBranchAfterRegex?: string
+    storageConfigured?: boolean
 }
 
 export interface DownStreams {

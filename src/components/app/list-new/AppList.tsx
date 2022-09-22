@@ -51,7 +51,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
 
     // API master data
-    const [appCheckListRes, setAppCheckListRes] = useState({ result: null })
     const [projectListRes, setProjectListRes] = useState({ result: [] })
     const [environmentListRes, setEnvironmentListRes] = useState({ result: [] })
 
@@ -94,7 +93,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         // fetch master filters data and some master data
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
-                setAppCheckListRes(initData.appCheckListRes)
                 setProjectListRes(initData.projectsRes)
                 setEnvironmentListRes(initData.environmentListRes)
                 setMasterFilters(initData.filters)
@@ -981,19 +979,17 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                 rootClassName="app-create-model-wrapper"
                 onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
             >
-                {serverMode == SERVER_MODE.FULL &&
-                    appCheckListRes.result?.appChecklist &&
-                    Object.values(appCheckListRes.result.appChecklist).every((check) => check) && (
-                        <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
-                            <AddIcon className="icon-dim-20 fcn-9" />
-                            <div className="ml-8">
-                                <strong>Custom app</strong>
-                                <div>
-                                    Connect a git repository to deploy <br /> a custom application
-                                </div>
+                {serverMode == SERVER_MODE.FULL && (
+                    <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
+                        <AddIcon className="icon-dim-20 fcn-9" />
+                        <div className="ml-8">
+                            <strong>Custom app</strong>
+                            <div>
+                                Connect a git repository to deploy <br /> a custom application
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
                 <div className="app-create-child cursor" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
@@ -1031,7 +1027,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                                 serverMode === SERVER_MODE.FULL && (
                                     <DevtronAppListContainer
                                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        appCheckListRes={appCheckListRes}
                                         clearAllFilters={removeAllFilters}
                                         sortApplicationList={sortApplicationList}
                                         updateLastDataSync={updateLastDataSync}

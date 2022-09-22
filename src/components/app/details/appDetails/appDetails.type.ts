@@ -93,3 +93,10 @@ export interface DeploymentStatusDetailModalType{
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
 }
+
+export interface ModuleConfigResponse extends ResponseType {
+  result?: {
+    enabled: boolean
+  }
+}
+

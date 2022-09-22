@@ -403,7 +403,7 @@
     opacity: 0;
 }
 
-.form__checkbox-label.form__checkbox-label--ignore-cache {
+.form__checkbox-label--ignore-cache {
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -412,6 +412,15 @@
     color: var(--N700);
     display: flex;
     align-items: center;
+}
+
+.form__checkbox-label--ignore-cache .form__checkbox-container{
+  height: 32px;
+  width: 32px;
+}
+
+.form__checkbox-label--ignore-cache .form__checkbox-label {
+  margin-left: 24px;
 }
 
 .caching-label input:checked + .check {

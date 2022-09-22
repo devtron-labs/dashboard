@@ -4,11 +4,12 @@ import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, La
 import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, Progressing, not } from '../../../common';
+import { DatePickerType2 as DateRangePicker, Progressing, not, useAsync } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION } from '../../../../config';
-import { Link } from 'react-router-dom';
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap } from '../../../../config';
+import { Link, NavLink } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
@@ -18,6 +19,8 @@ import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service';
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type';
 
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion, addExtraSpace: boolean}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
@@ -42,6 +45,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput);
     const [selectedLatency, setLatency] = useState<number>(99.9);
     const [hostURLConfig, setHostURLConfig] = useState(undefined);
+    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [graphs, setGraphs] = useState({
         cpu: "",
         ram: "",
@@ -189,28 +193,32 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     useEffect(() => {
-        let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
-        setCalendarValue(str);
-        checkDatasource();
-    }, [appName])
+        const inputCalendarValue: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
+        if(inputCalendarValue !== calendarValue){
+          setCalendarValue(inputCalendarValue);
+        }
+        if(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED){
+          checkDatasource();
+        }
+    }, [appName, grafanaModuleStatus])
 
     useEffect(() => {
         getNewGraphs(tab);
-    }, [datasource])
-
-    useEffect(() => {
-        getNewGraphs(tab);
-    }, [calendarValue])
+    }, [datasource, calendarValue])
 
     //@ts-ignore
-    if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin ) {
-        return <>
-            <AppMetricsEmptyState isLoading={datasource.isLoading}
+    if(grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED){
+        return <MonitoringModuleNotInstalled addSpace={addSpace} />
+    } else if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
+        return (
+            <AppMetricsEmptyState
+                isLoading={datasource.isLoading}
                 addSpace={addSpace}
                 isConfigured={datasource.isConfigured}
                 isHealthy={datasource.isHealthy}
-                hostURLConfig={hostURLConfig} />
-        </>
+                hostURLConfig={hostURLConfig}
+            />
+        )
     }
     else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
@@ -351,6 +359,31 @@ function EnableAppMetrics() {
             </Link>
         </div>
     );
+}
+
+function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
+    return (
+        <div className={`app-metrics-graph__empty-state-wrapper bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
+            <div className="flex left w-100 lh-20">
+                <span className="fs-14 fw-6 cv-5 flex left mr-16">
+                    <GraphIcon className="mr-8 fcv-5 icon-dim-20" />
+                    MONITORING
+                </span>
+                <div className="fw-4 fs-13 cn-7 flexbox">
+                    View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
+                    app.&nbsp;
+                    <NavLink
+                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                        className="cb-5 fs-13 fw-6 anchor w-auto dc__no-decor flex"
+                        target="_blank"
+                    >
+                        Learn more &nbsp;
+                        <OpenInNew />
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig, addSpace }) {
