@@ -195,7 +195,7 @@ export function showError(serverError, showToastOnUnknownError = true) {
     }
 }
 
-export function noop() { }
+export function noop(...args): any { }
 
 export function not(e) {
     return !e;
