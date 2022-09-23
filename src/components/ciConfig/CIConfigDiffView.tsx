@@ -5,6 +5,7 @@ import { Workflow } from '../workflowEditor/Workflow'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps } from './types'
+import { WorkflowType } from '../app/details/triggerView/types'
 
 export default function CIConfigDiffView({
     ciConfig,
@@ -161,6 +162,35 @@ export default function CIConfigDiffView({
         )
     }
 
+    // Todo: Revisit when restructuring/revamping pipeline flow paiting/rendering
+    const getWorkflowHeight = (_wf: WorkflowType) => {
+        const gitMaterialCount = _wf.nodes.filter((_nd) => _nd.type === 'GIT')?.length
+
+        if (gitMaterialCount > 3) {
+            return _wf.height
+        }
+
+        const ci = _wf.nodes.find((node) => node.type == 'CI')
+        if (ci) {
+            const _cdNamesList =
+                _configOverridenWorkflows?.find((_cwf) => _cwf.ciPipelineId === +ci.id)?.cdPipelines || []
+
+            if (gitMaterialCount === 1) {
+                return 110 + _cdNamesList.length * 20
+            } else if (gitMaterialCount === 2) {
+                return _cdNamesList.length <= 5
+                    ? 200
+                    : _cdNamesList.length <= 7
+                    ? 230
+                    : _cdNamesList.length <= 9
+                    ? 250
+                    : 280
+            }
+        }
+
+        return 280
+    }
+
     return (
         <VisibleModal className="">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
@@ -177,7 +207,7 @@ export default function CIConfigDiffView({
                                     name={_wf.name}
                                     startX={_wf.startX}
                                     startY={_wf.startY}
-                                    height={_wf.height}
+                                    height={getWorkflowHeight(_wf)}
                                     width={'100%'}
                                     nodes={_wf.nodes}
                                     history={history}
