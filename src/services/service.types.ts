@@ -199,3 +199,18 @@ export interface AppRouterType {
   appListCount: number
   loginCount: number
 }
+
+export interface ConfigOverrideWorkflowDetails {
+    cdPipelines: string[]
+    ciPipelineId: number
+    ciPipelineName: string
+    id: number
+    name: string
+}
+
+
+export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
+    result?: {
+        workflows: ConfigOverrideWorkflowDetails[]
+    }
+}

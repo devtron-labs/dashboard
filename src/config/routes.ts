@@ -29,6 +29,7 @@ export const URLS = {
     APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
+    APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: 'deployment-template',
     APP_WORKFLOW_CONFIG: 'workflow',
     APP_CM_CONFIG: 'configmap',

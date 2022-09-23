@@ -195,7 +195,7 @@ export function showError(serverError, showToastOnUnknownError = true) {
     }
 }
 
-export function noop() { }
+export function noop(...args): any { }
 
 export function not(e) {
     return !e;
@@ -441,6 +441,23 @@ export function shallowEqual(objA, objB) {
     }
 
     return true;
+}
+
+export function deepEqual(configA, configB) {
+    try {
+        for (const idx in configA) {
+            if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
+                return deepEqual(configA[idx], configB[idx])
+            } else if (configA[idx] !== configB[idx]) {
+                return false
+            }
+        }
+
+        return true
+    } catch (err) {
+        showError(err)
+        return true
+    }
 }
 
 export function useOnline() {

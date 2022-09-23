@@ -1,4 +1,5 @@
 import { AppEnvironment, AppOtherEnvironment } from '../../../../services/service.types'
+import { WorkflowResult } from '../triggerView/types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -25,6 +26,7 @@ export interface AppConfigState {
     navItems: CustomNavItemsType[]
     maximumAllowedUrl: string
     canDeleteApp: boolean
+    workflowsRes?: WorkflowResult
 }
 
 export interface AppStageUnlockedType {
@@ -63,6 +65,7 @@ export interface AppComposeRouterProps {
     isCDPipeline: boolean
     environments: AppEnvironment[]
     setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
+    workflowsRes: WorkflowResult
 }
 
 export interface EnvironmentOverridesProps {

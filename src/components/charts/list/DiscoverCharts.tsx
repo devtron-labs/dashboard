@@ -402,7 +402,7 @@ function DiscoverChartList() {
                                                                 Icon={Help}
                                                                 iconClass="fcv-5 h-20"
                                                                 linkText="Try refetching connected chart repos or connect a chart repository"
-                                                                redirectToLink={handleViewAllCharts}
+                                                                linkOnClick={handleViewAllCharts}
                                                             />
                                                         </ChartEmptyState>
                                                     )}
