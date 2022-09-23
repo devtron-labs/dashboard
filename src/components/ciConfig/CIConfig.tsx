@@ -29,6 +29,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
+import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { OptionType } from '../app/types'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
@@ -835,7 +836,12 @@ function Form({
                                 {...(configOverridenPipelines?.length > 0
                                     ? {
                                           message: 'This configuration is overriden for build pipeline(s) of',
-                                          linkText: `${configOverridenPipelines.length} Workflow(s) >`,
+                                          linkText: (
+                                              <span className="flex">
+                                                  {`${configOverridenPipelines.length} Workflow(s)`}
+                                                  <ArrowIcon className="icon-dim-16 fcb-5 dc__flip-180" />
+                                              </span>
+                                          ),
                                           linkClass: 'flex left',
                                           linkOnClick: toggleConfigOverrideDiffModal,
                                       }

@@ -8,7 +8,7 @@ interface InfoColourBarType {
     iconClass?: string
     iconSize?: number // E.g. 16, 20, etc.. Currently, there are around 12 sizes supported. Check `icons.css` or `base.scss` for supported sizes or add new size (class names starts with `icon-dim-`).
     renderActionButton?: () => JSX.Element
-    linkText?: string
+    linkText?: React.ReactNode
     redirectLink?: string
     linkOnClick?: () => void
     linkClass?: string
