@@ -104,18 +104,26 @@
     margin-top: 0;
 }
 
-.form__app-compose.config-override-view {
-    width: 100%;
-    margin: 0;
-    padding: 24px 0 16px;
-    margin-bottom: 0;
-}
-
 .form__app-compose {
     &.config-override-view {
+        width: 100%;
+        margin: 0;
+        padding: 24px 0 16px;
+        margin-bottom: 0;
+
         .white-card__docker-config {
+            padding: 16px;
+
             .form-row__docker {
                 align-items: flex-end;
+
+                &:last-of-type {
+                    margin-bottom: 0;
+
+                    .form__field {
+                        margin-bottom: 0;
+                    }
+                }
             }
         }
 

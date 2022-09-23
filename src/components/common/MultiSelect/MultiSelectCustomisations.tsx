@@ -113,7 +113,7 @@ export const multiSelectStyles = {
     },
     container: (base, state) => ({
         ...base,
-        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
     valueContainer: (base, state) => ({
         ...base,

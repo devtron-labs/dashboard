@@ -61,9 +61,22 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.setState({ top, left })
     }
 
-    getNodes = (nodeId: string) => {
+    getNodesData = (nodeId: string, renderingEdge?: boolean) => {
         const _nodes = [...this.props.nodes]
-        if (this.props.cdWorkflowList?.length > 0) {
+        const _cdNamesList = this.props.cdWorkflowList?.find((_cwf) => _cwf.ciPipelineId === +nodeId)?.cdPipelines || []
+        let dimensionX = 0
+
+        for (const _nd of _nodes) {
+            if (_nd.type == 'GIT') {
+                dimensionX += _nd.x
+            } else if (_nd.type == 'CI') {
+                dimensionX += _nd.x + _nd.width
+            } else if (_cdNamesList?.length > 0 && _nd.type === 'CD') {
+                dimensionX += _nd.x
+            }
+        }
+
+        if (_cdNamesList?.length > 0) {
             _nodes[_nodes.length - 1].downstreams = [`CD-${nodeId}`]
             _nodes.push({
                 type: 'CD',
@@ -76,29 +89,33 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 downstreams: [],
                 height: 190,
                 width: WorkflowCreate.cDNodeSizes.nodeWidth,
-                x: WorkflowCreate.cDNodeSizes.distanceX,
-                y: WorkflowCreate.cDNodeSizes.distanceY,
+                x: renderingEdge ? dimensionX : WorkflowCreate.cDNodeSizes.distanceX,
+                y: 24,
             })
         }
 
-        return _nodes
+        return {
+            dimensionX,
+            nodes: _nodes,
+            cdNamesList: _cdNamesList
+        }
     }
 
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == 'CI')
-        const _nodes = this.getNodes(ci.id)
+        const _nodesData = this.getNodesData(ci.id)
+        const _nodes = _nodesData.nodes
+        const _dimensionX = _nodesData.dimensionX
+        const _cdNamesList = _nodesData.cdNamesList
 
         if (ci) {
-            let dimensionX = 0
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == 'GIT') {
-                    dimensionX += node.x
                     return this.renderSourceNode(node)
                 } else if (node.type == 'CI') {
-                    dimensionX += node.x + node.width
                     return this.renderCINodes(node)
-                } else if (this.props.cdWorkflowList?.length > 0 && node.type === 'CD') {
-                    node.x = dimensionX + node.x
+                } else if (_cdNamesList?.length > 0 && node.type === 'CD') {
+                    node.x = _dimensionX
                 }
 
                 return this.renderCDNodes(node, ci.id)
@@ -233,7 +250,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     getEdges() {
         const ci = this.props.nodes.find((node) => node.type == 'CI')
-        const _nodes = this.getNodes(ci.id)
+        const _nodes = this.getNodesData(ci.id, true).nodes
 
         return _nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
@@ -295,16 +312,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 <div className="workflow__body">
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}
-                        {/* {this.props.cdWorkflowList?.length > 0 && (
-                            <Edge
-                                key="trigger-edge-ci-cd-config-view"
-                                startNode={edgeNode.startNode}
-                                endNode={edgeNode.endNode}
-                                onClickEdge={noop}
-                                deleteEdge={noop}
-                                onMouseOverEdge={noop}
-                            />
-                        )} */}
                         {this.renderNodes()}
                     </svg>
                     {!configDiffView && (
