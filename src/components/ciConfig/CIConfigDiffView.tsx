@@ -190,6 +190,11 @@ export default function CIConfigDiffView({
                         ))
                     )}
                 </div>
+                <div className="flex right dc__border-top-n1 pt-12 pb-12 pl-20 pr-20">
+                    <button className="flex cta h-36" onClick={toggleConfigOverrideDiffModal}>
+                        Got It
+                    </button>
+                </div>
             </div>
         </VisibleModal>
     )
