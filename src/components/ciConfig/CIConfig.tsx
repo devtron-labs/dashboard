@@ -187,7 +187,7 @@ function Form({
     const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            repository: { value: _selectedMaterial.name, error: '' },
+            repository: { value: _selectedMaterial?.name || '', error: '' },
             dockerfile: {
                 value: selectedCIPipeline?.isDockerConfigOverridden
                     ? selectedCIPipeline.dockerConfigOverride?.dockerBuildConfig?.dockerfileRelativePath
@@ -316,14 +316,14 @@ function Form({
             dockerRepository: repository_name.value || '',
             beforeDockerBuild: [],
             dockerBuildConfig: {
-                dockerfilePath: `${selectedMaterial.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
+                dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                 args: args.reduce((agg, { k, v }) => {
                     if (k && v) agg[k] = v
                     return agg
                 }, {}),
                 dockerfileRepository: repository.value,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
-                gitMaterialId: selectedMaterial.id,
+                gitMaterialId: selectedMaterial?.id,
                 targetPlatform: targetPlatforms,
             },
             afterDockerBuild: [],
@@ -776,10 +776,10 @@ function Form({
                                     className="default-tt"
                                     arrow={false}
                                     placement="top"
-                                    content={selectedMaterial.checkoutPath}
+                                    content={selectedMaterial?.checkoutPath}
                                 >
                                     <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                        {selectedMaterial.checkoutPath}
+                                        {selectedMaterial?.checkoutPath}
                                     </span>
                                 </Tippy>
 
@@ -823,8 +823,6 @@ function Form({
                                     : {
                                           message:
                                               'Container registry/docker file location for build pipelines can be overriden. Check advance options in build pipeline.',
-                                          linkText: 'Learn more',
-                                          redirectLink: 'https://docs.devtron.ai',
                                       })}
                             />
                             <hr className="mt-0 mb-20" />
