@@ -6,20 +6,18 @@ import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
-import { CiPipelineResult } from '../app/details/triggerView/types'
+import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
+import { DockerConfigOverrideType } from '../ciPipeline/types'
 
-export default function AdvancedConfigOptions({ ciPipeline, formData, setFormData, setDockerConfigOverridden }) {
+export default function AdvancedConfigOptions({
+    ciPipeline,
+    formData,
+    setFormData,
+    setDockerConfigOverridden,
+}: AdvancedConfigOptionsProps) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
-    const [parentState, setParentState] = useState<{
-        loadingState: ComponentStates
-        selectedCIPipeline: CIPipelineDataType
-        dockerRegistries: any
-        sourceConfig: any
-        ciConfig: CiPipelineResult
-        defaultDockerConfigs: DockerConfigOverrideType
-    }>({
+    const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
         selectedCIPipeline: ciPipeline,
         dockerRegistries: null,
@@ -30,11 +28,13 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
 
     const addDockerArg = (): void => {
         const _form = { ...formData }
-        if (_form.args > 0) {
+
+        if (_form.args.length > 0) {
             _form.args.unshift({ key: '', value: '' })
         } else {
             _form.args.push({ key: '', value: '' })
         }
+
         setFormData(_form)
     }
 
@@ -77,6 +77,7 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
             }
         }
 
+        // Update the specific config value present at different level from dockerConfigOverride
         if (key.startsWith('dockerConfigOverride.dockerBuildConfig')) {
             _form[keyPair[0]][keyPair[1]][keyPair[2]] = value
         } else if (key.startsWith('dockerConfigOverride')) {
@@ -85,12 +86,15 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
             _form.isDockerConfigOverridden = value
             setAllowOverride(value)
 
+            // Empty dockerConfigOverride when deleting override
             if (!value) {
-                _form.dockerConfigOverride = {}
+                _form.dockerConfigOverride = {} as DockerConfigOverrideType
             }
         }
 
         setFormData(_form)
+
+        // Check for diff in global & current CI config and set isDockerConfigOverridden flag accordingly
         setDockerConfigOverridden(!deepEqual(_form.dockerConfigOverride, parentState.defaultDockerConfigs))
     }
 

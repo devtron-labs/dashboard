@@ -2,23 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
-
-export interface CDNodeProps {
-    id: string
-    deploymentStrategy: string
-    triggerType: string
-    workflowId: number
-    x: number
-    y: number
-    width: number
-    height: number
-    title: string
-    environmentName: string
-    environmentId: number
-    to: string
-    toggleCDMenu: () => void
-    cdNamesList?: string[]
-}
+import { CDNodeProps } from '../types'
 
 export class CDNode extends Component<CDNodeProps> {
     renderReadOnlyCard() {
@@ -59,10 +43,10 @@ export class CDNode extends Component<CDNodeProps> {
 
                 <button className="workflow-node__add-cd-btn">
                     <Tippy
-                        className="default-tt"
+                        className="default-tt workflow-node__add-cd-btn-tippy"
                         arrow={false}
                         placement="top"
-                        content={<span style={{ display: 'block', width: '145px' }}> Add deployment pipeline </span>}
+                        content={<span className="add-cd-btn-tippy"> Add deployment pipeline </span>}
                     >
                         <Add
                             className="icon-dim-18 fcb-5"

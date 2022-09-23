@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { noop, Progressing, VisibleModal } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { Workflow } from '../workflowEditor/Workflow'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
+import { CIConfigDiffViewProps } from './types'
 
 export default function CIConfigDiffView({
     ciConfig,
     configOverridenPipelines,
-    configOverrides,
+    configOverrideWorkflows,
     processedWorkflows,
     toggleConfigOverrideDiffModal,
-}) {
+}: CIConfigDiffViewProps) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch<{
@@ -21,8 +22,8 @@ export default function CIConfigDiffView({
         appId: string
     }>()
     const wfCIMap = new Map<number, number>()
-    const _configOverridenWorkflows = configOverrides?.workflows?.filter((_cwf) => {
-        const _ciPipeline = configOverridenPipelines.find((_ci) => _ci.id === _cwf.ciPipelineId)
+    const _configOverridenWorkflows = configOverrideWorkflows.filter((_cwf) => {
+        const _ciPipeline = configOverridenPipelines?.find((_ci) => _ci.id === _cwf.ciPipelineId)
         if (!!_ciPipeline) {
             wfCIMap.set(_cwf.id, _ciPipeline.id)
             return _ciPipeline
@@ -40,7 +41,7 @@ export default function CIConfigDiffView({
         },
     }
 
-    const renderDetailedValue = (parentClassName: string, title: string, value: string) => {
+    const renderDetailedValue = (parentClassName: string, title: string, value: string): JSX.Element => {
         return (
             <div className={parentClassName}>
                 <div className="cn-6 pt-8 pl-16 pr-16 lh-16">{title}</div>
@@ -49,7 +50,12 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderValueDiff = (baseValue, currentValue, changedBGColor, configName) => {
+    const renderValueDiff = (
+        baseValue: string,
+        currentValue: string,
+        changedBGColor: boolean,
+        configName: string,
+    ): JSX.Element => {
         return (
             <>
                 {baseValue ? (
@@ -66,7 +72,7 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderConfigDiff = (_configOverridenWorkflows, wfId) => {
+    const renderConfigDiff = (_configOverridenWorkflows, wfId: string): JSX.Element => {
         const _currentWorkflow = _configOverridenWorkflows?.find((_wf) => +wfId === _wf.id)
         const _currentPipelineOverride = configOverridenPipelines?.find(
             (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
@@ -124,7 +130,7 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderConfigDiffModalTitle = () => {
+    const renderConfigDiffModalTitle = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify bcn-0 pr-20 dc__border-bottom">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 pt-16 pb-16 pl-20 pr-20">Override details</h2>
@@ -139,7 +145,7 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderViewBuildPipelineRow = (_wfId: number) => {
+    const renderViewBuildPipelineRow = (_wfId: number): JSX.Element => {
         return (
             <div className="flex dc__content-space pl-16 pr-16 pb-10 bcn-0 dc__border-left dc__border-right">
                 <span className="fs-14 fw-4 lh-20">Build pipeline is overriden</span>

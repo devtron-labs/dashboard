@@ -2,7 +2,7 @@ import { get, post } from './api';
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType, ConfigOverrideWorkflowDetailsResponse } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
@@ -25,7 +25,7 @@ export function getCIConfig(appId: number) {
     return get(URL);
 }
 
-export function getConfigOverrideDetails(appId: string) {
+export function getConfigOverrideWorkflowDetails(appId: string): Promise<ConfigOverrideWorkflowDetailsResponse> {
     return get(`${Routes.CI_CONFIG_OVERRIDE_GET}/${appId}`)
 }
 

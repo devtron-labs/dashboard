@@ -1,6 +1,9 @@
-import { RouteComponentProps } from 'react-router';
+import React from 'react';
 import { ServerError } from '../../modals/commonTypes';
-import { WorkflowType } from '../app/details/triggerView/types';
+import { ConfigOverrideWorkflowDetails } from '../../services/service.types';
+import { CiPipeline, CiPipelineResult, WorkflowType } from '../app/details/triggerView/types';
+import { CIPipelineDataType, DockerConfigOverrideType, FormType } from '../ciPipeline/types';
+import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type';
 
 export interface ArgsFieldSetProps {
     args: { key: string, value: string }[];
@@ -44,17 +47,53 @@ export interface CIConfigState {
     showDialog: boolean;
 }
 
-
-export interface CIConfigRouterProps {
-    appId: string;
-    history: any;
-}
-
-export interface CIConfigProps extends RouteComponentProps<CIConfigRouterProps> {
-    respondOnSuccess?: () => void;
-}
-
 export interface ProcessedWorkflowsType {
     processing: boolean
     workflows: WorkflowType[]
 }
+
+export interface CIConfigParentState {
+    loadingState: ComponentStates
+    selectedCIPipeline: CIPipelineDataType
+    dockerRegistries: any
+    sourceConfig: any
+    ciConfig: CiPipelineResult
+    defaultDockerConfigs: DockerConfigOverrideType
+}
+
+export interface CIConfigProps {
+    respondOnSuccess: () => void
+    configOverrideView?: boolean
+    allowOverride?: boolean
+    parentState?: CIConfigParentState
+    setParentState?: React.Dispatch<React.SetStateAction<CIConfigParentState>>
+    updateDockerConfigOverride?: (key, value) => void
+}
+
+export interface CIConfigDiffViewProps {
+    ciConfig: CiPipelineResult
+    configOverridenPipelines: CiPipeline[]
+    configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
+    processedWorkflows: ProcessedWorkflowsType
+    toggleConfigOverrideDiffModal: () => void
+}
+
+export interface CIConfigFormProps {
+    dockerRegistries: any
+    sourceConfig: any
+    ciConfig: CiPipelineResult
+    reload: () => Promise<void>
+    appId: string
+    selectedCIPipeline: CIPipelineDataType
+    configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
+    configOverrideView: boolean
+    allowOverride: boolean
+    updateDockerConfigOverride: (key, value) => void
+}
+
+export interface AdvancedConfigOptionsProps {
+    ciPipeline: CIPipelineDataType
+    formData: FormType
+    setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
+} 

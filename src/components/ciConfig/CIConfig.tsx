@@ -11,7 +11,7 @@ import {
 } from '../common'
 import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig, getConfigOverrideDetails, getWorkflowList } from '../../services/service'
+import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
 import { KeyValueInput } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
 import { NavLink, useParams } from 'react-router-dom'
@@ -34,12 +34,11 @@ import { OptionType } from '../app/types'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
-import { CiPipelineResult } from '../app/details/triggerView/types'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import CIConfigDiffView from './CIConfigDiffView'
-import { ProcessedWorkflowsType } from './types'
+import { CIConfigFormProps, CIConfigProps, ProcessedWorkflowsType } from './types'
+import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 
 export default function CIConfig({
     respondOnSuccess,
@@ -48,34 +47,11 @@ export default function CIConfig({
     parentState,
     setParentState,
     updateDockerConfigOverride,
-}: {
-    respondOnSuccess: () => void
-    configOverrideView?: boolean
-    allowOverride?: boolean
-    parentState?: {
-        loadingState: ComponentStates
-        selectedCIPipeline: CIPipelineDataType
-        dockerRegistries: any
-        sourceConfig: any
-        ciConfig: CiPipelineResult
-        defaultDockerConfigs: DockerConfigOverrideType
-    }
-    setParentState?: React.Dispatch<
-        React.SetStateAction<{
-            loadingState: ComponentStates
-            selectedCIPipeline: CIPipelineDataType
-            dockerRegistries: any
-            sourceConfig: any
-            ciConfig: any
-            defaultDockerConfigs: DockerConfigOverrideType
-        }>
-    >
-    updateDockerConfigOverride?: (key, value) => void
-}) {
+}: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
     const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
-    const [configOverrides, setConfigOverrides] = useState(null)
+    const [configOverrideWorkflows, setConfigOverrideWorkflows] = useState<ConfigOverrideWorkflowDetails[]>([])
     const [loading, setLoading] = useState(
         configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
     )
@@ -94,12 +70,12 @@ export default function CIConfig({
                 { result: dockerRegistries },
                 { result: sourceConfig },
                 { result: ciConfig },
-                { result: configOverrides },
+                { result: configOverrideWorkflows },
             ] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
                 getSourceConfig(appId),
                 getCIConfig(+appId),
-                getConfigOverrideDetails(appId),
+                getConfigOverrideWorkflowDetails(appId),
             ])
             Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id')
             setDockerRegistries(dockerRegistries || [])
@@ -108,7 +84,7 @@ export default function CIConfig({
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
             setSourceConfig(sourceConfig)
             setCIConfig(ciConfig)
-            setConfigOverrides(configOverrides)
+            setConfigOverrideWorkflows(configOverrideWorkflows?.workflows || [])
 
             if (setParentState) {
                 setParentState({
@@ -171,7 +147,7 @@ export default function CIConfig({
             reload={reload}
             appId={appId}
             selectedCIPipeline={parentState?.selectedCIPipeline}
-            configOverrides={configOverrides}
+            configOverrideWorkflows={configOverrideWorkflows}
             configOverrideView={configOverrideView}
             allowOverride={allowOverride}
             updateDockerConfigOverride={updateDockerConfigOverride}
@@ -186,11 +162,11 @@ function Form({
     reload,
     appId,
     selectedCIPipeline,
-    configOverrides,
+    configOverrideWorkflows,
     configOverrideView,
     allowOverride,
     updateDockerConfigOverride,
-}) {
+}: CIConfigFormProps) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const _selectedMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
@@ -209,7 +185,6 @@ function Form({
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
             : dockerRegistries.find((reg) => reg.isDefault)
     const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
-
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             repository: { value: _selectedMaterial.name, error: '' },
@@ -958,7 +933,7 @@ function Form({
                 <CIConfigDiffView
                     ciConfig={ciConfig}
                     configOverridenPipelines={configOverridenPipelines}
-                    configOverrides={configOverrides}
+                    configOverrideWorkflows={configOverrideWorkflows}
                     processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                 />

@@ -279,6 +279,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         })
     }
 
+    toggleShowDeleteDialog = () => {
+        this.props.showDeleteDialog(this.props.id)
+    }
+
     renderWorkflow() {
         let ciPipelineId = 0
         let ciPipeline = this.props.nodes.find((nd) => nd.type == 'CI')
@@ -302,7 +306,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             <button
                                 type="button"
                                 className="dc__align-right dc__transparent"
-                                onClick={(e) => this.props.showDeleteDialog(this.props.id)}
+                                onClick={this.toggleShowDeleteDialog}
                             >
                                 <img src={trash} alt="delete" />
                             </button>
