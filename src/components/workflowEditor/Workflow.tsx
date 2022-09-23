@@ -60,26 +60,33 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     setPosition = (top: number, left: number) => {
         this.setState({ top, left })
     }
-    renderNodes() {
-        let ci = this.props.nodes.find((node) => node.type == 'CI')
+
+    getNodes = (nodeId: string) => {
         const _nodes = [...this.props.nodes]
-        const isConfigOverriden = this.props.cdWorkflowList?.length > 0
-        if (isConfigOverriden) {
+        if (this.props.cdWorkflowList?.length > 0) {
+            _nodes[_nodes.length - 1].downstreams = [`CD-${nodeId}`]
             _nodes.push({
                 type: 'CD',
                 parents: [],
                 title: 'Deploy',
-                id: '',
+                id: nodeId,
                 isSource: false,
                 isGitSource: false,
                 isRoot: false,
                 downstreams: [],
                 height: 190,
-                width: 240,
-                x: 60,
-                y: 25,
+                width: WorkflowCreate.cDNodeSizes.nodeWidth,
+                x: WorkflowCreate.cDNodeSizes.distanceX,
+                y: WorkflowCreate.cDNodeSizes.distanceY,
             })
         }
+
+        return _nodes
+    }
+
+    renderNodes() {
+        const ci = this.props.nodes.find((node) => node.type == 'CI')
+        const _nodes = this.getNodes(ci.id)
 
         if (ci) {
             let dimensionX = 0
@@ -90,7 +97,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 } else if (node.type == 'CI') {
                     dimensionX += node.x + node.width
                     return this.renderCINodes(node)
-                } else if (isConfigOverriden && node.type === 'CD') {
+                } else if (this.props.cdWorkflowList?.length > 0 && node.type === 'CD') {
                     node.x = dimensionX + node.x
                 }
 
@@ -225,9 +232,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     getEdges() {
-        return this.props.nodes.reduce((edgeList, node) => {
+        const ci = this.props.nodes.find((node) => node.type == 'CI')
+        const _nodes = this.getNodes(ci.id)
+
+        return _nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = _nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
                 edgeList.push({
                     startNode: node,
                     endNode: endNode,

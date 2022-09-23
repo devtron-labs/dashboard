@@ -23,7 +23,7 @@ export interface CDNodeProps {
 export class CDNode extends Component<CDNodeProps> {
     renderReadOnlyCard() {
         return (
-            <div className="workflow-node">
+            <div className="workflow-node dc__overflow-scroll">
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Deploy</span>
@@ -88,7 +88,7 @@ export class CDNode extends Component<CDNodeProps> {
                 y={this.props.y}
                 width={this.props.width}
                 height={this.props.height}
-                style={{ overflow: 'visible' }}
+                style={{ overflow: this.props.cdNamesList?.length > 0 ? 'scroll' : 'visible' }}
             >
                 {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
             </foreignObject>

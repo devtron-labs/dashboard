@@ -2,7 +2,8 @@ import React, { useEffect } from 'react'
 import { noop, Progressing, VisibleModal } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { Workflow } from '../workflowEditor/Workflow'
-import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { URLS } from '../../config'
 
 export default function CIConfigDiffView({
     ciConfig,
@@ -16,9 +17,17 @@ export default function CIConfigDiffView({
     const match = useRouteMatch<{
         appId: string
     }>()
-    const _configOverridenWorkflows = configOverrides?.workflows?.filter(
-        (_cwf) => !!configOverridenPipelines.find((_ci) => _ci.id === _cwf.ciPipelineId),
-    )
+    const { appId } = useParams<{
+        appId: string
+    }>()
+    const wfCIMap = new Map<number, number>()
+    const _configOverridenWorkflows = configOverrides?.workflows?.filter((_cwf) => {
+        const _ciPipeline = configOverridenPipelines.find((_ci) => _ci.id === _cwf.ciPipelineId)
+        if (!!_ciPipeline) {
+            wfCIMap.set(_cwf.id, _ciPipeline.id)
+            return _ciPipeline
+        }
+    })
     const _overridenWorkflows = processedWorkflows.workflows.filter(
         (_wf) => !!_configOverridenWorkflows.find((_cwf) => _cwf.id === +_wf.id),
     )
@@ -78,7 +87,7 @@ export default function CIConfigDiffView({
                 if (gitMaterial.gitMaterialId === globalCIConfig?.dockerBuildConfig?.gitMaterialId) {
                     globalGitMaterialName = gitMaterial.materialName
                 }
-                
+
                 if (gitMaterial.gitMaterialId === _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId) {
                     currentMaterialName = gitMaterial.materialName
                 }
@@ -130,15 +139,20 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderViewBuildPipelineRow = () => {
-        return <div className="flex dc__content-space pl-16 pr-16 pb-10 bcn-0 dc__border-left dc__border-right">
-            <span className="fs-14 fw-4 lh-20">
-                Build pipeline is overriden
-            </span>
-            <Link to={'/'} className="fs-14 fw-4 lh-20">
-                View build pipeline
-            </Link>
-        </div>
+    const renderViewBuildPipelineRow = (_wfId: number) => {
+        return (
+            <div className="flex dc__content-space pl-16 pr-16 pb-10 bcn-0 dc__border-left dc__border-right">
+                <span className="fs-14 fw-4 lh-20">Build pipeline is overriden</span>
+                <Link
+                    to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${_wfId}/${
+                        URLS.APP_CI_CONFIG
+                    }/${wfCIMap.get(_wfId)}/build`}
+                    className="fs-14 fw-4 lh-20"
+                >
+                    View build pipeline
+                </Link>
+            </div>
+        )
     }
 
     return (
@@ -170,7 +184,7 @@ export default function CIConfigDiffView({
                                     addCIPipeline={noop}
                                     cdWorkflowList={_configOverridenWorkflows}
                                 />
-                                {renderViewBuildPipelineRow()}
+                                {renderViewBuildPipelineRow(+_wf.id)}
                                 {renderConfigDiff(_configOverridenWorkflows, _wf.id)}
                             </div>
                         ))
