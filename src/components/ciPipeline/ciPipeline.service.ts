@@ -463,7 +463,7 @@ function parseCIResponse(
                 name: ciPipeline.name,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
                 materials: materials,
-                args: args.length ? args : ciPipeline.parentCiPipeline ? [] : [{ key: '', value: '' }],
+                args: args.length ? args : [],
                 externalCiConfig: createCurlRequest(ciPipeline.externalCiConfig),
                 scanEnabled: ciPipeline.scanEnabled,
                 gitHost: gitHost,

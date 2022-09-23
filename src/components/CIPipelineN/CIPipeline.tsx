@@ -79,7 +79,7 @@ export default function CIPipeline({
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
-        args: [{ key: '', value: '' }],
+        args: [],
         materials: [],
         triggerType: TriggerType.Auto,
         scanEnabled: false,

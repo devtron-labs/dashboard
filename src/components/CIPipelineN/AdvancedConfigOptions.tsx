@@ -30,7 +30,11 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
 
     const addDockerArg = (): void => {
         const _form = { ...formData }
-        _form.args.unshift({ key: '', value: '' })
+        if (_form.args > 0) {
+            _form.args.unshift({ key: '', value: '' })
+        } else {
+            _form.args.push({ key: '', value: '' })
+        }
         setFormData(_form)
     }
 
@@ -94,43 +98,44 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
         return (
             <div>
                 <h3 className="fs-13 fw-6 cn-9 lh-20 m-0">Docker build arguments</h3>
-                <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-20" onClick={addDockerArg}>
+                <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override or provide additional docker build arguments for this pipeline.</p>
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg}>
                     <Add className="add-icon mt-6" />
                     Add parameter
                 </div>
-                {formData.args.map((arg, index) => {
-                    return (
-                        <div className="flexbox justify-space" key={`build-${index}`}>
-                            <div className="mt-8 w-100">
-                                <input
-                                    className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
-                                    autoComplete="off"
-                                    placeholder="Key"
-                                    type="text"
-                                    value={arg.key}
-                                    onChange={(event) => {
-                                        handleDockerArgChange(event, index, 'key')
+                {formData.args.length > 0 &&
+                    formData.args.map((arg, index) => {
+                        return (
+                            <div className="flexbox justify-space" key={`build-${index}`}>
+                                <div className="mt-8 w-100">
+                                    <input
+                                        className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                        autoComplete="off"
+                                        placeholder="Key"
+                                        type="text"
+                                        value={arg.key}
+                                        onChange={(event) => {
+                                            handleDockerArgChange(event, index, 'key')
+                                        }}
+                                    />
+                                    <textarea
+                                        className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                        value={arg.value}
+                                        onChange={(event) => {
+                                            handleDockerArgChange(event, index, 'value')
+                                        }}
+                                        placeholder="Value"
+                                    />
+                                </div>
+                                <Close
+                                    className="icon-dim-24 pointer mt-6 ml-6"
+                                    onClick={() => {
+                                        removeDockerArgs(index)
                                     }}
-                                />
-                                <textarea
-                                    className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
-                                    value={arg.value}
-                                    onChange={(event) => {
-                                        handleDockerArgChange(event, index, 'value')
-                                    }}
-                                    placeholder="Value"
                                 />
                             </div>
-                            <Close
-                                className="icon-dim-24 pointer mt-6 ml-6"
-                                onClick={() => {
-                                    removeDockerArgs(index)
-                                }}
-                            />
-                        </div>
-                    )
-                })}
+                        )
+                    })}
             </div>
         )
     }

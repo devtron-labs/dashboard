@@ -149,6 +149,7 @@
                 .workflow-node {
                     .workflow-node__title {
                         align-items: flex-start;
+                        margin-left: 0px;
                     }
                 }
             }
@@ -169,13 +170,3 @@
         }
     }
 }
-
-/* .form__app-compose.config-override-view .white-card__docker-config .form-row__docker .form__field {
-    overflow: hidden;
-}
-
-.form__app-compose.config-override-view .white-card__docker-config .form-row__docker .form__field .form__label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-} */
