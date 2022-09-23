@@ -41,7 +41,8 @@ export default function DevtronStackManager({
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
 }) {
-    const { serverMode,  moduleInInstallingState, setModuleInInstallingState, installedModuleMap } = useContext(mainContext)
+    const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
+        useContext(mainContext)
     const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -177,8 +178,8 @@ export default function DevtronStackManager({
             setModuleInInstallingState(moduleName)
         } else if (moduleInInstallingState === moduleName) {
             setModuleInInstallingState('')
-            if(moduleStatus === ModuleStatus.INSTALLED){
-              installedModuleMap.current = {...installedModuleMap.current, [moduleName]: true}
+            if (moduleStatus === ModuleStatus.INSTALLED) {
+                installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
             }
         }
     }
@@ -194,14 +195,21 @@ export default function DevtronStackManager({
                 const { result } = await getModuleInfo(queryParams.get('id'))
 
                 if (result) {
-                    const currentModule = stackDetails.discoverModulesList.find(
+                    const _stackDetails: StackDetailsType = stackDetails
+                    const currentModuleIndex = _stackDetails.discoverModulesList.findIndex(
                         (_module) => _module.name === result.name,
                     )
+                    const currentModule = {
+                        ..._stackDetails.discoverModulesList[currentModuleIndex],
+                        installationStatus: result.status,
+                    }
                     setSelectedModule({
                         ...currentModule,
                         installationStatus: result.status,
                     })
                     setModuleStatusInContext(result.name, result.status)
+                    _stackDetails.discoverModulesList[currentModuleIndex] = currentModule
+                    setStackDetails(_stackDetails)
                 }
             } else {
                 getCurrentServerInfo()
