@@ -462,7 +462,7 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
-    const otherInstallationInProgress = modulesList.some(
+    const otherInstallationInProgress = modulesList?.some(
         (module) => module.installationStatus === ModuleStatus.INSTALLING && module.name !== moduleName,
     )
     const dependentModuleList =
