@@ -515,11 +515,11 @@ function ClusterForm({
 
     async function onValidation() {
         let payload = getClusterPayload()
-
-        if (state.url.value.endsWith('/')) {
-            payload['server_url'] = state.url.value.slice(0, -1)
+        const urlValue = state.url.value.trim()
+        if (urlValue.endsWith('/')) {
+            payload['server_url'] = urlValue.slice(0, -1)
         } else {
-            payload['server_url'] = state.url.value
+            payload['server_url'] = urlValue
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
@@ -789,7 +789,7 @@ function Environment({
                     { error: 'Environment name is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
                     { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
-                    { error: 'Minimum 3 and Maximum 16 characters required', regex: /^.{3,16}$/ },
+                    { error: 'Minimum 1 and Maximum 16 characters required', regex: /^.{1,16}$/ },
                 ],
             },
             namespace: {
