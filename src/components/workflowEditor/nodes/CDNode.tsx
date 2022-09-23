@@ -27,7 +27,7 @@ export class CDNode extends Component<CDNodeProps> {
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Deploy</span>
-                        <div className="flex left column fs-12 fw-6 lh-18">
+                        <div className="flex left column fs-12 fw-6 lh-18 pt-6 pb-6">
                             {this.props.cdNamesList.map((_cdName) => (
                                 <span className="dc__ellipsis-right">{_cdName}</span>
                             ))}

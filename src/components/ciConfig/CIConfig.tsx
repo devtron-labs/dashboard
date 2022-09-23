@@ -79,6 +79,7 @@ export default function CIConfig({
         configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
     )
     const { appId } = useParams<{ appId: string }>()
+
     useEffect(() => {
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
             initialise()
@@ -173,7 +174,6 @@ export default function CIConfig({
             configOverrideView={configOverrideView}
             allowOverride={allowOverride}
             updateDockerConfigOverride={updateDockerConfigOverride}
-            defaultDockerConfigs={parentState?.defaultDockerConfigs}
         />
     )
 }
@@ -189,7 +189,6 @@ function Form({
     configOverrideView,
     allowOverride,
     updateDockerConfigOverride,
-    defaultDockerConfigs,
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const _selectedMaterial =
@@ -489,9 +488,6 @@ function Form({
                 )}
 
                 {props.label}
-                {defaultDockerConfigs?.dockerRegistry === props.label && (
-                    <span className="fs-11 fw-4 lh-20 cn-5">Globally configured</span>
-                )}
             </components.Option>
         )
     }
@@ -703,7 +699,7 @@ function Form({
                             {`${allowOverride ? 'Delete' : 'Allow'} Override`}
                         </button>
                     )}
-                    <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-8' : 'pb-16'}`}>
+                    <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
                         {configOverrideView
                             ? 'Registry to store container images'
                             : 'Selected repository will be used to store container images for this application'}
@@ -767,7 +763,7 @@ function Form({
                             )}
                         </div>
                     </div>
-                    <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-8' : 'pb-16'}`}>
+                    <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
                         Docker file location
                     </div>
                     <div className="mb-4 form-row__docker">

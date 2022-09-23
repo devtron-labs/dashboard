@@ -98,7 +98,7 @@ export default function AdvancedConfigOptions({ ciPipeline, formData, setFormDat
         return (
             <div>
                 <h3 className="fs-13 fw-6 cn-9 lh-20 m-0">Docker build arguments</h3>
-                <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override or provide additional docker build arguments for this pipeline.</p>
+                <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg}>
                     <Add className="add-icon mt-6" />
                     Add parameter

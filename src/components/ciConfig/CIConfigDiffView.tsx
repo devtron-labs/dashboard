@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { noop, Progressing, VisibleModal } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { Workflow } from '../workflowEditor/Workflow'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 export default function CIConfigDiffView({
     ciConfig,
@@ -40,11 +40,19 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderValueDiff = (baseValue, currentValue, configName) => {
+    const renderValueDiff = (baseValue, currentValue, changedBGColor, configName) => {
         return (
             <>
-                {baseValue ? renderDetailedValue('code-editor-red-diff', configName, baseValue) : <div />}
-                {currentValue ? renderDetailedValue('code-editor-green-diff', configName, currentValue) : <div />}
+                {baseValue ? (
+                    renderDetailedValue(changedBGColor ? 'code-editor-red-diff' : '', configName, baseValue)
+                ) : (
+                    <div />
+                )}
+                {currentValue ? (
+                    renderDetailedValue(changedBGColor ? 'code-editor-green-diff' : '', configName, currentValue)
+                ) : (
+                    <div />
+                )}
             </>
         )
     }
@@ -65,38 +73,44 @@ export default function CIConfigDiffView({
             _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId
 
         let globalGitMaterialName, currentMaterialName
-        if (changedGitMaterialBGColor && ciConfig?.materials) {
+        if (ciConfig?.materials) {
             for (const gitMaterial of ciConfig.materials) {
                 if (gitMaterial.gitMaterialId === globalCIConfig?.dockerBuildConfig?.gitMaterialId) {
                     globalGitMaterialName = gitMaterial.materialName
-                } else if (gitMaterial.gitMaterialId === _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId) {
+                }
+                
+                if (gitMaterial.gitMaterialId === _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId) {
                     currentMaterialName = gitMaterial.materialName
                 }
             }
         }
 
         return (
-            <div className="config-override-diff__values dc__border dc__no-top-border dc__bottom-radius-4">
-                {changedDockerRegistryBGColor &&
-                    renderValueDiff(
-                        globalCIConfig?.dockerRegistry,
-                        _currentPipelineOverride.dockerRegistry,
-                        'Container registry',
-                    )}
-                {changedDockerRepositoryBGColor &&
-                    renderValueDiff(
-                        globalCIConfig?.dockerRepository,
-                        _currentPipelineOverride.dockerRepository,
-                        'Container Repository',
-                    )}
-                {changedGitMaterialBGColor &&
-                    renderValueDiff(globalGitMaterialName, currentMaterialName, 'Git Repository')}
-                {changedDockerfileRelativePathBGColor &&
-                    renderValueDiff(
-                        globalCIConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                        _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath,
-                        'Docker file path',
-                    )}
+            <div className="config-override-diff__values dc__border dc__bottom-radius-4">
+                {renderValueDiff(
+                    globalCIConfig?.dockerRegistry,
+                    _currentPipelineOverride.dockerRegistry,
+                    changedDockerRegistryBGColor,
+                    'Container registry',
+                )}
+                {renderValueDiff(
+                    globalCIConfig?.dockerRepository,
+                    _currentPipelineOverride.dockerRepository,
+                    changedDockerRepositoryBGColor,
+                    'Container Repository',
+                )}
+                {renderValueDiff(
+                    globalGitMaterialName,
+                    currentMaterialName,
+                    changedGitMaterialBGColor,
+                    'Git Repository',
+                )}
+                {renderValueDiff(
+                    globalCIConfig?.dockerBuildConfig?.dockerfileRelativePath,
+                    _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath,
+                    changedDockerfileRelativePathBGColor,
+                    'Docker file path',
+                )}
             </div>
         )
     }
@@ -116,11 +130,22 @@ export default function CIConfigDiffView({
         )
     }
 
+    const renderViewBuildPipelineRow = () => {
+        return <div className="flex dc__content-space pl-16 pr-16 pb-10 bcn-0 dc__border-left dc__border-right">
+            <span className="fs-14 fw-4 lh-20">
+                Build pipeline is overriden
+            </span>
+            <Link to={'/'} className="fs-14 fw-4 lh-20">
+                View build pipeline
+            </Link>
+        </div>
+    }
+
     return (
         <VisibleModal className="">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
                 {renderConfigDiffModalTitle()}
-                <div className="config-override-diff__view p-20 dc__overflow-scroll">
+                <div className="config-override-diff__view p-20 dc__window-bg dc__overflow-scroll">
                     {processedWorkflows.processing ? (
                         <Progressing pageLoader />
                     ) : (
@@ -132,7 +157,7 @@ export default function CIConfigDiffView({
                                     name={_wf.name}
                                     startX={_wf.startX}
                                     startY={_wf.startY}
-                                    height={'238px'}
+                                    height={_wf.height}
                                     width={'100%'}
                                     nodes={_wf.nodes}
                                     history={history}
@@ -145,6 +170,7 @@ export default function CIConfigDiffView({
                                     addCIPipeline={noop}
                                     cdWorkflowList={_configOverridenWorkflows}
                                 />
+                                {renderViewBuildPipelineRow()}
                                 {renderConfigDiff(_configOverridenWorkflows, _wf.id)}
                             </div>
                         ))
