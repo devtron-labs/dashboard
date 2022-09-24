@@ -58,3 +58,20 @@ export interface PipelineSelectProps {
 export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
+
+export interface CDNodeProps {
+    id: string
+    deploymentStrategy: string
+    triggerType: string
+    workflowId: number
+    x: number
+    y: number
+    width: number
+    height: number
+    title: string
+    environmentName: string
+    environmentId: number
+    to: string
+    toggleCDMenu: () => void
+    cdNamesList?: string[]
+}
