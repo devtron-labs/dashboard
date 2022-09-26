@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, EVENT_STREAM_EVENTS_MAP, TERMINAL_STATUS_MAP, POD_STATUS } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -50,12 +50,15 @@ import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConf
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import { renderConfigurationError } from '../cdDetails/cd.utils'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 function useCIEventSource(url: string, maxLength?: number) {
     const [data, setData] = useState([])
+    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const [interval, setInterval] = useState(1000)
     const buffer = useRef([])
     const eventSourceRef = useRef(null)
@@ -87,16 +90,27 @@ function useCIEventSource(url: string, maxLength?: number) {
         setInterval(null)
     }
 
+    function handleError(error: any) {
+      setLogsNotAvailableError(true)
+      setData([])
+      buffer.current = []
+      eventSourceRef.current.close()
+      setInterval(null)
+    }
+
     useEffect(() => {
         buffer.current = []
-        eventSourceRef.current = new EventSource(url, { withCredentials: true })
-        eventSourceRef.current.addEventListener('message', handleMessage)
-        eventSourceRef.current.addEventListener('START_OF_STREAM', handleStreamStart)
-        eventSourceRef.current.addEventListener('END_OF_STREAM', handleStreamEnd)
+        if(url){
+          eventSourceRef.current = new EventSource(url, { withCredentials: true })
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, handleMessage)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM, handleStreamStart)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM, handleStreamEnd)
+          eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, handleError)
+        }
         return closeEventSource
     }, [url, maxLength])
 
-    return [data, eventSourceRef.current]
+    return [data, eventSourceRef.current, logsNotAvailableError]
 }
 
 interface Pipelines {
@@ -115,7 +129,8 @@ export default function CIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
-    const [securityLoading, securityModuleStatus, securityModuleError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [, securityModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [, blobStorageConfiguration, ] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -224,6 +239,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
+                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                             />
                         </Route>
                     )}
@@ -395,6 +411,7 @@ interface BuildDetails {
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
+    isBlobStorageConfigured: boolean
 }
 const BuildDetails: React.FC<BuildDetails> = ({
     triggerHistory,
@@ -402,7 +419,8 @@ const BuildDetails: React.FC<BuildDetails> = ({
     fullScreenView,
     setFullScreenView,
     synchroniseState,
-    isSecurityModuleInstalled
+    isSecurityModuleInstalled,
+    isBlobStorageConfigured
 }) => {
     const { buildId, appId, pipelineId, envId } = useParams<{
         appId: string
@@ -428,6 +446,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
             synchroniseState={synchroniseState}
             triggerHistory={triggerHistory}
             isSecurityModuleInstalled={isSecurityModuleInstalled}
+            isBlobStorageConfigured={isBlobStorageConfigured}
         />
     )
 }
@@ -438,7 +457,8 @@ const Details: React.FC<BuildDetails> = ({
     setFullScreenView,
     synchroniseState,
     triggerHistory,
-    isSecurityModuleInstalled
+    isSecurityModuleInstalled,
+    isBlobStorageConfigured
 }) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -535,6 +555,7 @@ const Details: React.FC<BuildDetails> = ({
                 pipeline={pipeline}
                 triggerDetails={triggerDetails}
                 setFullScreenView={setFullScreenView}
+                isBlobStorageConfigured={isBlobStorageConfigured}
             />
         </>
     )
@@ -619,15 +640,16 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                 </div>
                 {
                     {
-                        succeeded: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        healthy: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        running: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        progressing: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        starting: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        failed: <Failed triggerDetails={triggerDetails} type={type} />,
+                      [TERMINAL_STATUS_MAP.SUCCEEDED]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.HEALTHY]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.RUNNING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.PROGRESSING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.STARTING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[triggerDetails.status.toLowerCase()]
                 }
-                {!['succeeded', 'healthy', 'running', 'progressing', 'starting', 'failed'].includes(
+                {!Object.values(TERMINAL_STATUS_MAP).includes(
                     triggerDetails.status.toLowerCase(),
                 ) && <Generic triggerDetails={triggerDetails} type={type} />}
             </div>
@@ -776,7 +798,8 @@ const HistoryLogs: React.FC<{
     pipeline: CIPipeline
     triggerDetails: History
     setFullScreenView: (...args) => void
-}> = ({ pipeline, triggerDetails, setFullScreenView }) => {
+    isBlobStorageConfigured?: boolean
+}> = ({ pipeline, triggerDetails, setFullScreenView, isBlobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
@@ -793,7 +816,7 @@ const HistoryLogs: React.FC<{
                     <Switch>
                         <Route path={`${path}/logs`}>
                             <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} />
+                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} isBlobStorageConfigured={isBlobStorageConfigured} />
                             </div>
                         </Route>
                         <Route
@@ -962,9 +985,10 @@ function NoArtifactsView() {
     )
 }
 
-export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void }> = ({
+export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void, isBlobStorageConfigured: boolean }> = ({
     triggerDetails,
     setFullScreenView,
+    isBlobStorageConfigured
 }) => {
     const keys = useKeyDown()
 
@@ -979,8 +1003,10 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
-    const [logs, eventSource] = useCIEventSource(
-        `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
+    const [logs, eventSource, logsNotAvailable] = useCIEventSource(
+        triggerDetails.podStatus &&
+            triggerDetails.podStatus !== POD_STATUS.PENDING &&
+            `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
     )
     function createMarkup(log) {
         try {
@@ -991,19 +1017,20 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
             return { __html: log }
         }
     }
-    return (
-        <>
-            <div className="logs__body">
-                {logs.map((log, index) => {
-                    return <p className="mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(log)} />
-                })}
-                {eventSource && eventSource.readyState <= 1 && (
-                    <div className="flex left event-source-status">
-                        <Progressing />
-                    </div>
-                )}
-            </div>
-        </>
+
+    return triggerDetails.podStatus !== POD_STATUS.PENDING && logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
+      renderConfigurationError(isBlobStorageConfigured)
+    ) : (
+        <div className="logs__body">
+            {logs.map((log, index) => {
+                return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
+            })}
+            {(triggerDetails.podStatus === POD_STATUS.PENDING || (eventSource && eventSource.readyState <= 1)) && (
+                <div className="flex left event-source-status">
+                    <Progressing />
+                </div>
+            )}
+        </div>
     )
 }
 
@@ -1027,9 +1054,9 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
     )
 }
 
-export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any> }> = ({
+export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any>}> = ({
     triggerDetails,
-    getArtifactPromise,
+    getArtifactPromise
 }) => {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [downloading, setDownloading] = useState(false)
@@ -1081,7 +1108,7 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                     </div>
                 </div>
             </CIListItem>
-            {getArtifactPromise && (
+            {triggerDetails.blobStorageEnabled && getArtifactPromise && (
                 <CIListItem type="report">
                     <div className="flex column left">
                         <div className="cn-9 fs-14">Reports.zip</div>

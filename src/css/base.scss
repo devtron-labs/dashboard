@@ -402,6 +402,14 @@ a:focus {
     white-space: nowrap;
 }
 
+.dc__ellipsis-right__2nd-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
 .dc__ellipsis-left {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1503,6 +1511,10 @@ button.anchor {
     justify-content: space-between !important;
 }
 
+.dc__content-center {
+    justify-content: center !important;
+}
+
 .dc__content-start {
     justify-content: flex-start !important;
 }
@@ -1552,6 +1564,10 @@ button.anchor {
 
 .dc__border-right {
     border-right: solid 1px var(--N200);
+}
+
+.dc__border-top-n1 {
+    border-top: solid 1px var(--N100);
 }
 
 .dc__border-bottom-n1 {
@@ -1916,6 +1932,11 @@ textarea {
 }
 
 // Height in pixels
+
+.dc__height-inherit {
+  height: inherit;
+}
+
 .h-0 {
     height: 0px;
 }
@@ -2093,4 +2114,8 @@ textarea {
 
 .dc__column-gap-24 {
     column-gap: 24px;
+}
+
+.dc__flip-180 {
+    transform: rotate(180deg);
 }

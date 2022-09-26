@@ -1,15 +1,17 @@
 import React, { Component } from 'react'
 import { CIMaterialProps, CIMaterialState } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/appstatus/unknown.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
 import { TriggerViewContext } from './TriggerView'
-import Tippy from '@tippyjs/react'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { SourceTypeMap } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
@@ -31,7 +33,21 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         this.state = {
             regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
+            isBlobStorageConfigured: false
         }
+    }
+
+    componentDidMount() {
+      this.getSecurityModuleStatus()
+    }
+
+    async getSecurityModuleStatus(): Promise<void> {
+      try {
+          const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
+          if (result?.enabled) {
+              this.setState({ isBlobStorageConfigured: true })
+          }
+      } catch (error) {}
     }
 
     onClickStopPropagation = (e): void => {
@@ -39,9 +55,52 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickTrigger = (): void => {}
-    renderMaterialStartBuild = (context, canTrigger) => {
-        return (
-            <div className="trigger-modal__trigger">
+
+    renderIgnoreCache = (context) => {
+        if (this.props.isFirstTrigger) {
+            return (
+                <div className="flexbox">
+                    <Info className="icon-dim-20 mr-8" />
+                    <div>
+                        <div className="fw-6 fs-13">First pipeline run may take longer than usual</div>
+                        <div className="fw-4 fs-12">
+                            Future runs will have shorter build time if caching is enabled.
+                        </div>
+                    </div>
+                </div>
+            )
+        } else if (!this.state.isBlobStorageConfigured) {
+            return (
+                <div className="flexbox flex-align-center">
+                    <Storage className="icon-dim-24 mr-8" />
+                    <div>
+                        <div className="fw-6 fs-13">Cache not available as storage is not setup</div>
+                        <div className="fw-4 fs-12 flexbox">
+                            <span>Want to reduce build time?</span>
+                            <a
+                                className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
+                                href={DOCUMENTATION.ADMIN_PASSWORD}
+                                target="_blank"
+                            >
+                                Configure blob storage
+                            </a>
+                            <OpenInNew className="icon-dim-16 mt-3 ml-8" />
+                        </div>
+                    </div>
+                </div>
+            )
+        } else if (!this.props.isCacheAvailable) {
+            return (
+                <div className="flexbox">
+                    <Info className="icon-dim-20 mr-8" />
+                    <div>
+                        <div className="fw-6 fs-13">Cache will be generated for this pipeline run</div>
+                        <div className="fw-4 fs-12">Cache will be used in future runs to reduce build time.</div>
+                    </div>
+                </div>
+            )
+        } else {
+            return (
                 <Checkbox
                     isChecked={context.invalidateCache}
                     onClick={this.onClickStopPropagation}
@@ -49,21 +108,19 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     value={'CHECKED'}
                     onChange={context.toggleInvalidateCache}
                 >
-                    <span className="mr-5">Ignore Cache</span>
+                    <div className="mr-5">
+                        <div className="fs-13 fw-6">Ignore Cache</div>
+                        <div className="fs-12 fw-4">Ignoring cache will lead to longer build time.</div>
+                    </div>
                 </Checkbox>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="top"
-                    content={
-                        <span style={{ display: 'block', width: '200px' }}>
-                            This will ignore previous cache and create a new one. Ignoring cache will lead to longer
-                            build time.
-                        </span>
-                    }
-                >
-                    <Question className="icon-dim-20" />
-                </Tippy>
+            )
+        }
+    }
+
+    renderMaterialStartBuild = (context, canTrigger) => {
+        return (
+            <div className="trigger-modal__trigger">
+                {this.renderIgnoreCache(context)}
                 <ButtonWithLoader
                     rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                     loaderColor="#ffffff"

@@ -5,7 +5,6 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
 import { App, AppListState, OrderBy, SortBy } from './types';
-import { AppCheckListModal } from '../../checkList/AppCheckModal';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';

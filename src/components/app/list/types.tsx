@@ -1,7 +1,6 @@
 import React from 'react';
 import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps } from 'react-router';
-import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
 export interface AppListState {
     code: number;
@@ -18,11 +17,6 @@ export interface AppListState {
     pageSize: number;
     expandedRow: boolean;
     appData: App | null;
-    isAppCreated: boolean;
-    appStageCompleted: number;
-    chartStageCompleted: number;
-    appChecklist: AppCheckList;
-    chartChecklist: ChartCheckList;
 }
 
 export interface App {
@@ -54,7 +48,6 @@ export interface Environment {
 
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
     payloadParsedFromUrl?: any;
-    appCheckListRes? : any;
     serverMode? : string;
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;

@@ -79,7 +79,7 @@ export default function CIPipeline({
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
-        args: [{ key: '', value: '' }],
+        args: [],
         materials: [],
         triggerType: TriggerType.Auto,
         scanEnabled: false,
@@ -124,6 +124,7 @@ export default function CIPipeline({
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
+    const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
 
     useEffect(() => {
         setPageState(ViewType.LOADING)
@@ -353,7 +354,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.PreBuild, formData)
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
-        const scanValidation = isSecurityModuleInstalled && (formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING)
+        const scanValidation = !isSecurityModuleInstalled || (formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING)
         if (!scanValidation) {
             setLoadingData(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -369,8 +370,14 @@ export default function CIPipeline({
             return
         }
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
+
+        // Reset allow override flag to false if config matches with global
+        if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
+            formData.isDockerConfigOverridden = false
+        }
+
         saveCIPipeline(
-            formData,
+            {...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled: false },
             ciPipeline,
             formData.materials,
             +appId,
@@ -739,8 +746,9 @@ export default function CIPipeline({
                                     pageState={pageState}
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
-                                    ciPipelineId={ciPipeline.id}
+                                    ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
+                                    setDockerConfigOverridden={setDockerConfigOverridden}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

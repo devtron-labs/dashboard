@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle } from '../common'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -27,7 +27,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS } from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap } from '../../config'
 import { getEnvName } from './cluster.util'
 import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -36,6 +36,8 @@ import {
     DC_ENVIRONMENT_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
 } from '../../config/constantMessaging'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -226,6 +228,7 @@ function Cluster({
     const [config, setConfig] = useState(defaultConfig)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
+    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId])
     const history = useHistory()
     const newEnvs = useMemo(() => {
         let namespacesInAll = true
@@ -379,13 +382,12 @@ function Cluster({
                                 server_url,
                                 active,
                                 config,
-                                environments,
                                 toggleEditMode,
                                 reload,
                                 prometheus_url,
                                 prometheusAuth,
-                                serverMode,
                                 defaultClusterComponent,
+                                isGrafanaModuleInstalled: grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
                             }}
                         />
                     </>
@@ -410,13 +412,12 @@ function ClusterForm({
     server_url,
     active,
     config,
-    environments,
     toggleEditMode,
     reload,
     prometheus_url,
     prometheusAuth,
-    serverMode,
     defaultClusterComponent,
+    isGrafanaModuleInstalled
 }) {
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
@@ -514,11 +515,11 @@ function ClusterForm({
 
     async function onValidation() {
         let payload = getClusterPayload()
-
-        if (state.url.value.endsWith('/')) {
-            payload['server_url'] = state.url.value.slice(0, -1)
+        const urlValue = state.url.value.trim()
+        if (urlValue.endsWith('/')) {
+            payload['server_url'] = urlValue.slice(0, -1)
         } else {
-            payload['server_url'] = state.url.value
+            payload['server_url'] = urlValue
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
@@ -640,9 +641,9 @@ function ClusterForm({
                     </label>
                 )}
             </div>
-            {serverMode !== SERVER_MODE.EA_ONLY && (
+            {isGrafanaModuleInstalled && (
                 <>
-                    <hr></hr>
+                    <hr/>
                     <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
                         <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
@@ -657,10 +658,10 @@ function ClusterForm({
                     </div>
                 </>
             )}
-            {serverMode !== SERVER_MODE.EA_ONLY && !prometheusToggleEnabled && prometheus_url && (
+            {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && (
                 <PrometheusWarningInfo />
             )}
-            {serverMode !== SERVER_MODE.EA_ONLY && prometheusToggleEnabled && (
+            {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                 <div className="">
                     {(state.userName.error || state.password.error || state.endpoint.error) && (
                         <PrometheusRequiredFieldInfo />
@@ -788,7 +789,7 @@ function Environment({
                     { error: 'Environment name is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
                     { error: "Cannot start/end with '-'", regex: /^(?![-]).*[^-]$/ },
-                    { error: 'Minimum 3 and Maximum 16 characters required', regex: /^.{3,16}$/ },
+                    { error: 'Minimum 1 and Maximum 16 characters required', regex: /^.{1,16}$/ },
                 ],
             },
             namespace: {
