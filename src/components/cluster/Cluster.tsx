@@ -38,6 +38,9 @@ import {
 } from '../../config/constantMessaging'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import Tippy from '@tippyjs/react'
+import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -64,6 +67,17 @@ const PrometheusRequiredFieldInfo = () => {
             </div>
         </div>
     )
+}
+
+const clusterCommand = {
+    k8Cluster:{
+        title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
+        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+    },
+    microK8s:{
+        title: 'Light weight Kubernetes cluster',
+        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+    }
 }
 
 export default class ClusterList extends Component<ClusterListProps, any> {
@@ -593,6 +607,51 @@ function ClusterForm({
         k8sversion: '',
     }
 
+    const k8Cluster = () => {
+        return <ClusterInfoStepsModal subTitle={clusterCommand.k8Cluster.title} command={clusterCommand.k8Cluster.command} clusterName="K8s"/>
+    }
+
+    const microK8sCluster = () => {
+        return <ClusterInfoStepsModal subTitle={clusterCommand.microK8s.title} command={clusterCommand.microK8s.command} clusterName="microk8s"/>
+    }
+
+    const clusterLabel = () => {
+        return (
+            <div className="flex left">
+                Server URL* & Bearer token{isDefaultCluster() ? '' : '*'}
+                <span className="icon-dim-16 fcn-9 mr-4 ml-16">
+                    <Question className="icon-dim-16" />
+                </span>
+                <span>How to find for </span>
+                <Tippy
+                    className="default-white p-0"
+                    theme="light"
+                    arrow={true}
+                    placement="bottom"
+                    trigger="click"
+                    interactive={true}
+                    content={k8Cluster()}
+                    maxWidth="468px"
+                >
+                    <span className="ml-4 mr-2 cb-5 cursor">K8s cluster providers</span>
+                </Tippy>
+                <span className="cn-2">|</span>
+                <Tippy
+                    className="default-white p-0"
+                    theme="light"
+                    arrow={true}
+                    placement="bottom"
+                    trigger="click"
+                    interactive={true}
+                    content={microK8sCluster()}
+                    maxWidth="468px"
+                >
+                     <span className="ml-2 mr-2 cb-5 cursor">MicroK8s</span>
+                </Tippy>
+            </div>
+        )
+    }
+
     return (
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
             <div className="flex left mb-20">
@@ -619,13 +678,10 @@ function ClusterForm({
                     value={state.url.value}
                     error={state.url.error}
                     onChange={handleOnChange}
-                    label="Server URL*"
+                    label={clusterLabel()}
                 />
             </div>
             <div className="form__row form__row--bearer-token flex column left top">
-                <label htmlFor="" className="form__label">
-                    Bearer token{isDefaultCluster() ? '' : '*'}
-                </label>
                 <div className="bearer-token">
                     <ResizableTextarea
                         className="dc__resizable-textarea__with-max-height"

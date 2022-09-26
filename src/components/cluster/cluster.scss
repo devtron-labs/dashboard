@@ -1,0 +1,50 @@
+.cluster-modal-wrapper {
+    display: grid;
+    grid-template-columns: auto 1fr;
+}
+.cluster-modal-number {
+    display: flex;
+    margin-right: 16px;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    width: 24px;
+    border: 1px solid var(--N200);
+    border-radius: 50%;
+    z-index: 2;
+    background-color: var(--white);
+}
+
+.cluster-modal-container {
+    width: 404px;
+    background-color: var(--N100);
+    text-align: start;
+    height: 120px;
+}
+
+.cluster-inner-container {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--N200);
+    margin-left: -28px;
+    padding: 2px 44px 20px 28px;
+    line-height: 20px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.cluster-inner-container.cluster-last-item {
+    border-left: none;
+    padding-bottom: 0;
+}
+
+.default-white .tippy-content {
+    padding: 0 !important;
+}
+
+.cluster-clipboard {
+    top: 10px;
+    right: 10px;
+}
