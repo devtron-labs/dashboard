@@ -27,7 +27,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap } from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, ClusterCommand } from '../../config'
 import { getEnvName } from './cluster.util'
 import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -68,18 +68,6 @@ const PrometheusRequiredFieldInfo = () => {
         </div>
     )
 }
-
-const clusterCommand = {
-    k8Cluster:{
-        title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
-        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
-    },
-    microK8s:{
-        title: 'Light weight Kubernetes cluster',
-        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
-    }
-}
-
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
 
@@ -607,13 +595,17 @@ function ClusterForm({
         k8sversion: '',
     }
 
-    const k8Cluster = () => {
-        return <ClusterInfoStepsModal subTitle={clusterCommand.k8Cluster.title} command={clusterCommand.k8Cluster.command} clusterName="K8s"/>
-    }
-
-    const microK8sCluster = () => {
-        return <ClusterInfoStepsModal subTitle={clusterCommand.microK8s.title} command={clusterCommand.microK8s.command} clusterName="microk8s"/>
-    }
+    const K8sClusters = Object.values(ClusterCommand).map((cluster) => {
+        return {title: cluster.heading,
+            modalComponent: (
+                <ClusterInfoStepsModal
+                    subTitle={cluster.title}
+                    command={cluster.command}
+                    clusterName={cluster.clusterName}
+                />
+            )
+        }
+    })
 
     const clusterLabel = () => {
         return (
@@ -623,31 +615,23 @@ function ClusterForm({
                     <Question className="icon-dim-16" />
                 </span>
                 <span>How to find for </span>
-                <Tippy
-                    className="default-white p-0"
-                    theme="light"
-                    arrow={true}
-                    placement="bottom"
-                    trigger="click"
-                    interactive={true}
-                    content={k8Cluster()}
-                    maxWidth="468px"
-                >
-                    <span className="ml-4 mr-2 cb-5 cursor">K8s cluster providers</span>
-                </Tippy>
-                <span className="cn-2">|</span>
-                <Tippy
-                    className="default-white p-0"
-                    theme="light"
-                    arrow={true}
-                    placement="bottom"
-                    trigger="click"
-                    interactive={true}
-                    content={microK8sCluster()}
-                    maxWidth="468px"
-                >
-                     <span className="ml-2 mr-2 cb-5 cursor">MicroK8s</span>
-                </Tippy>
+                {K8sClusters.map((cluster, key) => (
+                    <>
+                        <Tippy
+                            className="default-white p-0"
+                            theme="light"
+                            arrow={true}
+                            placement="bottom"
+                            trigger="click"
+                            interactive={true}
+                            content={cluster.modalComponent}
+                            maxWidth="468px"
+                        >
+                            <span className="ml-4 mr-2 cb-5 cursor">{cluster.title}</span>
+                        </Tippy>
+                        {key + 1 !== K8sClusters.length && <span className="cn-2">|</span>}
+                    </>
+                ))}
             </div>
         )
     }
