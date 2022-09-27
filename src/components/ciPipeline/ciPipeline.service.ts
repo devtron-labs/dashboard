@@ -320,7 +320,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
         return materials
     }
 
-    for (let i = 0; i < gitMaterials.length; i++) {
+    for (let i = 0; i < gitMaterials?.length; i++) {
         const mat = gitMaterials[i]
         if (!ciMaterialSet.has(mat.gitMaterialId)) {
             materials.push({

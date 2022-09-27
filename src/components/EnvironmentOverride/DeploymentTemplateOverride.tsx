@@ -62,7 +62,7 @@ export default function DeploymentTemplateOverride({
                     return {
                         ...state,
                         charts: action.value.chartRefs,
-                        selectedChart: action.value.chartRefs.find((chart) => chart.id === _selectedChartId),
+                        selectedChart: action.value.chartRefs?.find((chart) => chart.id === _selectedChartId),
                         selectedChartRefId: _selectedChartId,
                     }
                 case 'createDuplicate':
