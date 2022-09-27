@@ -596,7 +596,7 @@ function ClusterForm({
     }
 
     const K8sClusterComponent = () => {
-       const k8sClusters = Object.values(ClusterCommand)
+        const k8sClusters = Object.values(ClusterCommand)
         return (
             <>
                 {k8sClusters.map((cluster, key) => (
