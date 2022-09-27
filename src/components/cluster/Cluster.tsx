@@ -27,7 +27,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, ClusterCommand } from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
 import { getEnvName } from './cluster.util'
 import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -595,8 +595,8 @@ function ClusterForm({
         k8sversion: '',
     }
 
-    const K8sClusterComponent = () => {
-        const k8sClusters = Object.values(ClusterCommand)
+    const ClusterInfoComponent = () => {
+        const k8sClusters = Object.values(CLUSTER_COMMAND)
         return (
             <>
                 {k8sClusters.map((cluster, key) => (
@@ -634,7 +634,7 @@ function ClusterForm({
                     <Question className="icon-dim-16" />
                 </span>
                 <span>How to find for </span>
-                <K8sClusterComponent />
+                <ClusterInfoComponent />
             </div>
         )
     }

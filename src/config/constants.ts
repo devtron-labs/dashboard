@@ -585,7 +585,7 @@ export const POD_STATUS = {
   PENDING: 'Pending'
 }
 
-export const ClusterCommand = {
+export const CLUSTER_COMMAND = {
     k8Cluster:{
         heading: "K8s cluster providers",
         clusterName: "K8s",
