@@ -1076,7 +1076,7 @@ button.anchor {
     font-size: 12px;
     line-height: 1.6;
     color: var(--N900);
-    border: 1px solid var(--N100);
+    border: 1px solid var(--N200);
     background-color: var(--N000);
 }
 
@@ -2062,6 +2062,10 @@ textarea {
 
 .mb-4-imp {
     margin-bottom: 4px !important;
+}
+
+.mb-8-imp {
+    margin-bottom: 8px !important;
 }
 
 .mb-16-imp {

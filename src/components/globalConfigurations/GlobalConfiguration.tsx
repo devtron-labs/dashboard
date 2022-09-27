@@ -531,6 +531,7 @@ export function CustomInput({
     disabled = false,
     autoComplete = 'off',
     labelClassName = '',
+    placeholder = '',
 }) {
     return (
         <div className="flex column left top">
@@ -544,6 +545,7 @@ export function CustomInput({
                     e.persist()
                     onChange(e)
                 }}
+                placeholder={placeholder}
                 value={value}
                 disabled={disabled}
             />

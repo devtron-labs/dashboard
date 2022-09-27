@@ -656,9 +656,10 @@ function ClusterForm({
                     error={state.cluster_name.error}
                     onChange={handleOnChange}
                     label="Name*"
+                    placeholder="Cluster name"
                 />
             </div>
-            <div className="form__row">
+            <div className="form__row mb-8-imp">
                 <CustomInput
                     autoComplete="off"
                     name="url"
@@ -666,6 +667,7 @@ function ClusterForm({
                     error={state.url.error}
                     onChange={handleOnChange}
                     label={clusterLabel()}
+                    placeholder="Enter server URL"
                 />
             </div>
             <div className="form__row form__row--bearer-token flex column left top">
@@ -675,6 +677,7 @@ function ClusterForm({
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
+                        placeholder="Enter bearer token"
                     />
                 </div>
                 {state.token.error && (
