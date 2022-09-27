@@ -398,7 +398,7 @@ export default function UserForm({
                                 <GroupRow
                                     key={idx}
                                     name={userGroup.value}
-                                    description={userGroupsMap.get(userGroup.value).description}
+                                    description={userGroupsMap.get(userGroup.value)?.description || ''}
                                     removeRow={(e) =>
                                         setUserGroups((userGroups) => removeItemsFromArray(userGroups, idx, 1))
                                     }

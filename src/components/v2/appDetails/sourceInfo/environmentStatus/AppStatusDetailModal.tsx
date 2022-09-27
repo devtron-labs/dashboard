@@ -22,7 +22,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
-        return aggregateNodes(_appDetails.resourceTree.nodes || [], _appDetails.resourceTree.podMetadata || [])
+        return aggregateNodes(_appDetails.resourceTree?.nodes || [], _appDetails.resourceTree?.podMetadata || [])
     }, [_appDetails])
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const escKeyPressHandler = (evt): void => {
