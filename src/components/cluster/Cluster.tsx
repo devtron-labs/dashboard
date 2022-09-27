@@ -595,17 +595,36 @@ function ClusterForm({
         k8sversion: '',
     }
 
-    const K8sClusters = Object.values(ClusterCommand).map((cluster) => {
-        return {title: cluster.heading,
-            modalComponent: (
-                <ClusterInfoStepsModal
-                    subTitle={cluster.title}
-                    command={cluster.command}
-                    clusterName={cluster.clusterName}
-                />
-            )
-        }
-    })
+    const K8sClusterComponent = () => {
+       const k8sClusters = Object.values(ClusterCommand)
+        return (
+            <>
+                {k8sClusters.map((cluster, key) => (
+                    <>
+                        <Tippy
+                            className="default-white p-0"
+                            theme="light"
+                            arrow={true}
+                            placement="bottom"
+                            trigger="click"
+                            interactive={true}
+                            content={
+                                <ClusterInfoStepsModal
+                                    subTitle={cluster.title}
+                                    command={cluster.command}
+                                    clusterName={cluster.clusterName}
+                                />
+                            }
+                            maxWidth="468px"
+                        >
+                            <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
+                        </Tippy>
+                        {key + 1 !== k8sClusters.length && <span className="cn-2">|</span>}
+                    </>
+                ))}
+            </>
+        )
+    }
 
     const clusterLabel = () => {
         return (
@@ -615,23 +634,7 @@ function ClusterForm({
                     <Question className="icon-dim-16" />
                 </span>
                 <span>How to find for </span>
-                {K8sClusters.map((cluster, key) => (
-                    <>
-                        <Tippy
-                            className="default-white p-0"
-                            theme="light"
-                            arrow={true}
-                            placement="bottom"
-                            trigger="click"
-                            interactive={true}
-                            content={cluster.modalComponent}
-                            maxWidth="468px"
-                        >
-                            <span className="ml-4 mr-2 cb-5 cursor">{cluster.title}</span>
-                        </Tippy>
-                        {key + 1 !== K8sClusters.length && <span className="cn-2">|</span>}
-                    </>
-                ))}
+                <K8sClusterComponent />
             </div>
         )
     }
