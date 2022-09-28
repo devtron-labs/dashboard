@@ -29,10 +29,8 @@ export default () => {
             if (!log || log.length == 0) {
                 console.log("no log lines")
             } else {
-                const logTimestamp = ev.lastEventId ? new Date(ev.lastEventId / 1000000).toString() : ''
-                log = `${
-                    logTimestamp.includes('Invalid') ? '' : `[${logTimestamp.split(' ').splice(1, 5).join(' ')}] `
-                }${this.prefix}${log}`
+                const logTimestamp = ev.lastEventId ? `[${new Date(ev.lastEventId / 1000000).toString().split(' ').splice(1, 5).join(' ')}] ` : ''
+                log = `${logTimestamp}${this.prefix}${log}`
 
                 if (!this.grepTokens) {
                     bufferedLogs = [log]
