@@ -1,7 +1,12 @@
-import React, { Component, Fragment } from 'react'
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
-import { ModuleNameMap, MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, SERVER_MODE, URLS } from '../../../config'
+import {
+    ModuleNameMap,
+    MODULE_STATUS_POLLING_INTERVAL,
+    MODULE_STATUS_RETRY_COUNT,
+    SERVER_MODE,
+    URLS,
+} from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -43,6 +48,7 @@ const NavigationList = [
         icon: DeploymentGroupIcon,
         href: URLS.DEPLOYMENT_GROUPS,
         isAvailableInEA: false,
+        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUP',
     },
     {
         title: 'Security',
@@ -50,7 +56,7 @@ const NavigationList = [
         href: URLS.SECURITY,
         iconClass: 'nav-security',
         icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY
+        moduleName: ModuleNameMap.SECURITY,
     },
     {
         title: 'Clusters',
@@ -113,7 +119,7 @@ export default class Navigation extends Component<
             showHelpCard: false,
             showMoreOptionCard: false,
             isCommandBarActive: false,
-            forceUpdateTime: Date.now()
+            forceUpdateTime: Date.now(),
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
@@ -148,7 +154,7 @@ export default class Navigation extends Component<
                     ...this.props.installedModuleMap.current,
                     [ModuleNameMap.SECURITY]: true,
                 }
-                this.setState({forceUpdateTime: Date.now()})
+                this.setState({ forceUpdateTime: Date.now() })
             } else if (result?.status === ModuleStatus.INSTALLING) {
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
@@ -265,9 +271,11 @@ export default class Navigation extends Component<
                         </NavLink>
                         {NavigationList.map((item, index) => {
                             if (
-                                (this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                this.props.installedModuleMap.current?.[item.moduleName]
+                                (!item.forceHideEnvKey ||
+                                    (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
+                                ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
+                                    (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                                    this.props.installedModuleMap.current?.[item.moduleName])
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
