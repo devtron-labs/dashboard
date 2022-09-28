@@ -1,5 +1,4 @@
 export default () => {
-
     // let filteredArray = []
     var bp = {
         // let eventSrc= undefined
@@ -30,7 +29,11 @@ export default () => {
             if (!log || log.length == 0) {
                 console.log("no log lines")
             } else {
-                log = this.prefix + log
+                const logTimestamp = ev.lastEventId
+                    ? `[${new Date(ev.lastEventId / 1000000).toString().split(' ').splice(1, 5).join(' ')}] `
+                    : ''
+                log = `${logTimestamp.includes('Invalid') ? '' : logTimestamp}${this.prefix}${log}`
+
                 if (!this.grepTokens) {
                     bufferedLogs = [log]
                 } else {
