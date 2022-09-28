@@ -129,6 +129,7 @@ export default function App() {
 
   useEffect(() => {
       if (!forceReloadOnLocationChange) return
+      update()
       window.location.reload();
   }, [location])
 
