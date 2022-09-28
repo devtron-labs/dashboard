@@ -48,7 +48,7 @@ const NavigationList = [
         icon: DeploymentGroupIcon,
         href: URLS.DEPLOYMENT_GROUPS,
         isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUP',
+        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
         title: 'Security',

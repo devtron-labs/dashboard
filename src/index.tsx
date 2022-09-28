@@ -26,7 +26,7 @@ interface customEnv {
     HELM_APP_DETAILS_POLLING_INTERVAL?: number
     EA_APP_DETAILS_POLLING_INTERVAL?: number
     CENTRAL_API_ENDPOINT?: string
-    HIDE_DEPLOYMENT_GROUP?: boolean
+    HIDE_DEPLOYMENT_GROUPS?: boolean
 }
 declare global {
     interface Window {
@@ -113,7 +113,7 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
-        HIDE_DEPLOYMENT_GROUP: true
+        HIDE_DEPLOYMENT_GROUPS: true
     }
 }
 
