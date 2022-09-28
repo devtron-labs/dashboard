@@ -292,8 +292,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     wf.nodes = wf.nodes.map((node) => {
                         switch (node.type) {
                             case 'CI':
-                                node['status'] = ciMap[node.id].status
-                                node['storageConfigured'] = ciMap[node.id].storageConfigured
+                                node['status'] = ciMap[node.id]?.status
+                                node['storageConfigured'] = ciMap[node.id]?.storageConfigured
                                 break
                             case 'PRECD':
                                 node['status'] = preCDMap[node.id]
