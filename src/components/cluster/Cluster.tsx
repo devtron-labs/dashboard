@@ -41,6 +41,7 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import Tippy from '@tippyjs/react'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
+import TippyHeadless from '@tippyjs/react/headless'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -601,14 +602,13 @@ function ClusterForm({
             <>
                 {k8sClusters.map((cluster, key) => (
                     <>
-                        <Tippy
-                            className="default-white cluster-info-modal"
+                        <TippyHeadless
+                            className=""
                             theme="light"
-                            arrow={true}
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            content={
+                            render={() => 
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}
@@ -618,7 +618,7 @@ function ClusterForm({
                             maxWidth="468px"
                         >
                             <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
-                        </Tippy>
+                        </TippyHeadless>
                         {key !== k8sClusters.length -1 && <span className="cn-2">|</span>}
                     </>
                 ))}

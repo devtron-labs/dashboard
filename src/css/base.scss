@@ -2111,3 +2111,23 @@ textarea {
 .dc__flip-180 {
     transform: rotate(180deg);
 }
+
+textarea::-webkit-input-placeholder {
+    color: var(--N400);
+}
+  
+textarea:-moz-placeholder { 
+    color: var(--N400); 
+}
+
+textarea::-moz-placeholder {
+    color: var(--N400); 
+}
+
+textarea:-ms-input-placeholder {
+    color: var(--N400); 
+}
+
+textarea::placeholder {
+    color: var(--N400); 
+}

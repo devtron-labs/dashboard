@@ -596,7 +596,7 @@ export const CLUSTER_COMMAND = {
     microK8s:{
         heading: "MicroK8s",
         clusterName: "microK8s",
-        title: 'Light weight Kubernetes cluster',
+        title: "MicroK8s is a light weight Kubernetes cluster",
         command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
     }
 }

@@ -26,8 +26,8 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
         {
             info: 'Run below command on terminal to get server URI & bearer token',
             additionalInfo: (
-                <div className="dc__position-rel cluster-modal-container dc__align-left bcn-1 p-10 lh-20 mt-2 br-4">
-                    <div className="fs-13 fw-4 h-100 dc__overflow-scroll" id="command-code">
+                <div className="dc__position-rel cluster-modal-container dc__align-left bcn-1 lh-20 mt-2 br-4">
+                    <div className="fs-13 fw-4 h-100 dc__overflow-scroll dc__ff-monospace pl-10 pt-10 pb-10 pr-36" id="command-code">
                         {command}
                     </div>
                     <Tippy
@@ -45,7 +45,7 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
                         interactive={true}
                     >
                         <div className="cluster-clipboard dc__position-abs cursor" onClick={copyClipboard}>
-                            <ClipboardIcon className="icon-dim-20" />
+                            <ClipboardIcon className="icon-dim-16" />
                         </div>
                     </Tippy>
                 </div>
@@ -78,7 +78,7 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
 
 export default function ClusterInfoStepsModal({ subTitle, command, clusterName }: ClusterStepModal) {
     return (
-        <div className="fs-13 fw-4">
+        <div className="fs-13 fw-4 br-4 en-2 bcn-0 cluster-modal-shadow">
             <h2 className="flex left fs-14 fw-6 p-12 m-0">
                 <Help className="icon-dim-20 fcv-5 mr-12" />
                 Get Server URL & Bearer token
