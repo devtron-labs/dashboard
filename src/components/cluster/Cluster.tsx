@@ -602,7 +602,7 @@ function ClusterForm({
                 {k8sClusters.map((cluster, key) => (
                     <>
                         <Tippy
-                            className="default-white p-0"
+                            className="default-white cluster-info-modal"
                             theme="light"
                             arrow={true}
                             placement="bottom"
@@ -619,7 +619,7 @@ function ClusterForm({
                         >
                             <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
                         </Tippy>
-                        {key + 1 !== k8sClusters.length && <span className="cn-2">|</span>}
+                        {key !== k8sClusters.length -1 && <span className="cn-2">|</span>}
                     </>
                 ))}
             </>

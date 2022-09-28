@@ -16,13 +16,17 @@
     margin-left: -28px;
 }
 
-.cluster-inner-container.cluster-last-item {
-    border-left: none;
-    padding-bottom: 0;
+.cluster-modal-wrapper:last-child {
+    .cluster-inner-container{
+        border-left: none;
+        padding-bottom: 0;
+    }
 }
 
-.default-white .tippy-content {
-    padding: 0 !important;
+.cluster-info-modal {
+    .tippy-content {
+        padding: 0 !important;
+    }
 }
 
 .cluster-clipboard {
