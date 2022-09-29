@@ -68,3 +68,9 @@ export interface ClusterListProps extends RouteComponentProps<{}> {
     // }[];
     // clusterEnvMap: any;
 }
+
+export interface ClusterStepModal {
+    subTitle: string
+    command: string
+    clusterName: string
+}

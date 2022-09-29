@@ -164,7 +164,6 @@
 
 .cluster-list {
     border: 1px solid #d6dbdf;
-    overflow: hidden;
     margin-bottom: 16px;
     background: white;
     border-radius: 8px;
@@ -174,6 +173,7 @@
         margin-bottom: unset;
         grid-template-columns: 1fr 24px;
         align-items: center;
+        border-radius: 8px;
     }
 
     &.cluster-list--create {
