@@ -76,7 +76,7 @@ export default function NavigationRoutes() {
                 _serverMode === SERVER_MODE.FULL ? getAppListMin() : null,
                 getLoginData(),
             ])
-            const superAdmin = userRole?.result?.roles.includes('role:super-admin___')
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
             setSuperAdmin(superAdmin)
             const appCount = appList?.result?.length || 0
             setAppListCount(appCount)

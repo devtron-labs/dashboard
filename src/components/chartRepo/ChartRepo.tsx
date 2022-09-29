@@ -7,7 +7,7 @@ import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoCo
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
-import { DOCUMENTATION } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
@@ -132,11 +132,17 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         {
             name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.{5,}$/ }
+                validators: [
+                  { error: 'Name is required', regex: /^.*$/ },
+                  { error: 'Minimum 5 characters required', regex: /^.{5,}$/ },
+              ]
             },
             url: {
                 required: true,
-                validator: { error: 'URL is required', regex: /^.{10,}$/ }
+                validators: [
+                  { error: 'URL is required', regex: /^.*$/ },
+                  { error: 'Invalid URL', regex: PATTERNS.URL },
+              ]
             },
             auth: {
                 required: true,

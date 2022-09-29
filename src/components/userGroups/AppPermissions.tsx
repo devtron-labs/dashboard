@@ -153,7 +153,7 @@ export default function AppPermissions({
             uniqueProjectIdsDevtronApps = [],
             uniqueProjectIdsHelmApps = []
         if (serverMode !== SERVER_MODE.EA_ONLY) {
-            roleFilters.forEach((element) => {
+            roleFilters?.forEach((element) => {
                 if (element.entity === EntityTypes.DIRECT) {
                     const projectId = projectsMap.get(element.team)?.id
                     if (typeof projectId !== 'undefined' && projectId != null) {

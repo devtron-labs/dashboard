@@ -79,7 +79,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             <span>Want to reduce build time?</span>
                             <a
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                href={DOCUMENTATION.ADMIN_PASSWORD}
+                                href={DOCUMENTATION.BLOB_STORAGE}
                                 target="_blank"
                             >
                                 Configure blob storage

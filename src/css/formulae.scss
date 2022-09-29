@@ -102,31 +102,31 @@ $color-suffix: 00;
 @each $color in $colors {
     @for $i from 0 through 9 {
         .c#{to-lower-case($color)}-#{$i} {
-            color: var(--#{$color}($i * 100));
+            color: var(--#{$color}#{$i * 100});
         }
 
         .bc#{to-lower-case($color)}-#{$i} {
-            background-color: var(--#{$color}($i * 100));
+            background-color: var(--#{$color}#{$i * 100});
         }
 
         .e#{to-lower-case($color)}-#{$i} {
-            border-color: var(--#{$color}($i * 100));
+            border-color: var(--#{$color}#{$i * 100});
             border-style: solid;
         }
 
         .sc#{to-lower-case($color)}-#{$i} {
-            stroke: var(--#{$color}($i * 100));
+            stroke: var(--#{$color}#{$i * 100});
 
             path {
-                stroke: var(--#{$color}($i * 100));
+                stroke: var(--#{$color}#{$i * 100});
             }
         }
 
         .fc#{to-lower-case($color)}-#{$i} {
-            fill: var(--#{$color}($i * 100));
+            fill: var(--#{$color}#{$i * 100});
 
             path {
-                fill: var(--#{$color}($i * 100));
+                fill: var(--#{$color}#{$i * 100});
             }
         }
     }
