@@ -425,13 +425,13 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
             })
             eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, (event: any) => {
                 retryCount--
+                if (eventSrcRef.current) {
+                    eventSrcRef.current.close()
+                }
                 if (retryCount > 0) {
                     getLogs()
                 } else {
                     setLogsNotAvailableError(true)
-                    if (eventSrcRef.current) {
-                        eventSrcRef.current.close()
-                    }
                 }
             })
         }

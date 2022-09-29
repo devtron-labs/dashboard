@@ -96,13 +96,13 @@ function useCIEventSource(url: string, maxLength?: number) {
 
     function handleError(error: any) {
         retryCount--
+        if (eventSourceRef.current) {
+            eventSourceRef.current.close()
+        }
         if (retryCount > 0) {
             getData()
         } else {
             setLogsNotAvailableError(true)
-            if (eventSourceRef.current) {
-                eventSourceRef.current.close()
-            }
             setInterval(null)
         }
     }
