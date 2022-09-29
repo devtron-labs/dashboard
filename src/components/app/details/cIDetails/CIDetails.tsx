@@ -58,7 +58,7 @@ let statusSet = new Set(['starting', 'running', 'pending'])
 
 function useCIEventSource(url: string, maxLength?: number) {
     const [data, setData] = useState([])
-    const [retryCount, setRetryCount] = useState(LOGS_RETRY_COUNT)
+    let retryCount = LOGS_RETRY_COUNT
     const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const [interval, setInterval] = useState(1000)
     const buffer = useRef([])
@@ -75,19 +75,19 @@ function useCIEventSource(url: string, maxLength?: number) {
 
     function handleMessage(event) {
         if (event.type === 'message') {
-            setRetryCount(LOGS_RETRY_COUNT)
+            retryCount = LOGS_RETRY_COUNT
             buffer.current.push(event.data)
         }
     }
 
     function handleStreamStart() {
-        setRetryCount(LOGS_RETRY_COUNT)
+        retryCount = LOGS_RETRY_COUNT
         buffer.current = []
         setData([])
     }
 
     function handleStreamEnd() {
-        setRetryCount(LOGS_RETRY_COUNT)
+        retryCount = LOGS_RETRY_COUNT
         setData((data) => [...data, ...buffer.current])
         buffer.current = []
         eventSourceRef.current.close()
@@ -95,16 +95,16 @@ function useCIEventSource(url: string, maxLength?: number) {
     }
 
     function handleError(error: any) {
-      setRetryCount(retryCount-1)
-      if(retryCount>0){
-        getData()
-      } else{
-        setLogsNotAvailableError(true)
-        if(eventSourceRef.current){
-          eventSourceRef.current.close()
+        retryCount--
+        if (retryCount > 0) {
+            getData()
+        } else {
+            setLogsNotAvailableError(true)
+            if (eventSourceRef.current) {
+                eventSourceRef.current.close()
+            }
+            setInterval(null)
         }
-        setInterval(null)
-      }
     }
 
     function getData() {
