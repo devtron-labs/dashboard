@@ -53,17 +53,22 @@ export default function TriggerViewConfigDiff({
     })
 
     useEffect(() => {
+        handleConfigToDeploySelection()
+    }, [selectedConfigToDeploy])
+
+    const handleConfigToDeploySelection = () => {
         if (activeSideNavOption.includes('/')) {
             const navParentChildKeys = activeSideNavOption.split('/')
 
             if (!getNavOptions(navParentChildKeys[0]).includes(navParentChildKeys[1])) {
                 setActiveSideNavOption(DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
                 handleNavOptionSelection(null, DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
-            } else {
-                handleNavOptionSelection(null, activeSideNavOption)
+                return
             }
         }
-    }, [selectedConfigToDeploy])
+
+        handleNavOptionSelection(null, activeSideNavOption)
+    }
 
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
@@ -138,12 +143,12 @@ export default function TriggerViewConfigDiff({
     const renderAvailableDiffColumn = () => {
         return (
             <div className="trigger-view-config-diff__side-nav pt-8 pb-8 bcn-0 dc__border-right h-100 dc__overflow-scroll">
-                {Object.values(DEPLOYMENT_CONFIGURATION_NAV_MAP).map((navOption) => {
+                {Object.values(DEPLOYMENT_CONFIGURATION_NAV_MAP).map((navOption, idx) => {
                     if (navOption.isMulti) {
                         const options = getNavOptions(navOption.key)
                         return (
                             options.length > 0 && (
-                                <>
+                                <Fragment key={`${navOption.key}-${idx}`}>
                                     <h3 className="cn-7 bcn-1 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-16 pr-16">
                                         {navOption.displayName}
                                     </h3>
@@ -162,7 +167,7 @@ export default function TriggerViewConfigDiff({
                                             </div>
                                         )
                                     })}
-                                </>
+                                </Fragment>
                             )
                         )
                     } else {
