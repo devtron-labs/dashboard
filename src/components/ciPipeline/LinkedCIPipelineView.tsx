@@ -109,7 +109,12 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
                 this.props.close();
-                this.props.getWorkflows();
+
+                if (this.props.deleteWorkflow) {
+                    this.props.deleteWorkflow(this.props.match.params.appId, +this.props.match.params.workflowId)
+                } else {
+                    this.props.getWorkflows()
+                }
             }
         }).catch((error: ServerErrors) => {
             showError(error);
