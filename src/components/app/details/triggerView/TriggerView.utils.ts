@@ -1,5 +1,5 @@
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
-import { showError } from '../../../common'
+import { deepEqual, showError } from '../../../common'
 import { prepareHistoryData } from '../cdDetails/service'
 import { DeploymentWithConfigType } from './types'
 
@@ -78,7 +78,7 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
                     componentName: _secret.componentName,
                     ...prepareHistoryData(_secret.config, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE),
                 })),
-            wfrId: resp.value?.result?.wfrId
+            wfrId: resp.value?.result?.wfrId,
         }
     }
 
@@ -86,25 +86,72 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
     return null
 }
 
-export const checkForDiff = (configA, configB, diffKey): number => {
-    try {
-        let diffCount = 0,
-            change
-        const _configValuesA = diffKey === 'values' ? configA.values : JSON.parse(configA.codeEditorValue)
-        const _configValuesB = diffKey === 'values' ? configB.values : JSON.parse(configB.codeEditorValue)
-        for (const idx in _configValuesA) {
-            if (typeof _configValuesA[idx] === 'object' && typeof _configValuesB[idx] === 'object') {
-                change = checkForDiff(_configValuesA[idx], _configValuesB[idx], diffKey)
-                if (Object.keys(change).length) {
-                    diffCount += 1
-                }
-            } else if (_configValuesA[idx] !== _configValuesB[idx]) {
-                diffCount += 1
-            }
-        }
+const areValuesDiff = (configA, configB) => {
+    if (
+        (configA && !configB) ||
+        (!configA && configB) ||
+        (configA.values && !configB.values) ||
+        (!configA.values && configB.values) ||
+        (configA.codeEditorValue?.value && !configB.codeEditorValue?.value) ||
+        (!configA.codeEditorValue?.value && configB.codeEditorValue?.value)
+    ) {
+        return true
+    } else if (!deepEqual(configA.values, configB.values)) {
+        return true
+    } else {
+        const parsedEditorValueA = JSON.parse(configA.codeEditorValue.value)
+        const parsedEditorValueB = JSON.parse(configB.codeEditorValue.value)
 
-        return diffCount
-    } catch (err) {
-        return 0
+        if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
+            return true
+        }
     }
+
+    return false
+}
+
+const checkForDiffInArray = (configA, configB, key, diffForOptions) => {
+    const configOptions = []
+    const configValueA = configA[key]
+    const configValueB = configB[key]
+
+    if (Array.isArray(configValueA)) {
+        configValueA.forEach((navOption) => {
+            configOptions.push(navOption['componentName'])
+        })
+    }
+
+    if (Array.isArray(configValueB)) {
+        configValueB.forEach((navOption) => {
+            if (!configOptions.includes(navOption['componentName'])) {
+                configOptions.push(navOption['componentName'])
+            }
+        })
+    }
+
+    for (const _cm of configOptions) {
+        const _valueA = configValueA?.find((_config) => _config.componentName === _cm)
+        const _valueB = configValueB?.find((_config) => _config.componentName === _cm)
+
+        diffForOptions[_cm] = areValuesDiff(_valueA, _valueB)
+    }
+
+    return diffForOptions
+}
+
+export const checkForDiff = (configA, configB) => {
+    let diffForOptions = {
+        deploymentTemplate: areValuesDiff(configA.deploymentTemplate, configB.deploymentTemplate),
+        pipelineStrategy: areValuesDiff(configA.pipelineStrategy, configB.pipelineStrategy),
+    }
+
+    if (configA.configMap?.length > 0 || configB.configMap?.length > 0) {
+        diffForOptions = checkForDiffInArray(configA, configB, 'configMap', diffForOptions)
+    }
+
+    if (configA.secret?.length > 0 || configB.secret?.length > 0) {
+        diffForOptions = checkForDiffInArray(configA, configB, 'secret', diffForOptions)
+    }
+
+    return diffForOptions
 }

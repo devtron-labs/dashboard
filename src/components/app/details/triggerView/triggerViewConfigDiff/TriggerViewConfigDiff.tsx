@@ -10,21 +10,7 @@ import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.uti
 import { getCommonConfigSelectStyles } from '../config'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '../../../../common'
-
-interface TriggerViewDeploymentConfigType {
-    configMap: DeploymentHistoryDetail
-    deploymentTemplate: DeploymentHistoryDetail
-    pipelineStrategy: DeploymentHistoryDetail
-    secret: DeploymentHistoryDetail
-}
-
-interface TriggerViewConfigDiffProps {
-    currentConfiguration: TriggerViewDeploymentConfigType
-    baseTemplateConfiguration: TriggerViewDeploymentConfigType
-    selectedConfigToDeploy
-    handleConfigSelection: (selected) => void
-    isConfigAvailable: (optionValue) => boolean
-}
+import { TriggerViewConfigDiffProps } from '../types'
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -32,6 +18,7 @@ export default function TriggerViewConfigDiff({
     selectedConfigToDeploy,
     handleConfigSelection,
     isConfigAvailable,
+    diffOptions,
 }: TriggerViewConfigDiffProps) {
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
@@ -156,14 +143,15 @@ export default function TriggerViewConfigDiff({
                                         const navKey = `${navOption.key}/${_option}`
                                         return (
                                             <div
-                                                className={`pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 ${
+                                                className={`flex left pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 dc__overflow-hidden ${
                                                     navKey === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
                                                 }`}
                                                 data-value={navKey}
                                                 onClick={handleNavOptionSelection}
                                                 key={navKey}
                                             >
-                                                {_option}
+                                                <span className="dc__ellipsis-right mr-10">{_option}</span>
+                                                {diffOptions?.[_option] && <span className="diff-dot" />}
                                             </div>
                                         )
                                     })}
@@ -173,14 +161,15 @@ export default function TriggerViewConfigDiff({
                     } else {
                         return (
                             <div
-                                className={`pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 ${
+                                className={`flex left pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 dc__overflow-hidden ${
                                     navOption.key === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
                                 }`}
                                 data-value={navOption.key}
                                 onClick={handleNavOptionSelection}
                                 key={navOption.key}
                             >
-                                {navOption.displayName}
+                                <span className="dc__ellipsis-right mr-10">{navOption.displayName}</span>
+                                {diffOptions?.[navOption.key] && <span className="diff-dot" />}
                             </div>
                         )
                     }

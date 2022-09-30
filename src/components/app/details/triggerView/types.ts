@@ -1,6 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DockerConfigOverrideType } from '../../../ciPipeline/types'
+import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 export type CDMdalTabType = 'SECURITY' | 'CHANGES'
 
@@ -46,6 +47,7 @@ export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
     diffFound: boolean
+    diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
     loadingMore: boolean
     showOlderImages: boolean
@@ -518,4 +520,20 @@ export interface BranchRegexModalProps {
 }
 export interface AppDetailsProps {
     isV2: boolean
+}
+
+interface TriggerViewDeploymentConfigType {
+    configMap: DeploymentHistoryDetail
+    deploymentTemplate: DeploymentHistoryDetail
+    pipelineStrategy: DeploymentHistoryDetail
+    secret: DeploymentHistoryDetail
+}
+
+export interface TriggerViewConfigDiffProps {
+    currentConfiguration: TriggerViewDeploymentConfigType
+    baseTemplateConfiguration: TriggerViewDeploymentConfigType
+    selectedConfigToDeploy
+    handleConfigSelection: (selected) => void
+    isConfigAvailable: (optionValue) => boolean
+    diffOptions: Record<string, boolean>
 }

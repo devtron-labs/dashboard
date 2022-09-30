@@ -444,6 +444,10 @@ export function shallowEqual(objA, objB) {
 }
 
 export function deepEqual(configA, configB) {
+    if (configA === configB) {
+        return true
+    }
+
     try {
         for (const idx in configA) {
             if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {

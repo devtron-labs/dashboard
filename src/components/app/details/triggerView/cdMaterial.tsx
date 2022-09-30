@@ -17,7 +17,6 @@ import {
     Progressing,
     getRandomColor,
     showError,
-    shallowEqual,
     ConditionalWrap,
 } from '../../../common'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
@@ -33,7 +32,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleNameMap } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
-import { getDeployConfigOptions, processResolvedPromise } from './TriggerView.utils'
+import { checkForDiff, getDeployConfigOptions, processResolvedPromise } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
 
@@ -44,6 +43,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             isSecurityModuleInstalled: false,
             checkingDiff: false,
             diffFound: false,
+            diffOptions: null,
             showConfigDiffView: false,
             loadingMore: false,
             showOlderImages: true,
@@ -102,12 +102,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             }[]) => {
                 const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes)
                 const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
+                const _diffOptions = checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
 
                 this.setState({
                     recentDeploymentConfig: _recentDeploymentConfig,
                     latestDeploymentConfig: processResolvedPromise(latestDeploymentConfigRes),
                     specificDeploymentConfig: _specificDeploymentConfig,
-                    diffFound: !shallowEqual(_recentDeploymentConfig, _specificDeploymentConfig),
+                    diffFound: Object.values(_diffOptions).some((d) => d),
+                    diffOptions: _diffOptions,
                     checkingDiff: false,
                 })
             },
@@ -673,10 +675,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     handleConfigSelection(selected) {
-        this.setState({
-            selectedConfigToDeploy: selected,
-            diffFound: !shallowEqual(this.state.recentDeploymentConfig, this.getBaseTemplateConfiguration()),
-        })
+        if (selected.value !== this.state.selectedConfigToDeploy.value) {
+            const _diffOptions = checkForDiff(this.state.recentDeploymentConfig, this.getBaseTemplateConfiguration(selected))
+            this.setState({
+                selectedConfigToDeploy: selected,
+                diffFound: Object.values(_diffOptions).some((d) => d),
+                diffOptions: _diffOptions,
+            })
+        }
     }
 
     deployTrigger(e) {
@@ -694,10 +700,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
-    getBaseTemplateConfiguration() {
-        return this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LAST_SAVED_CONFIG
+    getBaseTemplateConfiguration(selected = null) {
+        const selectedConfig = selected?.value || this.state.selectedConfigToDeploy.value
+        return selectedConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
             ? this.state.latestDeploymentConfig
-            : this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
+            : selectedConfig === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
             ? this.state.recentDeploymentConfig
             : this.state.specificDeploymentConfig
     }
@@ -782,6 +789,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             selectedConfigToDeploy={this.state.selectedConfigToDeploy}
                             handleConfigSelection={this.handleConfigSelection}
                             isConfigAvailable={this.isConfigAvailable}
+                            diffOptions={this.state.diffOptions}
                         />
                     ) : (
                         <>

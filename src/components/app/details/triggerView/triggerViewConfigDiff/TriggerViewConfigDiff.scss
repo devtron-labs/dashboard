@@ -3,12 +3,20 @@
         display: grid;
         grid-template-columns: 280px auto;
         height: calc(100vh - 186px);
-    
+
         .trigger-view-config-diff__side-nav {
             display: grid;
             grid-auto-rows: max-content;
+
+            .diff-dot {
+                background: var(--code-diff-dot);
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                margin-left: auto;
+            }
         }
-    
+
         .trigger-view-config-diff__values {
             display: grid;
             grid-template-columns: 50% 50%;
