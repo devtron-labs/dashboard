@@ -186,7 +186,12 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.props.close();
-                this.props.getWorkflows();
+
+                if (this.props.deleteWorkflow) {
+                    this.props.deleteWorkflow(this.props.match.params.appId, +this.props.match.params.workflowId)
+                } else {
+                    this.props.getWorkflows()
+                }
             }
         }).catch((error: ServerErrors) => {
             this.setState({ loadingData: false });
