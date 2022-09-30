@@ -27,7 +27,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap } from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
 import { getEnvName } from './cluster.util'
 import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -38,6 +38,10 @@ import {
 } from '../../config/constantMessaging'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import Tippy from '@tippyjs/react'
+import ClusterInfoStepsModal from './ClusterInfoStepsModal'
+import TippyHeadless from '@tippyjs/react/headless'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -65,7 +69,6 @@ const PrometheusRequiredFieldInfo = () => {
         </div>
     )
 }
-
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
 
@@ -593,6 +596,49 @@ function ClusterForm({
         k8sversion: '',
     }
 
+    const ClusterInfoComponent = () => {
+        const k8sClusters = Object.values(CLUSTER_COMMAND)
+        return (
+            <>
+                {k8sClusters.map((cluster, key) => (
+                    <>
+                        <TippyHeadless
+                            className=""
+                            theme="light"
+                            placement="bottom"
+                            trigger="click"
+                            interactive={true}
+                            render={() => 
+                                <ClusterInfoStepsModal
+                                    subTitle={cluster.title}
+                                    command={cluster.command}
+                                    clusterName={cluster.clusterName}
+                                />
+                            }
+                            maxWidth="468px"
+                        >
+                            <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
+                        </TippyHeadless>
+                        {key !== k8sClusters.length -1 && <span className="cn-2">|</span>}
+                    </>
+                ))}
+            </>
+        )
+    }
+
+    const clusterLabel = () => {
+        return (
+            <div className="flex left">
+                Server URL* & Bearer token{isDefaultCluster() ? '' : '*'}
+                <span className="icon-dim-16 fcn-9 mr-4 ml-16">
+                    <Question className="icon-dim-16" />
+                </span>
+                <span>How to find for </span>
+                <ClusterInfoComponent />
+            </div>
+        )
+    }
+
     return (
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
             <div className="flex left mb-20">
@@ -610,28 +656,28 @@ function ClusterForm({
                     error={state.cluster_name.error}
                     onChange={handleOnChange}
                     label="Name*"
+                    placeholder="Cluster name"
                 />
             </div>
-            <div className="form__row">
+            <div className="form__row mb-8-imp">
                 <CustomInput
                     autoComplete="off"
                     name="url"
                     value={state.url.value}
                     error={state.url.error}
                     onChange={handleOnChange}
-                    label="Server URL*"
+                    label={clusterLabel()}
+                    placeholder="Enter server URL"
                 />
             </div>
             <div className="form__row form__row--bearer-token flex column left top">
-                <label htmlFor="" className="form__label">
-                    Bearer token{isDefaultCluster() ? '' : '*'}
-                </label>
                 <div className="bearer-token">
                     <ResizableTextarea
                         className="dc__resizable-textarea__with-max-height"
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
+                        placeholder="Enter bearer token"
                     />
                 </div>
                 {state.token.error && (
