@@ -267,7 +267,7 @@ export const DOCUMENTATION = {
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
-    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -584,6 +584,21 @@ export const TERMINAL_STATUS_MAP = {
 
 export const POD_STATUS = {
   PENDING: 'Pending'
+}
+
+export const CLUSTER_COMMAND = {
+    k8Cluster:{
+        heading: "K8s cluster providers",
+        clusterName: "K8s",
+        title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
+        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+    },
+    microK8s:{
+        heading: "MicroK8s",
+        clusterName: "microK8s",
+        title: "MicroK8s is a light weight Kubernetes cluster",
+        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+    }
 }
 
 export const MODULE_STATUS_RETRY_COUNT = 3;
