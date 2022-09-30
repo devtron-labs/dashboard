@@ -383,6 +383,7 @@ export interface CIPipelineProps
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
+    deleteWorkflow?: (appId?: string, workflowId?: number) => any
 }
 
 export const PatchAction = {

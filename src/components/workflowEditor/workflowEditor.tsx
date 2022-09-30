@@ -297,6 +297,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
+                                deleteWorkflow={this.deleteWorkflow}
                             />
                         )
                     }}
@@ -313,6 +314,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
+                                deleteWorkflow={this.deleteWorkflow}
                             />
                         )
                     }}
