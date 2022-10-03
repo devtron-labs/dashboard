@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import branchIcon from '../../assets/icons/misc/branch.svg'
 import webhookIcon from '../../assets/icons/misc/webhook.svg'
 import Tippy from '@tippyjs/react'
@@ -30,8 +30,8 @@ export function CiPipelineSourceConfig({
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
     let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
 
-    const [sourceValueBase, setSourceValueBase] = useState<any>('')
-    const [sourceValueAdv, setSourceValueAdv] = useState<any>('')
+    const [sourceValueBase, setSourceValueBase] = useState<ReactNode>('')
+    const [sourceValueAdv, setSourceValueAdv] = useState<ReactNode>('')
     const [loading, setLoading] = useState(_isWebhook ? true : false)
 
     useEffect(() => {
