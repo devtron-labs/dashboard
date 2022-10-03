@@ -30,9 +30,23 @@ export function CiPipelineSourceConfig({
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
     let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
 
-    const [sourceValueBase, setSourceValueBase] = useState(_isWebhook ? '' : sourceValue)
-    const [sourceValueAdv, setSourceValueAdv] = useState(_isWebhook ? '' : sourceValue)
+    const [sourceValueBase, setSourceValueBase] = useState<any>('')
+    const [sourceValueAdv, setSourceValueAdv] = useState<any>('')
     const [loading, setLoading] = useState(_isWebhook ? true : false)
+
+    useEffect(() => {
+        updateSourceValue()
+    }, [sourceValue])
+
+    const updateSourceValue = () => {
+        if (_isWebhook) {
+            setSourceValueBase('')
+            setSourceValueAdv('')
+        } else {
+            setSourceValueBase(sourceValue)
+            setSourceValueAdv(sourceValue)
+        }
+    }
 
     //tippy content for regex type
     const rendeRegexSourceVal = (): JSX.Element => {
