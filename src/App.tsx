@@ -160,9 +160,7 @@ export default function App() {
                 (reg) => {
                     try {
                         reg.update()
-                    } catch (err) {
-                        // console.log(err)
-                    }
+                    } catch (err) {}
                 },
                 1000 * 60,
                 reg,
@@ -172,9 +170,7 @@ export default function App() {
             } else {
                 try {
                     reg.update()
-                } catch (err) {
-                    // console.log(err)
-                }
+                } catch (err) {}
             }
         })
     }, [])
