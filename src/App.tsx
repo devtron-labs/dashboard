@@ -41,7 +41,7 @@ export default function App() {
 	const refreshing = useRef(false)
 	const [bgUpdated, setBGUpdated] = useState(false)
 	const [validating, setValidating] = useState(true)
-	const [forceUpdateOnLocationChange, setforceUpdateOnLocationChange] = useState(false)
+	const [forceUpdateOnLocationChange, setForceUpdateOnLocationChange] = useState(false)
 	const location = useLocation()
 	const { push } = useHistory()
 	const didMountRef = useRef(false);
@@ -137,7 +137,7 @@ export default function App() {
         function onUpdate(reg) {
             const updateToastBody = (
                 <UpdateToast
-                    onClick={(e) => update()}
+                    onClick={update}
                     text="You are viewing an outdated version of Devtron UI."
                     buttonText="Reload"
                 />
@@ -147,7 +147,7 @@ export default function App() {
             } else {
                 updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
             }
-            setforceUpdateOnLocationChange(true)
+            setForceUpdateOnLocationChange(true)
         }
         function onSuccess(reg) {
             console.log('successfully installed')
