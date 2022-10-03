@@ -87,7 +87,9 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
 }
 
 const areValuesDiff = (configA, configB) => {
-    if (
+    if (!configA && !configB) {
+        return false
+    } else if (
         (configA && !configB) ||
         (!configA && configB) ||
         (configA.values && !configB.values) ||
