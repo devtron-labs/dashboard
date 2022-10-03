@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { DeploymentHistoryDetail, DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
+import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
 import YAML from 'yaml'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { MODES } from '../../../../../config'

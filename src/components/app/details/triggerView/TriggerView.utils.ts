@@ -99,11 +99,15 @@ const areValuesDiff = (configA, configB) => {
     } else if (!deepEqual(configA.values, configB.values)) {
         return true
     } else {
-        const parsedEditorValueA = JSON.parse(configA.codeEditorValue.value)
-        const parsedEditorValueB = JSON.parse(configB.codeEditorValue.value)
+        try {
+            const parsedEditorValueA = JSON.parse(configA.codeEditorValue.value)
+            const parsedEditorValueB = JSON.parse(configB.codeEditorValue.value)
 
-        if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
-            return true
+            if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
+                return true
+            }
+        } catch (err) {
+            return false
         }
     }
 
