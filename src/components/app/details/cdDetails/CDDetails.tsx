@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { EVENT_STREAM_EVENTS_MAP, Host, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -392,6 +392,7 @@ function NoCDTriggersView({ environmentName }) {
 function Logs({ triggerDetails, isBlobStorageConfigured }) {
     const eventSrcRef = useRef(null)
     const [logs, setLogs] = useState([])
+    let retryCount = LOGS_RETRY_COUNT
     const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const counter = useRef(0)
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
@@ -411,6 +412,7 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
             let url = `${Host}/app/cd-pipeline/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
             eventSrcRef.current = new EventSource(url, { withCredentials: true })
             eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, (event: any) => {
+                retryCount = LOGS_RETRY_COUNT
                 if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM) !== -1) {
                     setLogs([])
                     counter.current = 0
@@ -422,15 +424,22 @@ function Logs({ triggerDetails, isBlobStorageConfigured }) {
                 }
             })
             eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, (event: any) => {
-                eventSrcRef.current.close()
-                setLogsNotAvailableError(true)
+                retryCount--
+                if (eventSrcRef.current) {
+                    eventSrcRef.current.close()
+                }
+                if (retryCount > 0) {
+                    getLogs()
+                } else {
+                    setLogsNotAvailableError(true)
+                }
             })
         }
-        triggerDetails.podStatus!== POD_STATUS.PENDING && getLogs()
+        triggerDetails.podStatus !== POD_STATUS.PENDING && getLogs()
         return () => {
-          if(eventSrcRef.current){
-            eventSrcRef.current.close()
-          }
+            if (eventSrcRef.current) {
+                eventSrcRef.current.close()
+            }
         }
     }, [triggerDetails.id, pipelineId, triggerDetails.podStatus])
 

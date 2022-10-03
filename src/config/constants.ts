@@ -15,6 +15,7 @@ export const Routes = {
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
+    CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
@@ -202,6 +203,8 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
+    URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/
 }
 
 export const TriggerType = {
@@ -264,7 +267,7 @@ export const DOCUMENTATION = {
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
-    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/resources/devtron-troubleshoot#21.-configure-blob-storage`
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -583,5 +586,21 @@ export const POD_STATUS = {
   PENDING: 'Pending'
 }
 
+export const CLUSTER_COMMAND = {
+    k8Cluster:{
+        heading: "K8s cluster providers",
+        clusterName: "K8s",
+        title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
+        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+    },
+    microK8s:{
+        heading: "MicroK8s",
+        clusterName: "microK8s",
+        title: "MicroK8s is a light weight Kubernetes cluster",
+        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+    }
+}
+
 export const MODULE_STATUS_RETRY_COUNT = 3;
 export const MODULE_STATUS_POLLING_INTERVAL = 15000;
+export const LOGS_RETRY_COUNT = 3;

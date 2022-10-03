@@ -1077,7 +1077,7 @@ button.anchor {
     font-size: 12px;
     line-height: 1.6;
     color: var(--N900);
-    border: 1px solid var(--N100);
+    border: 1px solid var(--N200);
     background-color: var(--N000);
 }
 
@@ -1157,6 +1157,9 @@ button.anchor {
 
     &:disabled {
         background: var(--N100);
+    }
+    &:hover {
+        border-color: var(--N500);
     }
 }
 
@@ -1569,6 +1572,10 @@ button.anchor {
 
 .dc__border-right {
     border-right: solid 1px var(--N200);
+}
+
+.dc__border-top-n1 {
+    border-top: solid 1px var(--N100);
 }
 
 .dc__border-bottom-n1 {
@@ -2072,6 +2079,10 @@ textarea {
     margin-bottom: 4px !important;
 }
 
+.mb-8-imp {
+    margin-bottom: 8px !important;
+}
+
 .mb-16-imp {
     margin-bottom: 16px !important;
 }
@@ -2110,4 +2121,28 @@ textarea {
     path {
         fill: none !important;
     }
+}
+
+.dc__flip-180 {
+    transform: rotate(180deg);
+}
+
+textarea::-webkit-input-placeholder {
+    color: var(--N400);
+}
+
+textarea:-moz-placeholder {
+    color: var(--N400);
+}
+
+textarea::-moz-placeholder {
+    color: var(--N400);
+}
+
+textarea:-ms-input-placeholder {
+    color: var(--N400);
+}
+
+textarea::placeholder {
+    color: var(--N400);
 }

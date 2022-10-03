@@ -197,6 +197,7 @@ export default function AppConfig() {
         navItems: [],
         maximumAllowedUrl: '',
         canDeleteApp: false,
+        workflowsRes: null,
     })
 
     useEffect(() => {
@@ -229,6 +230,7 @@ export default function AppConfig() {
                     navItems,
                     maximumAllowedUrl: redirectUrl,
                     canDeleteApp: workflowRes.result.workflows.length === 0,
+                    workflowsRes: workflowRes.result,
                 })
                 if (location.pathname === match.url) {
                     history.replace(redirectUrl)
@@ -245,6 +247,7 @@ export default function AppConfig() {
             setState({
                 ...state,
                 canDeleteApp: response.result.workflows.length === 0,
+                workflowsRes: response.result,
             })
         })
     }
@@ -381,6 +384,7 @@ export default function AppConfig() {
                             getWorkflows={reloadWorkflows}
                             environments={environments}
                             setEnvironments={setEnvironments}
+                            workflowsRes={state.workflowsRes}
                         />
                     </div>
                 </div>
@@ -457,6 +461,7 @@ function AppComposeRouter({
     isCDPipeline,
     environments,
     setEnvironments,
+    workflowsRes
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 

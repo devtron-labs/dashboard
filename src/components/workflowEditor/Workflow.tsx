@@ -5,7 +5,6 @@ import { StaticNode } from './nodes/StaticNode'
 import {
     RectangularEdge as Edge,
     getLinkedCIPipelineURL,
-    ConfirmationDialog,
     getCIPipelineURL,
     getCDPipelineURL,
     getExCIPipelineURL,
@@ -25,8 +24,8 @@ export interface WorkflowProps
     name: string
     startX: number
     startY: number
-    width: number
-    height: number
+    width: number | string
+    height: number | string
     showDeleteDialog: (workflowId: number) => void
     handleCDSelect: (
         workflowId: string | number,
@@ -37,6 +36,7 @@ export interface WorkflowProps
     openEditWorkflow: (event, workflowId: number) => string
     handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
+    cdWorkflowList?: any[]
 }
 
 interface WorkflowState {
@@ -58,19 +58,77 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     setPosition = (top: number, left: number) => {
         this.setState({ top, left })
     }
+
+    getNodesData = (nodeId: string) => {
+        const _nodes = [...this.props.nodes]
+        const _cdNamesList = this.props.cdWorkflowList?.find((_cwf) => _cwf.ciPipelineId === +nodeId)?.cdPipelines || []
+
+        if (_cdNamesList?.length > 0) {
+            _nodes.push({
+                type: 'CD',
+                parents: [],
+                title: 'Deploy',
+                id: nodeId,
+                isSource: false,
+                isGitSource: false,
+                isRoot: false,
+                downstreams: [],
+                height: _cdNamesList.length > 9 ? 225 : 44 + _cdNamesList.length * 20,
+                width: WorkflowCreate.cDNodeSizes.nodeWidth,
+                x: 580,
+                y: 25,
+            })
+        }
+
+        return {
+            nodes: _nodes,
+            cdNamesList: _cdNamesList || [],
+        }
+    }
+
+    renderAdditionalEdge() {
+        return (
+            <g
+                className="edge-group"
+                style={{
+                    cursor: 'pointer',
+                }}
+            >
+                <path
+                    className="color-path"
+                    d="M520 56 L 580 56"
+                    fill="transparent"
+                    stroke="rgba(150,150,150)"
+                    stroke-width="2"
+                ></path>
+                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="rgba(100,100,100)"></path>
+            </g>
+        )
+    }
+
     renderNodes() {
-        let ci = this.props.nodes.find((node) => node.type == 'CI')
-        if (ci)
-            return this.props.nodes.map((node: NodeAttr) => {
+        const ci = this.props.nodes.find((node) => node.type == 'CI')
+        const _nodesData = this.getNodesData(ci?.id || '')
+        const _nodes = _nodesData.nodes
+
+        if (ci) {
+            return _nodes.map((node: NodeAttr) => {
                 if (node.type == 'GIT') {
                     return this.renderSourceNode(node)
                 } else if (node.type == 'CI') {
                     return this.renderCINodes(node)
-                } else {
-                    return this.renderCDNodes(node, ci.id)
+                } else if (_nodesData.cdNamesList.length > 0) {
+                    return (
+                        <>
+                            {this.renderAdditionalEdge()}
+                            {this.renderCDNodes(node, ci.id, _nodesData.cdNamesList)}
+                        </>
+                    )
                 }
+
+                return this.renderCDNodes(node, ci.id)
             })
-        else {
+        } else {
             return this.renderAddCIpipeline()
         }
     }
@@ -163,11 +221,16 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
                 }}
                 to={this.openCIPipeline(node)}
+                configDiffView={this.props.cdWorkflowList?.length > 0}
             />
         )
     }
 
-    renderCDNodes(node: NodeAttr, ciPipelineId: string | number) {
+    renderCDNodes(node: NodeAttr, ciPipelineId: string | number, cdNamesList?: string[]) {
+        if (this.props.cdWorkflowList?.length > 0 && !cdNamesList?.length) {
+            return
+        }
+
         return (
             <CDNode
                 key={node.id}
@@ -186,6 +249,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id)
                 }}
                 to={this.openCDPipeline(node)}
+                cdNamesList={cdNamesList}
             />
         )
     }
@@ -193,7 +257,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     getEdges() {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
                 edgeList.push({
                     startNode: node,
                     endNode: endNode,
@@ -218,44 +282,59 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         })
     }
 
+    toggleShowDeleteDialog = () => {
+        this.props.showDeleteDialog(this.props.id)
+    }
+
     renderWorkflow() {
         let ciPipelineId = 0
         let ciPipeline = this.props.nodes.find((nd) => nd.type == 'CI')
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
+        const configDiffView = this.props.cdWorkflowList?.length > 0
+
         return (
-            <div className="mb-20 workflow workflow--create" style={{ minWidth: `${this.props.width}px` }}>
+            <div
+                className="mb-20 workflow workflow--create"
+                style={{ minWidth: typeof this.props.width === 'string' ? this.props.width : `${this.props.width}px` }}
+            >
                 <div className="workflow__header">
                     <span className="workflow__name">{this.props.name}</span>
-                    <Link to={this.props.openEditWorkflow(null, this.props.id)}>
-                        <button type="button" className="dc__transparent">
-                            <img src={edit} alt="edit" className="icon-dim-18" />
-                        </button>
-                    </Link>
-                    <button
-                        type="button"
-                        className="dc__align-right dc__transparent"
-                        onClick={(e) => this.props.showDeleteDialog(this.props.id)}
-                    >
-                        <img src={trash} alt="delete" />
-                    </button>
+                    {!configDiffView && (
+                        <>
+                            <Link to={this.props.openEditWorkflow(null, this.props.id)}>
+                                <button type="button" className="dc__transparent">
+                                    <img src={edit} alt="edit" className="icon-dim-18" />
+                                </button>
+                            </Link>
+                            <button
+                                type="button"
+                                className="dc__align-right dc__transparent"
+                                onClick={this.toggleShowDeleteDialog}
+                            >
+                                <img src={trash} alt="delete" />
+                            </button>
+                        </>
+                    )}
                 </div>
                 <div className="workflow__body">
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}
                         {this.renderNodes()}
                     </svg>
-                    <PipelineSelect
-                        workflowId={this.props.id}
-                        showMenu={this.state.showCIMenu}
-                        styles={{
-                            left: `${this.state.left}px`,
-                            top: `${this.state.top}px`,
-                        }}
-                        addCIPipeline={this.props.addCIPipeline}
-                        toggleCIMenu={() => {
-                            this.setState({ showCIMenu: !this.state.showCIMenu })
-                        }}
-                    />
+                    {!configDiffView && (
+                        <PipelineSelect
+                            workflowId={this.props.id}
+                            showMenu={this.state.showCIMenu}
+                            styles={{
+                                left: `${this.state.left}px`,
+                                top: `${this.state.top}px`,
+                            }}
+                            addCIPipeline={this.props.addCIPipeline}
+                            toggleCIMenu={() => {
+                                this.setState({ showCIMenu: !this.state.showCIMenu })
+                            }}
+                        />
+                    )}
                 </div>
             </div>
         )

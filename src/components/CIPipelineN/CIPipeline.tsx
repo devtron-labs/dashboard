@@ -79,7 +79,7 @@ export default function CIPipeline({
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
-        args: [{ key: '', value: '' }],
+        args: [],
         materials: [],
         triggerType: TriggerType.Auto,
         scanEnabled: false,
@@ -124,6 +124,7 @@ export default function CIPipeline({
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
+    const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
 
     useEffect(() => {
         setPageState(ViewType.LOADING)
@@ -369,6 +370,12 @@ export default function CIPipeline({
             return
         }
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
+
+        // Reset allow override flag to false if config matches with global
+        if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
+            formData.isDockerConfigOverridden = false
+        }
+
         saveCIPipeline(
             {...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled: false },
             ciPipeline,
@@ -739,8 +746,9 @@ export default function CIPipeline({
                                     pageState={pageState}
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
-                                    ciPipelineId={ciPipeline.id}
+                                    ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
+                                    setDockerConfigOverridden={setDockerConfigOverridden}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

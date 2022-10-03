@@ -49,6 +49,7 @@ import {
     ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
+    OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
@@ -89,46 +90,46 @@ const ModuleDetailsCard = ({
     handleModuleCardClick,
     fromDiscoverModules,
 }: ModuleDetailsCardType): JSX.Element => {
-  const handleOnClick = (): void => {
-      if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
-          toast.error(
-              <ToastBody
-                  title="Unknown integration status"
-                  subtitle="There was an error fetching the integration status. Please try again later."
-              />,
-          )
-      } else if (handleModuleCardClick) {
-          handleModuleCardClick(moduleDetails, fromDiscoverModules)
-      }
-  }
-  return (
-      <div
-          className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
-          onClick={handleOnClick}
-      >
-          {getInstallationStatusLabel(moduleDetails.installationStatus)}
-          <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-          <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4">{moduleDetails.title}</div>
-          <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
-              {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
-                  <>
-                      You can&nbsp;
-                      <a
-                          href="https://github.com/devtron-labs/devtron/issues/new/choose"
-                          className="cb-5 fw-6"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                      >
-                          submit a ticket
-                      </a>
-                      &nbsp;to request an integration
-                  </>
-              ) : (
-                  moduleDetails.info
-              )}
-          </div>
-      </div>
-  )
+    const handleOnClick = (): void => {
+        if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
+            toast.error(
+                <ToastBody
+                    title="Unknown integration status"
+                    subtitle="There was an error fetching the integration status. Please try again later."
+                />,
+            )
+        } else if (handleModuleCardClick) {
+            handleModuleCardClick(moduleDetails, fromDiscoverModules)
+        }
+    }
+    return (
+        <div
+            className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
+            onClick={handleOnClick}
+        >
+            {getInstallationStatusLabel(moduleDetails.installationStatus)}
+            <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
+            <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4">{moduleDetails.title}</div>
+            <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
+                {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
+                    <>
+                        You can&nbsp;
+                        <a
+                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                            className="cb-5 fw-6"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            submit a ticket
+                        </a>
+                        &nbsp;to request an integration
+                    </>
+                ) : (
+                    moduleDetails.info
+                )}
+            </div>
+        </div>
+    )
 }
 
 export const ModulesListingView = ({
@@ -461,6 +462,9 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+    const otherInstallationInProgress = modulesList?.some(
+        (module) => module.installationStatus === ModuleStatus.INSTALLING && module.name !== moduleName,
+    )
     const dependentModuleList =
         modulesList?.filter((module) => moduleDetails.dependentModules.indexOf(Number(module.id)) >= 0) || []
     const isPendingDependency =
@@ -500,7 +504,10 @@ export const InstallationWrapper = ({
             return
         } else {
             if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
-                if (!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)) {
+                if (
+                    !isUpgradeView &&
+                    (belowMinSupportedVersion || isPendingDependency || otherInstallationInProgress)
+                ) {
                     return
                 }
                 setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
@@ -584,6 +591,16 @@ export const InstallationWrapper = ({
         )
     }
 
+    const getDisabledButtonTooltip = (): string => {
+        if (belowMinSupportedVersion) {
+            return DEVTRON_UPGRADE_MESSAGE
+        } else if (otherInstallationInProgress) {
+            return OTHER_INSTALLATION_IN_PROGRESS_MESSAGE
+        } else {
+            return PENDING_DEPENDENCY_MESSAGE
+        }
+    }
+
     return (
         <>
             <div className="module-details__install-wrapper">
@@ -603,17 +620,18 @@ export const InstallationWrapper = ({
                                 (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                                 <>
                                     <ConditionalWrap
-                                        condition={!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)}
+                                        condition={
+                                            !isUpgradeView &&
+                                            (belowMinSupportedVersion ||
+                                                isPendingDependency ||
+                                                otherInstallationInProgress)
+                                        }
                                         wrap={(children) => (
                                             <Tippy
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="top"
-                                                content={
-                                                    belowMinSupportedVersion
-                                                        ? DEVTRON_UPGRADE_MESSAGE
-                                                        : PENDING_DEPENDENCY_MESSAGE
-                                                }
+                                                content={getDisabledButtonTooltip()}
                                             >
                                                 <div>{children}</div>
                                             </Tippy>
@@ -621,7 +639,10 @@ export const InstallationWrapper = ({
                                     >
                                         <button
                                             className={`module-details__install-button cta flex mb-16 ${
-                                                !isUpgradeView && (belowMinSupportedVersion || isPendingDependency)
+                                                !isUpgradeView &&
+                                                (belowMinSupportedVersion ||
+                                                    isPendingDependency ||
+                                                    otherInstallationInProgress)
                                                     ? 'disabled-state'
                                                     : ''
                                             }`}
@@ -733,7 +754,11 @@ export const ModuleDetailsView = ({
             <Carousel className="module-details__carousel" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper mt-24">
                 <div className="module-details__feature-wrapper">
-                    <img className="module-details__feature-icon mb-8" src={moduleDetails.icon} alt={moduleDetails.title} />
+                    <img
+                        className="module-details__feature-icon mb-8"
+                        src={moduleDetails.icon}
+                        alt={moduleDetails.title}
+                    />
                     <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
@@ -814,7 +839,7 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
         <div className="mb-16">
             <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">
                 <div className="icon-dim-20 mr-12">
-                  <Warning className="icon-dim-20 warning-icon-y7" />
+                    <Warning className="icon-dim-20 warning-icon-y7" />
                 </div>
                 <div>
                     <h2 className="fs-13 fw-6 lh-20 mb-4 mt-0">{configNoteDetail.title}</h2>
