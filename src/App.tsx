@@ -133,47 +133,51 @@ export default function App() {
   }, [location])
 
 	useEffect(() => {
-
-
-		if (!navigator.serviceWorker) return
-		function onUpdate(reg) {
-			const updateToastBody = <UpdateToast onClick={e => update()} text="You are viewing an outdated version of Devtron UI." buttonText="Reload" />
-			if (toast.isActive(updateToastRef.current)) {
-				toast.update(updateToastRef.current, { render: updateToastBody })
-			}
-			else {
-				updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
-			}
-      setforceUpdateOnLocationChange(true)
-		}
-		function onSuccess(reg) {
-			console.log('successfully installed')
-		}
-		navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
-		serviceWorker.register({ onUpdate, onSuccess });
-		navigator.serviceWorker.getRegistration().then(reg => {
-			if (!reg) return
-			setInterval(reg => {
-				try {
-					reg.update()
-				}
-				catch (err) {
-					// console.log(err)
-				}
-			}, 1000 * 60, reg)
-			if (reg.waiting) {
-        onUpdate(reg)
-			}
-			else {
-				try {
-					reg.update()
-				}
-				catch (err) {
-					// console.log(err)
-				}
-			}
-		})
-	}, [])
+        if (!navigator.serviceWorker) return
+        function onUpdate(reg) {
+            const updateToastBody = (
+                <UpdateToast
+                    onClick={(e) => update()}
+                    text="You are viewing an outdated version of Devtron UI."
+                    buttonText="Reload"
+                />
+            )
+            if (toast.isActive(updateToastRef.current)) {
+                toast.update(updateToastRef.current, { render: updateToastBody })
+            } else {
+                updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
+            }
+            setforceUpdateOnLocationChange(true)
+        }
+        function onSuccess(reg) {
+            console.log('successfully installed')
+        }
+        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+        serviceWorker.register({ onUpdate, onSuccess })
+        navigator.serviceWorker.getRegistration().then((reg) => {
+            if (!reg) return
+            setInterval(
+                (reg) => {
+                    try {
+                        reg.update()
+                    } catch (err) {
+                        // console.log(err)
+                    }
+                },
+                1000 * 60,
+                reg,
+            )
+            if (reg.waiting) {
+                onUpdate(reg)
+            } else {
+                try {
+                    reg.update()
+                } catch (err) {
+                    // console.log(err)
+                }
+            }
+        })
+    }, [])
 
 	useEffect(() => {
 		if (!bgUpdated) return
