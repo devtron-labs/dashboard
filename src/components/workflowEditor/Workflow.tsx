@@ -108,7 +108,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == 'CI')
-        const _nodesData = this.getNodesData(ci.id)
+        const _nodesData = this.getNodesData(ci?.id || '')
         const _nodes = _nodesData.nodes
 
         if (ci) {
