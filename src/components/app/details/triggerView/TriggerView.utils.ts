@@ -26,6 +26,12 @@ export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     },
 }
 
+export const SPECIFIC_TRIGGER_CONFIG_OPTION = {
+    label: 'Config deployed with selected image',
+    value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
+    infoText: 'Use configuration deployed with selected image',
+}
+
 export const getDeployConfigOptions = () => {
     return [
         {
@@ -41,11 +47,7 @@ export const getDeployConfigOptions = () => {
                     value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
                     infoText: 'Retain currently deployed configuration',
                 },
-                {
-                    label: 'Config deployed with selected image',
-                    value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
-                    infoText: 'Use configuration deployed with selected image',
-                },
+                SPECIFIC_TRIGGER_CONFIG_OPTION,
             ],
         },
     ]

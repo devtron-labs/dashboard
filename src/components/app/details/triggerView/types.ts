@@ -18,7 +18,7 @@ export interface CDMaterialProps {
     toggleSourceInfo: (materialIndex: number) => void
     closeCDModal: () => void
     onClickRollbackMaterial?: (
-        cdNodeId: any,
+        cdNodeId: number,
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
@@ -536,4 +536,19 @@ export interface TriggerViewConfigDiffProps {
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
+}
+
+export const MATERIAL_TYPE = {
+    rollbackMaterialList: 'rollbackMaterialList',
+    inputMaterialList: 'inputMaterialList',
+    none: 'none'
+}
+
+export const STAGE_TYPE = {
+    CD: 'CD',
+    CI: 'CI',
+    GIT: 'GIT',
+    PRECD: 'PRECD',
+    POSTCD: 'POSTCD',
+    ROLLBACK: 'ROLLBACK',
 }

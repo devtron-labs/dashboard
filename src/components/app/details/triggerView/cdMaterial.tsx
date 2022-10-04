@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
 import ReactSelect, { components } from 'react-select'
-import { CDMaterialProps, CDMaterialState, CDMaterialType, DeploymentWithConfigType } from './types'
+import {
+    CDMaterialProps,
+    CDMaterialState,
+    CDMaterialType,
+    DeploymentWithConfigType,
+    MATERIAL_TYPE,
+    STAGE_TYPE,
+} from './types'
 import { GitTriggers } from '../cIDetails/types'
 import close from '../../../../assets/icons/ic-close.svg'
 import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg'
@@ -32,7 +39,12 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleNameMap } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
-import { checkForDiff, getDeployConfigOptions, processResolvedPromise } from './TriggerView.utils'
+import {
+    checkForDiff,
+    getDeployConfigOptions,
+    processResolvedPromise,
+    SPECIFIC_TRIGGER_CONFIG_OPTION,
+} from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
 
@@ -48,13 +60,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             loadingMore: false,
             showOlderImages: true,
             noMoreImages: false,
-            selectedConfigToDeploy: {
-                label: 'Config deployed with selected image',
-                value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
-                infoText: 'Use configuration deployed with selected image',
-            },
+            selectedConfigToDeploy: SPECIFIC_TRIGGER_CONFIG_OPTION,
             selectedMaterial: props.material.find((_mat) => _mat.isSelected),
-            isRollbackTrigger: props.materialType === 'rollbackMaterialList',
+            isRollbackTrigger: props.materialType === MATERIAL_TYPE.rollbackMaterialList,
             recentDeploymentConfig: null,
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
@@ -195,20 +203,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderSequentialCDCardTitle = (mat) => {
-        if (this.props.stageType !== 'CD') return
+        if (this.props.stageType !== STAGE_TYPE.CD) return
 
         if (mat.latest && mat.runningOnParentCd) {
             return (
                 <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>{' '}
+                    <span className="cn-9 fw-6">Deployed on</span>&nbsp;
                     <span className="cv-5 fw-6">
                         {this.props.parentEnvironmentName}
                         {this.props.parentEnvironmentName ? (
                             <>
-                                <span className="cn-9 fw-4" style={{ fontStyle: 'italic' }}>
-                                    {' '}
-                                    and{' '}
-                                </span>
+                                <span className="cn-9 fw-4 dc__italic-font-style">&nbsp;and&nbsp;</span>
                                 {this.props.envName}
                             </>
                         ) : (
@@ -277,11 +282,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img src={docker} alt="" className="commit-hash__icon" />
                         {mat.image}
                     </div>
-                    {this.props.stageType !== 'CD' && mat.latest && (
+                    {this.props.stageType !== STAGE_TYPE.CD && mat.latest && (
                         <span className="last-deployed-status">Last Run</span>
                     )}
                 </div>
-                {this.props.materialType === 'none' ? (
+                {this.props.materialType === MATERIAL_TYPE.none ? (
                     <div />
                 ) : (
                     <div className="material-history__info flex left fs-13">
@@ -299,12 +304,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         ) : (
                             <>
                                 <span
-                                    className="flex fs-13 fw-6 lh-18 icon-dim-20 mr-6 cn-0 m-auto"
+                                    className="flex fs-13 fw-6 lh-18 icon-dim-20 mr-6 cn-0 m-auto dc__border-transparent dc__uppercase dc__border-radius-50-per"
                                     style={{
                                         backgroundColor: getRandomColor(mat.deployedBy),
-                                        borderRadius: '50%',
-                                        border: 'solid 1px transparent',
-                                        textTransform: 'uppercase',
                                     }}
                                 >
                                     {mat.deployedBy[0]}
@@ -418,19 +420,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderCDModalHeader(): JSX.Element | string {
-        const _stageType = this.state.isRollbackTrigger ? 'ROLLBACK' : this.props.stageType
+        const _stageType = this.state.isRollbackTrigger ? STAGE_TYPE.ROLLBACK : this.props.stageType
         switch (_stageType) {
-            case 'PRECD':
+            case STAGE_TYPE.PRECD:
                 return 'Pre Deployment'
-            case 'CD':
+            case STAGE_TYPE.CD:
                 return (
                     <>
                         Deploy to <span className="fw-6">{this.props.envName}</span>
                     </>
                 )
-            case 'POSTCD':
+            case STAGE_TYPE.POSTCD:
                 return 'Post Deployment'
-            case 'ROLLBACK':
+            case STAGE_TYPE.ROLLBACK:
                 return (
                     <>
                         Rollback for <span className="fw-6">{this.props.envName}</span>
@@ -660,7 +662,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             <Progressing />
                         ) : (
                             <>
-                                {this.props.stageType === 'CD' ? (
+                                {this.props.stageType === STAGE_TYPE.CD ? (
                                     <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
                                 ) : (
                                     <img src={play} alt="trigger" className="trigger-btn__icon" />
@@ -676,7 +678,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     handleConfigSelection(selected) {
         if (selected.value !== this.state.selectedConfigToDeploy.value) {
-            const _diffOptions = checkForDiff(this.state.recentDeploymentConfig, this.getBaseTemplateConfiguration(selected))
+            const _diffOptions = checkForDiff(
+                this.state.recentDeploymentConfig,
+                this.getBaseTemplateConfiguration(selected),
+            )
             this.setState({
                 selectedConfigToDeploy: selected,
                 diffFound: Object.values(_diffOptions).some((d) => d),

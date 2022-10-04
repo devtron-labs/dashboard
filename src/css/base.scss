@@ -1553,6 +1553,10 @@ button.anchor {
     border: 1px solid var(--N200);
 }
 
+.dc__border-transparent {
+    border: 1px solid transparent;
+}
+
 .dc__border-top {
     border-top: solid 1px var(--N200);
 }
@@ -1721,6 +1725,10 @@ button.anchor {
 
 .dc__border-radius-24 {
     border-radius: 24px;
+}
+
+.dc__border-radius-50-per {
+    border-radius: 50%;
 }
 
 .dc__no-top-border {
@@ -2145,4 +2153,8 @@ textarea:-ms-input-placeholder {
 
 textarea::placeholder {
     color: var(--N400); 
+}
+
+.dc__italic-font-style {
+    font-style: italic !important;
 }
