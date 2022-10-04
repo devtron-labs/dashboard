@@ -277,7 +277,6 @@ function cdMaterialListModal(artifacts: any[], markFirstSelected: boolean) {
                 : [],
         }
     })
-    materials.sort((a, b) => sortCallback('id', b, a))
     return materials
 }
 

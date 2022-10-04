@@ -443,21 +443,42 @@ export function shallowEqual(objA, objB) {
     return true;
 }
 
-export function deepEqual(configA, configB) {
-    if (configA === configB) {
-        return true
+export function compareObjectLength(objA: any, objB: any): boolean {
+    const isArrayA = Array.isArray(objA)
+    const isArrayB = Array.isArray(objB)
+
+    if ((isArrayA && !isArrayB) || (!isArrayA && isArrayB)) {
+        return false
+    } else if (typeof objA === 'object' && typeof objB === 'object') {
+        return Object.keys(objA).length === Object.keys(objB).length
     }
 
-    try {
-        for (const idx in configA) {
-            if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
-                return deepEqual(configA[idx], configB[idx])
-            } else if (configA[idx] !== configB[idx]) {
-                return false
-            }
-        }
+    return objA.length === objB.length
+}
 
-        return true
+export function deepEqual(configA: any, configB: any): boolean {
+    try {
+        if (configA === configB) {
+            return true
+        } else if (
+            (configA && !configB) ||
+            (!configA && configB) ||
+            !compareObjectLength(configA, configB)
+        ) {
+            return false
+        } else {
+            let isEqual = true
+            for (const idx in configA) {
+                if (!isEqual) {
+                    break
+                } else if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
+                    isEqual = deepEqual(configA[idx], configB[idx])
+                } else if (configA[idx] !== configB[idx]) {
+                    isEqual = false
+                }
+            }
+            return isEqual
+        }
     } catch (err) {
         showError(err)
         return true

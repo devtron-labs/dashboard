@@ -650,7 +650,7 @@
     background-color: var(--N100);
 }
 
-.trigger-modal__config-diff-status:not(.config-not-found):hover .config-diff-status::after {
+.trigger-modal__trigger:hover .trigger-modal__config-diff-status:not(.config-not-found) .config-diff-status::after {
     content: " from LAST DEPLOYED";
 }
 

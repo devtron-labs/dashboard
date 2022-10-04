@@ -1,7 +1,7 @@
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
 import { deepEqual, showError } from '../../../common'
 import { prepareHistoryData } from '../cdDetails/service'
-import { DeploymentWithConfigType } from './types'
+import { DeploymentWithConfigType, TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -88,7 +88,7 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
     return null
 }
 
-const areValuesDiff = (configA, configB) => {
+const compareConfigValues = (configA, configB): boolean => {
     if (!configA && !configB) {
         return false
     } else if (
@@ -118,7 +118,12 @@ const areValuesDiff = (configA, configB) => {
     return false
 }
 
-const checkForDiffInArray = (configA, configB, key, diffForOptions) => {
+const checkForDiffInArray = (
+    configA: TriggerViewDeploymentConfigType,
+    configB: TriggerViewDeploymentConfigType,
+    key: string,
+    diffForOptions: Record<string, boolean>,
+): Record<string, boolean> => {
     const configOptions = []
     const configValueA = configA[key]
     const configValueB = configB[key]
@@ -141,16 +146,16 @@ const checkForDiffInArray = (configA, configB, key, diffForOptions) => {
         const _valueA = configValueA?.find((_config) => _config.componentName === _cm)
         const _valueB = configValueB?.find((_config) => _config.componentName === _cm)
 
-        diffForOptions[_cm] = areValuesDiff(_valueA, _valueB)
+        diffForOptions[_cm] = compareConfigValues(_valueA, _valueB)
     }
 
     return diffForOptions
 }
 
-export const checkForDiff = (configA, configB) => {
-    let diffForOptions = {
-        deploymentTemplate: areValuesDiff(configA.deploymentTemplate, configB.deploymentTemplate),
-        pipelineStrategy: areValuesDiff(configA.pipelineStrategy, configB.pipelineStrategy),
+export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: TriggerViewDeploymentConfigType) => {
+    let diffForOptions: Record<string, boolean> = {
+        deploymentTemplate: compareConfigValues(configA.deploymentTemplate, configB.deploymentTemplate),
+        pipelineStrategy: compareConfigValues(configA.pipelineStrategy, configB.pipelineStrategy),
     }
 
     if (configA.configMap?.length > 0 || configB.configMap?.length > 0) {

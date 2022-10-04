@@ -522,11 +522,11 @@ export interface AppDetailsProps {
     isV2: boolean
 }
 
-interface TriggerViewDeploymentConfigType {
-    configMap: DeploymentHistoryDetail
+export interface TriggerViewDeploymentConfigType {
+    configMap: DeploymentHistoryDetail[]
     deploymentTemplate: DeploymentHistoryDetail
     pipelineStrategy: DeploymentHistoryDetail
-    secret: DeploymentHistoryDetail
+    secret: DeploymentHistoryDetail[]
 }
 
 export interface TriggerViewConfigDiffProps {

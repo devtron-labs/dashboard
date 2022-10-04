@@ -255,13 +255,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     selectedMaterial.wfrId,
                 )
                 if (result) {
+                    const _specificDeploymentConfig = processResolvedPromise({
+                        status: 'fulfilled',
+                        value: {
+                            result,
+                        },
+                    })
+                    const _diffOptions = checkForDiff(
+                        this.state.recentDeploymentConfig,
+                        _specificDeploymentConfig,
+                    )
                     this.setState({
-                        specificDeploymentConfig: processResolvedPromise({
-                            status: 'fulfilled',
-                            value: {
-                                result,
-                            },
-                        }),
+                        specificDeploymentConfig: _specificDeploymentConfig,
+                        diffFound: Object.values(_diffOptions).some((d) => d),
+                        diffOptions: _diffOptions,
                     })
                 }
             } catch (error) {
