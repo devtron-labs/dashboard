@@ -1,5 +1,6 @@
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
 import { deepEqual, showError } from '../../../common'
+import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
 import { DeploymentWithConfigType, TriggerViewDeploymentConfigType } from './types'
 
@@ -88,7 +89,7 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
     return null
 }
 
-const compareConfigValues = (configA, configB): boolean => {
+const compareConfigValues = (configA: DeploymentHistoryDetail, configB: DeploymentHistoryDetail): boolean => {
     if (!configA && !configB) {
         return false
     } else if (
