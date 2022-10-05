@@ -116,7 +116,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     recentDeploymentConfig: _recentDeploymentConfig,
                     latestDeploymentConfig: processResolvedPromise(latestDeploymentConfigRes),
                     specificDeploymentConfig: _specificDeploymentConfig,
-                    diffFound: Object.values(_diffOptions).some((d) => d),
+                    diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
                     diffOptions: _diffOptions,
                     checkingDiff: false,
                 })
@@ -261,13 +261,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             result,
                         },
                     })
-                    const _diffOptions = checkForDiff(
-                        this.state.recentDeploymentConfig,
-                        _specificDeploymentConfig,
-                    )
+                    const _diffOptions = checkForDiff(this.state.recentDeploymentConfig, _specificDeploymentConfig)
                     this.setState({
                         specificDeploymentConfig: _specificDeploymentConfig,
-                        diffFound: Object.values(_diffOptions).some((d) => d),
+                        diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
                         diffOptions: _diffOptions,
                     })
                 }
@@ -568,29 +565,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     getTippyContent() {
-        if (
-            this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-            (!this.state.specificDeploymentConfig?.deploymentTemplate ||
-                !this.state.specificDeploymentConfig.pipelineStrategy)
-        ) {
-            return (
-                <>
-                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
-                    <p className="fs-12 fw-4 lh-18 m-0">Please select a different image or configuration to deploy</p>
-                </>
-            )
-        } else if (
-            this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
-            (!this.state.recentDeploymentConfig?.deploymentTemplate ||
-                !this.state.recentDeploymentConfig.pipelineStrategy)
-        ) {
-            return (
-                <>
-                    <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
-                    <p className="fs-12 fw-4 lh-18 m-0">Please select a different configuration to deploy</p>
-                </>
-            )
-        }
+        return (
+            <>
+                <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
+                <p className="fs-12 fw-4 lh-18 m-0">
+                    {this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+                    (!this.state.specificDeploymentConfig ||
+                        !this.state.specificDeploymentConfig.deploymentTemplate ||
+                        !this.state.specificDeploymentConfig.pipelineStrategy)
+                        ? 'Please select a different image or configuration to deploy'
+                        : 'Please select a different configuration to deploy'}
+                </p>
+            </>
+        )
     }
 
     renderTriggerModalCTA() {
@@ -691,7 +678,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
             this.setState({
                 selectedConfigToDeploy: selected,
-                diffFound: Object.values(_diffOptions).some((d) => d),
+                diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
                 diffOptions: _diffOptions,
             })
         }

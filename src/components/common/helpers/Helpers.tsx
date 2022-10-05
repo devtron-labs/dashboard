@@ -444,12 +444,16 @@ export function shallowEqual(objA, objB) {
 }
 
 export function compareObjectLength(objA: any, objB: any): boolean {
+    if (objA === objB) {
+        return true
+    }
+
     const isArrayA = Array.isArray(objA)
     const isArrayB = Array.isArray(objB)
 
     if ((isArrayA && !isArrayB) || (!isArrayA && isArrayB)) {
         return false
-    } else if (typeof objA === 'object' && typeof objB === 'object') {
+    } else if (!isArrayA && !isArrayB) {
         return Object.keys(objA).length === Object.keys(objB).length
     }
 

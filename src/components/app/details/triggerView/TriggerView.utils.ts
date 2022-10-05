@@ -153,6 +153,10 @@ const checkForDiffInArray = (
 }
 
 export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: TriggerViewDeploymentConfigType) => {
+    if (!configA || !configB) {
+        return null
+    }
+
     let diffForOptions: Record<string, boolean> = {
         deploymentTemplate: compareConfigValues(configA.deploymentTemplate, configB.deploymentTemplate),
         pipelineStrategy: compareConfigValues(configA.pipelineStrategy, configB.pipelineStrategy),
