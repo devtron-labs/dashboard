@@ -328,20 +328,6 @@ export const Details: React.FC<{
         </div>
     }
 
-    let message = null;
-    const conditions = appDetails?.resourceTree?.conditions;
-    const Rollout = aggregatedNodes?.nodes?.Rollout
-    if (
-        ['progressing', 'degraded'].includes(appDetails?.resourceTree?.status.toLowerCase()) &&
-        Array.isArray(conditions) &&
-        conditions?.length > 0 &&
-        conditions[0].message
-    ) {
-        message = conditions[0].message;
-    } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0]?.health?.message;
-    }
-
     async function handleHibernate(e) {
         try {
             setHibernating(true);
