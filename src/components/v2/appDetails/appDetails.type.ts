@@ -39,6 +39,8 @@ export enum AggregationKeys {
 
 export enum NodeStatus {
     Degraded = 'degraded',
+    Healthy = 'healthy',
+    Progressing = 'progressing'
 }
 
 export enum NodeType {

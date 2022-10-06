@@ -116,3 +116,14 @@ svg.app-notes__icon {
     background-color: var(--N200);
     margin: 0 8px;
 }
+
+.app-status-detail-modal{
+  .app-status-row{
+    display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+        &:hover {
+          background-color: var(--N50);
+      }
+  }
+}

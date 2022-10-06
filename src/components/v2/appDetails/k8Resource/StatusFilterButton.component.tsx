@@ -9,7 +9,7 @@ interface TabState {
     isSelected: boolean
 }
 
-export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
+export const StatusFilterButtonComponent = ({nodes, shortDescription, handleFilterClick}: {nodes: Array<Node>, shortDescription?: boolean, handleFilterClick?: (selectedFilter: string)=> void}) => {
     const [selectedTab, setSelectedTab] = useState('all');
 
     let allNodeCount: number = 0,
@@ -44,7 +44,11 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
 
     useEffect(()=>{
         // handleFilterClick(selectedTab.toUpperCase())
-        IndexStore.updateFilterType(selectedTab.toUpperCase());
+        if(handleFilterClick){
+          handleFilterClick(selectedTab.toUpperCase())
+        } else{
+          IndexStore.updateFilterType(selectedTab.toUpperCase());
+        }
    },[nodes, selectedTab])
 
     return (
@@ -69,7 +73,7 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
                                             style={{ zIndex: 'unset' }}
                                         />
                                     )}
-                                    <span className="dc__first-letter-capitalize">{filter.status.toLowerCase()}</span>
+                                    {(filter.status==='ALL' || !shortDescription) && <span className="dc__first-letter-capitalize">{filter.status.toLowerCase()}</span>}
                                     <span className="pl-4">({filter.count})</span>
                                 </a>
                             )}
