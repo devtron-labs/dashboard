@@ -68,6 +68,7 @@ function AppStatusDetailModal({
     const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [showSeeMore, setShowSeeMore] = useState(true)
     const [filteredNodes, setFilteredNodes] = useState(flattenedNodes)
+    const [currentFilter, setCurrentFilter] = useState('')
 
     useEffect(() => {
         try {
@@ -129,14 +130,17 @@ function AppStatusDetailModal({
     }
 
     const onFilterClick = (selectedFilter: string): void => {
-        if (selectedFilter === 'ALL') {
-            setFilteredNodes(flattenedNodes)
-        } else {
-            setFilteredNodes(
-                flattenedNodes.filter(
-                    (nodeDetails) => nodeDetails.health?.status?.toLowerCase() === selectedFilter.toLowerCase(),
-                ),
-            )
+        if (currentFilter !== selectedFilter) {
+            setCurrentFilter(selectedFilter)
+            if (selectedFilter === 'ALL') {
+                setFilteredNodes(flattenedNodes)
+            } else {
+                setFilteredNodes(
+                    flattenedNodes.filter(
+                        (nodeDetails) => nodeDetails.health?.status?.toLowerCase() === selectedFilter.toLowerCase(),
+                    ),
+                )
+            }
         }
     }
 
@@ -155,22 +159,20 @@ function AppStatusDetailModal({
     }, [outsideClickHandler])
 
     return (
-        <Drawer position="right" width="1000px">
+        <Drawer position="right" width="1024px">
             <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
-                <div className="app-status-detail__header dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
-                    <div className="title flex dc__content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
-                        App status detail
-                        <span className="cursor" onClick={close}>
-                            <Close className="icon-dim-24" />
-                        </span>
-                    </div>
+                <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
                     <div>
+                        <div className="title cn-9 fs-16 fw-6 mb-4">App status detail</div>
                         <div
-                            className={`subtitle app-summary__status-name fw-6 pl-20 f-${_appDetails.resourceTree.status.toLowerCase()} mr-16`}
+                            className={`subtitle app-summary__status-name fw-6 fs-13 f-${_appDetails.resourceTree.status.toLowerCase()} mr-16`}
                         >
                             {_appDetails.resourceTree.status.toUpperCase()}
                         </div>
                     </div>
+                    <span className="cursor" onClick={close}>
+                        <Close className="icon-dim-24" />
+                    </span>
                 </div>
 
                 <div className="app-status-detail__body">
@@ -204,34 +206,36 @@ function AppStatusDetailModal({
                     <div>
                         <div className="app-status-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
                             {APP_STATUS_HEADERS.map((headerKey, index) => (
-                                <div className="fs-12 fw-6 cn-7" key={`header_${index}`}>
+                                <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
                                     {headerKey}
                                 </div>
                             ))}
                         </div>
-                        {filteredNodes.map((nodeDetails) => (
-                            <div
-                                className="app-status-row pt-8 pr-20 pb-8 pl-20"
-                                key={`${nodeDetails.kind}/${nodeDetails.name}`}
-                            >
-                                <div>{nodeDetails.kind}</div>
-                                <div className="dc__ellipsis-left dc__align-left">{nodeDetails.name}</div>
+                        <div className="resource-list fs-13">
+                            {filteredNodes.map((nodeDetails) => (
                                 <div
-                                    className={`app-summary__status-name f-${
-                                        nodeDetails.health && nodeDetails.health.status
-                                            ? nodeDetails.health.status.toLowerCase()
-                                            : ''
-                                    }`}
+                                    className="app-status-row pt-8 pr-20 pb-8 pl-20"
+                                    key={`${nodeDetails.kind}/${nodeDetails.name}`}
                                 >
-                                    {nodeDetails.status
-                                        ? nodeDetails.status
-                                        : nodeDetails.health
-                                        ? nodeDetails.health.status
-                                        : ''}
+                                    <div>{nodeDetails.kind}</div>
+                                    <div className="dc__ellipsis-left dc__align-left">{nodeDetails.name}</div>
+                                    <div
+                                        className={`app-summary__status-name f-${
+                                            nodeDetails.health && nodeDetails.health.status
+                                                ? nodeDetails.health.status.toLowerCase()
+                                                : ''
+                                        }`}
+                                    >
+                                        {nodeDetails.status
+                                            ? nodeDetails.status
+                                            : nodeDetails.health
+                                            ? nodeDetails.health.status
+                                            : ''}
+                                    </div>
+                                    <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
                                 </div>
-                                <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
