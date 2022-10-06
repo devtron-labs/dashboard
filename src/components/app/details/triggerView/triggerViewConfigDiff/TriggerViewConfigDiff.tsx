@@ -145,13 +145,12 @@ export default function TriggerViewConfigDiff({
                                             <div
                                                 className={`flex left pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 dc__overflow-hidden ${
                                                     navKey === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
-                                                }`}
+                                                } ${diffOptions?.[_option] ? 'diff-dot' : ''}`}
                                                 data-value={navKey}
                                                 onClick={handleNavOptionSelection}
                                                 key={navKey}
                                             >
-                                                <span className="dc__ellipsis-right mr-10">{_option}</span>
-                                                {diffOptions?.[_option] && <span className="diff-dot" />}
+                                                {_option}
                                             </div>
                                         )
                                     })}
@@ -163,13 +162,12 @@ export default function TriggerViewConfigDiff({
                             <div
                                 className={`flex left pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 dc__overflow-hidden ${
                                     navOption.key === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
-                                }`}
+                                } ${diffOptions?.[navOption.key] ? 'diff-dot' : ''}`}
                                 data-value={navOption.key}
                                 onClick={handleNavOptionSelection}
                                 key={navOption.key}
                             >
-                                <span className="dc__ellipsis-right mr-10">{navOption.displayName}</span>
-                                {diffOptions?.[navOption.key] && <span className="diff-dot" />}
+                                {navOption.displayName}
                             </div>
                         )
                     }
@@ -195,8 +193,7 @@ export default function TriggerViewConfigDiff({
 
         return {
             keys:
-                (_currentValues &&
-                    _baseValues &&
+                ((_currentValues || _baseValues) &&
                     Object.keys({
                         ..._currentValues,
                         ..._baseValues,
@@ -217,8 +214,8 @@ export default function TriggerViewConfigDiff({
         return (
             <div className="trigger-view-config-diff__values en-2 bw-1 br-4 bcn-0 mb-16 pt-2 pb-2">
                 {configValuesOptions.keys.map((configKey, index) => {
-                    const currentValue = configValuesOptions.currentValues[configKey]
-                    const baseValue = configValuesOptions.baseValues[configKey]
+                    const currentValue = configValuesOptions.currentValues?.[configKey]
+                    const baseValue = configValuesOptions.baseValues?.[configKey]
                     const changeBGColor = currentValue?.value !== baseValue?.value
                     return (
                         <Fragment key={`deployment-history-diff-view-${index}`}>
