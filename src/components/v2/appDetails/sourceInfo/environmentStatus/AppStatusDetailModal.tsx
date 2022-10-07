@@ -195,11 +195,7 @@ function AppStatusDetailModal({
                     <div className="pt-16 pl-20 pb-16">
                         <div className="flexbox pr-20 w-100">
                             <div>
-                                <StatusFilterButtonComponent
-                                    nodes={flattenedNodes}
-                                    shortDescription={true}
-                                    handleFilterClick={onFilterClick}
-                                />
+                                <StatusFilterButtonComponent nodes={flattenedNodes} handleFilterClick={onFilterClick} />
                             </div>
                         </div>
                     </div>

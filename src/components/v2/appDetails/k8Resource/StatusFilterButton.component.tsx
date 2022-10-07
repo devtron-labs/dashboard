@@ -11,11 +11,9 @@ interface TabState {
 
 export const StatusFilterButtonComponent = ({
     nodes,
-    shortDescription,
     handleFilterClick,
 }: {
     nodes: Array<Node>
-    shortDescription?: boolean
     handleFilterClick?: (selectedFilter: string) => void
 }) => {
     const [selectedTab, setSelectedTab] = useState('all')
@@ -71,9 +69,9 @@ export const StatusFilterButtonComponent = ({
                                         setSelectedTab(filter.status.toLowerCase())
                                         // handleFilterClick(filter.status);
                                     }}
-                                    className={`${
-                                        filter.isSelected ? 'bcb-1 cn-9' : ''
-                                    } p-6 pointer dc__border-right cn-5 pr-6 fw-6 dc__no-decor flex left`}
+                                    className={`${filter.isSelected ? 'bcb-1 cn-9' : ''} ${
+                                        index < filters.length - 1 ? 'dc__border-right' : ''
+                                    } pt-1 pr-8 pb-1 pl-8 pointer  cn-5 pr-6 fw-6 dc__no-decor flex left`}
                                 >
                                     {index !== 0 && (
                                         <span
@@ -81,14 +79,8 @@ export const StatusFilterButtonComponent = ({
                                             style={{ zIndex: 'unset' }}
                                         />
                                     )}
-                                    {(filter.status === 'ALL' || !shortDescription) && (
-                                        <span className="dc__first-letter-capitalize">
-                                            {filter.status.toLowerCase()}
-                                        </span>
-                                    )}
-                                    <span className={filter.status === 'ALL' || !shortDescription ? 'pl-4' : ''}>
-                                        {filter.status === 'ALL' || !shortDescription? `(${filter.count})`: filter.count}
-                                    </span>
+                                    <span className="dc__first-letter-capitalize">{filter.status.toLowerCase()}</span>
+                                    <span className="pl-4">({filter.count})</span>
                                 </a>
                             )}
                         </React.Fragment>
