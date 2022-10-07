@@ -133,3 +133,8 @@ export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promi
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
     return put(Routes.HELM_LINK_TO_CHART_STORE_API, request);
 };
+
+export const getManifestUrlInfo = (appId: string): Promise<ReleaseInfoResponse> => {
+    let url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
+    return get(url);
+}

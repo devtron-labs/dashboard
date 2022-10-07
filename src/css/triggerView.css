@@ -582,3 +582,21 @@
     margin: 12px 0;
     color: var(--N700);
 }
+
+.url-table_row {
+    display: flex;
+    column-gap: 16px;
+    border-bottom: 1px solid var(--N200);
+}
+
+.url-table_row .items-width-1 {
+    flex: 1
+}
+
+.url-box {
+    max-width: 240px;
+}
+
+.url-table_row.table-content {
+    border-bottom: 1px solid var(--N100);
+}

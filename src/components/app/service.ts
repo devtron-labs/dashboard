@@ -412,3 +412,11 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
 export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
     return post(Routes.APP_LABELS, request)
 }
+
+export const getIngressServiceUrls = (params) => {
+    const urlParams = Object.entries(params).map(([key, value]) => {
+        if (!value) return
+        return `${key}=${value}`
+    })
+    return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)
+}

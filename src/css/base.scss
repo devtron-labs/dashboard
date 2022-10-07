@@ -417,6 +417,10 @@ a:focus {
     direction: rtl;
 }
 
+.dc__ellipsis-left.direction-left {
+    text-align: left;
+}
+
 .anchor {
     color: var(--B500);
     text-decoration: none;
@@ -1780,6 +1784,15 @@ textarea {
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
+    }
+}
+
+.icon-color-n7 {
+    path:nth-child(1) {
+        fill: none !important;
+    }
+    path:nth-child(2) {
+        fill: var(--N700);
     }
 }
 

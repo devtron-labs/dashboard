@@ -75,6 +75,7 @@ import { AppType } from '../../../v2/appDetails/appDetails.type';
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
 import { getDeploymentStatusDetail } from './appDetails.service';
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
+import { TriggerUrlModal } from '../../list/TriggerUrl';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -152,6 +153,7 @@ export const Details: React.FC<{
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
+    const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
@@ -383,6 +385,7 @@ export const Details: React.FC<{
                             setDetailed={toggleDetailedStatus}
                             environments={environments}
                             showCommitInfo={isAppDeployment ? showCommitInfo : null}
+                            showUrlInfo={isAppDeployment ? showUrlInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                             toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
@@ -453,6 +456,13 @@ export const Details: React.FC<{
                             }}
                         />
                     }
+                    {urlInfo && (
+                        <TriggerUrlModal
+                            appId={params.appId}
+                            envId={params.envId}
+                            close={() => showUrlInfo(false)}
+                        />
+                    )}
                     {commitInfo && (
                         <TriggerInfoModal
                             appId={appDetails?.appId}
