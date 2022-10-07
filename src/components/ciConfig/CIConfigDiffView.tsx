@@ -36,10 +36,7 @@ export default function CIConfigDiffView({
     const globalCIConfig = {
         dockerRegistry: ciConfig?.dockerRegistry,
         dockerRepository: ciConfig?.dockerRepository,
-        dockerBuildConfig: {
-            gitMaterialId: ciConfig?.dockerBuildConfig?.gitMaterialId,
-            dockerfileRelativePath: ciConfig?.dockerBuildConfig?.dockerfileRelativePath,
-        },
+        ciBuildConfig: ciConfig?.ciBuildConfig
     }
 
     const renderDetailedValue = (parentClassName: string, title: string, value: string): JSX.Element => {
@@ -82,20 +79,20 @@ export default function CIConfigDiffView({
         const changedDockerRepositoryBGColor =
             globalCIConfig?.dockerRepository !== _currentPipelineOverride?.dockerRepository
         const changedDockerfileRelativePathBGColor =
-            globalCIConfig?.dockerBuildConfig?.dockerfileRelativePath !==
-            _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath
+            globalCIConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath !==
+            _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
         const changedGitMaterialBGColor =
-            globalCIConfig?.dockerBuildConfig?.gitMaterialId !==
-            _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId
+            globalCIConfig?.ciBuildConfig?.gitMaterialId !==
+            _currentPipelineOverride?.ciBuildConfig?.gitMaterialId
 
         let globalGitMaterialName, currentMaterialName
         if (ciConfig?.materials) {
             for (const gitMaterial of ciConfig.materials) {
-                if (gitMaterial.gitMaterialId === globalCIConfig?.dockerBuildConfig?.gitMaterialId) {
+                if (gitMaterial.gitMaterialId === globalCIConfig?.ciBuildConfig?.gitMaterialId) {
                     globalGitMaterialName = gitMaterial.materialName
                 }
 
-                if (gitMaterial.gitMaterialId === _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId) {
+                if (gitMaterial.gitMaterialId === _currentPipelineOverride?.ciBuildConfig?.gitMaterialId) {
                     currentMaterialName = gitMaterial.materialName
                 }
             }
@@ -122,8 +119,8 @@ export default function CIConfigDiffView({
                     'Git Repository',
                 )}
                 {renderValueDiff(
-                    globalCIConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                    _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath,
+                    globalCIConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
+                    _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
                     changedDockerfileRelativePathBGColor,
                     'Docker file path',
                 )}

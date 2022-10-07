@@ -39,6 +39,7 @@ import { WorkflowCreate } from '../app/details/triggerView/config'
 import CIConfigDiffView from './CIConfigDiffView'
 import { CIConfigFormProps, CIConfigProps, ProcessedWorkflowsType } from './types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
+import { CIBuildType } from '../ciPipeline/types'
 
 export default function CIConfig({
     respondOnSuccess,
@@ -96,10 +97,7 @@ export default function CIConfig({
                     defaultDockerConfigs: {
                         dockerRegistry: ciConfig.dockerRegistry,
                         dockerRepository: ciConfig.dockerRepository,
-                        dockerBuildConfig: {
-                            gitMaterialId: ciConfig.dockerBuildConfig.gitMaterialId,
-                            dockerfileRelativePath: ciConfig.dockerBuildConfig.dockerfileRelativePath,
-                        },
+                        ciBuildConfig: ciConfig.ciBuildConfig
                     },
                 })
             }
@@ -172,10 +170,10 @@ function Form({
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
                   (material) =>
-                      material.id === selectedCIPipeline.dockerConfigOverride?.dockerBuildConfig?.gitMaterialId,
+                      material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
               )
-            : ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.gitMaterialId
-            ? sourceConfig.material.find((material) => material.id === ciConfig.dockerBuildConfig.gitMaterialId)
+            : ciConfig?.ciBuildConfig?.gitMaterialId
+            ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
             : sourceConfig.material[0]
     const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
     const _selectedRegistry =
@@ -190,9 +188,9 @@ function Form({
             repository: { value: _selectedMaterial?.name || '', error: '' },
             dockerfile: {
                 value: selectedCIPipeline?.isDockerConfigOverridden
-                    ? selectedCIPipeline.dockerConfigOverride?.dockerBuildConfig?.dockerfileRelativePath
-                    : ciConfig
-                    ? ciConfig.dockerBuildConfig.dockerfileRelativePath
+                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
+                    : ciConfig?.ciBuildConfig
+                    ? ciConfig.ciBuildConfig.dockerBuildConfig?.dockerfileRelativePath
                     : 'Dockerfile',
                 error: '',
             },
@@ -247,8 +245,8 @@ function Form({
     })
     let _selectedPlatforms = []
     let _customTargetPlatorm = false
-    if (ciConfig?.dockerBuildConfig?.targetPlatform) {
-        _selectedPlatforms = ciConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
+    if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+        _selectedPlatforms = ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
             _customTargetPlatorm = _customTargetPlatorm || !targetPlatformMap.get(platformValue)
             return { label: platformValue, value: platformValue }
         })
@@ -265,10 +263,10 @@ function Form({
 
     useEffect(() => {
         let args = []
-        if (ciConfig && ciConfig.dockerBuildConfig.args) {
-            args = Object.keys(ciConfig.dockerBuildConfig.args).map((arg) => ({
+        if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.args) {
+            args = Object.keys(ciConfig.ciBuildConfig.dockerBuildConfig.args).map((arg) => ({
                 k: arg,
-                v: ciConfig.dockerBuildConfig.args[arg],
+                v: ciConfig.ciBuildConfig.dockerBuildConfig.args[arg],
                 keyError: '',
                 valueError: '',
             }))
@@ -315,16 +313,20 @@ function Form({
             dockerRegistry: registry.value || '',
             dockerRepository: repository_name.value || '',
             beforeDockerBuild: [],
-            dockerBuildConfig: {
-                dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
-                args: args.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
-                    return agg
-                }, {}),
-                dockerfileRepository: repository.value,
-                dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
+            ciBuildConfig: {
+                buildPackConfig: null,
+                ciBuildType: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+                dockerBuildConfig: {
+                    dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
+                    args: args.reduce((agg, { k, v }) => {
+                        if (k && v) agg[k] = v
+                        return agg
+                    }, {}),
+                    dockerfileRepository: repository.value,
+                    dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
+                    targetPlatform: targetPlatforms,
+                },
                 gitMaterialId: selectedMaterial?.id,
-                targetPlatform: targetPlatforms,
             },
             afterDockerBuild: [],
             appName: '',
@@ -365,7 +367,7 @@ function Form({
         repository.value = selectedMaterial.name
 
         if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('dockerConfigOverride.dockerBuildConfig.gitMaterialId', selectedMaterial.id)
+            updateDockerConfigOverride('dockerConfigOverride.ciBuildConfig.gitMaterialId', selectedMaterial.id)
         }
     }
 
@@ -626,7 +628,7 @@ function Form({
         if (updateDockerConfigOverride) {
             updateDockerConfigOverride(
                 `dockerConfigOverride.${
-                    e.target.name === 'dockerfile' ? 'dockerBuildConfig.dockerfileRelativePath' : 'dockerRepository'
+                    e.target.name === 'dockerfile' ? 'ciBuildConfig.dockerBuildConfig.dockerfileRelativePath' : 'dockerRepository'
                 }`,
                 e.target.value,
             )
@@ -791,7 +793,7 @@ function Form({
                                     name="dockerfile"
                                     value={
                                         configOverrideView && !allowOverride
-                                            ? ciConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
+                                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
                                             : dockerfile.value
                                     }
                                     onChange={handleOnChangeConfig}

@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
-import { DockerConfigOverrideType } from '../../../ciPipeline/types'
+import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
 import { CIMaterialType } from './MaterialHistory'
 export type CDMdalTabType = 'SECURITY' | 'CHANGES'
 
@@ -394,7 +394,7 @@ export interface CiPipelineResult {
     appId?: number
     dockerRegistry?: string
     dockerRepository?: string
-    dockerBuildConfig?: DockerBuildConfig
+    ciBuildConfig?: CIBuildConfigType
     ciPipelines?: CiPipeline[]
     appName?: string
     version?: string
