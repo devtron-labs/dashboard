@@ -139,8 +139,18 @@ export function SourceInfo({
                                     </span>
                                 </div>
                                 <div className="flex left">
-                                    {message && <span className="select-material-message">{message.slice(0, 30)}</span>}
-                                    {message?.length > 30 && <span className="more-message cb-5 fw-6">Details</span>}
+                                    {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
+                                        <span className="cb-5 fw-6">Details</span>
+                                    ) : (
+                                        <>
+                                            {message && (
+                                                <span className="select-material-message">{message.slice(0, 30)}</span>
+                                            )}
+                                            {message?.length > 30 && (
+                                                <span className="more-message cb-5 fw-6">Details</span>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
