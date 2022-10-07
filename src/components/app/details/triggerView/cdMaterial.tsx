@@ -824,7 +824,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     render() {
         return (
-            <VisibleModal className="" close={this.props.closeCDModal}>
+            <VisibleModal
+                className=""
+                parentClassName={this.state.isRollbackTrigger ? 'dc__overflow-hidden' : ''}
+                close={this.props.closeCDModal}
+            >
                 <div
                     className={`modal-body--cd-material h-100 ${
                         this.state.isRollbackTrigger ? 'contains-diff-view' : ''

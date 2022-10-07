@@ -36,7 +36,7 @@ export const SPECIFIC_TRIGGER_CONFIG_OPTION = {
 export const getDeployConfigOptions = () => {
     return [
         {
-            label: 'Select configuration to deploy',
+            label: 'Select a configuration to deploy',
             options: [
                 {
                     label: 'Last saved config',

@@ -62,11 +62,11 @@ export default function TriggerViewConfigDiff({
             <CodeEditor
                 value={editorValues.value}
                 defaultValue={editorValues.defaultValue}
-                height="488px"
+                height="calc(100vh - 16px)"
                 diffView={true}
                 readOnly={true}
-                noParsing
                 mode={MODES.YAML}
+                noParsing
             />
         )
     }
@@ -136,7 +136,7 @@ export default function TriggerViewConfigDiff({
                         return (
                             options.length > 0 && (
                                 <Fragment key={`${navOption.key}-${idx}`}>
-                                    <h3 className="cn-7 bcn-1 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-16 pr-16">
+                                    <h3 className="cn-7 bcn-1 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-16 pr-16 dc__uppercase">
                                         {navOption.displayName}
                                     </h3>
                                     {options.map((_option) => {
