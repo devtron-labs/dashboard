@@ -11,18 +11,17 @@ import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
 import IndexStore from '../../v2/appDetails/index.store'
 
 interface TriggerURL {
-    appId?: string,
-    envId: string,
-    installedAppId?: string,
-    close: () => void,
+    appId?: string
+    envId: string
+    installedAppId?: string
+    close: () => void
     isEAMode?: boolean
 }
 
-export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }:TriggerURL) {
+export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) {
     const [resp, setResponse] = useState<any>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
-    
 
     async function getManifest() {
         try {
@@ -56,7 +55,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     }, [appId, envId])
 
     return (
-        <VisibleModal className="">
+        <VisibleModal className="" close={close}>
             <div className="modal-body--ci-material h-100 dc__overflow-hidden">
                 <div className="trigger-modal__header">
                     <h1 className="modal__title flex left fs-16">URLs</h1>
@@ -67,8 +66,9 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
 
                 {loading ? (
                     <Progressing pageLoader />
+                ) : Object.values(data).every((value) => !value.length) ? (
+                    <EmptyUrlState />
                 ) : (
-                    Object.values(data).every(value => !value.length) ? <EmptyUrlState /> :
                     Object.entries(data).map(([kind, item]) =>
                         item.length ? (
                             <div className="pt-20 pl-20 pr-20 cn-9">
@@ -87,7 +87,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                             <div className="items-width-1">
                                                 {v.urls.map((url) => (
                                                     <div className="flex left">
-                                                        <span className='url-box dc__ellipsis-right mr-6'>{url}</span>
+                                                        <span className="url-box dc__ellipsis-right mr-6">{url}</span>
                                                         <span className="icon-dim-16">
                                                             <CopyToClipboardText
                                                                 iconClass="pointer dc__visible-hover--child icon-dim-16"
@@ -99,7 +99,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                             </div>
                                         )}
                                         <div className="flex left items-width-1">
-                                            <span className='url-box dc__ellipsis-right mr-6'>{v.pointsTo}</span>
+                                            <span className="url-box dc__ellipsis-right mr-6">{v.pointsTo}</span>
                                             <span className="icon-dim-16">
                                                 <CopyToClipboardText
                                                     iconClass="pointer dc__visible-hover--child icon-dim-16"
@@ -148,9 +148,9 @@ export function CopyToClipboardText({ text, iconClass }) {
     )
 }
 
-function EmptyUrlState(){
+function EmptyUrlState() {
     return (
-        <EmptyState >
+        <EmptyState>
             <EmptyState.Image>
                 <img src={AppNotDeployed} alt="" />
             </EmptyState.Image>
