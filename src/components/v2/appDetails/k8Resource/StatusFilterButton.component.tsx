@@ -3,7 +3,7 @@ import IndexStore from '../index.store'
 import { useState } from 'react'
 import { NodeStatus, StatusFilterButtonType } from '../appDetails.type'
 import { RadioGroup } from '../../../common'
-import './k8resources.scss';
+import './k8resources.scss'
 
 interface TabState {
     status: string
@@ -37,14 +37,14 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
 
     const filters = [
         { status: 'ALL', count: allNodeCount, isSelected: 'all' == selectedTab },
-        { status: NodeStatus.Healthy, count: healthyNodeCount, isSelected: NodeStatus.Healthy == selectedTab },
+        { status: NodeStatus.Missing, count: missingNodeCount, isSelected: NodeStatus.Missing == selectedTab },
         { status: NodeStatus.Degraded, count: failedNodeCount, isSelected: NodeStatus.Degraded == selectedTab },
         {
             status: NodeStatus.Progressing,
             count: progressingNodeCount,
             isSelected: NodeStatus.Progressing == selectedTab,
         },
-        { status: NodeStatus.Missing, count: missingNodeCount, isSelected: NodeStatus.Missing == selectedTab },
+        { status: NodeStatus.Healthy, count: healthyNodeCount, isSelected: NodeStatus.Healthy == selectedTab },
     ]
 
     useEffect(() => {

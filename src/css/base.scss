@@ -922,8 +922,8 @@ button.anchor {
     }
 
     &.missing {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/missing.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.unknown {
