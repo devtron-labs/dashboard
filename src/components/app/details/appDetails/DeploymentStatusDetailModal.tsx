@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Drawer, handleUTCTime } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
@@ -13,9 +13,39 @@ export default function DeploymentStatusDetailModal({
     environmentName,
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailModalType) {
+    const appStatusDetailRef = useRef<HTMLDivElement>(null)
+    const escKeyPressHandler = (evt): void => {
+        if (evt && evt.key === 'Escape' && typeof close === 'function') {
+            evt.preventDefault()
+            close()
+        }
+    }
+    const outsideClickHandler = (evt): void => {
+        if (
+            appStatusDetailRef.current &&
+            !appStatusDetailRef.current.contains(evt.target) &&
+            typeof close === 'function'
+        ) {
+            close()
+        }
+    }
+    useEffect(() => {
+        document.addEventListener('keydown', escKeyPressHandler)
+        return (): void => {
+            document.removeEventListener('keydown', escKeyPressHandler)
+        }
+    }, [escKeyPressHandler])
+
+    useEffect(() => {
+        document.addEventListener('click', outsideClickHandler)
+        return (): void => {
+            document.removeEventListener('click', outsideClickHandler)
+        }
+    }, [outsideClickHandler])
+
     return (
-        <Drawer position="right" width="50%">
-            <div className="deployment-status-breakdown-modal-container bcn-0">
+        <Drawer position="right" width="1024px">
+            <div className="deployment-status-breakdown-modal-container bcn-0" ref={appStatusDetailRef}>
                 <div className="dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
                     <div className="title flex dc__content-space pl-20 pr-20 ">
                         <div>
