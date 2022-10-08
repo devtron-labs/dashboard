@@ -119,22 +119,22 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
         this.savePipeline = this.savePipeline.bind(this)
         this.selectEnvironment = this.selectEnvironment.bind(this)
-        this.escFunction = this.escFunction.bind(this);
+        this.escFunction = this.escFunction.bind(this)
     }
 
     componentDidMount() {
         this.getDeploymentStrategies()
-        document.addEventListener("keydown", this.escFunction);
+        document.addEventListener('keydown', this.escFunction)
     }
 
     componentWillUnmount() {
-      document.removeEventListener("keydown", this.escFunction);
+        document.removeEventListener('keydown', this.escFunction)
     }
 
     escFunction(event) {
-      if (event.keyCode === 27 || event.key === "Escape") {
-      this.props &&  this.props.close();
-      }
+        if (event.keyCode === 27 || event.key === 'Escape' && typeof this.props.close === 'function') {
+          this.props.close()
+        }
     }
 
     getDeploymentStrategies(): void {

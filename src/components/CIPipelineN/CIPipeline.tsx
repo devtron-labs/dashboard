@@ -677,16 +677,12 @@ export default function CIPipeline({
         )
     }
 
-    const { pathname } = useLocation()
     const keys = useKeyDown()
 
     useEffect(() => {
-        if (!pathname.includes('/ci-pipeline/')) return
-        switch (keys.join('')) {
-            case 'Escape':
-                close()
-                break
-        }
+      if (keys.join('') === 'Escape' && typeof close === 'function') {
+          close()
+      }
     }, [keys])
 
     return (
