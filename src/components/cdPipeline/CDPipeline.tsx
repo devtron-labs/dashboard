@@ -123,6 +123,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     componentDidMount() {
         this.getDeploymentStrategies()
+        document.addEventListener("keydown", this.escFunction);
+    }
+
+    componentWillUnmount() {
+      document.removeEventListener("keydown", this.escFunction);
+    }
+
+    escFunction(event) {
+      if (event.keyCode === 27 || event.key === "Escape") {
+        this.props.close();
+      }
     }
 
     getDeploymentStrategies(): void {
