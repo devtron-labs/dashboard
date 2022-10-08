@@ -5,7 +5,7 @@ import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
-import './k8resources.css';
+import './k8resources.scss';
 import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 
 export default function K8ResourceComponent({

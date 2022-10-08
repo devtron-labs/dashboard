@@ -7,7 +7,7 @@ import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
 import { APP_STATUS_CUSTOM_MESSAGES, APP_STATUS_HEADERS } from '../../../../../config'
 import { StatusFilterButtonComponent } from '../../k8Resource/StatusFilterButton.component'
-import { NodeStatus } from '../../appDetails.type'
+import { AppStatusDetailType, NodeStatus } from '../../appDetails.type'
 
 interface NodeStreamMap {
     group: string
@@ -21,20 +21,17 @@ interface NodeStreamMap {
 }
 
 const STATUS_SORTING_ORDER = {
-    [NodeStatus.Degraded]: 1,
-    [NodeStatus.Progressing]: 2,
-    [NodeStatus.Healthy]: 3,
+    [NodeStatus.Missing]: 1,
+    [NodeStatus.Degraded]: 2,
+    [NodeStatus.Progressing]: 3,
+    [NodeStatus.Healthy]: 4,
 }
 
 function AppStatusDetailModal({
     close,
     appStreamData,
     showAppStatusMessage,
-}: {
-    close: () => void
-    appStreamData: any
-    showAppStatusMessage?: boolean
-}) {
+}: AppStatusDetailType) {
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
@@ -44,17 +41,15 @@ function AppStatusDetailModal({
     let flattenedNodes = []
     if (nodesKeyArray.length > 0) {
         for (let index = 0; index < nodesKeyArray.length; index++) {
-            //if(nodesKeyArray[index].toLowerCase() !== 'rollout'){
             const element = nodes.nodes[nodesKeyArray[index]]
             element.forEach((childElement) => {
                 childElement.health && flattenedNodes.push(childElement)
             })
-            //}
         }
         flattenedNodes.sort((a, b) => {
             return (
-                STATUS_SORTING_ORDER[a.health.status.toLowerCase()] -
-                STATUS_SORTING_ORDER[b.health.status.toLowerCase()]
+                STATUS_SORTING_ORDER[a.health.status?.toLowerCase()] -
+                STATUS_SORTING_ORDER[b.health.status?.toLowerCase()]
             )
         })
     }
@@ -214,7 +209,7 @@ function AppStatusDetailModal({
                                     key={`${nodeDetails.kind}/${nodeDetails.name}`}
                                 >
                                     <div>{nodeDetails.kind}</div>
-                                    <div className="dc__ellipsis-left dc__align-left">{nodeDetails.name}</div>
+                                    <div>{nodeDetails.name}</div>
                                     <div
                                         className={`app-summary__status-name f-${
                                             nodeDetails.health && nodeDetails.health.status
