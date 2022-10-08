@@ -717,16 +717,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     loadOlderImages() {
         if (this.props.onClickRollbackMaterial && !this.state.loadingMore) {
-            this.props.onClickRollbackMaterial(
-                this.props.pipelineId,
-                this.props.material.length + 1,
-                20,
-                this.handleOlderImagesLoading,
-            )
-            this.setState({
-                showOlderImages: false,
-                loadingMore: true,
-            })
+            if (this.props.material.length > 19) {
+                this.props.onClickRollbackMaterial(
+                    this.props.pipelineId,
+                    this.props.material.length + 1,
+                    20,
+                    this.handleOlderImagesLoading,
+                )
+                this.setState({
+                    showOlderImages: false,
+                    loadingMore: true,
+                })
+            } else {
+                this.setState({
+                    showOlderImages: false,
+                    noMoreImages: true,
+                })
+            }
         }
     }
 
@@ -798,18 +805,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     : 'Select Image'}
                             </div>
                             {this.renderMaterial()}
-                            {this.state.isRollbackTrigger && !this.state.noMoreImages && (
-                                <button
-                                    className="show-older-images-cta cta ghosted flex h-32"
-                                    onClick={this.loadOlderImages}
-                                >
-                                    {this.state.loadingMore ? (
-                                        <Progressing styles={{ height: '32px' }} />
-                                    ) : (
-                                        'Show older images'
-                                    )}
-                                </button>
-                            )}
+                            {this.state.isRollbackTrigger &&
+                                !this.state.noMoreImages &&
+                                this.props.material.length !== 1 && (
+                                    <button
+                                        className="show-older-images-cta cta ghosted flex h-32"
+                                        onClick={this.loadOlderImages}
+                                    >
+                                        {this.state.loadingMore ? (
+                                            <Progressing styles={{ height: '32px' }} />
+                                        ) : (
+                                            'Show older images'
+                                        )}
+                                    </button>
+                                )}
                         </>
                     )}
                 </div>
