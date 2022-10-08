@@ -75,6 +75,7 @@ import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/a
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
 import { getDeploymentStatusDetail } from './appDetails.service';
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
+import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
 import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
 import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
 
@@ -329,20 +330,6 @@ export const Details: React.FC<{
         </div>
     }
 
-    let message = null;
-    const conditions = appDetails?.resourceTree?.conditions;
-    const Rollout = aggregatedNodes?.nodes?.Rollout
-    if (
-        ['progressing', 'degraded'].includes(appDetails?.resourceTree?.status.toLowerCase()) &&
-        Array.isArray(conditions) &&
-        conditions?.length > 0 &&
-        conditions[0].message
-    ) {
-        message = conditions[0].message;
-    } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0]?.health?.message;
-    }
-
     async function handleHibernate(e) {
         try {
             setHibernating(true)
@@ -383,6 +370,10 @@ export const Details: React.FC<{
 
     const hideDeploymentDetailModal = ():void=>{
       toggleDeploymentDetailedStatus(false)
+    }
+
+    const hideAppDetailsStatus = ():void=>{
+      toggleDetailedStatus(false)
     }
 
     if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0){
@@ -449,15 +440,11 @@ export const Details: React.FC<{
                         isDevtronApp={true}
                     />
                     {detailedStatus && (
-                        <ProgressStatus
-                            message={message}
-                            nodes={aggregatedNodes}
-                            streamData={streamData}
-                            status={appDetails?.resourceTree?.status}
-                            close={(e) => toggleDetailedStatus(false)}
-                            appName={appDetails.appName}
-                            environmentName={appDetails.environmentName}
-                        />
+                          <AppStatusDetailModal
+                              close={hideAppDetailsStatus}
+                              appStreamData={streamData}
+                              showAppStatusMessage={false}
+                          />
                     )}
                      {deploymentDetailedStatus && (
                         <DeploymentStatusDetailModal
@@ -1101,110 +1088,6 @@ export function TimeRangeSelector({
         </div>
     );
 }
-
-export const ProgressStatus: React.FC<{
-    streamData: AppStreamData;
-    nodes: AggregatedNodes;
-    appName: string;
-    environmentName: string;
-    status: any;
-    close: (...args) => void;
-    message: string;
-}> = ({ streamData, nodes, status, close, message, appName, environmentName }) => {
-    const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
-    useEffect(() => {
-        const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
-            (agg, curr) => {
-                agg.set(`${curr.kind}/${curr.name}`, curr);
-                return agg;
-            },
-            new Map(),
-        );
-        setNodeStatusMap(stats);
-    }, [streamData]);
-
-    function getNodeMessage(kind, name) {
-        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-            const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
-            if (status === 'SyncFailed') return 'Unable to apply changes: ' + message;
-        }
-        return '';
-    }
-
-    return (
-        <VisibleModal className="app-status__material-modal">
-            <div className="app-status-detai">
-                <div className="title flex left">
-                    App status detail
-                    <div className="fa fa-close" onClick={close} />
-                </div>
-                <div className="flex left">
-                    <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
-                    {message && <div>{message}</div>}
-                </div>
-                {status.toLowerCase() !== 'missing' && (
-                    <div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    {['name', 'status', 'message'].map((n) => (
-                                        <th>{n}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {nodes &&
-                                    Object.keys(nodes.nodes)
-                                        .filter((kind) => kind.toLowerCase() !== 'rollout')
-                                        .map((kind) =>
-                                            Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
-                                                <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
-                                                    <td valign="top">
-                                                        <div className="kind-name">
-                                                            <div>{nodeDetails.kind}/</div>
-                                                            <div className="dc__ellipsis-left">{nodeDetails.name}</div>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        valign="top"
-                                                        className={`app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
-                                                            ? nodeDetails.health.status.toLowerCase()
-                                                            : ''
-                                                            }`}
-                                                    >
-                                                        {nodeDetails.status
-                                                            ? nodeDetails.status
-                                                            : nodeDetails.health
-                                                                ? nodeDetails.health.status
-                                                                : ''}
-                                                    </td>
-                                                    <td valign="top">
-                                                        <div
-                                                            style={{
-                                                                display: 'grid',
-                                                                gridAutoColumns: '1fr',
-                                                                gridRowGap: '8px',
-                                                            }}
-                                                        >
-                                                            {getNodeMessage(kind, nodeDetails.name) && (
-                                                                <div>{getNodeMessage(kind, nodeDetails.name)}</div>
-                                                            )}
-                                                            {nodeDetails.health && nodeDetails.health.message && (
-                                                                <div>{nodeDetails.health.message}</div>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )),
-                                        )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-        </VisibleModal>
-    );
-};
 
 const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);

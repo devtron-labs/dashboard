@@ -915,11 +915,15 @@ button.anchor {
     &.succeeded {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
+        &.healthy--node {
+          background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
+          background-size: contain, contain;
+        }
     }
 
     &.missing {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/missing.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.unknown {
@@ -941,11 +945,6 @@ button.anchor {
     &.degraded {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/degraded.svg'), $background;
-
-        &.degraded--node {
-            background: url('../assets/icons/misc/errorInfo.svg');
-            transform: rotate(180deg);
-        }
     }
 
     &.progressing,
@@ -2119,19 +2118,19 @@ textarea {
 textarea::-webkit-input-placeholder {
     color: var(--N400);
 }
-  
-textarea:-moz-placeholder { 
-    color: var(--N400); 
+
+textarea:-moz-placeholder {
+    color: var(--N400);
 }
 
 textarea::-moz-placeholder {
-    color: var(--N400); 
+    color: var(--N400);
 }
 
 textarea:-ms-input-placeholder {
-    color: var(--N400); 
+    color: var(--N400);
 }
 
 textarea::placeholder {
-    color: var(--N400); 
+    color: var(--N400);
 }
