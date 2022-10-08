@@ -102,7 +102,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
     }
 
   escFunction(event) {
-    if (event.keyCode === 27 || event.key === 'Escape' && typeof this.props.close === 'function') {
+    if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
         this.props.close()
     }
   }
