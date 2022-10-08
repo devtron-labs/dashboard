@@ -187,7 +187,7 @@ function AppStatusDetailModal({
                             {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree.status.toUpperCase()]}
                         </div>
                     )}
-                    <div className="pt-16 pl-20 pb-16">
+                    <div className="pt-16 pl-20 pb-8">
                         <div className="flexbox pr-20 w-100">
                             <div>
                                 <StatusFilterButtonComponent nodes={flattenedNodes} handleFilterClick={onFilterClick} />

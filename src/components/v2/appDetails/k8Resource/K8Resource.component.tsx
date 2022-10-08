@@ -31,7 +31,7 @@ export default function K8ResourceComponent({
 
     return (
         <div className="bcn-0" style={{ justifyContent: 'space-between' }}>
-            <div className="pt-16 pl-20 pb-16">
+            <div className="pt-16 pl-20 pb-8">
                 <FilterResource nodes={nodes} />
             </div>
             {nodes.length > 0 ? (
