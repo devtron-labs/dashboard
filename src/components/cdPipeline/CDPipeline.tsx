@@ -200,7 +200,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     getCDPipeline(): void {
-      console.log( this.props)
         getCDPipelineConfig(this.props.match.params.appId, this.props.match.params.cdPipelineId)
             .then((data) => {
                 let pipelineConfigFromRes = data.pipelineConfig
