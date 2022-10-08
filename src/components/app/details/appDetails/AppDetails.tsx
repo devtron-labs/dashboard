@@ -71,11 +71,13 @@ import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType } from '../../../v2/appDetails/appDetails.type';
+import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type';
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
 import { getDeploymentStatusDetail } from './appDetails.service';
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
+import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
+import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -330,14 +332,39 @@ export const Details: React.FC<{
 
     async function handleHibernate(e) {
         try {
-            setHibernating(true);
-            await stopStartApp(Number(params.appId), Number(params.envId), appDetails.resourceTree.status.toLowerCase() === 'hibernating' ? 'START' : 'STOP');
-            toast.success('Deployment initiated.');
-            setHibernateConfirmationModal('');
+            setHibernating(true)
+            const isUnHibernateReq = ['hibernating', 'hibernated'].includes(
+                appDetails.resourceTree.status.toLowerCase(),
+            )
+            if (appDetails.deploymentAppType === DeploymentAppType.helm) {
+                const rolloutNode = appDetails.resourceTree.nodes?.filter((_n) => _n.kind === NodeTypes.Rollout)?.[0]
+                if (rolloutNode) {
+                    const _stopStartApp = isUnHibernateReq ? unhibernateApp : hibernateApp
+                    const requestPayload: HibernateRequest = {
+                        appId: `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}-${appDetails.environmentName}`,
+                        resources: [
+                            {
+                                kind: rolloutNode.kind,
+                                name: rolloutNode.name,
+                                group: rolloutNode.group,
+                                version: rolloutNode.version,
+                                namespace: rolloutNode.namespace,
+                            },
+                        ],
+                    }
+
+                    await _stopStartApp(requestPayload)
+                }
+            } else {
+                await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
+            }
+            await callAppDetailsAPI()
+            toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
+            setHibernateConfirmationModal('')
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setHibernating(false);
+            setHibernating(false)
         }
     }
 
@@ -463,7 +490,7 @@ export const Details: React.FC<{
                                             scaled
                                             {hibernateConfirmationModal === 'hibernate'
                                                 ? ' down to 0 '
-                                                : ' upto its original count '}
+                                                : ' up to its original count '}
                                             on {appDetails.environmentName}
                                         </b>
                                         environment.
@@ -473,7 +500,7 @@ export const Details: React.FC<{
                                 <p className='mt-16'>Are you sure you want to continue?</p>
                             </ConfirmationDialog.Body>
                             <ConfirmationDialog.ButtonGroup>
-                                <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
+                                <button className="cta cancel" disabled={hibernating} onClick={(e) => setHibernateConfirmationModal('')}>
                                     Cancel
                                 </button>
                                 <button className="cta" disabled={hibernating} onClick={handleHibernate}>

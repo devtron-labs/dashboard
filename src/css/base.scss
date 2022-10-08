@@ -956,7 +956,8 @@ button.anchor {
         animation: unset;
     }
 
-    &.hibernating {
+    &.hibernating,
+    &.hibernated {
         background-size: contain, contain;
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
     }
