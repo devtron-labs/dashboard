@@ -350,7 +350,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
-                        className={`material-history__top ${
+                        className={`material-history__top mh-66 ${
                             !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
                         style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
