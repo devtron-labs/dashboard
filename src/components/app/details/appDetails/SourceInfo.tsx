@@ -91,9 +91,7 @@ export function SourceInfo({
                     {showHibernateModal && (
                         <button
                             className="cta cta-with-img small cancel fs-12 fw-6"
-                            onClick={(e) =>
-                                showHibernateModal(isHibernated ? 'resume' : 'hibernate')
-                            }
+                            onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
                         >
                             <ScaleDown
                                 className={`icon-dim-16 mr-6 rotate`}
@@ -136,7 +134,7 @@ export function SourceInfo({
                                     <span
                                         className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
                                     >
-                                        {status}
+                                        {isHibernated ? 'Hibernating' : status}
                                     </span>
                                 </div>
                                 <div className="flex left">
