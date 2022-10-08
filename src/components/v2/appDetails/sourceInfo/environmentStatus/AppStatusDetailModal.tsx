@@ -27,11 +27,7 @@ const STATUS_SORTING_ORDER = {
     [NodeStatus.Healthy]: 4,
 }
 
-function AppStatusDetailModal({
-    close,
-    appStreamData,
-    showAppStatusMessage,
-}: AppStatusDetailType) {
+function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: AppStatusDetailType) {
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
@@ -132,7 +128,7 @@ function AppStatusDetailModal({
             } else {
                 setFilteredNodes(
                     flattenedNodes.filter(
-                        (nodeDetails) => nodeDetails.health?.status?.toLowerCase() === selectedFilter.toLowerCase(),
+                        (nodeDetails) => nodeDetails.health.status?.toLowerCase() === selectedFilter.toLowerCase(),
                     ),
                 )
             }
@@ -212,16 +208,10 @@ function AppStatusDetailModal({
                                     <div>{nodeDetails.name}</div>
                                     <div
                                         className={`app-summary__status-name f-${
-                                            nodeDetails.health && nodeDetails.health.status
-                                                ? nodeDetails.health.status.toLowerCase()
-                                                : ''
+                                            nodeDetails.health.status ? nodeDetails.health.status.toLowerCase() : ''
                                         }`}
                                     >
-                                        {nodeDetails.status
-                                            ? nodeDetails.status
-                                            : nodeDetails.health
-                                            ? nodeDetails.health.status
-                                            : ''}
+                                        {nodeDetails.status ? nodeDetails.status : nodeDetails.health.status}
                                     </div>
                                     <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
                                 </div>
