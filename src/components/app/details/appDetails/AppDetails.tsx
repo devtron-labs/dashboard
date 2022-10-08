@@ -346,12 +346,12 @@ export const Details: React.FC<{
     async function handleHibernate(e) {
         try {
             setHibernating(true)
+            const isUnHibernateReq = ['hibernating', 'hibernated'].includes(
+                appDetails.resourceTree.status.toLowerCase(),
+            )
             if (appDetails.deploymentAppType === DeploymentAppType.helm) {
                 const rolloutNode = appDetails.resourceTree.nodes?.filter((_n) => _n.kind === NodeTypes.Rollout)?.[0]
                 if (rolloutNode) {
-                    const isUnHibernateReq = ['hibernating', 'hibernated'].includes(
-                        appDetails.resourceTree.status.toLowerCase(),
-                    )
                     const _stopStartApp = isUnHibernateReq ? unhibernateApp : hibernateApp
                     const requestPayload: HibernateRequest = {
                         appId: `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}-${appDetails.environmentName}`,
@@ -369,14 +369,10 @@ export const Details: React.FC<{
                     await _stopStartApp(requestPayload)
                 }
             } else {
-                await stopStartApp(
-                    Number(params.appId),
-                    Number(params.envId),
-                    appDetails.resourceTree.status.toLowerCase() === 'hibernating' ? 'START' : 'STOP',
-                )
+                await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             }
-            callAppDetailsAPI()
-            toast.success('Deployment initiated.')
+            await callAppDetailsAPI()
+            toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
             setHibernateConfirmationModal('')
         } catch (err) {
             showError(err)
@@ -507,7 +503,7 @@ export const Details: React.FC<{
                                             scaled
                                             {hibernateConfirmationModal === 'hibernate'
                                                 ? ' down to 0 '
-                                                : ' upto its original count '}
+                                                : ' up to its original count '}
                                             on {appDetails.environmentName}
                                         </b>
                                         environment.
@@ -517,7 +513,7 @@ export const Details: React.FC<{
                                 <p className='mt-16'>Are you sure you want to continue?</p>
                             </ConfirmationDialog.Body>
                             <ConfirmationDialog.ButtonGroup>
-                                <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
+                                <button className="cta cancel" disabled={hibernating} onClick={(e) => setHibernateConfirmationModal('')}>
                                     Cancel
                                 </button>
                                 <button className="cta" disabled={hibernating} onClick={handleHibernate}>

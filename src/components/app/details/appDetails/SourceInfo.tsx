@@ -59,6 +59,7 @@ export function SourceInfo({
             action: 'Deployment status clicked',
         })
     }
+    const isHibernated =  ['hibernating', 'hibernated'].includes(status.toLowerCase())
     return (
         <div className="flex left w-100 column source-info-container">
             <div className="flex left w-100 mb-16">
@@ -91,16 +92,16 @@ export function SourceInfo({
                         <button
                             className="cta cta-with-img small cancel fs-12 fw-6"
                             onClick={(e) =>
-                                showHibernateModal(status.toLowerCase() === 'hibernating' ? 'resume' : 'hibernate')
+                                showHibernateModal(isHibernated ? 'resume' : 'hibernate')
                             }
                         >
                             <ScaleDown
                                 className={`icon-dim-16 mr-6 rotate`}
                                 style={{
-                                    ['--rotateBy' as any]: status.toLowerCase() === 'hibernating' ? '180deg' : '0deg',
+                                    ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
                                 }}
                             />
-                            {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
+                            {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
                         </button>
                     )}
                 </div>
