@@ -14,7 +14,7 @@ import { ServerErrors } from '../../../../modals/commonTypes'
 import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import { URLS, ViewType, SourceTypeMap, BUILD_STATUS } from '../../../../config'
@@ -37,7 +37,7 @@ export const TriggerViewContext = createContext({
     onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {},
     onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
-    onClickRollbackMaterial: (cdNodeId) => {},
+    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
     closeCIModal: () => {},
     selectCommit: (materialId: string, hash: string) => {},
     selectMaterial: (materialId) => {},
@@ -276,7 +276,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 //Create maps from Array
                 if (allCIs.length) {
                     allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = {status: pipeline.ciStatus, storageConfigured: pipeline.storageConfigured || false}
+                        ciMap[pipeline.ciPipelineId] = {
+                            status: pipeline.ciStatus,
+                            storageConfigured: pipeline.storageConfigured || false,
+                        }
                     })
                 }
                 if (allCDs.length) {
@@ -438,17 +441,32 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickRollbackMaterial = (cdNodeId) => {
-        ReactGA.event({
-            category: 'Trigger View',
-            action: 'Select Rollback Material Clicked',
-        })
-        getRollbackMaterialList(cdNodeId)
+    onClickRollbackMaterial = (
+        cdNodeId: number,
+        offset?: number,
+        size?: number,
+        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+    ) => {
+        if (!offset && !size) {
+            ReactGA.event({
+                category: 'Trigger View',
+                action: 'Select Rollback Material Clicked',
+            })
+        }
+
+        const _offset = offset || 1
+        const _size = size || 20
+
+        getRollbackMaterialList(cdNodeId, _offset, _size)
             .then((response) => {
                 let workflows = this.state.workflows.map((workflow) => {
                     let nodes = workflow.nodes.map((node) => {
-                        if (node.type === 'CD' && +node.id == cdNodeId) {
-                            node.rollbackMaterialList = response.result
+                        if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            if (!offset && !size) {
+                                node.rollbackMaterialList = response.result
+                            } else {
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                            }
                         }
                         return node
                     })
@@ -469,15 +487,23 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         this.getWorkflowStatus()
                     },
                 )
+
+                if (callback && response.result) {
+                    callback(false, response.result.length < 20)
+                }
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 this.setState({ code: errors.code })
+
+                if (callback) {
+                    callback(false)
+                }
             })
     }
 
     // stageType'PRECD' | 'CD' | 'POSTCD'
-    onClickTriggerCDNode = (nodeType: string): void => {
+    onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
         ReactGA.event({
             category: 'Trigger View',
             action: `${nodeType} Triggered`,
@@ -495,10 +521,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let key = this.state.materialType
         ciArtifact = node[key].find((artifact) => artifact.isSelected == true)
         if (appId && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType)
+            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        let msg = key == 'rollbackMaterialList' ? 'Rollback Initiated' : 'Deployment Initiated'
+                        let msg =
+                            key == MATERIAL_TYPE.rollbackMaterialList ? 'Rollback Initiated' : 'Deployment Initiated'
                         toast.success(msg)
                         this.setState(
                             {
@@ -854,7 +881,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         getWorkflows={this.getWorkflows}
                         loader={this.state.loader}
                         setLoader={this.setLoader}
-                        isFirstTrigger={nd?.status?.toLowerCase()=== BUILD_STATUS.NOT_TRIGGERED}
+                        isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                         isCacheAvailable={nd?.storageConfigured}
                     />
                 </>
@@ -883,6 +910,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
             return (
                 <CDMaterial
+                    appId={Number(this.props.match.params.appId)}
+                    pipelineId={this.state.cdNodeId}
                     stageType={this.state.nodeType}
                     material={material}
                     materialType={this.state.materialType}
@@ -890,6 +919,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isLoading={this.state.isLoading}
                     changeTab={this.changeTab}
                     triggerDeploy={this.onClickTriggerCDNode}
+                    onClickRollbackMaterial={this.onClickRollbackMaterial}
                     closeCDModal={this.closeCDModal}
                     selectImage={this.selectImage}
                     toggleSourceInfo={this.toggleSourceInfo}

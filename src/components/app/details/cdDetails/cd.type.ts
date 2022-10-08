@@ -5,6 +5,7 @@ export interface DeploymentHistorySingleValue {
     value: string
 }
 export interface DeploymentHistoryDetail {
+    componentName?: string
     values: Record<string, DeploymentHistorySingleValue>
     codeEditorValue: DeploymentHistorySingleValue
 }

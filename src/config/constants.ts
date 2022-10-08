@@ -22,6 +22,9 @@ export const Routes = {
 
     CD_CONFIG: 'app/cd-pipeline',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
+    SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
