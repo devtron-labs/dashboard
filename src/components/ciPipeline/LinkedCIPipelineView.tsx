@@ -58,17 +58,31 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         }
         this.deletePipeline = this.deletePipeline.bind(this);
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
+        this.escFunction = this.escFunction.bind(this)
     }
 
     componentDidMount() {
-        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true).then((response) => {
-            this.setState({ ...response, loadingData: false }, () => {
-                this.generateSourceUrl();
-            });
-        }).catch((error: ServerErrors) => {
-            showError(error);
-            this.setState({ loadingData: false });
-        })
+      document.addEventListener('keydown', this.escFunction)
+      getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true)
+          .then((response) => {
+              this.setState({ ...response, loadingData: false }, () => {
+                  this.generateSourceUrl()
+              })
+          })
+          .catch((error: ServerErrors) => {
+              showError(error)
+              this.setState({ loadingData: false })
+          })
+    }
+
+    componentWillUnmount() {
+      document.removeEventListener('keydown', this.escFunction)
+    }
+
+    escFunction(event) {
+        if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
+           this.props.close()
+        }
     }
 
     async generateSourceUrl() {
