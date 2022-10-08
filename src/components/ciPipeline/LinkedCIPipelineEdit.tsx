@@ -52,6 +52,21 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         this.selectApp = this.selectApp.bind(this)
         this.handleName = this.handleName.bind(this)
         this.validationRules = new ValidationRules()
+        this.escFunction = this.escFunction.bind(this);
+    }
+
+    componentDidMount() {
+        document.addEventListener('keydown', this.escFunction)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.escFunction)
+    }
+
+    escFunction(event) {
+        if (event.keyCode === 27 || event.key === 'Escape') {
+             this.props.close()
+        }
     }
 
     selectApp({ value }): void {

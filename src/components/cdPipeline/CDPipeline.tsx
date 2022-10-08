@@ -119,6 +119,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
         this.savePipeline = this.savePipeline.bind(this)
         this.selectEnvironment = this.selectEnvironment.bind(this)
+        this.escFunction = this.escFunction.bind(this);
     }
 
     componentDidMount() {
@@ -132,7 +133,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     escFunction(event) {
       if (event.keyCode === 27 || event.key === "Escape") {
-        this.props.close();
+      this.props &&  this.props.close();
       }
     }
 
@@ -199,6 +200,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     getCDPipeline(): void {
+      console.log( this.props)
         getCDPipelineConfig(this.props.match.params.appId, this.props.match.params.cdPipelineId)
             .then((data) => {
                 let pipelineConfigFromRes = data.pipelineConfig
