@@ -67,12 +67,13 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         this.copyToClipboard = this.copyToClipboard.bind(this);
         this.validationRules = new ValidationRules();
         this.handleSourceChange = this.handleSourceChange.bind(this);
-
+        this.escFunction = this.escFunction.bind(this);
     }
 
     componentDidMount() {
         this.getHostURLConfig();
         if (this.props.match.params.ciPipelineId) {
+             document.addEventListener("keydown", this.escFunction);
             getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response });
             }).catch((error: ServerErrors) => {
@@ -95,6 +96,16 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             })
         }
     }
+
+  componentWillUnmount() {
+      document.removeEventListener('keydown', this.escFunction)
+    }
+
+  escFunction(event) {
+    if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
+        this.props.close()
+    }
+  }
 
     getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
