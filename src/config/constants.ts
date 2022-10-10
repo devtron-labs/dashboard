@@ -603,9 +603,9 @@ export const CLUSTER_COMMAND = {
     }
 }
 
-export const KIND = {
-    INGRESS: 'Ingress',
-    SERVICE: 'Service'
+export enum KIND {
+    INGRESS = 'Ingress',
+    SERVICE = 'Service'
 }
 
 export const MODULE_STATUS_RETRY_COUNT = 3;
