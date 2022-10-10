@@ -152,6 +152,8 @@ export interface DeploymentTemplateOptionsTabProps {
     ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
     selectedChartRefId: number
     disableVersionSelect?: boolean
+    yamlMode: boolean
+    toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -175,6 +177,7 @@ export interface DeploymentTemplateEditorViewProps {
     setFetchedValues: React.Dispatch<React.SetStateAction<Record<number, string>>>
     readOnly?: boolean
     globalChartRefId?: number
+    yamlMode: boolean
 }
 
 export interface EsoData {

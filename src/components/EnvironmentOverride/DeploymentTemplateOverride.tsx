@@ -236,6 +236,7 @@ function DeploymentTemplateOverrideForm({
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number, string>>({})
+    const [yamlMode, toggleYamlMode] = useState(true)
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -363,6 +364,8 @@ function DeploymentTemplateOverrideForm({
                     selectedChart={state.selectedChart}
                     selectChart={handleSelectChart}
                     selectedChartRefId={state.selectedChartRefId}
+                    yamlMode={yamlMode}
+                    toggleYamlMode={toggleYamlMode}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -397,6 +400,7 @@ function DeploymentTemplateOverrideForm({
                     setFetchedValues={setFetchedValues}
                     readOnly={!state.duplicate}
                     globalChartRefId={state.data.globalChartRefId}
+                    yamlMode={yamlMode}
                 />
                 {!state.openComparison && !state.showReadme && (
                     <DeploymentConfigFormCTA

@@ -44,6 +44,7 @@ export default function DeploymentConfig({
     const history = useHistory()
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
+    const [yamlMode, toggleYamlMode] = useState(true)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
@@ -212,6 +213,8 @@ export default function DeploymentConfig({
                     selectedChart={selectedChart}
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
+                    yamlMode={yamlMode}
+                    toggleYamlMode={toggleYamlMode}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -229,6 +232,7 @@ export default function DeploymentConfig({
                     environments={environments || []}
                     fetchedValues={fetchedValues}
                     setFetchedValues={setFetchedValues}
+                    yamlMode={yamlMode}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA

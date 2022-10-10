@@ -8,7 +8,9 @@ import {
     CHECKBOX_VALUE,
     ConditionalWrap,
     isVersionLessThanOrEqualToTarget,
+    not,
     Progressing,
+    RadioGroup,
     showError,
     sortObjectArrayAlphabetically,
     versionComparator,
@@ -196,7 +198,7 @@ export const ChartTypeVersionOptions = ({
     }
 
     return (
-        <div className="chart-type-version-options">
+        <div className="chart-type-version-options pr-16 pt-8 pb-8 dc__border-right">
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 {isUnSet ? (
@@ -332,24 +334,41 @@ export const DeploymentTemplateOptionsTab = ({
     selectChart,
     selectedChartRefId,
     disableVersionSelect,
+    yamlMode,
+    toggleYamlMode,
 }: DeploymentTemplateOptionsTabProps) => {
+    function changeEditorMode() {
+        toggleYamlMode(not)
+    }
     return (
-        <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16 pt-8 pb-8">
+        <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16">
             {!openComparison && !openReadMe ? (
-                <ChartTypeVersionOptions
-                    isUnSet={isUnSet}
-                    charts={charts}
-                    selectedChart={selectedChart}
-                    selectChart={selectChart}
-                    selectedChartRefId={selectedChartRefId}
-                    disableVersionSelect={disableVersionSelect}
-                />
+                <div className="flex">
+                    <ChartTypeVersionOptions
+                        isUnSet={isUnSet}
+                        charts={charts}
+                        selectedChart={selectedChart}
+                        selectChart={selectChart}
+                        selectedChartRefId={selectedChartRefId}
+                        disableVersionSelect={disableVersionSelect}
+                    />
+                    <RadioGroup
+                        className="gui-yaml-switch pl-16"
+                        name="yaml-mode"
+                        initialTab={yamlMode ? 'yaml' : 'gui'}
+                        disabled={false}
+                        onChange={changeEditorMode}
+                    >
+                        <RadioGroup.Radio value="gui">Basic</RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
+                    </RadioGroup>
+                </div>
             ) : (
                 <span className="flex fs-13 fw-6 cn-9 h-32">
                     {openComparison ? 'Comparing deployment template' : 'Showing README.md'}
                 </span>
             )}
-            <CompareOptions
+            {yamlMode && <CompareOptions
                 isComparisonAvailable={isComparisonAvailable}
                 isEnvOverride={isEnvOverride}
                 openComparison={openComparison}
@@ -358,7 +377,7 @@ export const DeploymentTemplateOptionsTab = ({
                 openReadMe={openReadMe}
                 isReadMeAvailable={isReadMeAvailable}
                 handleReadMeClick={handleReadMeClick}
-            />
+            />}
         </div>
     )
 }
@@ -569,6 +588,7 @@ export const DeploymentTemplateEditorView = ({
     setFetchedValues,
     readOnly,
     globalChartRefId,
+    yamlMode,
 }: DeploymentTemplateEditorViewProps) => {
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
@@ -635,7 +655,7 @@ export const DeploymentTemplateEditorView = ({
         }
     }, [openComparison])
 
-    return (
+    return yamlMode ? (
         <>
             {showReadme && (
                 <div className="dt-readme dc__border-right">
@@ -691,6 +711,8 @@ export const DeploymentTemplateEditorView = ({
                 </CodeEditor>
             </div>
         </>
+    ) : (
+      <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom">button mode</div>
     )
 }
 
