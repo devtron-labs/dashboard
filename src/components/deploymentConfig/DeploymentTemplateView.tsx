@@ -23,6 +23,8 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Next } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as Locked } from '../../assets/icons/ic-locked.svg'
+import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -41,6 +43,7 @@ import {
 } from './types'
 import { getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -368,16 +371,18 @@ export const DeploymentTemplateOptionsTab = ({
                     {openComparison ? 'Comparing deployment template' : 'Showing README.md'}
                 </span>
             )}
-            {yamlMode && <CompareOptions
-                isComparisonAvailable={isComparisonAvailable}
-                isEnvOverride={isEnvOverride}
-                openComparison={openComparison}
-                handleComparisonClick={handleComparisonClick}
-                chartConfigLoading={chartConfigLoading}
-                openReadMe={openReadMe}
-                isReadMeAvailable={isReadMeAvailable}
-                handleReadMeClick={handleReadMeClick}
-            />}
+            {yamlMode && (
+                <CompareOptions
+                    isComparisonAvailable={isComparisonAvailable}
+                    isEnvOverride={isEnvOverride}
+                    openComparison={openComparison}
+                    handleComparisonClick={handleComparisonClick}
+                    chartConfigLoading={chartConfigLoading}
+                    openReadMe={openReadMe}
+                    isReadMeAvailable={isReadMeAvailable}
+                    handleReadMeClick={handleReadMeClick}
+                />
+            )}
         </div>
     )
 }
@@ -589,6 +594,7 @@ export const DeploymentTemplateEditorView = ({
     readOnly,
     globalChartRefId,
     yamlMode,
+    toggleYamlMode,
 }: DeploymentTemplateEditorViewProps) => {
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
@@ -655,6 +661,18 @@ export const DeploymentTemplateEditorView = ({
         }
     }, [openComparison])
 
+    const switchToYAMLMode = (): void=>{
+      toggleYamlMode(not)
+    }
+
+    const renderActionButton = () => {
+        return (
+            <span className="cb-5 cursor fw-6" onClick={switchToYAMLMode}>
+                Switch to Advanced
+            </span>
+        )
+    }
+
     return yamlMode ? (
         <>
             {showReadme && (
@@ -712,7 +730,21 @@ export const DeploymentTemplateEditorView = ({
             </div>
         </>
     ) : (
-      <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom">button mode</div>
+        <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom p-20">
+            <InfoColourBar
+                message="Basic has limited configurations. Changes made here will be updated in Advanced (YAML)."
+                classname="info_bar"
+                Icon={InfoIcon}
+                iconClass="icon-dim-20"
+            />
+            <InfoColourBar
+                message="To modify additional configurations"
+                classname="dc__content-start bw-1 bcv-1 ev-2 bcv-1"
+                Icon={Help}
+                iconClass="fcv-5 icon-dim-20"
+                renderActionButton={renderActionButton}
+            />
+        </div>
     )
 }
 

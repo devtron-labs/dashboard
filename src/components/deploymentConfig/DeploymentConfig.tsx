@@ -233,6 +233,7 @@ export default function DeploymentConfig({
                     fetchedValues={fetchedValues}
                     setFetchedValues={setFetchedValues}
                     yamlMode={yamlMode}
+                    toggleYamlMode={toggleYamlMode}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA

@@ -178,6 +178,7 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     yamlMode: boolean
+    toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface EsoData {

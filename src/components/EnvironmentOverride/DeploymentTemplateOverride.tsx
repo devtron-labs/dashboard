@@ -401,6 +401,7 @@ function DeploymentTemplateOverrideForm({
                     readOnly={!state.duplicate}
                     globalChartRefId={state.data.globalChartRefId}
                     yamlMode={yamlMode}
+                    toggleYamlMode={toggleYamlMode}
                 />
                 {!state.openComparison && !state.showReadme && (
                     <DeploymentConfigFormCTA
