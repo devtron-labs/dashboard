@@ -81,14 +81,30 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                     </div>
                                     {item.map((value) => (
                                         <div className="url-table_row table-content pt-6 pb-6 fw-4 cn-9 fs-13 dc__visible-hover dc__visible-hover--parent">
-                                            <div className="dc__ellipsis-left direction-left w-200">{value.name}</div>
+                                            <Tippy
+                                                content={value.name}
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                            >
+                                                <div className="dc__ellipsis-left direction-left w-200">
+                                                    {value.name}
+                                                </div>
+                                            </Tippy>
                                             {value?.urls && (
                                                 <div className="items-width-1">
                                                     {value.urls.map((url) => (
                                                         <div className="flex left">
-                                                            <span className="url-box dc__ellipsis-right mr-6">
-                                                                {url}
-                                                            </span>
+                                                            <Tippy
+                                                                content={url}
+                                                                className="default-tt"
+                                                                arrow={false}
+                                                                placement="top"
+                                                            >
+                                                                <span className="url-box dc__ellipsis-right mr-6">
+                                                                    {url}
+                                                                </span>
+                                                            </Tippy>
                                                             <span className="icon-dim-16">
                                                                 <CopyToClipboardText
                                                                     iconClass="pointer dc__visible-hover--child icon-dim-16"
@@ -100,9 +116,16 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                 </div>
                                             )}
                                             <div className="flex left items-width-1">
-                                                <span className="url-box dc__ellipsis-right mr-6">
-                                                    {value.pointsTo}
-                                                </span>
+                                                <Tippy
+                                                    content={value.pointsTo}
+                                                    className="default-tt"
+                                                    arrow={false}
+                                                    placement="top"
+                                                >
+                                                    <span className="url-box dc__ellipsis-right mr-6">
+                                                        {value.pointsTo}
+                                                    </span>
+                                                </Tippy>
                                                 <span className="icon-dim-16">
                                                     <CopyToClipboardText
                                                         iconClass="pointer dc__visible-hover--child icon-dim-16"
