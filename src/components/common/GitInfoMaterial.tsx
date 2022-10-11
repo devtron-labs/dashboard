@@ -82,7 +82,7 @@ export default function GitInfoMaterial({
         }
         return (
             <div className="material-list">
-                <div className="material-list__title material-list__title--border-bottom">Git Repository</div>
+                <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">Git Repository</div>
                 <MaterialSource
                     material={material}
                     selectMaterial={context.selectMaterial}

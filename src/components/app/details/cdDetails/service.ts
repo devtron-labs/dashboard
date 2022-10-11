@@ -63,7 +63,7 @@ export interface DeploymentHistoryDetailRes extends ResponseType {
     result?: DeploymentHistoryDetail
 }
 
-const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
+export const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     const deploymentTemplateData = {}
     if (rawData['templateVersion']) {
         deploymentTemplateData['templateVersion'] = { displayName: 'Chart Version', value: rawData['templateVersion'] }
@@ -77,7 +77,7 @@ const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistor
     return deploymentTemplateData
 }
 
-const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySingleValue> => {
+export const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     const pipelineConfigData = {}
     if (rawData['pipelineTriggerType']) {
         pipelineConfigData['pipelineTriggerType'] = {
@@ -94,7 +94,7 @@ const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySin
     return pipelineConfigData
 }
 
-const prepareConfigMapAndSecretData = (
+export const prepareConfigMapAndSecretData = (
     rawData,
     type: string,
     historyData: DeploymentHistoryDetail,

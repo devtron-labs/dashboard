@@ -71,10 +71,13 @@ import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType } from '../../../v2/appDetails/appDetails.type';
+import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type';
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
 import { getDeploymentStatusDetail } from './appDetails.service';
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
+import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
+import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
+import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -327,35 +330,50 @@ export const Details: React.FC<{
         </div>
     }
 
-    let message = null;
-    const conditions = appDetails?.resourceTree?.conditions;
-    const Rollout = aggregatedNodes?.nodes?.Rollout
-    if (
-        ['progressing', 'degraded'].includes(appDetails?.resourceTree?.status.toLowerCase()) &&
-        Array.isArray(conditions) &&
-        conditions?.length > 0 &&
-        conditions[0].message
-    ) {
-        message = conditions[0].message;
-    } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0]?.health?.message;
-    }
-
     async function handleHibernate(e) {
         try {
-            setHibernating(true);
-            await stopStartApp(Number(params.appId), Number(params.envId), appDetails.resourceTree.status.toLowerCase() === 'hibernating' ? 'START' : 'STOP');
-            toast.success('Deployment initiated.');
-            setHibernateConfirmationModal('');
+            setHibernating(true)
+            const isUnHibernateReq = ['hibernating', 'hibernated'].includes(
+                appDetails.resourceTree.status.toLowerCase(),
+            )
+            if (appDetails.deploymentAppType === DeploymentAppType.helm) {
+                const rolloutNode = appDetails.resourceTree.nodes?.filter((_n) => _n.kind === NodeTypes.Rollout)?.[0]
+                if (rolloutNode) {
+                    const _stopStartApp = isUnHibernateReq ? unhibernateApp : hibernateApp
+                    const requestPayload: HibernateRequest = {
+                        appId: `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}-${appDetails.environmentName}`,
+                        resources: [
+                            {
+                                kind: rolloutNode.kind,
+                                name: rolloutNode.name,
+                                group: rolloutNode.group,
+                                version: rolloutNode.version,
+                                namespace: rolloutNode.namespace,
+                            },
+                        ],
+                    }
+
+                    await _stopStartApp(requestPayload)
+                }
+            } else {
+                await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
+            }
+            await callAppDetailsAPI()
+            toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
+            setHibernateConfirmationModal('')
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setHibernating(false);
+            setHibernating(false)
         }
     }
 
     const hideDeploymentDetailModal = ():void=>{
       toggleDeploymentDetailedStatus(false)
+    }
+
+    const hideAppDetailsStatus = ():void=>{
+      toggleDetailedStatus(false)
     }
 
     if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0){
@@ -422,15 +440,11 @@ export const Details: React.FC<{
                         isDevtronApp={true}
                     />
                     {detailedStatus && (
-                        <ProgressStatus
-                            message={message}
-                            nodes={aggregatedNodes}
-                            streamData={streamData}
-                            status={appDetails?.resourceTree?.status}
-                            close={(e) => toggleDetailedStatus(false)}
-                            appName={appDetails.appName}
-                            environmentName={appDetails.environmentName}
-                        />
+                          <AppStatusDetailModal
+                              close={hideAppDetailsStatus}
+                              appStreamData={streamData}
+                              showAppStatusMessage={false}
+                          />
                     )}
                      {deploymentDetailedStatus && (
                         <DeploymentStatusDetailModal
@@ -476,7 +490,7 @@ export const Details: React.FC<{
                                             scaled
                                             {hibernateConfirmationModal === 'hibernate'
                                                 ? ' down to 0 '
-                                                : ' upto its original count '}
+                                                : ' up to its original count '}
                                             on {appDetails.environmentName}
                                         </b>
                                         environment.
@@ -486,7 +500,7 @@ export const Details: React.FC<{
                                 <p className='mt-16'>Are you sure you want to continue?</p>
                             </ConfirmationDialog.Body>
                             <ConfirmationDialog.ButtonGroup>
-                                <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
+                                <button className="cta cancel" disabled={hibernating} onClick={(e) => setHibernateConfirmationModal('')}>
                                     Cancel
                                 </button>
                                 <button className="cta" disabled={hibernating} onClick={handleHibernate}>
@@ -1074,110 +1088,6 @@ export function TimeRangeSelector({
         </div>
     );
 }
-
-export const ProgressStatus: React.FC<{
-    streamData: AppStreamData;
-    nodes: AggregatedNodes;
-    appName: string;
-    environmentName: string;
-    status: any;
-    close: (...args) => void;
-    message: string;
-}> = ({ streamData, nodes, status, close, message, appName, environmentName }) => {
-    const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
-    useEffect(() => {
-        const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
-            (agg, curr) => {
-                agg.set(`${curr.kind}/${curr.name}`, curr);
-                return agg;
-            },
-            new Map(),
-        );
-        setNodeStatusMap(stats);
-    }, [streamData]);
-
-    function getNodeMessage(kind, name) {
-        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-            const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
-            if (status === 'SyncFailed') return 'Unable to apply changes: ' + message;
-        }
-        return '';
-    }
-
-    return (
-        <VisibleModal className="app-status__material-modal">
-            <div className="app-status-detai">
-                <div className="title flex left">
-                    App status detail
-                    <div className="fa fa-close" onClick={close} />
-                </div>
-                <div className="flex left">
-                    <div className={`subtitle app-summary__status-name f-${status.toLowerCase()} mr-16`}>{status}</div>
-                    {message && <div>{message}</div>}
-                </div>
-                {status.toLowerCase() !== 'missing' && (
-                    <div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    {['name', 'status', 'message'].map((n) => (
-                                        <th>{n}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {nodes &&
-                                    Object.keys(nodes.nodes)
-                                        .filter((kind) => kind.toLowerCase() !== 'rollout')
-                                        .map((kind) =>
-                                            Array.from(nodes.nodes[kind] as Map<string, any>).map(([nodeName, nodeDetails]) => (
-                                                <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
-                                                    <td valign="top">
-                                                        <div className="kind-name">
-                                                            <div>{nodeDetails.kind}/</div>
-                                                            <div className="dc__ellipsis-left">{nodeDetails.name}</div>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        valign="top"
-                                                        className={`app-summary__status-name f-${nodeDetails.health && nodeDetails.health.status
-                                                            ? nodeDetails.health.status.toLowerCase()
-                                                            : ''
-                                                            }`}
-                                                    >
-                                                        {nodeDetails.status
-                                                            ? nodeDetails.status
-                                                            : nodeDetails.health
-                                                                ? nodeDetails.health.status
-                                                                : ''}
-                                                    </td>
-                                                    <td valign="top">
-                                                        <div
-                                                            style={{
-                                                                display: 'grid',
-                                                                gridAutoColumns: '1fr',
-                                                                gridRowGap: '8px',
-                                                            }}
-                                                        >
-                                                            {getNodeMessage(kind, nodeDetails.name) && (
-                                                                <div>{getNodeMessage(kind, nodeDetails.name)}</div>
-                                                            )}
-                                                            {nodeDetails.health && nodeDetails.health.message && (
-                                                                <div>{nodeDetails.health.message}</div>
-                                                            )}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )),
-                                        )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-        </VisibleModal>
-    );
-};
 
 const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);

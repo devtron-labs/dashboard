@@ -490,7 +490,7 @@ function Form({
     const platformMenuList = (props): JSX.Element => {
         return (
             <components.MenuList {...props}>
-                <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
+                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
                     Type to enter a target platform. Press Enter to accept.
                 </div>
                 {props.children}
