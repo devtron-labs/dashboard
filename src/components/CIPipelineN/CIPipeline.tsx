@@ -677,14 +677,6 @@ export default function CIPipeline({
         )
     }
 
-    const keys = useKeyDown()
-
-    useEffect(() => {
-      if (keys.join('') === 'Escape' && typeof close === 'function') {
-          close()
-      }
-    }, [keys])
-
     return (
         <VisibleModal className="">
             <div
