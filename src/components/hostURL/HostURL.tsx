@@ -29,24 +29,44 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     componentDidMount() {
-        getHostURLConfiguration().then((response) => {
-            let form = response.result;
-            if (!form) {
-                form = {
-                    id: undefined,
-                    key: "url",
-                    value: "",
-                    active: true,
-                }
-            }
-            this.setState({
-                view: ViewType.FORM,
-                form: form
-            })
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code });
-        })
+      let payload = {
+          ...this.state.form,
+          value: window.location.origin,
+      }
+      saveHostURLConfiguration(payload)
+          .then((response) => {
+              this.setState({
+                  saveLoading: false,
+                  form: response.result,
+              })
+          })
+          .catch((error) => {
+              showError(error)
+              this.setState({
+                  statusCode: error.code,
+                  saveLoading: false,
+              })
+          })
+      getHostURLConfiguration()
+          .then((response) => {
+              let form = response.result
+              if (!form) {
+                  form = {
+                      id: undefined,
+                      key: 'url',
+                      value: window.location.origin,
+                      active: true,
+                  }
+              }
+              this.setState({
+                  view: ViewType.FORM,
+                  form: form,
+              })
+          })
+          .catch((error) => {
+              showError(error)
+              this.setState({ view: ViewType.ERROR, statusCode: error.code })
+          })
     }
 
     handleChange(event): void {

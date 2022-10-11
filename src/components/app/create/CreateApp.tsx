@@ -11,7 +11,7 @@ import {
 import { AddNewAppProps, AddNewAppState } from '../types';
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config';
 import { ValidationRules } from './validationRules';
-import { getTeamListMin } from '../../../services/service';
+import { getHostURLConfiguration, getTeamListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
@@ -25,6 +25,7 @@ import AsyncSelect from 'react-select/async';
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil';
 import { Option } from '../../v2/common/ReactSelect.utils';
+import { saveHostURLConfiguration } from '../../hostURL/hosturl.service';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -56,6 +57,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
+            hostURLConfig: undefined
         };
         this.createApp = this.createApp.bind(this);
         this.handleAppname = this.handleAppname.bind(this);
@@ -74,6 +76,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             if (this._inputAppName) this._inputAppName.focus();
         }
     }
+
 
     handleInputChange = (inputTagValue) => {
         let { form, isValid } = { ...this.state };
@@ -139,6 +142,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return true;
     };
 
+     getHostURLConfig = async() => {
+      const { result } = await getHostURLConfiguration()
+      this.setState({hostURLConfig: result})
+      let payload = {
+        id: this.state.hostURLConfig?.id,
+        key: this.state.hostURLConfig?.key,
+        value: this.state.hostURLConfig?.value ? this.state.hostURLConfig.value : window.location.origin,
+        active: this.state.hostURLConfig?.active,
+    }
+         saveHostURLConfiguration(payload);
+    }
+
     createApp(): void {
         const validForm = this.validateForm();
         if (!validForm) {
@@ -175,6 +190,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         createApp(request)
             .then((response) => {
                 if (response.result) {
+                  this.getHostURLConfig()
                     let { form, isValid } = { ...this.state };
                     form.appId = response.result.id;
                     form.appName = response.result.appName;
@@ -453,3 +469,5 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 }
+
+
