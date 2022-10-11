@@ -58,7 +58,6 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
     }
     const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [showSeeMore, setShowSeeMore] = useState(true)
-    const [filteredNodes, setFilteredNodes] = useState(flattenedNodes)
     const [currentFilter, setCurrentFilter] = useState('')
 
     useEffect(() => {
@@ -121,17 +120,8 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
     }
 
     const onFilterClick = (selectedFilter: string): void => {
-        if (currentFilter !== selectedFilter) {
-            setCurrentFilter(selectedFilter)
-            if (selectedFilter === 'ALL') {
-                setFilteredNodes(flattenedNodes)
-            } else {
-                setFilteredNodes(
-                    flattenedNodes.filter(
-                        (nodeDetails) => nodeDetails.health.status?.toLowerCase() === selectedFilter.toLowerCase(),
-                    ),
-                )
-            }
+        if (currentFilter !== selectedFilter.toLowerCase()) {
+            setCurrentFilter(selectedFilter.toLowerCase())
         }
     }
 
@@ -199,23 +189,29 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                             ))}
                         </div>
                         <div className="resource-list fs-13">
-                            {filteredNodes.map((nodeDetails) => (
-                                <div
-                                    className="app-status-row pt-8 pr-20 pb-8 pl-20"
-                                    key={`${nodeDetails.kind}/${nodeDetails.name}`}
-                                >
-                                    <div>{nodeDetails.kind}</div>
-                                    <div>{nodeDetails.name}</div>
+                            {flattenedNodes
+                                .filter(
+                                    (nodeDetails) =>
+                                        currentFilter === 'all' ||
+                                        nodeDetails.health.status?.toLowerCase() === currentFilter,
+                                )
+                                .map((nodeDetails) => (
                                     <div
-                                        className={`app-summary__status-name f-${
-                                            nodeDetails.health.status ? nodeDetails.health.status.toLowerCase() : ''
-                                        }`}
+                                        className="app-status-row pt-8 pr-20 pb-8 pl-20"
+                                        key={`${nodeDetails.kind}/${nodeDetails.name}`}
                                     >
-                                        {nodeDetails.status ? nodeDetails.status : nodeDetails.health.status}
+                                        <div>{nodeDetails.kind}</div>
+                                        <div>{nodeDetails.name}</div>
+                                        <div
+                                            className={`app-summary__status-name f-${
+                                                nodeDetails.health.status ? nodeDetails.health.status.toLowerCase() : ''
+                                            }`}
+                                        >
+                                            {nodeDetails.status ? nodeDetails.status : nodeDetails.health.status}
+                                        </div>
+                                        <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
                                     </div>
-                                    <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                     </div>
                 </div>
