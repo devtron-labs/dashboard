@@ -45,6 +45,8 @@ export default function DeploymentConfig({
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
     const [yamlMode, toggleYamlMode] = useState(true)
+    const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
+    const [currentViewEditor, setCurrentViewEditor] = useState(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
@@ -97,6 +99,8 @@ export default function DeploymentConfig({
                         chartRefId,
                         readme,
                         schema,
+                        isBasicViewLocked,
+                        currentViewEditor
                     },
                 },
             } = await getDeploymentTemplate(+appId, +selectedChart.id)
@@ -106,6 +110,9 @@ export default function DeploymentConfig({
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
+            setIsBasicViewLocked(isBasicViewLocked || true)
+            setCurrentViewEditor(currentViewEditor)
+            toggleYamlMode(currentViewEditor=== 'BASIC'? false: true)
         } catch (err) {
             showError(err)
         } finally {
@@ -137,6 +144,8 @@ export default function DeploymentConfig({
                 valuesOverride: obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
+                isBasicViewLocked,
+                currentViewEditor
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
@@ -215,6 +224,7 @@ export default function DeploymentConfig({
                     selectedChartRefId={selectedChartRefId}
                     yamlMode={yamlMode}
                     toggleYamlMode={toggleYamlMode}
+                    isBasicViewLocked={isBasicViewLocked}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}

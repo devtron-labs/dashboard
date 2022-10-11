@@ -366,6 +366,7 @@ function DeploymentTemplateOverrideForm({
                     selectedChartRefId={state.selectedChartRefId}
                     yamlMode={yamlMode}
                     toggleYamlMode={toggleYamlMode}
+                    isBasicViewLocked={false}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}

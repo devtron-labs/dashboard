@@ -60,7 +60,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                 </Tippy>
             )}
         >
-            <label className={`${className} radio`}>
+            <label className={`${className} radio ${(isDisabled || disabled)? 'disabled': ''}`}>
                 <input
                     type="checkbox"
                     value={value}

@@ -154,6 +154,7 @@ export interface DeploymentTemplateOptionsTabProps {
     disableVersionSelect?: boolean
     yamlMode: boolean
     toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
+    isBasicViewLocked: boolean
 }
 
 export interface DeploymentTemplateEditorViewProps {

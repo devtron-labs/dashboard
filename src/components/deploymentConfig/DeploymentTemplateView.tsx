@@ -27,7 +27,6 @@ import { ReactComponent as Locked } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -342,6 +341,7 @@ export const DeploymentTemplateOptionsTab = ({
     disableVersionSelect,
     yamlMode,
     toggleYamlMode,
+    isBasicViewLocked,
 }: DeploymentTemplateOptionsTabProps) => {
     function changeEditorMode() {
         toggleYamlMode(not)
@@ -363,10 +363,26 @@ export const DeploymentTemplateOptionsTab = ({
                             className="gui-yaml-switch pl-16"
                             name="yaml-mode"
                             initialTab={yamlMode ? 'yaml' : 'gui'}
-                            disabled={false}
+                            disabled={isBasicViewLocked}
                             onChange={changeEditorMode}
                         >
-                            <RadioGroup.Radio value="gui"><Lock className="icon-dim-12 mr-6" />Basic</RadioGroup.Radio>
+                            <RadioGroup.Radio
+                                isDisabled={isBasicViewLocked}
+                                value="gui"
+                                showTippy={isBasicViewLocked}
+                                tippyContent={
+                                    <div className="dc__mxw-200">
+                                        <span className="dc__block fw-6">Basic view is locked</span>
+                                        <span className="fw-4">
+                                            Some advanced configurations have been modified. Please continue editing in
+                                            Advanced(YAML) view.
+                                        </span>
+                                    </div>
+                                }
+                            >
+                                {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
+                                Basic
+                            </RadioGroup.Radio>
                             <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
                         </RadioGroup>
                     )}
@@ -689,7 +705,8 @@ export const DeploymentTemplateEditorView = ({
                 <Tippy
                     className="default-tt"
                     arrow={false}
-                    content={<span className="dc__mxw-200 dc__block">{description}</span>}
+                    content={<span className="dc__mxw-200 dc__block fw-4">{description}</span>}
+                    interactive={true}
                 >
                     <span className="text-underline-dashed">
                         {title}
@@ -700,7 +717,7 @@ export const DeploymentTemplateEditorView = ({
         )
     }
 
-    return false ? (
+    return yamlMode ? (
         <>
             {showReadme && (
                 <div className="dt-readme dc__border-right">

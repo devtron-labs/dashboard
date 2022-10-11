@@ -1062,7 +1062,7 @@ button.anchor {
             stroke: var(--N500);
         }
 
-        &:hover {
+        &:hover:not(.disabled) {
             color: var(--N900);
 
             svg path {
