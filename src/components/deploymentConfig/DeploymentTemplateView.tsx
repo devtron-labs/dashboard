@@ -201,7 +201,7 @@ export const ChartTypeVersionOptions = ({
     }
 
     return (
-        <div className="chart-type-version-options pr-16 pt-8 pb-8 dc__border-right">
+        <div className={`chart-type-version-options pr-16 pt-8 pb-8 ${disableVersionSelect? '': 'dc__border-right'}`}>
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 {isUnSet ? (
@@ -355,16 +355,18 @@ export const DeploymentTemplateOptionsTab = ({
                         selectedChartRefId={selectedChartRefId}
                         disableVersionSelect={disableVersionSelect}
                     />
-                    <RadioGroup
-                        className="gui-yaml-switch pl-16"
-                        name="yaml-mode"
-                        initialTab={yamlMode ? 'yaml' : 'gui'}
-                        disabled={false}
-                        onChange={changeEditorMode}
-                    >
-                        <RadioGroup.Radio value="gui">Basic</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
-                    </RadioGroup>
+                    {!disableVersionSelect && (
+                        <RadioGroup
+                            className="gui-yaml-switch pl-16"
+                            name="yaml-mode"
+                            initialTab={yamlMode ? 'yaml' : 'gui'}
+                            disabled={false}
+                            onChange={changeEditorMode}
+                        >
+                            <RadioGroup.Radio value="gui">Basic</RadioGroup.Radio>
+                            <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
+                        </RadioGroup>
+                    )}
                 </div>
             ) : (
                 <span className="flex fs-13 fw-6 cn-9 h-32">
@@ -661,8 +663,8 @@ export const DeploymentTemplateEditorView = ({
         }
     }, [openComparison])
 
-    const switchToYAMLMode = (): void=>{
-      toggleYamlMode(not)
+    const switchToYAMLMode = (): void => {
+        toggleYamlMode(not)
     }
 
     const renderActionButton = () => {
