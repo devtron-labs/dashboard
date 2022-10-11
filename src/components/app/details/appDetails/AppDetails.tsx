@@ -153,7 +153,7 @@ export const Details: React.FC<{
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
-    const [urlInfo, showUrlInfo] = useState<boolean>(false)
+    const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
@@ -385,7 +385,7 @@ export const Details: React.FC<{
                             setDetailed={toggleDetailedStatus}
                             environments={environments}
                             showCommitInfo={isAppDeployment ? showCommitInfo : null}
-                            showUrlInfo={isAppDeployment ? showUrlInfo : null}
+                            showUrlInfo={isAppDeployment ? setUrlInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                             toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
@@ -460,7 +460,7 @@ export const Details: React.FC<{
                         <TriggerUrlModal
                             appId={params.appId}
                             envId={params.envId}
-                            close={() => showUrlInfo(false)}
+                            close={() => setUrlInfo(false)}
                         />
                     )}
                     {commitInfo && (

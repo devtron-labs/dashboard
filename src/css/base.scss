@@ -417,8 +417,10 @@ a:focus {
     direction: rtl;
 }
 
-.dc__ellipsis-left.direction-left {
-    text-align: left;
+.dc__ellipsis-left {
+    &.direction-left {
+        text-align: left;
+    }
 }
 
 .anchor {

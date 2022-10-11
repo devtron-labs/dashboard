@@ -413,7 +413,7 @@ export const createAppLabels = (request: CreateAppLabelsRequest): Promise<Respon
     return post(Routes.APP_LABELS, request)
 }
 
-export const getIngressServiceUrls = (params) => {
+export const getIngressServiceUrls = (params: { appId?: string; envId: string; installedAppId?: string }) => {
     const urlParams = Object.entries(params).map(([key, value]) => {
         if (!value) return
         return `${key}=${value}`
