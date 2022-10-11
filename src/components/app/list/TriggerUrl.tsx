@@ -14,6 +14,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     const [result, setResponse] = useState<ManifestUrlList[]>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
+    const [errorMessage, setErrorMessage] = useState({ title: '', subtitle: '' })
 
     const createUrlDataList = () => {
         result?.map((item) => {
@@ -41,8 +42,10 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                 setResponse(response.result)
                 setLoading(false)
             }
+            setErrorMessage({ title: '', subtitle: '' })
         } catch (error) {
-            showError(error)
+            setLoading(false)
+            setErrorMessage({title: 'Failed to fetch URLs', subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.' })
         }
     }
 
@@ -66,7 +69,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                     {loading ? (
                         <Progressing pageLoader />
                     ) : Object.values(data).every((value) => !value.length) ? (
-                        <EmptyUrlState />
+                        <EmptyUrlState title={errorMessage.title} subtitle={errorMessage.subtitle}/>
                     ) : (
                         Object.entries(data).map(([kind, item]) =>
                             item.length ? (
@@ -91,7 +94,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                     {value.name}
                                                 </div>
                                             </Tippy>
-                                            {value?.urls && (
+                                            {kind === KIND.INGRESS && value?.urls && (
                                                 <div className="items-width-1">
                                                     {value.urls.map((url) => (
                                                         <div className="flex left">
@@ -175,16 +178,16 @@ export function CopyToClipboardText({ text, iconClass }: { text: string; iconCla
     )
 }
 
-function EmptyUrlState() {
+function EmptyUrlState({title = "", subtitle = ""}) {
     return (
         <EmptyState>
             <EmptyState.Image>
                 <img src={AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4>No URLs available</h4>
+                <h4>{title || "No URLs available"}</h4>
             </EmptyState.Title>
-            <EmptyState.Subtitle>No URLs found in ingress and service resources</EmptyState.Subtitle>
+            <EmptyState.Subtitle>{subtitle || "No URLs found in ingress and service resources"}</EmptyState.Subtitle>
         </EmptyState>
     )
 }
