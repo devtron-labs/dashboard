@@ -13,6 +13,7 @@ import {
     RadioGroup,
     showError,
     sortObjectArrayAlphabetically,
+    Toggle,
     versionComparator,
 } from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
@@ -25,6 +26,8 @@ import { ReactComponent as Next } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as Locked } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -201,7 +204,7 @@ export const ChartTypeVersionOptions = ({
     }
 
     return (
-        <div className={`chart-type-version-options pr-16 pt-8 pb-8 ${disableVersionSelect? '': 'dc__border-right'}`}>
+        <div className={`chart-type-version-options pr-16 pt-8 pb-8 ${disableVersionSelect ? '' : 'dc__border-right'}`}>
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 {isUnSet ? (
@@ -363,7 +366,7 @@ export const DeploymentTemplateOptionsTab = ({
                             disabled={false}
                             onChange={changeEditorMode}
                         >
-                            <RadioGroup.Radio value="gui">Basic</RadioGroup.Radio>
+                            <RadioGroup.Radio value="gui"><Lock className="icon-dim-12 mr-6" />Basic</RadioGroup.Radio>
                             <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
                         </RadioGroup>
                     )}
@@ -602,6 +605,7 @@ export const DeploymentTemplateEditorView = ({
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
+    const [httpRequestRoute, setHttpRequestRoute] = useState(false)
 
     useEffect(() => {
         if (selectedChart && environments.length > 0) {
@@ -675,7 +679,28 @@ export const DeploymentTemplateEditorView = ({
         )
     }
 
-    return yamlMode ? (
+    const handleScanToggle = (): void => {
+        setHttpRequestRoute(not)
+    }
+
+    const renderLabel = (title: string, description: string, isMandatory?: boolean): JSX.Element => {
+        return (
+            <label className="cn-7 mb-0 lh-32">
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    content={<span className="dc__mxw-200 dc__block">{description}</span>}
+                >
+                    <span className="text-underline-dashed">
+                        {title}
+                        {isMandatory && <span className="cr-5"> *</span>}
+                    </span>
+                </Tippy>
+            </label>
+        )
+    }
+
+    return false ? (
         <>
             {showReadme && (
                 <div className="dt-readme dc__border-right">
@@ -732,20 +757,89 @@ export const DeploymentTemplateEditorView = ({
             </div>
         </>
     ) : (
-        <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom p-20">
-            <InfoColourBar
-                message="Basic has limited configurations. Changes made here will be updated in Advanced (YAML)."
-                classname="info_bar"
-                Icon={InfoIcon}
-                iconClass="icon-dim-20"
-            />
-            <InfoColourBar
-                message="To modify additional configurations"
-                classname="dc__content-start bw-1 bcv-1 ev-2 bcv-1"
-                Icon={Help}
-                iconClass="fcv-5 icon-dim-20"
-                renderActionButton={renderActionButton}
-            />
+        <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom p-20 scrollable">
+            <div className="w-650-px">
+                <InfoColourBar
+                    message="Basic has limited configurations. Changes made here will be updated in Advanced (YAML)."
+                    classname="info_bar mr-36"
+                    Icon={InfoIcon}
+                    iconClass="icon-dim-20"
+                />
+                <div className="pt-20 pb-20">
+                    <div className="fw-6 fs-14 cn-9 mb-8">Container Port</div>
+                    <div className="row-container mb-8">
+                        {renderLabel('Port', 'Port for the container')}
+                        <input type="text" className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                    </div>
+                    <div className="row-container mb-8">
+                        <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
+                        <div className="mt-4" style={{ width: '32px', height: '20px' }}>
+                            <Toggle selected={httpRequestRoute} onSelect={handleScanToggle} />
+                        </div>
+                    </div>
+                    {httpRequestRoute && (
+                        <>
+                            <div className="row-container mb-8">
+                                {renderLabel('Host', 'Host name', true)}
+                                <input type="text" className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                            </div>
+                            <div className="row-container mb-8">
+                                {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
+                                <input type="text" className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                                <Close className="option-close-icon icon-dim-16 mt-8 mr-8" />
+                            </div>
+                            <div className="row-container mb-8">
+                                <div />
+                                <div className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-100px">
+                                    <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
+                                    Add another
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    <div className="fw-6 fs-14 cn-9 mb-8">Resources (CPU & RAM)</div>
+                    <div className="row-container mb-8">
+                        {renderLabel('CPU', 'CPU available to the application')}
+                        <input type="text" className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                    </div>
+                    <div className="row-container mb-8">
+                        {renderLabel('Memory', 'Memory available to the application')}
+                        <input type="text" className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                    </div>
+                    <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>
+                    <div className="row-container mb-8">
+                        {renderLabel(
+                            'Key/Value',
+                            'Set environment variables as key:value for containers that run in the Pod.',
+                        )}
+                        <div>
+                            <input
+                                type="text"
+                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
+                            />
+                            <textarea
+                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
+                                rows={2}
+                            ></textarea>
+                        </div>
+                        <Close className="option-close-icon icon-dim-16 mt-8 mr-8" />
+                    </div>
+                    <div className="row-container mb-8">
+                        <div />
+                        <div className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-100px">
+                            <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
+                            Add another
+                        </div>
+                    </div>
+                </div>
+                <InfoColourBar
+                    message="To modify additional configurations"
+                    classname="dc__content-start bw-1 bcv-1 ev-2 bcv-1 mr-36"
+                    Icon={Help}
+                    iconClass="fcv-5 icon-dim-20"
+                    renderActionButton={renderActionButton}
+                />
+            </div>
         </div>
     )
 }

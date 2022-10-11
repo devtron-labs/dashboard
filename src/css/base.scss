@@ -1636,6 +1636,10 @@ button.anchor {
     max-width: 300px;
 }
 
+.dc__mxw-200 {
+    max-width: 200px;
+}
+
 .fw-n {
     font-weight: normal !important;
 }
@@ -1729,8 +1733,8 @@ button.anchor {
 }
 
 .dc__no-bottom-radius {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
 .dc__left-radius-4 {
