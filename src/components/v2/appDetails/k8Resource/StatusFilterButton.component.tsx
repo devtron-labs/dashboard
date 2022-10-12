@@ -36,7 +36,7 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
     })
 
     const filters = [
-        { status: 'ALL', count: allNodeCount, isSelected: 'all' == selectedTab },
+        { status: 'all', count: allNodeCount, isSelected: 'all' == selectedTab },
         { status: NodeStatus.Missing, count: missingNodeCount, isSelected: NodeStatus.Missing == selectedTab },
         { status: NodeStatus.Degraded, count: failedNodeCount, isSelected: NodeStatus.Degraded == selectedTab },
         {
@@ -48,22 +48,31 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
     ]
 
     useEffect(() => {
-        if (handleFilterClick) {
-            handleFilterClick(selectedTab.toUpperCase())
+        if (
+            (selectedTab === NodeStatus.Healthy && healthyNodeCount === 0) ||
+            (selectedTab === NodeStatus.Degraded && failedNodeCount === 0) ||
+            (selectedTab === NodeStatus.Progressing && progressingNodeCount === 0) ||
+            (selectedTab === NodeStatus.Missing && missingNodeCount === 0)
+        ) {
+            setSelectedTab('all')
         } else {
-            IndexStore.updateFilterType(selectedTab.toUpperCase())
+            if (handleFilterClick) {
+                handleFilterClick(selectedTab)
+            } else {
+                IndexStore.updateFilterType(selectedTab.toUpperCase())
+            }
         }
     }, [nodes, selectedTab])
 
     const handleTabSwitch = (event): void => {
-        setSelectedTab(event.target.value.toLowerCase())
+        setSelectedTab(event.target.value)
     }
 
     return (
         <RadioGroup
             className="status-filter-button gui-yaml-switch"
             name="yaml-mode"
-            initialTab={'ALL'}
+            initialTab={selectedTab}
             disabled={false}
             onChange={handleTabSwitch}
         >
@@ -74,11 +83,11 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
                             <RadioGroup.Radio value={filter.status}>
                                 {index !== 0 && (
                                     <span
-                                        className={`dc__app-summary__icon icon-dim-16 mr-6 ${filter.status.toLowerCase()} ${filter.status.toLowerCase()}--node`}
+                                        className={`dc__app-summary__icon icon-dim-16 mr-6 ${filter.status} ${filter.status}--node`}
                                         style={{ zIndex: 'unset' }}
                                     />
                                 )}
-                                <span className="dc__first-letter-capitalize">{filter.status.toLowerCase()}</span>
+                                <span className="dc__first-letter-capitalize">{filter.status}</span>
                                 <span className="pl-4">({filter.count})</span>
                             </RadioGroup.Radio>
                         ),
