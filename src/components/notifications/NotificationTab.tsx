@@ -20,7 +20,7 @@ import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useHistory } from 'react-router-dom';
 import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
@@ -79,6 +79,7 @@ export interface NotificationTabState {
     deleting: boolean;
     confirmation: boolean;
     singleDeletedId: number;
+    disableEdit: boolean
 }
 
 export class NotificationTab extends Component<any, NotificationTabState> {
@@ -118,7 +119,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             hostURLConfig: undefined,
            deleting: false,
            confirmation: false,
-           singleDeletedId: 0
+           singleDeletedId: 0,
+           disableEdit: false
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -178,7 +180,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             })
             this.setState({ channelList: list })
         }).catch((error) => {
-            showError(error)
+           this.setState({disableEdit: true})
         })
     }
 
@@ -543,12 +545,22 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     }
 
+    CreateNewNotification = () => {
+        if(this.state.disableEdit){
+            
+            showError({code: 403})
+        }
+        else{
+            this.props.history.push(URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW)
+        }
+    }
+
     renderBody() {
         return <div className="notification-tab">
-            <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} style={{ width: "100px" }}
+            <div onClick={this.CreateNewNotification} style={{ width: "100px" }}
                 className="cta small flex dc__no-decor">
                 <Add className="icon-dim-16 mr-5" />Add New
-            </Link>
+            </div>
             {this.renderOptions()}
             {this.renderPipelineList()}
             {this.state.pagination.size > 0 ? <Pagination offset={this.state.pagination.offset}

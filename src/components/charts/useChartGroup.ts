@@ -47,39 +47,44 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     useEffect(() => {
         async function populateCharts() {
             try {
-                const [
-                    { result: chartRepoList },
-                    { result: chartGroup },
-                    { result: availableCharts },
-                    { result: projects },
-                    { result: environments },
-                    { result: gitOpsModuleInstalledAndConfigured}
-                ] = await Promise.all([
+                await Promise.allSettled([
                     getChartRepoList(),
-                    serverMode == SERVER_MODE.FULL ? getChartGroups() : { result: undefined },
+                    serverMode == SERVER_MODE.FULL ? getChartGroups() : { value:{ status: "fulfilled",result: undefined} },
                     getAvailableCharts(`?includeDeprecated=1`),
                     getTeamList(),
                     getEnvironmentListMin(),
-                    isGitOpsModuleInstalledAndConfigured()
-                ])
-                let chartRepos = chartRepoList
-                    .map((chartRepo) => {
-                        return {
-                            value: chartRepo.id,
-                            label: chartRepo.name,
-                        }
-                    })
-                    .sort(sortOptionsByLabel)
-                setState((state) => ({
-                    ...state,
-                    loading: false,
-                    chartRepos,
-                    chartGroups: chartGroup?.groups,
-                    availableCharts: mapByKey(availableCharts, 'id'),
-                    projects,
-                    environments,
-                    noGitOpsConfigAvailable: gitOpsModuleInstalledAndConfigured.isInstalled && !gitOpsModuleInstalledAndConfigured.isConfigured
-                }))
+                    isGitOpsModuleInstalledAndConfigured(),
+                ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
+                    const [
+                        chartRepoList,
+                        chartGroup,
+                        availableCharts,
+                        projects,
+                        environments,
+                        gitOpsModuleInstalledAndConfigured,
+                    ] = responses.map((response) => response?.value?.result || [])
+                  
+                    let chartRepos = chartRepoList
+                        .map((chartRepo) => {
+                            return {
+                                value: chartRepo.id,
+                                label: chartRepo.name,
+                            }
+                        })
+                        .sort(sortOptionsByLabel)
+                    setState((state) => ({
+                        ...state,
+                        loading: false,
+                        chartRepos,
+                        chartGroups: chartGroup?.groups || [],
+                        availableCharts: mapByKey(availableCharts, 'id'),
+                        projects,
+                        environments,
+                        noGitOpsConfigAvailable:
+                            gitOpsModuleInstalledAndConfigured.isInstalled &&
+                            !gitOpsModuleInstalledAndConfigured.isConfigured,
+                    }))
+                })
             } catch (err) {
                 showError(err)
                 setState((state) => ({ ...state, loading: false }))
