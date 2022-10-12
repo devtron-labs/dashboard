@@ -182,12 +182,12 @@ export function showError(serverError, showToastOnUnknownError = true, hideAcces
             toast.error(userMessage || internalMessage)
         })
     } else {
-        if (!hideAccessError && serverError.code !== 403 && serverError.code !== 408) {
+        if (serverError.code !== 403 && serverError.code !== 408) {
             Sentry.captureException(serverError)
         }
 
         if (showToastOnUnknownError) {
-            if (serverError.code === 403 || serverError.code === 401) {
+            if (!hideAccessError && serverError.code === 403 || serverError.code === 401) {
                 toast.info(
                     <ToastBody
                         title="Access denied"
