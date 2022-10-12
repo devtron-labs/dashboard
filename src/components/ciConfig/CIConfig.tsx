@@ -30,6 +30,7 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
+import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { OptionType } from '../app/types'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
@@ -97,7 +98,7 @@ export default function CIConfig({
                     defaultDockerConfigs: {
                         dockerRegistry: ciConfig.dockerRegistry,
                         dockerRepository: ciConfig.dockerRepository,
-                        ciBuildConfig: ciConfig.ciBuildConfig
+                        ciBuildConfig: ciConfig.ciBuildConfig,
                     },
                 })
             }
@@ -169,8 +170,7 @@ function Form({
     const _selectedMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
-                  (material) =>
-                      material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
+                  (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
               )
             : ciConfig?.ciBuildConfig?.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
@@ -628,7 +628,9 @@ function Form({
         if (updateDockerConfigOverride) {
             updateDockerConfigOverride(
                 `dockerConfigOverride.${
-                    e.target.name === 'dockerfile' ? 'ciBuildConfig.dockerBuildConfig.dockerfileRelativePath' : 'dockerRepository'
+                    e.target.name === 'dockerfile'
+                        ? 'ciBuildConfig.dockerBuildConfig.dockerfileRelativePath'
+                        : 'dockerRepository'
                 }`,
                 e.target.value,
             )
@@ -647,22 +649,20 @@ function Form({
         <>
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
                 {!configOverrideView && (
-                    <>
-                        <h1 className="form__title">Docker build configuration</h1>
-                        <p className="form__subtitle">
-                            Required to execute CI pipelines for this application.&nbsp;
-                            <a
-                                rel="noreferrer noopener"
-                                target="_blank"
-                                className="dc__link"
-                                href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                            >
-                                Learn more
-                            </a>
-                        </p>
-                    </>
+                    <div className="flex dc__content-space mb-20">
+                        <h1 className="form__title">Build Configuration</h1>
+                        <a
+                            className="flex right dc__link"
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                        >
+                            <BookOpenIcon className="icon-dim-16 mr-8" />
+                            <span>View documentation</span>
+                        </a>
+                    </div>
                 )}
-                <div className="white-card white-card__docker-config dc__position-rel">
+                <div className="white-card white-card__docker-config dc__position-rel mb-12">
                     {configOverrideView && (
                         <button
                             className={`allow-config-override flex dc__position-abs h-28 cta ${
@@ -678,9 +678,7 @@ function Form({
                         </button>
                     )}
                     <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
-                        {configOverrideView
-                            ? 'Registry to store container images'
-                            : 'Selected repository will be used to store container images for this application'}
+                        Store container image at
                     </div>
                     <div className="mb-4 form-row__docker">
                         <div className="form__field">
@@ -741,6 +739,31 @@ function Form({
                             )}
                         </div>
                     </div>
+                    {!configOverrideView && (
+                        <InfoColourBar
+                            classname="info_bar"
+                            Icon={InfoIcon}
+                            iconClass="icon-dim-20"
+                            {...(configOverridenPipelines?.length > 0
+                                ? {
+                                      message: 'This configuration is overriden for build pipeline(s) of',
+                                      linkText: (
+                                          <span className="flex">
+                                              {`${configOverridenPipelines.length} Workflow(s)`}
+                                              <ArrowIcon className="icon-dim-16 fcb-5 dc__flip-180" />
+                                          </span>
+                                      ),
+                                      linkClass: 'flex left',
+                                      linkOnClick: toggleConfigOverrideDiffModal,
+                                  }
+                                : {
+                                      message:
+                                          'Container registry/docker file location for build pipelines can be overriden. Check advance options in build pipeline.',
+                                  })}
+                        />
+                    )}
+                </div>
+                <div className="white-card white-card__docker-config dc__position-rel">
                     <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
                         Docker file location
                     </div>
@@ -793,7 +816,8 @@ function Form({
                                     name="dockerfile"
                                     value={
                                         configOverrideView && !allowOverride
-                                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
+                                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath ||
+                                              'Dockerfile'
                                             : dockerfile.value
                                     }
                                     onChange={handleOnChangeConfig}
@@ -806,27 +830,6 @@ function Form({
                     </div>
                     {!configOverrideView && (
                         <>
-                            <InfoColourBar
-                                classname="info_bar mb-24"
-                                Icon={InfoIcon}
-                                iconClass="icon-dim-20"
-                                {...(configOverridenPipelines?.length > 0
-                                    ? {
-                                          message: 'This configuration is overriden for build pipeline(s) of',
-                                          linkText: (
-                                              <span className="flex">
-                                                  {`${configOverridenPipelines.length} Workflow(s)`}
-                                                  <ArrowIcon className="icon-dim-16 fcb-5 dc__flip-180" />
-                                              </span>
-                                          ),
-                                          linkClass: 'flex left',
-                                          linkOnClick: toggleConfigOverrideDiffModal,
-                                      }
-                                    : {
-                                          message:
-                                              'Container registry/docker file location for build pipelines can be overriden. Check advance options in build pipeline.',
-                                      })}
-                            />
                             <hr className="mt-0 mb-20" />
                             <div onClick={toggleCollapse} className="flex left cursor mb-20">
                                 <div className="icon-dim-40 mr-16">

@@ -123,7 +123,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string): { navItem
             currentStep: completedSteps,
         },
         {
-            title: 'Docker Build Config',
+            title: 'Build Configuration',
             href: `/app/${appId}/edit/docker-build-config`,
             stage: STAGE_NAME.CI_CONFIG,
             isLocked: !isUnlocked.dockerBuildConfig,
