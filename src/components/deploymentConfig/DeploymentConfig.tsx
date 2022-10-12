@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
@@ -15,10 +15,12 @@ import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../config'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch, getValueByPointer } from 'fast-json-patch'
+import { BASIC_FIELD_MAPPING } from './constants'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -28,6 +30,7 @@ export default function DeploymentConfig({
     environments,
     setEnvironments,
 }: DeploymentConfigProps) {
+    const { currentServerInfo } = useContext(mainContext)
     const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
     const [selectedChartRefId, selectChartRefId] = useState(0)
     const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
@@ -97,25 +100,50 @@ export default function DeploymentConfig({
         }
     }
 
-    const parseDataForView = (isBasicViewLocked: boolean, currentViewEditor: string, template): void => {
-    const BASIC_FIELD_MAPPING = {
-      port: '/ContainerPort/0/port',
-      host: '/ingress/hosts/0/host',
-      path: '/ingress/hosts/0/paths',
-      resources: '/resources',
-      envVariables: '/EnvVariables',
-  }
-        setIsBasicViewLocked(isBasicViewLocked)
-        setCurrentViewEditor(currentViewEditor)
-        toggleYamlMode(currentViewEditor === 'BASIC' ? false : true)
-        const _basicFieldValues =  {}
+    const parseDataForView = async (isBasicViewLocked: boolean, currentViewEditor: string, template): Promise<void> => {
+        const _basicFieldValues = {}
         const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
-        if(!isBasicViewLocked){
-          for (let index = 0; index < basicFieldArray.length; index++) {
-            const key = basicFieldArray[index];
-            _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
-          }
-          setBasicFieldValues(_basicFieldValues)
+        let _currentViewEditor
+        if (!currentViewEditor) {
+            isBasicViewLocked = false
+        } else if (currentViewEditor === 'UNDEFINED') {
+            const {
+                result: {
+                    globalConfig: { defaultAppOverride },
+                },
+            } = await getDeploymentTemplate(+appId, +selectedChart.id)
+            defaultAppOverride['ContainerPort'][0]['port'] = 891831
+            defaultAppOverride['ingress']['hosts'][0]['host'] = 'hello'
+            const _patchData = jsonpatch.compare(defaultAppOverride, template)
+            for (let index = 0; index < _patchData.length; index++) {
+                const path = _patchData[index].path
+                for (let index = 0; index < basicFieldArray.length; index++) {
+                    if (path === BASIC_FIELD_MAPPING[basicFieldArray[index]]) {
+                        isBasicViewLocked = true
+                        break
+                    }
+                }
+                if (isBasicViewLocked) {
+                    break
+                }
+            }
+            console.log(isBasicViewLocked)
+        } else {
+            _currentViewEditor = currentViewEditor
+        }
+        _currentViewEditor =
+            isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                ? 'ADVANCED'
+                : 'BASIC'
+        setIsBasicViewLocked(isBasicViewLocked)
+        setCurrentViewEditor(_currentViewEditor)
+        toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
+        if (!isBasicViewLocked) {
+            for (let index = 0; index < basicFieldArray.length; index++) {
+                const key = basicFieldArray[index]
+                _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
+            }
+            setBasicFieldValues(_basicFieldValues)
         }
     }
 
@@ -144,7 +172,9 @@ export default function DeploymentConfig({
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
-            parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
+            if (selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -277,6 +307,7 @@ export default function DeploymentConfig({
                     yamlMode={yamlMode}
                     toggleYamlMode={toggleYamlMode}
                     basicFieldValues={basicFieldValues}
+                    setBasicFieldValues={setBasicFieldValues}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA

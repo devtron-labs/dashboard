@@ -231,6 +231,7 @@ export default function NavigationRoutes() {
                     moduleInInstallingState,
                     setModuleInInstallingState,
                     installedModuleMap,
+                    currentServerInfo
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>

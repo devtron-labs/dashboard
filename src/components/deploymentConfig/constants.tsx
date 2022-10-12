@@ -45,3 +45,11 @@ export const getCommonSelectStyles = (styleOverrides = {}) => {
         ...styleOverrides,
     }
 }
+
+export const BASIC_FIELD_MAPPING = {
+  port: '/ContainerPort/0/port',
+  host: '/ingress/hosts/0/host',
+  path: '/ingress/hosts/0/paths',
+  resources: '/resources',
+  envVariables: '/EnvVariables',
+}

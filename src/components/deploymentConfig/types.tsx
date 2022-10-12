@@ -181,6 +181,7 @@ export interface DeploymentTemplateEditorViewProps {
     yamlMode: boolean
     toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
     basicFieldValues?: Record<string, any>
+    setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
 }
 
 export interface EsoData {
