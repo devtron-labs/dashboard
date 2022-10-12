@@ -88,7 +88,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                     </div>
                                     {item.map((value) => (
                                         <div className="url-table_row table-content pt-6 pb-6 fw-4 cn-9 fs-13 dc__visible-hover dc__visible-hover--parent">
-                                            <div className="flexbox dc__content-start w-200">
+                                            <div className="flex dc__align-start dc__content-start w-200">
                                                 <Tippy
                                                     content={value.name}
                                                     className="default-tt dc__word-break-all"
@@ -125,7 +125,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                 </div>
                                             )}
                                             <div className="flexbox dc__content-start items-width-1">
-                                                <span className='flex'>
+                                                <span className='flex dc__align-start'>
                                                 <Tippy
                                                     content={value.pointsTo}
                                                     className="default-tt dc__word-break-all"
@@ -136,7 +136,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                         {value.pointsTo}
                                                     </span>
                                                 </Tippy>
-                                                <span className="icon-dim-16">
+                                                <span className="icon-dim-16 pt-2">
                                                     <CopyToClipboardText
                                                         iconClass="pointer dc__visible-hover--child icon-dim-16"
                                                         text={value.pointsTo}
