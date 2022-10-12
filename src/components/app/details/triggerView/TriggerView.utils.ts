@@ -7,12 +7,12 @@ import { DeploymentWithConfigType, TriggerViewDeploymentConfigType } from './typ
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
         key: 'deploymentTemplate',
-        displayName: 'Deployment template',
+        displayName: 'Deployment Template',
         isMulti: false,
     },
     PIPELINE_STRATEGY: {
         key: 'pipelineStrategy',
-        displayName: 'Pipeline configurations',
+        displayName: 'Pipeline Configuration',
         isMulti: false,
     },
     CONFIGMAP: {
