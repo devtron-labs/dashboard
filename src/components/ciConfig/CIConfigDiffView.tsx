@@ -37,9 +37,9 @@ export default function CIConfigDiffView({
     let globalCIConfig = {} as DockerConfigOverrideType
     if (ciConfig) {
         globalCIConfig = {
-            dockerRegistry: ciConfig?.dockerRegistry,
-            dockerRepository: ciConfig?.dockerRepository,
-            ciBuildConfig: ciConfig?.ciBuildConfig
+            dockerRegistry: ciConfig.dockerRegistry,
+            dockerRepository: ciConfig.dockerRepository,
+            ciBuildConfig: ciConfig.ciBuildConfig
         }
     }
 
