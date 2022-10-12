@@ -189,7 +189,7 @@ function Form({
             dockerfile: {
                 value: selectedCIPipeline?.isDockerConfigOverridden
                     ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
-                    : ciConfig?.ciBuildConfig
+                    : ciConfig?.ciBuildConfig?.dockerBuildConfig
                     ? ciConfig.ciBuildConfig.dockerBuildConfig?.dockerfileRelativePath
                     : 'Dockerfile',
                 error: '',
