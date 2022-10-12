@@ -55,9 +55,13 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
         getManifest()
     }, [appId, envId])
 
+    const stopPropogation = (e) => {
+        e.stopPropagation()
+    }
+
     return (
         <VisibleModal className="" close={close}>
-            <div className="modal-body--ci-material h-100 dc__overflow-hidden">
+            <div onClick={stopPropogation} className="modal-body--ci-material h-100 dc__overflow-hidden">
                 <div className="trigger-modal__header">
                     <h1 className="modal__title flex left fs-16">URLs</h1>
                     <button type="button" className="dc__transparent" onClick={close}>
@@ -65,7 +69,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                     </button>
                 </div>
 
-                <div className="h-100 dc__overflow-scroll">
+                <div className="dc__overflow-scroll" style={{height: "calc(100% - 67px)"}}>
                     {loading ? (
                         <Progressing pageLoader />
                     ) : Object.values(data).every((value) => !value.length) ? (
@@ -84,23 +88,25 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                     </div>
                                     {item.map((value) => (
                                         <div className="url-table_row table-content pt-6 pb-6 fw-4 cn-9 fs-13 dc__visible-hover dc__visible-hover--parent">
-                                            <Tippy
-                                                content={value.name}
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                            >
-                                                <div className="dc__ellipsis-left direction-left w-200">
-                                                    {value.name}
-                                                </div>
-                                            </Tippy>
+                                            <div className="flexbox dc__content-start w-200">
+                                                <Tippy
+                                                    content={value.name}
+                                                    className="default-tt dc__word-break-all"
+                                                    arrow={false}
+                                                    placement="top"
+                                                >
+                                                    <span className="url-box dc__ellipsis-left direction-left">
+                                                        {value.name}
+                                                    </span>
+                                                </Tippy>
+                                            </div>
                                             {kind === KIND.INGRESS && value?.urls && (
                                                 <div className="items-width-1">
                                                     {value.urls.map((url) => (
                                                         <div className="flex left">
                                                             <Tippy
                                                                 content={url}
-                                                                className="default-tt"
+                                                                className="default-tt dc__word-break-all"
                                                                 arrow={false}
                                                                 placement="top"
                                                             >
@@ -118,10 +124,11 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                     ))}
                                                 </div>
                                             )}
-                                            <div className="flex left items-width-1">
+                                            <div className="flexbox dc__content-start items-width-1">
+                                                <span className='flex'>
                                                 <Tippy
                                                     content={value.pointsTo}
-                                                    className="default-tt"
+                                                    className="default-tt dc__word-break-all"
                                                     arrow={false}
                                                     placement="top"
                                                 >
@@ -134,6 +141,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                         iconClass="pointer dc__visible-hover--child icon-dim-16"
                                                         text={value.pointsTo}
                                                     />
+                                                </span>
                                                 </span>
                                             </div>
                                         </div>

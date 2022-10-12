@@ -227,6 +227,10 @@ a:focus {
     clear: both;
 }
 
+.dc__word-break-all {
+    word-break: break-all;
+}
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
