@@ -203,13 +203,29 @@ export interface BuildStageType {
     steps: StepType[]
 }
 
+export enum CIBuildType {
+    SELF_DOCKERFILE_BUILD_TYPE = 'self-dockerfile-build',
+    MANAGED_DOCKERFILE_BUILD_TYPE = 'managed-dockerfile-build',
+    BUILDPACK_BUILD_TYPE = 'buildpack-build',
+}
+
+export interface CIBuildConfigType {
+    buildPackConfig: any
+    ciBuildType: CIBuildType
+    dockerBuildConfig: {
+        DockerfileContent: string
+        dockerfileRelativePath: string
+        args?: Map<string, string>
+        targetPlatform?: any
+    }
+    gitMaterialId: number
+    id?: number
+}
+
 export interface DockerConfigOverrideType {
     dockerRegistry: string
     dockerRepository: string
-    dockerBuildConfig: {
-        gitMaterialId: number
-        dockerfileRelativePath: string
-    }
+    ciBuildConfig: CIBuildConfigType
 }
 
 export interface FormType {

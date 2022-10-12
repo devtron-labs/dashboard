@@ -6,6 +6,7 @@ import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-r
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps } from './types'
 import { WorkflowType } from '../app/details/triggerView/types'
+import { DockerConfigOverrideType } from '../ciPipeline/types'
 
 export default function CIConfigDiffView({
     ciConfig,
@@ -33,13 +34,13 @@ export default function CIConfigDiffView({
     const _overridenWorkflows = processedWorkflows.workflows.filter(
         (_wf) => !!_configOverridenWorkflows.find((_cwf) => _cwf.id === +_wf.id),
     )
-    const globalCIConfig = {
-        dockerRegistry: ciConfig?.dockerRegistry,
-        dockerRepository: ciConfig?.dockerRepository,
-        dockerBuildConfig: {
-            gitMaterialId: ciConfig?.dockerBuildConfig?.gitMaterialId,
-            dockerfileRelativePath: ciConfig?.dockerBuildConfig?.dockerfileRelativePath,
-        },
+    let globalCIConfig = {} as DockerConfigOverrideType
+    if (ciConfig) {
+        globalCIConfig = {
+            dockerRegistry: ciConfig.dockerRegistry,
+            dockerRepository: ciConfig.dockerRepository,
+            ciBuildConfig: ciConfig.ciBuildConfig
+        }
     }
 
     const renderDetailedValue = (parentClassName: string, title: string, value: string): JSX.Element => {
@@ -78,24 +79,24 @@ export default function CIConfigDiffView({
         const _currentPipelineOverride = configOverridenPipelines?.find(
             (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
         )?.dockerConfigOverride
-        const changedDockerRegistryBGColor = globalCIConfig?.dockerRegistry !== _currentPipelineOverride?.dockerRegistry
+        const changedDockerRegistryBGColor = globalCIConfig.dockerRegistry !== _currentPipelineOverride?.dockerRegistry
         const changedDockerRepositoryBGColor =
-            globalCIConfig?.dockerRepository !== _currentPipelineOverride?.dockerRepository
+            globalCIConfig.dockerRepository !== _currentPipelineOverride?.dockerRepository
         const changedDockerfileRelativePathBGColor =
-            globalCIConfig?.dockerBuildConfig?.dockerfileRelativePath !==
-            _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath
+            globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath !==
+            _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
         const changedGitMaterialBGColor =
-            globalCIConfig?.dockerBuildConfig?.gitMaterialId !==
-            _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId
+            globalCIConfig.ciBuildConfig?.gitMaterialId !==
+            _currentPipelineOverride?.ciBuildConfig?.gitMaterialId
 
         let globalGitMaterialName, currentMaterialName
         if (ciConfig?.materials) {
             for (const gitMaterial of ciConfig.materials) {
-                if (gitMaterial.gitMaterialId === globalCIConfig?.dockerBuildConfig?.gitMaterialId) {
+                if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
                     globalGitMaterialName = gitMaterial.materialName
                 }
 
-                if (gitMaterial.gitMaterialId === _currentPipelineOverride?.dockerBuildConfig?.gitMaterialId) {
+                if (gitMaterial.gitMaterialId === _currentPipelineOverride?.ciBuildConfig?.gitMaterialId) {
                     currentMaterialName = gitMaterial.materialName
                 }
             }
@@ -104,13 +105,13 @@ export default function CIConfigDiffView({
         return (
             <div className="config-override-diff__values dc__border dc__bottom-radius-4">
                 {renderValueDiff(
-                    globalCIConfig?.dockerRegistry,
+                    globalCIConfig.dockerRegistry,
                     _currentPipelineOverride.dockerRegistry,
                     changedDockerRegistryBGColor,
                     'Container registry',
                 )}
                 {renderValueDiff(
-                    globalCIConfig?.dockerRepository,
+                    globalCIConfig.dockerRepository,
                     _currentPipelineOverride.dockerRepository,
                     changedDockerRepositoryBGColor,
                     'Container Repository',
@@ -122,8 +123,8 @@ export default function CIConfigDiffView({
                     'Git Repository',
                 )}
                 {renderValueDiff(
-                    globalCIConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                    _currentPipelineOverride?.dockerBuildConfig?.dockerfileRelativePath,
+                    globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
+                    _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
                     changedDockerfileRelativePathBGColor,
                     'Docker file path',
                 )}

@@ -70,15 +70,14 @@ export default function AdvancedConfigOptions({
             _form.dockerConfigOverride = {
                 dockerRegistry: parentState.ciConfig.dockerRegistry,
                 dockerRepository: parentState.ciConfig.dockerRepository,
-                dockerBuildConfig: {
-                    gitMaterialId: parentState.ciConfig.dockerBuildConfig.gitMaterialId,
-                    dockerfileRelativePath: parentState.ciConfig.dockerBuildConfig.dockerfileRelativePath,
-                },
+                ciBuildConfig: parentState.ciConfig.ciBuildConfig,
             }
         }
 
         // Update the specific config value present at different level from dockerConfigOverride
-        if (key.startsWith('dockerConfigOverride.dockerBuildConfig')) {
+        if (key.includes('dockerBuildConfig')) {
+            _form[keyPair[0]][keyPair[1]][keyPair[2]][keyPair[3]] = value
+        } else if (key.includes('ciBuildConfig')) {
             _form[keyPair[0]][keyPair[1]][keyPair[2]] = value
         } else if (key.startsWith('dockerConfigOverride')) {
             _form[keyPair[0]][keyPair[1]] = value
@@ -90,6 +89,11 @@ export default function AdvancedConfigOptions({
             if (!value) {
                 _form.dockerConfigOverride = {} as DockerConfigOverrideType
             }
+        }
+
+        // Revisit
+        if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty('id')) {
+            delete _form.dockerConfigOverride.ciBuildConfig.id
         }
 
         setFormData(_form)
