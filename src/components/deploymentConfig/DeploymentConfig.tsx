@@ -17,6 +17,8 @@ import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap } from '../../config'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import * as jsonpatch from 'fast-json-patch'
+import { applyPatch, getValueByPointer } from 'fast-json-patch'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -47,12 +49,22 @@ export default function DeploymentConfig({
     const [yamlMode, toggleYamlMode] = useState(true)
     const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
     const [currentViewEditor, setCurrentViewEditor] = useState(null)
+    const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
         !!appId,
     )
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+
+    const JSON_FIELD_MAPPING = {
+        port: ['ContainerPort', 'port'],
+        host: ['ingress', 'hosts', '0', 'host'],
+        path: ['ingress', 'hosts', '0', 'paths'],
+        cpu: ['resources', 'limits', 'cpu'],
+        memory: ['resources', 'limits', 'memory'],
+        key: ['EnvVariables'],
+    }
 
     useEffect(() => {
         initialise()
@@ -85,6 +97,28 @@ export default function DeploymentConfig({
         }
     }
 
+    const parseDataForView = (isBasicViewLocked: boolean, currentViewEditor: string, template): void => {
+    const BASIC_FIELD_MAPPING = {
+      port: '/ContainerPort/0/port',
+      host: '/ingress/hosts/0/host',
+      path: '/ingress/hosts/0/paths',
+      resources: '/resources',
+      envVariables: '/EnvVariables',
+  }
+        setIsBasicViewLocked(isBasicViewLocked)
+        setCurrentViewEditor(currentViewEditor)
+        toggleYamlMode(currentViewEditor === 'BASIC' ? false : true)
+        const _basicFieldValues =  {}
+        const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
+        if(!isBasicViewLocked){
+          for (let index = 0; index < basicFieldArray.length; index++) {
+            const key = basicFieldArray[index];
+            _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
+          }
+          setBasicFieldValues(_basicFieldValues)
+        }
+    }
+
     async function fetchDeploymentTemplate() {
         setChartConfigLoading(true)
         try {
@@ -100,7 +134,7 @@ export default function DeploymentConfig({
                         readme,
                         schema,
                         isBasicViewLocked,
-                        currentViewEditor
+                        currentViewEditor,
                     },
                 },
             } = await getDeploymentTemplate(+appId, +selectedChart.id)
@@ -110,9 +144,7 @@ export default function DeploymentConfig({
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
-            setIsBasicViewLocked(isBasicViewLocked || true)
-            setCurrentViewEditor(currentViewEditor)
-            toggleYamlMode(currentViewEditor=== 'BASIC'? false: true)
+            parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
         } catch (err) {
             showError(err)
         } finally {
@@ -145,7 +177,7 @@ export default function DeploymentConfig({
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
                 isBasicViewLocked,
-                currentViewEditor
+                currentViewEditor,
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
@@ -244,11 +276,17 @@ export default function DeploymentConfig({
                     setFetchedValues={setFetchedValues}
                     yamlMode={yamlMode}
                     toggleYamlMode={toggleYamlMode}
+                    basicFieldValues={basicFieldValues}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA
                         loading={loading || chartConfigLoading}
-                        showAppMetricsToggle={charts && selectedChart && appMetricsEnvironmentVariableEnabled && grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                        showAppMetricsToggle={
+                            charts &&
+                            selectedChart &&
+                            appMetricsEnvironmentVariableEnabled &&
+                            grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+                        }
                         isAppMetricsEnabled={isAppMetricsEnabled}
                         isCiPipeline={isCiPipeline}
                         currentChart={selectedChart}

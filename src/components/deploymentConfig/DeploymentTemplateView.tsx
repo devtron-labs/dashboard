@@ -616,6 +616,7 @@ export const DeploymentTemplateEditorView = ({
     globalChartRefId,
     yamlMode,
     toggleYamlMode,
+    basicFieldValues,
 }: DeploymentTemplateEditorViewProps) => {
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
@@ -786,7 +787,11 @@ export const DeploymentTemplateEditorView = ({
                     <div className="fw-6 fs-14 cn-9 mb-8">Container Port</div>
                     <div className="row-container mb-8">
                         {renderLabel('Port', 'Port for the container')}
-                        <input type="text" className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                        <input
+                            type="text"
+                            value={basicFieldValues['port']}
+                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        />
                     </div>
                     <div className="row-container mb-8">
                         <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
@@ -798,12 +803,24 @@ export const DeploymentTemplateEditorView = ({
                         <>
                             <div className="row-container mb-8">
                                 {renderLabel('Host', 'Host name', true)}
-                                <input type="text" className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                                <input
+                                    type="text"
+                                    value={basicFieldValues['host']}
+                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                />
                             </div>
                             <div className="row-container mb-8">
                                 {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
-                                <input type="text" className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
-                                <Close className="option-close-icon icon-dim-16 mt-8 mr-8" />
+                                {basicFieldValues['path']?.map((path: string, index: number) => (
+                                    <div key={`path-${index}`}>
+                                        <input
+                                            type="text"
+                                            value={path}
+                                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                        />
+                                        <Close className="option-close-icon icon-dim-16 mt-8 mr-8" />
+                                    </div>
+                                ))}
                             </div>
                             <div className="row-container mb-8">
                                 <div />
@@ -817,11 +834,19 @@ export const DeploymentTemplateEditorView = ({
                     <div className="fw-6 fs-14 cn-9 mb-8">Resources (CPU & RAM)</div>
                     <div className="row-container mb-8">
                         {renderLabel('CPU', 'CPU available to the application')}
-                        <input type="text" className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                        <input
+                            type="text"
+                            value={basicFieldValues['resources']['limits']['cpu']}
+                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        />
                     </div>
                     <div className="row-container mb-8">
                         {renderLabel('Memory', 'Memory available to the application')}
-                        <input type="text" className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5" />
+                        <input
+                            type="text"
+                            value={basicFieldValues['resources']['limits']['memory']}
+                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        />
                     </div>
                     <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>
                     <div className="row-container mb-8">
@@ -829,17 +854,23 @@ export const DeploymentTemplateEditorView = ({
                             'Key/Value',
                             'Set environment variables as key:value for containers that run in the Pod.',
                         )}
-                        <div>
-                            <input
-                                type="text"
-                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
-                            />
-                            <textarea
-                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
-                                rows={2}
-                            ></textarea>
-                        </div>
-                        <Close className="option-close-icon icon-dim-16 mt-8 mr-8" />
+                        {basicFieldValues['envVariables']?.map((envVariable: string, index: number) => (
+                            <React.Fragment key={`path-${index}`}>
+                                <div>
+                                    <input
+                                        type="text"
+                                        value={envVariable['key']}
+                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
+                                    />
+                                    <textarea
+                                        value={envVariable['value']}
+                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
+                                        rows={2}
+                                    ></textarea>
+                                </div>
+                                <Close className="option-close-icon icon-dim-16 mt-8 mr-8" />
+                            </React.Fragment>
+                        ))}
                     </div>
                     <div className="row-container mb-8">
                         <div />

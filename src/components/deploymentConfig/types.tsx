@@ -180,6 +180,7 @@ export interface DeploymentTemplateEditorViewProps {
     globalChartRefId?: number
     yamlMode: boolean
     toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
+    basicFieldValues?: Record<string, any>
 }
 
 export interface EsoData {
