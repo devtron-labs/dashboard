@@ -288,10 +288,10 @@ export default function TriggerViewConfigDiff({
         return (
             <div className="trigger-view-config-diff__tabs dc__border-bottom">
                 <div className="fs-13 fw-6 lh-20 cn-9 bcn-0 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-right">
-                    Deployment configuration
+                    Deployment Configuration
                 </div>
                 <div className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 bcn-0 dc__border-right">
-                    Last deployed config
+                    Last Deployed Configuration
                 </div>
                 <div className="flex left bcn-0">
                     <ReactSelect
