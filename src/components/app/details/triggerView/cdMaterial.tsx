@@ -551,15 +551,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         ) : !_canReviewConfig ? (
                             <>
                                 <WarningIcon className="no-config-found-icon icon-dim-16" />
-                                &nbsp; Config not available
+                                &nbsp; Config Not Available
                             </>
                         ) : this.state.diffFound ? (
                             <>
                                 <WarningIcon className="config-diff-found-icon icon-dim-16" />
-                                &nbsp; <span className="config-diff-status">Config diff</span>
+                                &nbsp; <span className="config-diff-status">Config Diff</span>
                             </>
                         ) : (
-                            <span className="config-diff-status">No config diff</span>
+                            <span className="config-diff-status">No Config Diff</span>
                         )}
                     </div>
                 )}
