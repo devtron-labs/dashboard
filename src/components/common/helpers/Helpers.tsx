@@ -186,8 +186,8 @@ export function showError(serverError, showToastOnUnknownError = true, hideAcces
             Sentry.captureException(serverError)
         }
 
-        if (showToastOnUnknownError) {
-            if (!hideAccessError && serverError.code === 403 || serverError.code === 401) {
+        if (!hideAccessError && showToastOnUnknownError) {
+            if (serverError.code === 403 || serverError.code === 401) {
                 toast.info(
                     <ToastBody
                         title="Access denied"
