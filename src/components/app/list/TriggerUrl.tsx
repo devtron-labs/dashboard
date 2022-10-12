@@ -95,7 +95,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                     arrow={false}
                                                     placement="top"
                                                 >
-                                                    <span className="url-box dc__ellipsis-left direction-left">
+                                                    <span className="dc__ellipsis-left direction-left">
                                                         {value.name}
                                                     </span>
                                                 </Tippy>
