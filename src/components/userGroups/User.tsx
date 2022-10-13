@@ -205,13 +205,14 @@ export default function UserForm({
             }
         } catch (err) {
 
-            var err_obj = new ServerError(err)
+            const code = err["code"]
+            const message = err["errors"][0].userMessage
 
-            if (err_obj.code == 400 ){
-                toast.error(err_obj.userMessage)
+            if (code === 400 ){
+                toast.error(message)
             }
-            else if (err_obj.code == 417){
-                toast.warn(err_obj.userMessage)
+            else if (code === 417){
+                toast.warn(message)
             }
             else{
                 showError(err);
