@@ -22,6 +22,9 @@ export const Routes = {
 
     CD_CONFIG: 'app/cd-pipeline',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
+    SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
@@ -611,3 +614,4 @@ export enum KIND {
 export const MODULE_STATUS_RETRY_COUNT = 3;
 export const MODULE_STATUS_POLLING_INTERVAL = 15000;
 export const LOGS_RETRY_COUNT = 3;
+export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']

@@ -61,6 +61,7 @@ export function SourceInfo({
             action: 'Deployment status clicked',
         })
     }
+    const isHibernated =  ['hibernating', 'hibernated'].includes(status.toLowerCase())
     return (
         <div className="flex left w-100 column source-info-container">
             <div className="flex left w-100 mb-16">
@@ -101,17 +102,15 @@ export function SourceInfo({
                     {showHibernateModal && (
                         <button
                             className="cta cta-with-img small cancel fs-12 fw-6"
-                            onClick={(e) =>
-                                showHibernateModal(status.toLowerCase() === 'hibernating' ? 'resume' : 'hibernate')
-                            }
+                            onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
                         >
                             <ScaleDown
                                 className={`icon-dim-16 mr-6 rotate`}
                                 style={{
-                                    ['--rotateBy' as any]: status.toLowerCase() === 'hibernating' ? '180deg' : '0deg',
+                                    ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
                                 }}
                             />
-                            {status.toLowerCase() === 'hibernating' ? 'Restore pod count' : 'Scale pods to 0'}
+                            {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
                         </button>
                     )}
                 </div>
@@ -146,12 +145,22 @@ export function SourceInfo({
                                     <span
                                         className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
                                     >
-                                        {status}
+                                        {isHibernated ? 'Hibernating' : status}
                                     </span>
                                 </div>
                                 <div className="flex left">
-                                    {message && <span className="select-material-message">{message.slice(0, 30)}</span>}
-                                    {message?.length > 30 && <span className="more-message cb-5 fw-6">Details</span>}
+                                    {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
+                                        <span className="cb-5 fw-6">Details</span>
+                                    ) : (
+                                        <>
+                                            {message && (
+                                                <span className="select-material-message">{message.slice(0, 30)}</span>
+                                            )}
+                                            {message?.length > 30 && (
+                                                <span className="more-message cb-5 fw-6">Details</span>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>

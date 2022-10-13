@@ -38,7 +38,6 @@
     line-height: 1.5;
     letter-spacing: normal;
     color: var(--N700);
-    padding: 12px 20px;
 }
 
 .material-list__title--border-bottom {
@@ -133,10 +132,10 @@
 }
 
 .material-history--cd {
-    width: 800px;
-    margin-top: 0px;
+    width: 100%;
     background-color: transparent;
     padding: 0px;
+    margin: 0 0 12px;
 }
 
 .material-history__header {
@@ -148,7 +147,9 @@
 }
 
 .material-history__top {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, auto) 1fr;
+    grid-column-gap: 24px;
     justify-content: space-between;
     align-items: center;
     background-color: var(--white);
@@ -159,8 +160,6 @@
 
 .material-history__info {
     font-family: 'open sans';
-    margin-right: auto;
-    margin-left: 30px;
 }
 
 .material-history__select-text {
@@ -183,7 +182,7 @@
 
 .material-history-selected {
     box-shadow: 0px 2px 2px rgb(217, 236, 255);
-    border: solid 1px var(--B500);
+    border: solid 1px var(--B400);
 }
 
 .material-history__all-changes {
@@ -272,7 +271,7 @@
     background-color: var(--B100);
     color: var(--B500);
     border-radius: 4px;
-    padding: 0px 6px;
+    padding: 2px 8px;
     display: flex;
     align-items: center;
     text-transform: lowercase;
@@ -286,14 +285,14 @@
 
 .commit-hash--docker {
     white-space: nowrap;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     color: var(--N900);
 }
 
 .commit-hash__icon {
     width: 16px;
     height: 16px;
-    margin-right: 2px;
+    margin-right: 4px;
 }
 
 .trigger-modal {
@@ -317,10 +316,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
+    padding: 10px 20px;
     color: var(--N900);
     border-bottom: solid 1px #d6dbdf;
     margin: 0px;
+}
+
+.trigger-modal__header .modal__title {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
 }
 
 .trigger-modal__content {
@@ -333,13 +338,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 20px;
+    padding: 16px 20px;
     box-shadow: inset 0 1px 0 0 var(--N200);
     background-color: var(--white);
     position: absolute;
     width: 100%;
     bottom: 0px;
-    z-index: 2;
+    z-index: 9;
 }
 
 .trigger-modal__trigger.trigger-modal__trigger--empty-state {
@@ -348,7 +353,7 @@
     box-shadow: none;
 }
 
-.cta-with-img.cta-with-img--trigger-btn {
+.cta-with-img.cta-with-img--ci-trigger-btn {
     width: 260px;
     padding: 14px;
     height: 50px;
@@ -363,13 +368,30 @@
     user-select: none;
 }
 
+.cta-with-img.cta-with-img--cd-trigger-btn {
+    width: auto;
+    padding: 8px 16px;
+    height: 36px;
+    border-radius: 4px;
+    background-color: var(--B500);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: normal;
+    margin-left: auto;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 .trigger-btn__icon {
     width: 22px;
     height: 22px;
     margin-right: 6px;
 }
 
-.cta-with-img--trigger-btn:disabled svg path[fill='#FFF'] {
+.cta-with-img--ci-trigger-btn:disabled svg path[fill='#FFF'],
+.cta-with-img--cd-trigger-btn:disabled svg path[fill='#FFF'] {
     fill: var(--N400);
 }
 
@@ -440,9 +462,26 @@
 .trigger-modal__body {
     display: flex;
     background-color: var(--window-bg);
-    height: calc(100vh - 72px);
+    height: calc(100vh - 49px);
     overflow: auto;
     flex-direction: column;
+    padding: 20px;
+}
+
+.trigger-modal__body .show-older-images-cta.cta.ghosted {
+    border: 1px solid var(--N200);
+}
+
+.trigger-modal__body .show-older-images-cta.cta.ghosted .loader__svg path {
+    fill: var(--B500);
+}
+
+.trigger-modal__body .show-older-images-cta.cta.ghosted:hover,
+.trigger-modal__body .show-older-images-cta.cta.ghosted:active,
+.trigger-modal__body .show-older-images-cta.cta.ghosted:focus {
+    background: white;
+    color: var(--B500);
+    border: 1px solid var(--B500);
 }
 
 .config-text {
@@ -466,10 +505,6 @@
     letter-spacing: normal;
 }
 
-.material-history:nth-child(2) {
-    /* margin-top: 0px; */
-}
-
 .material-history:last-child {
     margin-bottom: 92px;
 }
@@ -479,10 +514,21 @@
 }
 
 .modal-body--cd-material {
+    width: 800px;
     position: fixed;
     right: 0;
     background: var(--N000);
     top: 0;
+}
+
+.modal-body--cd-material.contains-diff-view {
+    width: 100%;
+    min-width: 992px;
+    max-width: 1112px;
+}
+
+.modal-body--cd-material.contains-diff-view .material-history:last-child {
+    margin-bottom: 8px;
 }
 
 .modal-body--ci-material {
@@ -500,8 +546,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: calc(100vh - 72px);
-    width: 800px;
+    height: calc(100vh - 50px);
+    width: 100%;
 }
 
 .cd-material__img {
@@ -599,4 +645,50 @@
 
 .url-table_row.table-content {
     border-bottom: 1px solid var(--N100);
+}
+
+.trigger-modal__trigger .deploy-config-select__group {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.trigger-modal__trigger .deploy-config-select__group .deploy-config-select__group-heading {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none;
+    color: var(--N900);
+    background-color: var(--window-bg);
+    padding: 4px 10px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin: 0;
+}
+
+.trigger-modal__config-diff-status:not(.config-not-found):hover {
+    background-color: var(--N100);
+}
+
+.trigger-modal__trigger:hover .trigger-modal__config-diff-status:not(.config-not-found) .config-diff-status::after {
+    content: " from Last Deployed";
+}
+
+.trigger-modal__config-diff-status svg.loader__svg path,
+.trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
+    fill: white;
+}
+
+.trigger-modal__config-diff-status svg.config-diff-found-icon path:last-of-type {
+    fill: var(--R500);
+}
+
+.trigger-modal__config-diff-status svg.no-config-found-icon path:nth-of-type(2) {
+    fill: var(--Y500);
+}
+
+.code-editor-green-diff {
+    background: var(--code-editor-green);
+}
+
+.code-editor-red-diff {
+    background: var(--code-editor-red);
 }

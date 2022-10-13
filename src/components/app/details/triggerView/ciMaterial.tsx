@@ -122,7 +122,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <div className="trigger-modal__trigger">
                 {this.renderIgnoreCache(context)}
                 <ButtonWithLoader
-                    rootClassName="cta-with-img cta-with-img--trigger-btn"
+                    rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                     loaderColor="#ffffff"
                     disabled={!canTrigger}
                     isLoading={this.props.isLoading}
