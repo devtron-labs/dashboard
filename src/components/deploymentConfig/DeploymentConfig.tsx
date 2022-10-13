@@ -108,12 +108,8 @@ export default function DeploymentConfig({
             isBasicViewLocked = false
         } else if (currentViewEditor === 'UNDEFINED') {
             const {
-                result: {
-                    globalConfig: { defaultAppOverride },
-                },
-            } = await getDeploymentTemplate(+appId, +selectedChart.id)
-            defaultAppOverride['ContainerPort'][0]['port'] = 891831
-            defaultAppOverride['ingress']['hosts'][0]['host'] = 'hello'
+                result: { defaultAppOverride },
+            } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
             const _patchData = jsonpatch.compare(defaultAppOverride, template)
             for (let index = 0; index < _patchData.length; index++) {
                 const path = _patchData[index].path
