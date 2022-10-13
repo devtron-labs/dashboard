@@ -7,7 +7,7 @@ import { useWindowSize } from './UseWindowSize';
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom';
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
-import { ToastBody } from '../ToastBody';
+import { toastAccessDenied } from '../ToastBody';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -179,15 +179,7 @@ export function getRandomColor(email: string): string {
 export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
     if (serverError.code === 403 || serverError.code === 401) {
         if(!hideAccessError){
-            toast.info(
-                <ToastBody
-                    title="Access denied"
-                    subtitle="You do not have required access to perform this action"
-                />,
-                {
-                    className: 'devtron-toast unauthorized',
-                },
-            )
+            toastAccessDenied()
         }
     }
     else if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
