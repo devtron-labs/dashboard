@@ -651,7 +651,7 @@
 }
 
 .trigger-modal__trigger:hover .trigger-modal__config-diff-status:not(.config-not-found) .config-diff-status::after {
-    content: " from LAST DEPLOYED";
+    content: " from Last Deployed";
 }
 
 .trigger-modal__config-diff-status svg.loader__svg path,
