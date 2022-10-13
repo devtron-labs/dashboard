@@ -18,9 +18,8 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import * as jsonpatch from 'fast-json-patch'
-import { applyPatch, getValueByPointer } from 'fast-json-patch'
-import { BASIC_FIELD_MAPPING } from './constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import { getBasicFieldValue, isBasicValueChanged } from './DeploymentConfig.utils'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -53,21 +52,13 @@ export default function DeploymentConfig({
     const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
     const [currentViewEditor, setCurrentViewEditor] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
+    const [basicFieldPatchData, setBasicFieldPatchData] = useState<jsonpatch.Operation[]>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
         !!appId,
     )
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-
-    const JSON_FIELD_MAPPING = {
-        port: ['ContainerPort', 'port'],
-        host: ['ingress', 'hosts', '0', 'host'],
-        path: ['ingress', 'hosts', '0', 'paths'],
-        cpu: ['resources', 'limits', 'cpu'],
-        memory: ['resources', 'limits', 'memory'],
-        key: ['EnvVariables'],
-    }
 
     useEffect(() => {
         initialise()
@@ -101,8 +92,6 @@ export default function DeploymentConfig({
     }
 
     const parseDataForView = async (isBasicViewLocked: boolean, currentViewEditor: string, template): Promise<void> => {
-        const _basicFieldValues = {}
-        const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
         let _currentViewEditor
         if (!currentViewEditor) {
             isBasicViewLocked = false
@@ -110,20 +99,7 @@ export default function DeploymentConfig({
             const {
                 result: { defaultAppOverride },
             } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
-            const _patchData = jsonpatch.compare(defaultAppOverride, template)
-            for (let index = 0; index < _patchData.length; index++) {
-                const path = _patchData[index].path
-                for (let index = 0; index < basicFieldArray.length; index++) {
-                    if (path === BASIC_FIELD_MAPPING[basicFieldArray[index]]) {
-                        isBasicViewLocked = true
-                        break
-                    }
-                }
-                if (isBasicViewLocked) {
-                    break
-                }
-            }
-            console.log(isBasicViewLocked)
+            isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         } else {
             _currentViewEditor = currentViewEditor
         }
@@ -135,11 +111,7 @@ export default function DeploymentConfig({
         setCurrentViewEditor(_currentViewEditor)
         toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
         if (!isBasicViewLocked) {
-            for (let index = 0; index < basicFieldArray.length; index++) {
-                const key = basicFieldArray[index]
-                _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
-            }
-            setBasicFieldValues(_basicFieldValues)
+            setBasicFieldValues(getBasicFieldValue(template))
         }
     }
 
@@ -240,6 +212,9 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string): void => {
         setTempFormData(str)
+        if(str && currentViewEditor && !isBasicViewLocked){
+          setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+        }
     }
 
     const handleReadMeClick = () => {
@@ -283,6 +258,9 @@ export default function DeploymentConfig({
                     yamlMode={yamlMode}
                     toggleYamlMode={toggleYamlMode}
                     isBasicViewLocked={isBasicViewLocked}
+                    codeEditorValue={tempFormData}
+                    setBasicFieldValues={setBasicFieldValues}
+                    basicFieldPatchData={basicFieldPatchData}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -304,6 +282,8 @@ export default function DeploymentConfig({
                     toggleYamlMode={toggleYamlMode}
                     basicFieldValues={basicFieldValues}
                     setBasicFieldValues={setBasicFieldValues}
+                    basicFieldPatchData={basicFieldPatchData}
+                    setBasicFieldPatchData={setBasicFieldPatchData}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA

@@ -47,6 +47,7 @@ import { getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { setObservableConfig } from 'recompose'
+import { getBasicFieldValue, isBasicValueChanged, patchBasicFieldValue } from './DeploymentConfig.utils'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -204,7 +205,11 @@ export const ChartTypeVersionOptions = ({
     }
 
     return (
-        <div className={`chart-type-version-options pr-16 pt-8 pb-8 ${(disableVersionSelect || selectedChart?.name !== ROLLOUT_DEPLOYMENT) ? '' : 'dc__border-right'}`}>
+        <div
+            className={`chart-type-version-options pr-16 pt-8 pb-8 ${
+                disableVersionSelect || selectedChart?.name !== ROLLOUT_DEPLOYMENT ? '' : 'dc__border-right'
+            }`}
+        >
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 {isUnSet ? (
@@ -343,8 +348,19 @@ export const DeploymentTemplateOptionsTab = ({
     yamlMode,
     toggleYamlMode,
     isBasicViewLocked,
+    setBasicFieldValues,
+    codeEditorValue,
+    basicFieldPatchData
 }: DeploymentTemplateOptionsTabProps) => {
     function changeEditorMode() {
+        if (isBasicViewLocked) {
+            return
+        }
+        if (yamlMode) {
+            setBasicFieldValues(getBasicFieldValue(YAML.parse(codeEditorValue)))
+        } else {
+            //patchBasicFieldValue(codeEditorValue, basicFieldPatch)
+        }
         toggleYamlMode(not)
     }
     return (

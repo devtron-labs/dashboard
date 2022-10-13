@@ -3,6 +3,7 @@ import { ServerError } from '../../modals/commonTypes'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import * as jsonpatch from 'fast-json-patch'
 
 export interface DeploymentObject {
     id: number | null
@@ -155,6 +156,9 @@ export interface DeploymentTemplateOptionsTabProps {
     yamlMode: boolean
     toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
     isBasicViewLocked: boolean
+    setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
+    codeEditorValue?: string
+    basicFieldPatchData?: jsonpatch.Operation[]
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -182,6 +186,8 @@ export interface DeploymentTemplateEditorViewProps {
     toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
     basicFieldValues?: Record<string, any>
     setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
+    basicFieldPatchData?: jsonpatch.Operation[]
+    setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<jsonpatch.Operation[]>>
 }
 
 export interface EsoData {
