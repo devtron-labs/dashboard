@@ -168,7 +168,7 @@ function EnvironmentSelectorComponent() {
             </div>
             <div className="flex">
                 <button
-                    className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                    className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
                     onClick={showInfoUrl}
                 >
                     <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />Urls
