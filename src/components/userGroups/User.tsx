@@ -203,7 +203,15 @@ export default function UserForm({
                 toast.success('User created');
             }
         } catch (err) {
-            showError(err);
+            if (err.code == 400 ){
+                toast.error(err.message)
+            }
+            else if (err.code == 417){
+                toast.warn(err.message)
+            }
+            else{
+                showError(err);
+            }
         } finally {
             setSubmitting(false);
         }
