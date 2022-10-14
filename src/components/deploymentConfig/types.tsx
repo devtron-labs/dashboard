@@ -159,6 +159,9 @@ export interface DeploymentTemplateOptionsTabProps {
     setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
     codeEditorValue?: string
     basicFieldPatchData?: jsonpatch.Operation[]
+    editorOnChange: (str: string, fromBasic?:boolean) => void
+    basicFieldValuesErrorObj?: BasicFieldErrorObj
+    setBasicFieldValuesErrorObj?: React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -173,7 +176,7 @@ export interface DeploymentTemplateEditorViewProps {
     readme: string
     value: string
     defaultValue?: string
-    editorOnChange: (str: string) => void
+    editorOnChange: (str: string, fromBasic?:boolean) => void
     schemas: any
     charts: DeploymentChartVersionType[]
     selectedChart: DeploymentChartVersionType
@@ -188,6 +191,8 @@ export interface DeploymentTemplateEditorViewProps {
     setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
     basicFieldPatchData?: jsonpatch.Operation[]
     setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<jsonpatch.Operation[]>>
+    basicFieldValuesErrorObj?: BasicFieldErrorObj
+    setBasicFieldValuesErrorObj?: React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
 }
 
 export interface EsoData {
@@ -228,4 +233,23 @@ export interface SecretFormProps {
     update: (...args) => void
     collapse: (...args) => void
     initialise?: () => void
+}
+
+export interface BasicFieldDataType {
+    isUpdated: boolean
+    dataType: string
+    value: any
+    isMandatory: boolean
+    isInvalid: boolean
+}
+
+interface ErrorObj {
+    isValid: boolean
+    message: string | null
+}
+
+export interface BasicFieldErrorObj {
+    isValid: boolean
+    port: ErrorObj
+    envVariables: ErrorObj[]
 }

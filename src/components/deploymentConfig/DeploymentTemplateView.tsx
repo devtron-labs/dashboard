@@ -27,6 +27,7 @@ import { ReactComponent as Locked } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -43,11 +44,12 @@ import {
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
 } from './types'
-import { getCommonSelectStyles } from './constants'
+import { BASIC_FIELD_MAPPING, getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { setObservableConfig } from 'recompose'
-import { getBasicFieldValue, isBasicValueChanged, patchBasicFieldValue } from './DeploymentConfig.utils'
+import { getBasicFieldValue, updateTemplateFromBasicValue, validateBasicView } from './DeploymentConfig.utils'
+import { applyPatch } from 'fast-json-patch'
+import { ValidationRules } from './validationRules'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -350,16 +352,24 @@ export const DeploymentTemplateOptionsTab = ({
     isBasicViewLocked,
     setBasicFieldValues,
     codeEditorValue,
-    basicFieldPatchData
+    basicFieldPatchData,
+    editorOnChange,
+    basicFieldValuesErrorObj,
+    setBasicFieldValuesErrorObj,
 }: DeploymentTemplateOptionsTabProps) => {
     function changeEditorMode() {
-        if (isBasicViewLocked) {
+        if (isBasicViewLocked || !basicFieldValuesErrorObj.isValid) {
             return
         }
+        const parsedCodeEditorValue = YAML.parse(codeEditorValue)
         if (yamlMode) {
-            setBasicFieldValues(getBasicFieldValue(YAML.parse(codeEditorValue)))
-        } else {
-            //patchBasicFieldValue(codeEditorValue, basicFieldPatch)
+            const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+            setBasicFieldValues(_basicFieldValues)
+            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+        } else if (basicFieldPatchData.length > 0) {
+            const newTemplate = applyPatch(parsedCodeEditorValue, basicFieldPatchData).newDocument
+            updateTemplateFromBasicValue(newTemplate)
+            editorOnChange(YAML.stringify(newTemplate), !yamlMode)
         }
         toggleYamlMode(not)
     }
@@ -375,7 +385,7 @@ export const DeploymentTemplateOptionsTab = ({
                         selectedChartRefId={selectedChartRefId}
                         disableVersionSelect={disableVersionSelect}
                     />
-                    {selectedChart?.name === ROLLOUT_DEPLOYMENT && !disableVersionSelect && (
+                    {selectedChart?.name === ROLLOUT_DEPLOYMENT && !disableVersionSelect && !chartConfigLoading && codeEditorValue && (
                         <RadioGroup
                             className="gui-yaml-switch pl-16"
                             name="yaml-mode"
@@ -384,8 +394,8 @@ export const DeploymentTemplateOptionsTab = ({
                             onChange={changeEditorMode}
                         >
                             <RadioGroup.Radio
-                                isDisabled={isBasicViewLocked}
                                 value="gui"
+                                isDisabled={isBasicViewLocked}
                                 showTippy={isBasicViewLocked}
                                 tippyContent={
                                     <div className="dc__mxw-200">
@@ -400,7 +410,19 @@ export const DeploymentTemplateOptionsTab = ({
                                 {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
                                 Basic
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
+                            <RadioGroup.Radio
+                                value="yaml"
+                                isDisabled={!basicFieldValuesErrorObj?.isValid}
+                                showTippy={!basicFieldValuesErrorObj?.isValid}
+                                tippyContent={
+                                    <div className="dc__mxw-200">
+                                        <span className="dc__block fw-6">Validation Error</span>
+                                        <span className="fw-4">Some required fields are missing</span>
+                                    </div>
+                                }
+                            >
+                                Advanced (YAML)
+                            </RadioGroup.Radio>
                         </RadioGroup>
                     )}
                 </div>
@@ -635,13 +657,17 @@ export const DeploymentTemplateEditorView = ({
     toggleYamlMode,
     basicFieldValues,
     setBasicFieldValues,
+    basicFieldPatchData,
+    setBasicFieldPatchData,
+    basicFieldValuesErrorObj,
+    setBasicFieldValuesErrorObj,
 }: DeploymentTemplateEditorViewProps) => {
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const [httpRequestRoute, setHttpRequestRoute] = useState(false)
-
+    const validationRules = new ValidationRules()
     useEffect(() => {
         if (selectedChart && environments.length > 0) {
             let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
@@ -738,10 +764,31 @@ export const DeploymentTemplateEditorView = ({
 
     const handleInputChange = (e) => {
         const _basicFieldValues = { ...basicFieldValues }
-        if (e.target.name === 'port' || e.target.name === 'host') {
-            _basicFieldValues[e.target.name] = e.target.value
+        const _basicFieldPatchData = [...basicFieldPatchData]
+        if (e.target.name === 'port') {
+            e.target.value = e.target.value.replace(/\D/g, '')
+            _basicFieldValues['port'] = e.target.value && Number(e.target.value)
+            if (validationRules.port(e.target.value).isValid) {
+                _basicFieldPatchData.push({
+                    op: 'replace',
+                    path: BASIC_FIELD_MAPPING['port'],
+                    value: Number(e.target.value),
+                })
+            }
+        } else if (e.target.name === 'host') {
+            _basicFieldValues['host'] = e.target.value
+            _basicFieldPatchData.push({
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING['host'],
+                value: e.target.value,
+            })
         } else if (e.target.name === 'path') {
             _basicFieldValues[e.target.name][e.target.dataset.index] = e.target.value
+            _basicFieldPatchData.push({
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING[e.target.name],
+                value: _basicFieldValues[e.target.name][e.target.dataset.index],
+            })
         } else if (e.target.name === 'resources_cpu' || e.target.name === 'resources_memory') {
             const resource = _basicFieldValues['resources']
             if (e.target.name === 'resources_cpu') {
@@ -752,28 +799,49 @@ export const DeploymentTemplateEditorView = ({
                 resource['requests']['memory'] = e.target.value
             }
             _basicFieldValues['resources'] = resource
-        } else if (e.target.name === 'envVariables_key' || e.target.name === 'envVariables_value') {
+            _basicFieldPatchData.push({ op: 'replace', path: BASIC_FIELD_MAPPING['resources'], value: resource })
+        } else if (e.target.name.indexOf('envVariables_') >= 0) {
             const envVariable = _basicFieldValues['envVariables'][e.target.dataset.index]
-            if (e.target.name === 'envVariables_key') {
+            if (e.target.name.indexOf('key') >= 0) {
                 envVariable['key'] = e.target.value
             } else {
                 envVariable['value'] = e.target.value
             }
             _basicFieldValues['envVariables'][e.target.dataset.index] = envVariable
+            if (validationRules.envVariable(envVariable).isValid && envVariable.key && envVariable.value) {
+                _basicFieldPatchData.push({
+                    op: 'replace',
+                    path: BASIC_FIELD_MAPPING['envVariables'],
+                    value: _basicFieldValues['envVariables'],
+                })
+            }
         }
         setBasicFieldValues(_basicFieldValues)
+        setBasicFieldPatchData(_basicFieldPatchData)
+        setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
     }
 
     const addRow = (e): void => {
         const _basicFieldValues = { ...basicFieldValues }
         _basicFieldValues[e.target.dataset.name].unshift(e.target.dataset.name === 'path' ? '' : { key: '', value: '' })
         setBasicFieldValues(_basicFieldValues)
+        if (e.target.dataset.name === 'envVariables') {
+            const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
+            _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
+            setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
+        }
     }
 
     const removeRow = (e): void => {
         const _basicFieldValues = { ...basicFieldValues }
         _basicFieldValues[e.target.name].splice(1, e.target.dataset.index)
         setBasicFieldValues(_basicFieldValues)
+        if (e.target.dataset.name === 'envVariables') {
+            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+            // const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
+            // _basicFieldValuesErrorObj.envVariables.splice(1, e.target.dataset.index)
+            // setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
+        }
     }
 
     return yamlMode ? (
@@ -844,13 +912,21 @@ export const DeploymentTemplateEditorView = ({
                 <div className="fw-6 fs-14 cn-9 mb-8">Container Port</div>
                 <div className="row-container mb-8">
                     {renderLabel('Port', 'Port for the container')}
-                    <input
-                        type="text"
-                        name="port"
-                        value={basicFieldValues?.['port']}
-                        className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                        onChange={handleInputChange}
-                    />
+                    <div>
+                        <input
+                            type="text"
+                            name="port"
+                            value={basicFieldValues?.['port']}
+                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            onChange={handleInputChange}
+                        />
+                        {basicFieldValuesErrorObj?.port && !basicFieldValuesErrorObj.port.isValid && (
+                            <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                <span>{basicFieldValuesErrorObj.port.message}</span>
+                            </span>
+                        )}
+                    </div>
                 </div>
                 <div className="row-container mb-8">
                     <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
@@ -873,7 +949,7 @@ export const DeploymentTemplateEditorView = ({
                         <div className="row-container mb-8">
                             {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
                             <div
-                                className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-100px"
+                                className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
                                 data-name="path"
                                 onClick={addRow}
                             >
@@ -930,7 +1006,7 @@ export const DeploymentTemplateEditorView = ({
                         'Set environment variables as key:value for containers that run in the Pod.',
                     )}
                     <div
-                        className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-100px"
+                        className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
                         data-name="envVariables"
                         onClick={addRow}
                     >
@@ -939,25 +1015,33 @@ export const DeploymentTemplateEditorView = ({
                     </div>
                 </div>
                 {basicFieldValues?.['envVariables']?.map((envVariable: string, index: number) => (
-                    <div className="row-container mb-8" key={`path-${index}`}>
+                    <div className="row-container mb-8" key={`envVariables-${index}`}>
                         <div />
                         <div>
                             <input
                                 type="text"
-                                name="envVariables_key"
+                                name={`envVariables_key-${index}`}
                                 data-index={index}
                                 value={envVariable['key']}
                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
                                 onChange={handleInputChange}
                             />
                             <textarea
-                                name="envVariables_value"
+                                name={`envVariables_value-${index}`}
                                 data-index={index}
                                 value={envVariable['value']}
                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
                                 onChange={handleInputChange}
                                 rows={2}
                             ></textarea>
+
+                            {basicFieldValuesErrorObj?.envVariables[index] &&
+                                !basicFieldValuesErrorObj.envVariables[index].isValid && (
+                                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                        <span>{basicFieldValuesErrorObj.envVariables[index].message}</span>
+                                    </span>
+                                )}
                         </div>
                         <Close
                             className="option-close-icon icon-dim-16 mt-8 mr-8"

@@ -1,9 +1,16 @@
 import * as jsonpatch from 'fast-json-patch'
-import { applyPatch, getValueByPointer } from 'fast-json-patch'
+import { getValueByPointer } from 'fast-json-patch'
 import { BASIC_FIELD_MAPPING } from './constants'
+import { BasicFieldErrorObj } from './types'
+import { ValidationRules } from './validationRules'
 
 const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
 let templateFromBasicValue
+const validationRules = new ValidationRules()
+
+export const updateTemplateFromBasicValue = (template): void=>{
+  templateFromBasicValue = template
+}
 
 export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean => {
     if (!templateFromBasicValue && !defaultTemplate) return false
@@ -20,7 +27,7 @@ export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean
 
 export const getBasicFieldValue = (template) => {
     templateFromBasicValue = template
-    const _basicFieldValues = {}
+    const _basicFieldValues: Record<string, any> = {}
     for (let index = 0; index < basicFieldArray.length; index++) {
         const key = basicFieldArray[index]
         _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
@@ -28,27 +35,14 @@ export const getBasicFieldValue = (template) => {
     return _basicFieldValues
 }
 
-export const patchBasicFieldValue = (template) => {
-    const _basicFieldValues = {}
-    for (let index = 0; index < basicFieldArray.length; index++) {
-        const key = basicFieldArray[index]
-        _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
+export const validateBasicView = (basicFieldValues: Record<string, any>): BasicFieldErrorObj => {
+    const _portValidation = validationRules.port(Number(basicFieldValues['port']))
+    const _basicFieldErrorObj = { isValid: _portValidation.isValid, port: _portValidation, envVariables: [] }
+    for (let index = 0; index < basicFieldValues['envVariables'].length; index++) {
+        const element = basicFieldValues['envVariables'][index]
+        const _envVariableValidation = validationRules.envVariable(element)
+        _basicFieldErrorObj.envVariables.push(_envVariableValidation)
+        _basicFieldErrorObj.isValid = _basicFieldErrorObj.isValid && _envVariableValidation.isValid
     }
-    return _basicFieldValues
-}
-
-export const getUpdatedStateAndData = (defaultTemplate, modifiedTemplate, yamlMode) => {
-    const result = {}
-    // if(yamlMode){
-    //   const _isBasicViewLocked = isBasicValueChanged(defaultTemplate, modifiedTemplate)
-    //   result['isBasicViewLocked'] = _isBasicViewLocked
-    //   result['yamlMode'] = !_isBasicViewLocked
-    // } else{
-    //   result['yamlMode'] = !yamlMode
-    //   patchBasicFieldValue(modifiedTemplate)
-    // }
-    // const _isBasicViewLocked = isBasicValueChanged(defaultTemplate, modifiedTemplate)
-    // if(_isBasicViewLocked){
-    //   yamlMode
-    // }
+    return _basicFieldErrorObj
 }

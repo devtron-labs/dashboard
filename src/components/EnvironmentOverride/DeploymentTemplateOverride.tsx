@@ -367,6 +367,7 @@ function DeploymentTemplateOverrideForm({
                     yamlMode={yamlMode}
                     toggleYamlMode={toggleYamlMode}
                     isBasicViewLocked={false}
+                    editorOnChange={editorOnChange}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}

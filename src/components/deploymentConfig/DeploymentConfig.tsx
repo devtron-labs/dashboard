@@ -10,7 +10,7 @@ import {
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from './DeploymentTemplateView'
-import { DeploymentChartVersionType, DeploymentConfigProps } from './types'
+import { BasicFieldErrorObj, DeploymentChartVersionType, DeploymentConfigProps } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
@@ -19,7 +19,7 @@ import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import * as jsonpatch from 'fast-json-patch'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { getBasicFieldValue, isBasicValueChanged } from './DeploymentConfig.utils'
+import { getBasicFieldValue, isBasicValueChanged, validateBasicView } from './DeploymentConfig.utils'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -52,7 +52,8 @@ export default function DeploymentConfig({
     const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
     const [currentViewEditor, setCurrentViewEditor] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
-    const [basicFieldPatchData, setBasicFieldPatchData] = useState<jsonpatch.Operation[]>(null)
+    const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
+    const [basicFieldPatchData, setBasicFieldPatchData] = useState<jsonpatch.Operation[]>([])
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
@@ -111,7 +112,9 @@ export default function DeploymentConfig({
         setCurrentViewEditor(_currentViewEditor)
         toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
         if (!isBasicViewLocked) {
-            setBasicFieldValues(getBasicFieldValue(template))
+          const _basicFieldValues = getBasicFieldValue(template)
+            setBasicFieldValues(_basicFieldValues)
+            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }
     }
 
@@ -210,10 +213,10 @@ export default function DeploymentConfig({
         toggleConfirmation(false)
     }
 
-    const editorOnChange = (str: string): void => {
+    const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempFormData(str)
-        if(str && currentViewEditor && !isBasicViewLocked){
-          setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+        if (str && currentViewEditor && !isBasicViewLocked && !fromBasic) {
+            setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
         }
     }
 
@@ -261,6 +264,9 @@ export default function DeploymentConfig({
                     codeEditorValue={tempFormData}
                     setBasicFieldValues={setBasicFieldValues}
                     basicFieldPatchData={basicFieldPatchData}
+                    editorOnChange={editorOnChange}
+                    basicFieldValuesErrorObj={basicFieldValuesErrorObj}
+                    setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -284,6 +290,8 @@ export default function DeploymentConfig({
                     setBasicFieldValues={setBasicFieldValues}
                     basicFieldPatchData={basicFieldPatchData}
                     setBasicFieldPatchData={setBasicFieldPatchData}
+                    basicFieldValuesErrorObj={basicFieldValuesErrorObj}
+                    setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA
