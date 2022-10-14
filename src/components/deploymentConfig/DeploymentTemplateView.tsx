@@ -412,8 +412,8 @@ export const DeploymentTemplateOptionsTab = ({
                             </RadioGroup.Radio>
                             <RadioGroup.Radio
                                 value="yaml"
-                                isDisabled={!basicFieldValuesErrorObj?.isValid}
-                                showTippy={!basicFieldValuesErrorObj?.isValid}
+                                isDisabled={!isBasicViewLocked && !basicFieldValuesErrorObj?.isValid}
+                                showTippy={!isBasicViewLocked && !basicFieldValuesErrorObj?.isValid}
                                 tippyContent={
                                     <div className="dc__mxw-200">
                                         <span className="dc__block fw-6">Validation Error</span>
