@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
-import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync } from '../common'
+import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync, not } from '../common'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import {
     DeploymentConfigFormCTA,
@@ -18,8 +18,9 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import * as jsonpatch from 'fast-json-patch'
+import { applyPatch } from 'fast-json-patch'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { getBasicFieldValue, isBasicValueChanged, validateBasicView } from './DeploymentConfig.utils'
+import { getBasicFieldValue, isBasicValueChanged, updateTemplateFromBasicValue, validateBasicView } from './DeploymentConfig.utils'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -53,7 +54,7 @@ export default function DeploymentConfig({
     const [currentViewEditor, setCurrentViewEditor] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
-    const [basicFieldPatchData, setBasicFieldPatchData] = useState<jsonpatch.Operation[]>([])
+    const [basicFieldPatchData, setBasicFieldPatchData] = useState<Record<string, jsonpatch.Operation>>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
@@ -236,6 +237,28 @@ export default function DeploymentConfig({
         }
     }
 
+    const changeEditorMode = (): void => {
+      if (isBasicViewLocked || !basicFieldValuesErrorObj.isValid) {
+          return
+      }
+      const parsedCodeEditorValue = YAML.parse(tempFormData)
+      if (yamlMode) {
+          const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+          setBasicFieldValues(_basicFieldValues)
+          setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+      } else if (basicFieldPatchData !== null) {
+          const _patchKeys = Object.keys(basicFieldPatchData)
+          const _basicFieldPatchData = []
+          for (let index = 0; index < _patchKeys.length; index++) {
+            _basicFieldPatchData.push(basicFieldPatchData[_patchKeys[index]])
+          }
+          const newTemplate = applyPatch(parsedCodeEditorValue, _basicFieldPatchData).newDocument
+          updateTemplateFromBasicValue(newTemplate)
+          editorOnChange(YAML.stringify(newTemplate), !yamlMode)
+      }
+      toggleYamlMode(not)
+  }
+
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
     return (
@@ -259,14 +282,10 @@ export default function DeploymentConfig({
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
                     yamlMode={yamlMode}
-                    toggleYamlMode={toggleYamlMode}
                     isBasicViewLocked={isBasicViewLocked}
                     codeEditorValue={tempFormData}
-                    setBasicFieldValues={setBasicFieldValues}
-                    basicFieldPatchData={basicFieldPatchData}
-                    editorOnChange={editorOnChange}
                     basicFieldValuesErrorObj={basicFieldValuesErrorObj}
-                    setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
+                    changeEditorMode={changeEditorMode}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -285,13 +304,13 @@ export default function DeploymentConfig({
                     fetchedValues={fetchedValues}
                     setFetchedValues={setFetchedValues}
                     yamlMode={yamlMode}
-                    toggleYamlMode={toggleYamlMode}
                     basicFieldValues={basicFieldValues}
                     setBasicFieldValues={setBasicFieldValues}
                     basicFieldPatchData={basicFieldPatchData}
                     setBasicFieldPatchData={setBasicFieldPatchData}
                     basicFieldValuesErrorObj={basicFieldValuesErrorObj}
                     setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
+                    changeEditorMode={changeEditorMode}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA

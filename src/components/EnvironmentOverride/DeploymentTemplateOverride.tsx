@@ -33,7 +33,7 @@ export default function DeploymentTemplateOverride({
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, setLoading] = useState(false)
     const [chartRefLoading, setChartRefLoading] = useState(null)
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const initialState = {
         showReadme: false,
         openComparison: false,
@@ -212,7 +212,7 @@ export default function DeploymentTemplateOverride({
                     initialise={initialise}
                     handleAppMetrics={handleAppMetrics}
                     handleDelete={handleDelete}
-                    isGrafanaModuleInstalled= {grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                    isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                 />
             )}
         </div>
@@ -229,7 +229,7 @@ function DeploymentTemplateOverrideForm({
     handleAppMetrics,
     handleDelete,
     chartRefLoading,
-    isGrafanaModuleInstalled
+    isGrafanaModuleInstalled,
 }) {
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
@@ -330,6 +330,14 @@ function DeploymentTemplateOverrideForm({
         dispatch({ type: 'selectChart', value: selectedChart })
     }
 
+    // const handleBasicFieldValues = (selectedChart: DeploymentChartVersionType) => {
+    //     dispatch({ type: 'selectChart', value: selectedChart })
+    // }
+
+    // const handleSelectChart = (selectedChart: DeploymentChartVersionType) => {
+    //     dispatch({ type: 'selectChart', value: selectedChart })
+    // }
+
     const closeConfirmationDialog = () => {
         dispatch({ type: 'toggleDialog' })
     }
@@ -365,9 +373,18 @@ function DeploymentTemplateOverrideForm({
                     selectChart={handleSelectChart}
                     selectedChartRefId={state.selectedChartRefId}
                     yamlMode={yamlMode}
-                    toggleYamlMode={toggleYamlMode}
                     isBasicViewLocked={false}
-                    editorOnChange={editorOnChange}
+                    codeEditorValue={
+                        tempValue
+                            ? tempValue
+                            : state
+                            ? state.duplicate
+                                ? YAML.stringify(state.duplicate, { indent: 2 })
+                                : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                            : ''
+                    }
+                    //basicFieldValuesErrorObj={basicFieldValuesErrorObj}
+                    //changeEditorMode={changeEditorMode}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -403,7 +420,7 @@ function DeploymentTemplateOverrideForm({
                     readOnly={!state.duplicate}
                     globalChartRefId={state.data.globalChartRefId}
                     yamlMode={yamlMode}
-                    toggleYamlMode={toggleYamlMode}
+                    //toggleYamlMode={toggleYamlMode}
                 />
                 {!state.openComparison && !state.showReadme && (
                     <DeploymentConfigFormCTA
@@ -412,7 +429,10 @@ function DeploymentTemplateOverrideForm({
                         disableButton={!state.duplicate}
                         disableCheckbox={!state.duplicate}
                         showAppMetricsToggle={
-                            state.charts && state.selectedChart && appMetricsEnvironmentVariableEnabled && isGrafanaModuleInstalled
+                            state.charts &&
+                            state.selectedChart &&
+                            appMetricsEnvironmentVariableEnabled &&
+                            isGrafanaModuleInstalled
                         }
                         isAppMetricsEnabled={state.data.appMetrics}
                         currentChart={state.selectedChart}

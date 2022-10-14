@@ -154,14 +154,10 @@ export interface DeploymentTemplateOptionsTabProps {
     selectedChartRefId: number
     disableVersionSelect?: boolean
     yamlMode: boolean
-    toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
     isBasicViewLocked: boolean
-    setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
-    codeEditorValue?: string
-    basicFieldPatchData?: jsonpatch.Operation[]
-    editorOnChange: (str: string, fromBasic?:boolean) => void
+    codeEditorValue: string
     basicFieldValuesErrorObj?: BasicFieldErrorObj
-    setBasicFieldValuesErrorObj?: React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+    changeEditorMode?: () => void
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -176,7 +172,7 @@ export interface DeploymentTemplateEditorViewProps {
     readme: string
     value: string
     defaultValue?: string
-    editorOnChange: (str: string, fromBasic?:boolean) => void
+    editorOnChange: (str: string, fromBasic?: boolean) => void
     schemas: any
     charts: DeploymentChartVersionType[]
     selectedChart: DeploymentChartVersionType
@@ -186,13 +182,13 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     yamlMode: boolean
-    toggleYamlMode: React.Dispatch<React.SetStateAction<boolean>>
     basicFieldValues?: Record<string, any>
     setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
-    basicFieldPatchData?: jsonpatch.Operation[]
-    setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<jsonpatch.Operation[]>>
+    basicFieldPatchData?: Record<string, jsonpatch.Operation>
+    setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<Record<string, jsonpatch.Operation>>>
     basicFieldValuesErrorObj?: BasicFieldErrorObj
     setBasicFieldValuesErrorObj?: React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+    changeEditorMode?: () => void
 }
 
 export interface EsoData {

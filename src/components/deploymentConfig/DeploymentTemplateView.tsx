@@ -348,31 +348,11 @@ export const DeploymentTemplateOptionsTab = ({
     selectedChartRefId,
     disableVersionSelect,
     yamlMode,
-    toggleYamlMode,
     isBasicViewLocked,
-    setBasicFieldValues,
     codeEditorValue,
-    basicFieldPatchData,
-    editorOnChange,
     basicFieldValuesErrorObj,
-    setBasicFieldValuesErrorObj,
+    changeEditorMode,
 }: DeploymentTemplateOptionsTabProps) => {
-    function changeEditorMode() {
-        if (isBasicViewLocked || !basicFieldValuesErrorObj.isValid) {
-            return
-        }
-        const parsedCodeEditorValue = YAML.parse(codeEditorValue)
-        if (yamlMode) {
-            const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-            setBasicFieldValues(_basicFieldValues)
-            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
-        } else if (basicFieldPatchData.length > 0) {
-            const newTemplate = applyPatch(parsedCodeEditorValue, basicFieldPatchData).newDocument
-            updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAML.stringify(newTemplate), !yamlMode)
-        }
-        toggleYamlMode(not)
-    }
     return (
         <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16">
             {!openComparison && !openReadMe ? (
@@ -385,46 +365,49 @@ export const DeploymentTemplateOptionsTab = ({
                         selectedChartRefId={selectedChartRefId}
                         disableVersionSelect={disableVersionSelect}
                     />
-                    {selectedChart?.name === ROLLOUT_DEPLOYMENT && !disableVersionSelect && !chartConfigLoading && codeEditorValue && (
-                        <RadioGroup
-                            className="gui-yaml-switch pl-16"
-                            name="yaml-mode"
-                            initialTab={yamlMode ? 'yaml' : 'gui'}
-                            disabled={isBasicViewLocked}
-                            onChange={changeEditorMode}
-                        >
-                            <RadioGroup.Radio
-                                value="gui"
-                                isDisabled={isBasicViewLocked}
-                                showTippy={isBasicViewLocked}
-                                tippyContent={
-                                    <div className="dc__mxw-200">
-                                        <span className="dc__block fw-6">Basic view is locked</span>
-                                        <span className="fw-4">
-                                            Some advanced configurations have been modified. Please continue editing in
-                                            Advanced(YAML) view.
-                                        </span>
-                                    </div>
-                                }
+                    {selectedChart?.name === ROLLOUT_DEPLOYMENT &&
+                        !disableVersionSelect &&
+                        !chartConfigLoading &&
+                        codeEditorValue && (
+                            <RadioGroup
+                                className="gui-yaml-switch pl-16"
+                                name="yaml-mode"
+                                initialTab={yamlMode ? 'yaml' : 'gui'}
+                                disabled={isBasicViewLocked}
+                                onChange={changeEditorMode}
                             >
-                                {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
-                                Basic
-                            </RadioGroup.Radio>
-                            <RadioGroup.Radio
-                                value="yaml"
-                                isDisabled={!isBasicViewLocked && !basicFieldValuesErrorObj?.isValid}
-                                showTippy={!isBasicViewLocked && !basicFieldValuesErrorObj?.isValid}
-                                tippyContent={
-                                    <div className="dc__mxw-200">
-                                        <span className="dc__block fw-6">Validation Error</span>
-                                        <span className="fw-4">Some required fields are missing</span>
-                                    </div>
-                                }
-                            >
-                                Advanced (YAML)
-                            </RadioGroup.Radio>
-                        </RadioGroup>
-                    )}
+                                <RadioGroup.Radio
+                                    value="gui"
+                                    isDisabled={isBasicViewLocked}
+                                    showTippy={isBasicViewLocked}
+                                    tippyContent={
+                                        <div className="dc__mxw-200">
+                                            <span className="dc__block fw-6">Basic view is locked</span>
+                                            <span className="fw-4">
+                                                Some advanced configurations have been modified. Please continue editing
+                                                in Advanced(YAML) view.
+                                            </span>
+                                        </div>
+                                    }
+                                >
+                                    {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
+                                    Basic
+                                </RadioGroup.Radio>
+                                <RadioGroup.Radio
+                                    value="yaml"
+                                    isDisabled={!isBasicViewLocked && !basicFieldValuesErrorObj?.isValid}
+                                    showTippy={!isBasicViewLocked && !basicFieldValuesErrorObj?.isValid}
+                                    tippyContent={
+                                        <div className="dc__mxw-200">
+                                            <span className="dc__block fw-6">Validation Error</span>
+                                            <span className="fw-4">Some required fields are missing</span>
+                                        </div>
+                                    }
+                                >
+                                    Advanced (YAML)
+                                </RadioGroup.Radio>
+                            </RadioGroup>
+                        )}
                 </div>
             ) : (
                 <span className="flex fs-13 fw-6 cn-9 h-32">
@@ -654,13 +637,13 @@ export const DeploymentTemplateEditorView = ({
     readOnly,
     globalChartRefId,
     yamlMode,
-    toggleYamlMode,
     basicFieldValues,
     setBasicFieldValues,
     basicFieldPatchData,
     setBasicFieldPatchData,
     basicFieldValuesErrorObj,
     setBasicFieldValuesErrorObj,
+    changeEditorMode,
 }: DeploymentTemplateEditorViewProps) => {
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
@@ -728,13 +711,9 @@ export const DeploymentTemplateEditorView = ({
         }
     }, [openComparison])
 
-    const switchToYAMLMode = (): void => {
-        toggleYamlMode(not)
-    }
-
     const renderActionButton = () => {
         return (
-            <span className="cb-5 cursor fw-6" onClick={switchToYAMLMode}>
+            <span className="cb-5 cursor fw-6" onClick={changeEditorMode}>
                 Switch to Advanced
             </span>
         )
@@ -764,31 +743,35 @@ export const DeploymentTemplateEditorView = ({
 
     const handleInputChange = (e) => {
         const _basicFieldValues = { ...basicFieldValues }
-        const _basicFieldPatchData = [...basicFieldPatchData]
+        const _basicFieldPatchData = { ...basicFieldPatchData }
         if (e.target.name === 'port') {
             e.target.value = e.target.value.replace(/\D/g, '')
             _basicFieldValues['port'] = e.target.value && Number(e.target.value)
             if (validationRules.port(e.target.value).isValid) {
-                _basicFieldPatchData.push({
+                _basicFieldPatchData['port'] = {
                     op: 'replace',
                     path: BASIC_FIELD_MAPPING['port'],
                     value: Number(e.target.value),
-                })
+                }
             }
         } else if (e.target.name === 'host') {
             _basicFieldValues['host'] = e.target.value
-            _basicFieldPatchData.push({
+            _basicFieldValues['hosts'] = [_basicFieldValues['hosts'][0]]
+            _basicFieldValues['hosts'][0]['host'] = e.target.value
+            _basicFieldPatchData['hosts'] = {
                 op: 'replace',
                 path: BASIC_FIELD_MAPPING['host'],
-                value: e.target.value,
-            })
-        } else if (e.target.name === 'path') {
-            _basicFieldValues[e.target.name][e.target.dataset.index] = e.target.value
-            _basicFieldPatchData.push({
+                value: _basicFieldValues['hosts'],
+            }
+        } else if (e.target.name === 'paths') {
+            _basicFieldValues['paths'][e.target.dataset.index] = e.target.value
+            _basicFieldValues['hosts'] = [_basicFieldValues['hosts'][0]]
+            _basicFieldValues['hosts'][0]['paths'] = _basicFieldValues['paths']
+            _basicFieldPatchData['hosts'] = {
                 op: 'replace',
-                path: BASIC_FIELD_MAPPING[e.target.name],
-                value: _basicFieldValues[e.target.name][e.target.dataset.index],
-            })
+                path: BASIC_FIELD_MAPPING['hosts'],
+                value: _basicFieldValues['hosts'],
+            }
         } else if (e.target.name === 'resources_cpu' || e.target.name === 'resources_memory') {
             const resource = _basicFieldValues['resources']
             if (e.target.name === 'resources_cpu') {
@@ -799,7 +782,11 @@ export const DeploymentTemplateEditorView = ({
                 resource['requests']['memory'] = e.target.value
             }
             _basicFieldValues['resources'] = resource
-            _basicFieldPatchData.push({ op: 'replace', path: BASIC_FIELD_MAPPING['resources'], value: resource })
+            _basicFieldPatchData['resources'] = {
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING['resources'],
+                value: resource,
+            }
         } else if (e.target.name.indexOf('envVariables_') >= 0) {
             const envVariable = _basicFieldValues['envVariables'][e.target.dataset.index]
             if (e.target.name.indexOf('key') >= 0) {
@@ -809,11 +796,11 @@ export const DeploymentTemplateEditorView = ({
             }
             _basicFieldValues['envVariables'][e.target.dataset.index] = envVariable
             if (validationRules.envVariable(envVariable).isValid && envVariable.key && envVariable.value) {
-                _basicFieldPatchData.push({
+                _basicFieldPatchData['envVariables'] = {
                     op: 'replace',
                     path: BASIC_FIELD_MAPPING['envVariables'],
                     value: _basicFieldValues['envVariables'],
-                })
+                }
             }
         }
         setBasicFieldValues(_basicFieldValues)
@@ -823,7 +810,7 @@ export const DeploymentTemplateEditorView = ({
 
     const addRow = (e): void => {
         const _basicFieldValues = { ...basicFieldValues }
-        _basicFieldValues[e.target.dataset.name].unshift(e.target.dataset.name === 'path' ? '' : { key: '', value: '' })
+        _basicFieldValues[e.target.dataset.name].unshift(e.target.dataset.name === 'paths' ? '' : { key: '', value: '' })
         setBasicFieldValues(_basicFieldValues)
         if (e.target.dataset.name === 'envVariables') {
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
@@ -838,9 +825,6 @@ export const DeploymentTemplateEditorView = ({
         setBasicFieldValues(_basicFieldValues)
         if (e.target.dataset.name === 'envVariables') {
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
-            // const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
-            // _basicFieldValuesErrorObj.envVariables.splice(1, e.target.dataset.index)
-            // setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
         }
     }
 
@@ -950,19 +934,19 @@ export const DeploymentTemplateEditorView = ({
                             {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
                             <div
                                 className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
-                                data-name="path"
+                                data-name="paths"
                                 onClick={addRow}
                             >
                                 <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
                                 Add another
                             </div>
                         </div>
-                        {basicFieldValues?.['path']?.map((path: string, index: number) => (
+                        {basicFieldValues?.['paths']?.map((path: string, index: number) => (
                             <div className="row-container mb-8" key={`path-${index}`}>
                                 <div />
                                 <input
                                     type="text"
-                                    name="path"
+                                    name="paths"
                                     data-index={index}
                                     value={path}
                                     className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
@@ -970,7 +954,7 @@ export const DeploymentTemplateEditorView = ({
                                 />
                                 <Close
                                     className="option-close-icon icon-dim-16 mt-8 mr-8"
-                                    name="path"
+                                    name="paths"
                                     data-index={index}
                                     onClick={removeRow}
                                 />
