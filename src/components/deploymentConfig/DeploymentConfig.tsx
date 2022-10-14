@@ -20,7 +20,12 @@ import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/Devtro
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { getBasicFieldValue, isBasicValueChanged, updateTemplateFromBasicValue, validateBasicView } from './DeploymentConfig.utils'
+import {
+    getBasicFieldValue,
+    isBasicValueChanged,
+    updateTemplateFromBasicValue,
+    validateBasicView,
+} from './DeploymentConfig.utils'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -113,7 +118,7 @@ export default function DeploymentConfig({
         setCurrentViewEditor(_currentViewEditor)
         toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
         if (!isBasicViewLocked) {
-          const _basicFieldValues = getBasicFieldValue(template)
+            const _basicFieldValues = getBasicFieldValue(template)
             setBasicFieldValues(_basicFieldValues)
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }
@@ -160,6 +165,10 @@ export default function DeploymentConfig({
             toast.error(error)
             return
         }
+        if (!basicFieldValuesErrorObj.isValid) {
+            toast.error('Some required fields are missing')
+            return
+        }
         if (chartConfig.id) {
             //update flow, might have overridden
             toggleConfirmation(true)
@@ -175,7 +184,7 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride: obj,
+                valuesOverride: basicFieldPatchData !== null ? patchBasicData(obj) : obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
                 isBasicViewLocked,
@@ -237,27 +246,32 @@ export default function DeploymentConfig({
         }
     }
 
-    const changeEditorMode = (): void => {
-      if (isBasicViewLocked || !basicFieldValuesErrorObj.isValid) {
-          return
-      }
-      const parsedCodeEditorValue = YAML.parse(tempFormData)
-      if (yamlMode) {
-          const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-          setBasicFieldValues(_basicFieldValues)
-          setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
-      } else if (basicFieldPatchData !== null) {
-          const _patchKeys = Object.keys(basicFieldPatchData)
-          const _basicFieldPatchData = []
-          for (let index = 0; index < _patchKeys.length; index++) {
+    const patchBasicData = (_template) => {
+        const _patchKeys = Object.keys(basicFieldPatchData)
+        const _basicFieldPatchData = []
+        for (let index = 0; index < _patchKeys.length; index++) {
             _basicFieldPatchData.push(basicFieldPatchData[_patchKeys[index]])
-          }
-          const newTemplate = applyPatch(parsedCodeEditorValue, _basicFieldPatchData).newDocument
-          updateTemplateFromBasicValue(newTemplate)
-          editorOnChange(YAML.stringify(newTemplate), !yamlMode)
-      }
-      toggleYamlMode(not)
-  }
+        }
+        return applyPatch(_template, _basicFieldPatchData).newDocument
+    }
+
+    const changeEditorMode = (): void => {
+        if (isBasicViewLocked || !basicFieldValuesErrorObj.isValid) {
+            return
+        }
+        const parsedCodeEditorValue = YAML.parse(tempFormData)
+        if (yamlMode) {
+            const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+            setBasicFieldValues(_basicFieldValues)
+            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+        } else if (basicFieldPatchData !== null) {
+            const newTemplate = patchBasicData(parsedCodeEditorValue)
+            updateTemplateFromBasicValue(newTemplate)
+            editorOnChange(YAML.stringify(newTemplate), !yamlMode)
+            setBasicFieldPatchData(null)
+        }
+        toggleYamlMode(not)
+    }
 
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
