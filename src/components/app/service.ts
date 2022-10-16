@@ -64,7 +64,7 @@ export function getCITriggerInfoModal(
                 lastFetchTime: mat.lastFetchTime || '',
             }
         })
-        if (!materials.find((mat) => mat.isSelected)) {
+        if (materials.length>0 && !materials.find((mat) => mat.isSelected)) {
             materials[0].isSelected = true
         }
         return {
