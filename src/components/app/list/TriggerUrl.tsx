@@ -81,9 +81,9 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                     <h5 className="mt-0 fw-6 dc__first-letter-capitalize">{kind}</h5>
                                     <div className="url-table_row pt-6 pb-6 fw-6 cn-7">
                                         <div className="w-200">Name</div>
-                                        {kind === KIND.INGRESS && <div className="items-width-1">Urls</div>}
+                                        {kind === KIND.INGRESS && <div className="items-width-1">URLs</div>}
                                         <div className="items-width-1">
-                                            {kind === KIND.INGRESS ? 'Points to (loadBalancer)' : 'Loadbalancer'}
+                                            {kind === KIND.INGRESS ? 'Points to load Balancer)' : 'Load Balancer'}
                                         </div>
                                     </div>
                                     {item.map((value) => (
