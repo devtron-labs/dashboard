@@ -83,7 +83,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                         <div className="w-200">Name</div>
                                         {kind === KIND.INGRESS && <div className="items-width-1">URLs</div>}
                                         <div className="items-width-1">
-                                            {kind === KIND.INGRESS ? 'Points to load Balancer)' : 'Load Balancer'}
+                                            {kind === KIND.INGRESS ? 'Points to Load Balancer' : 'Load Balancer'}
                                         </div>
                                     </div>
                                     {item.map((value) => (
