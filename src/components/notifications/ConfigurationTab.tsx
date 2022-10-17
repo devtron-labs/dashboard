@@ -94,6 +94,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 this.setState(state)
             })
             .catch((error) => {
+                showError(error,true,true)
                 this.setState({view: ViewType.ERROR})
             })
     }
