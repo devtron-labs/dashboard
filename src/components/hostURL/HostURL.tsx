@@ -50,7 +50,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
               value: window.location.origin,
               active: this.state.form.active,
           }
-            console.log(form)
             if(!form.value){
               try{
                 saveHostURLConfiguration(payload)

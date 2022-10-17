@@ -77,7 +77,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
-
     handleInputChange = (inputTagValue) => {
         let { form, isValid } = { ...this.state };
         this.setState({
