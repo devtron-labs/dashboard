@@ -3,7 +3,7 @@ FROM node:14 AS builder
 WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install
+RUN yarn install --network-timeout 600000
 
 COPY src/ src
 COPY types/ types
