@@ -3,7 +3,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
-import { showError, Progressing } from '../common'
+import { showError, Progressing, ErrorScreenNotAuthorized } from '../common'
 import {
     deleteNotification,
     getChannelConfigs,
@@ -94,7 +94,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 this.setState(state)
             })
             .catch((error) => {
-                showError(error)
+                this.setState({view: ViewType.ERROR})
             })
     }
 
@@ -533,6 +533,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     }
 
     render() {
+        if (this.state.view === ViewType.ERROR) {
+            return <div style={{ "height": "calc(100vh - 172px)" }}>
+                 <ErrorScreenNotAuthorized
+                    subtitle=""
+                />
+            </div>
+        }
         return (
             <>
                 <div className="configuration-tab">
