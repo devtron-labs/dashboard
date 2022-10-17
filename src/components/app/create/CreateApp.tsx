@@ -144,14 +144,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
      getHostURLConfig = async() => {
       const { result } = await getHostURLConfiguration()
-      this.setState({hostURLConfig: result})
-      let payload = {
-        id: this.state.hostURLConfig?.id,
-        key: this.state.hostURLConfig?.key,
-        value: this.state.hostURLConfig?.value ? this.state.hostURLConfig.value : window.location.origin,
-        active: this.state.hostURLConfig?.active,
-    }
-         saveHostURLConfiguration(payload);
+      this.setState({ hostURLConfig: result })
+
+      if (this.state.hostURLConfig && !this.state.hostURLConfig?.value) {
+          let payload = {
+              id: this.state.hostURLConfig?.id,
+              key: this.state.hostURLConfig?.key,
+              value: window.location.origin,
+              active: this.state.hostURLConfig?.active,
+          }
+          saveHostURLConfiguration(payload)
+      }
+
     }
 
     createApp(): void {
