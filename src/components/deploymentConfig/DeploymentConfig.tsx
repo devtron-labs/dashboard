@@ -324,7 +324,8 @@ export default function DeploymentConfig({
                             charts &&
                             selectedChart &&
                             appMetricsEnvironmentVariableEnabled &&
-                            grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+                            grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                            yamlMode
                         }
                         isAppMetricsEnabled={isAppMetricsEnabled}
                         isCiPipeline={isCiPipeline}

@@ -532,7 +532,8 @@ function DeploymentTemplateOverrideForm({
                             state.charts &&
                             state.selectedChart &&
                             appMetricsEnvironmentVariableEnabled &&
-                            isGrafanaModuleInstalled
+                            isGrafanaModuleInstalled &&
+                            state.yamlMode
                         }
                         isAppMetricsEnabled={state.data.appMetrics}
                         currentChart={state.selectedChart}
