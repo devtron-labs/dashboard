@@ -57,13 +57,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
-            hostURLConfig: {
-              id: undefined,
-              key: "url",
-              value: "",
-              active: true,
-          }
-        };
+
+        }
         this.createApp = this.createApp.bind(this);
         this.handleAppname = this.handleAppname.bind(this);
         this.handleProject = this.handleProject.bind(this);
@@ -149,14 +144,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
      getHostURLConfig = async() => {
        try {
            const { result } = await getHostURLConfiguration()
-           this.setState({ hostURLConfig: result })
 
-           if (this.state.hostURLConfig && !this.state.hostURLConfig?.value) {
-               let payload = {
-                   id: this.state.hostURLConfig?.id,
-                   key: this.state.hostURLConfig?.key,
+           if (!result?.value ) {
+               const payload = {
+                   id: result.id,
+                   key: result.key,
                    value: window.location.origin,
-                   active: this.state.hostURLConfig?.active,
+                   active: result.active,
                }
                saveHostURLConfiguration(payload)
            }

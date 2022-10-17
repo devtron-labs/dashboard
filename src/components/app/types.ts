@@ -42,7 +42,6 @@ export interface AddNewAppState {
         appName: boolean;
         cloneAppId: boolean;
     };
-    hostURLConfig: HostURLConfig;
 }
 
 export interface AppDetails {

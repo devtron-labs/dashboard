@@ -44,13 +44,13 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 form: form
             })
 
-            const payload = {
-              id: this.state.form.id,
-              key: this.state.form.key,
-              value: window.location.origin,
-              active: this.state.form.active,
-          }
             if(!form.value){
+              const payload = {
+                id: form.id,
+                key: form.key,
+                value: window.location.origin,
+                active: form.active,
+            }
               try{
                 saveHostURLConfiguration(payload)
               }catch(err){
@@ -78,6 +78,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         if (!this.state.form.value.length) {
             toast.error("Some required fields are missing");
             return;
+        }else if(!this.state.form.id){
+          return
         }
         this.setState({ saveLoading: true, })
         const payload = {
@@ -86,8 +88,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             value: this.state.form.value,
             active: this.state.form.active,
         }
-        let promise = payload.id && updateHostURLConfiguration(payload)
-        promise.then((response) => {
+
+        updateHostURLConfiguration(payload).then((response) => {
             toast.success("Saved Successful")
             this.setState({
                 saveLoading: false,
