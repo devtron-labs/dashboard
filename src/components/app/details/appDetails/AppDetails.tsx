@@ -400,7 +400,7 @@ export const Details: React.FC<{
                             appDetails={appDetails}
                             setDetailed={toggleDetailedStatus}
                             environments={environments}
-                            showCommitInfo={isAppDeployment ? showCommitInfo : null}
+                            showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                             toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}

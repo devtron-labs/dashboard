@@ -30,6 +30,7 @@ import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { ServerError } from '../../modals/commonTypes';
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -203,7 +204,19 @@ export default function UserForm({
                 toast.success('User created');
             }
         } catch (err) {
-            showError(err);
+
+            const code = err["code"]
+            const message = err["errors"][0].userMessage
+
+            if (code === 400 ){
+                toast.error(message)
+            }
+            else if (code === 417){
+                toast.warn(message)
+            }
+            else{
+                showError(err);
+            }
         } finally {
             setSubmitting(false);
         }
