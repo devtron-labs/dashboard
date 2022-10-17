@@ -156,7 +156,7 @@ export interface DeploymentTemplateOptionsTabProps {
     yamlMode: boolean
     isBasicViewLocked: boolean
     codeEditorValue: string
-    basicFieldValuesErrorObj?: BasicFieldErrorObj
+    basicFieldValuesErrorObj: BasicFieldErrorObj
     changeEditorMode?: () => void
 }
 
@@ -182,13 +182,13 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     yamlMode: boolean
-    basicFieldValues?: Record<string, any>
+    basicFieldValues: Record<string, any>
     setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
-    basicFieldPatchData?: Record<string, jsonpatch.Operation>
+    basicFieldPatchData: Record<string, jsonpatch.Operation>
     setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<Record<string, jsonpatch.Operation>>>
-    basicFieldValuesErrorObj?: BasicFieldErrorObj
+    basicFieldValuesErrorObj: BasicFieldErrorObj
     setBasicFieldValuesErrorObj?: React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
-    changeEditorMode?: () => void
+    changeEditorMode: () => void
 }
 
 export interface EsoData {

@@ -1,5 +1,5 @@
 import * as jsonpatch from 'fast-json-patch'
-import { getValueByPointer } from 'fast-json-patch'
+import { getValueByPointer, applyPatch } from 'fast-json-patch'
 import { BASIC_FIELD_MAPPING } from './constants'
 import { BasicFieldErrorObj } from './types'
 import { ValidationRules } from './validationRules'
@@ -45,4 +45,13 @@ export const validateBasicView = (basicFieldValues: Record<string, any>): BasicF
         _basicFieldErrorObj.isValid = _basicFieldErrorObj.isValid && _envVariableValidation.isValid
     }
     return _basicFieldErrorObj
+}
+
+export const patchBasicData = (_template, basicFieldPatchData) => {
+    const _patchKeys = Object.keys(basicFieldPatchData)
+    const _basicFieldPatchData = []
+    for (let index = 0; index < _patchKeys.length; index++) {
+        _basicFieldPatchData.push(basicFieldPatchData[_patchKeys[index]])
+    }
+    return applyPatch(_template, _basicFieldPatchData).newDocument
 }
