@@ -57,7 +57,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
-            hostURLConfig: undefined
+            hostURLConfig: {
+              id: undefined,
+              key: "url",
+              value: "",
+              active: true,
+          }
         };
         this.createApp = this.createApp.bind(this);
         this.handleAppname = this.handleAppname.bind(this);
