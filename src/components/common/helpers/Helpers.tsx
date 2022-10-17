@@ -177,17 +177,17 @@ export function getRandomColor(email: string): string {
 }
 
 export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
-    if (serverError.code === 403 || serverError.code === 401) {
-        if(!hideAccessError){
-            toastAccessDenied()
-        }
-    }
-    else if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+    if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
         serverError.errors.map(({ userMessage, internalMessage }) => {
             toast.error(userMessage || internalMessage)
         })
     } else {
-        if (serverError.code !== 403 && serverError.code !== 408) {
+        if (serverError.code === 403 || serverError.code === 401) {
+            if(!hideAccessError){
+                toastAccessDenied()
+            }
+        }
+        else if (serverError.code !== 403 && serverError.code !== 408) {
             Sentry.captureException(serverError)
         }
 
