@@ -12,7 +12,7 @@ export default function AnnouncementBanner({ parentClassName = '' }) {
         <div className={`announcement-banner-container ${parentClassName}`}>
             <InfoColourBar
                 message={message}
-                classname="announcement-bar fw-6 lh-20"
+                classname="announcement-bar fw-4 lh-20"
                 Icon={MegaphoneIcon}
                 iconSize={20}
             />

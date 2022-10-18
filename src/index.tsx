@@ -115,7 +115,7 @@ if (!window || !window._env_) {
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         HIDE_DEPLOYMENT_GROUPS: true,
-        ANNOUNCEMENT_BANNER_MSG: 'AVOID DEPLOYING non critical changes to production between 21st to 31st Oct 2022'
+        ANNOUNCEMENT_BANNER_MSG: 'Avoid deploying non critical changes to production between 21st to 31st Oct 2022'
     }
 }
 
