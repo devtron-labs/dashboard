@@ -8,8 +8,8 @@ const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
 let templateFromBasicValue
 const validationRules = new ValidationRules()
 
-export const updateTemplateFromBasicValue = (template): void=>{
-  templateFromBasicValue = template
+export const updateTemplateFromBasicValue = (template): void => {
+    templateFromBasicValue = template
 }
 
 export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean => {
@@ -37,7 +37,15 @@ export const getBasicFieldValue = (template) => {
 
 export const validateBasicView = (basicFieldValues: Record<string, any>): BasicFieldErrorObj => {
     const _portValidation = validationRules.port(Number(basicFieldValues['port']))
-    const _basicFieldErrorObj = { isValid: _portValidation.isValid, port: _portValidation, envVariables: [] }
+    const _cpuValidation = validationRules.port(basicFieldValues['resources']?.['limits']?.['cpu'])
+    const _memoryValidation = validationRules.port(basicFieldValues['resources']?.['limits']?.['memory'])
+    const _basicFieldErrorObj = {
+        isValid: _portValidation.isValid && _cpuValidation.isValid && _memoryValidation.isValid,
+        port: _portValidation,
+        cpu: _cpuValidation,
+        memory: _memoryValidation,
+        envVariables: [],
+    }
     for (let index = 0; index < basicFieldValues['envVariables'].length; index++) {
         const element = basicFieldValues['envVariables'][index]
         const _envVariableValidation = validationRules.envVariable(element)

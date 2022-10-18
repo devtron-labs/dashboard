@@ -247,7 +247,12 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
-        if (isBasicViewLocked || !basicFieldValuesErrorObj.isValid) {
+        if (basicFieldValuesErrorObj && !basicFieldValuesErrorObj.isValid) {
+            toast.error('Some required fields are missing')
+            toggleYamlMode(false)
+            return
+        }
+        if (isBasicViewLocked) {
             return
         }
         const parsedCodeEditorValue = YAML.parse(tempFormData)

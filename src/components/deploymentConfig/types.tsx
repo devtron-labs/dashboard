@@ -183,11 +183,15 @@ export interface DeploymentTemplateEditorViewProps {
     globalChartRefId?: number
     yamlMode: boolean
     basicFieldValues: Record<string, any>
-    setBasicFieldValues?: React.Dispatch<React.SetStateAction<Record<string, any>>>
+    setBasicFieldValues?: (
+        basicFieldValues: Record<string, any>,
+    ) => void | React.Dispatch<React.SetStateAction<Record<string, any>>>
     basicFieldPatchData: Record<string, jsonpatch.Operation>
     setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<Record<string, jsonpatch.Operation>>>
     basicFieldValuesErrorObj: BasicFieldErrorObj
-    setBasicFieldValuesErrorObj?: React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+    setBasicFieldValuesErrorObj?: (
+      basicFieldErrorObj: BasicFieldErrorObj,
+  ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
     changeEditorMode: () => void
 }
 
@@ -247,5 +251,7 @@ interface ErrorObj {
 export interface BasicFieldErrorObj {
     isValid: boolean
     port: ErrorObj
+    cpu: ErrorObj
+    memory: ErrorObj
     envVariables: ErrorObj[]
 }
