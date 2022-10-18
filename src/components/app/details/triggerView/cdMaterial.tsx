@@ -47,6 +47,7 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
+import AnnouncementBanner from '../../../common/AnnouncementBanner'
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     constructor(props: CDMaterialProps) {
@@ -768,6 +769,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return true
     }
 
+    getTriggerModalBodyHeight() {
+        if (this.state.showConfigDiffView) {
+            return 'calc(100vh - 141px)'
+        } else if (this.state.isRollbackTrigger) {
+            return 'calc(100vh - 153px)'
+        }
+        return 'calc(100vh - 116px)'
+    }
+
     renderCDModal() {
         return (
             <>
@@ -793,12 +803,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
+                {!this.state.showConfigDiffView && <AnnouncementBanner parentClassName="cd-trigger-announcement" />}
                 <div
                     className={`trigger-modal__body ${
                         this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
                     }`}
                     style={{
-                        height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
+                        height: this.getTriggerModalBodyHeight(),
                     }}
                 >
                     {this.state.showConfigDiffView && this.canReviewConfig() ? (

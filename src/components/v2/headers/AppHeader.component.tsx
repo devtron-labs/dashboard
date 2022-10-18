@@ -128,6 +128,7 @@ function AppHeaderComponent() {
             breadCrumbs={renderBreadcrumbs}
             showTabs={true}
             renderHeaderTabs={renderHelmDetailsTabs}
+            showAnnouncementHeader={true}
         />
         </div>
     )

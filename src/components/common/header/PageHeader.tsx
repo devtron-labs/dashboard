@@ -13,6 +13,7 @@ import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
 import { handlePostHogEventUpdate, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
+import AnnouncementBanner from '../AnnouncementBanner'
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
@@ -28,6 +29,7 @@ export interface PageHeaderType {
     renderActionButtons?: () => JSX.Element
     showCloseButton?: boolean
     onClose?: () => void
+    showAnnouncementHeader?: boolean
 }
 
 function PageHeader({
@@ -45,6 +47,7 @@ function PageHeader({
     renderActionButtons,
     showCloseButton = false,
     onClose,
+    showAnnouncementHeader,
 }: PageHeaderType) {
     const {
         loginCount,
@@ -223,6 +226,7 @@ function PageHeader({
                     {renderLogoutHelpSection()}
                 </div>
             )}
+            {showAnnouncementHeader && <AnnouncementBanner parentClassName="page-header-banner" />}
         </div>
     )
 }

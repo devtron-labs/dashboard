@@ -2162,3 +2162,26 @@ textarea::placeholder {
 .dc__italic-font-style {
     font-style: italic !important;
 }
+
+// Start: accouncement banner
+.announcement-banner-container {
+    &.page-header-banner {
+        width: fit-content;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
+
+    &.cd-trigger-announcement {
+        .info-bar-container {
+            .announcement-bar {
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid var(--Y700);
+            }
+        }
+    }
+}
+
+// End: accouncement banner

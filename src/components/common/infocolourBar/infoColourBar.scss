@@ -25,4 +25,13 @@
         background-color: var(--V100);
         border: 1px solid var(--V200);
     }
+
+    .announcement-bar {
+        background-color: var(--Y500);
+        border: 1px solid var(--Y700);
+        border-top: none;
+        padding: 8px 12px !important;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
 }

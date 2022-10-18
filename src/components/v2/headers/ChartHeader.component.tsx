@@ -141,6 +141,7 @@ function ChartHeaderComponent() {
                 showTabs={true}
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
+                showAnnouncementHeader={true}
             />
         </div>
     )
