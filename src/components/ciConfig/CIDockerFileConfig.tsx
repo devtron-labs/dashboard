@@ -1,14 +1,13 @@
-import React from 'react'
-
-import ReactSelect, { components } from 'react-select'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import React, { Fragment, useState } from 'react'
+import ReactSelect from 'react-select'
+import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
+import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as ProhibitIcon } from '../../assets/icons/ic-prohibit.svg'
+import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { _multiSelectStyles } from './CIConfig.utils'
-import Tippy from '@tippyjs/react'
+import { CIBuildType } from '../ciPipeline/types'
+import CIBuildpackBuildOptions, { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -30,6 +29,34 @@ export default function CIDockerFileConfig({
     showCustomPlatformWarning,
     setShowCustomPlatformWarning,
 }) {
+    const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(CIBuildType.SELF_DOCKERFILE_BUILD_TYPE)
+    const CI_BUILD_TYPE_OPTIONS = [
+        {
+            id: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+            heading: 'I have a Dockerfile',
+            info: 'Requires a Dockerfile, gives full control of the build process.',
+            icon: FileIcon,
+            iconStroke: true,
+            addDivider: true,
+        },
+        {
+            id: CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE,
+            heading: 'Create Dockerfile',
+            info: 'Select from available templates and create a Dockerfile.',
+            icon: AddIcon,
+            iconStroke: false,
+            addDivider: true,
+        },
+        {
+            id: CIBuildType.BUILDPACK_BUILD_TYPE,
+            heading: 'Build without Dockerfile',
+            info: 'Uses buildpack to build container image.',
+            icon: ProhibitIcon,
+            iconStroke: false,
+            addDivider: false,
+        },
+    ]
+
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
         repository.value = selectedMaterial.name
@@ -39,48 +66,61 @@ export default function CIDockerFileConfig({
         }
     }
 
-    const repositoryOption = (props): JSX.Element => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    const renderCIBuildTypeOptions = () => {
         return (
-            <components.Option {...props}>
-                {props.data.url.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-                {props.data.url.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-                {props.data.url.includes('bitbucket') && (
-                    <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                )}
-                {props.data.url.includes('gitlab') ||
-                props.data.url.includes('github') ||
-                props.data.url.includes('bitbucket') ? null : (
-                    <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                )}
+            <div className="flex mb-16">
+                {CI_BUILD_TYPE_OPTIONS.map((option) => {
+                    const isCurrentlySelected = ciBuildTypeOption === option.id
+                    const isGlobalSelection = ciConfig?.ciBuildConfig?.ciBuildType === option.id
 
-                {props.label}
-            </components.Option>
-        )
-    }
-
-    const repositoryControls = (props): JSX.Element => {
-        let value = ''
-        if (props.hasValue) {
-            value = props.getValue()[0].url
-        }
-        let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
-        return (
-            <components.Control {...props}>
-                {value.includes('github') && <GitHub className="icon-dim-20 ml-10" />}
-                {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-10" />}
-                {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-10" />}
-                {showGit && <Git className="icon-dim-20 ml-10" />}
-                {props.children}
-            </components.Control>
-        )
-    }
-
-    return (
-        <div className="white-card white-card__docker-config dc__position-rel">
-            <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
-                How do you want to build the container image?
+                    return (
+                        <Fragment key={option.id}>
+                            <div
+                                id={option.id}
+                                className={`flex top w-298 h-80 dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
+                                    isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
+                                }`}
+                                onClick={() => {
+                                    setCIBuildTypeOption(option.id)
+                                }}
+                            >
+                                {isGlobalSelection && (
+                                    <div
+                                        className="flex icon-dim-16 bcb-5 stroke-width-4 dc__position-abs"
+                                        style={{
+                                            top: 0,
+                                            right: 0,
+                                            borderBottomLeftRadius: '4px',
+                                            borderTopRightRadius: '3px',
+                                        }}
+                                    >
+                                        <CheckIcon className="icon-dim-10 scn-0" />
+                                    </div>
+                                )}
+                                <div>
+                                    <option.icon
+                                        className={`icon-dim-20 ${option.iconStroke ? 'sc' : 'fc'}${
+                                            isCurrentlySelected ? 'n-6' : 'b-5'
+                                        }`}
+                                    />
+                                </div>
+                                <div className="ml-10">
+                                    <span className={`fs-13 fw-6 lh-20 ${isCurrentlySelected ? 'cn-9' : 'cb-5'}`}>
+                                        {option.heading}
+                                    </span>
+                                    <p className="fs-13 fw-4 lh-20 cn-7 m-0">{option.info}</p>
+                                </div>
+                            </div>
+                            {option.addDivider && <div className="h-48 dc__border-right-n1 mr-8 ml-8" />}
+                        </Fragment>
+                    )
+                })}
             </div>
+        )
+    }
+
+    const renderSelfDockerfileBuildOption = () => {
+        return (
             <div className="mb-4 form-row__docker">
                 <div className="form__field">
                     <label className="form__label">Select repository containing Dockerfile</label>
@@ -111,17 +151,6 @@ export default function CIDockerFileConfig({
                         Docker file path (relative)*
                     </label>
                     <div className="docker-flie-container">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={selectedMaterial?.checkoutPath}
-                        >
-                            <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                {selectedMaterial?.checkoutPath}
-                            </span>
-                        </Tippy>
-
                         <input
                             tabIndex={4}
                             type="text"
@@ -141,6 +170,30 @@ export default function CIDockerFileConfig({
                     {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
                 </div>
             </div>
+        )
+    }
+
+    const renderManagedDockerfileBuildOption = () => {
+        return <div></div>
+    }
+
+    return (
+        <div className="white-card white-card__docker-config dc__position-rel">
+            <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">How do you want to build the container image?</h3>
+            {renderCIBuildTypeOptions()}
+            {ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE && renderSelfDockerfileBuildOption()}
+            {ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE && renderManagedDockerfileBuildOption()}
+            {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
+                <CIBuildpackBuildOptions
+                    sourceConfig={sourceConfig}
+                    configOverrideView={configOverrideView}
+                    allowOverride={allowOverride}
+                    _selectedMaterial={_selectedMaterial}
+                    selectedMaterial={selectedMaterial}
+                    handleFileLocationChange={handleFileLocationChange}
+                    repository={repository}
+                />
+            )}
             {!configOverrideView && (
                 <>
                     <hr className="mt-0 mb-20" />

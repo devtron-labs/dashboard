@@ -31,6 +31,17 @@
         grid-template-columns: 240px 1fr;
         grid-column-gap: 16px;
 
+        &.buildpack-option-wrapper {
+            display: flex;
+            flex-direction: column;
+
+            .buildpack-options {
+                display: grid;
+                grid-template-columns: 1fr 220px 220px;
+                grid-column-gap: 8px;
+            }
+        }
+
         .popup-button {
             height: 40px;
         }
@@ -95,6 +106,10 @@
         font-size: 12px;
         padding: 2px;
         padding-left: 6px;
+    }
+
+    .stroke-width-4 {
+        stroke-width: 4px;
     }
 }
 

@@ -55,7 +55,6 @@ export default function CIContainerRegistryConfig({
         }
     }
 
-
     const handleRegistryChange = (selectedRegistry): void => {
         setSelectedRegistry(selectedRegistry)
         registry.value = selectedRegistry.id
@@ -64,7 +63,7 @@ export default function CIContainerRegistryConfig({
             updateDockerConfigOverride('dockerConfigOverride.dockerRegistry', selectedRegistry.id)
         }
     }
-    
+
     const toggleAllowOverride = () => {
         if (updateDockerConfigOverride) {
             updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
@@ -114,7 +113,6 @@ export default function CIContainerRegistryConfig({
         )
     }
 
-
     return (
         <div className="white-card white-card__docker-config dc__position-rel mb-12">
             {configOverrideView && (
@@ -131,7 +129,9 @@ export default function CIContainerRegistryConfig({
                     {`${allowOverride ? 'Delete' : 'Allow'} Override`}
                 </button>
             )}
-            <div className={`fs-14 fw-6 lh-20 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>Store container image at</div>
+            <h3 className={`fs-14 fw-6 lh-20 m-0 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
+                Store container image at
+            </h3>
             <div className="mb-4 form-row__docker">
                 <div className="form__field">
                     <label htmlFor="" className="form__label">

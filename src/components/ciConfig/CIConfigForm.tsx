@@ -275,7 +275,7 @@ export default function CIConfigForm({
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
                 {!configOverrideView && (
                     <div className="flex dc__content-space mb-20">
-                        <h1 className="form__title">Build Configuration</h1>
+                        <h2 className="form__title m-0-imp">Build Configuration</h2>
                         <a
                             className="flex right dc__link"
                             rel="noreferrer noopener"
