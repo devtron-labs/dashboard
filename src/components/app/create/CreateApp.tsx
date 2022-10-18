@@ -152,7 +152,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                      value: window.location.origin,
                      active: result.active,
                  }
-                 saveHostURLConfiguration(payload)
+                await saveHostURLConfiguration(payload)
              }
          } catch (error) {
              showError(error)

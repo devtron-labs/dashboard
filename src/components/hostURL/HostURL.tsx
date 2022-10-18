@@ -31,19 +31,12 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     componentDidMount() {
         getHostURLConfiguration()
             .then((response) => {
-                let form = response.result
-                if (!form) {
-                    form = {
-                        id: undefined,
-                        key: 'url',
-                        value: '',
-                        active: true,
-                    }
+                let form = response.result || {
+                    id: undefined,
+                    key: 'url',
+                    value: '',
+                    active: true,
                 }
-                this.setState({
-                    view: ViewType.FORM,
-                    form: form,
-                })
 
                 if (!form.value) {
                     const payload = {
@@ -52,11 +45,22 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                         value: window.location.origin,
                         active: form.active,
                     }
-                    try {
-                        saveHostURLConfiguration(payload)
-                    } catch (err) {
-                        console.log(err)
-                    }
+                    saveHostURLConfiguration(payload)
+                        .then((response) => {
+                            this.setState({
+                                view: ViewType.FORM,
+                                form: response.result,
+                            })
+                        })
+                        .catch((err) => {
+                            showError(err)
+                            this.setState({ view: ViewType.ERROR, statusCode: err.code })
+                        })
+                } else {
+                    this.setState({
+                        view: ViewType.FORM,
+                        form: form,
+                    })
                 }
             })
             .catch((error) => {
