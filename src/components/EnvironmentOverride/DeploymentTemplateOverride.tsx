@@ -179,6 +179,13 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
+            if (result.IsOverride) {
+                parseDataForView(
+                  result.environmentConfig.isBasicViewLocked,
+                  result.environmentConfig.currentViewEditor,
+                  result.environmentConfig.envOverrideValues,
+                )
+            }
             dispatch({ type: 'setResult', value: result })
             setParentState(ComponentStates.loaded)
         } catch (err) {
