@@ -95,9 +95,9 @@ function NodeComponent({
                     if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
                         tableHeader = ['Name', ''];
                     }else{
-                        tableHeader = ['Name', 'Ready', ''];
+                        tableHeader = ['Name', 'Ready', 'Restarts', ' Age', ''];
                     }
-                    _fcw = 'col-10';
+                    _fcw = 'col-8';
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ['Name', 'URL', ''];
@@ -137,6 +137,24 @@ function NodeComponent({
             setSelectedHealthyNodeCount(_healthyNodeCount);
         }
     }, [params.nodeType, podType, url, filteredNodes]);
+
+    const getElapsedTime = (createdAt : Date) => {
+        let currentDate = new Date()
+        let timeDiffInseconds = Math.floor((currentDate.getTime() - createdAt.getTime())/1000)
+        let days = Math.floor(timeDiffInseconds/(24*60*60))
+        timeDiffInseconds = timeDiffInseconds%(24*60*60) 
+        let hrs = Math.floor(timeDiffInseconds/(60*60))
+        timeDiffInseconds = timeDiffInseconds%(60*60)
+        let mins = Math.floor(timeDiffInseconds/60)
+        let secs = timeDiffInseconds%60 
+        let elapsedTime = ""
+        if(days >= 1) elapsedTime+=(days+"d:")
+        if(hrs >= 1) elapsedTime+=(hrs+"h")
+        if(elapsedTime.length > 0)return elapsedTime
+        if(mins >= 1) elapsedTime+=(mins+"m:")
+        if(secs >= 1) elapsedTime+=(secs+"s")
+        return elapsedTime
+    };
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
@@ -311,6 +329,18 @@ function NodeComponent({
                             <div className={'flex left col-1 pt-9 pb-9'}>
                                 {' '}
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}{' '}
+                            </div>
+                        )}
+
+                        {params.nodeType === NodeType.Pod.toLowerCase() && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                {' '}
+                                {node.info?.filter((_info) => _info.name === 'Restart Count')[0]?.value}{' '}
+                            </div>
+                        )}
+                        {params.nodeType === NodeType.Pod.toLowerCase() && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                {getElapsedTime(new Date(node.createdAt))}{' '}
                             </div>
                         )}
 
