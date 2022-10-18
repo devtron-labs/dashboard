@@ -27,6 +27,7 @@ interface customEnv {
     EA_APP_DETAILS_POLLING_INTERVAL?: number
     CENTRAL_API_ENDPOINT?: string
     HIDE_DEPLOYMENT_GROUPS?: boolean
+    ANNOUNCEMENT_BANNER_MSG?: string
 }
 declare global {
     interface Window {
@@ -113,7 +114,8 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
-        HIDE_DEPLOYMENT_GROUPS: true
+        HIDE_DEPLOYMENT_GROUPS: true,
+        ANNOUNCEMENT_BANNER_MSG: 'AVOID DEPLOYING non critical changes to production between 21st to 31st Oct 2022'
     }
 }
 

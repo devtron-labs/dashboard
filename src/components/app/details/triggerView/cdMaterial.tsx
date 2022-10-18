@@ -772,7 +772,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     getTriggerModalBodyHeight() {
         if (this.state.showConfigDiffView) {
             return 'calc(100vh - 141px)'
-        } else if (this.state.isRollbackTrigger) {
+        } else if (this.state.isRollbackTrigger && window?._env_?.ANNOUNCEMENT_BANNER_MSG) {
             return 'calc(100vh - 153px)'
         }
         return 'calc(100vh - 116px)'
