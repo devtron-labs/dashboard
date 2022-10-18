@@ -486,7 +486,7 @@ function AppComposeRouter({
                     {isUnlocked.dockerBuildConfig && (
                         <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
                             <>
-                                <CIConfig respondOnSuccess={respondOnSuccess} />
+                                <CIConfig respondOnSuccess={respondOnSuccess} isCDPipeline={isCDPipeline} />
                                 <NextButton
                                     currentStageName={STAGE_NAME.CI_CONFIG}
                                     navItems={navItems}

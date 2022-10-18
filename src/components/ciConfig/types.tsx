@@ -68,6 +68,7 @@ export interface CIConfigProps {
     parentState?: CIConfigParentState
     setParentState?: React.Dispatch<React.SetStateAction<CIConfigParentState>>
     updateDockerConfigOverride?: (key, value) => void
+    isCDPipeline?: boolean
 }
 
 export interface CIConfigDiffViewProps {
@@ -89,6 +90,7 @@ export interface CIConfigFormProps {
     configOverrideView: boolean
     allowOverride: boolean
     updateDockerConfigOverride: (key, value) => void
+    isCDPipeline: boolean
 }
 
 export interface AdvancedConfigOptionsProps {

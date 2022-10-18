@@ -25,6 +25,7 @@ export const Routes = {
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
     RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
     LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
