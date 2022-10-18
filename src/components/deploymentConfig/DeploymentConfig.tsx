@@ -187,7 +187,7 @@ export default function DeploymentConfig({
                 valuesOverride: basicFieldPatchData !== null ? patchBasicData(obj, basicFieldPatchData) : obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
-                isBasicViewLocked,
+                isBasicViewLocked: isBasicViewLocked,
                 currentViewEditor,
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
