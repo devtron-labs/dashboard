@@ -141,23 +141,23 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return true;
     };
 
-     getHostURLConfig = async() => {
-       try {
-           const { result } = await getHostURLConfiguration()
+     getHostURLConfig = async () => {
+         try {
+             const { result } = await getHostURLConfiguration()
 
-           if (!result?.value ) {
-               const payload = {
-                   id: result.id,
-                   key: result.key,
-                   value: window.location.origin,
-                   active: result.active,
-               }
-               saveHostURLConfiguration(payload)
-           }
-       } catch (error) {
-           showError(error)
-       }
-    }
+             if (!result?.value) {
+                 const payload = {
+                     id: result.id,
+                     key: result.key,
+                     value: window.location.origin,
+                     active: result.active,
+                 }
+                 saveHostURLConfiguration(payload)
+             }
+         } catch (error) {
+             showError(error)
+         }
+     }
 
     createApp(): void {
         const validForm = this.validateForm();

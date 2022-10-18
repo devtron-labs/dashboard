@@ -1,5 +1,4 @@
 import { RouteComponentProps } from 'react-router';
-import { HostURLConfig } from '../../services/service.types';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {

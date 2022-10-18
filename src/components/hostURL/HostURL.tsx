@@ -29,38 +29,40 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     componentDidMount() {
-        getHostURLConfiguration().then((response) => {
-            let form = response.result;
-            if (!form) {
-                form = {
-                    id: undefined,
-                    key: "url",
-                    value: "",
-                    active: true,
+        getHostURLConfiguration()
+            .then((response) => {
+                let form = response.result
+                if (!form) {
+                    form = {
+                        id: undefined,
+                        key: 'url',
+                        value: '',
+                        active: true,
+                    }
                 }
-            }
-            this.setState({
-                view: ViewType.FORM,
-                form: form
-            })
+                this.setState({
+                    view: ViewType.FORM,
+                    form: form,
+                })
 
-            if(!form.value){
-              const payload = {
-                id: form.id,
-                key: form.key,
-                value: window.location.origin,
-                active: form.active,
-            }
-              try{
-                saveHostURLConfiguration(payload)
-              }catch(err){
-                console.log(err)
-              }
-            }
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code });
-        })
+                if (!form.value) {
+                    const payload = {
+                        id: form.id,
+                        key: form.key,
+                        value: window.location.origin,
+                        active: form.active,
+                    }
+                    try {
+                        saveHostURLConfiguration(payload)
+                    } catch (err) {
+                        console.log(err)
+                    }
+                }
+            })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR, statusCode: error.code })
+            })
     }
 
     handleChange(event): void {
