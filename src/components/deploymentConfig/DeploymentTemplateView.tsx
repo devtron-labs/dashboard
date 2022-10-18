@@ -798,10 +798,25 @@ export const DeploymentTemplateEditorView = ({
 
     const addRow = (e): void => {
         const _basicFieldValues = { ...basicFieldValues }
-        _basicFieldValues[e.target.dataset.name].unshift(
-            e.target.dataset.name === 'paths' ? '' : { key: '', value: '' },
-        )
+        const _basicFieldPatchData = { ...basicFieldPatchData }
+        if (e.target.dataset.name === 'paths') {
+            _basicFieldValues['paths'].unshift('')
+            _basicFieldValues['hosts'][0]['paths'] = _basicFieldValues['paths']
+            _basicFieldPatchData['hosts'] = {
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING['hosts'],
+                value: _basicFieldValues['hosts'],
+            }
+        } else {
+            _basicFieldValues['envVariables'].unshift({ key: '', value: '' })
+            _basicFieldPatchData['hosts'] = {
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING['envVariables'],
+                value: _basicFieldValues['envVariables'],
+            }
+        }
         setBasicFieldValues(_basicFieldValues)
+        setBasicFieldPatchData(_basicFieldPatchData)
         if (e.target.dataset.name === 'envVariables') {
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
@@ -811,12 +826,28 @@ export const DeploymentTemplateEditorView = ({
 
     const removeRow = (name: string, index: number): void => {
         const _basicFieldValues = { ...basicFieldValues }
+        const _basicFieldPatchData = { ...basicFieldPatchData }
         if (_basicFieldValues[name].length === 1) {
             _basicFieldValues[name].length = 0
         } else {
             _basicFieldValues[name].splice(index, 1)
         }
+        if (name === 'paths') {
+            _basicFieldValues['hosts'][0]['paths'] = _basicFieldValues['paths']
+            _basicFieldPatchData['hosts'] = {
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING['hosts'],
+                value: _basicFieldValues['hosts'],
+            }
+        } else {
+            _basicFieldPatchData['hosts'] = {
+                op: 'replace',
+                path: BASIC_FIELD_MAPPING['envVariables'],
+                value: _basicFieldValues['envVariables'],
+            }
+        }
         setBasicFieldValues(_basicFieldValues)
+        setBasicFieldPatchData(_basicFieldPatchData)
         if (name === 'envVariables') {
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }

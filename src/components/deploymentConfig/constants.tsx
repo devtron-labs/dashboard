@@ -53,4 +53,6 @@ export const BASIC_FIELD_MAPPING = {
   resources: '/resources',
   envVariables: '/EnvVariables',
   hosts: '/ingress/hosts',
+  resourcesMemory: '/resources/limits/memory',
+  resourcesCPU: '/resources/limits/cpu',
 }
