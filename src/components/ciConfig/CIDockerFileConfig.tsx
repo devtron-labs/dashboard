@@ -11,6 +11,7 @@ import CIBuildpackBuildOptions, { repositoryControls, repositoryOption } from '.
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
 import { showError } from '../common'
+import Tippy from '@tippyjs/react'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -88,6 +89,14 @@ export default function CIDockerFileConfig({
         }
     }
 
+    const handleCIBuildTypeOptionSelection = (id: CIBuildType) => {
+        setCIBuildTypeOption(id)
+        setCurrentCIBuildConfig({
+            ...currentCIBuildConfig,
+            ciBuildType: id
+        })
+    }
+
     const renderCIBuildTypeOptions = () => {
         return (
             <div className="flex mb-16">
@@ -103,7 +112,7 @@ export default function CIDockerFileConfig({
                                     isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                 }`}
                                 onClick={() => {
-                                    setCIBuildTypeOption(option.id)
+                                    handleCIBuildTypeOptionSelection(option.id)
                                 }}
                             >
                                 {isGlobalSelection && (
@@ -164,7 +173,17 @@ export default function CIDockerFileConfig({
                     <label htmlFor="" className="form__label">
                         Docker file path (relative)*
                     </label>
-                    <div className="docker-flie-container">
+                    <div className="docker-file-container">
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="top"
+                            content={selectedMaterial?.checkoutPath}
+                        >
+                            <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                {selectedMaterial?.checkoutPath}
+                            </span>
+                        </Tippy>
                         <input
                             tabIndex={4}
                             type="text"

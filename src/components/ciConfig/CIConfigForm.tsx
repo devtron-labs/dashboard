@@ -116,7 +116,7 @@ export default function CIConfigForm({
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>({
         buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig,
         ciBuildType: ciConfig?.ciBuildConfig?.ciBuildType || CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
-        dockerBuildConfig: {
+        dockerBuildConfig: ciConfig?.ciBuildConfig?.dockerBuildConfig || {
             dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
             dockerfileContent: '',
         },
@@ -179,7 +179,8 @@ export default function CIConfigForm({
             ciBuildConfig: {
                 ...currentCIBuildConfig,
                 dockerBuildConfig: {
-                    ...currentCIBuildConfig.dockerBuildConfig,
+                    dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
+                    dockerfileContent: '',
                     dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                     args: args.reduce((agg, { k, v }) => {
                         if (k && v) agg[k] = v
