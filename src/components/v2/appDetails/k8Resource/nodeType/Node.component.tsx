@@ -149,10 +149,10 @@ function NodeComponent({
         let secs = timeDiffInseconds%60 
         let elapsedTime = ""
         if(days >= 1) elapsedTime+=(days+"d")
-        if(hrs >= 1) elapsedTime+=(hrs+":h")
+        if(hrs >= 1) elapsedTime+=(":"+hrs+"h")
         if(elapsedTime.length > 0)return elapsedTime
         if(mins >= 1) elapsedTime+=(mins+"m")
-        if(secs >= 1) elapsedTime+=(secs+":s")
+        if(secs >= 1) elapsedTime+=(":"+secs+"s")
         return elapsedTime
     };
 
@@ -331,11 +331,10 @@ function NodeComponent({
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}{' '}
                             </div>
                         )}
-
+                    
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {' '}
-                                {node.info?.filter((_info) => _info.name === 'Restart Count')[0] ? node.info?.filter((_info) => _info.name === 'Restart Count')[0].value : 0}{' '}
+                                {(node.kind !== 'Containers') && (node.info?.filter((_info) => _info.name === 'Restart Count').sort((a,b) => a.name > b.name? -1: 1)[0]?.value)}
                             </div>
                         )}
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
