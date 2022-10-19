@@ -64,12 +64,6 @@ export default function CIContainerRegistryConfig({
         }
     }
 
-    const toggleAllowOverride = () => {
-        if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
-        }
-    }
-
     const containerRegistryOption = (props): JSX.Element => {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
@@ -115,20 +109,6 @@ export default function CIContainerRegistryConfig({
 
     return (
         <div className="white-card white-card__docker-config dc__position-rel mb-12">
-            {configOverrideView && (
-                <button
-                    className={`allow-config-override flex dc__position-abs h-28 cta ${
-                        allowOverride ? 'delete' : 'ghosted'
-                    }`}
-                    onClick={toggleAllowOverride}
-                    style={{
-                        top: '16px',
-                        right: '16px',
-                    }}
-                >
-                    {`${allowOverride ? 'Delete' : 'Allow'} Override`}
-                </button>
-            )}
             <h3 className={`fs-14 fw-6 lh-20 m-0 ${configOverrideView ? 'pb-20' : 'pb-16'}`}>
                 Store container image at
             </h3>

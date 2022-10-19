@@ -34,6 +34,7 @@
         &.buildpack-option-wrapper {
             display: flex;
             flex-direction: column;
+            column-gap: 8px;
 
             .buildpack-options {
                 display: grid;
@@ -141,24 +142,16 @@
         padding: 24px 0 16px;
         margin-bottom: 0;
 
-        .white-card__docker-config {
-            .form-row__docker {
-                align-items: flex-end;
-
-                &:last-of-type {
-                    margin-bottom: 0;
-
-                    .form__field {
-                        margin-bottom: 0;
-                    }
+        .form-row__docker {
+            &.buildpack-option-wrapper {
+                .buildpack-options {
+                    grid-template-columns: 1fr 200px 200px;
+                    margin-bottom: 16px;
                 }
-            }
-        }
 
-        .allow-config-override {
-            &.cta {
-                top: 16px;
-                right: 16px;
+                .form__field {
+                    margin-bottom: 0;
+                }
             }
         }
     }

@@ -152,41 +152,40 @@ export default function AdvancedConfigOptions({
         setCollapsedSection(!collapsedSection)
     }
 
+    const toggleAllowOverride = () => {
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
+        }
+    }
+
     return (
         <div className="ci-advanced-options__container mb-20">
             <hr />
             <div className="ci-advanced-options__toggle flex left pointer" onClick={toggleAdvancedOptions}>
-                <div className="icon-dim-40 mr-16">
-                    <PluginIcon />
-                </div>
                 <div>
-                    <h2 className="fs-14 fw-6 cn-9 lh-20 m-0">Advanced options</h2>
+                    <h2 className="fs-14 fw-6 cn-9 lh-20 m-0">Override Options</h2>
                     <p className="fs-13 fw-4 cn-7 lh-20 m-0">
-                        Override container registry, override dockerfile, docker build arguments for this pipeline.
+                        Override container registry, dockerfile for this pipeline.
                     </p>
                 </div>
-                <div className="icon-dim-20 ml-auto">
-                    <Dropdown
-                        style={{
-                            transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)',
-                            transition: 'all .2s ease',
-                        }}
-                    />
-                </div>
+                <button
+                    className={`allow-config-override flex h-28 ml-auto cta ${allowOverride ? 'delete' : 'ghosted'}`}
+                    onClick={toggleAllowOverride}
+                >
+                    {`${allowOverride ? 'Delete' : 'Allow'} Override`}
+                </button>
             </div>
-            {collapsedSection && (
-                <div className="ci-advanced-options__wrapper">
-                    <CIConfig
-                        respondOnSuccess={noop}
-                        configOverrideView={true}
-                        allowOverride={allowOverride}
-                        parentState={parentState}
-                        setParentState={setParentState}
-                        updateDockerConfigOverride={updateDockerConfigOverride}
-                    />
-                    {parentState?.loadingState === ComponentStates.loaded && renderDockerArgs()}
-                </div>
-            )}
+            <div className="ci-advanced-options__wrapper">
+                <CIConfig
+                    respondOnSuccess={noop}
+                    configOverrideView={true}
+                    allowOverride={allowOverride}
+                    parentState={parentState}
+                    setParentState={setParentState}
+                    updateDockerConfigOverride={updateDockerConfigOverride}
+                />
+                {parentState?.loadingState === ComponentStates.loaded && renderDockerArgs()}
+            </div>
         </div>
     )
 }

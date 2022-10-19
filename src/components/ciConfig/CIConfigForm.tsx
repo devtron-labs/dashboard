@@ -333,11 +333,13 @@ export default function CIConfigForm({
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />
-                <div className="form__buttons mt-12">
-                    <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>
-                        {loading ? <Progressing /> : 'Save Configuration'}
-                    </button>
-                </div>
+                {!configOverrideView && (
+                    <div className="form__buttons mt-12">
+                        <button tabIndex={5} type="button" className="cta" onClick={handleOnSubmit}>
+                            {loading ? <Progressing /> : 'Save Configuration'}
+                        </button>
+                    </div>
+                )}
             </div>
             {showCustomPlatformConfirmation && renderConfirmationModal()}
             {showConfigOverrideDiff && (

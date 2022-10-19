@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, useKeyDown, VisibleModal } from '../common'
+import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, useKeyDown, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
 import { BuildStageVariable, BuildTabText, ModuleNameMap, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
@@ -678,7 +678,7 @@ export default function CIPipeline({
     }
 
     return (
-        <VisibleModal className="">
+        <Drawer position="right" width="1024px">
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
@@ -778,6 +778,6 @@ export default function CIPipeline({
                 )}
                 {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </div>
-        </VisibleModal>
+        </Drawer>
     )
 }

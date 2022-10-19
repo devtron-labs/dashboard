@@ -181,7 +181,7 @@ export default function CICreateDockerfileOption({ configOverrideView, allowOver
     const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]
     return (
         <div className="create-dockerfile-option dc__border br-4 mb-16 dc__overflow-hidden">
-            <CodeEditor loading={editorData?.fetching} value={editorData?.data} mode={MODES.DOCKERFILE} height="200px">
+            <CodeEditor loading={editorData?.fetching} value={editorData?.data} mode={MODES.DOCKERFILE} height="200px" readOnly={configOverrideView && !allowOverride}>
                 <CodeEditor.Header>
                     <div className="flex fs-12 fw-6 cn-7">{renderLanguageOptions()}</div>
                 </CodeEditor.Header>

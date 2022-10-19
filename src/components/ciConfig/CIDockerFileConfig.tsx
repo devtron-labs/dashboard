@@ -108,7 +108,7 @@ export default function CIDockerFileConfig({
                         <Fragment key={option.id}>
                             <div
                                 id={option.id}
-                                className={`flex top w-298 h-80 dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
+                                className={`flex top left ${configOverrideView ? 'w-212 h-40' : 'w-298 h-80'} dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
                                     isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                 }`}
                                 onClick={() => {
@@ -131,7 +131,7 @@ export default function CIDockerFileConfig({
                                     <span className={`fs-13 fw-6 lh-20 ${isCurrentlySelected ? 'cn-9' : 'cb-5'}`}>
                                         {option.heading}
                                     </span>
-                                    <p className="fs-13 fw-4 lh-20 cn-7 m-0">{option.info}</p>
+                                    {!configOverrideView && <p className="fs-13 fw-4 lh-20 cn-7 m-0">{option.info}</p>}
                                 </div>
                             </div>
                             {option.addDivider && <div className="h-48 dc__border-right-n1 mr-8 ml-8" />}
