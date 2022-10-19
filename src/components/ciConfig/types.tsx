@@ -1,6 +1,7 @@
 import React from 'react';
 import { ServerError } from '../../modals/commonTypes';
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types';
+import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type';
 import { CiPipeline, CiPipelineResult, WorkflowType } from '../app/details/triggerView/types';
 import { CIPipelineDataType, DockerConfigOverrideType, FormType } from '../ciPipeline/types';
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type';
@@ -69,6 +70,8 @@ export interface CIConfigProps {
     setParentState?: React.Dispatch<React.SetStateAction<CIConfigParentState>>
     updateDockerConfigOverride?: (key, value) => void
     isCDPipeline?: boolean
+    isCiPipeline?: boolean
+    navItems?: CustomNavItemsType[]
 }
 
 export interface CIConfigDiffViewProps {
@@ -91,6 +94,8 @@ export interface CIConfigFormProps {
     allowOverride: boolean
     updateDockerConfigOverride: (key, value) => void
     isCDPipeline: boolean
+    isCiPipeline: boolean
+    navItems: CustomNavItemsType[]
 }
 
 export interface AdvancedConfigOptionsProps {

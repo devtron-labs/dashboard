@@ -11,10 +11,13 @@ import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
+import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
 import CIConfigDiffView from './CIConfigDiffView'
 import CIContainerRegistryConfig from './CIContainerRegistryConfig'
 import CIDockerFileConfig from './CIDockerFileConfig'
 import { getTargetPlatformMap } from './CIConfig.utils'
+import { useHistory } from 'react-router-dom'
+import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
 export default function CIConfigForm({
     dockerRegistries,
@@ -28,7 +31,10 @@ export default function CIConfigForm({
     allowOverride,
     updateDockerConfigOverride,
     isCDPipeline,
+    isCiPipeline,
+    navItems
 }: CIConfigFormProps) {
+    const history = useHistory()
     const _selectedMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
@@ -179,8 +185,8 @@ export default function CIConfigForm({
             ciBuildConfig: {
                 ...currentCIBuildConfig,
                 dockerBuildConfig: {
+                    ...currentCIBuildConfig.dockerBuildConfig,
                     dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
-                    dockerfileContent: '',
                     dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                     args: args.reduce((agg, { k, v }) => {
                         if (k && v) agg[k] = v
@@ -197,9 +203,14 @@ export default function CIConfigForm({
         setLoading(true)
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
-            const { result } = await saveOrUpdate(requestBody)
+            await saveOrUpdate(requestBody)
             toast.success('Successfully saved.')
             reload()
+
+            if (!isCiPipeline) {
+                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.CI_CONFIG)
+                history.push(navItems[stageIndex + 1].href)
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -333,14 +344,33 @@ export default function CIConfigForm({
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />
-                {!configOverrideView && (
-                    <div className="form__buttons mt-12">
-                        <button tabIndex={5} type="button" className="cta" onClick={handleOnSubmit}>
-                            {loading ? <Progressing /> : 'Save Configuration'}
-                        </button>
-                    </div>
-                )}
             </div>
+            {!configOverrideView && (
+                <div className="save-build-configuration form__buttons dc__position-abs bcn-0 dc__border-top">
+                    <button
+                        tabIndex={5}
+                        type="button"
+                        className="flex cta h-36"
+                        onClick={handleOnSubmit}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                {!isCiPipeline ? (
+                                    <>
+                                        Save & Next
+                                        <NextIcon className="icon-dim-16 ml-5 scn-0" />
+                                    </>
+                                ) : (
+                                    'Save Configuration'
+                                )}
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
             {showCustomPlatformConfirmation && renderConfirmationModal()}
             {showConfigOverrideDiff && (
                 <CIConfigDiffView

@@ -361,7 +361,11 @@ export default function AppConfig() {
     else
         return (
             <>
-                <div className="app-compose">
+                <div
+                    className={`app-compose ${
+                        location.pathname.includes(`/${URLS.APP_DOCKER_CONFIG}`) ? 'dc__position-rel' : ''
+                    }`}
+                >
                     <div
                         className={`app-compose__nav flex column left top dc__position-rel dc__overflow-scroll ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
@@ -461,7 +465,7 @@ function AppComposeRouter({
     isCDPipeline,
     environments,
     setEnvironments,
-    workflowsRes
+    workflowsRes,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -486,13 +490,18 @@ function AppComposeRouter({
                     {isUnlocked.dockerBuildConfig && (
                         <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
                             <>
-                                <CIConfig respondOnSuccess={respondOnSuccess} isCDPipeline={isCDPipeline} />
-                                <NextButton
+                                <CIConfig
+                                    respondOnSuccess={respondOnSuccess}
+                                    isCDPipeline={isCDPipeline}
+                                    isCiPipeline={isCiPipeline}
+                                    navItems={navItems}
+                                />
+                                {/* <NextButton
                                     currentStageName={STAGE_NAME.CI_CONFIG}
                                     navItems={navItems}
                                     isDisabled={!isUnlocked.deploymentTemplate}
                                     isCiPipeline={isCiPipeline}
-                                />
+                                /> */}
                             </>
                         </Route>
                     )}

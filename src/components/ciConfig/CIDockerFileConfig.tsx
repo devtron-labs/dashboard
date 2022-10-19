@@ -216,6 +216,8 @@ export default function CIDockerFileConfig({
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     frameworks={buildersAndFrameworks.frameworks}
+                    currentCIBuildConfig={currentCIBuildConfig}
+                    setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (

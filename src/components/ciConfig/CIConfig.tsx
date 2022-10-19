@@ -18,6 +18,8 @@ export default function CIConfig({
     setParentState,
     updateDockerConfigOverride,
     isCDPipeline,
+    isCiPipeline,
+    navItems,
 }: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
@@ -120,6 +122,8 @@ export default function CIConfig({
             allowOverride={allowOverride}
             updateDockerConfigOverride={updateDockerConfigOverride}
             isCDPipeline={isCDPipeline}
+            isCiPipeline={isCiPipeline}
+            navItems={navItems}
         />
     )
 }

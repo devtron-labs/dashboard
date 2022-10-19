@@ -1,11 +1,14 @@
+import Tippy from '@tippyjs/react'
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import { OptionType } from '../app/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { showError } from '../common'
+import { copyToClipboard, showError } from '../common'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../v2/common/ReactSelect.utils'
-
+import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
+import { CIBuildType } from '../ciPipeline/types'
 interface FrameworkOptionType extends OptionType {
     templateUrl: string
 }
@@ -15,12 +18,20 @@ interface TemplateDataType {
     data: string
 }
 
-export default function CICreateDockerfileOption({ configOverrideView, allowOverride, frameworks }) {
+export default function CICreateDockerfileOption({
+    configOverrideView,
+    allowOverride,
+    frameworks,
+    currentCIBuildConfig,
+    setCurrentCIBuildConfig,
+}) {
     const [languages, setLanguages] = useState<OptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
     const [selectedLanguage, setSelectedLanguage] = useState<OptionType>()
     const [selectedFramework, setSelectedFramework] = useState<FrameworkOptionType>()
     const [templateData, setTemplateData] = useState<Record<string, TemplateDataType>>() // key: language-framework
+    const [editorValue, setEditorValue] = useState<string>('')
+    const [copied, setCopied] = useState(false)
 
     useEffect(() => {
         if (frameworks.length > 0) {
@@ -75,6 +86,17 @@ export default function CICreateDockerfileOption({ configOverrideView, allowOver
                         data: respData,
                     },
                 })
+                setEditorValue(respData)
+
+                // Revisit
+                setCurrentCIBuildConfig({
+                    ...currentCIBuildConfig,
+                    ciBuildType: CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE,
+                    buildPackConfig: null,
+                    dockerBuildConfig: {
+                        dockerfileContent: respData,
+                    },
+                })
             } catch (err) {
                 showError(err)
             }
@@ -86,6 +108,7 @@ export default function CICreateDockerfileOption({ configOverrideView, allowOver
                     data: '',
                 },
             })
+            setEditorValue('')
         }
     }
 
@@ -108,6 +131,12 @@ export default function CICreateDockerfileOption({ configOverrideView, allowOver
             border: 'none',
             boxShadow: 'none',
             minHeight: '32px',
+        }),
+        singleValue: (base) => ({
+            ...base,
+            fontSize: '13px',
+            fontWeight: '600',
+            color: 'var(--N900)',
         }),
         option: (base, state) => ({
             ...base,
@@ -139,11 +168,22 @@ export default function CICreateDockerfileOption({ configOverrideView, allowOver
         }),
     }
 
-    const renderLanguageOptions = () => {
+    const resetChanges = () => {
+        const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]
+        setEditorValue(editorData?.data)
+        setCurrentCIBuildConfig({
+            ...currentCIBuildConfig,
+            dockerBuildConfig: {
+                dockerfileContent: editorData?.data,
+            },
+        })
+    }
+
+    const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
+                <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
                 <ReactSelect
-                    className="mr-12"
                     tabIndex={3}
                     options={languages}
                     value={selectedLanguage}
@@ -158,32 +198,86 @@ export default function CICreateDockerfileOption({ configOverrideView, allowOver
                     isDisabled={configOverrideView && !allowOverride}
                 />
                 {languageFrameworks?.get(selectedLanguage?.value)?.[0]?.value && (
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        options={languageFrameworks?.get(selectedLanguage?.value) || []}
-                        value={selectedFramework}
-                        isSearchable={false}
-                        styles={customStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        onChange={handleFrameworkSelection}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                    <>
+                        <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+                        <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
+                        <ReactSelect
+                            tabIndex={3}
+                            options={languageFrameworks?.get(selectedLanguage?.value) || []}
+                            value={selectedFramework}
+                            isSearchable={false}
+                            styles={customStyles}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option,
+                            }}
+                            onChange={handleFrameworkSelection}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    </>
+                )}
+                {!editorData?.fetching && editorData?.data !== editorValue && (
+                    <>
+                        <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+                        <div className="flex left cursor" onClick={resetChanges}>
+                            <div className="icon-dim-12 flex">
+                                <Reset className="icon-dim-12" />
+                            </div>
+                            <span className="ml-4">Reset changes</span>
+                        </div>
+                    </>
                 )}
             </div>
         )
     }
 
+    const handleCopyToClipboard = (e) => {
+        e.stopPropagation()
+        copyToClipboard(editorValue, () => setCopied(true))
+    }
+
+    const handleEditorValueChange = (value: string) => {
+        setEditorValue(value)
+        setCurrentCIBuildConfig({
+            ...currentCIBuildConfig,
+            dockerBuildConfig: {
+                dockerfileContent: value,
+            },
+        })
+    }
+
     const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]
     return (
         <div className="create-dockerfile-option dc__border br-4 mb-16 dc__overflow-hidden">
-            <CodeEditor loading={editorData?.fetching} value={editorData?.data} mode={MODES.DOCKERFILE} height="200px" readOnly={configOverrideView && !allowOverride}>
+            <CodeEditor
+                loading={editorData?.fetching}
+                value={editorValue || editorData?.data}
+                mode={MODES.DOCKERFILE}
+                height="200px"
+                readOnly={configOverrideView && !allowOverride}
+                onChange={handleEditorValueChange}
+            >
                 <CodeEditor.Header>
-                    <div className="flex fs-12 fw-6 cn-7">{renderLanguageOptions()}</div>
+                    <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
+                        {renderLanguageOptions(editorData)}
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={copied ? 'Copied!' : 'Copy'}
+                            trigger="mouseenter click"
+                            onShow={(_tippy) => {
+                                setTimeout(() => {
+                                    _tippy.hide()
+                                    setCopied(false)
+                                }, 5000)
+                            }}
+                            interactive={true}
+                        >
+                            <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                        </Tippy>
+                    </div>
                 </CodeEditor.Header>
             </CodeEditor>
             <div></div>
