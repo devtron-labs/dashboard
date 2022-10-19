@@ -315,6 +315,7 @@ export enum MODES {
     YAML = 'yaml',
     JSON = 'json',
     SHELL = 'shell',
+    DOCKERFILE = 'dockerfile',
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'

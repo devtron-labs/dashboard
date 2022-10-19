@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -8,6 +8,9 @@ import CIAdvancedConfig from './CIAdvancedConfig'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
+import { getBuildpackMetadata, getDockerfileTemplate } from './service'
+import CICreateDockerfileOption from './CICreateDockerfileOption'
+import { showError } from '../common'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -28,8 +31,14 @@ export default function CIDockerFileConfig({
     targetPlatformMap,
     showCustomPlatformWarning,
     setShowCustomPlatformWarning,
+    currentCIBuildConfig,
+    setCurrentCIBuildConfig,
 }) {
-    const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(CIBuildType.SELF_DOCKERFILE_BUILD_TYPE)
+    const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
+    const [buildersAndFrameworks, setBuildersAndFrameworks] = useState({
+        builders: [],
+        frameworks: [],
+    })
     const CI_BUILD_TYPE_OPTIONS = [
         {
             id: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
@@ -56,6 +65,19 @@ export default function CIDockerFileConfig({
             addDivider: false,
         },
     ]
+
+    useEffect(() => {
+        Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
+            .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
+                setBuildersAndFrameworks({
+                    builders: buildpackMetadata?.Builders || [],
+                    frameworks: dockerfileTemplate?.LanguageFrameworks || [],
+                })
+            })
+            .catch((err) => {
+                showError(err)
+            })
+    }, [])
 
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
@@ -85,15 +107,7 @@ export default function CIDockerFileConfig({
                                 }}
                             >
                                 {isGlobalSelection && (
-                                    <div
-                                        className="flex icon-dim-16 bcb-5 stroke-width-4 dc__position-abs"
-                                        style={{
-                                            top: 0,
-                                            right: 0,
-                                            borderBottomLeftRadius: '4px',
-                                            borderTopRightRadius: '3px',
-                                        }}
-                                    >
+                                    <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
                                         <CheckIcon className="icon-dim-10 scn-0" />
                                     </div>
                                 )}
@@ -173,25 +187,31 @@ export default function CIDockerFileConfig({
         )
     }
 
-    const renderManagedDockerfileBuildOption = () => {
-        return <div></div>
-    }
-
     return (
         <div className="white-card white-card__docker-config dc__position-rel">
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">How do you want to build the container image?</h3>
             {renderCIBuildTypeOptions()}
             {ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE && renderSelfDockerfileBuildOption()}
-            {ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE && renderManagedDockerfileBuildOption()}
+            {ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE && (
+                <CICreateDockerfileOption
+                    configOverrideView={configOverrideView}
+                    allowOverride={allowOverride}
+                    frameworks={buildersAndFrameworks.frameworks}
+                />
+            )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
                 <CIBuildpackBuildOptions
+                    ciConfig={ciConfig}
                     sourceConfig={sourceConfig}
+                    builders={buildersAndFrameworks.builders}
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     _selectedMaterial={_selectedMaterial}
                     selectedMaterial={selectedMaterial}
                     handleFileLocationChange={handleFileLocationChange}
                     repository={repository}
+                    currentCIBuildConfig={currentCIBuildConfig}
+                    setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />
             )}
             {!configOverrideView && (

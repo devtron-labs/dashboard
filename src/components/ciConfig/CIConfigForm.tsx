@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import { DOCUMENTATION, PATTERNS } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
-import { CIBuildType } from '../ciPipeline/types'
+import { CIBuildConfigType, CIBuildType } from '../ciPipeline/types'
 import { ConfirmationDialog, Progressing, showError, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
 import { CIConfigFormProps, ProcessedWorkflowsType } from './types'
@@ -113,6 +113,15 @@ export default function CIConfigForm({
         workflows: [],
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
+    const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>({
+        buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig,
+        ciBuildType: ciConfig?.ciBuildConfig?.ciBuildType || CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+        dockerBuildConfig: {
+            dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
+            dockerfileContent: '',
+        },
+        gitMaterialId: selectedMaterial?.id,
+    })
 
     useEffect(() => {
         let args = []
@@ -160,26 +169,25 @@ export default function CIConfigForm({
                 return
             }
         }
-        let requestBody = {
-            id: ciConfig ? ciConfig.id : null,
-            appId: +appId || null,
+
+        const requestBody = {
+            id: ciConfig?.id ?? null,
+            appId: +appId ?? null,
             dockerRegistry: registry.value || '',
             dockerRepository: repository_name.value || '',
             beforeDockerBuild: [],
             ciBuildConfig: {
-                buildPackConfig: null,
-                ciBuildType: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+                ...currentCIBuildConfig,
                 dockerBuildConfig: {
+                    ...currentCIBuildConfig.dockerBuildConfig,
                     dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                     args: args.reduce((agg, { k, v }) => {
                         if (k && v) agg[k] = v
                         return agg
                     }, {}),
                     dockerfileRepository: repository.value,
-                    dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                     targetPlatform: targetPlatforms,
                 },
-                gitMaterialId: selectedMaterial?.id,
             },
             afterDockerBuild: [],
             appName: '',
@@ -321,6 +329,8 @@ export default function CIConfigForm({
                     targetPlatformMap={targetPlatformMap}
                     showCustomPlatformWarning={showCustomPlatformWarning}
                     setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                    currentCIBuildConfig={currentCIBuildConfig}
+                    setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />
                 <div className="form__buttons mt-12">
                     <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>

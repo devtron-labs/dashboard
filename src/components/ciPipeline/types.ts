@@ -210,11 +210,19 @@ export enum CIBuildType {
 }
 
 export interface CIBuildConfigType {
-    buildPackConfig: any
+    buildPackConfig: {
+        builderId: string
+        language: string
+        languageVersion: string
+        buildPacks?: any
+        args?: any
+    }
     ciBuildType: CIBuildType
     dockerBuildConfig: {
-        DockerfileContent: string
+        dockerfileContent: string
         dockerfileRelativePath: string
+        dockerfilePath?: string
+        dockerfileRepository?: string
         args?: Map<string, string>
         targetPlatform?: any
     }

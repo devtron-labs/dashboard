@@ -108,8 +108,23 @@
         padding-left: 6px;
     }
 
-    .stroke-width-4 {
-        stroke-width: 4px;
+    .build-type-selection {
+        top: 0;
+        right: 0;
+        border-bottom-left-radius: 4px;
+        border-top-right-radius: 3px;
+
+        svg {
+            path {
+                stroke-width: 4px;
+            }
+        }
+    }
+
+    .create-dockerfile-option {
+        .code-editor__header {
+            background-color: white;
+        }
     }
 }
 

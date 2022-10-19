@@ -45,7 +45,7 @@ interface CodeEditorInterface {
     onChange?: (string) => void;
     children?: any;
     defaultValue?: string;
-    mode?: 'json' | 'yaml' | 'shell';
+    mode?: 'json' | 'yaml' | 'shell' | 'dockerfile';
     tabSize?: number;
     readOnly?: boolean;
     noParsing?: boolean;
@@ -105,7 +105,7 @@ interface Action {
 }
 
 interface CodeEditorState {
-    mode: 'json' | 'yaml' | 'shell';
+    mode: 'json' | 'yaml' | 'shell' | 'dockerfile';
     diffMode: boolean;
     theme: 'vs' | 'vs-dark';
     code: string;
