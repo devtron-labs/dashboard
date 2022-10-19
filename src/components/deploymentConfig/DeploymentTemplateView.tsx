@@ -8,7 +8,6 @@ import {
     CHECKBOX_VALUE,
     ConditionalWrap,
     isVersionLessThanOrEqualToTarget,
-    not,
     Progressing,
     RadioGroup,
     showError,
@@ -28,6 +27,7 @@ import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -637,7 +637,6 @@ export const DeploymentTemplateEditorView = ({
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
-    const [httpRequestRoute, setHttpRequestRoute] = useState(false)
     const validationRules = new ValidationRules()
     useEffect(() => {
         if (selectedChart && environments.length > 0) {
@@ -705,10 +704,6 @@ export const DeploymentTemplateEditorView = ({
                 Switch to Advanced
             </span>
         )
-    }
-
-    const handleScanToggle = (): void => {
-        setHttpRequestRoute(not)
     }
 
     const renderLabel = (title: string, description: string, isMandatory?: boolean): JSX.Element => {
@@ -853,7 +848,20 @@ export const DeploymentTemplateEditorView = ({
         }
     }
 
-    return yamlMode ? (
+    const handleScanToggle = (): void => {
+        const _basicFieldValues = { ...basicFieldValues }
+        const _basicFieldPatchData = { ...basicFieldPatchData }
+        _basicFieldValues['enabled'] = !_basicFieldValues['enabled']
+        _basicFieldPatchData['port'] = {
+            op: 'replace',
+            path: BASIC_FIELD_MAPPING['enabled'],
+            value: _basicFieldValues['enabled'],
+        }
+        setBasicFieldValues(_basicFieldValues)
+        setBasicFieldPatchData(_basicFieldPatchData)
+    }
+
+    return yamlMode || selectedChart.name !== ROLLOUT_DEPLOYMENT ? (
         <>
             {showReadme && (
                 <div className="dt-readme dc__border-right">
@@ -910,177 +918,191 @@ export const DeploymentTemplateEditorView = ({
             </div>
         </>
     ) : (
-        <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom p-20 scrollable">
-            <InfoColourBar
-                message="Basic has limited configurations. Changes made here will be updated in Advanced (YAML)."
-                classname="info_bar mr-36 w-650-px"
-                Icon={InfoIcon}
-                iconClass="icon-dim-20"
-            />
-            <div className="pt-20 pb-20 w-650-px">
-                <div className="fw-6 fs-14 cn-9 mb-12">Container Port</div>
-                <div className="row-container mb-16">
-                    {renderLabel('Port', 'Port for the container', true)}
-                    <div>
-                        <input
-                            type="text"
-                            name="port"
-                            value={basicFieldValues?.['port']}
-                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            onChange={handleInputChange}
-                        />
-                        {basicFieldValuesErrorObj?.port && !basicFieldValuesErrorObj.port.isValid && (
-                            <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                <span>{basicFieldValuesErrorObj.port.message}</span>
-                            </span>
-                        )}
-                    </div>
+        <>
+            {isUnSet && (
+                <div className="bcy-1 fs-12 fw-4 cn-9 en-2 bw-1 dc__no-left-border dc__no-right-border flexbox pt-8 pr-16 pb-8 pl-16 h-32 lh-16">
+                    <WarningIcon className="warning-icon-y7 icon-dim-16 mr-8" />
+                    Chart type cannot be changed once saved.
                 </div>
-                <div className={`row-container ${httpRequestRoute ? ' mb-8' : ' mb-16'}`}>
-                    <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
-                    <div className="mt-4" style={{ width: '32px', height: '20px' }}>
-                        <Toggle selected={httpRequestRoute} onSelect={handleScanToggle} />
-                    </div>
-                </div>
-                {httpRequestRoute && (
-                    <div className="mb-12">
-                        <div className="row-container mb-12">
-                            {renderLabel('Host', 'Host name')}
-                            <input
-                                type="text"
-                                name="host"
-                                value={basicFieldValues?.['host']}
-                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="row-container mb-4">
-                            {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
-                            <div
-                                className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
-                                data-name="paths"
-                                onClick={addRow}
-                            >
-                                <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
-                                Add path
-                            </div>
-                        </div>
-                        {basicFieldValues?.['paths']?.map((path: string, index: number) => (
-                            <div className="row-container mb-4" key={`path-${index}`}>
-                                <div />
-                                <input
-                                    type="text"
-                                    name="paths"
-                                    data-index={index}
-                                    value={path}
-                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                    onChange={handleInputChange}
-                                />
-                                <Close
-                                    className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
-                                    onClick={(e) => removeRow('paths', index)}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
-                <div className="fw-6 fs-14 cn-9 mb-8">Resources (CPU & RAM)</div>
-                <div className="row-container mb-8">
-                    {renderLabel('CPU', 'CPU available to the application', true)}
-                    <div>
-                        <input
-                            type="text"
-                            name="resources_cpu"
-                            value={basicFieldValues?.['resources']['limits']['cpu']}
-                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            onChange={handleInputChange}
-                        />
-                        {basicFieldValuesErrorObj?.cpu && !basicFieldValuesErrorObj.cpu.isValid && (
-                            <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                <span>{basicFieldValuesErrorObj.cpu.message}</span>
-                            </span>
-                        )}
-                    </div>
-                </div>
-                <div className="row-container mb-16">
-                    {renderLabel('Memory', 'Memory available to the application', true)}
-                    <div>
-                        <input
-                            type="text"
-                            name="resources_memory"
-                            value={basicFieldValues?.['resources']['limits']['memory']}
-                            className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            onChange={handleInputChange}
-                        />
-                        {basicFieldValuesErrorObj?.memory && !basicFieldValuesErrorObj.memory.isValid && (
-                            <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                <span>{basicFieldValuesErrorObj.memory.message}</span>
-                            </span>
-                        )}
-                    </div>
-                </div>
-                <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>
-                <div className="row-container mb-4">
-                    {renderLabel(
-                        'Key/Value',
-                        'Set environment variables as key:value for containers that run in the Pod.',
-                    )}
-                    <div
-                        className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
-                        data-name="envVariables"
-                        onClick={addRow}
-                    >
-                        <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
-                        Add variable
-                    </div>
-                </div>
-                {basicFieldValues?.['envVariables']?.map((envVariable: string, index: number) => (
-                    <div className="row-container mb-4" key={`envVariables-${index}`}>
-                        <div />
+            )}
+            <div
+                className={`form__row form__row--code-editor-container pt-20 pr-20 pl-20 scrollable ${
+                    !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
+                }`}
+            >
+                <InfoColourBar
+                    message="Basic has limited configurations. Changes made here will be updated in Advanced (YAML)."
+                    classname="info_bar mr-36 w-650-px"
+                    Icon={InfoIcon}
+                    iconClass="icon-dim-20"
+                />
+                <div className="pt-20 pb-20 w-650-px">
+                    <div className="fw-6 fs-14 cn-9 mb-12">Container Port</div>
+                    <div className="row-container mb-16">
+                        {renderLabel('Port', 'Port for the container', true)}
                         <div>
                             <input
                                 type="text"
-                                name={`envVariables_key-${index}`}
-                                data-index={index}
-                                value={envVariable['key']}
-                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
+                                name="port"
+                                value={basicFieldValues?.['port']}
+                                className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                 onChange={handleInputChange}
                             />
-                            <textarea
-                                name={`envVariables_value-${index}`}
-                                data-index={index}
-                                value={envVariable['value']}
-                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
-                                onChange={handleInputChange}
-                                rows={2}
-                            ></textarea>
-
-                            {basicFieldValuesErrorObj?.envVariables[index] &&
-                                !basicFieldValuesErrorObj.envVariables[index].isValid && (
-                                    <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{basicFieldValuesErrorObj.envVariables[index].message}</span>
-                                    </span>
-                                )}
+                            {basicFieldValuesErrorObj?.port && !basicFieldValuesErrorObj.port.isValid && (
+                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                    <span>{basicFieldValuesErrorObj.port.message}</span>
+                                </span>
+                            )}
                         </div>
-                        <Close
-                            className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
-                            onClick={(e) => removeRow('envVariables', index)}
-                        />
                     </div>
-                ))}
+                    <div className={`row-container ${basicFieldValues?.['enabled'] ? ' mb-8' : ' mb-16'}`}>
+                        <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
+                        <div className="mt-4" style={{ width: '32px', height: '20px' }}>
+                            <Toggle selected={basicFieldValues?.['enabled']} onSelect={handleScanToggle} />
+                        </div>
+                    </div>
+                    {basicFieldValues?.['enabled'] && (
+                        <div className="mb-12">
+                            <div className="row-container mb-12">
+                                {renderLabel('Host', 'Host name')}
+                                <input
+                                    type="text"
+                                    name="host"
+                                    value={basicFieldValues?.['host']}
+                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="row-container mb-4">
+                                {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
+                                <div
+                                    className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
+                                    data-name="paths"
+                                    onClick={addRow}
+                                >
+                                    <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
+                                    Add path
+                                </div>
+                            </div>
+                            {basicFieldValues?.['paths']?.map((path: string, index: number) => (
+                                <div className="row-container mb-4" key={`path-${index}`}>
+                                    <div />
+                                    <input
+                                        type="text"
+                                        name="paths"
+                                        data-index={index}
+                                        value={path}
+                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                        onChange={handleInputChange}
+                                    />
+                                    <Close
+                                        className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
+                                        onClick={(e) => removeRow('paths', index)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <div className="fw-6 fs-14 cn-9 mb-8">Resources (CPU & RAM)</div>
+                    <div className="row-container mb-8">
+                        {renderLabel('CPU', 'CPU available to the application', true)}
+                        <div>
+                            <input
+                                type="text"
+                                name="resources_cpu"
+                                value={basicFieldValues?.['resources']['limits']['cpu']}
+                                className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                onChange={handleInputChange}
+                            />
+                            {basicFieldValuesErrorObj?.cpu && !basicFieldValuesErrorObj.cpu.isValid && (
+                                <span className="flexbox cr-5 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                    <span>{basicFieldValuesErrorObj.cpu.message}</span>
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                    <div className="row-container mb-16">
+                        {renderLabel('Memory', 'Memory available to the application', true)}
+                        <div>
+                            <input
+                                type="text"
+                                name="resources_memory"
+                                value={basicFieldValues?.['resources']['limits']['memory']}
+                                className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                onChange={handleInputChange}
+                            />
+                            {basicFieldValuesErrorObj?.memory && !basicFieldValuesErrorObj.memory.isValid && (
+                                <span className="flexbox cr-5 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                    <span>{basicFieldValuesErrorObj.memory.message}</span>
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                    <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>
+                    <div className="row-container mb-4">
+                        {renderLabel(
+                            'Key/Value',
+                            'Set environment variables as key:value for containers that run in the Pod.',
+                        )}
+                        <div
+                            className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
+                            data-name="envVariables"
+                            onClick={addRow}
+                        >
+                            <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
+                            Add variable
+                        </div>
+                    </div>
+                    {basicFieldValues?.['envVariables']?.map((envVariable: string, index: number) => (
+                        <div className="row-container mb-4" key={`envVariables-${index}`}>
+                            <div />
+                            <div>
+                                <input
+                                    type="text"
+                                    name={`envVariables_key-${index}`}
+                                    data-index={index}
+                                    value={envVariable['key']}
+                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
+                                    onChange={handleInputChange}
+                                    placeholder="key"
+                                />
+                                <textarea
+                                    name={`envVariables_value-${index}`}
+                                    data-index={index}
+                                    value={envVariable['value']}
+                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
+                                    onChange={handleInputChange}
+                                    rows={2}
+                                    placeholder="value"
+                                ></textarea>
+
+                                {basicFieldValuesErrorObj?.envVariables[index] &&
+                                    !basicFieldValuesErrorObj.envVariables[index].isValid && (
+                                        <span className="flexbox cr-5 fw-5 fs-11 flexbox">
+                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                            <span>{basicFieldValuesErrorObj.envVariables[index].message}</span>
+                                        </span>
+                                    )}
+                            </div>
+                            <Close
+                                className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
+                                onClick={(e) => removeRow('envVariables', index)}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
             <InfoColourBar
                 message="To modify additional configurations"
-                classname="dc__content-start bw-1 bcv-1 ev-2 bcv-1 w-100  switch-to-advance-info-bar "
+                classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
                 Icon={Help}
                 iconClass="fcv-5 icon-dim-20"
                 renderActionButton={renderActionButton}
             />
-        </div>
+        </>
     )
 }
 

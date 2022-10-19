@@ -210,6 +210,12 @@
     grid-template-rows: 32px 1fr;
     overflow: hidden;
     grid-area: editor;
+    &.gui{
+      height: calc(100% - 162px);
+    }
+    &.gui-with-warning{
+      height: calc(100% - 195px);
+    }
     &.scrollable {
         overflow: hidden scroll;
     }
@@ -236,14 +242,11 @@
             fill: var(--Y700);
         }
     }
+}
 
-    .switch-to-advance-info-bar {
-        position: fixed;
-        bottom: 76px;
-        left: 303px;
-        padding: 6px 16px;
-        border-radius: 0;
-    }
+.switch-to-advance-info-bar {
+    padding: 6px 16px;
+    border-radius: 0;
 }
 
 .deploymentConfig__warning {
