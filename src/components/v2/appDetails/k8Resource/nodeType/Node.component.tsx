@@ -148,11 +148,11 @@ function NodeComponent({
         let mins = Math.floor(timeDiffInseconds/60)
         let secs = timeDiffInseconds%60 
         let elapsedTime = ""
-        if(days >= 1) elapsedTime+=(days+"d:")
-        if(hrs >= 1) elapsedTime+=(hrs+"h")
+        if(days >= 1) elapsedTime+=(days+"d")
+        if(hrs >= 1) elapsedTime+=(hrs+":h")
         if(elapsedTime.length > 0)return elapsedTime
-        if(mins >= 1) elapsedTime+=(mins+"m:")
-        if(secs >= 1) elapsedTime+=(secs+"s")
+        if(mins >= 1) elapsedTime+=(mins+"m")
+        if(secs >= 1) elapsedTime+=(secs+":s")
         return elapsedTime
     };
 
@@ -335,11 +335,12 @@ function NodeComponent({
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
                                 {' '}
-                                {node.info?.filter((_info) => _info.name === 'Restart Count')[0]?.value}{' '}
+                                {node.info?.filter((_info) => _info.name === 'Restart Count')[0] ? node.info?.filter((_info) => _info.name === 'Restart Count')[0].value : 0}{' '}
                             </div>
                         )}
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
+                                {' '}
                                 {getElapsedTime(new Date(node.createdAt))}{' '}
                             </div>
                         )}
