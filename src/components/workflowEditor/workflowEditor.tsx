@@ -22,6 +22,7 @@ import './workflowEditor.css'
 import { NodeAttr } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
+import { WebhookCI } from '../ciPipeline/WebhookCI/WebhookCIPipeline'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     constructor(props) {
@@ -285,7 +286,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         deleteWorkflow={this.deleteWorkflow}
                     />
                 </Route>
-                <Route
+                <Route path={`${this.props.match.path}/external-ci/:ciPipelineId?`}>
+                    <WebhookCI
+
+                    />
+                </Route>
+                {/* <Route
                     path={`${this.props.match.path}/external-ci/:ciPipelineId?`}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {
                         return (
@@ -301,7 +307,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             />
                         )
                     }}
-                />
+                /> */}
                 <Route
                     path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {
