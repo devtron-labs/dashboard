@@ -196,9 +196,6 @@ function NavItem({ hostURLConfig, serverMode }) {
         },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, moduleName: ModuleNameMap.NOTIFICATION },
     ]
-    let showError =
-        (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
-        !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
         getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
@@ -246,11 +243,6 @@ function NavItem({ hostURLConfig, serverMode }) {
             >
                 <div className={`flexbox flex-justify ${className || ''}`}>
                     <div>{route.name}</div>
-                    {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                        <Error className="global-configuration__error-icon icon-dim-20" />
-                    ) : (
-                        ''
-                    )}
                 </div>
             </NavLink>
         )
