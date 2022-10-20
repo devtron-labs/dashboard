@@ -29,7 +29,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     componentDidMount() {
-      getAppCheckList()
         getHostURLConfiguration()
             .then((response) => {
                 let form = response.result || {
