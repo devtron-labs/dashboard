@@ -97,26 +97,24 @@ export default function DeploymentConfig({
         }
     }
 
-    const parseDataForView = async (isBasicViewLocked: boolean, currentViewEditor: string, template): Promise<void> => {
-        let _currentViewEditor
-        if (!currentViewEditor) {
-            isBasicViewLocked = false
-        } else if (currentViewEditor === 'UNDEFINED') {
+    const parseDataForView = async (_isBasicViewLocked: boolean, _currentViewEditor: string, template): Promise<void> => {
+        if (_currentViewEditor === 'UNDEFINED') {
             const {
                 result: { defaultAppOverride },
             } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
-            isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
-        } else {
-            _currentViewEditor = currentViewEditor
+            _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
-        _currentViewEditor =
-            isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
-                ? 'ADVANCED'
-                : 'BASIC'
-        setIsBasicViewLocked(isBasicViewLocked)
-        setCurrentViewEditor(_currentViewEditor)
-        toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
-        if (!isBasicViewLocked) {
+        if (!currentViewEditor) {
+          _currentViewEditor =
+                _isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                    ? 'ADVANCED'
+                    : 'BASIC'
+            setIsBasicViewLocked(_isBasicViewLocked)
+            console.log(currentViewEditor)
+            setCurrentViewEditor(_currentViewEditor)
+            toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
+        }
+        if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
             setBasicFieldValues(_basicFieldValues)
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))

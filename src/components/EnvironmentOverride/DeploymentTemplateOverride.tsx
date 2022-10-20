@@ -233,11 +233,12 @@ export default function DeploymentTemplateOverride({
         }
     }
 
-    const parseDataForView = async (isBasicViewLocked: boolean, currentViewEditor: string, template): Promise<void> => {
-        let _currentViewEditor
-        if (!currentViewEditor) {
-            isBasicViewLocked = false
-        } else if (currentViewEditor === '' || currentViewEditor === 'UNDEFINED') {
+    const parseDataForView = async (
+        _isBasicViewLocked: boolean,
+        _currentViewEditor: string,
+        template,
+    ): Promise<void> => {
+        if (_currentViewEditor === '' || _currentViewEditor === 'UNDEFINED') {
             const {
                 result: {
                     globalConfig: { defaultAppOverride },
@@ -246,34 +247,29 @@ export default function DeploymentTemplateOverride({
                 +appId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
-            isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
-        } else {
-            _currentViewEditor = currentViewEditor
+            _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
-        _currentViewEditor =
-            isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
-                ? 'ADVANCED'
-                : 'BASIC'
-        if (!isBasicViewLocked) {
+
+        const statesToUpdate = {}
+        if (!state.currentViewEditor) {
+            _currentViewEditor =
+                _isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                    ? 'ADVANCED'
+                    : 'BASIC'
+            statesToUpdate['yamlMode'] = _currentViewEditor === 'BASIC' ? false : true
+            statesToUpdate['currentViewEditor'] = _currentViewEditor
+            statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
+        }
+
+        if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
+            statesToUpdate['basicFieldValues'] = _basicFieldValues
+            statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
+        }
+        if (statesToUpdate !== {}) {
             dispatch({
                 type: 'multipleOptions',
-                value: {
-                    basicFieldValues: _basicFieldValues,
-                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                    yamlMode: _currentViewEditor === 'BASIC' ? false : true,
-                    currentViewEditor: _currentViewEditor,
-                    isBasicViewLocked: false,
-                },
-            })
-        } else {
-            dispatch({
-                type: 'multipleOptions',
-                value: {
-                    yamlMode: _currentViewEditor === 'BASIC' ? false : true,
-                    currentViewEditor: _currentViewEditor,
-                    isBasicViewLocked: true,
-                },
+                value: statesToUpdate,
             })
         }
     }

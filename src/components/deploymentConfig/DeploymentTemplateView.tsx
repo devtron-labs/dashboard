@@ -391,7 +391,7 @@ export const DeploymentTemplateOptionsTab = ({
                                     </>
                                 }
                             >
-                                {disableVersionSelect && chartConfigLoading && codeEditorValue && isBasicViewLocked && (
+                                {!disableVersionSelect && !chartConfigLoading && codeEditorValue && isBasicViewLocked && (
                                     <Locked className="icon-dim-12 mr-6" />
                                 )}
                                 Basic
