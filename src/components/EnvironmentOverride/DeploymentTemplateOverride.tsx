@@ -252,7 +252,7 @@ export default function DeploymentTemplateOverride({
         const statesToUpdate = {}
         if (!state.currentViewEditor) {
             _currentViewEditor =
-                _isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                _isBasicViewLocked || state.openComparison || state.showReadme || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
                     ? 'ADVANCED'
                     : 'BASIC'
             statesToUpdate['yamlMode'] = _currentViewEditor === 'BASIC' ? false : true

@@ -388,9 +388,10 @@ export const DeploymentTemplateOptionsTab = ({
                                     </>
                                 }
                             >
-                                {!disableVersionSelect && !chartConfigLoading && codeEditorValue && isBasicViewLocked && (
-                                    <Locked className="icon-dim-12 mr-6" />
-                                )}
+                                {!disableVersionSelect &&
+                                    !chartConfigLoading &&
+                                    codeEditorValue &&
+                                    isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
                                 Basic
                             </RadioGroup.Radio>
                             <RadioGroup.Radio
@@ -743,13 +744,12 @@ export const DeploymentTemplateEditorView = ({
         } else if (e.target.name === 'resources_cpu' || e.target.name === 'resources_memory') {
             const resource = _basicFieldValues['resources']
             resource['limits'][e.target.name === 'resources_cpu' ? 'cpu' : 'memory'] = e.target.value
-
             resource['requests'] = resource['limits']
+            resource['requests'] = { ...resource['limits'] }
             _basicFieldValues['resources'] = resource
         } else if (e.target.name.indexOf('envVariables_') >= 0) {
             const envVariable = _basicFieldValues['envVariables'][e.target.dataset.index]
             envVariable[e.target.name.indexOf('key') >= 0 ? 'key' : 'value'] = e.target.value
-
             _basicFieldValues['envVariables'][e.target.dataset.index] = envVariable
         }
         setBasicFieldValues(_basicFieldValues)
@@ -757,6 +757,7 @@ export const DeploymentTemplateEditorView = ({
     }
 
     const addRow = (e): void => {
+        if (readOnly) return
         const _basicFieldValues = { ...basicFieldValues }
         if (e.target.dataset.name === 'paths') {
             _basicFieldValues['hosts'][0]['paths'].unshift('')
@@ -772,6 +773,7 @@ export const DeploymentTemplateEditorView = ({
     }
 
     const removeRow = (name: string, index: number): void => {
+        if (readOnly) return
         const _basicFieldValues = { ...basicFieldValues }
         const _currentValue =
             name === 'envVariables' ? _basicFieldValues['envVariables'] : _basicFieldValues['hosts'][0]['paths']
@@ -882,6 +884,7 @@ export const DeploymentTemplateEditorView = ({
                                     value={basicFieldValues?.['port']}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
+                                    readOnly={readOnly}
                                 />
                                 {basicFieldValuesErrorObj?.port && !basicFieldValuesErrorObj.port.isValid && (
                                     <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
@@ -894,7 +897,11 @@ export const DeploymentTemplateEditorView = ({
                         <div className={`row-container ${basicFieldValues?.['enabled'] ? ' mb-8' : ' mb-16'}`}>
                             <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
                             <div className="mt-4" style={{ width: '32px', height: '20px' }}>
-                                <Toggle selected={basicFieldValues?.['enabled']} onSelect={handleScanToggle} />
+                                <Toggle
+                                    selected={basicFieldValues?.['enabled']}
+                                    onSelect={handleScanToggle}
+                                    disabled={readOnly}
+                                />
                             </div>
                         </div>
                         {basicFieldValues?.['enabled'] && (
@@ -907,6 +914,7 @@ export const DeploymentTemplateEditorView = ({
                                         value={basicFieldValues?.['hosts']?.[0]['host']}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
+                                        readOnly={readOnly}
                                     />
                                 </div>
                                 <div className="row-container mb-4">
@@ -930,6 +938,7 @@ export const DeploymentTemplateEditorView = ({
                                             value={path}
                                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                             onChange={handleInputChange}
+                                            readOnly={readOnly}
                                         />
                                         <Close
                                             className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
@@ -949,6 +958,7 @@ export const DeploymentTemplateEditorView = ({
                                     value={basicFieldValues?.['resources']['limits']['cpu']}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
+                                    readOnly={readOnly}
                                 />
                                 {basicFieldValuesErrorObj?.cpu && !basicFieldValuesErrorObj.cpu.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
@@ -967,6 +977,7 @@ export const DeploymentTemplateEditorView = ({
                                     value={basicFieldValues?.['resources']['limits']['memory']}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
+                                    readOnly={readOnly}
                                 />
                                 {basicFieldValuesErrorObj?.memory && !basicFieldValuesErrorObj.memory.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
@@ -1003,6 +1014,7 @@ export const DeploymentTemplateEditorView = ({
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
                                         onChange={handleInputChange}
                                         placeholder="key"
+                                        readOnly={readOnly}
                                     />
                                     <textarea
                                         name={`envVariables_value-${index}`}
@@ -1012,6 +1024,7 @@ export const DeploymentTemplateEditorView = ({
                                         onChange={handleInputChange}
                                         rows={2}
                                         placeholder="value"
+                                        readOnly={readOnly}
                                     ></textarea>
 
                                     {basicFieldValuesErrorObj?.envVariables[index] &&
