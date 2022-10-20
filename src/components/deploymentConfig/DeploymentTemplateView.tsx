@@ -365,42 +365,50 @@ export const DeploymentTemplateOptionsTab = ({
                         selectedChartRefId={selectedChartRefId}
                         disableVersionSelect={disableVersionSelect}
                     />
-                    {selectedChart?.name === ROLLOUT_DEPLOYMENT &&
-                        !disableVersionSelect &&
-                        !chartConfigLoading &&
-                        codeEditorValue && (
-                            <RadioGroup
-                                className="gui-yaml-switch pl-16"
-                                name="yaml-mode"
-                                initialTab={yamlMode ? 'yaml' : 'gui'}
-                                disabled={isBasicViewLocked}
-                                onChange={changeEditorMode}
+                    {selectedChart?.name === ROLLOUT_DEPLOYMENT && (
+                        <RadioGroup
+                            className="gui-yaml-switch pl-16"
+                            name="yaml-mode"
+                            initialTab={yamlMode ? 'yaml' : 'gui'}
+                            disabled={isBasicViewLocked}
+                            onChange={changeEditorMode}
+                        >
+                            <RadioGroup.Radio
+                                value="gui"
+                                canSelect={disableVersionSelect && chartConfigLoading && codeEditorValue}
+                                isDisabled={isBasicViewLocked}
+                                showTippy={isBasicViewLocked}
+                                tippyContent={
+                                    <>
+                                        <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                            <Locked className="icon-dim-20 mr-6 fcy-7" />
+                                            <span className="fs-14 fw-6 cn-9">Basic view is locked</span>
+                                        </div>
+                                        <div className="fs-13 fw-4 cn-9 p-12">
+                                            Basic view is locked as some advanced configurations have been modified.
+                                            Please continue editing in Advanced (YAML) view.
+                                        </div>
+                                    </>
+                                }
                             >
-                                <RadioGroup.Radio
-                                    value="gui"
-                                    isDisabled={isBasicViewLocked}
-                                    showTippy={isBasicViewLocked}
-                                    tippyContent={
-                                        <>
-                                            <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
-                                                <Locked className="icon-dim-20 mr-6 fcy-7" />
-                                                <span className="fs-14 fw-6 cn-9">Basic view is locked</span>
-                                            </div>
-                                            <div className="fs-13 fw-4 cn-9 p-12">
-                                                Basic view is locked as some advanced configurations have been modified.
-                                                Please continue editing in Advanced (YAML) view.
-                                            </div>
-                                        </>
-                                    }
-                                >
-                                    {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
-                                    Basic
-                                </RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml" canSelect={basicFieldValuesErrorObj?.isValid}>
-                                    Advanced (YAML)
-                                </RadioGroup.Radio>
-                            </RadioGroup>
-                        )}
+                                {disableVersionSelect && chartConfigLoading && codeEditorValue && isBasicViewLocked && (
+                                    <Locked className="icon-dim-12 mr-6" />
+                                )}
+                                Basic
+                            </RadioGroup.Radio>
+                            <RadioGroup.Radio
+                                value="yaml"
+                                canSelect={
+                                    disableVersionSelect &&
+                                    chartConfigLoading &&
+                                    codeEditorValue &&
+                                    basicFieldValuesErrorObj?.isValid
+                                }
+                            >
+                                Advanced (YAML)
+                            </RadioGroup.Radio>
+                        </RadioGroup>
+                    )}
                 </div>
             ) : (
                 <span className="flex fs-13 fw-6 cn-9 h-32">
