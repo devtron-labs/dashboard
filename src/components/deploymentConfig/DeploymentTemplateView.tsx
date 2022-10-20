@@ -381,13 +381,16 @@ export const DeploymentTemplateOptionsTab = ({
                                     isDisabled={isBasicViewLocked}
                                     showTippy={isBasicViewLocked}
                                     tippyContent={
-                                        <div className="dc__mxw-200">
-                                            <span className="dc__block fw-6">Basic view is locked</span>
-                                            <span className="fw-4">
-                                                Some advanced configurations have been modified. Please continue editing
-                                                in Advanced(YAML) view.
-                                            </span>
-                                        </div>
+                                        <>
+                                            <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                                <Locked className="icon-dim-20 mr-6" />
+                                                <span className="fs-14 fw-6 cn-9">Basic view is locked</span>
+                                            </div>
+                                            <div className="fs-13 fw-4 cn-9 p-12">
+                                                Basic view is locked as some advanced configurations have been modified.
+                                                Please continue editing in Advanced (YAML) view.
+                                            </div>
+                                        </>
                                     }
                                 >
                                     {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
@@ -731,7 +734,7 @@ export const DeploymentTemplateEditorView = ({
         } else if (e.target.name === 'host') {
             _basicFieldValues['hosts'][0]['host'] = e.target.value
         } else if (e.target.name === 'paths') {
-            _basicFieldValues['hosts'][0]['paths'][e.target.dataset.index]  =  e.target.value
+            _basicFieldValues['hosts'][0]['paths'][e.target.dataset.index] = e.target.value
         } else if (e.target.name === 'resources_cpu' || e.target.name === 'resources_memory') {
             const resource = _basicFieldValues['resources']
             resource['limits'][e.target.name === 'resources_cpu' ? 'cpu' : 'memory'] = e.target.value

@@ -1099,6 +1099,11 @@ button.anchor {
     color: var(--N900);
     border: 1px solid var(--N200);
     background-color: var(--N000);
+    &.no-content-padding{
+      .tippy-content{
+        padding: 0;
+      }
+    }
 }
 
 .dc__devtron-breadcrumb {
