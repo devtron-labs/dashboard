@@ -88,13 +88,9 @@ export function userModal(user) {
 }
 
 export async function getUserList() {
-    try {
-        const response = await get('user');
-        const { result } = response;
-        return { ...response, result: result.sort((a, b) => a.email_id.localeCompare(b.email_id)) };
-    } catch (err) {
-        return err;
-    }
+    const response = await get('user')
+    const { result } = response
+    return { ...response, result: result.sort((a, b) => a.email_id.localeCompare(b.email_id)) }
 }
 
 interface UserDetail extends ResponseType {
@@ -106,7 +102,7 @@ export function getUserId(userId: number): Promise<UserDetail> {
 }
 
 interface GroupList extends ResponseType {
-    result?: {
+    result: {
         id: number;
         name: string;
         description: string;
@@ -115,13 +111,9 @@ interface GroupList extends ResponseType {
 }
 
 export async function getGroupList(): Promise<GroupList> {
-    try {
-        const response = await get('user/role/group');
-        const { result } = response;
-        return { ...response, result: result.sort((a, b) => a.name.localeCompare(b.name)) };
-    } catch (err: any) {
-        return err;
-    }
+    const response = await get('user/role/group')
+    const { result } = response
+    return { ...response, result: result.sort((a, b) => a.name.localeCompare(b.name)) }
 }
 
 export function getGroupId(groupId: number) {
