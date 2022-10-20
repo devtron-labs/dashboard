@@ -383,7 +383,7 @@ export const DeploymentTemplateOptionsTab = ({
                                     tippyContent={
                                         <>
                                             <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
-                                                <Locked className="icon-dim-20 mr-6" />
+                                                <Locked className="icon-dim-20 mr-6 fcy-7" />
                                                 <span className="fs-14 fw-6 cn-9">Basic view is locked</span>
                                             </div>
                                             <div className="fs-13 fw-4 cn-9 p-12">

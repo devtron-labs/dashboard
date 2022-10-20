@@ -55,7 +55,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
         <ConditionalWrap
             condition={showTippy}
             wrap={(children) => (
-                <Tippy className="default-white w-250 no-content-padding" arrow={false} placement="bottom" content={tippyContent}>
+                <Tippy className="default-white w-250 no-content-padding tippy-shadow" arrow={false} placement="bottom" content={tippyContent}>
                     {children}
                 </Tippy>
             )}
