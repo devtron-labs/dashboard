@@ -204,17 +204,12 @@
     }
 }
 
-.form__row--code-editor-container {
-    height: calc(100% - 124px);
-    display: grid;
-    grid-template-rows: 32px 1fr;
-    overflow: hidden;
-    grid-area: editor;
-    &.gui{
-      height: calc(100% - 162px);
+.form__row--gui-container {
+    &.gui {
+        height: calc(100% - 162px);
     }
-    &.gui-with-warning{
-      height: calc(100% - 195px);
+    &.gui-with-warning {
+        height: calc(100% - 195px);
     }
     &.scrollable {
         overflow: hidden scroll;
@@ -228,6 +223,14 @@
         grid-template-columns: 220px auto 20px;
         column-gap: 8px;
     }
+}
+
+.form__row--code-editor-container {
+    height: calc(100% - 124px);
+    display: grid;
+    grid-template-rows: 32px 1fr;
+    overflow: hidden;
+    grid-area: editor;
 
     &.form__row {
         margin-bottom: 0;
