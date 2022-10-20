@@ -7,6 +7,7 @@ import { useWindowSize } from './UseWindowSize';
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom';
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
+import { toastAccessDenied } from '../ToastBody';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -175,11 +176,18 @@ export function getRandomColor(email: string): string {
     return colors[sum % colors.length];
 }
 
-export function showError(serverError, showToastOnUnknownError = true) {
+export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
     if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
         serverError.errors.map(({ userMessage, internalMessage }) => {
-            toast.error(userMessage || internalMessage);
-        });
+            if(serverError.code === 403 && userMessage === 'unauthorized'){
+                if(!hideAccessError){
+                    toastAccessDenied()
+                }
+            }
+            else{
+                toast.error(userMessage || internalMessage)
+            }
+        })
     } else {
         if (serverError.code !== 403 && serverError.code !== 408) {
             Sentry.captureException(serverError)
@@ -187,9 +195,9 @@ export function showError(serverError, showToastOnUnknownError = true) {
 
         if (showToastOnUnknownError) {
             if (serverError.message) {
-                toast.error(serverError.message);
+                toast.error(serverError.message)
             } else {
-                toast.error('Some Error Occurred');
+                toast.error('Some Error Occurred')
             }
         }
     }
