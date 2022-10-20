@@ -6,7 +6,7 @@ import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
 import { ErrorScreenManager, Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
-import { getHostURLConfiguration } from '../../services/service';
+import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 import './hosturl.css';
@@ -29,6 +29,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     componentDidMount() {
+      getAppCheckList()
         getHostURLConfiguration()
             .then((response) => {
                 let form = response.result || {
