@@ -327,15 +327,18 @@ function NodeComponent({
                                 {getElapsedTime(new Date(node.createdAt))}{' '}
                             </div>
                         )}
-                        <div className={'flex left col-1 pt-9 pb-9'}>
-                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                        
+                        {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
                                 <NodeLevelExternalLinks
                                     helmAppDetails={appDetails}
                                     nodeLevelExternalLinks={podLevelExternalLinks}
                                     podName={node.name}
                                 />
-                            )}
-                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                            </div>
+                        )}
+                        {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
                                 <NodeLevelExternalLinks
                                     helmAppDetails={appDetails}
                                     nodeLevelExternalLinks={containerLevelExternalLinks}
@@ -343,8 +346,9 @@ function NodeComponent({
                                     containerName={node.name}
                                     addExtraSpace={true}
                                 />
-                            )}
-                        </div>
+                            </div>
+                        )}
+                        
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
                             <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                         </div>
