@@ -252,7 +252,10 @@ export default function DeploymentTemplateOverride({
         const statesToUpdate = {}
         if (!state.currentViewEditor) {
             _currentViewEditor =
-                _isBasicViewLocked || state.openComparison || state.showReadme || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                _isBasicViewLocked ||
+                state.openComparison ||
+                state.showReadme ||
+                currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
                     ? 'ADVANCED'
                     : 'BASIC'
             statesToUpdate['yamlMode'] = _currentViewEditor === 'BASIC' ? false : true
@@ -403,27 +406,29 @@ function DeploymentTemplateOverrideForm({
         if (state.isBasicViewLocked) {
             return
         }
-        const parsedCodeEditorValue = YAML.parse(tempValue)
-        if (state.yamlMode) {
-            const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+        try {
+            const parsedCodeEditorValue = YAML.parse(tempValue)
+            if (state.yamlMode) {
+                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+                dispatch({
+                    type: 'multipleOptions',
+                    value: {
+                        basicFieldValues: _basicFieldValues,
+                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                        yamlMode: !state.yamlMode,
+                    },
+                })
+                return
+            } else {
+                const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
+                updateTemplateFromBasicValue(newTemplate)
+                editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
+            }
             dispatch({
-                type: 'multipleOptions',
-                value: {
-                    basicFieldValues: _basicFieldValues,
-                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                    yamlMode: !state.yamlMode,
-                },
+                type: 'changeEditorMode',
+                value: true,
             })
-            return
-        } else {
-            const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
-            updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
-        }
-        dispatch({
-            type: 'changeEditorMode',
-            value: true,
-        })
+        } catch (err) {}
     }
 
     const handleComparisonClick = () => {
@@ -443,10 +448,13 @@ function DeploymentTemplateOverrideForm({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempValue(str)
         if (str && state.currentViewEditor && !state.isBasicViewLocked && !fromBasic) {
-            dispatch({
-                type: 'setIsBasicViewLocked',
-                value: isBasicValueChanged(YAML.parse(str)),
-            })
+            try {
+                const _isBasicViewLocked = isBasicValueChanged(YAML.parse(str))
+                dispatch({
+                    type: 'setIsBasicViewLocked',
+                    value: _isBasicViewLocked,
+                })
+            } catch (error) {}
         }
     }
 

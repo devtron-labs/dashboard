@@ -96,7 +96,11 @@ export default function DeploymentConfig({
         }
     }
 
-    const parseDataForView = async (_isBasicViewLocked: boolean, _currentViewEditor: string, template): Promise<void> => {
+    const parseDataForView = async (
+        _isBasicViewLocked: boolean,
+        _currentViewEditor: string,
+        template,
+    ): Promise<void> => {
         if (_currentViewEditor === 'UNDEFINED') {
             const {
                 result: { defaultAppOverride },
@@ -104,7 +108,7 @@ export default function DeploymentConfig({
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
         if (!currentViewEditor) {
-          _currentViewEditor =
+            _currentViewEditor =
                 _isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
                     ? 'ADVANCED'
                     : 'BASIC'
@@ -223,7 +227,9 @@ export default function DeploymentConfig({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempFormData(str)
         if (str && currentViewEditor && !isBasicViewLocked && !fromBasic) {
-            setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+            try {
+                setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+            } catch (error) {}
         }
     }
 
@@ -252,17 +258,20 @@ export default function DeploymentConfig({
         if (isBasicViewLocked) {
             return
         }
-        const parsedCodeEditorValue = YAML.parse(tempFormData)
-        if (yamlMode) {
-            const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-            setBasicFieldValues(_basicFieldValues)
-            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
-        } else {
-            const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldValues)
-            updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAML.stringify(newTemplate), !yamlMode)
-        }
-        toggleYamlMode(not)
+
+        try {
+            const parsedCodeEditorValue = YAML.parse(tempFormData)
+            if (yamlMode) {
+                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+                setBasicFieldValues(_basicFieldValues)
+                setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+            } else {
+                const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldValues)
+                updateTemplateFromBasicValue(newTemplate)
+                editorOnChange(YAML.stringify(newTemplate), !yamlMode)
+            }
+            toggleYamlMode(not)
+        } catch (error) {}
     }
 
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
