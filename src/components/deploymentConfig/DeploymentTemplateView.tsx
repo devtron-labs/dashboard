@@ -24,7 +24,6 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Next } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as Locked } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
@@ -44,12 +43,10 @@ import {
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
 } from './types'
-import { BASIC_FIELD_MAPPING, getCommonSelectStyles } from './constants'
+import { getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { getBasicFieldValue, updateTemplateFromBasicValue, validateBasicView } from './DeploymentConfig.utils'
-import { applyPatch } from 'fast-json-patch'
-import { ValidationRules } from './validationRules'
+import { validateBasicView } from './DeploymentConfig.utils'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {

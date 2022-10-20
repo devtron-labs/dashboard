@@ -32,7 +32,6 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import * as jsonpatch from 'fast-json-patch'
 
 export default function DeploymentTemplateOverride({
     parentState,

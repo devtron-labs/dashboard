@@ -17,7 +17,6 @@ import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import * as jsonpatch from 'fast-json-patch'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
