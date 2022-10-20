@@ -59,7 +59,6 @@ export default function DeploymentConfig({
     const [currentViewEditor, setCurrentViewEditor] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
-    const [basicFieldPatchData, setBasicFieldPatchData] = useState<Record<string, jsonpatch.Operation>>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
@@ -150,6 +149,7 @@ export default function DeploymentConfig({
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
             if (selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                updateTemplateFromBasicValue(defaultAppOverride)
                 parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
             }
         } catch (err) {
@@ -184,7 +184,7 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride: basicFieldPatchData !== null ? patchBasicData(obj, basicFieldPatchData) : obj,
+                valuesOverride: !yamlMode ? patchBasicData(obj, basicFieldValues) : obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
                 isBasicViewLocked: isBasicViewLocked,
@@ -260,11 +260,10 @@ export default function DeploymentConfig({
             const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
             setBasicFieldValues(_basicFieldValues)
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
-        } else if (basicFieldPatchData !== null) {
-            const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldPatchData)
+        } else {
+            const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldValues)
             updateTemplateFromBasicValue(newTemplate)
             editorOnChange(YAML.stringify(newTemplate), !yamlMode)
-            setBasicFieldPatchData(null)
         }
         toggleYamlMode(not)
     }
@@ -316,8 +315,6 @@ export default function DeploymentConfig({
                     yamlMode={yamlMode}
                     basicFieldValues={basicFieldValues}
                     setBasicFieldValues={setBasicFieldValues}
-                    basicFieldPatchData={basicFieldPatchData}
-                    setBasicFieldPatchData={setBasicFieldPatchData}
                     basicFieldValuesErrorObj={basicFieldValuesErrorObj}
                     setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
                     changeEditorMode={changeEditorMode}

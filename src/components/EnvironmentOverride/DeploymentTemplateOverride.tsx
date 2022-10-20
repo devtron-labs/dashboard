@@ -22,7 +22,7 @@ import {
 import { BasicFieldErrorObj, DeploymentChartVersionType } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../config'
+import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getBasicFieldValue,
@@ -179,11 +179,12 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
-            if (result.IsOverride) {
+            if (result.IsOverride && state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues)
                 parseDataForView(
-                  result.environmentConfig.isBasicViewLocked,
-                  result.environmentConfig.currentViewEditor,
-                  result.environmentConfig.envOverrideValues,
+                    result.environmentConfig.isBasicViewLocked,
+                    result.environmentConfig.currentViewEditor,
+                    result.environmentConfig.envOverrideValues,
                 )
             }
             dispatch({ type: 'setResult', value: result })
@@ -208,11 +209,14 @@ export default function DeploymentTemplateOverride({
             }
         } else {
             //create copy
-            parseDataForView(
-                state.data.environmentConfig.isBasicViewLocked,
-                state.data.environmentConfig.currentViewEditor,
-                state.duplicate || state.data.globalConfig,
-            )
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                updateTemplateFromBasicValue(state.duplicate || state.data.globalConfig)
+                parseDataForView(
+                    state.data.environmentConfig.isBasicViewLocked,
+                    state.data.environmentConfig.currentViewEditor,
+                    state.duplicate || state.data.globalConfig,
+                )
+            }
             dispatch({ type: 'createDuplicate', value: state.data.globalConfig })
         }
     }
@@ -319,7 +323,6 @@ function DeploymentTemplateOverrideForm({
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number, string>>({})
-    const [basicFieldPatchData, setBasicFieldPatchData] = useState<Record<string, jsonpatch.Operation>>(null)
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -338,9 +341,10 @@ function DeploymentTemplateOverrideForm({
             state.data.environmentConfig && state.data.environmentConfig.id > 0
                 ? updateDeploymentTemplate
                 : createDeploymentTemplate
+        const envOverrideValuesWithBasic = !state.yamlMode && patchBasicData(obj, state.basicFieldValues)
         const payload = {
             environmentId: +envId,
-            envOverrideValues: obj,
+            envOverrideValues: envOverrideValuesWithBasic || obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
             isAppMetricsEnabled: state.data.appMetrics,
@@ -359,6 +363,9 @@ function DeploymentTemplateOverrideForm({
         try {
             setLoading(not)
             await api(+appId, +envId, payload)
+            if (envOverrideValuesWithBasic) {
+                editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
+            }
             toast.success(
                 <div className="toast">
                     <div className="toast__title">
@@ -413,10 +420,10 @@ function DeploymentTemplateOverrideForm({
                 },
             })
             return
-        } else if (basicFieldPatchData !== null) {
-            const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldPatchData)
+        } else {
+            const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
             updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAML.stringify(newTemplate), state.yamlMode)
+            editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
         }
         dispatch({
             type: 'changeEditorMode',
@@ -545,8 +552,6 @@ function DeploymentTemplateOverrideForm({
                     changeEditorMode={changeEditorMode}
                     basicFieldValues={state.basicFieldValues}
                     setBasicFieldValues={setBasicFieldValues}
-                    basicFieldPatchData={basicFieldPatchData}
-                    setBasicFieldPatchData={setBasicFieldPatchData}
                     basicFieldValuesErrorObj={state.basicFieldValuesErrorObj}
                     setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
                 />

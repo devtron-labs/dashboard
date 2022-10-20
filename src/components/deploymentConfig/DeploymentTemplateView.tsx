@@ -393,7 +393,9 @@ export const DeploymentTemplateOptionsTab = ({
                                     {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
                                     Basic
                                 </RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">Advanced (YAML)</RadioGroup.Radio>
+                                <RadioGroup.Radio value="yaml" canSelect={basicFieldValuesErrorObj?.isValid}>
+                                    Advanced (YAML)
+                                </RadioGroup.Radio>
                             </RadioGroup>
                         )}
                 </div>
@@ -627,8 +629,6 @@ export const DeploymentTemplateEditorView = ({
     yamlMode,
     basicFieldValues,
     setBasicFieldValues,
-    basicFieldPatchData,
-    setBasicFieldPatchData,
     basicFieldValuesErrorObj,
     setBasicFieldValuesErrorObj,
     changeEditorMode,
@@ -637,7 +637,6 @@ export const DeploymentTemplateEditorView = ({
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
-    const validationRules = new ValidationRules()
     useEffect(() => {
         if (selectedChart && environments.length > 0) {
             let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
@@ -726,92 +725,37 @@ export const DeploymentTemplateEditorView = ({
 
     const handleInputChange = (e) => {
         const _basicFieldValues = { ...basicFieldValues }
-        const _basicFieldPatchData = { ...basicFieldPatchData }
         if (e.target.name === 'port') {
             e.target.value = e.target.value.replace(/\D/g, '')
             _basicFieldValues['port'] = e.target.value && Number(e.target.value)
-            if (validationRules.port(e.target.value).isValid) {
-                _basicFieldPatchData['port'] = {
-                    op: 'replace',
-                    path: BASIC_FIELD_MAPPING['port'],
-                    value: Number(e.target.value),
-                }
-            }
         } else if (e.target.name === 'host') {
-            _basicFieldValues['host'] = e.target.value
-            _basicFieldValues['hosts'] = [_basicFieldValues['hosts'][0]]
             _basicFieldValues['hosts'][0]['host'] = e.target.value
-            _basicFieldPatchData['hosts'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['hosts'],
-                value: _basicFieldValues['hosts'],
-            }
         } else if (e.target.name === 'paths') {
-            _basicFieldValues['paths'][e.target.dataset.index] = e.target.value
-            _basicFieldValues['hosts'] = [_basicFieldValues['hosts'][0]]
-            _basicFieldValues['hosts'][0]['paths'] = _basicFieldValues['paths']
-            _basicFieldPatchData['hosts'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['hosts'],
-                value: _basicFieldValues['hosts'],
-            }
+            _basicFieldValues['hosts'][0]['paths'][e.target.dataset.index]  =  e.target.value
         } else if (e.target.name === 'resources_cpu' || e.target.name === 'resources_memory') {
             const resource = _basicFieldValues['resources']
-            if (e.target.name === 'resources_cpu') {
-                resource['limits']['cpu'] = e.target.value
-                resource['requests']['cpu'] = e.target.value
-            } else {
-                resource['limits']['memory'] = e.target.value
-                resource['requests']['memory'] = e.target.value
-            }
+            resource['limits'][e.target.name === 'resources_cpu' ? 'cpu' : 'memory'] = e.target.value
+
+            resource['requests'] = resource['limits']
             _basicFieldValues['resources'] = resource
-            _basicFieldPatchData['resources'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['resources'],
-                value: resource,
-            }
         } else if (e.target.name.indexOf('envVariables_') >= 0) {
             const envVariable = _basicFieldValues['envVariables'][e.target.dataset.index]
-            if (e.target.name.indexOf('key') >= 0) {
-                envVariable['key'] = e.target.value
-            } else {
-                envVariable['value'] = e.target.value
-            }
+            envVariable[e.target.name.indexOf('key') >= 0 ? 'key' : 'value'] = e.target.value
+
             _basicFieldValues['envVariables'][e.target.dataset.index] = envVariable
-            if (validationRules.envVariable(envVariable).isValid && envVariable.key && envVariable.value) {
-                _basicFieldPatchData['envVariables'] = {
-                    op: 'replace',
-                    path: BASIC_FIELD_MAPPING['envVariables'],
-                    value: _basicFieldValues['envVariables'],
-                }
-            }
         }
         setBasicFieldValues(_basicFieldValues)
-        setBasicFieldPatchData(_basicFieldPatchData)
         setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
     }
 
     const addRow = (e): void => {
         const _basicFieldValues = { ...basicFieldValues }
-        const _basicFieldPatchData = { ...basicFieldPatchData }
         if (e.target.dataset.name === 'paths') {
-            _basicFieldValues['paths'].unshift('')
-            _basicFieldValues['hosts'][0]['paths'] = _basicFieldValues['paths']
-            _basicFieldPatchData['hosts'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['hosts'],
-                value: _basicFieldValues['hosts'],
-            }
+            _basicFieldValues['hosts'][0]['paths'].unshift('')
         } else {
             _basicFieldValues['envVariables'].unshift({ key: '', value: '' })
-            _basicFieldPatchData['hosts'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['envVariables'],
-                value: _basicFieldValues['envVariables'],
-            }
         }
         setBasicFieldValues(_basicFieldValues)
-        setBasicFieldPatchData(_basicFieldPatchData)
         if (e.target.dataset.name === 'envVariables') {
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
@@ -821,28 +765,19 @@ export const DeploymentTemplateEditorView = ({
 
     const removeRow = (name: string, index: number): void => {
         const _basicFieldValues = { ...basicFieldValues }
-        const _basicFieldPatchData = { ...basicFieldPatchData }
-        if (_basicFieldValues[name].length === 1) {
-            _basicFieldValues[name].length = 0
+        const _currentValue =
+            name === 'envVariables' ? _basicFieldValues['envVariables'] : _basicFieldValues['hosts'][0]['paths']
+        if (_currentValue.length === 1) {
+            _currentValue.length = 0
         } else {
-            _basicFieldValues[name].splice(index, 1)
+            _currentValue.splice(index, 1)
         }
         if (name === 'paths') {
-            _basicFieldValues['hosts'][0]['paths'] = _basicFieldValues['paths']
-            _basicFieldPatchData['hosts'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['hosts'],
-                value: _basicFieldValues['hosts'],
-            }
+            _basicFieldValues['hosts'][0]['paths'] = _currentValue
         } else {
-            _basicFieldPatchData['hosts'] = {
-                op: 'replace',
-                path: BASIC_FIELD_MAPPING['envVariables'],
-                value: _basicFieldValues['envVariables'],
-            }
+            _basicFieldValues['envVariables'] = _currentValue
         }
         setBasicFieldValues(_basicFieldValues)
-        setBasicFieldPatchData(_basicFieldPatchData)
         if (name === 'envVariables') {
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }
@@ -850,15 +785,8 @@ export const DeploymentTemplateEditorView = ({
 
     const handleScanToggle = (): void => {
         const _basicFieldValues = { ...basicFieldValues }
-        const _basicFieldPatchData = { ...basicFieldPatchData }
         _basicFieldValues['enabled'] = !_basicFieldValues['enabled']
-        _basicFieldPatchData['port'] = {
-            op: 'replace',
-            path: BASIC_FIELD_MAPPING['enabled'],
-            value: _basicFieldValues['enabled'],
-        }
         setBasicFieldValues(_basicFieldValues)
-        setBasicFieldPatchData(_basicFieldPatchData)
     }
 
     return yamlMode || selectedChart.name !== ROLLOUT_DEPLOYMENT ? (
@@ -930,12 +858,6 @@ export const DeploymentTemplateEditorView = ({
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
                 }`}
             >
-                <InfoColourBar
-                    message="Basic has limited configurations. Changes made here will be updated in Advanced (YAML)."
-                    classname="info_bar mr-36 w-650-px"
-                    Icon={InfoIcon}
-                    iconClass="icon-dim-20"
-                />
                 <div className="pt-20 pb-20 w-650-px">
                     <div className="fw-6 fs-14 cn-9 mb-12">Container Port</div>
                     <div className="row-container mb-16">
@@ -969,7 +891,7 @@ export const DeploymentTemplateEditorView = ({
                                 <input
                                     type="text"
                                     name="host"
-                                    value={basicFieldValues?.['host']}
+                                    value={basicFieldValues?.['hosts']?.[0]['host']}
                                     className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                 />
@@ -985,7 +907,7 @@ export const DeploymentTemplateEditorView = ({
                                     Add path
                                 </div>
                             </div>
-                            {basicFieldValues?.['paths']?.map((path: string, index: number) => (
+                            {basicFieldValues?.['hosts']?.[0]?.['paths']?.map((path: string, index: number) => (
                                 <div className="row-container mb-4" key={`path-${index}`}>
                                     <div />
                                     <input

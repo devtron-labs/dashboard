@@ -18,7 +18,7 @@ export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean
     for (let index = 0; index < _patchData.length; index++) {
         const path = _patchData[index].path
         for (let index = 0; index < basicFieldArray.length; index++) {
-            if (path === BASIC_FIELD_MAPPING[basicFieldArray[index]]) {
+            if (path.indexOf(BASIC_FIELD_MAPPING[basicFieldArray[index]]) === 0) {
                 return true
             }
         }
@@ -32,6 +32,8 @@ export const getBasicFieldValue = (template) => {
         const key = basicFieldArray[index]
         _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
     }
+    _basicFieldValues['hosts'] = [_basicFieldValues['hosts'][0]]
+    _basicFieldValues['resources']['requests'] = { ..._basicFieldValues['resources']['limits'] }
     return _basicFieldValues
 }
 
@@ -55,11 +57,16 @@ export const validateBasicView = (basicFieldValues: Record<string, any>): BasicF
     return _basicFieldErrorObj
 }
 
-export const patchBasicData = (_template, basicFieldPatchData) => {
-    const _patchKeys = Object.keys(basicFieldPatchData)
-    const _basicFieldPatchData = []
-    for (let index = 0; index < _patchKeys.length; index++) {
-        _basicFieldPatchData.push(basicFieldPatchData[_patchKeys[index]])
+export const patchBasicData = (_template, basicFieldValues: Record<string, any>) => {
+    const basicFieldPatchData = []
+    const basicFieldValuesKey = Object.keys(basicFieldValues)
+    for (let index = 0; index < basicFieldValuesKey.length; index++) {
+        const key = basicFieldArray[index]
+        basicFieldPatchData.push({
+            op: 'replace',
+            path: BASIC_FIELD_MAPPING[key],
+            value: basicFieldValues[key],
+        })
     }
-    return applyPatch(_template, _basicFieldPatchData).newDocument
+    return applyPatch(_template, basicFieldPatchData).newDocument
 }

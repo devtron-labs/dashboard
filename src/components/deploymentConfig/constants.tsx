@@ -47,13 +47,9 @@ export const getCommonSelectStyles = (styleOverrides = {}) => {
 }
 
 export const BASIC_FIELD_MAPPING = {
-  port: '/ContainerPort/0/port',
-  enabled: '/ingress/enabled',
-  host: '/ingress/hosts/0/host',
-  paths: '/ingress/hosts/0/paths',
-  resources: '/resources',
-  envVariables: '/EnvVariables',
-  hosts: '/ingress/hosts',
-  resourcesMemory: '/resources/limits/memory',
-  resourcesCPU: '/resources/limits/cpu',
+    port: '/ContainerPort/0/port',
+    enabled: '/ingress/enabled',
+    hosts: '/ingress/hosts',
+    resources: '/resources',
+    envVariables: '/EnvVariables',
 }

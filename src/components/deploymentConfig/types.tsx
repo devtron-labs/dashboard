@@ -186,8 +186,6 @@ export interface DeploymentTemplateEditorViewProps {
     setBasicFieldValues?: (
         basicFieldValues: Record<string, any>,
     ) => void | React.Dispatch<React.SetStateAction<Record<string, any>>>
-    basicFieldPatchData: Record<string, jsonpatch.Operation>
-    setBasicFieldPatchData?: React.Dispatch<React.SetStateAction<Record<string, jsonpatch.Operation>>>
     basicFieldValuesErrorObj: BasicFieldErrorObj
     setBasicFieldValuesErrorObj?: (
       basicFieldErrorObj: BasicFieldErrorObj,
