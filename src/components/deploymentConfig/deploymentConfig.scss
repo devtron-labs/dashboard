@@ -362,5 +362,10 @@
             border-radius: 0;
             margin-bottom: 0;
         }
+        .form__row--gui-container {
+            &.gui {
+                height: calc(100% - 240px);
+            }
+        }
     }
 }
