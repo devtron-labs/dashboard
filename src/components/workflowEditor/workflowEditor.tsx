@@ -46,7 +46,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showSuccessScreen: false,
             showNoGitOpsWarningPopup: false,
             cdLink: '',
-            noGitOpsConfiguration: false
+            noGitOpsConfiguration: false,
         }
     }
 
@@ -92,13 +92,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .catch((error) => {})
     }
 
-    async checkGitOpsConfiguration():Promise<void> {
-      try {
-          const { result } = await isGitOpsModuleInstalledAndConfigured()
-          if (result.isInstalled && !result.isConfigured) {
-              this.setState({ noGitOpsConfiguration: true })
-          }
-      } catch (error) {}
+    async checkGitOpsConfiguration(): Promise<void> {
+        try {
+            const { result } = await isGitOpsModuleInstalledAndConfigured()
+            if (result.isInstalled && !result.isConfigured) {
+                this.setState({ noGitOpsConfiguration: true })
+            }
+        } catch (error) {}
     }
 
     showDeleteDialog = (workflowId: number) => {
@@ -158,15 +158,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         parentPipelineType: string,
         parentPipelineId?: number | string,
     ) => {
-      const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
-      if (this.state.noGitOpsConfiguration) {
-          this.setState({
-              showNoGitOpsWarningPopup: true,
-              cdLink: LINK,
-          })
-      } else {
-          this.props.history.push(LINK)
-      }
+        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        if (this.state.noGitOpsConfiguration) {
+            this.setState({
+                showNoGitOpsWarningPopup: true,
+                cdLink: LINK,
+            })
+        } else {
+            this.props.history.push(LINK)
+        }
     }
 
     openCreateWorkflow = (): string => {
@@ -210,8 +210,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
         this.setState({ showNoGitOpsWarningPopup: false })
-        if(isContinueWithHelm){
-          this.props.history.push(this.state.cdLink)
+        if (isContinueWithHelm) {
+            this.props.history.push(this.state.cdLink)
         }
     }
 
@@ -288,7 +288,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 </Route>
                 <Route path={`${this.props.match.path}/external-ci/:ciPipelineId?`}>
                     <WebhookCI
-
+                        appName={this.state.appName}
+                        connectCDPipelines={this.getLen()}
+                        close={this.closePipeline}
+                        getWorkflows={this.getWorkflows}
+                        deleteWorkflow={this.deleteWorkflow}
                     />
                 </Route>
                 {/* <Route
@@ -498,7 +502,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         />
                     )}
                     {this.state.showNoGitOpsWarningPopup && (
-                        <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning}/>
+                        <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
                     )}
                 </div>
             )
