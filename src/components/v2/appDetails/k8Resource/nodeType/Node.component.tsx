@@ -318,7 +318,7 @@ function NodeComponent({
                     
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {(node.kind !== 'Containers') && (node.info?.filter((_info) => _info.name === 'Restart Count').sort((a,b) => a.name > b.name? -1: 1)[0]?.value)}
+                                {(node.kind !== 'Containers') && (node.info?.map((_info) => _info.name === 'Restart Count' ?_info.value : 0).sort((a,b) => a > b ? -1: 1)[0])}
                             </div>
                         )}
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
