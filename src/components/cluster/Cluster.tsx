@@ -188,7 +188,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
-                    <h5 className="form__subtitle">
+                    <p className="form__subtitle">
                         Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
                         <a
                             className="dc__link"
@@ -198,7 +198,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         >
                             Learn more
                         </a>
-                    </h5>
+                    </p>
                     {this.state.clusters.map((cluster) => (
                         <Cluster
                             {...cluster}
@@ -307,7 +307,7 @@ function Cluster({
                             </div>
                             {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                         </List>
-                        {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? <hr className="mt-0 mb-16" /> : null}
+                        {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? <hr className="mt-0 mb-0" /> : null}
                         {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? (
                             <ClusterInstallStatus
                                 agentInstallationStage={agentInstallationStage}

@@ -126,7 +126,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         return <>
             <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
                 <h2 className="form__title">Host URL</h2>
-                <h5 className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </h5>
+                <p className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </p>
                 <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
                     <div className="hosturl__description">
                         <div>

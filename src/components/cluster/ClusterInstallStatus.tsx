@@ -5,7 +5,7 @@ import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}>{
 
     render() {
-        let classes = `cluster-create-status mt-16 mb-16`;
+        let classes = `cluster-create-status`;
         if (this.props.agentInstallationStage === 0) {
             return <div className={`${classes} cluster-create-status--not-triggered`}>
                 <NotDeployed className="icon-dim-20" />
