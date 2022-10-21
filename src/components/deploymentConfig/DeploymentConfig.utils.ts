@@ -1,6 +1,6 @@
 import * as jsonpatch from 'fast-json-patch'
 import { getValueByPointer, applyPatch } from 'fast-json-patch'
-import { BASIC_FIELD_MAPPING } from './constants'
+import { BASIC_FIELDS, BASIC_FIELD_MAPPING } from './constants'
 import { BasicFieldErrorObj } from './types'
 import { ValidationRules } from './validationRules'
 
@@ -32,15 +32,15 @@ export const getBasicFieldValue = (template) => {
         const key = basicFieldArray[index]
         _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
     }
-    _basicFieldValues['hosts'] = [_basicFieldValues['hosts'][0]]
-    _basicFieldValues['resources']['requests'] = { ..._basicFieldValues['resources']['limits'] }
+    _basicFieldValues[BASIC_FIELDS.HOSTS] = [_basicFieldValues[BASIC_FIELDS.HOSTS][0]]
+    _basicFieldValues[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.REQUESTS] = { ..._basicFieldValues[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS] }
     return _basicFieldValues
 }
 
 export const validateBasicView = (basicFieldValues: Record<string, any>): BasicFieldErrorObj => {
-    const _portValidation = validationRules.port(Number(basicFieldValues['port']))
-    const _cpuValidation = validationRules.port(basicFieldValues['resources']?.['limits']?.['cpu'])
-    const _memoryValidation = validationRules.port(basicFieldValues['resources']?.['limits']?.['memory'])
+    const _portValidation = validationRules.port(Number(basicFieldValues[BASIC_FIELDS.PORT]))
+    const _cpuValidation = validationRules.port(basicFieldValues[BASIC_FIELDS.RESOURCES]?.[BASIC_FIELDS.LIMITS]?.[BASIC_FIELDS.CPU])
+    const _memoryValidation = validationRules.port(basicFieldValues[BASIC_FIELDS.RESOURCES]?.[BASIC_FIELDS.LIMITS]?.[BASIC_FIELDS.MEMORY])
     const _basicFieldErrorObj = {
         isValid: _portValidation.isValid && _cpuValidation.isValid && _memoryValidation.isValid,
         port: _portValidation,
@@ -48,8 +48,8 @@ export const validateBasicView = (basicFieldValues: Record<string, any>): BasicF
         memory: _memoryValidation,
         envVariables: [],
     }
-    for (let index = 0; index < basicFieldValues['envVariables'].length; index++) {
-        const element = basicFieldValues['envVariables'][index]
+    for (let index = 0; index < basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length; index++) {
+        const element = basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][index]
         const _envVariableValidation = validationRules.envVariable(element)
         _basicFieldErrorObj.envVariables.push(_envVariableValidation)
         _basicFieldErrorObj.isValid = _basicFieldErrorObj.isValid && _envVariableValidation.isValid

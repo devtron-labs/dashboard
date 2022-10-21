@@ -32,6 +32,7 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import { EDITOR_VIEW } from '../deploymentConfig/constants'
 
 export default function DeploymentTemplateOverride({
     parentState,
@@ -237,7 +238,7 @@ export default function DeploymentTemplateOverride({
         _currentViewEditor: string,
         template,
     ): Promise<void> => {
-        if (_currentViewEditor === '' || _currentViewEditor === 'UNDEFINED') {
+        if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
                 result: {
                     globalConfig: { defaultAppOverride },
@@ -256,9 +257,9 @@ export default function DeploymentTemplateOverride({
                 state.openComparison ||
                 state.showReadme ||
                 currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
-                    ? 'ADVANCED'
-                    : 'BASIC'
-            statesToUpdate['yamlMode'] = _currentViewEditor === 'BASIC' ? false : true
+                    ? EDITOR_VIEW.ADVANCED
+                    : EDITOR_VIEW.BASIC
+            statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.BASIC ? false : true
             statesToUpdate['currentViewEditor'] = _currentViewEditor
             statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
         }

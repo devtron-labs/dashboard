@@ -43,7 +43,7 @@ import {
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
 } from './types'
-import { getCommonSelectStyles } from './constants'
+import { BASIC_FIELDS, getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
@@ -733,23 +733,22 @@ export const DeploymentTemplateEditorView = ({
 
     const handleInputChange = (e) => {
         const _basicFieldValues = { ...basicFieldValues }
-        if (e.target.name === 'port') {
+        if (e.target.name === BASIC_FIELDS.PORT) {
             e.target.value = e.target.value.replace(/\D/g, '')
-            _basicFieldValues['port'] = e.target.value && Number(e.target.value)
-        } else if (e.target.name === 'host') {
-            _basicFieldValues['hosts'][0]['host'] = e.target.value
-        } else if (e.target.name === 'paths') {
-            _basicFieldValues['hosts'][0]['paths'][e.target.dataset.index] = e.target.value
-        } else if (e.target.name === 'resources_cpu' || e.target.name === 'resources_memory') {
-            const resource = _basicFieldValues['resources']
-            resource['limits'][e.target.name === 'resources_cpu' ? 'cpu' : 'memory'] = e.target.value
-            resource['requests'] = resource['limits']
-            resource['requests'] = { ...resource['limits'] }
-            _basicFieldValues['resources'] = resource
-        } else if (e.target.name.indexOf('envVariables_') >= 0) {
-            const envVariable = _basicFieldValues['envVariables'][e.target.dataset.index]
-            envVariable[e.target.name.indexOf('key') >= 0 ? 'key' : 'value'] = e.target.value
-            _basicFieldValues['envVariables'][e.target.dataset.index] = envVariable
+            _basicFieldValues[BASIC_FIELDS.PORT] = e.target.value && Number(e.target.value)
+        } else if (e.target.name === BASIC_FIELDS.HOST) {
+            _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.HOST] = e.target.value
+        } else if (e.target.name === BASIC_FIELDS.PATH) {
+            _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS][e.target.dataset.index] = e.target.value
+        } else if (e.target.name === BASIC_FIELDS.RESOURCES_CPU || e.target.name === BASIC_FIELDS.RESOURCES_MEMORY) {
+            const resource = _basicFieldValues[BASIC_FIELDS.RESOURCES]
+            resource[BASIC_FIELDS.LIMITS][e.target.name === BASIC_FIELDS.RESOURCES_CPU ? BASIC_FIELDS.CPU : BASIC_FIELDS.MEMORY] = e.target.value
+            resource[BASIC_FIELDS.REQUESTS] = { ...resource[BASIC_FIELDS.LIMITS] }
+            _basicFieldValues[BASIC_FIELDS.RESOURCES] = resource
+        } else if (e.target.name.indexOf(BASIC_FIELDS.ENV_VARIABLES+'_') >= 0) {
+            const envVariable = _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][e.target.dataset.index]
+            envVariable[e.target.name.indexOf(BASIC_FIELDS.KEY) >= 0 ? BASIC_FIELDS.KEY : BASIC_FIELDS.VALUE] = e.target.value
+            _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][e.target.dataset.index] = envVariable
         }
         setBasicFieldValues(_basicFieldValues)
         setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
@@ -758,13 +757,13 @@ export const DeploymentTemplateEditorView = ({
     const addRow = (e): void => {
         if (readOnly) return
         const _basicFieldValues = { ...basicFieldValues }
-        if (e.target.dataset.name === 'paths') {
-            _basicFieldValues['hosts'][0]['paths'].unshift('')
+        if (e.target.dataset.name === BASIC_FIELDS.PATH) {
+            _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
         } else {
-            _basicFieldValues['envVariables'].unshift({ key: '', value: '' })
+            _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].unshift({ key: '', value: '' })
         }
         setBasicFieldValues(_basicFieldValues)
-        if (e.target.dataset.name === 'envVariables') {
+        if (e.target.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
@@ -775,26 +774,26 @@ export const DeploymentTemplateEditorView = ({
         if (readOnly) return
         const _basicFieldValues = { ...basicFieldValues }
         const _currentValue =
-            name === 'envVariables' ? _basicFieldValues['envVariables'] : _basicFieldValues['hosts'][0]['paths']
+            name === BASIC_FIELDS.ENV_VARIABLES ? _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] : _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS]
         if (_currentValue.length === 1) {
             _currentValue.length = 0
         } else {
             _currentValue.splice(index, 1)
         }
-        if (name === 'paths') {
-            _basicFieldValues['hosts'][0]['paths'] = _currentValue
+        if (name === BASIC_FIELDS.PATH) {
+            _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS] = _currentValue
         } else {
-            _basicFieldValues['envVariables'] = _currentValue
+            _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] = _currentValue
         }
         setBasicFieldValues(_basicFieldValues)
-        if (name === 'envVariables') {
+        if (name === BASIC_FIELDS.ENV_VARIABLES) {
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }
     }
 
     const handleScanToggle = (): void => {
         const _basicFieldValues = { ...basicFieldValues }
-        _basicFieldValues['enabled'] = !_basicFieldValues['enabled']
+        _basicFieldValues[BASIC_FIELDS.ENABLED] = !_basicFieldValues[BASIC_FIELDS.ENABLED]
         setBasicFieldValues(_basicFieldValues)
     }
 
@@ -875,12 +874,12 @@ export const DeploymentTemplateEditorView = ({
                     <div className="w-650-px">
                         <div className="fw-6 fs-14 cn-9 mb-12">Container Port</div>
                         <div className="row-container mb-16">
-                            {renderLabel('Port', 'Port for the container', true)}
+                            {renderLabel(BASIC_FIELDS.PORT, 'Port for the container', true)}
                             <div>
                                 <input
                                     type="text"
-                                    name="port"
-                                    value={basicFieldValues?.['port']}
+                                    name={BASIC_FIELDS.PORT}
+                                    value={basicFieldValues?.[BASIC_FIELDS.PORT]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
@@ -893,24 +892,24 @@ export const DeploymentTemplateEditorView = ({
                                 )}
                             </div>
                         </div>
-                        <div className={`row-container ${basicFieldValues?.['enabled'] ? ' mb-8' : ' mb-16'}`}>
+                        <div className={`row-container ${basicFieldValues?.[BASIC_FIELDS.ENABLED] ? ' mb-8' : ' mb-16'}`}>
                             <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
                             <div className="mt-4" style={{ width: '32px', height: '20px' }}>
                                 <Toggle
-                                    selected={basicFieldValues?.['enabled']}
+                                    selected={basicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleScanToggle}
                                     disabled={readOnly}
                                 />
                             </div>
                         </div>
-                        {basicFieldValues?.['enabled'] && (
+                        {basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
                             <div className="mb-12">
                                 <div className="row-container mb-12">
-                                    {renderLabel('Host', 'Host name')}
+                                    {renderLabel(BASIC_FIELDS.HOST, 'Host name')}
                                     <input
                                         type="text"
-                                        name="host"
-                                        value={basicFieldValues?.['hosts']?.[0]['host']}
+                                        name={BASIC_FIELDS.HOST}
+                                        value={basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
                                         readOnly={readOnly}
@@ -920,19 +919,19 @@ export const DeploymentTemplateEditorView = ({
                                     {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
                                     <div
                                         className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
-                                        data-name="paths"
+                                        data-name={BASIC_FIELDS.PATH}
                                         onClick={addRow}
                                     >
                                         <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
                                         Add path
                                     </div>
                                 </div>
-                                {basicFieldValues?.['hosts']?.[0]?.['paths']?.map((path: string, index: number) => (
-                                    <div className="row-container mb-4" key={`path-${index}`}>
+                                {basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0]?.[BASIC_FIELDS.PATHS]?.map((path: string, index: number) => (
+                                    <div className="row-container mb-4" key={`${BASIC_FIELDS.PATH}-${index}`}>
                                         <div />
                                         <input
                                             type="text"
-                                            name="paths"
+                                            name={BASIC_FIELDS.PATH}
                                             data-index={index}
                                             value={path}
                                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
@@ -941,7 +940,7 @@ export const DeploymentTemplateEditorView = ({
                                         />
                                         <Close
                                             className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
-                                            onClick={(e) => removeRow('paths', index)}
+                                            onClick={(e) => removeRow(BASIC_FIELDS.PATH, index)}
                                         />
                                     </div>
                                 ))}
@@ -953,8 +952,8 @@ export const DeploymentTemplateEditorView = ({
                             <div>
                                 <input
                                     type="text"
-                                    name="resources_cpu"
-                                    value={basicFieldValues?.['resources']['limits']['cpu']}
+                                    name={BASIC_FIELDS.RESOURCES_CPU}
+                                    value={basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][BASIC_FIELDS.CPU]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
@@ -972,8 +971,8 @@ export const DeploymentTemplateEditorView = ({
                             <div>
                                 <input
                                     type="text"
-                                    name="resources_memory"
-                                    value={basicFieldValues?.['resources']['limits']['memory']}
+                                    name={BASIC_FIELDS.RESOURCES_MEMORY}
+                                    value={basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][BASIC_FIELDS.MEMORY]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
@@ -994,35 +993,35 @@ export const DeploymentTemplateEditorView = ({
                             )}
                             <div
                                 className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
-                                data-name="envVariables"
+                                data-name={BASIC_FIELDS.ENV_VARIABLES}
                                 onClick={addRow}
                             >
                                 <Add className="icon-dim-20 fcb-5 mt-6 mr-6" />
                                 Add variable
                             </div>
                         </div>
-                        {basicFieldValues?.['envVariables']?.map((envVariable: string, index: number) => (
-                            <div className="row-container mb-4" key={`envVariables-${index}`}>
+                        {basicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map((envVariable: string, index: number) => (
+                            <div className="row-container mb-4" key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}>
                                 <div />
                                 <div>
                                     <input
                                         type="text"
-                                        name={`envVariables_key-${index}`}
+                                        name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.KEY}-${index}`}
                                         data-index={index}
-                                        value={envVariable['key']}
+                                        value={envVariable[BASIC_FIELDS.KEY]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
                                         onChange={handleInputChange}
-                                        placeholder="key"
+                                        placeholder={BASIC_FIELDS.KEY}
                                         readOnly={readOnly}
                                     />
                                     <textarea
-                                        name={`envVariables_value-${index}`}
+                                        name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.VALUE}-${index}`}
                                         data-index={index}
-                                        value={envVariable['value']}
+                                        value={envVariable[BASIC_FIELDS.VALUE]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
                                         onChange={handleInputChange}
                                         rows={2}
-                                        placeholder="value"
+                                        placeholder={BASIC_FIELDS.VALUE}
                                         readOnly={readOnly}
                                     ></textarea>
 
@@ -1036,7 +1035,7 @@ export const DeploymentTemplateEditorView = ({
                                 </div>
                                 <Close
                                     className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
-                                    onClick={(e) => removeRow('envVariables', index)}
+                                    onClick={(e) => removeRow(BASIC_FIELDS.ENV_VARIABLES, index)}
                                 />
                             </div>
                         ))}

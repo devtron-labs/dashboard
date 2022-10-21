@@ -25,6 +25,7 @@ import {
     updateTemplateFromBasicValue,
     validateBasicView,
 } from './DeploymentConfig.utils'
+import { EDITOR_VIEW } from './constants'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -101,7 +102,7 @@ export default function DeploymentConfig({
         _currentViewEditor: string,
         template,
     ): Promise<void> => {
-        if (_currentViewEditor === 'UNDEFINED') {
+        if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
                 result: { defaultAppOverride },
             } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
@@ -110,11 +111,11 @@ export default function DeploymentConfig({
         if (!currentViewEditor) {
             _currentViewEditor =
                 _isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
-                    ? 'ADVANCED'
-                    : 'BASIC'
+                    ? EDITOR_VIEW.ADVANCED
+                    : EDITOR_VIEW.BASIC
             setIsBasicViewLocked(_isBasicViewLocked)
             setCurrentViewEditor(_currentViewEditor)
-            toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
+            toggleYamlMode(_currentViewEditor === EDITOR_VIEW.BASIC ? false : true)
         }
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
