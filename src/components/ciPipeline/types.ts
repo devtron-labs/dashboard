@@ -214,7 +214,9 @@ export interface CIBuildConfigType {
         builderId: string
         language: string
         languageVersion: string
+        projectPath: string
         builderLangEnvParam?: string
+        currentBuilderLangEnvParam?: string
         buildPacks?: any
         args?: any
     }

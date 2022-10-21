@@ -36,10 +36,18 @@
             flex-direction: column;
             column-gap: 8px;
 
-            .buildpack-options {
+            .buildpack-options,
+            .project-material-options {
                 display: grid;
-                grid-template-columns: 1fr 220px 220px;
                 grid-column-gap: 8px;
+            }
+
+            .project-material-options {
+                grid-template-columns: 50% 50%;
+            }
+
+            .buildpack-options {
+                grid-template-columns: 1fr 220px 220px;
             }
         }
 
@@ -144,9 +152,12 @@
 
         .form-row__docker {
             &.buildpack-option-wrapper {
+                .project-material-options {
+                    margin-bottom: 16px;
+                }
+
                 .buildpack-options {
                     grid-template-columns: 1fr 200px 200px;
-                    margin-bottom: 16px;
                 }
 
                 .form__field {

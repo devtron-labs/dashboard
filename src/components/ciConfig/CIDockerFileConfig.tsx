@@ -23,6 +23,7 @@ export default function CIDockerFileConfig({
     setSelectedMaterial,
     repository,
     dockerfile,
+    projectPath,
     updateDockerConfigOverride,
     args,
     setArgs,
@@ -71,7 +72,7 @@ export default function CIDockerFileConfig({
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
             .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
                 setBuildersAndFrameworks({
-                    builders: buildpackMetadata?.Builders || [],
+                    builders: buildpackMetadata?.LanguageBuilder || [],
                     frameworks: dockerfileTemplate?.LanguageFrameworks || [],
                 })
             })
@@ -229,6 +230,8 @@ export default function CIDockerFileConfig({
                     selectedMaterial={selectedMaterial}
                     handleFileLocationChange={handleFileLocationChange}
                     repository={repository}
+                    projectPath={projectPath}
+                    handleOnChangeConfig={handleOnChangeConfig}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />

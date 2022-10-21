@@ -11,7 +11,6 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { _multiSelectStyles } from './CIConfig.utils'
-import { getBuildpackMetadata } from './service'
 import { OptionType } from '../app/types'
 import { CIBuildType } from '../ciPipeline/types'
 
@@ -52,6 +51,15 @@ export const repositoryControls = (props): JSX.Element => {
     )
 }
 
+interface BuilderIdOptionType extends OptionType {
+    BuilderLangEnvParam: string
+}
+
+interface LanguageBuilderType {
+    Versions: OptionType[]
+    BuilderLanguageMetadata: BuilderIdOptionType[]
+}
+
 export default function CIBuildpackBuildOptions({
     ciConfig,
     sourceConfig,
@@ -62,17 +70,16 @@ export default function CIBuildpackBuildOptions({
     selectedMaterial,
     handleFileLocationChange,
     repository,
+    projectPath,
+    handleOnChangeConfig,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
 }) {
-    const [buildersList, setBuildersList] = useState<OptionType[]>([])
-    const [selectedBuilder, setSelectedBuilder] = useState<OptionType>()
+    const [supportedLanguagesList, setSupportedLanguagesList] = useState<OptionType[]>([])
+    const [selectedBuilder, setSelectedBuilder] = useState<BuilderIdOptionType>()
     const [selectedLanguage, setSelectedLanguage] = useState<OptionType>()
     const [selectedVersion, setSelectedVersion] = useState<OptionType>()
-    const [builderLanguageSupportMap, setBuilderLanguageSupportMap] = useState<Map<string, any>>()
-    const [supportedLanguagesList, setSupportedLanguagesList] = useState<OptionType[]>([])
-    const [supportedVersionsMap, setSupportedVersionsMap] = useState<Map<string, string[]>>()
-    const [supportedVersionsList, setSupportedVersionsList] = useState<OptionType[]>([])
+    const [builderLanguageSupportMap, setBuilderLanguageSupportMap] = useState<Record<string, LanguageBuilderType>>()
 
     useEffect(() => {
         if (builders.length > 0) {
@@ -81,42 +88,55 @@ export default function CIBuildpackBuildOptions({
     }, [builders])
 
     const initBuilderData = () => {
-        const _buildersList = []
-        const _builderLanguageSupportMap = new Map<string, any>()
-        for (const _builder of builders) {
-            _buildersList.push({
-                label: _builder.Id,
-                value: _builder.Id,
-            })
-            _builderLanguageSupportMap.set(_builder.Id, _builder.LanguageSupport)
-        }
-
-        setBuildersList(_buildersList)
-        setBuilderLanguageSupportMap(_builderLanguageSupportMap)
-
-        // Revisit
-        const languageSupport = _builderLanguageSupportMap.get(_buildersList[0].value)
         const _supportedLanguagesList = []
-        const _supportedVersionsMap = new Map<string, string[]>()
-        for (const _lang of languageSupport) {
-            _supportedLanguagesList.push({ label: _lang.Language, value: _lang.Language })
-            _supportedVersionsMap.set(_lang.Language, _lang.Versions)
+        const _builderLanguageSupportMap: Record<string, LanguageBuilderType> = {}
+        let initOption = null
+        for (const _languageBuilder of builders) {
+            _builderLanguageSupportMap[_languageBuilder.Language] = {
+                Versions: _languageBuilder.Versions?.map((ver) => ({
+                    label: ver,
+                    value: ver,
+                })),
+                BuilderLanguageMetadata: _languageBuilder.BuilderLanguageMetadata?.map((_builder) => ({
+                    label: _builder.Id,
+                    value: _builder.Id,
+                    BuilderLangEnvParam: _builder.BuilderLangEnvParam,
+                })),
+            }
+            _supportedLanguagesList.push({
+                label: _languageBuilder.Language,
+                value: _languageBuilder.Language,
+            })
+
+            if (!initOption) {
+                initOption = {
+                    language: _languageBuilder.Language,
+                    version: _languageBuilder.Versions[0],
+                    builderId: _languageBuilder.BuilderLanguageMetadata[0].Id,
+                    BuilderLangEnvParam: _languageBuilder.BuilderLanguageMetadata[0].BuilderLangEnvParam,
+                }
+            }
         }
         setSupportedLanguagesList(_supportedLanguagesList)
-        const _supportedVersions =
-            _supportedVersionsMap.get(_supportedLanguagesList[0].value)?.map((ver) => ({
-                label: ver,
-                value: ver,
-            })) || []
-        setSupportedVersionsMap(_supportedVersionsMap)
-        setSupportedVersionsList(_supportedVersions)
+        setBuilderLanguageSupportMap(_builderLanguageSupportMap)
+
+        const currentBuilderLangEnvParam = _builderLanguageSupportMap[
+            ciConfig?.ciBuildConfig?.buildPackConfig?.language
+        ]?.BuilderLanguageMetadata?.find(
+            (_builder) => _builder.value === ciConfig.ciBuildConfig.buildPackConfig.builderId,
+        )?.BuilderLangEnvParam
         setSelectedBuilder(
             ciConfig?.ciBuildConfig?.buildPackConfig?.builderId
                 ? {
                       label: ciConfig.ciBuildConfig.buildPackConfig.builderId,
                       value: ciConfig.ciBuildConfig.buildPackConfig.builderId,
+                      BuilderLangEnvParam: currentBuilderLangEnvParam,
                   }
-                : _buildersList[0],
+                : {
+                      label: initOption.builderId,
+                      value: initOption.builderId,
+                      BuilderLangEnvParam: initOption.BuilderLangEnvParam,
+                  },
         )
         setSelectedLanguage(
             ciConfig?.ciBuildConfig?.buildPackConfig?.language
@@ -124,7 +144,10 @@ export default function CIBuildpackBuildOptions({
                       label: ciConfig.ciBuildConfig.buildPackConfig.language,
                       value: ciConfig.ciBuildConfig.buildPackConfig.language,
                   }
-                : _supportedLanguagesList[0],
+                : {
+                      label: initOption.language,
+                      value: initOption.language,
+                  },
         )
         setSelectedVersion(
             ciConfig?.ciBuildConfig?.buildPackConfig?.languageVersion
@@ -132,101 +155,80 @@ export default function CIBuildpackBuildOptions({
                       label: ciConfig.ciBuildConfig.buildPackConfig.languageVersion,
                       value: ciConfig.ciBuildConfig.buildPackConfig.languageVersion,
                   }
-                : _supportedVersions[0],
+                : {
+                      label: initOption.version,
+                      value: initOption.version,
+                  },
         )
-
-        // Revisit
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
             buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig
                 ? ciConfig.ciBuildConfig.buildPackConfig
                 : {
-                      builderId: _buildersList[0].value,
-                      language: _supportedLanguagesList[0].value,
-                      languageVersion: _supportedVersions[0].value,
+                      builderId: initOption.builderId,
+                      language: initOption.language,
+                      languageVersion: initOption.version,
+                      builderLangEnvParam: initOption.BuilderLangEnvParam,
+                      currentBuilderLangEnvParam,
                   },
-            dockerBuildConfig: null,
         })
     }
 
-    const handleBuilderSelection = (selected: OptionType) => {
-        setSelectedBuilder(selected)
-
-        const languageSupport = builderLanguageSupportMap.get(selected.value)
-        const _supportedLanguagesList = []
-        const _supportedVersionsMap = new Map<string, string[]>()
-        let isLanguagePresent = false
-        for (const _lang of languageSupport) {
-            _supportedLanguagesList.push({ label: _lang.Language, value: _lang.Language })
-            _supportedVersionsMap.set(_lang.Language, _lang.Versions)
-
-            if (!isLanguagePresent && _lang.Language === selectedLanguage?.value) {
-                isLanguagePresent = true
-            }
-        }
-        setSupportedLanguagesList(_supportedLanguagesList)
-        setSupportedVersionsMap(_supportedVersionsMap)
-
-        if (!isLanguagePresent) {
-            setSelectedLanguage(_supportedLanguagesList[0])
-        }
-
-        // update version
-        setCurrentCIBuildConfig({
-            ...currentCIBuildConfig,
-            ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
-            buildPackConfig: {
-                builderId: selected.value,
-                language: isLanguagePresent ? selectedLanguage?.value : _supportedLanguagesList[0].value,
-                languageVersion: selectedVersion?.value,
-            },
-        })
-    }
-
-    const handleLanguageSelection = (selected) => {
+    const handleLanguageSelection = (selected: OptionType) => {
         setSelectedLanguage(selected)
 
-        const _supportedVersions =
-            supportedVersionsMap.get(selected.value)?.map((ver) => ({
-                label: ver,
-                value: ver,
-            })) || []
-
-        setSupportedVersionsList(_supportedVersions)
-
+        const _languageBuilder = builderLanguageSupportMap[selected.value]
         const _selectedVersion =
-            _supportedVersions.find((ver) => ver.value === selectedVersion?.value) || _supportedVersions[0]
+            _languageBuilder.Versions.find((ver) => ver.value === selectedVersion?.value) ||
+            _languageBuilder.Versions[0]
         setSelectedVersion(_selectedVersion)
 
-        // update version
+        const _selectedBuilder =
+            _languageBuilder.BuilderLanguageMetadata.find((_builder) => _builder.value === selectedBuilder.value) ||
+            _languageBuilder.BuilderLanguageMetadata[0]
+        setSelectedBuilder(_selectedBuilder)
+
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             buildPackConfig: {
-                builderId: selectedBuilder?.value,
+                builderId: _selectedBuilder.value,
                 language: selected.value,
                 languageVersion: _selectedVersion.value,
+                builderLangEnvParam: _selectedBuilder.BuilderLangEnvParam,
             },
         })
     }
 
-    const handleVersionSelection = (selected) => {
+    const handleVersionSelection = (selected: OptionType) => {
         setSelectedVersion(selected)
-
-        // update version
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             buildPackConfig: {
-                builderId: selectedBuilder?.value,
-                language: selectedLanguage?.value,
+                builderId: selectedBuilder.value,
+                language: selectedLanguage.value,
                 languageVersion: selected.value,
+                builderLangEnvParam: selectedBuilder.BuilderLangEnvParam,
+            },
+        })
+    }
+
+    const handleBuilderSelection = (selected: BuilderIdOptionType) => {
+        setSelectedBuilder(selected)
+        setCurrentCIBuildConfig({
+            ...currentCIBuildConfig,
+            buildPackConfig: {
+                builderId: selected.value,
+                language: selectedLanguage.value,
+                languageVersion: selectedVersion.value,
+                builderLangEnvParam: selected.BuilderLangEnvParam,
             },
         })
     }
 
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">
-            <div className="flex buildpack-options">
+            <div className="flex top project-material-options">
                 <div className="form__field">
                     <label className="form__label">Repo containing code you want to build</label>
                     <ReactSelect
@@ -259,6 +261,29 @@ export default function CIBuildpackBuildOptions({
                     {repository.error && <label className="form__error">{repository.error}</label>}
                 </div>
                 <div className="form__field">
+                    <label htmlFor="" className="form__label">
+                        Project path (relative)*
+                    </label>
+                    <input
+                        tabIndex={4}
+                        type="text"
+                        className="form__input file-name"
+                        placeholder="Enter the project path"
+                        name="projectPath"
+                        value={
+                            configOverrideView && !allowOverride
+                                ? ciConfig.ciBuildConfig.buildPackConfig?.projectPath || './'
+                                : projectPath.value
+                        }
+                        onChange={handleOnChangeConfig}
+                        autoComplete={'off'}
+                        disabled={configOverrideView && !allowOverride}
+                    />
+                    {projectPath.error && <label className="form__error">{projectPath.error}</label>}
+                </div>
+            </div>
+            <div className="flex top buildpack-options">
+                <div className="form__field">
                     <label className="form__label">Language</label>
                     <ReactSelect
                         className="m-0"
@@ -289,7 +314,8 @@ export default function CIBuildpackBuildOptions({
                     <ReactSelect
                         className="m-0"
                         tabIndex={3}
-                        options={supportedVersionsList}
+                        isLoading={!builderLanguageSupportMap?.[selectedLanguage?.value]}
+                        options={builderLanguageSupportMap?.[selectedLanguage?.value]?.Versions}
                         value={selectedVersion}
                         styles={getCommonSelectStyle({
                             control: (base, state) => ({
@@ -310,32 +336,33 @@ export default function CIBuildpackBuildOptions({
                         isDisabled={configOverrideView && !allowOverride}
                     />
                 </div>
-            </div>
-            <div className="form__field">
-                <label className="form__label">Select a builder</label>
-                <ReactSelect
-                    className="m-0"
-                    tabIndex={3}
-                    options={buildersList}
-                    value={selectedBuilder}
-                    styles={getCommonSelectStyle({
-                        control: (base, state) => ({
-                            ...base,
-                            minHeight: '36px',
-                            boxShadow: 'none',
-                            backgroundColor: 'var(--N50)',
-                            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                            cursor: 'pointer',
-                        }),
-                    })}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    onChange={handleBuilderSelection}
-                    isDisabled={configOverrideView && !allowOverride}
-                />
+                <div className="form__field">
+                    <label className="form__label">Select a builder</label>
+                    <ReactSelect
+                        className="m-0"
+                        tabIndex={3}
+                        isLoading={!builderLanguageSupportMap?.[selectedLanguage?.value]}
+                        options={builderLanguageSupportMap?.[selectedLanguage?.value]?.BuilderLanguageMetadata}
+                        value={selectedBuilder}
+                        styles={getCommonSelectStyle({
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: '36px',
+                                boxShadow: 'none',
+                                backgroundColor: 'var(--N50)',
+                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                cursor: 'pointer',
+                            }),
+                        })}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        onChange={handleBuilderSelection}
+                        isDisabled={configOverrideView && !allowOverride}
+                    />
+                </div>
             </div>
         </div>
     )

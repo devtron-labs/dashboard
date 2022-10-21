@@ -54,11 +54,20 @@ export default function CIConfigForm({
         {
             repository: { value: _selectedMaterial?.name || '', error: '' },
             dockerfile: {
-                value: selectedCIPipeline?.isDockerConfigOverridden
-                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
-                    : ciConfig?.ciBuildConfig?.dockerBuildConfig
-                    ? ciConfig.ciBuildConfig.dockerBuildConfig?.dockerfileRelativePath
-                    : 'Dockerfile',
+                value:
+                    (selectedCIPipeline?.isDockerConfigOverridden
+                        ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig
+                              ?.dockerfileRelativePath
+                        : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
+                          ciConfig.ciBuildConfig.dockerBuildConfig?.dockerfileRelativePath) || 'Dockerfile',
+                error: '',
+            },
+            projectPath: {
+                value:
+                    (selectedCIPipeline?.isDockerConfigOverridden
+                        ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildPackConfig?.projectPath
+                        : ciConfig?.ciBuildConfig?.buildPackConfig &&
+                          ciConfig.ciBuildConfig.buildPackConfig?.projectPath) || './',
                 error: '',
             },
             registry: { value: _selectedRegistry?.id, error: '' },
@@ -84,6 +93,13 @@ export default function CIConfigForm({
                 validator: {
                     error: 'Dockerfile is required',
                     regex: PATTERNS.STRING,
+                },
+            },
+            projectPath: {
+                required: true,
+                validator: {
+                    error: 'Project path is required',
+                    regex: /^.*$/,
                 },
             },
             registry: {
@@ -196,22 +212,27 @@ export default function CIConfigForm({
             currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE &&
             currentCIBuildConfig.buildPackConfig
         ) {
-            _ciBuildConfig['dockerBuildConfig'] = null
+            const _buildEnvArgs = buildEnvArgs.reduce((agg, { k, v }) => {
+                if (k && v) agg[k] = v
+                return agg
+            }, {})
+
+            if (currentCIBuildConfig.buildPackConfig.builderId !== ciConfig.ciBuildConfig.buildPackConfig.builderId) {
+                delete _buildEnvArgs[currentCIBuildConfig.buildPackConfig.currentBuilderLangEnvParam]
+                setBuildEnvArgs(_buildEnvArgs)
+            } else if (currentCIBuildConfig.buildPackConfig.builderLangEnvParam) {
+                _buildEnvArgs[currentCIBuildConfig.buildPackConfig.builderLangEnvParam] =
+                    currentCIBuildConfig.buildPackConfig.languageVersion
+            }
+
             _ciBuildConfig['buildPackConfig'] = {
                 builderId: currentCIBuildConfig.buildPackConfig.builderId,
                 language: currentCIBuildConfig.buildPackConfig.language,
                 languageVersion: currentCIBuildConfig.buildPackConfig.languageVersion,
-                args: {
-                    ...buildEnvArgs.reduce((agg, { k, v }) => {
-                        if (k && v) agg[k] = v
-                        return agg
-                    }, {}),
-                    [currentCIBuildConfig.buildPackConfig.builderLangEnvParam]:
-                            currentCIBuildConfig.buildPackConfig.languageVersion,
-                },
+                projectPath: projectPath.value,
+                args: _buildEnvArgs,
             }
         } else {
-            _ciBuildConfig['buildPackConfig'] = null
             _ciBuildConfig['dockerBuildConfig'] = {
                 ...currentCIBuildConfig.dockerBuildConfig,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
@@ -325,7 +346,7 @@ export default function CIConfigForm({
         }
     }
 
-    const { repository, dockerfile, registry, repository_name, key, value } = state
+    const { repository, dockerfile, projectPath, registry, repository_name, key, value } = state
     return (
         <>
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
@@ -368,6 +389,7 @@ export default function CIConfigForm({
                     setSelectedMaterial={setSelectedMaterial}
                     repository={repository}
                     dockerfile={dockerfile}
+                    projectPath={projectPath}
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     args={args}
                     setArgs={setArgs}
