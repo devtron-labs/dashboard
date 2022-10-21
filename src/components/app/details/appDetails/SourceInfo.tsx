@@ -17,12 +17,14 @@ import { Nodes } from '../../types'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
+import { ReactComponent as LinkIcon }  from '../../../../assets/icons/ic-link.svg'
 
 export function SourceInfo({
     appDetails,
     setDetailed = null,
     environments,
     showCommitInfo = null,
+    showUrlInfo = null,
     showHibernateModal = null,
     toggleDeploymentDetailedStatus = null,
     deploymentStatus = null,
@@ -79,6 +81,15 @@ export function SourceInfo({
                     )}
                 </Tippy>}
                 <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
+                {showUrlInfo && (
+                        <button
+                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                            onClick={(e) => showUrlInfo(true)}
+                        >
+                            <LinkIcon className="icon-dim-16 mr-6 icon-color-n7"  />
+                            URLs
+                        </button>
+                    )}
                     {showCommitInfo && (
                         <button
                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
