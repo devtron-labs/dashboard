@@ -313,8 +313,7 @@ function NodeComponent({
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {' '}
-                                {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}{' '}
+                                {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
                     
@@ -326,8 +325,7 @@ function NodeComponent({
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {' '}
-                                {getElapsedTime(new Date(node.createdAt))}{' '}
+                                {getElapsedTime(new Date(node.createdAt))}
                             </div>
                         )}
 
