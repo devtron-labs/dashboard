@@ -95,13 +95,18 @@ function NodeComponent({
                     if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
                         tableHeader = ['Name', ''];
                     }else{
-                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', ''];
+                        tableHeader = externalLinks.length > 0 ?['Name', 'Ready', 'Restarts', 'Age', 'Links', ''] : tableHeader 
                     }
                     _fcw = 'col-7';
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ['Name', 'URL', ''];
                     _fcw = 'col-6';
+                    break;
+                case NodeType.ReplicaSet.toLowerCase() || NodeType.StatefulSet.toLowerCase():
+                    tableHeader = ['Name', 'Links', ''];
+                    _fcw = 'col-10';
                     break;
                 default:
                     tableHeader = ['Name', ''];
@@ -321,32 +326,34 @@ function NodeComponent({
                                 {(node.kind !== 'Containers') && (node.info?.map((_info) => _info.name === 'Restart Count' ?_info.value : 0).sort((a,b) => a > b ? -1: 1)[0])}
                             </div>
                         )}
+
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
                                 {' '}
                                 {getElapsedTime(new Date(node.createdAt))}{' '}
                             </div>
                         )}
-                        
-                        {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+
+                        {(node.kind === NodeType.Containers || node.kind === NodeType.Pod) &&(
+                        <div className={'flex left col-1 pt-9 pb-9'}>
+                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
                                 <NodeLevelExternalLinks
                                     helmAppDetails={appDetails}
                                     nodeLevelExternalLinks={podLevelExternalLinks}
                                     podName={node.name}
-                                />
-                            </div>
-                        )}
-                        {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                />   
+                            )}
+                        
+                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
                                 <NodeLevelExternalLinks
                                     helmAppDetails={appDetails}
                                     nodeLevelExternalLinks={containerLevelExternalLinks}
                                     podName={node['pNode']?.name}
                                     containerName={node.name}
                                     addExtraSpace={true}
-                                />
-                            </div>
+                                />    
+                            )}
+                        </div>
                         )}
                         
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
