@@ -2,6 +2,8 @@ import React from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ButtonWithLoader, VisibleModal } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as BotIcon } from '../../../assets/icons/ic-bot.svg'
+import { ReactComponent as PersonIcon } from '../../../assets/icons/ic-person.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { CIPipelineType } from '../types'
 
@@ -34,7 +36,22 @@ export function WebhookCI({ appName, connectCDPipelines, getWorkflows, close, de
                         </div>
                     </div>
                     <div className="fw-6 fs-14 cn-9 pb-8">When do you want to deploy</div>
-                    <div></div>
+                    <div className="flex mb-20">
+                        <div className="flex dc__content-start w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bcn-0 en-2 bw-1">
+                            <BotIcon className="icon-dim-20 mr-12" />
+                            <div>
+                                <div>Automatic</div>
+                                <div>Deploy everytime a new image is received</div>
+                            </div>
+                        </div>
+                        <div className="flex dc__content-start w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bcn-0 en-2 bw-1">
+                            <PersonIcon className="icon-dim-20 mr-12" />
+                            <div>
+                                <div>Manual</div>
+                                <div>Select and deploy from available images</div>
+                            </div>
+                        </div>
+                    </div>
                     <InfoColourBar
                         message="Connecting to external CI service: A webhook url and sample JSON will be generated after the pipeline is created."
                         classname="bw-1 bcv-1 ev-2 bcv-1 fs-12"
