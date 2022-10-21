@@ -162,9 +162,7 @@ export default function CIDockerFileConfig({
                             Option: repositoryOption,
                             Control: repositoryControls,
                         }}
-                        onChange={(selected) => {
-                            handleFileLocationChange(selected)
-                        }}
+                        onChange={handleFileLocationChange}
                         isDisabled={configOverrideView && !allowOverride}
                     />
                     {repository.error && <label className="form__error">{repository.error}</label>}

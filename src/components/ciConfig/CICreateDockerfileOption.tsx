@@ -55,11 +55,40 @@ export default function CICreateDockerfileOption({
             }))
             setLanguages(_languages)
             setLanguageFrameworks(_languageFrameworks)
-            setSelectedLanguage(_languages[0])
 
-            const _selectedFramework = _languageFrameworks.get(_languages[0].value)[0]
+            const _selectedLanguage = currentCIBuildConfig.dockerBuildConfig.language
+                ? {
+                      label: currentCIBuildConfig.dockerBuildConfig.language,
+                      value: currentCIBuildConfig.dockerBuildConfig.language,
+                  }
+                : _languages[0]
+            setSelectedLanguage(_selectedLanguage)
+
+            const _frameworks = _languageFrameworks.get(
+                currentCIBuildConfig.dockerBuildConfig.language || _languages[0].value,
+            )
+            const _selectedFramework =
+                _frameworks.find((_f) => _f.value === currentCIBuildConfig.dockerBuildConfig.languageFramework) ||
+                _frameworks[0]
             setSelectedFramework(_selectedFramework)
-            getTemplateData(_languages[0], _selectedFramework)
+
+            if (
+                currentCIBuildConfig.dockerBuildConfig.language &&
+                _selectedLanguage.value === currentCIBuildConfig.dockerBuildConfig.language &&
+                currentCIBuildConfig.dockerBuildConfig.languageFramework &&
+                _selectedFramework.value === currentCIBuildConfig.dockerBuildConfig.languageFramework
+            ) {
+                setTemplateData({
+                    ...templateData,
+                    [`${_selectedLanguage.value}-${_selectedFramework.value}`]: {
+                        fetching: false,
+                        data: currentCIBuildConfig.dockerBuildConfig.dockerfileContent,
+                    },
+                })
+                setEditorValue(currentCIBuildConfig.dockerBuildConfig.dockerfileContent)
+            } else {
+                getTemplateData(_selectedLanguage, _selectedFramework)
+            }
         }
     }, [frameworks])
 
@@ -87,18 +116,26 @@ export default function CICreateDockerfileOption({
                     },
                 })
                 setEditorValue(respData)
-
-                // Revisit
                 setCurrentCIBuildConfig({
                     ...currentCIBuildConfig,
                     ciBuildType: CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE,
-                    buildPackConfig: null,
                     dockerBuildConfig: {
+                        ...currentCIBuildConfig.dockerBuildConfig,
                         dockerfileContent: respData,
+                        language: _selectedLanguage?.value,
+                        languageFramework: _selectedFramework?.value,
                     },
                 })
             } catch (err) {
                 showError(err)
+                setTemplateData({
+                    ...templateData,
+                    [templateKey]: {
+                        fetching: false,
+                        data: '',
+                    },
+                })
+                setEditorValue('')
             }
         } else {
             setTemplateData({
@@ -174,7 +211,10 @@ export default function CICreateDockerfileOption({
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             dockerBuildConfig: {
+                ...currentCIBuildConfig.dockerBuildConfig,
                 dockerfileContent: editorData?.data,
+                language: selectedLanguage?.value,
+                languageFramework: selectedFramework?.value,
             },
         })
     }
@@ -239,12 +279,16 @@ export default function CICreateDockerfileOption({
 
     const handleEditorValueChange = (value: string) => {
         setEditorValue(value)
-        setCurrentCIBuildConfig({
-            ...currentCIBuildConfig,
-            dockerBuildConfig: {
-                dockerfileContent: value,
-            },
-        })
+
+        if (templateData && selectedLanguage?.value) {
+            setCurrentCIBuildConfig({
+                ...currentCIBuildConfig,
+                dockerBuildConfig: {
+                    ...currentCIBuildConfig.dockerBuildConfig,
+                    dockerfileContent: value,
+                },
+            })
+        }
     }
 
     const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]

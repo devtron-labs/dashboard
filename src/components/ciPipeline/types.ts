@@ -214,6 +214,7 @@ export interface CIBuildConfigType {
         builderId: string
         language: string
         languageVersion: string
+        builderLangEnvParam?: string
         buildPacks?: any
         args?: any
     }
@@ -225,6 +226,8 @@ export interface CIBuildConfigType {
         dockerfileRepository?: string
         args?: Map<string, string>
         targetPlatform?: any
+        language?: string
+        languageFramework?: string
     }
     gitMaterialId: number
     id?: number

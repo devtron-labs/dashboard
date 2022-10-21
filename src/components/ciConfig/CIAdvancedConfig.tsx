@@ -101,7 +101,7 @@ export default function CIAdvancedConfig({
                     <PluginIcon />
                 </div>
                 <div>
-                    <div className="fs-14 fw-6 ">Advanced (optional)</div>
+                    <div className="fs-14 fw-6 ">Advanced options</div>
                     <div className="form-row__add-parameters">
                         <span className="fs-13 fw-4 cn-7">Set target platform for build, Docker build arguments</span>
                     </div>

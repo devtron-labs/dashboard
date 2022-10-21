@@ -32,7 +32,7 @@ export default function CIConfigForm({
     updateDockerConfigOverride,
     isCDPipeline,
     isCiPipeline,
-    navItems
+    navItems,
 }: CIConfigFormProps) {
     const history = useHistory()
     const _selectedMaterial =
@@ -100,6 +100,7 @@ export default function CIConfigForm({
         onValidation,
     )
     const [args, setArgs] = useState([])
+    const [buildEnvArgs, setBuildEnvArgs] = useState([])
     const [loading, setLoading] = useState(false)
     const targetPlatformMap = getTargetPlatformMap()
     let _selectedPlatforms = []
@@ -130,19 +131,33 @@ export default function CIConfigForm({
     })
 
     useEffect(() => {
-        let args = []
+        let _args = []
         if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.args) {
-            args = Object.keys(ciConfig.ciBuildConfig.dockerBuildConfig.args).map((arg) => ({
+            _args = Object.keys(ciConfig.ciBuildConfig.dockerBuildConfig.args).map((arg) => ({
                 k: arg,
                 v: ciConfig.ciBuildConfig.dockerBuildConfig.args[arg],
                 keyError: '',
                 valueError: '',
             }))
         }
-        if (args.length === 0) {
-            args.push({ k: '', v: '', keyError: '', valueError: '' })
+        if (_args.length === 0) {
+            _args.push({ k: '', v: '', keyError: '', valueError: '' })
         }
-        setArgs(args)
+        setArgs(_args)
+
+        let _buildEnvArgs = []
+        if (ciConfig?.ciBuildConfig?.buildPackConfig?.args) {
+            _buildEnvArgs = Object.keys(ciConfig.ciBuildConfig.buildPackConfig.args).map((arg) => ({
+                k: arg,
+                v: ciConfig.ciBuildConfig.buildPackConfig.args[arg],
+                keyError: '',
+                valueError: '',
+            }))
+        }
+        if (_buildEnvArgs.length === 0) {
+            _buildEnvArgs.push({ k: '', v: '', keyError: '', valueError: '' })
+        }
+        setBuildEnvArgs(_buildEnvArgs)
     }, [])
 
     async function onValidation(state) {
@@ -176,26 +191,47 @@ export default function CIConfigForm({
             }
         }
 
+        const _ciBuildConfig = { ...currentCIBuildConfig }
+        if (
+            currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE &&
+            currentCIBuildConfig.buildPackConfig
+        ) {
+            _ciBuildConfig['dockerBuildConfig'] = null
+            _ciBuildConfig['buildPackConfig'] = {
+                builderId: currentCIBuildConfig.buildPackConfig.builderId,
+                language: currentCIBuildConfig.buildPackConfig.language,
+                languageVersion: currentCIBuildConfig.buildPackConfig.languageVersion,
+                args: {
+                    ...buildEnvArgs.reduce((agg, { k, v }) => {
+                        if (k && v) agg[k] = v
+                        return agg
+                    }, {}),
+                    [currentCIBuildConfig.buildPackConfig.builderLangEnvParam]:
+                            currentCIBuildConfig.buildPackConfig.languageVersion,
+                },
+            }
+        } else {
+            _ciBuildConfig['buildPackConfig'] = null
+            _ciBuildConfig['dockerBuildConfig'] = {
+                ...currentCIBuildConfig.dockerBuildConfig,
+                dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
+                dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
+                args: args.reduce((agg, { k, v }) => {
+                    if (k && v) agg[k] = v
+                    return agg
+                }, {}),
+                dockerfileRepository: repository.value,
+                targetPlatform: targetPlatforms,
+            }
+        }
+
         const requestBody = {
             id: ciConfig?.id ?? null,
             appId: +appId ?? null,
             dockerRegistry: registry.value || '',
             dockerRepository: repository_name.value || '',
             beforeDockerBuild: [],
-            ciBuildConfig: {
-                ...currentCIBuildConfig,
-                dockerBuildConfig: {
-                    ...currentCIBuildConfig.dockerBuildConfig,
-                    dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
-                    dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
-                    args: args.reduce((agg, { k, v }) => {
-                        if (k && v) agg[k] = v
-                        return agg
-                    }, {}),
-                    dockerfileRepository: repository.value,
-                    targetPlatform: targetPlatforms,
-                },
-            },
+            ciBuildConfig: _ciBuildConfig,
             afterDockerBuild: [],
             appName: '',
             ...(ciConfig && ciConfig.version ? { version: ciConfig.version } : {}),
