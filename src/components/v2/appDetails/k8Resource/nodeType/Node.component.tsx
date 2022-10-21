@@ -288,22 +288,6 @@ function NodeComponent({
                                     })}
                                 </div>
                             </div>
-                            {/* {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={podLevelExternalLinks}
-                                    podName={node.name}
-                                />
-                            )}
-                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={containerLevelExternalLinks}
-                                    podName={node['pNode']?.name}
-                                    containerName={node.name}
-                                    addExtraSpace={true}
-                                />
-                            )} */}
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
