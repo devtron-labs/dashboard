@@ -918,7 +918,7 @@ export const DeploymentTemplateEditorView = ({
                                 <div className="row-container mb-4">
                                     {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
                                     <div
-                                        className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
+                                        className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120"
                                         data-name={BASIC_FIELDS.PATH}
                                         onClick={addRow}
                                     >
@@ -992,7 +992,7 @@ export const DeploymentTemplateEditorView = ({
                                 'Set environment variables as key:value for containers that run in the Pod.',
                             )}
                             <div
-                                className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120-px"
+                                className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120"
                                 data-name={BASIC_FIELDS.ENV_VARIABLES}
                                 onClick={addRow}
                             >
