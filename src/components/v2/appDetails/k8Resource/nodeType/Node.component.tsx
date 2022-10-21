@@ -96,17 +96,12 @@ function NodeComponent({
                         tableHeader = ['Name', ''];
                     }else{
                         tableHeader = ['Name', 'Ready', 'Restarts', 'Age', ''];
-                        tableHeader = externalLinks.length > 0 ?['Name', 'Ready', 'Restarts', 'Age', 'Links', ''] : tableHeader 
                     }
-                    _fcw = 'col-7';
+                    _fcw = 'col-8';
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ['Name', 'URL', ''];
                     _fcw = 'col-6';
-                    break;
-                case NodeType.ReplicaSet.toLowerCase() || NodeType.StatefulSet.toLowerCase():
-                    tableHeader = ['Name', 'Links', ''];
-                    _fcw = 'col-10';
                     break;
                 default:
                     tableHeader = ['Name', ''];
@@ -291,6 +286,22 @@ function NodeComponent({
                                     })}
                                 </div>
                             </div>
+                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={podLevelExternalLinks}
+                                    podName={node.name}
+                                />
+                            )}
+                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={containerLevelExternalLinks}
+                                    podName={node['pNode']?.name}
+                                    containerName={node.name}
+                                    addExtraSpace={true}
+                                />
+                            )}
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -334,28 +345,6 @@ function NodeComponent({
                             </div>
                         )}
 
-                        {(node.kind === NodeType.Containers || node.kind === NodeType.Pod) &&(
-                        <div className={'flex left col-1 pt-9 pb-9'}>
-                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={podLevelExternalLinks}
-                                    podName={node.name}
-                                />   
-                            )}
-                        
-                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={containerLevelExternalLinks}
-                                    podName={node['pNode']?.name}
-                                    containerName={node.name}
-                                    addExtraSpace={true}
-                                />    
-                            )}
-                        </div>
-                        )}
-                        
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
                             <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                         </div>
