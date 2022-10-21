@@ -178,7 +178,7 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
-            if (result.IsOverride && state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
                 updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues)
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,

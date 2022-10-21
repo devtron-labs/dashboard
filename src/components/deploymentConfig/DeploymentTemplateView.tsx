@@ -372,7 +372,7 @@ export const DeploymentTemplateOptionsTab = ({
                         >
                             <RadioGroup.Radio
                                 value="gui"
-                                canSelect={disableVersionSelect && chartConfigLoading && codeEditorValue}
+                                canSelect={!chartConfigLoading && !isBasicViewLocked && codeEditorValue}
                                 isDisabled={isBasicViewLocked}
                                 showTippy={isBasicViewLocked}
                                 tippyContent={
@@ -388,8 +388,7 @@ export const DeploymentTemplateOptionsTab = ({
                                     </>
                                 }
                             >
-                                {!disableVersionSelect &&
-                                    !chartConfigLoading &&
+                                {!chartConfigLoading &&
                                     codeEditorValue &&
                                     isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
                                 Basic
