@@ -438,7 +438,10 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
-                  } else {
+                  } else if (deploymentData.deploymentStatus === 'succeeded') {
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                } else {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
                   }

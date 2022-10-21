@@ -53,6 +53,7 @@ const TIME_STAMP_ORDER = {
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
+    inprogressStatusTimer
 
     constructor(props: TriggerViewProps) {
         super(props)
@@ -90,6 +91,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     componentWillUnmount() {
         clearInterval(this.timerRef)
+        this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
     }
 
     componentDidMount() {
@@ -273,17 +275,35 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let postCDMap = {}
                 let allCIs = response?.result?.ciWorkflowStatus || []
                 let allCDs = response?.result?.cdWorkflowStatus || []
+                let cicdInProgress = false
                 //Create maps from Array
                 if (allCIs.length) {
                     allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = pipeline.ciStatus
+                        ciMap[pipeline.ciPipelineId] = {
+                            status: pipeline.ciStatus,
+                            storageConfigured: pipeline.storageConfigured || false,
+                        }
+                        if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
+                            cicdInProgress = true
+                        }
                     })
+
                 }
                 if (allCDs.length) {
                     allCDs.forEach((pipeline) => {
                         if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
                         if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status
                         if (pipeline.deploy_status) cdMap[pipeline.pipeline_id] = pipeline.deploy_status
+                        if (
+                            !cicdInProgress &&
+                            (pipeline.pre_status === 'Starting' ||
+                                pipeline.pre_status === 'Running' ||
+                                pipeline.deploy_status === 'Progressing' ||
+                                pipeline.post_status === 'Starting' ||
+                                pipeline.post_status === 'Running')
+                        ) {
+                            cicdInProgress = true
+                        }
                     })
                 }
                 //Update Workflow using maps
@@ -308,6 +328,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     })
                     return wf
                 })
+                this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
+                if (cicdInProgress) {
+                    this.inprogressStatusTimer = setTimeout(() => {
+                        this.getWorkflowStatus()
+                    }, 10000)
+                }
                 this.setState({ workflows })
             })
             .catch((errors: ServerErrors) => {
