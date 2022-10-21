@@ -10,6 +10,11 @@ export interface OptionType {
     value: string;
 }
 
+export interface NumberOptionType {
+    label: string;
+    value: number;
+}
+
 export interface LabelTags {
     tags: OptionType[];
     inputTagValue: string;
@@ -361,3 +366,14 @@ export enum NodeDetailTabs {
     TERMINAL = 'TERMINAL',
 }
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
+
+export enum SortingOrder {
+    ASC = 'ASC',
+    DESC = 'DESC'
+}
+
+export interface CreateAppLabelsRequest {
+    id: number
+    labels: { key: string; value: string }[]
+    teamId: number
+}

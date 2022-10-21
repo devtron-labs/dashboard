@@ -34,7 +34,7 @@ export class DeploymentTableModal extends Component<DeploymentTableModalProps, {
             <div className="modal__body" style={{ width: "820px" }}>
                 <div className="modal__header">
                     <h1 className="modal__title">Deployments</h1>
-                    <button type="button" className="transparent" onClick={this.props.close}>
+                    <button type="button" className="dc__transparent" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>

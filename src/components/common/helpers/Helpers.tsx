@@ -6,6 +6,8 @@ import YAML from 'yaml';
 import { useWindowSize } from './UseWindowSize';
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom';
+import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
+import { toastAccessDenied } from '../ToastBody';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -174,11 +176,18 @@ export function getRandomColor(email: string): string {
     return colors[sum % colors.length];
 }
 
-export function showError(serverError, showToastOnUnknownError = true) {
+export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
     if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
         serverError.errors.map(({ userMessage, internalMessage }) => {
-            toast.error(userMessage || internalMessage);
-        });
+            if(serverError.code === 403 && userMessage === 'unauthorized'){
+                if(!hideAccessError){
+                    toastAccessDenied()
+                }
+            }
+            else{
+                toast.error(userMessage || internalMessage)
+            }
+        })
     } else {
         if (serverError.code !== 403 && serverError.code !== 408) {
             Sentry.captureException(serverError)
@@ -186,15 +195,15 @@ export function showError(serverError, showToastOnUnknownError = true) {
 
         if (showToastOnUnknownError) {
             if (serverError.message) {
-                toast.error(serverError.message);
+                toast.error(serverError.message)
             } else {
-                toast.error('Some Error Occurred');
+                toast.error('Some Error Occurred')
             }
         }
     }
 }
 
-export function noop() { }
+export function noop(...args): any { }
 
 export function not(e) {
     return !e;
@@ -440,6 +449,52 @@ export function shallowEqual(objA, objB) {
     }
 
     return true;
+}
+
+export function compareObjectLength(objA: any, objB: any): boolean {
+    if (objA === objB) {
+        return true
+    }
+
+    const isArrayA = Array.isArray(objA)
+    const isArrayB = Array.isArray(objB)
+
+    if ((isArrayA && !isArrayB) || (!isArrayA && isArrayB)) {
+        return false
+    } else if (!isArrayA && !isArrayB) {
+        return Object.keys(objA).length === Object.keys(objB).length
+    }
+
+    return objA.length === objB.length
+}
+
+export function deepEqual(configA: any, configB: any): boolean {
+    try {
+        if (configA === configB) {
+            return true
+        } else if (
+            (configA && !configB) ||
+            (!configA && configB) ||
+            !compareObjectLength(configA, configB)
+        ) {
+            return false
+        } else {
+            let isEqual = true
+            for (const idx in configA) {
+                if (!isEqual) {
+                    break
+                } else if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
+                    isEqual = deepEqual(configA[idx], configB[idx])
+                } else if (configA[idx] !== configB[idx]) {
+                    isEqual = false
+                }
+            }
+            return isEqual
+        }
+    } catch (err) {
+        showError(err)
+        return true
+    }
 }
 
 export function useOnline() {
@@ -906,7 +961,7 @@ export const sortOptionsByValue = (optionA, optionB) => {
     return 0
 }
 
-// Create instance of MutationObserver & watch for DOM changes until 
+// Create instance of MutationObserver & watch for DOM changes until
 // disconnect() is called.
 export const watchDOMForChanges = (callback: (observer: MutationObserver) => void) => {
     const observer = new MutationObserver(() => {
@@ -936,4 +991,9 @@ export const elementDidMount = (identifier: string): Promise<unknown> => {
             }
         })
     })
+}
+
+// Setting expiry time in local storage for specified action key
+export const setActionWithExpiry = (key: string, days: number): void => {
+  localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }

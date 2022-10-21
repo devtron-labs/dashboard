@@ -1,7 +1,9 @@
 .create-app-modal {
     width: 450px;
     max-height: 90vh;
-    margin-top: 40px;
+    margin-top: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 .footer {
@@ -22,15 +24,15 @@ span.form__label {
     color: #404040;
 }
 
-.info__container--create-app {
+.info-container--create-app {
     padding: 10px 12px;
     align-items: start;
     grid-template-columns: 20px 1fr auto;
     grid-column-gap: 12px;
-}
 
-.info__title {
-    display: inline;
+    .dc__info-title {
+      display: inline;
+    }
 }
 
 .form-row {

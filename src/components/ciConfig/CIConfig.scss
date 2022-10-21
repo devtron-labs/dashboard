@@ -1,59 +1,76 @@
 .white-card__docker-config {
     padding: 20px 24px 12px 24px;
+
     .form-row {
         margin-bottom: 24px;
     }
+
     .form-row__key-value {
         display: grid;
         grid-template-columns: 50% 1fr;
         grid-column-gap: 16px;
     }
+
     .form-row__add-parameters {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
         .add-parameter {
             .fa.fa-plus {
                 margin-right: 4px;
             }
+
             color: var(--B500);
             text-align: right;
         }
     }
+
     .form-row__docker {
         display: grid;
         grid-template-columns: 240px 1fr;
         grid-column-gap: 16px;
+
         .popup-button {
             height: 40px;
         }
+
         .select-popup {
             width: 240px;
         }
+
         .form__field {
             margin-bottom: 16px;
+
             .bottom-0 {
                 bottom: 0;
             }
+
             .docker-flie-container {
                 display: flex;
+
                 .checkout-path-container {
-                    padding: 10px;
-                    background: #d0d4d9;
+                    padding: 8px 10px;
                     border-radius: 4px 0 0 4px;
+                    max-width: 200px;
+                    min-width: 30px;
                 }
+
                 .file-name {
                     border-radius: 0 4px 4px 0;
                 }
             }
         }
+
         .form__error {
             position: unset;
             display: flex;
             align-items: center;
             margin-top: 4px;
+
             &.form__error--info {
                 color: #6b778c;
+
                 &:before {
                     content: '';
                     background: url('../../assets/icons/ic-info-warn.svg');
@@ -66,20 +83,103 @@
             }
         }
     }
+
     .popup-button {
         .select-button {
             height: 40px;
             padding-left: 10px;
         }
     }
+
     .target-platform__select__multi-value__label {
         font-size: 12px;
         padding: 2px;
         padding-left: 6px;
     }
 }
+
 .docker__dropdown {
     margin: auto;
     margin-right: 0;
     margin-top: 0;
+}
+
+.form__app-compose {
+    &.config-override-view {
+        width: 100%;
+        margin: 0;
+        padding: 24px 0 16px;
+        margin-bottom: 0;
+
+        .white-card__docker-config {
+            padding: 16px;
+
+            .form-row__docker {
+                align-items: flex-end;
+
+                &:last-of-type {
+                    margin-bottom: 0;
+
+                    .form__field {
+                        margin-bottom: 0;
+                    }
+                }
+            }
+        }
+
+        .allow-config-override {
+            &.cta {
+                top: 16px;
+                right: 16px;
+            }
+        }
+    }
+}
+
+.modal__body {
+    &.modal__config-override-diff {
+        width: 1024px;
+        height: 100%;
+        margin-top: 0;
+
+        .config-override-diff__view {
+            height: calc(100% - 116px);
+        }
+
+        .workflow {
+            &.workflow--create {
+                margin-bottom: 0;
+                border-bottom: none;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+
+                .workflow__header {
+                    padding: 16px 20px 0;
+                    border-bottom: none;
+                }
+
+                .workflow-node {
+                    .workflow-node__title:not(.workflow-node__title--static) {
+                        align-items: flex-start;
+                        margin-left: 0px;
+                    }
+                }
+            }
+        }
+
+        .config-override-diff__values {
+            display: grid;
+            grid-template-columns: 50% 50%;
+            grid-template-rows: auto;
+            background: white;
+
+            .code-editor-green-diff {
+                background: #eaf1dd;
+            }
+
+            .code-editor-red-diff {
+                background: #ffd4d1;
+            }
+        }
+    }
 }

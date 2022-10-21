@@ -11,11 +11,11 @@ import {
 import { AddNewAppProps, AddNewAppState } from '../types';
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config';
 import { ValidationRules } from './validationRules';
-import { getTeamListMin } from '../../../services/service';
+import { getHostURLConfiguration, getTeamListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
-import './createApp.css';
+import './createApp.scss';
 import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } from '../appLabelCommon';
 import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
@@ -25,6 +25,7 @@ import AsyncSelect from 'react-select/async';
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil';
 import { Option } from '../../v2/common/ReactSelect.utils';
+import { saveHostURLConfiguration } from '../../hostURL/hosturl.service';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -56,7 +57,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
-        };
+
+        }
         this.createApp = this.createApp.bind(this);
         this.handleAppname = this.handleAppname.bind(this);
         this.handleProject = this.handleProject.bind(this);
@@ -139,6 +141,24 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return true;
     };
 
+     getHostURLConfig = async () => {
+         try {
+             const { result } = await getHostURLConfiguration()
+
+             if (!result?.value) {
+                 const payload = {
+                     id: result.id,
+                     key: result.key,
+                     value: window.location.origin,
+                     active: result.active,
+                 }
+                await saveHostURLConfiguration(payload)
+             }
+         } catch (error) {
+             showError(error)
+         }
+     }
+
     createApp(): void {
         const validForm = this.validateForm();
         if (!validForm) {
@@ -175,6 +195,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         createApp(request)
             .then((response) => {
                 if (response.result) {
+                  this.getHostURLConfig()
                     let { form, isValid } = { ...this.state };
                     form.appId = response.result.id;
                     form.appName = response.result.appName;
@@ -381,7 +402,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 ) : null}
                             </span>
                         </div>
-                        <div className="form__row clone-apps inline-block">
+                        <div className="form__row clone-apps dc__inline-block">
                             <RadioGroup
                                 className="no-border"
                                 value={this.state.form.appCreationType}
@@ -395,7 +416,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </RadioGroup>
                         </div>
                         {this.state.form.appCreationType === AppCreationType.Existing && (
-                            <div className="form__row clone-apps inline-block">
+                            <div className="form__row clone-apps dc__inline-block">
                                 <span className="form__label">Select an app to clone*</span>
                                 <AsyncSelect
                                     loadOptions={appListOptions}
@@ -420,11 +441,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </div>
                         )}
                         {this.state.form.appCreationType === AppCreationType.Existing && (
-                            <div className="info__container info__container--create-app eb-2 mb-16">
+                            <div className="dc__info-container info-container--create-app eb-2 mb-16">
                                 <Info />
                                 <div className="flex column left">
                                     <div>
-                                        <div className="info__title">Important: </div>Do not forget to modify git
+                                        <div className="dc__info-title">Important: </div>Do not forget to modify git
                                         repositories, corresponding branches and container registries to be used for
                                         each CI Pipeline if required.
                                     </div>
@@ -453,3 +474,5 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 }
+
+

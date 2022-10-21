@@ -1,3 +1,4 @@
+import React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 
@@ -201,6 +202,16 @@ export interface BuildStageType {
     id: number
     steps: StepType[]
 }
+
+export interface DockerConfigOverrideType {
+    dockerRegistry: string
+    dockerRepository: string
+    dockerBuildConfig: {
+        gitMaterialId: number
+        dockerfileRelativePath: string
+    }
+}
+
 export interface FormType {
     name: string
     args: { key: string; value: string }[]
@@ -230,6 +241,8 @@ export interface FormType {
     ciPipelineEditable: true
     preBuildStage?: BuildStageType
     postBuildStage?: BuildStageType
+    isDockerConfigOverridden?: boolean
+    dockerConfigOverride?: DockerConfigOverrideType
 }
 
 interface ErrorObj {
@@ -280,6 +293,8 @@ export interface CIPipelineDataType {
     name: string
     linkedCount: number
     scanEnabled?: boolean
+    isDockerConfigOverridden?: boolean
+    dockerConfigOverride?: DockerConfigOverrideType
 }
 export interface CIPipelineState {
     code: number
@@ -368,6 +383,7 @@ export interface CIPipelineProps
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
+    deleteWorkflow?: (appId?: string, workflowId?: number) => any
 }
 
 export const PatchAction = {
@@ -430,4 +446,13 @@ export interface WebhookCIProps {
     onWebhookConditionSelectorChange: (index: number, selectorId: number) => void
     onWebhookConditionSelectorValueChange: (index: number, value: string) => void
     copyToClipboard: (text: string, callback) => void
+}
+
+export interface BuildType {
+    showFormError: boolean
+    isAdvanced: boolean
+    ciPipeline: CIPipelineDataType
+    pageState: string
+    isSecurityModuleInstalled: boolean
+    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
 }

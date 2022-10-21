@@ -1,50 +1,48 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react'
 import { useParams } from 'react-router'
-import ReadmeConfig from '../deploymentConfig/ReadmeConfig'
 import {
     getDeploymentTemplate,
     createDeploymentTemplate,
     updateDeploymentTemplate,
     deleteDeploymentTemplate,
-    createNamespace,
-    toggleAppMetrics,
     chartRefAutocomplete,
 } from './service'
-import fileIcon from '../../assets/icons/ic-file.svg'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ArrowSquareOut } from '../../assets/icons/misc/arrowSquareOut.svg'
 import { Override } from './ConfigMapOverrides'
-import {
-    Select,
-    mapByKey,
-    showError,
-    not,
-    Progressing,
-    ConfirmationDialog,
-    VisibleModal,
-    Info,
-    useEffectAfterMount,
-    useJsonYaml,
-} from '../common'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { showError, not, Progressing, ConfirmationDialog, useEffectAfterMount, useJsonYaml, useAsync } from '../common'
 import { toast } from 'react-toastify'
-import { OptApplicationMetrics } from '../deploymentConfig/DeploymentConfig'
 import '../deploymentConfig/deploymentConfig.scss'
 import warningIcon from '../../assets/img/warning-medium.svg'
-import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
-import { ReactComponent as DiffIcon } from '../../assets/icons/ic-compare.svg'
+import {
+    DeploymentConfigFormCTA,
+    DeploymentTemplateEditorView,
+    DeploymentTemplateOptionsTab,
+} from '../deploymentConfig/DeploymentTemplateView'
+import { DeploymentChartVersionType } from '../deploymentConfig/types'
+import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleNameMap } from '../../config'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
-export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
+export default function DeploymentTemplateOverride({
+    parentState,
+    setParentState,
+    environments,
+    environmentName,
+}: DeploymentTemplateOverrideProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, setLoading] = useState(false)
     const [chartRefLoading, setChartRefLoading] = useState(null)
-
+    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const initialState = {
+        showReadme: false,
+        openComparison: false,
+        charts: [],
+        selectedChart: null,
+    }
     const memoisedReducer = useCallback(
         (state, action) => {
             switch (action.type) {
-                case 'toggleCollapse':
-                    return { ...state, collapsed: !Boolean(state.collapsed) }
                 case 'setResult':
                     return {
                         ...state,
@@ -55,40 +53,50 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
                                 : null,
                     }
                 case 'setCharts':
+                    // Use other latest ref id instead of selectedChartRefId on delete override action
+                    const _selectedChartId =
+                        (!action.value.isDeleteAction && state.selectedChartRefId) ||
+                        action.value.latestEnvChartRef ||
+                        action.value.latestAppChartRef ||
+                        action.value.latestChartRef
                     return {
                         ...state,
-                        charts: mapByKey(action.value.chartRefs, 'id'),
-                        selectedChartRefId:
-                            state.selectedChartRefId ||
-                            action.value.latestEnvChartRef ||
-                            action.value.latestAppChartRef ||
-                            action.value.latestChartRef,
+                        charts: action.value.chartRefs,
+                        selectedChart: action.value.chartRefs?.find((chart) => chart.id === _selectedChartId),
+                        selectedChartRefId: _selectedChartId,
                     }
                 case 'createDuplicate':
                     return { ...state, duplicate: action.value, selectedChartRefId: state.data.globalChartRefId }
                 case 'removeDuplicate':
                     return { ...state, duplicate: null }
                 case 'selectChart':
-                    return { ...state, selectedChartRefId: action.value }
-                case 'appMetricsLoading':
-                    return { ...state, appMetricsLoading: true }
-                case 'success':
-                case 'error':
-                    return { ...state, appMetricsLoading: false }
+                    return {
+                        ...state,
+                        selectedChart: action.value,
+                        selectedChartRefId: action.value.id,
+                    }
+                case 'appMetrics':
+                    return {
+                        ...state,
+                        data: {
+                            ...state.data,
+                            appMetrics: action.value,
+                        },
+                    }
+                case 'showReadme':
+                    return { ...state, showReadme: action.value }
+                case 'openComparison':
+                    return { ...state, openComparison: action.value }
                 case 'toggleDialog':
                     return { ...state, dialog: !state.dialog }
                 case 'reset':
-                    return { collapsed: true, charts: new Map(), selectedChartRefId: null }
+                    return { ...initialState, selectedChartRefId: null }
                 default:
                     return state
             }
         },
         [appId, envId],
     )
-    const initialState = {
-        collapsed: true,
-        charts: new Map(),
-    }
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
 
     useEffect(() => {
@@ -108,29 +116,34 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
         initialise()
     }, [state.selectedChartRefId])
 
-    async function initialise() {
+    async function initialise(isDeleteAction?: boolean, forceReloadEnvironments?: boolean) {
         setChartRefLoading(true)
         try {
             const { result } = await chartRefAutocomplete(+appId, +envId)
-            dispatch({ type: 'setCharts', value: result })
+            dispatch({
+                type: 'setCharts',
+                value: {
+                    ...result,
+                    isDeleteAction,
+                },
+            })
+
+            if (isDeleteAction || forceReloadEnvironments) {
+                setParentState(ComponentStates.reloading)
+            }
         } catch (err) {
-            setParentState('failed')
+            setParentState(ComponentStates.failed)
             showError(err)
         } finally {
             setChartRefLoading(false)
         }
     }
 
-    async function handleAppMetrics(isOpted) {
-        dispatch({ type: 'appMetricsLoading' })
-        try {
-            const { result } = await toggleAppMetrics(+appId, +envId, {
-                isAppMetricsEnabled: isOpted,
-            })
-            initialise()
-        } catch (err) {
-            showError(err)
-        }
+    async function handleAppMetrics() {
+        dispatch({
+            type: 'appMetrics',
+            value: !state.data.appMetrics,
+        })
     }
 
     async function fetchDeploymentTemplate() {
@@ -141,18 +154,12 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
             dispatch({ type: 'setResult', value: result })
-            setParentState('loaded')
+            setParentState(ComponentStates.loaded)
         } catch (err) {
-            setParentState('failed')
+            setParentState(ComponentStates.failed)
             showError(err)
         } finally {
             setLoading(false)
-            if (state.appMetricsLoading) {
-                toast.success(`Successfully ${state.data.appMetrics ? 'deactivated' : 'activated'} app metrics.`, {
-                    autoClose: null,
-                })
-                dispatch({ type: 'success' })
-            }
         }
     }
 
@@ -177,70 +184,65 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
             const { result } = await deleteDeploymentTemplate(state.data.environmentConfig.id, +appId, +envId)
             toast.success('Restored to global.', { autoClose: null })
             dispatch({ type: 'removeDuplicate' })
-            initialise()
+            initialise(true)
         } catch (err) {
         } finally {
             dispatch({ type: 'toggleDialog' })
         }
     }
 
-    if (loading || state.loading) return null
-    if (parentState === 'loading') return null
+    if (loading || state.loading || parentState === ComponentStates.loading) {
+        return <Progressing size={48} fullHeight />
+    }
+
     return (
-        <>
+        <div
+            className={`app-compose__deployment-config bcn-0 ${
+                state.openComparison || state.showReadme ? 'full-view' : 'h-100'
+            }`}
+        >
             {state.data && state.charts && (
-                <NameSpace
-                    originalNamespace={state.data.namespace}
-                    chartRefId={state.latestAppChartRef || state.latestChartRef}
-                    id={state.data.environmentConfig.id}
+                <DeploymentTemplateOverrideForm
+                    chartRefLoading={chartRefLoading}
+                    state={state}
+                    environments={environments}
+                    environmentName={environmentName}
+                    handleOverride={handleOverride}
+                    dispatch={dispatch}
+                    initialise={initialise}
+                    handleAppMetrics={handleAppMetrics}
+                    handleDelete={handleDelete}
+                    isGrafanaModuleInstalled= {grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                 />
             )}
-            <section className="deployment-template-override white-card white-card--list">
-                <div
-                    className="environment-override-list pointer flex left"
-                    onClick={(e) => dispatch({ type: 'toggleCollapse' })}
-                >
-                    <img src={fileIcon} alt="file-icon" />
-                    <div className="flex left fs-14 cn-9 fw-5">Deployment template</div>
-                    {state.data && state.data.IsOverride && <div className="flex tag">modified</div>}
-                    <img
-                        alt="arrow"
-                        className={`pointer rotate`}
-                        style={{ ['--rotateBy' as any]: `${state.collapsed ? '0' : '180'}deg` }}
-                        src={arrowTriangle}
-                    />
-                </div>
-                {!state.collapsed && state.data && state.charts && (
-                    <DeploymentTemplateOverrideForm
-                        chartRefLoading={chartRefLoading}
-                        state={state}
-                        handleOverride={handleOverride}
-                        dispatch={dispatch}
-                        initialise={initialise}
-                        handleAppMetrics={handleAppMetrics}
-                        handleDelete={handleDelete}
-                    />
-                )}
-            </section>
-        </>
+        </div>
     )
 }
 
 function DeploymentTemplateOverrideForm({
     state,
+    environments,
+    environmentName,
     handleOverride,
     dispatch,
     initialise,
     handleAppMetrics,
     handleDelete,
     chartRefLoading,
+    isGrafanaModuleInstalled
 }) {
     const [tempValue, setTempValue] = useState('')
-    const [showReadme, setReadme] = useState(false)
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
-    const [diffView, setDiffview] = useState(false)
+    const [fetchedValues, setFetchedValues] = useState<Record<number, string>>({})
+
+    useEffect(() => {
+        // Reset editor value on delete override action
+        if (!state.duplicate && tempValue) {
+            editorOnChange('')
+        }
+    }, [state.duplicate])
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -257,6 +259,7 @@ function DeploymentTemplateOverrideForm({
             envOverrideValues: obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
+            isAppMetricsEnabled: state.data.appMetrics,
             ...(state.data.environmentConfig.id > 0
                 ? {
                       id: state.data.environmentConfig.id,
@@ -281,20 +284,61 @@ function DeploymentTemplateOverrideForm({
                 </div>,
                 { autoClose: null },
             )
-            initialise()
+            setFetchedValues({})
+            initialise(false, true)
         } catch (err) {
             showError(err)
         } finally {
             setLoading(not)
         }
     }
+
+    const handleReadMeClick = () => {
+        dispatch({
+            type: 'showReadme',
+            value: !state.showReadme,
+        })
+
+        if (state.openComparison) {
+            dispatch({
+                type: 'openComparison',
+                value: false,
+            })
+        }
+    }
+
+    const handleComparisonClick = () => {
+        dispatch({
+            type: 'openComparison',
+            value: !state.openComparison,
+        })
+
+        if (state.showReadme) {
+            dispatch({
+                type: 'showReadme',
+                value: false,
+            })
+        }
+    }
+
+    const editorOnChange = (str: string): void => {
+        setTempValue(str)
+    }
+
+    const handleSelectChart = (selectedChart: DeploymentChartVersionType) => {
+        dispatch({ type: 'selectChart', value: selectedChart })
+    }
+
+    const closeConfirmationDialog = () => {
+        dispatch({ type: 'toggleDialog' })
+    }
+
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
-    const chartName = state.charts.get(state.data.globalChartRefId)?.name
+
     return (
         <>
             <form
-                className="deployment-template-override-form"
-                style={{ marginBottom: '16px' }}
+                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''}`}
                 onSubmit={handleSubmit}
             >
                 <Override
@@ -303,152 +347,72 @@ function DeploymentTemplateOverrideForm({
                     onClick={handleOverride}
                     type="deployment template"
                 />
-                <div className="form__row">
-                    <div className="m-b-4 form__label">Chart type</div>
-                    <div className="text__subtitle">{chartName}</div>
-                </div>
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gridColumnGap: '16px',
-                        marginBottom: '16px',
-                    }}
-                >
-                    <div className="flex left column">
-                        <label htmlFor="" className="form__label">
-                            Template version {state.duplicate ? '(app default)' : ''}
-                        </label>
-                        <input
-                            autoComplete="off"
-                            value={state.charts.get(state.data.globalChartRefId).version}
-                            className="form__input"
-                            disabled
-                        />
-                    </div>
-                    {state.duplicate && (
-                        <div className="flex left column">
-                            <label htmlFor="" className="form__label">
-                                Template version (environment override)
-                            </label>
-                            <Select
-                                onChange={(e) => dispatch({ type: 'selectChart', value: e.target.value })}
-                                value={state.selectedChartRefId}
-                                rootClassName="chart-version"
-                            >
-                                <Select.Button style={{ height: '40px', paddingLeft: '8px', width: '100%' }}>
-                                    {state.selectedChartRefId
-                                        ? state.charts.get(state.selectedChartRefId).version
-                                        : 'Select chart'}
-                                </Select.Button>
-                                {state.charts &&
-                                    Array.from(state.charts.values() as { id: number; name: string; version: string }[])
-                                        .sort((a, b) => b.id - a.id)
-                                        .filter((chart) => chart.name == chartName)
-                                        .map((value, idx) => (
-                                            <Select.Option key={idx} value={value.id}>
-                                                {value.version}
-                                            </Select.Option>
-                                        ))}
-                            </Select>
-                        </div>
-                    )}
-                </div>
-                <div className="form__row form__row--code-editor-container">
-                    <CodeEditor
-                        value={
-                            tempValue
-                                ? tempValue
-                                : state
-                                ? state.duplicate
-                                    ? YAML.stringify(state.duplicate, { indent: 2 })
-                                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
-                        onChange={(tempValue) => {
-                            setTempValue(tempValue)
-                        }}
-                        defaultValue={
-                            state && state.data && state.duplicate
-                                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
-                        mode={MODES.YAML}
-                        validatorSchema={state.data.schema}
-                        readOnly={!state.duplicate}
-                        loading={chartRefLoading}
-                        diffView={state.duplicate && diffView}
-                    >
-                        <div className="readme-container ">
-                            <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                <h5>{MODES.YAML.toUpperCase()}</h5>
-                                {state.duplicate && (
-                                    <div
-                                        className="code-editor__split-pane flex pointer"
-                                        onClick={() => setDiffview(!diffView)}
-                                    >
-                                        <DiffIcon className="icon-dim-20 mr-5" />
-                                        {diffView ? 'Hide comparison' : 'Compare with default'}
-                                    </div>
-                                )}
-                                <CodeEditor.ValidationError />
-                            </CodeEditor.Header>
-                            {state.data.readme && (
-                                <div
-                                    className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px"
-                                    onClick={(e) => setReadme(true)}
-                                >
-                                    README
-                                    <ArrowSquareOut className="icon-dim-18 scb-5 ml-5 rotateBy--90" />
-                                </div>
-                            )}
-                        </div>
-                    </CodeEditor>
-                </div>
-                <div className="form__buttons mt-12">
-                    <button className="cta" disabled={!state.duplicate}>
-                        {loading ? <Progressing /> : 'Save'}
-                    </button>
-                </div>
-            </form>
-            {showReadme && (
-                <VisibleModal className="">
-                    <ReadmeConfig
-                        value={
-                            tempValue
-                                ? tempValue
-                                : state
-                                ? state.duplicate
-                                    ? YAML.stringify(state.duplicate, { indent: 2 })
-                                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
-                        loading={chartRefLoading}
-                        onChange={(tempValue) => {
-                            setTempValue(tempValue)
-                        }}
-                        handleClose={(e) => setReadme(false)}
-                        schema={state.data.schema}
-                        defaultValue={
-                            state && state.data && state.duplicate
-                                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
-                        readOnly={!state.duplicate}
-                        readme={state.data.readme}
-                    />
-                </VisibleModal>
-            )}
-            {appMetricsEnvironmentVariableEnabled && (
-                <OptApplicationMetrics
-                    currentChart={state.charts.get(state.selectedChartRefId)}
-                    onChange={handleAppMetrics}
-                    opted={!!state.data.appMetrics}
-                    loading={state.appMetricsLoading}
-                    disabled={!state.duplicate || (state.data && !state.data.IsOverride)}
+                <DeploymentTemplateOptionsTab
+                    isEnvOverride={true}
+                    isComparisonAvailable={true}
+                    isUnSet={false}
+                    environmentName={environmentName}
+                    disableVersionSelect={!state.duplicate}
+                    openComparison={state.openComparison}
+                    handleComparisonClick={handleComparisonClick}
+                    chartConfigLoading={chartRefLoading}
+                    isReadMeAvailable={!!state.data.readme}
+                    openReadMe={state.showReadme}
+                    handleReadMeClick={handleReadMeClick}
+                    charts={state.charts}
+                    selectedChart={state.selectedChart}
+                    selectChart={handleSelectChart}
+                    selectedChartRefId={state.selectedChartRefId}
                 />
-            )}
-
+                <DeploymentTemplateEditorView
+                    appId={appId}
+                    envId={envId}
+                    isUnSet={false}
+                    isEnvOverride={true}
+                    openComparison={state.openComparison}
+                    showReadme={state.showReadme}
+                    chartConfigLoading={chartRefLoading}
+                    readme={state.data.readme}
+                    value={
+                        tempValue
+                            ? tempValue
+                            : state
+                            ? state.duplicate
+                                ? YAML.stringify(state.duplicate, { indent: 2 })
+                                : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                            : ''
+                    }
+                    defaultValue={
+                        state && state.data && state.openComparison
+                            ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                            : ''
+                    }
+                    editorOnChange={editorOnChange}
+                    schemas={state.data.schema}
+                    charts={state.charts || []}
+                    selectedChart={state.selectedChart}
+                    environments={environments || []}
+                    environmentName={environmentName}
+                    fetchedValues={fetchedValues}
+                    setFetchedValues={setFetchedValues}
+                    readOnly={!state.duplicate}
+                    globalChartRefId={state.data.globalChartRefId}
+                />
+                {!state.openComparison && !state.showReadme && (
+                    <DeploymentConfigFormCTA
+                        loading={loading || chartRefLoading}
+                        isEnvOverride={true}
+                        disableButton={!state.duplicate}
+                        disableCheckbox={!state.duplicate}
+                        showAppMetricsToggle={
+                            state.charts && state.selectedChart && appMetricsEnvironmentVariableEnabled && isGrafanaModuleInstalled
+                        }
+                        isAppMetricsEnabled={state.data.appMetrics}
+                        currentChart={state.selectedChart}
+                        toggleAppMetrics={handleAppMetrics}
+                    />
+                )}
+            </form>
             {state.dialog && (
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warningIcon} />
@@ -457,11 +421,7 @@ function DeploymentTemplateOverrideForm({
                         subtitle="This action will cause all overrides to erase and app level configuration will be applied"
                     />
                     <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            className="cta cancel"
-                            onClick={(e) => dispatch({ type: 'toggleDialog' })}
-                        >
+                        <button type="button" className="cta cancel" onClick={closeConfirmationDialog}>
                             Cancel
                         </button>
                         <button type="button" className="cta delete" onClick={handleDelete}>
@@ -471,59 +431,5 @@ function DeploymentTemplateOverrideForm({
                 </ConfirmationDialog>
             )}
         </>
-    )
-}
-
-function NameSpace({ originalNamespace = '', chartRefId, id }) {
-    const [loading, setLoading] = useState(false)
-    const { appId, envId } = useParams<{ appId: string; envId: string }>()
-    const [namespace, setNamespace] = useState(originalNamespace)
-    useEffect(() => {
-        setNamespace(originalNamespace)
-    }, [originalNamespace])
-    async function handleSubmit(e) {
-        e.preventDefault()
-        setLoading(not)
-        try {
-            const { result } = await createNamespace(appId, envId, {
-                namespace: namespace,
-                chartRefId: chartRefId,
-                id,
-            })
-        } catch (err) {
-            showError(err)
-        } finally {
-            setLoading(not)
-        }
-    }
-    return (
-        <form className="namespace" onSubmit={handleSubmit}>
-            <label htmlFor="" className="form__label">
-                Namespace
-            </label>
-            <div className="flex">
-                <input
-                    type="text"
-                    autoComplete="off"
-                    className="form__input"
-                    disabled={!!originalNamespace}
-                    onChange={(e) => setNamespace(e.target.value)}
-                    value={namespace}
-                />
-                {!originalNamespace && (
-                    <button className="cta" type="submit" style={{ marginLeft: '16px' }}>
-                        {loading ? <Progressing /> : 'Save'}
-                    </button>
-                )}
-            </div>
-            {!originalNamespace && (
-                <div className="flex left">
-                    <Info color="#b1b7bc" style={{ width: '14px' }} />
-                    <span style={{ color: '#6b778c', marginLeft: '4px' }} className="form__error form__error--info">
-                        Cannot be edited after saving.
-                    </span>
-                </div>
-            )}
-        </form>
     )
 }

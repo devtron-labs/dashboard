@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Component } from 'react'
 import {
     Progressing,
     showError,
@@ -12,7 +12,10 @@ import {
     CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
+    DeleteDialog,
+    useAsync,
 } from '../common'
+import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'
 import { getAppChartRef } from '../../services/service'
@@ -25,40 +28,20 @@ import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-
-let sampleJSON = [
-    {
-        key: 'service/credentials',
-        name: 'secret-key',
-        property: 'property-name',
-        isBinary: true,
-    },
-    {
-        key: 'service/credentials',
-        name: 'secret-key',
-        property: 'property-name',
-        isBinary: true,
-    },
-]
-
-let dataHeader = (
-    <div>
-        # Sample Data<br></br># key: Secret key in backend<br></br># name: Name for this key in the generated secret
-        <br></br># property: Property to extract if secret in backend is a JSON object(optional)<br></br># isBinary: Set
-        this to true if configuring an item for a binary file stored(optional)<br></br>
-    </div>
-)
-
-const sample = YAML.stringify(sampleJSON)
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
+import { EsoData, SecretFormProps } from '../deploymentConfig/types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { NavLink } from 'react-router-dom'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -137,7 +120,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             <p className="form__subtitle form__subtitle--artifacts">
                 A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     rel="noreferer noopener"
                     href={DOCUMENTATION.APP_CREATE_SECRET}
                     target="blank"
@@ -192,6 +175,7 @@ export function CollapsedSecretForm({
     externalType = '',
     filePermission = '',
     subPath = false,
+    esoSecretData= null,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -226,6 +210,7 @@ export function CollapsedSecretForm({
                     externalType={externalType}
                     subPath={subPath}
                     filePermission={filePermission}
+                    esoSecretData={esoSecretData}
                 />
             )}
         </section>
@@ -244,7 +229,7 @@ export function Tab({ title, active, onClick }) {
 export function ListComponent({ icon = '', title, subtitle = '', onClick, className = '', collapsible = false }) {
     return (
         <article
-            className={`configuration-list pointer ${className}`}
+            className={`dc__configuration-list pointer ${className}`}
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />
@@ -255,27 +240,6 @@ export function ListComponent({ icon = '', title, subtitle = '', onClick, classN
             {collapsible && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
         </article>
     )
-}
-interface SecretFormProps {
-    id: number
-    appChartRef: { id: number; version: string; name: string }
-    appId: number
-    roleARN: string
-    name: string
-    index: number
-    external: boolean
-    externalType: string
-    secretData: { key: string; name: string; property: string; isBinary: boolean }[]
-    type: string
-    data: { k: string; v: string }[]
-    isUpdate: boolean
-    mountPath: string
-    keyValueEditable?: boolean
-    filePermission: string
-    subPath: boolean
-    update: (...args) => void
-    collapse: (...args) => void
-    initialise?: () => void
 }
 
 export const SecretForm: React.FC<SecretFormProps> = function (props) {
@@ -314,7 +278,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         value: props.data ? Object.keys(props.data).join(',') : '',
         error: '',
     })
+    const isHashiOrAWS = hasHashiOrAWS(externalType)
 
+    const isESO = hasESO(externalType)
     let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -339,16 +305,20 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
+    const isEsoSecretData = props.esoSecretData?.secretStore && props.esoSecretData?.esoData.length > 0
+    const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecretData?.esoData)
+    const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [codeEditorRadio, setCodeEditorRadio] = useState('data')
+    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
+    const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))
-    const isHashiOrAWS =
-        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
 
     function setKeyValueArray(arr) {
         tempArray.current = arr
@@ -372,6 +342,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         if (!props.isUpdate) return
         handleSecretFetch()
     }, [])
+
+    useEffect(() => {
+        if (isESO) {
+            toggleYamlMode(true)
+        }
+    }, [isESO, yamlMode])
 
     function handleRoleARNChange(event) {
         setRoleARN({ value: event.target.value, error: '' })
@@ -493,17 +469,30 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             return
         }
         if (externalType === '' && !arr.length) {
-            toast.warn('Please add secret data before saving.')
+            toast.error('Please add secret data before saving.')
             return
         }
-        if (isHashiOrAWS) {
-            let secretDataArray = secretData
-            let isValid = secretDataArray.reduce((isValid, s) => {
-                isValid = isValid && !!s.fileName && !!s.name
-                return isValid
-            }, true)
+
+        if (isHashiOrAWS || isESO) {
+            let isValid = true
+            if (isESO) {
+                isValid = esoSecretData?.reduce((isValid, s) => {
+                    isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
+                    return isValid
+                }, !!secretStore && !!esoSecretData?.length)
+            } else {
+                isValid = secretData.reduce((isValid, s) => {
+                    isValid = isValid && !!s.fileName && !!s.name
+                    return isValid
+                }, !!secretData.length)
+            }
+
             if (!isValid) {
-                toast.warn('Please check key and name')
+                !isESO
+                    ? toast.error('Please check key and name')
+                    : !secretStore
+                    ? toast.error('Please check secretStore')
+                    : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                 return
             }
         }
@@ -519,7 +508,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 name: configName.value,
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: !!externalType,
-                roleARN: isHashiOrAWS ? roleARN.value : '',
+                roleARN: isHashiOrAWS || isESO ? roleARN.value : '',
                 externalType,
             }
             //Adding conditional fields
@@ -534,7 +523,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 })
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
-                payload['data'] = data
+                payload[CODE_EDITOR_RADIO_STATE.DATA] = data
+            } else if (isESO) {
+                payload['esoSecretData'] = {
+                    secretStore: secretStore,
+                    esoData: esoSecretData,
+                }
             }
 
             if (selectedTab === 'Data Volume') {
@@ -552,7 +546,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     const externalSubpathKey = externalSubpathValues.value.replace(/\s+/g, '').split(',')
                     const secretKeys = {}
                     externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
-                    payload['data'] = secretKeys
+                    payload[CODE_EDITOR_RADIO_STATE.DATA] = secretKeys
                 }
             }
 
@@ -609,6 +603,25 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setSecretDataYaml(secretYaml)
     }
 
+    const closeDeleteCIModal = (): void => {
+        setShowDeleteModal(false)
+    }
+
+    const showDeleteCIModal = (): void => {
+        setShowDeleteModal(true)
+    }
+
+    const renderDeleteCIModal = () => {
+        return (
+            <DeleteDialog
+                title={`Delete Secret '${props.name}' ?`}
+                description={`'${props.name}' will not be used in future deployments. Are you sure?`}
+                closeDelete={closeDeleteCIModal}
+                delete={handleDelete}
+            />
+        )
+    }
+
     function handleSecretDataDelete(index: number): void {
         let json = secretData
         setSecretData((state) => {
@@ -629,15 +642,25 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== 'data') return
-        setSecretDataYaml(yaml)
+        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
+        if (isESO) {
+            setEsoYaml(yaml)
+        } else {
+            setSecretDataYaml(yaml)
+        }
         try {
-            if (!yaml || !yaml.length) {
+            let json = YAML.parse(yaml)
+            if (!json || !Object.keys(json).length) {
                 setSecretData([])
+                setEsoData([])
+                setSecretStore(null)
                 return
             }
-            let json = YAML.parse(yaml)
-            if (Array.isArray(json)) {
+            if (isESO) {
+                setEsoData(json.esoData)
+                setSecretStore(json.secretStore)
+            }
+            if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
                     let temp = {}
                     temp['isBinary'] = j.isBinary
@@ -654,9 +677,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 })
                 setSecretData(json)
             }
-        } catch (error) {
-            // console.log(error)
-        }
+        } catch (error) {}
     }
 
     function handleDeleteParam(e, idx: number): void {
@@ -675,13 +696,40 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         toggleYamlMode(not)
     }
 
+    const onChange = (e) => {
+        setExternalType(e.value)
+    }
+
+    const ExternalSecretHelpNote = () => {
+        return (
+            <div className="fs-13 fw-4 lh-18">
+                <NavLink
+                    to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
+                    className="dc__link"
+                    target="_blank"
+                >
+                    External Secrets Operator
+                </NavLink>
+                &nbsp;should be installed in the target cluster.&nbsp;
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.EXTERNAL_SECRET}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    Learn more
+                </a>
+            </div>
+        )
+    }
+
     return (
         <div className="white-card__config-map">
             <div className="white-card__header">
                 {!envId && <div>{props.isUpdate ? `Edit Secret` : `Add Secret`}</div>}
                 <div className="uncollapse__delete flex">
                     {props.isUpdate && !secretMode && (
-                        <Trash className="icon-n4 cursor icon-delete" onClick={handleDelete} />
+                        <Trash className="icon-n4 cursor icon-delete" onClick={showDeleteCIModal} />
                     )}
                     {typeof props.collapse === 'function' && !envId && (
                         <img
@@ -696,30 +744,36 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
-                    <Select
-                        value={externalType}
-                        onChange={(e) => {
-                            setExternalType(e.target.value)
+                    <ReactSelect
+                        placeholder="Select Secret Type"
+                        options={getTypeGroups()}
+                        defaultValue={
+                            externalType && externalType !== ''
+                                ? getTypeGroups(externalType)
+                                : getTypeGroups()[0].options[0]
+                        }
+                        onChange={onChange}
+                        styles={groupStyle()}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: SecretOptions,
+                            GroupHeading,
                         }}
-                        disabled={secretMode}
-                    >
-                        <Select.Button>
-                            {externalType || externalType === '' ? EXTERNAL_TYPES[externalType] : `Select Secret Type`}
-                        </Select.Button>
-                        {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option key={value} value={value}>
-                                {name}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    />
                 </div>
+                {isESO && <InfoColourBar
+                    classname="info_bar cn-9 mt-16 lh-20"
+                    message={<ExternalSecretHelpNote />}
+                    Icon={InfoIcon}
+                    iconSize={20}
+                />}
             </div>
             {externalType === 'KubernetesSecret' ? (
-                <div className="info__container mb-24">
+                <div className="dc__info-container mb-24">
                     <Info className="icon-dim-20" />
                     <div className="flex column left">
-                        <div className="info__title">Using External Secrets</div>
-                        <div className="info__subtitle">
+                        <div className="dc__info-title">Using External Secrets</div>
+                        <div className="dc__info-subtitle">
                             Secret will not be created by system. However, they will be used inside the pod. Please make
                             sure that secret with the same name is present in the environment.
                         </div>
@@ -794,7 +848,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                                     <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                     <span className="cn-7 ml-5">Learn more about </span>
                                     <a
-                                        href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                        href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
                                         rel="noreferrer noopener"
                                         target="_blank"
                                     >
@@ -848,7 +902,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                                     <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                     <span className="cn-7 ml-5">Learn more about </span>
                                     <a
-                                        href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                        href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
                                         rel="noreferrer noopener"
                                         target="_blank"
                                     >
@@ -874,7 +928,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     />
                 </div>
             )}
-            {isHashiOrAWS ? (
+            {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
                         value={roleARN.value}
@@ -889,17 +943,19 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             ) : null}
             {isExternalValues && (
                 <div className="flex left mb-16">
-                    <b className="mr-5 bold">Data*</b>
-                    <RadioGroup
-                        className="gui-yaml-switch"
-                        name="yaml-mode"
-                        initialTab={yamlMode ? 'yaml' : 'gui'}
-                        disabled={false}
-                        onChange={changeEditorMode}
-                    >
-                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                    </RadioGroup>
+                    <b className="mr-5 dc__bold">Data*</b>
+                    {!isESO && (
+                        <RadioGroup
+                            className="gui-yaml-switch"
+                            name="yaml-mode"
+                            initialTab={yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                            disabled={false}
+                            onChange={changeEditorMode}
+                        >
+                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                        </RadioGroup>
+                    )}
                 </div>
             )}
             {externalType === '' && (
@@ -908,7 +964,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         <div className="yaml-container">
                             <CodeEditor
                                 value={secretMode ? lockedYaml : yaml}
-                                mode="yaml"
+                                mode={MODES.YAML}
                                 inline
                                 height={350}
                                 onChange={handleYamlChange}
@@ -951,16 +1007,26 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     )}
                 </>
             )}
-            {isHashiOrAWS && yamlMode ? (
+            {(isHashiOrAWS || isESO) && yamlMode ? (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={codeEditorRadio === 'sample' ? sample : secretDataYaml}
+                        value={
+                            codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
+                                ? sample
+                                : isESO
+                                ? esoSecretYaml
+                                : secretDataYaml
+                        }
                         mode="yaml"
                         inline
                         height={350}
                         onChange={handleSecretDataYamlChange}
-                        readOnly={secretMode && codeEditorRadio === 'sample'}
-                        shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeader}
+                        readOnly={secretMode && codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                        shebang={
+                            codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
+                                ? '#Check sample for usage.'
+                                : dataHeaders[externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT]
+                        }
                     >
                         <CodeEditor.Header>
                             <RadioGroup
@@ -972,8 +1038,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                                     setCodeEditorRadio(event.target.value)
                                 }}
                             >
-                                <RadioGroup.Radio value="data">Data</RadioGroup.Radio>
-                                <RadioGroup.Radio value="sample">Sample</RadioGroup.Radio>
+                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                    {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                                </RadioGroup.Radio>
+                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                    {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                                </RadioGroup.Radio>
                             </RadioGroup>
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>
@@ -1000,7 +1070,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             )}
             {!secretMode && isExternalValues && !yamlMode && (
                 <div
-                    className="add-parameter bold pointer flex left anchor"
+                    className="add-parameter dc__bold pointer flex left anchor"
                     onClick={(event) => {
                         if (isHashiOrAWS) {
                             setSecretData((secretData) => [
@@ -1023,6 +1093,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     {loading ? <Progressing /> : `${props.name ? 'Update' : 'Save'} Secret`}
                 </button>
             </div>
+            {showDeleteModal && renderDeleteCIModal()}
         </div>
     )
 }

@@ -12,13 +12,14 @@ import './app.css'
 import Tippy from '@tippyjs/react'
 import { getAppMetaInfo, createAppLabels } from '../service'
 import { toast } from 'react-toastify'
-import { OptionType } from '../types'
+import { NumberOptionType, OptionType } from '../types'
 import AboutAppInfoModal from './AboutAppInfoModal'
 import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } from '../appLabelCommon'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
+import { AppDetailsProps } from './triggerView/types'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -29,7 +30,7 @@ const IndexComponent = lazy(() => import('../../v2/index'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
-export default function AppDetailsPage({ isV2 }) {
+export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
 
@@ -93,20 +94,25 @@ export function AppHeader() {
     const [isLoading, setIsLoading] = useState(false)
     const [appName, setAppName] = useState('')
 
-    const getAppMetaInfoRes = () => {
-        setIsLoading(true)
-        const res = getAppMetaInfo(appId).then((_result) => {
-            setAppName(_result?.result?.appName)
-            let labelOptionRes = _result?.result?.labels?.map((_label) => {
-                return {
-                    label: `${_label.key?.toString()}:${_label.value?.toString()}`,
-                    value: `${_label.key?.toString()}:${_label.value?.toString()}`,
-                }
-            })
-            setResult(_result)
-            setIsLoading(false)
-            setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
-        })
+    const getAppMetaInfoRes = async () => {
+        try {
+            setIsLoading(true)
+            const { result } = await getAppMetaInfo(appId)
+            if (result) {
+                setAppName(result?.appName)
+                const labelOptionRes = result?.labels?.map((_label) => {
+                    return {
+                        label: `${_label.key?.toString()}:${_label.value?.toString()}`,
+                        value: `${_label.key?.toString()}:${_label.value?.toString()}`,
+                    }
+                })
+                setResult(result)
+                setIsLoading(false)
+                setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+            }
+        } catch (err) {
+            showError(err)
+        }
     }
 
     useEffect(() => {
@@ -145,7 +151,7 @@ export function AppHeader() {
         })
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: any, projectMetadata: NumberOptionType) {
         const validForm = validateForm()
         if (!validForm) {
             return
@@ -166,16 +172,26 @@ export function AppHeader() {
         }
 
         const payload = {
-            appId: parseInt(appId),
+            id: parseInt(appId),
             labels: _optionTypes,
+            teamId: projectMetadata.value,
         }
 
         try {
-            const { result } = await createAppLabels(payload)
+            await createAppLabels(payload)
             setShowInfoModal(false)
-            toast.success('Successfully saved.')
+            if (result.projectName === projectMetadata.label) {
+                toast.success('Successfully saved')
+            } else {
+                toast.success(`Application '${result.appName}' is moved to project '${projectMetadata.label}'`)
+                await getAppMetaInfoRes()
+            }
         } catch (err) {
-            showError(err)
+            if (err['code'] === 403 && result.projectName !== projectMetadata.label) {
+                toast.error(`You don't have the required access to the target project ${projectMetadata.label}`)
+            } else {
+                showError(err)
+            }
         } finally {
             setSubmitting(false)
         }
@@ -207,7 +223,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cb-5 fs-16 text-capitalize">devtron apps</span>,
+                    component: <span className="cb-5 fs-16 dc__capitalize">devtron apps</span>,
                     linked: true,
                 },
             },
@@ -230,9 +246,10 @@ export function AppHeader() {
         return (
             showInfoModal && (
                 <VisibleModal className="app-status__material-modal">
-                    <div className="modal__body br-8 bcn-0 p-20">
+                    <div className="modal__body br-8 bcn-0 mt-0-imp p-0 dc__no-top-radius">
                         <AboutAppInfoModal
-                            appMetaResult={result?.result}
+                            appId={appId}
+                            appMetaResult={result}
                             onClose={setShowInfoModal}
                             isLoading={isLoading}
                             labelTags={labelTags}
@@ -252,7 +269,7 @@ export function AppHeader() {
     const renderAppDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right">
+                <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}

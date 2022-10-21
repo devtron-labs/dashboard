@@ -43,7 +43,7 @@ function BranchRegexModal({
                 <h1 className="modal__title flex left fs-16">{title}</h1>
                 <button
                     type="button"
-                    className="transparent"
+                    className="dc__transparent"
                     onClick={() => {
                         close()
                     }}
@@ -89,7 +89,7 @@ function BranchRegexModal({
 
     const renderValidationErrorLabel = (message: string): JSX.Element => {
         return (
-            <div className="error-label flex left align-start fs-11 fw-4 mt-6 ml-36">
+            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6 ml-36">
                 <Error className="icon-dim-16" />
                 <div className="ml-4 cr-5">{message}</div>
             </div>
@@ -124,7 +124,7 @@ function BranchRegexModal({
                     const _regexValue = regexValue[mat.gitMaterialId] || {}
                     return (
                         mat.regex && (
-                            <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
+                            <div className="dc__border-bottom pb-20 pt-20" key={`regex_${index}`}>
                                 <div className="flex left">
                                     <span className="mr-14">
                                         {mat.gitMaterialUrl.includes('gitlab') ? <GitLab /> : null}

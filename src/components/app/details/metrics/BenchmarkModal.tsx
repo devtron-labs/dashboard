@@ -107,7 +107,7 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}>{
             <div className={`modal__body`} style={{ width: "800px" }}>
                 <div className="modal__header modal__header--benchmark">
                     <h1 className="modal__title modal__title--benchmark">{benchmark.metric}</h1>
-                    <button type="button" className="transparent" onClick={this.props.close}>
+                    <button type="button" className="dc__transparent" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -134,10 +134,10 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}>{
                     </tbody>
                 </table>
                 <div className="pro-tip mb-20">
-                    <p className="pro-tip__title m-0"><Tip className="icon-dim-20 vertical vertical-align-middle mr-8" /> Pro Tip</p>
+                    <p className="pro-tip__title m-0"><Tip className="icon-dim-20 vertical dc__vertical-align-middle mr-8" /> Pro Tip</p>
                     <p className="pro-tip__subtitle m-0"> {benchmark.tip}</p>
                 </div>
-                <button className="cta cancel align-right" onClick={this.props.close}>Close</button>
+                <button className="cta cancel dc__align-right" onClick={this.props.close}>Close</button>
             </div>
         </VisibleModal>
     }

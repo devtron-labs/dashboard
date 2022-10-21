@@ -1,29 +1,29 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, showError, Toggle } from '../common'
-import error from '../../assets/icons/misc/errorInfo.svg'
+import { Progressing, Toggle } from '../common'
 import { ciPipelineContext } from './CIPipeline'
-import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType, WebhookCIProps } from '../ciPipeline/types'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import {
+    BuildType,
+    CiPipelineSourceTypeOption,
+    FormErrorObjectType,
+    FormType,
+    WebhookCIProps,
+} from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
+import AdvancedConfigOptions from './AdvancedConfigOptions'
 
 export function Build({
     showFormError,
     isAdvanced,
-    ciPipelineId,
+    ciPipeline,
     pageState,
-}: {
-    showFormError: boolean
-    isAdvanced: boolean
-    ciPipelineId: number
-    pageState: string
-}) {
+    isSecurityModuleInstalled,
+    setDockerConfigOverridden,
+}: BuildType) {
     const {
         formData,
         setFormData,
@@ -33,7 +33,6 @@ export function Build({
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
-    const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
@@ -61,12 +60,13 @@ export function Build({
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
-        let isPrevWebhook = _formData.ciPipelineSourceTypeOptions.find(sto => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
+        let isPrevWebhook =
+            _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
         const allMaterials = _formData.materials.map((mat) => {
             return {
                 ...mat,
                 type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
-                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value
+                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value,
             }
         })
         _formData.materials = allMaterials
@@ -145,28 +145,6 @@ export function Build({
         callback()
     }
 
-    const addDockerArg = (): void => {
-        const _form = { ...formData }
-        _form.args.unshift({ key: '', value: '' })
-        setFormData(_form)
-    }
-
-    const handleDockerArgChange = (event, index: number, key: 'key' | 'value'): void => {
-        const _form = { ...formData }
-        _form.args[index][key] = event.target.value
-        setFormData(_form)
-    }
-
-    const removeDockerArgs = (index: number): void => {
-        const _form = { ...formData }
-        const newArgs = []
-        for (let i = 0; i < _form.args.length; i++) {
-            if (index != i) newArgs.push(_form.args[i])
-        }
-        _form.args = newArgs
-        setFormData(_form)
-    }
-
     const handleScanToggle = (): void => {
         const _formData = { ...formData }
         _formData.scanEnabled = !_formData.scanEnabled
@@ -204,69 +182,6 @@ export function Build({
         )
     }
 
-    const renderDockerArgs = () => {
-        return (
-            <div>
-                <hr />
-                <div
-                    className="flexbox justify-space pointer"
-                    onClick={(event) => {
-                        setCollapsedSection(!collapsedSection)
-                    }}
-                >
-                    <div>
-                        <div className="fs-14 fw-6 cn-9">Docker build arguments</div>
-                        <div className="fs-12 fw-4 cn-7">Override docker build configurations for this pipeline.</div>
-                    </div>
-                    <Dropdown
-                        className="mt-10"
-                        style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
-                    />
-                </div>
-                {collapsedSection ? (
-                    <div>
-                        <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-20" onClick={addDockerArg}>
-                            <Add className="add-icon mt-6" />
-                            Add parameter
-                        </div>
-                        {formData.args.map((arg, index) => {
-                            return (
-                                <div className="flexbox justify-space" key={`build-${index}`}>
-                                    <div className="mt-8 w-100">
-                                        <input
-                                            className="w-100 top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
-                                            autoComplete="off"
-                                            placeholder="Key"
-                                            type="text"
-                                            value={arg.key}
-                                            onChange={(event) => {
-                                                handleDockerArgChange(event, index, 'key')
-                                            }}
-                                        />
-                                        <textarea
-                                            className="build__value w-100 bottom-radius-4 no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
-                                            value={arg.value}
-                                            onChange={(event) => {
-                                                handleDockerArgChange(event, index, 'value')
-                                            }}
-                                            placeholder="Value"
-                                        />
-                                    </div>
-                                    <Close
-                                        className="icon-dim-24 pointer mt-6 ml-6"
-                                        onClick={() => {
-                                            removeDockerArgs(index)
-                                        }}
-                                    />
-                                </div>
-                            )
-                        })}
-                    </div>
-                ) : null}
-            </div>
-        )
-    }
-
     const handlePipelineName = (event): void => {
         const _form = { ...formData }
         _form.name = event.target.value
@@ -280,7 +195,7 @@ export function Build({
                 <input
                     className="form__input"
                     autoComplete="off"
-                    disabled={!!ciPipelineId}
+                    disabled={!!ciPipeline?.id}
                     placeholder="e.g. my-first-pipeline"
                     type="text"
                     value={formData.name}
@@ -333,8 +248,13 @@ export function Build({
             {renderBasicCI()}
             {isAdvanced && (
                 <>
-                    {renderScanner()}
-                    {renderDockerArgs()}
+                    {isSecurityModuleInstalled && renderScanner()}
+                    <AdvancedConfigOptions
+                        ciPipeline={ciPipeline}
+                        formData={formData}
+                        setFormData={setFormData}
+                        setDockerConfigOverridden={setDockerConfigOverridden}
+                    />
                 </>
             )}
         </div>

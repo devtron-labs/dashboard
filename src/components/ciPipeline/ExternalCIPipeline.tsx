@@ -67,12 +67,13 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         this.copyToClipboard = this.copyToClipboard.bind(this);
         this.validationRules = new ValidationRules();
         this.handleSourceChange = this.handleSourceChange.bind(this);
-
+        this.escFunction = this.escFunction.bind(this);
     }
 
     componentDidMount() {
         this.getHostURLConfig();
         if (this.props.match.params.ciPipelineId) {
+             document.addEventListener("keydown", this.escFunction);
             getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId).then((response) => {
                 this.setState({ ...response });
             }).catch((error: ServerErrors) => {
@@ -95,6 +96,16 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             })
         }
     }
+
+  componentWillUnmount() {
+      document.removeEventListener('keydown', this.escFunction)
+    }
+
+  escFunction(event) {
+    if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
+        this.props.close()
+    }
+  }
 
     getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
@@ -186,7 +197,12 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.props.close();
-                this.props.getWorkflows();
+
+                if (this.props.deleteWorkflow) {
+                    this.props.deleteWorkflow(this.props.match.params.appId, +this.props.match.params.workflowId)
+                } else {
+                    this.props.getWorkflows()
+                }
             }
         }).catch((error: ServerErrors) => {
             this.setState({ loadingData: false });
@@ -237,7 +253,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         return <>
             <div className="p-20 flex flex-align-center flex-justify">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Create external build pipeline</h2>
-                <button type="button" className="transparent flex icon-dim-24" onClick={() => {
+                <button type="button" className="dc__transparent flex icon-dim-24" onClick={() => {
                               this.props.close();
                           }}>
                     <Close className="icon-dim-24" />
@@ -294,7 +310,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
             return <div className="br-4 bw-1 er-2 pt-10 mt-20 pb-10 pl-16 pr-16 bcr-1 flex left">
                 <Error className="icon-dim-20 mr-8" />
                 <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
-                <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
                 </div>
             </div>
         }

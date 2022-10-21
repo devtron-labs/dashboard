@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import branchIcon from '../../assets/icons/misc/branch.svg'
 import webhookIcon from '../../assets/icons/misc/webhook.svg'
 import Tippy from '@tippyjs/react'
@@ -30,9 +30,23 @@ export function CiPipelineSourceConfig({
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
     let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
 
-    const [sourceValueBase, setSourceValueBase] = useState(_isWebhook ? '' : sourceValue)
-    const [sourceValueAdv, setSourceValueAdv] = useState(_isWebhook ? '' : sourceValue)
+    const [sourceValueBase, setSourceValueBase] = useState<ReactNode>('')
+    const [sourceValueAdv, setSourceValueAdv] = useState<ReactNode>('')
     const [loading, setLoading] = useState(_isWebhook ? true : false)
+
+    useEffect(() => {
+        updateSourceValue()
+    }, [sourceValue])
+
+    const updateSourceValue = () => {
+        if (_isWebhook) {
+            setSourceValueBase('')
+            setSourceValueAdv('')
+        } else {
+            setSourceValueBase(sourceValue)
+            setSourceValueAdv(sourceValue)
+        }
+    }
 
     //tippy content for regex type
     const rendeRegexSourceVal = (): JSX.Element => {
@@ -105,7 +119,7 @@ export function CiPipelineSourceConfig({
 
     return (
         <div className={showTooltip ? 'branch-name' : ''}>
-            {loading && showIcons && <span className="loading-dots">loading</span>}
+            {loading && showIcons && <span className="dc__loading-dots">loading</span>}
             {!loading && (
                 <>
                     {showIcons && (
@@ -120,7 +134,7 @@ export function CiPipelineSourceConfig({
                             <div>
                                 {!baseText && (
                                     <div className="flex left">
-                                        <div className="ellipsis-right">{sourceValueBase}</div>
+                                        <div className="dc__ellipsis-right">{sourceValueBase}</div>
                                         <Info className="icon-dim-12 fcn-5 ml-4" />
                                     </div>
                                 )}
@@ -134,7 +148,7 @@ export function CiPipelineSourceConfig({
                     )}
                     {!showTooltip && (
                         <>
-                            <span className="ellipsis-right">{sourceValueAdv}</span>
+                            <span className="dc__ellipsis-right">{sourceValueAdv}</span>
                         </>
                     )}
                 </>

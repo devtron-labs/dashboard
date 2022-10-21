@@ -20,6 +20,7 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { MultiValue } from 'react-select'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
+import { DOCUMENTATION } from '../../config'
 
 function ExternalLinks() {
     const history = useHistory()
@@ -210,13 +211,13 @@ function ExternalLinks() {
                                         onError={onImageLoadError}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name cn-9 fs-13 ellipsis-right">
+                                <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
                                     {link.name}
                                 </div>
-                                <div className="external-links__cell--cluster cn-9 fs-13 ellipsis-right">
+                                <div className="external-links__cell--cluster cn-9 fs-13 dc__ellipsis-right">
                                     {getClusterLabel(link)}
                                 </div>
-                                <div className="external-links__cell--url__template cn-9 fs-13 ellipsis-right">
+                                <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
                                     {link.url}
                                 </div>
                                 <div className="external-link-actions">
@@ -253,7 +254,7 @@ function ExternalLinks() {
                     Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page.&nbsp;
                     <a
-                        href="https://docs.devtron.ai/devtron/setup/global-configurations/external-links"
+                        href={DOCUMENTATION.EXTERNAL_LINKS}
                         target="_blank"
                         rel="noreferrer noopener"
                         className="cb-5"
@@ -261,7 +262,7 @@ function ExternalLinks() {
                         Learn more
                     </a>
                 </p>
-                <div className="cta-search-filter-container flex content-space mb-16">
+                <div className="cta-search-filter-container flex dc__content-space mb-16">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />
                     {renderSearchFilterWrapper()}
                 </div>

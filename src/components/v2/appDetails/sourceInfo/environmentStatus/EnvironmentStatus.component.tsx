@@ -33,7 +33,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         <div>
             <div className="flex left ml-20 mb-16">
                 {status && (
-                    <div className="app-status-card bcn-0 mr-12 br-8 p-16">
+                    <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" onClick={() => setShowAppStatusDetail(true)}>
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>
                             <Tippy
@@ -45,16 +45,16 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             </Tippy>
                         </div>
 
-                        <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
+                        <div className={`f-${status.toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}>
                             <span>{status}</span>
                             <figure
                                 className={`${
                                     showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()
-                                } app-summary__icon ml-8 icon-dim-20`}
+                                } dc__app-summary__icon ml-8 icon-dim-20`}
                             ></figure>
                         </div>
-                        <div onClick={() => setShowAppStatusDetail(true)}>
-                            <span className="details-hover cursor cb-5 fw-6">Details</span>
+                        <div>
+                            <span className="details-hover cb-5 fw-6">Details</span>
                         </div>
                     </div>
                 )}
@@ -74,13 +74,13 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                         <div
                             className={`f-${appDetails.additionalData[
                                 'status'
-                            ].toLowerCase()} text-capitalize fw-6 fs-14 flex left`}
+                            ].toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}
                         >
                             <span>{appDetails.additionalData['status']}</span>
                             <figure
                                 className={`${appDetails.additionalData[
                                     'status'
-                                ].toLowerCase()} app-summary__icon ml-8 icon-dim-20`}
+                                ].toLowerCase()} dc__app-summary__icon ml-8 icon-dim-20`}
                             ></figure>
                         </div>
                         <div className="lh-1-33 cn-9 flex left">

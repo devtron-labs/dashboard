@@ -107,7 +107,9 @@ export class Filter extends Component<FilterProps, FilterState>{
     }
 
     render() {
-        let classNames = this.state.show ? "filter__menu filter__menu--show" : "filter__menu";
+        let classNames = `filter__menu filter__menu-${this.props.position === 'right' ? 'right' : 'left'} ${
+            this.state.show ? 'filter__menu--show' : ''
+        }`
         let faIcon = this.state.show ? "fa fa-caret-up" : "fa fa-caret-down";
         let isDisable = this.shouldApplyFilter();
         let badge = this.props.badgeCount ? this.props.badgeCount : this.getSavedFilter();
@@ -131,7 +133,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         }
 
 
-        return <div className="filter" >
+        return <div className={`filter ${this.props.rootClassName || ''}`} >
             {
                 (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
                 <div>
@@ -158,7 +160,7 @@ export class Filter extends Component<FilterProps, FilterState>{
             {
                 !this.props.isDisabled &&
                 <>
-                    {this.state.show ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
+                    {this.state.show ? <div className="dc__transparent-div" onClick={this.handleClick}></div> : null}
                     <div className={classNames} ref={node => this.node = node}>
                         {
                             this.props.loading ? <Progressing /> :

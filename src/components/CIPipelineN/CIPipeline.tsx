@@ -1,8 +1,8 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
+import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, useKeyDown, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
-import { BuildStageVariable, BuildTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, ModuleNameMap, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -34,6 +34,8 @@ import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export const ciPipelineContext = createContext(null)
 
@@ -74,9 +76,10 @@ export default function CIPipeline({
     }>({ preBuildStage: [], postBuildStage: [] })
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
+    const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
-        args: [{ key: '', value: '' }],
+        args: [],
         materials: [],
         triggerType: TriggerType.Auto,
         scanEnabled: false,
@@ -121,9 +124,11 @@ export default function CIPipeline({
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
+    const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
 
     useEffect(() => {
         setPageState(ViewType.LOADING)
+        getSecurityModuleStatus()
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((response) => {
@@ -165,6 +170,7 @@ export default function CIPipeline({
                 })
         }
     }, [])
+
     useEffect(() => {
         getGlobalVariable(Number(appId))
             .then((response) => {
@@ -193,6 +199,15 @@ export default function CIPipeline({
                 showError(error)
             })
     }, [])
+
+    const getSecurityModuleStatus = async (): Promise<void> => {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setSecurityModuleInstalled(true)
+            }
+        } catch (error) {}
+    }
 
     function processPluginList(pluginList: PluginDetailType[]): void {
         const _presetPlugin = []
@@ -339,7 +354,8 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.PreBuild, formData)
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
-        const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+        const scanValidation =
+            !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setLoadingData(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -355,8 +371,14 @@ export default function CIPipeline({
             return
         }
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
+
+        // Reset allow override flag to false if config matches with global
+        if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
+            formData.isDockerConfigOverridden = false
+        }
+
         saveCIPipeline(
-            formData,
+            { ...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false },
             ciPipeline,
             formData.materials,
             +appId,
@@ -490,9 +512,7 @@ export default function CIPipeline({
             _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
             let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid =
-                    isValid &&
-                    validationRules.sourceValue( mat.regex || mat.value).isValid
+                isValid = isValid && validationRules.sourceValue(mat.regex || mat.value).isValid
                 return isValid
             }, true)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
@@ -618,6 +638,7 @@ export default function CIPipeline({
     const addNewTask = () => {
         const _formData = { ...formData }
         const detailsFromLastStep = calculateLastStepDetail(true, _formData, activeStageName)
+
         const stage = {
             id: detailsFromLastStep.index,
             index: detailsFromLastStep.index,
@@ -667,7 +688,7 @@ export default function CIPipeline({
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{title}</h2>
                     <button
                         type="button"
-                        className="transparent flex icon-dim-24"
+                        className="dc__transparent flex icon-dim-24"
                         onClick={() => {
                             close()
                         }}
@@ -725,7 +746,9 @@ export default function CIPipeline({
                                     pageState={pageState}
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
-                                    ciPipelineId={ciPipeline.id}
+                                    ciPipeline={ciPipeline}
+                                    isSecurityModuleInstalled={isSecurityModuleInstalled}
+                                    setDockerConfigOverridden={setDockerConfigOverridden}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

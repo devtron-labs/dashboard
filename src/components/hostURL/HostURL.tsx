@@ -6,7 +6,7 @@ import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
 import { ErrorScreenManager, Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
-import { getHostURLConfiguration } from '../../services/service';
+import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 import './hosturl.css';
@@ -29,24 +29,44 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     componentDidMount() {
-        getHostURLConfiguration().then((response) => {
-            let form = response.result;
-            if (!form) {
-                form = {
+        getHostURLConfiguration()
+            .then((response) => {
+                let form = response.result || {
                     id: undefined,
-                    key: "url",
-                    value: "",
+                    key: 'url',
+                    value: '',
                     active: true,
                 }
-            }
-            this.setState({
-                view: ViewType.FORM,
-                form: form
+
+                if (!form.value) {
+                    const payload = {
+                        id: form.id,
+                        key: form.key,
+                        value: window.location.origin,
+                        active: form.active,
+                    }
+                    saveHostURLConfiguration(payload)
+                        .then((response) => {
+                            this.setState({
+                                view: ViewType.FORM,
+                                form: response.result,
+                            })
+                        })
+                        .catch((err) => {
+                            showError(err)
+                            this.setState({ view: ViewType.ERROR, statusCode: err.code })
+                        })
+                } else {
+                    this.setState({
+                        view: ViewType.FORM,
+                        form: form,
+                    })
+                }
             })
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code });
-        })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR, statusCode: error.code })
+            })
     }
 
     handleChange(event): void {
@@ -64,16 +84,18 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         if (!this.state.form.value.length) {
             toast.error("Some required fields are missing");
             return;
+        }else if(!this.state.form.id){
+          return
         }
         this.setState({ saveLoading: true, })
-        let payload = {
+        const payload = {
             id: this.state.form.id,
             key: this.state.form.key,
             value: this.state.form.value,
             active: this.state.form.active,
         }
-        let promise = payload.id ? updateHostURLConfiguration(payload) : saveHostURLConfiguration(payload);
-        promise.then((response) => {
+
+        updateHostURLConfiguration(payload).then((response) => {
             toast.success("Saved Successful")
             this.setState({
                 saveLoading: false,
@@ -101,7 +123,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     renderHostErrorMessage() {
-        return <div className="hosturl__error ml-20 mr-20 mb-16 flex left">
+        return <div className="dc__hosturl-error ml-20 mr-20 mb-16 flex left">
             <Error className="icon-dim-20 mr-8" />
             <div>Saved host URL doesn’t match the domain address in your browser.</div>
         </div>
@@ -110,7 +132,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     renderBlankHostField() {
         return <div className="flex left pt-4">
             <img src={TriangleAlert} alt="" className="icon-dim-16 mr-8" />
-            <div className="deprecated-warn__text fs-11">Please enter host url</div>
+            <div className="dc__deprecated-warn-text fs-11">Please enter host url</div>
         </div>
     }
 

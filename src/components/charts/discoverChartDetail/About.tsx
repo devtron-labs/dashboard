@@ -23,9 +23,9 @@ function Detailed({ appVersion = "", created = "", digest = "", home = "", sourc
         <div className="detailed-container flex column left detailed">
             {detailed && <>
                 <span className="chart-store-card__subtitle">Application version</span>
-                <div className="chart-store-card__text ellipsis-right">{appVersion}</div>
+                <div className="chart-store-card__text dc__ellipsis-right">{appVersion}</div>
                 <span className="chart-store-card__subtitle">Created</span>
-                <div className="chart-store-card__text ellipsis-right">{moment(created).fromNow()}</div>
+                <div className="chart-store-card__text dc__ellipsis-right">{moment(created).fromNow()}</div>
                 <span className="chart-store-card__subtitle">Digest</span>
                 <div className="chart-store-card__text digest">{digest}</div>
                 {chartYaml && <>

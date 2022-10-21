@@ -102,31 +102,31 @@ $color-suffix: 00;
 @each $color in $colors {
     @for $i from 0 through 9 {
         .c#{to-lower-case($color)}-#{$i} {
-            color: var(--#{$color}($i * 100));
+            color: var(--#{$color}#{$i * 100});
         }
 
         .bc#{to-lower-case($color)}-#{$i} {
-            background-color: var(--#{$color}($i * 100));
+            background-color: var(--#{$color}#{$i * 100});
         }
 
         .e#{to-lower-case($color)}-#{$i} {
-            border-color: var(--#{$color}($i * 100));
+            border-color: var(--#{$color}#{$i * 100});
             border-style: solid;
         }
 
         .sc#{to-lower-case($color)}-#{$i} {
-            stroke: var(--#{$color}($i * 100));
+            stroke: var(--#{$color}#{$i * 100});
 
             path {
-                stroke: var(--#{$color}($i * 100));
+                stroke: var(--#{$color}#{$i * 100});
             }
         }
 
         .fc#{to-lower-case($color)}-#{$i} {
-            fill: var(--#{$color}($i * 100));
+            fill: var(--#{$color}#{$i * 100});
 
             path {
-                fill: var(--#{$color}($i * 100));
+                fill: var(--#{$color}#{$i * 100});
             }
         }
     }
@@ -160,6 +160,20 @@ $color-suffix: 00;
     }
 }
 
+@mixin cta-disabled-opacity($bg, $color, $border) {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background: $bg;
+        color: $color;
+        border: 1px solid $border;
+        cursor: not-allowed;
+    }
+}
+
 .cta,
 .cta-with-img {
     height: 40px;
@@ -174,6 +188,10 @@ $color-suffix: 00;
     line-height: 40px;
     text-align: center;
     @include cta(var(--B500), var(--white), transparent);
+
+    &.disabled-opacity {
+        @include cta-disabled-opacity(var(--B500), var(--white), transparent)
+    }
 
     &.small {
         height: 32px;
@@ -281,7 +299,7 @@ $color-suffix: 00;
 .lh-1-33{
     line-height: 1.33;
  }
- 
+
 .lh-1-25{
     line-height: 1.25;
  }
@@ -290,7 +308,7 @@ $color-suffix: 00;
  }
 
 .divider {
-    border-top: 1px solid #d0d4d9;
+    border-top: 1px solid var(--N200);
 }
 
 .sqr-44 {

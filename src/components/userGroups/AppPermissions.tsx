@@ -153,7 +153,7 @@ export default function AppPermissions({
             uniqueProjectIdsDevtronApps = [],
             uniqueProjectIdsHelmApps = []
         if (serverMode !== SERVER_MODE.EA_ONLY) {
-            roleFilters.forEach((element) => {
+            roleFilters?.forEach((element) => {
                 if (element.entity === EntityTypes.DIRECT) {
                     const projectId = projectsMap.get(element.team)?.id
                     if (typeof projectId !== 'undefined' && projectId != null) {
@@ -388,7 +388,7 @@ export default function AppPermissions({
 
     return (
         <>
-            <ul role="tablist" className="tab-list mt-12 border-bottom">
+            <ul role="tablist" className="tab-list mt-12 dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink to={`${url}/devtron-apps`} className="tab-list__tab-link" activeClassName="active">

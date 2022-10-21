@@ -22,6 +22,9 @@ export interface WorkflowEditState {
     environmentId?: number;
     environmentName?: string;
     successTitle?: string;
+    showNoGitOpsWarningPopup?: boolean
+    cdLink?: string
+    noGitOpsConfiguration?: boolean
 }
 
 export interface WorkflowEditProps
@@ -50,4 +53,25 @@ export interface PipelineSelectProps {
     styles: { left: string; top: string };
     toggleCIMenu: (event) => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => void;
+}
+
+export interface NoGitOpsConfiguredWarningType {
+    closePopup: (isContinueWithHelm: boolean) => void
+}
+
+export interface CDNodeProps {
+    id: string
+    deploymentStrategy: string
+    triggerType: string
+    workflowId: number
+    x: number
+    y: number
+    width: number
+    height: number
+    title: string
+    environmentName: string
+    environmentId: number
+    to: string
+    toggleCDMenu: () => void
+    cdNamesList?: string[]
 }

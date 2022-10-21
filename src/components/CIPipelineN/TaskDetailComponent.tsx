@@ -205,7 +205,7 @@ export function TaskDetailComponent() {
                             <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
                                 Shell
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio className="right-radius no-left-border" value={ScriptType.CONTAINERIMAGE}>
+                            <RadioGroup.Radio className="right-radius dc__no-left-border" value={ScriptType.CONTAINERIMAGE}>
                                 Container Image
                             </RadioGroup.Radio>
                         </RadioGroup>

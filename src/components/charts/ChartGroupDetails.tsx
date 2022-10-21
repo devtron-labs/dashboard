@@ -20,6 +20,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
+import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()
@@ -65,6 +66,8 @@ export default function ChartGroupDetails() {
     )
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
+    const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
     function handleAdvancedChart() {
             push(`${url}/deploy`, {
@@ -133,9 +136,41 @@ export default function ChartGroupDetails() {
         )
     }
 
+    const handleDeployButtonClick= (): void => {
+      handleActionButtonClick(false)
+    }
+
+    const handleAdvancedButtonClick= (): void => {
+      handleActionButtonClick(true)
+    }
+
+    const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
+        if (state.noGitOpsConfigAvailable) {
+            setClickedOnAdvance(_clickedOnAdvance)
+            toggleGitOpsWarningModal(true)
+        } else {
+            handleContinueWithHelm(_clickedOnAdvance)
+        }
+    }
+
+    const handleContinueWithHelm = (_clickedOnAdvance: boolean): void => {
+        if (_clickedOnAdvance) {
+            handleAdvancedChart()
+        } else {
+            toggleDeployModal(true)
+        }
+    }
+
+    const hideNoGitOpsWarning = (isContinueWithHelm: boolean): void => {
+        toggleGitOpsWarningModal(false)
+        if (isContinueWithHelm) {
+            handleContinueWithHelm(clickedOnAdvance)
+        }
+    }
+
     const renderChartGroupActionButton = () => {
         return (
-            <div className="page-header__cta-container flex">
+            <div className="dc__page-header__cta-container flex">
                 <button type="button" className="cta flex cancel mr-16 h-32" onClick={redirectToConfigure}>
                     <Pencil className="mr-5" />
                     Edit
@@ -217,8 +252,8 @@ export default function ChartGroupDetails() {
                                            })
 
                                         }*/
-                                        onClick={handleAdvancedChart}
-                                        className="cta cancel ellipsis-right w100"
+                                        onClick={handleAdvancedButtonClick}
+                                        className="cta cancel dc__ellipsis-right w-100"
                                     >
                                         Advanced Options
                                     </button>
@@ -239,8 +274,8 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={() => toggleDeployModal(true)}
-                                        className="cta ellipsis-right w100"
+                                        onClick={handleDeployButtonClick}
+                                        className="cta dc__ellipsis-right w-100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>
@@ -270,6 +305,7 @@ export default function ChartGroupDetails() {
                     }}
                 />
             ) : null}
+            {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}
         </div>
     )
 }

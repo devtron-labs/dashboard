@@ -52,7 +52,7 @@ export default function GitInfoMaterial({
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">
                     {showWebhookModal ? (
-                        <button type="button" className="transparent flex" onClick={hideWebhookModal}>
+                        <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
                             <Back className="mr-16" />
                         </button>
                     ) : null}
@@ -67,7 +67,7 @@ export default function GitInfoMaterial({
                         </>
                     ) : null}
                 </h1>
-                <button type="button" className="transparent" onClick={onClickCloseButton}>
+                <button type="button" className="dc__transparent" onClick={onClickCloseButton}>
                     <Close />
                 </button>
             </div>
@@ -82,7 +82,7 @@ export default function GitInfoMaterial({
         }
         return (
             <div className="material-list">
-                <div className="material-list__title material-list__title--border-bottom">Git Repository</div>
+                <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">Git Repository</div>
                 <MaterialSource
                     material={material}
                     selectMaterial={context.selectMaterial}
@@ -104,7 +104,7 @@ export default function GitInfoMaterial({
                 onClick={material.regex ? showBranchRegexModal : noop}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
-                {showWebhookModal ? 'Select commit to build' : <div className="ellipsis-right"> {material?.value}</div>}
+                {showWebhookModal ? 'Select commit to build' : <div className="dc__ellipsis-right"> {material?.value}</div>}
                 {material.regex && (
                     <Tippy
                         className="default-tt"
@@ -113,7 +113,7 @@ export default function GitInfoMaterial({
                         content={'Change branch'}
                         interactive={true}
                     >
-                        <button type="button" className="transparent flexbox">
+                        <button type="button" className="dc__transparent flexbox">
                             <Edit className="icon-dim-16" />
                         </button>
                     </Tippy>
@@ -149,7 +149,7 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel en-2 bw-1 br-4 h-32">
+            <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -161,7 +161,7 @@ export default function GitInfoMaterial({
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
             </div>
@@ -175,7 +175,7 @@ export default function GitInfoMaterial({
             <div className="select-material select-material--trigger-view">
                 {!isWebhook && (
                     <div
-                        className="flex content-space position-sticky"
+                        className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
                         {renderBranchChangeHeader(material)}
@@ -225,7 +225,7 @@ export default function GitInfoMaterial({
                                 />
                                 .
                                 <span
-                                    className="learn-more__href cursor"
+                                    className="dc__link cursor"
                                     onClick={() => toggleWebhookModal(material.id)}
                                 >
                                     View all incoming webhook payloads

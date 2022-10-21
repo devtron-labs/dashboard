@@ -111,7 +111,7 @@ export class Typeahead extends Component<TypeaheadProps, { defaultSelections: an
             selectItem: this.selectItem,
             onChange: this.props.onChange,
         }}>
-            {this.state.showMenu ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
+            {this.state.showMenu ? <div className="dc__transparent-div" onClick={this.handleClick}></div> : null}
             {this.props.multi ? this.renderMultiSelection() : this.renderSingleSelection()}
             {this.state.showMenu ? <ul className="typeahead__menu">{this.props.children}</ul> : null}
         </TypeaheadContext.Provider>

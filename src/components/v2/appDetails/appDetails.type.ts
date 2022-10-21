@@ -39,6 +39,9 @@ export enum AggregationKeys {
 
 export enum NodeStatus {
     Degraded = 'degraded',
+    Healthy = 'healthy',
+    Progressing = 'progressing',
+    Missing = 'missing'
 }
 
 export enum NodeType {
@@ -342,4 +345,15 @@ interface Sync {
 export interface LogSearchTermType {
     logSearchTerms: Record<string, string>;
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+}
+
+export interface AppStatusDetailType {
+    close: () => void
+    appStreamData: any
+    showAppStatusMessage?: boolean
+}
+
+export interface StatusFilterButtonType {
+  nodes: Array<Node>
+  handleFilterClick?: (selectedFilter: string) => void
 }

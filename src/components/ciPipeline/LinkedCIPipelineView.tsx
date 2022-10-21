@@ -58,17 +58,31 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         }
         this.deletePipeline = this.deletePipeline.bind(this);
         this.closeCIDeleteModal = this.closeCIDeleteModal.bind(this);
+        this.escFunction = this.escFunction.bind(this)
     }
 
     componentDidMount() {
-        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true).then((response) => {
-            this.setState({ ...response, loadingData: false }, () => {
-                this.generateSourceUrl();
-            });
-        }).catch((error: ServerErrors) => {
-            showError(error);
-            this.setState({ loadingData: false });
-        })
+      document.addEventListener('keydown', this.escFunction)
+      getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true)
+          .then((response) => {
+              this.setState({ ...response, loadingData: false }, () => {
+                  this.generateSourceUrl()
+              })
+          })
+          .catch((error: ServerErrors) => {
+              showError(error)
+              this.setState({ loadingData: false })
+          })
+    }
+
+    componentWillUnmount() {
+      document.removeEventListener('keydown', this.escFunction)
+    }
+
+    escFunction(event) {
+        if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
+           this.props.close()
+        }
     }
 
     async generateSourceUrl() {
@@ -109,7 +123,12 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
                 this.props.close();
-                this.props.getWorkflows();
+
+                if (this.props.deleteWorkflow) {
+                    this.props.deleteWorkflow(this.props.match.params.appId, +this.props.match.params.workflowId)
+                } else {
+                    this.props.getWorkflows()
+                }
             }
         }).catch((error: ServerErrors) => {
             showError(error);
@@ -122,11 +141,11 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     renderInfoDialog() {
-        return <div className="info__container info__container--linked-ci">
+        return <div className="dc__info-container info__container--linked-ci mb-16">
             <Info />
             <div className="flex column left">
-                <div className="info__title">Configurations(Read Only)</div>
-                <div className="info__subtitle">You cannot edit a linked Pipeline. To make changes edit the source Pipeline.
+                <div className="dc__info-title">Configurations(Read Only)</div>
+                <div className="dc__info-subtitle">You cannot edit a linked Pipeline. To make changes edit the source Pipeline.
                 <Link to={this.state.sourcePipelineURL} target="_blank" className="ml-5">
                         View Source Pipeline
                 </Link>
@@ -167,7 +186,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         return <>
             <div className="flex left pt-15 pb-15 pl-20 pr-20">
                 <h2 className="fs-16 fw-6 m-0">Linked build pipeline</h2>
-                <button type="button" className="transparent ml-auto" onClick={() => this.props.close()}>
+                <button type="button" className="dc__transparent ml-auto" onClick={() => this.props.close()}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -226,7 +245,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         {this.renderSecondaryButtton()}
                         <Link to={this.state.sourcePipelineURL}
                             target="_blank"
-                            className="cta cta--workflow flex flex-1 no-decor"
+                            className="cta cta--workflow flex flex-1 dc__no-decor"
                             onClick={(event) => this.generateSourceUrl()}>
                             View Source Pipeline
                         </Link>

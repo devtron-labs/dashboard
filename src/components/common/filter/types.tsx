@@ -25,6 +25,8 @@ export interface FilterProps {
     errored?: boolean;
     errorMessage?: string;
     errorCallbackFunction?: () => void;
+    rootClassName?: string
+    position?: 'left' | 'right'
 }
 
 export interface FilterState {

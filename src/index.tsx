@@ -22,6 +22,11 @@ interface customEnv {
     HIDE_DISCORD?: boolean
     POSTHOG_ENABLED?: boolean
     POSTHOG_TOKEN?: string
+    DEVTRON_APP_DETAILS_POLLING_INTERVAL?: number
+    HELM_APP_DETAILS_POLLING_INTERVAL?: number
+    EA_APP_DETAILS_POLLING_INTERVAL?: number
+    CENTRAL_API_ENDPOINT?: string
+    HIDE_DEPLOYMENT_GROUPS?: boolean
 }
 declare global {
     interface Window {
@@ -76,7 +81,8 @@ if (
                         (error['value'] &&
                             (error['value'].includes('write data discarded, use flow control to avoid losing data') ||
                                 error['value'].includes('Failed to update a ServiceWorker') ||
-                                error['value'].includes('TypeError: ServiceWorker') ||
+                                (error['value'].includes('ServiceWorker script at ') &&
+                                    error['value'].includes('encountered an error during installation.')) ||
                                 error['value'].includes('Loading CSS chunk') ||
                                 error['value'].includes(`Unexpected token '<'`))))
                 ) {
@@ -103,6 +109,11 @@ if (!window || !window._env_) {
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
         HIDE_DISCORD: true,
+        DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
+        HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
+        EA_APP_DETAILS_POLLING_INTERVAL: 30000,
+        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        HIDE_DEPLOYMENT_GROUPS: true
     }
 }
 

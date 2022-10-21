@@ -29,6 +29,7 @@ export const URLS = {
     APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
+    APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: 'deployment-template',
     APP_WORKFLOW_CONFIG: 'workflow',
     APP_CM_CONFIG: 'configmap',
@@ -58,6 +59,8 @@ export const URLS = {
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
+    GUIDE: 'guide',
+    GETTING_STARTED: 'getting-started',
     SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
@@ -73,7 +76,7 @@ export const URLS = {
     CHART: '/chart',
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
-    DEPLOYMENT_STATUS: 'app/deployment-status/timeline'
+    DETAILS: '/details'
 }
 
 export enum APP_COMPOSE_STAGE {

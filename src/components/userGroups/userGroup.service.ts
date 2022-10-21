@@ -88,13 +88,9 @@ export function userModal(user) {
 }
 
 export async function getUserList() {
-    try {
-        const response = await get('user');
-        const { result } = response;
-        return { ...response, result: result.sort((a, b) => a.email_id.localeCompare(b.email_id)) };
-    } catch (err) {
-        return err;
-    }
+    const response = await get('user')
+    const { result } = response
+    return { ...response, result: result.sort((a, b) => a.email_id.localeCompare(b.email_id)) }
 }
 
 interface UserDetail extends ResponseType {
@@ -106,7 +102,7 @@ export function getUserId(userId: number): Promise<UserDetail> {
 }
 
 interface GroupList extends ResponseType {
-    result?: {
+    result: {
         id: number;
         name: string;
         description: string;
@@ -115,13 +111,9 @@ interface GroupList extends ResponseType {
 }
 
 export async function getGroupList(): Promise<GroupList> {
-    try {
-        const response = await get('user/role/group');
-        const { result } = response;
-        return { ...response, result: result.sort((a, b) => a.name.localeCompare(b.name)) };
-    } catch (err: any) {
-        return err;
-    }
+    const response = await get('user/role/group')
+    const { result } = response
+    return { ...response, result: result.sort((a, b) => a.name.localeCompare(b.name)) }
 }
 
 export function getGroupId(groupId: number) {
@@ -144,9 +136,23 @@ interface UserRole extends ResponseType {
 }
 
 export function getUserRole(): Promise<UserRole> {
-    return get(`user/check/roles`);
+    return get(Routes.USER_CHECK_ROLE);
+}
+export interface UsersDataToExportResponse extends ResponseType {
+    result?: CreateUser[]
+}
+export interface GroupsDataToExportResponse extends ResponseType {
+    result?: CreateGroup[]
 }
 
 export function getEnvironmentListHelmApps(): Promise<any> {
     return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
+}
+
+export function getUsersDataToExport(): Promise<UsersDataToExportResponse> {
+    return get(Routes.ALL_USERS_LIST)
+}
+
+export function getGroupsDataToExport(): Promise<GroupsDataToExportResponse> {
+    return get(Routes.ALL_GROUPS_LIST)
 }

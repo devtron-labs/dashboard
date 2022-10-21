@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { Project } from './Project';
 import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './project.css';
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
@@ -119,7 +118,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         return <>
             <h1 className="form__title">Projects</h1>
             <p className="form__subtitle">Manage your organization's projects.&nbsp;
-                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
+                <a className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
             </p>
         </>
     }

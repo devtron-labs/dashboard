@@ -59,9 +59,9 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
             </div>
             {!collapsedSection && (
                 <div className="variable-container">
-                    <div className="fs-12 fw-6 text-uppercase">Variable</div>
-                    <div className="fs-12 fw-6 text-uppercase">Format</div>
-                    <div className="fs-12 fw-6 text-uppercase">
+                    <div className="fs-12 fw-6 dc__uppercase">Variable</div>
+                    <div className="fs-12 fw-6 dc__uppercase">Format</div>
+                    <div className="fs-12 fw-6 dc__uppercase">
                         {type === PluginVariableType.INPUT ? 'Value' : 'Description'}
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
@@ -86,7 +86,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                             </span>
                                         }
                                     >
-                                        <div className="fs-13 fw-4 lh-28 ellipsis-right">
+                                        <div className="fs-13 fw-4 lh-28 dc__ellipsis-right">
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
                                     </Tippy>

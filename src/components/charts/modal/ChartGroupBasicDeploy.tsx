@@ -177,7 +177,7 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
             className={listClassNames}>
             {charts.map((chart, index) => {
                 if (chart.isEnabled) return <div key={index} className="form__row deploy-selected-chart__list-item">
-                    <img onError={handleImageError} src={chart.chartMetaData.icon || ""} alt="" className="chart-grid-item__icon" />
+                    <img onError={handleImageError} src={chart.chartMetaData.icon || ""} alt="" className="dc__chart-grid-item__icon" />
                     <div className="w-100">
                         <span className="form__label form__label--lower">{chart.chartMetaData.chartRepoName}/{chart.chartMetaData.chartName}</span>
                         <input autoComplete="off" className={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`} type="text" tabIndex={index + 1} value={chart.name.value}

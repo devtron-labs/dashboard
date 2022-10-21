@@ -16,11 +16,12 @@ import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { isGitopsConfigured, getHostURLConfiguration } from '../../services/service'
+import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.css'
 import { NodeAttr } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
+import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     constructor(props) {
@@ -42,6 +43,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             workflowId: 0,
             allCINodesMap: undefined,
             showSuccessScreen: false,
+            showNoGitOpsWarningPopup: false,
+            cdLink: '',
+            noGitOpsConfiguration: false
         }
     }
 
@@ -51,6 +55,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     getWorkflows = () => {
         this.getHostURLConfig()
+        this.checkGitOpsConfiguration()
         getCreateWorkflows(this.props.match.params.appId)
             .then((result) => {
                 const allCINodeMap = new Map(
@@ -84,6 +89,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 this.setState({ hostURLConfig: response.result })
             })
             .catch((error) => {})
+    }
+
+    async checkGitOpsConfiguration():Promise<void> {
+      try {
+          const { result } = await isGitOpsModuleInstalledAndConfigured()
+          if (result.isInstalled && !result.isConfigured) {
+              this.setState({ noGitOpsConfiguration: true })
+          }
+      } catch (error) {}
     }
 
     showDeleteDialog = (workflowId: number) => {
@@ -143,8 +157,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         parentPipelineType: string,
         parentPipelineId?: number | string,
     ) => {
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
-        this.props.history.push(LINK)
+      const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+      if (this.state.noGitOpsConfiguration) {
+          this.setState({
+              showNoGitOpsWarningPopup: true,
+              cdLink: LINK,
+          })
+      } else {
+          this.props.history.push(LINK)
+      }
     }
 
     openCreateWorkflow = (): string => {
@@ -183,6 +204,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         //update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) {
             this.props.respondOnSuccess()
+        }
+    }
+
+    hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
+        this.setState({ showNoGitOpsWarningPopup: false })
+        if(isContinueWithHelm){
+          this.props.history.push(this.state.cdLink)
         }
     }
 
@@ -269,6 +297,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
+                                deleteWorkflow={this.deleteWorkflow}
                             />
                         )
                     }}
@@ -285,6 +314,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
+                                deleteWorkflow={this.deleteWorkflow}
                             />
                         )
                     }}
@@ -318,7 +348,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             <>
                 <button
                     type="button"
-                    className="cta no-decor flex mb-20"
+                    className="cta dc__no-decor flex mb-20"
                     style={{ width: '170px' }}
                     onClick={this.toggleCIMenu}
                 >
@@ -347,7 +377,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     Workflows consist of pipelines from build to deployment stages of an application. <br></br>
                     <a
-                        className="learn-more__href"
+                        className="dc__link"
                         href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                         target="blank"
                         rel="noreferrer noopener"
@@ -368,7 +398,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <div className="cn-9 fs-13">
                         Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
                         &nbsp;
-                        <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
                             Review and update
                         </NavLink>
                     </div>
@@ -407,7 +437,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             return <Progressing pageLoader />
         } else if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )
@@ -439,7 +469,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <p>
                         Workflow consist of pipelines from buid to deployment stages of an application.&nbsp;
                         <a
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                             target="blank"
                             rel="noreferrer noopener"
@@ -460,6 +490,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             closeSuccessPopup={this.closeSuccessPopup}
                             successTitle={this.state.successTitle}
                         />
+                    )}
+                    {this.state.showNoGitOpsWarningPopup && (
+                        <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning}/>
                     )}
                 </div>
             )

@@ -72,7 +72,7 @@ function RouterComponent({ envType }) {
         _getAndSetAppDetail();
         initTimer = setTimeout(() => {
             _init();
-        }, 30000);
+        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL ||30000);
     }
 
     const _getAndSetAppDetail = async () => {
@@ -106,7 +106,7 @@ function RouterComponent({ envType }) {
                     .catch((e) => {
                         setExternalLinksAndTools(externalLinksAndTools)
                         setIsLoading(false)
-                    })   
+                    })
             } else {
                 setIsLoading(false)
             }
@@ -129,7 +129,7 @@ function RouterComponent({ envType }) {
                 <img src={ErrorImage} />
                 <div className="w-250 flex column">
                     <h4 className="fw-6">This app does not exist</h4>
-                    <div className="mb-20 flex align-center">We could not find and connect to this application.</div>
+                    <div className="mb-20 flex dc__align-center">We could not find and connect to this application.</div>
                     <div className="cta" onClick={redirectToHomePage}>
                         Go back to home page
                     </div>
@@ -143,7 +143,7 @@ function RouterComponent({ envType }) {
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
 
             {!isLoading && errorResponseCode && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
