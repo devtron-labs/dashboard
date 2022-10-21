@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ChartCheckListProps } from './checklist.type';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
-import { ReactComponent as Check } from '../../assets/icons/ic-outline-check.svg';
-import Uncheck from '../../assets/img/ic-success@2x.png';
 
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
 
