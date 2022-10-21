@@ -114,3 +114,18 @@ export interface AppListPropType {
   isSuperAdmin: boolean
   appListCount: number
 }
+
+export interface TriggerURL {
+    appId?: string
+    envId: string
+    installedAppId?: string
+    close: () => void
+    isEAMode?: boolean
+}
+
+export interface ManifestUrlList {
+    kind: string
+    name: string
+    pointsTo: string
+    urls: string[]
+}
