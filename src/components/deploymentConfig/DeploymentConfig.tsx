@@ -113,7 +113,6 @@ export default function DeploymentConfig({
                     ? 'ADVANCED'
                     : 'BASIC'
             setIsBasicViewLocked(_isBasicViewLocked)
-            console.log(currentViewEditor)
             setCurrentViewEditor(_currentViewEditor)
             toggleYamlMode(_currentViewEditor === 'BASIC' ? false : true)
         }
