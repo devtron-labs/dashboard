@@ -95,17 +95,17 @@ function NodeComponent({
                     if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
                         tableHeader = ['Name', ''];
                     }else{
-                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', ''];
+                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
                     }
-                    _fcw = 'col-8';
+                    _fcw = 'col-7';
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ['Name', 'URL', ''];
                     _fcw = 'col-6';
                     break;
                 default:
-                    tableHeader = ['Name', ''];
-                    _fcw = 'col-11';
+                    tableHeader = ['Name','',''];
+                    _fcw = 'col-10';
                     break;
             }
 
@@ -214,8 +214,10 @@ function NodeComponent({
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && !!_currentNodeHeader && (
-                        <div className="fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
-                            <span>{node.kind}</span>
+                        <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
+                            <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
+                            { (node.kind === NodeType.Pod) && (podLevelExternalLinks.length > 0) && (<div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> )}
+                            { (node.kind === NodeType.Containers) && (containerLevelExternalLinks.length > 0) && (<div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> )}  
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
@@ -286,7 +288,7 @@ function NodeComponent({
                                     })}
                                 </div>
                             </div>
-                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                            {/* {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
                                 <NodeLevelExternalLinks
                                     helmAppDetails={appDetails}
                                     nodeLevelExternalLinks={podLevelExternalLinks}
@@ -301,7 +303,7 @@ function NodeComponent({
                                     containerName={node.name}
                                     addExtraSpace={true}
                                 />
-                            )}
+                            )} */}
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -344,6 +346,28 @@ function NodeComponent({
                                 {getElapsedTime(new Date(node.createdAt))}{' '}
                             </div>
                         )}
+
+                    
+                        <div className={'flex left col-1 pt-9 pb-9'}>
+                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={podLevelExternalLinks}
+                                    podName={node.name}
+                                />   
+                            )}
+                        
+                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={containerLevelExternalLinks}
+                                    podName={node['pNode']?.name}
+                                    containerName={node.name}
+                                    addExtraSpace={true}
+                                />    
+                            )}
+                        </div>
+                      
 
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
                             <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
