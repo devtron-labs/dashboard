@@ -4,7 +4,7 @@ import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import { OptionType } from '../app/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { copyToClipboard, showError } from '../common'
+import { copyToClipboard, Progressing, showError } from '../common'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
@@ -296,9 +296,14 @@ export default function CICreateDockerfileOption({
         <div className="create-dockerfile-option dc__border br-4 mb-16 dc__overflow-hidden">
             <CodeEditor
                 loading={editorData?.fetching}
+                customLoader={
+                    <div className="h-300">
+                        <Progressing fullHeight />
+                    </div>
+                }
                 value={editorValue || editorData?.data}
                 mode={MODES.DOCKERFILE}
-                height="200px"
+                height="300px"
                 readOnly={configOverrideView && !allowOverride}
                 onChange={handleEditorValueChange}
             >

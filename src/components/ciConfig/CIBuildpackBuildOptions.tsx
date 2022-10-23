@@ -13,6 +13,7 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { CIBuildType } from '../ciPipeline/types'
+import Tippy from '@tippyjs/react'
 
 export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -92,16 +93,23 @@ export default function CIBuildpackBuildOptions({
         const _builderLanguageSupportMap: Record<string, LanguageBuilderType> = {}
         let initOption = null
         for (const _languageBuilder of builders) {
-            _builderLanguageSupportMap[_languageBuilder.Language] = {
-                Versions: _languageBuilder.Versions?.map((ver) => ({
+            const versionOptions =
+                _languageBuilder.Versions?.map((ver) => ({
                     label: ver,
                     value: ver,
-                })),
-                BuilderLanguageMetadata: _languageBuilder.BuilderLanguageMetadata?.map((_builder) => ({
-                    label: _builder.Id,
-                    value: _builder.Id,
-                    BuilderLangEnvParam: _builder.BuilderLangEnvParam,
-                })),
+                })) || []
+            versionOptions.push({
+                label: 'Autodetect',
+                value: 'Autodetect',
+            })
+            _builderLanguageSupportMap[_languageBuilder.Language] = {
+                Versions: versionOptions,
+                BuilderLanguageMetadata:
+                    _languageBuilder.BuilderLanguageMetadata?.map((_builder) => ({
+                        label: _builder.Id,
+                        value: _builder.Id,
+                        BuilderLangEnvParam: _builder.BuilderLangEnvParam,
+                    })) || [],
             }
             _supportedLanguagesList.push({
                 label: _languageBuilder.Language,
@@ -164,13 +172,17 @@ export default function CIBuildpackBuildOptions({
             ...currentCIBuildConfig,
             ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
             buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig
-                ? ciConfig.ciBuildConfig.buildPackConfig
+                ? {
+                      ...ciConfig.ciBuildConfig.buildPackConfig,
+                      builderLangEnvParam: currentBuilderLangEnvParam,
+                      currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                  }
                 : {
                       builderId: initOption.builderId,
                       language: initOption.language,
                       languageVersion: initOption.version,
                       builderLangEnvParam: initOption.BuilderLangEnvParam,
-                      currentBuilderLangEnvParam,
+                      currentBuilderLangEnvParam: currentBuilderLangEnvParam,
                   },
         })
     }
@@ -192,6 +204,7 @@ export default function CIBuildpackBuildOptions({
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             buildPackConfig: {
+                ...currentCIBuildConfig.buildPackConfig,
                 builderId: _selectedBuilder.value,
                 language: selected.value,
                 languageVersion: _selectedVersion.value,
@@ -205,6 +218,7 @@ export default function CIBuildpackBuildOptions({
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             buildPackConfig: {
+                ...currentCIBuildConfig.buildPackConfig,
                 builderId: selectedBuilder.value,
                 language: selectedLanguage.value,
                 languageVersion: selected.value,
@@ -218,6 +232,7 @@ export default function CIBuildpackBuildOptions({
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             buildPackConfig: {
+                ...currentCIBuildConfig.buildPackConfig,
                 builderId: selected.value,
                 language: selectedLanguage.value,
                 languageVersion: selectedVersion.value,
@@ -225,6 +240,9 @@ export default function CIBuildpackBuildOptions({
             },
         })
     }
+
+    const projectPathVal =
+        configOverrideView && !allowOverride ? ciConfig.ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
 
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">
@@ -262,24 +280,24 @@ export default function CIBuildpackBuildOptions({
                 </div>
                 <div className="form__field">
                     <label htmlFor="" className="form__label">
-                        Project path (relative)*
+                        Project path (relative)
                     </label>
-                    <input
-                        tabIndex={4}
-                        type="text"
-                        className="form__input file-name"
-                        placeholder="Enter the project path"
-                        name="projectPath"
-                        value={
-                            configOverrideView && !allowOverride
-                                ? ciConfig.ciBuildConfig.buildPackConfig?.projectPath || './'
-                                : projectPath.value
-                        }
-                        onChange={handleOnChangeConfig}
-                        autoComplete={'off'}
-                        disabled={configOverrideView && !allowOverride}
-                    />
-                    {projectPath.error && <label className="form__error">{projectPath.error}</label>}
+                    <div className="project-path-container h-36">
+                        <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                            ./
+                        </span>
+                        <input
+                            tabIndex={4}
+                            type="text"
+                            className="form__input file-name"
+                            placeholder="Project path"
+                            name="projectPath"
+                            value={projectPathVal === './' ? '' : projectPathVal}
+                            onChange={handleOnChangeConfig}
+                            autoComplete={'off'}
+                            disabled={configOverrideView && !allowOverride}
+                        />
+                    </div>
                 </div>
             </div>
             <div className="flex top buildpack-options">

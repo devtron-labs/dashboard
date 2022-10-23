@@ -7,7 +7,7 @@ import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIBuildType, DockerConfigOverrideType } from '../ciPipeline/types'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -185,6 +185,14 @@ export default function AdvancedConfigOptions({
                     updateDockerConfigOverride={updateDockerConfigOverride}
                 />
                 {parentState?.loadingState === ComponentStates.loaded && renderDockerArgs()}
+                {/* {((!formData?.isDockerConfigOverridden &&
+                    parentState?.defaultDockerConfigs?.ciBuildConfig?.ciBuildType !==
+                        CIBuildType.BUILDPACK_BUILD_TYPE) ||
+                    (formData?.isDockerConfigOverridden &&
+                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType !==
+                            CIBuildType.BUILDPACK_BUILD_TYPE)) &&
+                    parentState?.loadingState === ComponentStates.loaded &&
+                    renderDockerArgs()} */}
             </div>
         </div>
     )

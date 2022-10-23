@@ -21,12 +21,12 @@ export default function CIDockerFileConfig({
     _selectedMaterial,
     selectedMaterial,
     setSelectedMaterial,
-    repository,
-    dockerfile,
-    projectPath,
+    formState,
     updateDockerConfigOverride,
     args,
     setArgs,
+    buildEnvArgs,
+    setBuildEnvArgs,
     handleOnChangeConfig,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
@@ -83,7 +83,7 @@ export default function CIDockerFileConfig({
 
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
-        repository.value = selectedMaterial.name
+        formState.repository.value = selectedMaterial.name
 
         if (updateDockerConfigOverride) {
             updateDockerConfigOverride('dockerConfigOverride.ciBuildConfig.gitMaterialId', selectedMaterial.id)
@@ -94,7 +94,7 @@ export default function CIDockerFileConfig({
         setCIBuildTypeOption(id)
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
-            ciBuildType: id
+            ciBuildType: id,
         })
     }
 
@@ -109,7 +109,9 @@ export default function CIDockerFileConfig({
                         <Fragment key={option.id}>
                             <div
                                 id={option.id}
-                                className={`flex top left ${configOverrideView ? 'w-212 h-40' : 'w-298 h-80'} dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
+                                className={`flex top left ${
+                                    configOverrideView ? 'w-212 h-40' : 'w-298 h-80'
+                                } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
                                     isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                 }`}
                                 onClick={() => {
@@ -166,7 +168,7 @@ export default function CIDockerFileConfig({
                         onChange={handleFileLocationChange}
                         isDisabled={configOverrideView && !allowOverride}
                     />
-                    {repository.error && <label className="form__error">{repository.error}</label>}
+                    {formState.repository.error && <label className="form__error">{formState.repository.error}</label>}
                 </div>
                 <div className="form__field">
                     <label htmlFor="" className="form__label">
@@ -192,19 +194,20 @@ export default function CIDockerFileConfig({
                             value={
                                 configOverrideView && !allowOverride
                                     ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
-                                    : dockerfile.value
+                                    : formState.dockerfile.value
                             }
                             onChange={handleOnChangeConfig}
                             autoComplete={'off'}
                             disabled={configOverrideView && !allowOverride}
                         />
                     </div>
-                    {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
+                    {formState.dockerfile.error && <label className="form__error">{formState.dockerfile.error}</label>}
                 </div>
             </div>
         )
     }
 
+    const isBuildpackType = currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
     return (
         <div className="white-card white-card__docker-config dc__position-rel">
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">How do you want to build the container image?</h3>
@@ -229,27 +232,26 @@ export default function CIDockerFileConfig({
                     _selectedMaterial={_selectedMaterial}
                     selectedMaterial={selectedMaterial}
                     handleFileLocationChange={handleFileLocationChange}
-                    repository={repository}
-                    projectPath={projectPath}
+                    repository={formState.repository}
+                    projectPath={formState.projectPath}
                     handleOnChangeConfig={handleOnChangeConfig}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 />
             )}
-            {!configOverrideView && (
-                <>
-                    <hr className="mt-0 mb-20" />
-                    <CIAdvancedConfig
-                        args={args}
-                        setArgs={setArgs}
-                        selectedTargetPlatforms={selectedTargetPlatforms}
-                        setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                        targetPlatformMap={targetPlatformMap}
-                        showCustomPlatformWarning={showCustomPlatformWarning}
-                        setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                    />
-                </>
-            )}
+            {(!configOverrideView || isBuildpackType) && <hr className="mt-16 mb-16" />}
+            <CIAdvancedConfig
+                configOverrideView={configOverrideView}
+                allowOverride={allowOverride}
+                args={isBuildpackType ? buildEnvArgs : args}
+                setArgs={isBuildpackType ? setBuildEnvArgs : setArgs}
+                isBuildpackType={isBuildpackType}
+                selectedTargetPlatforms={selectedTargetPlatforms}
+                setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                targetPlatformMap={targetPlatformMap}
+                showCustomPlatformWarning={showCustomPlatformWarning}
+                setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+            />
         </div>
     )
 }

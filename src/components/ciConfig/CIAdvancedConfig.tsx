@@ -5,11 +5,16 @@ import { KeyValueInput } from '../configMaps/ConfigMap'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 
 export default function CIAdvancedConfig({
+    configOverrideView,
+    allowOverride,
     args,
     setArgs,
+    isBuildpackType,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
     targetPlatformMap,
@@ -17,16 +22,39 @@ export default function CIAdvancedConfig({
     setShowCustomPlatformWarning,
 }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
+    const updateNotAllowed = configOverrideView && !allowOverride
 
     const toggleCollapse = (): void => {
         setIsCollapsed(!isCollapsed)
     }
 
+    const addArg = (e) => {
+        if (updateNotAllowed) {
+            return
+        }
+
+        setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
+    }
+
     const handleArgsChange = (index, k, v): void => {
+        if (updateNotAllowed) {
+            return
+        }
+
         setArgs((arr) => {
             arr[index] = { k: k, v: v, keyError: '', valueError: '' }
             return Array.from(arr)
         })
+    }
+
+    const deleteArgs = (e) => {
+        if (updateNotAllowed) {
+            return
+        }
+
+        const argsTemp = [...args]
+        argsTemp.splice(e.target.dataset.id, 1)
+        setArgs(argsTemp)
     }
 
     const platformMenuList = (props): JSX.Element => {
@@ -94,7 +122,70 @@ export default function CIAdvancedConfig({
         }
     }
 
-    return (
+    const renderBuildEnvArgs = () => {
+        return (
+            <div>
+                <div className="flex left fs-13 fw-6 mb-8">
+                    Build env arguments
+                    <QuestionIcon className="icon-dim-16 fcn-6 ml-4" />
+                </div>
+                {args &&
+                    args.map((arg, idx) => (
+                        <div className="flexbox justify-space" key={`build-${idx}`}>
+                            <div className="mt-8 w-100">
+                                <input
+                                    className={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
+                                        updateNotAllowed ? 'cursor-not-allowed' : ''
+                                    }`}
+                                    autoComplete="off"
+                                    placeholder="Key"
+                                    type="text"
+                                    value={arg.k}
+                                    onChange={(e) => {
+                                        handleArgsChange(idx, e.target.value, arg.v)
+                                    }}
+                                    disabled={updateNotAllowed}
+                                />
+                                <textarea
+                                    className={`build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
+                                        updateNotAllowed ? 'cursor-not-allowed' : ''
+                                    }`}
+                                    value={arg.v}
+                                    onChange={(e) => {
+                                        handleArgsChange(idx, arg.k, e.target.value)
+                                    }}
+                                    placeholder="Value"
+                                    disabled={updateNotAllowed}
+                                />
+                            </div>
+                            <Cross
+                                data-id={idx}
+                                className={`icon-dim-24 mt-6 ml-6 ${
+                                    updateNotAllowed ? 'cursor-not-allowed' : 'cursor'
+                                }`}
+                                onClick={deleteArgs}
+                            />
+                        </div>
+                    ))}
+                <div
+                    className={`add-parameter fs-14 mb-20 ${
+                        updateNotAllowed ? 'cn-6 cursor-not-allowed' : 'cb-5 cursor'
+                    }`}
+                    onClick={addArg}
+                >
+                    <span className="fa fa-plus mr-8"></span>Add parameter
+                </div>
+            </div>
+        )
+    }
+
+    if (configOverrideView && !isBuildpackType) {
+        return null
+    }
+
+    return isBuildpackType ? (
+        renderBuildEnvArgs()
+    ) : (
         <>
             <div onClick={toggleCollapse} className="flex left cursor mb-20">
                 <div className="icon-dim-40 mr-16">

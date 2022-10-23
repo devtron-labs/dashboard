@@ -67,7 +67,7 @@ export default function CIConfigForm({
                     (selectedCIPipeline?.isDockerConfigOverridden
                         ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildPackConfig?.projectPath
                         : ciConfig?.ciBuildConfig?.buildPackConfig &&
-                          ciConfig.ciBuildConfig.buildPackConfig?.projectPath) || './',
+                          ciConfig.ciBuildConfig.buildPackConfig?.projectPath) || '',
                 error: '',
             },
             registry: { value: _selectedRegistry?.id, error: '' },
@@ -96,11 +96,7 @@ export default function CIConfigForm({
                 },
             },
             projectPath: {
-                required: true,
-                validator: {
-                    error: 'Project path is required',
-                    regex: /^.*$/,
-                },
+                required: false,
             },
             registry: {
                 required: true,
@@ -208,33 +204,41 @@ export default function CIConfigForm({
         }
 
         const _ciBuildConfig = { ...currentCIBuildConfig }
-        if (
-            currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE &&
-            currentCIBuildConfig.buildPackConfig
-        ) {
+        if (_ciBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE && _ciBuildConfig.buildPackConfig) {
             const _buildEnvArgs = buildEnvArgs.reduce((agg, { k, v }) => {
                 if (k && v) agg[k] = v
                 return agg
             }, {})
 
-            if (currentCIBuildConfig.buildPackConfig.builderId !== ciConfig.ciBuildConfig.buildPackConfig.builderId) {
-                delete _buildEnvArgs[currentCIBuildConfig.buildPackConfig.currentBuilderLangEnvParam]
-                setBuildEnvArgs(_buildEnvArgs)
-            } else if (currentCIBuildConfig.buildPackConfig.builderLangEnvParam) {
-                _buildEnvArgs[currentCIBuildConfig.buildPackConfig.builderLangEnvParam] =
-                    currentCIBuildConfig.buildPackConfig.languageVersion
+            if (
+                Object.keys(_buildEnvArgs).length > 0 &&
+                (_buildEnvArgs[_ciBuildConfig.buildPackConfig.currentBuilderLangEnvParam] ||
+                    _buildEnvArgs[_ciBuildConfig.buildPackConfig.builderLangEnvParam]) &&
+                (_ciBuildConfig.buildPackConfig.builderId !== ciConfig?.ciBuildConfig?.buildPackConfig?.builderId ||
+                    _ciBuildConfig.buildPackConfig.languageVersion === 'Autodetect') &&
+                _buildEnvArgs[_ciBuildConfig.buildPackConfig.currentBuilderLangEnvParam]
+            ) {
+                delete _buildEnvArgs[_ciBuildConfig.buildPackConfig.currentBuilderLangEnvParam]
+            }
+
+            if (
+                _ciBuildConfig.buildPackConfig.languageVersion !== 'Autodetect' &&
+                _ciBuildConfig.buildPackConfig.builderLangEnvParam
+            ) {
+                _buildEnvArgs[_ciBuildConfig.buildPackConfig.builderLangEnvParam] =
+                    _ciBuildConfig.buildPackConfig.languageVersion
             }
 
             _ciBuildConfig['buildPackConfig'] = {
-                builderId: currentCIBuildConfig.buildPackConfig.builderId,
-                language: currentCIBuildConfig.buildPackConfig.language,
-                languageVersion: currentCIBuildConfig.buildPackConfig.languageVersion,
-                projectPath: projectPath.value,
+                builderId: _ciBuildConfig.buildPackConfig.builderId,
+                language: _ciBuildConfig.buildPackConfig.language,
+                languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
+                projectPath: projectPath.value || './',
                 args: _buildEnvArgs,
             }
         } else {
             _ciBuildConfig['dockerBuildConfig'] = {
-                ...currentCIBuildConfig.dockerBuildConfig,
+                ..._ciBuildConfig.dockerBuildConfig,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                 args: args.reduce((agg, { k, v }) => {
@@ -387,12 +391,12 @@ export default function CIConfigForm({
                     _selectedMaterial={_selectedMaterial}
                     selectedMaterial={selectedMaterial}
                     setSelectedMaterial={setSelectedMaterial}
-                    repository={repository}
-                    dockerfile={dockerfile}
-                    projectPath={projectPath}
+                    formState={state}
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     args={args}
                     setArgs={setArgs}
+                    buildEnvArgs={buildEnvArgs}
+                    setBuildEnvArgs={setBuildEnvArgs}
                     handleOnChangeConfig={handleOnChangeConfig}
                     selectedTargetPlatforms={selectedTargetPlatforms}
                     setSelectedTargetPlatforms={setSelectedTargetPlatforms}

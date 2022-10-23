@@ -43,11 +43,11 @@
             }
 
             .project-material-options {
-                grid-template-columns: 50% 50%;
+                grid-template-columns: 1fr 1fr;
             }
 
             .buildpack-options {
-                grid-template-columns: 1fr 220px 220px;
+                grid-template-columns: 226.4px 226.4px 1fr;
             }
         }
 
@@ -66,7 +66,8 @@
                 bottom: 0;
             }
 
-            .docker-file-container {
+            .docker-file-container,
+            .project-path-container {
                 display: flex;
 
                 .checkout-path-container {
@@ -157,7 +158,7 @@
                 }
 
                 .buildpack-options {
-                    grid-template-columns: 1fr 200px 200px;
+                    grid-template-columns: 161px 161px 1fr;
                 }
 
                 .form__field {
