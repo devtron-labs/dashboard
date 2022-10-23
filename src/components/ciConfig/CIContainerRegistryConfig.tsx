@@ -60,7 +60,7 @@ export default function CIContainerRegistryConfig({
         registry.value = selectedRegistry.id
 
         if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('dockerConfigOverride.dockerRegistry', selectedRegistry.id)
+            updateDockerConfigOverride('dockerRegistry', selectedRegistry.id)
         }
     }
 

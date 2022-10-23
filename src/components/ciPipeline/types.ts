@@ -209,28 +209,32 @@ export enum CIBuildType {
     BUILDPACK_BUILD_TYPE = 'buildpack-build',
 }
 
+export interface BuildPackConfigType {
+    builderId: string
+    language: string
+    languageVersion: string
+    projectPath: string
+    builderLangEnvParam?: string
+    currentBuilderLangEnvParam?: string
+    buildPacks?: any
+    args?: Map<string, string>
+}
+
+export interface DockerBuildConfigType {
+    dockerfileContent: string
+    dockerfileRelativePath: string
+    dockerfilePath?: string
+    dockerfileRepository?: string
+    args?: Map<string, string>
+    targetPlatform?: any
+    language?: string
+    languageFramework?: string
+}
+
 export interface CIBuildConfigType {
-    buildPackConfig: {
-        builderId: string
-        language: string
-        languageVersion: string
-        projectPath: string
-        builderLangEnvParam?: string
-        currentBuilderLangEnvParam?: string
-        buildPacks?: any
-        args?: any
-    }
+    buildPackConfig: BuildPackConfigType
     ciBuildType: CIBuildType
-    dockerBuildConfig: {
-        dockerfileContent: string
-        dockerfileRelativePath: string
-        dockerfilePath?: string
-        dockerfileRepository?: string
-        args?: Map<string, string>
-        targetPlatform?: any
-        language?: string
-        languageFramework?: string
-    }
+    dockerBuildConfig: DockerBuildConfigType
     gitMaterialId: number
     id?: number
 }

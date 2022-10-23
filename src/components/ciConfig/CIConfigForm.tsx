@@ -132,15 +132,31 @@ export default function CIConfigForm({
         workflows: [],
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
-    const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>({
-        buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig,
-        ciBuildType: ciConfig?.ciBuildConfig?.ciBuildType || CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
-        dockerBuildConfig: ciConfig?.ciBuildConfig?.dockerBuildConfig || {
-            dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
-            dockerfileContent: '',
-        },
-        gitMaterialId: selectedMaterial?.id,
-    })
+    const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
+        allowOverride &&
+            selectedCIPipeline?.isDockerConfigOverridden &&
+            selectedCIPipeline.dockerConfigOverride?.ciBuildConfig
+            ? {
+                  buildPackConfig: selectedCIPipeline.dockerConfigOverride.ciBuildConfig.buildPackConfig,
+                  ciBuildType:
+                      selectedCIPipeline.dockerConfigOverride.ciBuildConfig.ciBuildType ||
+                      CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+                  dockerBuildConfig: selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig || {
+                      dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
+                      dockerfileContent: '',
+                  },
+                  gitMaterialId: selectedMaterial?.id,
+              }
+            : {
+                  buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig,
+                  ciBuildType: ciConfig?.ciBuildConfig?.ciBuildType || CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+                  dockerBuildConfig: ciConfig?.ciBuildConfig?.dockerBuildConfig || {
+                      dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
+                      dockerfileContent: '',
+                  },
+                  gitMaterialId: selectedMaterial?.id,
+              },
+    )
 
     useEffect(() => {
         let _args = []
@@ -158,10 +174,10 @@ export default function CIConfigForm({
         setArgs(_args)
 
         let _buildEnvArgs = []
-        if (ciConfig?.ciBuildConfig?.buildPackConfig?.args) {
-            _buildEnvArgs = Object.keys(ciConfig.ciBuildConfig.buildPackConfig.args).map((arg) => ({
+        if (currentCIBuildConfig.buildPackConfig?.args) {
+            _buildEnvArgs = Object.keys(currentCIBuildConfig.buildPackConfig.args).map((arg) => ({
                 k: arg,
-                v: ciConfig.ciBuildConfig.buildPackConfig.args[arg],
+                v: currentCIBuildConfig.buildPackConfig.args[arg],
                 keyError: '',
                 valueError: '',
             }))
@@ -205,36 +221,15 @@ export default function CIConfigForm({
 
         const _ciBuildConfig = { ...currentCIBuildConfig }
         if (_ciBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE && _ciBuildConfig.buildPackConfig) {
-            const _buildEnvArgs = buildEnvArgs.reduce((agg, { k, v }) => {
-                if (k && v) agg[k] = v
-                return agg
-            }, {})
-
-            if (
-                Object.keys(_buildEnvArgs).length > 0 &&
-                (_buildEnvArgs[_ciBuildConfig.buildPackConfig.currentBuilderLangEnvParam] ||
-                    _buildEnvArgs[_ciBuildConfig.buildPackConfig.builderLangEnvParam]) &&
-                (_ciBuildConfig.buildPackConfig.builderId !== ciConfig?.ciBuildConfig?.buildPackConfig?.builderId ||
-                    _ciBuildConfig.buildPackConfig.languageVersion === 'Autodetect') &&
-                _buildEnvArgs[_ciBuildConfig.buildPackConfig.currentBuilderLangEnvParam]
-            ) {
-                delete _buildEnvArgs[_ciBuildConfig.buildPackConfig.currentBuilderLangEnvParam]
-            }
-
-            if (
-                _ciBuildConfig.buildPackConfig.languageVersion !== 'Autodetect' &&
-                _ciBuildConfig.buildPackConfig.builderLangEnvParam
-            ) {
-                _buildEnvArgs[_ciBuildConfig.buildPackConfig.builderLangEnvParam] =
-                    _ciBuildConfig.buildPackConfig.languageVersion
-            }
-
             _ciBuildConfig['buildPackConfig'] = {
                 builderId: _ciBuildConfig.buildPackConfig.builderId,
                 language: _ciBuildConfig.buildPackConfig.language,
                 languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
                 projectPath: projectPath.value || './',
-                args: _buildEnvArgs,
+                args: buildEnvArgs.reduce((agg, { k, v }) => {
+                    if (k && v) agg[k] = v
+                    return agg
+                }, {}),
             }
         } else {
             _ciBuildConfig['dockerBuildConfig'] = {
@@ -332,14 +327,17 @@ export default function CIConfigForm({
         handleOnChange(e)
 
         if (updateDockerConfigOverride) {
-            updateDockerConfigOverride(
-                `dockerConfigOverride.${
-                    e.target.name === 'dockerfile'
-                        ? 'ciBuildConfig.dockerBuildConfig.dockerfileRelativePath'
-                        : 'dockerRepository'
-                }`,
-                e.target.value,
-            )
+            if (e.target.name === 'repository_name') {
+                updateDockerConfigOverride('dockerRepository', e.target.value)
+            } else {
+                updateDockerConfigOverride('dockerfileRelativePath', {
+                    ...currentCIBuildConfig,
+                    dockerBuildConfig: {
+                        ...currentCIBuildConfig.dockerBuildConfig,
+                        dockerfileRelativePath: e.target.value,
+                    },
+                })
+            }
         }
     }
 
@@ -388,6 +386,7 @@ export default function CIConfigForm({
                     sourceConfig={sourceConfig}
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
+                    selectedCIPipeline={selectedCIPipeline}
                     _selectedMaterial={_selectedMaterial}
                     selectedMaterial={selectedMaterial}
                     setSelectedMaterial={setSelectedMaterial}

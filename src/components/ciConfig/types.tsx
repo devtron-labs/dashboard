@@ -3,6 +3,7 @@ import { ServerError } from '../../modals/commonTypes';
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types';
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type';
 import { CiPipeline, CiPipelineResult, WorkflowType } from '../app/details/triggerView/types';
+import { OptionType } from '../app/types';
 import { CIPipelineDataType, DockerConfigOverrideType, FormType } from '../ciPipeline/types';
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type';
 
@@ -103,4 +104,40 @@ export interface AdvancedConfigOptionsProps {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
-} 
+}
+
+interface LanguageBuilderType {
+    Language: string
+    Versions: string[]
+    BuilderLanguageMetadata: {
+        Id: string
+        BuilderLangEnvParam: string
+    }[]
+}
+
+interface LanguageFrameworkType {
+    Language: string
+    Framework: string
+    TemplateUrl: string
+}
+
+export interface BuildersAndFrameworksType {
+    builders: LanguageBuilderType[]
+    frameworks: LanguageFrameworkType[]
+    selectedBuilder: BuilderIdOptionType
+    selectedLanguage: OptionType
+    selectedVersion: VersionsOptionType
+}
+
+export interface BuilderIdOptionType extends OptionType {
+    BuilderLangEnvParam: string
+}
+
+export interface VersionsOptionType extends OptionType {
+    infoText?: string
+}
+
+export interface LanguageBuilderOptionType {
+    Versions: VersionsOptionType[]
+    BuilderLanguageMetadata: BuilderIdOptionType[]
+}

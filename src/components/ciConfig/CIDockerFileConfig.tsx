@@ -12,12 +12,15 @@ import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
 import { showError } from '../common'
 import Tippy from '@tippyjs/react'
+import { OptionType } from '../app/types'
+import { BuilderIdOptionType, BuildersAndFrameworksType, VersionsOptionType } from './types'
 
 export default function CIDockerFileConfig({
     configOverrideView,
     ciConfig,
     sourceConfig,
     allowOverride,
+    selectedCIPipeline,
     _selectedMaterial,
     selectedMaterial,
     setSelectedMaterial,
@@ -37,10 +40,14 @@ export default function CIDockerFileConfig({
     setCurrentCIBuildConfig,
 }) {
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
-    const [buildersAndFrameworks, setBuildersAndFrameworks] = useState({
+    const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
         builders: [],
         frameworks: [],
+        selectedBuilder: null,
+        selectedLanguage: null,
+        selectedVersion: null,
     })
+    const isBuildpackType = currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
     const CI_BUILD_TYPE_OPTIONS = [
         {
             id: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
@@ -72,6 +79,7 @@ export default function CIDockerFileConfig({
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
             .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
                 setBuildersAndFrameworks({
+                    ...buildersAndFrameworks,
                     builders: buildpackMetadata?.LanguageBuilder || [],
                     frameworks: dockerfileTemplate?.LanguageFrameworks || [],
                 })
@@ -81,12 +89,36 @@ export default function CIDockerFileConfig({
             })
     }, [])
 
+    useEffect(() => {
+        if (configOverrideView && updateDockerConfigOverride && currentCIBuildConfig) {
+            updateDockerConfigOverride('ciBuildConfig', currentCIBuildConfig)
+        }
+    }, [currentCIBuildConfig])
+
+    useEffect(() => {
+        if (configOverrideView && isBuildpackType && buildEnvArgs && updateDockerConfigOverride) {
+            updateDockerConfigOverride('buildPackConfig', {
+                ...currentCIBuildConfig,
+                buildPackConfig: {
+                    ...currentCIBuildConfig.buildPackConfig,
+                    args: buildEnvArgs.reduce((agg, { k, v }) => {
+                        if (k && v) agg[k] = v
+                        return agg
+                    }, {}),
+                },
+            })
+        }
+    }, [buildEnvArgs])
+
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
         formState.repository.value = selectedMaterial.name
 
         if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('dockerConfigOverride.ciBuildConfig.gitMaterialId', selectedMaterial.id)
+            updateDockerConfigOverride('gitMaterialId', {
+                ...currentCIBuildConfig,
+                gitMaterialId: selectedMaterial.id,
+            })
         }
     }
 
@@ -96,6 +128,13 @@ export default function CIDockerFileConfig({
             ...currentCIBuildConfig,
             ciBuildType: id,
         })
+
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride('ciBuildType', {
+                ...currentCIBuildConfig,
+                ciBuildType: id,
+            })
+        }
     }
 
     const renderCIBuildTypeOptions = () => {
@@ -103,7 +142,11 @@ export default function CIDockerFileConfig({
             <div className="flex mb-16">
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
-                    const isGlobalSelection = ciConfig?.ciBuildConfig?.ciBuildType === option.id
+                    const isGlobalSelection =
+                        (!configOverrideView && ciConfig?.ciBuildConfig?.ciBuildType === option.id) ||
+                        (configOverrideView &&
+                            allowOverride &&
+                            selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.ciBuildType === option.id)
 
                     return (
                         <Fragment key={option.id}>
@@ -207,7 +250,6 @@ export default function CIDockerFileConfig({
         )
     }
 
-    const isBuildpackType = currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
     return (
         <div className="white-card white-card__docker-config dc__position-rel">
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">How do you want to build the container image?</h3>
@@ -224,9 +266,14 @@ export default function CIDockerFileConfig({
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
                 <CIBuildpackBuildOptions
-                    ciConfig={ciConfig}
+                    ciBuildConfig={
+                        configOverrideView && allowOverride
+                            ? selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig
+                            : ciConfig?.ciBuildConfig
+                    }
                     sourceConfig={sourceConfig}
-                    builders={buildersAndFrameworks.builders}
+                    buildersAndFrameworks={buildersAndFrameworks}
+                    setBuildersAndFrameworks={setBuildersAndFrameworks}
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     _selectedMaterial={_selectedMaterial}
@@ -237,6 +284,8 @@ export default function CIDockerFileConfig({
                     handleOnChangeConfig={handleOnChangeConfig}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                    buildEnvArgs={buildEnvArgs}
+                    setBuildEnvArgs={setBuildEnvArgs}
                 />
             )}
             {(!configOverrideView || isBuildpackType) && <hr className="mt-16 mb-16" />}

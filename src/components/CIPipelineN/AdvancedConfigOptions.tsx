@@ -1,13 +1,11 @@
 import React, { useState } from 'react'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { CIBuildType, DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIBuildConfigType, DockerConfigOverrideType } from '../ciPipeline/types'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -54,12 +52,11 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
-    const updateDockerConfigOverride = (key: string, value: any) => {
+    const updateDockerConfigOverride = (key: string, value: CIBuildConfigType | boolean | string) => {
+        // Shallow copy all data from formData to _form
         const _form = {
-            isDockerConfigOverridden: ciPipeline?.isDockerConfigOverridden,
             ...formData,
         }
-        const keyPair = key.split('.')
 
         // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
         if (
@@ -70,24 +67,29 @@ export default function AdvancedConfigOptions({
             _form.dockerConfigOverride = {
                 dockerRegistry: parentState.ciConfig.dockerRegistry,
                 dockerRepository: parentState.ciConfig.dockerRepository,
-                ciBuildConfig: parentState.ciConfig.ciBuildConfig,
+                ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig))
             }
         }
 
         // Update the specific config value present at different level from dockerConfigOverride
-        if (key.includes('dockerBuildConfig')) {
-            _form[keyPair[0]][keyPair[1]][keyPair[2]][keyPair[3]] = value
-        } else if (key.includes('ciBuildConfig')) {
-            _form[keyPair[0]][keyPair[1]][keyPair[2]] = value
-        } else if (key.startsWith('dockerConfigOverride')) {
-            _form[keyPair[0]][keyPair[1]] = value
-        } else if (key === 'isDockerConfigOverridden') {
-            _form.isDockerConfigOverridden = value
-            setAllowOverride(value)
+        if (key === 'isDockerConfigOverridden') {
+            const _value = value as boolean
+            _form.isDockerConfigOverridden = _value
+            setAllowOverride(_value)
 
             // Empty dockerConfigOverride when deleting override
-            if (!value) {
+            if (!_value) {
                 _form.dockerConfigOverride = {} as DockerConfigOverrideType
+            }
+        } else if (key === 'dockerRegistry' || key === 'dockerRepository') {
+            _form.dockerConfigOverride = {
+                ..._form.dockerConfigOverride,
+                [key]: value as string
+            }
+        } else {
+            _form.dockerConfigOverride = {
+                ..._form.dockerConfigOverride,
+                ciBuildConfig: value as CIBuildConfigType
             }
         }
 

@@ -489,20 +489,12 @@ function AppComposeRouter({
                     </Route>
                     {isUnlocked.dockerBuildConfig && (
                         <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
-                            <>
-                                <CIConfig
-                                    respondOnSuccess={respondOnSuccess}
-                                    isCDPipeline={isCDPipeline}
-                                    isCiPipeline={isCiPipeline}
-                                    navItems={navItems}
-                                />
-                                {/* <NextButton
-                                    currentStageName={STAGE_NAME.CI_CONFIG}
-                                    navItems={navItems}
-                                    isDisabled={!isUnlocked.deploymentTemplate}
-                                    isCiPipeline={isCiPipeline}
-                                /> */}
-                            </>
+                            <CIConfig
+                                respondOnSuccess={respondOnSuccess}
+                                isCDPipeline={isCDPipeline}
+                                isCiPipeline={isCiPipeline}
+                                navItems={navItems}
+                            />
                         </Route>
                     )}
                     {isUnlocked.deploymentTemplate && (

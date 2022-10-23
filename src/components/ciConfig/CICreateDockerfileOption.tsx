@@ -43,7 +43,7 @@ export default function CICreateDockerfileOption({
                         .map((lf) => ({
                             label: lf.Framework,
                             value: lf.Framework,
-                            templateUrl: _framework.TemplateUrl,
+                            templateUrl: lf.TemplateUrl,
                         }))
                     _languageFrameworks.set(_framework.Language, _frameworksList)
                 }
@@ -94,7 +94,20 @@ export default function CICreateDockerfileOption({
 
     const getTemplateData = async (_selectedLanguage, _selectedFramework) => {
         const templateKey = `${_selectedLanguage?.value}-${_selectedFramework?.value}`
-        if (_selectedFramework?.templateUrl) {
+        const _currentData = templateData?.[templateKey]
+
+        if (_currentData?.fetching) {
+            return
+        } else if (_currentData?.data) {
+            setTemplateData({
+                ...templateData,
+                [templateKey]: {
+                    fetching: false,
+                    data: _currentData.data,
+                },
+            })
+            setEditorValue(_currentData.data)
+        } else if (_selectedFramework?.templateUrl) {
             setTemplateData({
                 ...templateData,
                 [templateKey]: {
@@ -298,7 +311,7 @@ export default function CICreateDockerfileOption({
                 loading={editorData?.fetching}
                 customLoader={
                     <div className="h-300">
-                        <Progressing fullHeight />
+                        <Progressing pageLoader fullHeight />
                     </div>
                 }
                 value={editorValue || editorData?.data}
