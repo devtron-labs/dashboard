@@ -173,6 +173,8 @@ export const Routes = {
     SSO_LIST: 'sso/list',
     SSO_CREATE: 'sso/create',
     SSO_UPDATE: 'sso/update',
+    INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
+    EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls'
 }
 
 export const ViewType = {
@@ -602,6 +604,11 @@ export const CLUSTER_COMMAND = {
         title: "MicroK8s is a light weight Kubernetes cluster",
         command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
     }
+}
+
+export enum KIND {
+    INGRESS = 'Ingress',
+    SERVICE = 'Service'
 }
 
 export const MODULE_STATUS_RETRY_COUNT = 3;

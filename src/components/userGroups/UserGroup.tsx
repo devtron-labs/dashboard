@@ -21,6 +21,7 @@ import {
     mapByKey,
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
+    ErrorScreenNotAuthorized,
 } from '../common'
 import {
     getUserList,
@@ -348,7 +349,7 @@ const UserGroupList: React.FC<{
 
     useEffect(() => {
         if (!error) return
-        showError(error)
+        showError(error,true,true)
     }, [error])
 
     useEffectAfterMount(() => {
@@ -534,6 +535,8 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
+        
+    if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
     if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result.filter(
         (userOrGroup) =>
