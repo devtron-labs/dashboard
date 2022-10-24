@@ -33,7 +33,7 @@ export default function CustomChartList() {
                 setLoader(false)
             })
             .catch((error) => {
-                showError(error)
+                showError(error,true,true)
                 setErrorStatusCode(error.code)
                 setLoader(false)
             })

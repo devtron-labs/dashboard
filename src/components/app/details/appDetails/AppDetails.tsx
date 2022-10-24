@@ -75,6 +75,7 @@ import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/a
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
 import { getDeploymentStatusDetail } from './appDetails.service';
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
+import { TriggerUrlModal } from '../../list/TriggerUrl';
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
 import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
 import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
@@ -155,6 +156,7 @@ export const Details: React.FC<{
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
+    const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('');
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
@@ -401,6 +403,7 @@ export const Details: React.FC<{
                             setDetailed={toggleDetailedStatus}
                             environments={environments}
                             showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
+                            showUrlInfo={isAppDeployment ? setUrlInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                             toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
@@ -467,6 +470,13 @@ export const Details: React.FC<{
                             }}
                         />
                     }
+                    {urlInfo && (
+                        <TriggerUrlModal
+                            appId={params.appId}
+                            envId={params.envId}
+                            close={() => setUrlInfo(false)}
+                        />
+                    )}
                     {commitInfo && (
                         <TriggerInfoModal
                             appId={appDetails?.appId}
