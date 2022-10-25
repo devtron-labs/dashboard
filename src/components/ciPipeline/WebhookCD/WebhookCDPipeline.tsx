@@ -7,7 +7,7 @@ import { ReactComponent as PersonIcon } from '../../../assets/icons/ic-person.sv
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { CIPipelineType } from '../types'
 
-export function WebhookCI({ appName, connectCDPipelines, getWorkflows, close, deleteWorkflow }: CIPipelineType) {
+export function WebhookCD({ appName, connectCDPipelines, getWorkflows, close, deleteWorkflow }: CIPipelineType) {
     return (
         <VisibleModal className="">
             <div className="modal__body modal__body__ci_new_ui br-0 modal__body--p-0">
