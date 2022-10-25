@@ -152,8 +152,8 @@ export default function CIDockerFileConfig({
                         <Fragment key={option.id}>
                             <div
                                 id={option.id}
-                                className={`flex top left ${
-                                    configOverrideView ? 'w-212 h-40' : 'w-298 h-80'
+                                className={`flex top left flex-1 ${
+                                    configOverrideView ? 'h-40' : 'h-80'
                                 } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
                                     isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                 }`}

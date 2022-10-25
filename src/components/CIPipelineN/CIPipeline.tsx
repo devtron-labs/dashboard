@@ -677,8 +677,8 @@ export default function CIPipeline({
         )
     }
 
-    return (
-        <Drawer position="right" width="1024px">
+    const renderCIPipelineModal = () => {
+        return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
@@ -778,6 +778,14 @@ export default function CIPipeline({
                 )}
                 {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </div>
+        )
+    }
+
+    return ciPipelineId ? (
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            {renderCIPipelineModal()}
         </Drawer>
+    ) : (
+        <VisibleModal className="">{renderCIPipelineModal()}</VisibleModal>
     )
 }

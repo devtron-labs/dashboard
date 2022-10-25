@@ -8,10 +8,12 @@ interface drawerInterface{
     backdrop ?: boolean;
     onClose ?: (e:any)=>void;
     width?: string;
+    minWidth?: string;
+    maxWidth?: string;
     height?: string;
 }
 
-const Drawer:React.FC<drawerInterface> = ({children, position, height, width})=>{
+const Drawer:React.FC<drawerInterface> = ({children, position, height, width, minWidth, maxWidth})=>{
     const drawerRef = useRef(null)
     useEffect(()=>{
         setTimeout(()=>drawerRef.current?.classList?.add('show'), 1)
@@ -20,6 +22,8 @@ const Drawer:React.FC<drawerInterface> = ({children, position, height, width})=>
     const style={}
     if(position === 'left' || position === 'right'){
         style['--width'] = width
+        style['--minWidth'] = minWidth
+        style['--maxWidth'] = maxWidth
     }
     if (position === 'top' || position === 'bottom') {
         style['--height'] = height
