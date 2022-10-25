@@ -129,10 +129,16 @@ export default function CIBuildpackBuildOptions({
         ]?.BuilderLanguageMetadata?.find(
             (_builder) => _builder.value === ciBuildConfig.buildPackConfig.builderId,
         )?.BuilderLangEnvParam
+        const _currentCIBuildConfig = {
+            ...currentCIBuildConfig,
+            ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
+        }
+
         let _language = buildersAndFrameworks.selectedLanguage,
             _version = buildersAndFrameworks.selectedVersion,
             _builder = buildersAndFrameworks.selectedBuilder
 
+        // Update buildersAndFrameworks & buildPackConfig only on the first mount of the component
         if (!_language || !_version || !_builder) {
             if (ciBuildConfig?.buildPackConfig) {
                 _builder = {
@@ -148,6 +154,11 @@ export default function CIBuildpackBuildOptions({
                     label: ciBuildConfig.buildPackConfig.languageVersion,
                     value: ciBuildConfig.buildPackConfig.languageVersion,
                 }
+                _currentCIBuildConfig['buildPackConfig'] = {
+                    ...ciBuildConfig.buildPackConfig,
+                    builderLangEnvParam: currentBuilderLangEnvParam,
+                    currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                }
             } else {
                 _builder = {
                     label: initOption.builderId,
@@ -162,37 +173,25 @@ export default function CIBuildpackBuildOptions({
                     label: initOption.version,
                     value: initOption.version,
                 }
+                _currentCIBuildConfig['buildPackConfig'] = {
+                    builderId: initOption.builderId,
+                    language: initOption.language,
+                    languageVersion: initOption.version,
+                    builderLangEnvParam: initOption.BuilderLangEnvParam,
+                    currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                }
             }
-
             setBuildersAndFrameworks({
                 ...buildersAndFrameworks,
                 selectedBuilder: _builder,
                 selectedLanguage: _language,
                 selectedVersion: _version,
             })
-        }
-        const _currentCIBuildConfig = {
-            ...currentCIBuildConfig,
-            ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
+            updateBuildEnvArgs(_version.value, _builder, true)
         }
 
-        if (ciBuildConfig?.buildPackConfig) {
-            _currentCIBuildConfig['buildPackConfig'] = {
-                ...ciBuildConfig.buildPackConfig,
-                builderLangEnvParam: currentBuilderLangEnvParam,
-                currentBuilderLangEnvParam: currentBuilderLangEnvParam,
-            }
-        } else {
-            _currentCIBuildConfig['buildPackConfig'] = {
-                builderId: initOption.builderId,
-                language: initOption.language,
-                languageVersion: initOption.version,
-                builderLangEnvParam: initOption.BuilderLangEnvParam,
-                currentBuilderLangEnvParam: currentBuilderLangEnvParam,
-            }
-        }
+        // Always set currentCIBuildConfig on init for changing ciBuildType
         setCurrentCIBuildConfig(_currentCIBuildConfig)
-        updateBuildEnvArgs(_currentCIBuildConfig.buildPackConfig.languageVersion, _builder, _currentCIBuildConfig, true)
     }
 
     const handleLanguageSelection = (selected: OptionType) => {
@@ -202,7 +201,7 @@ export default function CIBuildpackBuildOptions({
             _languageBuilder.Versions[0]
         const _selectedBuilder =
             _languageBuilder.BuilderLanguageMetadata.find(
-                (_builder) => _builder.value === buildersAndFrameworks.selectedBuilder.value,
+                (_builder) => _builder.value === buildersAndFrameworks.selectedBuilder?.value,
             ) || _languageBuilder.BuilderLanguageMetadata[0]
         setBuildersAndFrameworks({
             ...buildersAndFrameworks,
@@ -220,7 +219,7 @@ export default function CIBuildpackBuildOptions({
                 builderLangEnvParam: _selectedBuilder.BuilderLangEnvParam,
             },
         })
-        updateBuildEnvArgs(_selectedVersion.value, _selectedBuilder, currentCIBuildConfig)
+        updateBuildEnvArgs(_selectedVersion.value, _selectedBuilder)
     }
 
     const handleVersionSelection = (selected: OptionType) => {
@@ -238,7 +237,7 @@ export default function CIBuildpackBuildOptions({
                 builderLangEnvParam: buildersAndFrameworks.selectedBuilder.BuilderLangEnvParam,
             },
         })
-        updateBuildEnvArgs(selected.value, buildersAndFrameworks.selectedBuilder, currentCIBuildConfig)
+        updateBuildEnvArgs(selected.value, buildersAndFrameworks.selectedBuilder)
     }
 
     const handleBuilderSelection = (selected: BuilderIdOptionType) => {
@@ -254,17 +253,13 @@ export default function CIBuildpackBuildOptions({
                 language: buildersAndFrameworks.selectedLanguage.value,
                 languageVersion: buildersAndFrameworks.selectedVersion.value,
                 builderLangEnvParam: selected.BuilderLangEnvParam,
+                currentBuilderLangEnvParam: buildersAndFrameworks.selectedBuilder.value,
             },
         })
-        updateBuildEnvArgs(buildersAndFrameworks.selectedVersion.value, selected, currentCIBuildConfig)
+        updateBuildEnvArgs(buildersAndFrameworks.selectedVersion.value, selected)
     }
 
-    const updateBuildEnvArgs = (
-        version: string,
-        builder: BuilderIdOptionType,
-        _currentCIBuildConfig: CIBuildConfigType,
-        isInitCall?: boolean,
-    ) => {
+    const updateBuildEnvArgs = (version: string, builder: BuilderIdOptionType, isInitCall?: boolean) => {
         let _buildEnvArgs = [...buildEnvArgs]
 
         /**
@@ -305,16 +300,16 @@ export default function CIBuildpackBuildOptions({
             })
         } else if (
             version !== 'Autodetect' &&
-            (_currentCIBuildConfig.buildPackConfig.builderId !== builder.value ||
-                _currentCIBuildConfig.buildPackConfig.languageVersion !== version)
+            (currentCIBuildConfig.buildPackConfig.builderId !== builder.value ||
+                currentCIBuildConfig.buildPackConfig.languageVersion !== version)
         ) {
             let isArgPresent = false,
                 argIdx
             _buildEnvArgs.forEach((_arg, idx) => {
                 if (
                     !isArgPresent &&
-                    (_currentCIBuildConfig.buildPackConfig.currentBuilderLangEnvParam === _arg.k ||
-                        _currentCIBuildConfig.buildPackConfig.builderLangEnvParam === _arg.k ||
+                    (currentCIBuildConfig.buildPackConfig.currentBuilderLangEnvParam === _arg.k ||
+                        currentCIBuildConfig.buildPackConfig.builderLangEnvParam === _arg.k ||
                         builder.BuilderLangEnvParam === _arg.k)
                 ) {
                     isArgPresent = true

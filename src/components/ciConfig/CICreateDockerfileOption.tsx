@@ -32,6 +32,8 @@ export default function CICreateDockerfileOption({
     const [templateData, setTemplateData] = useState<Record<string, TemplateDataType>>() // key: language-framework
     const [editorValue, setEditorValue] = useState<string>('')
     const [copied, setCopied] = useState(false)
+    const controller = new AbortController()
+    const signal = controller.signal
 
     useEffect(() => {
         if (frameworks.length > 0) {
@@ -90,6 +92,11 @@ export default function CICreateDockerfileOption({
                 getTemplateData(_selectedLanguage, _selectedFramework)
             }
         }
+
+        return (): void => {
+            // Abort the ongoing request if user switches between the build types
+            controller.abort()
+        }
     }, [frameworks])
 
     const getTemplateData = async (_selectedLanguage, _selectedFramework) => {
@@ -117,7 +124,10 @@ export default function CICreateDockerfileOption({
             })
 
             try {
-                const respData = await fetch(_selectedFramework.templateUrl).then((res) => {
+                const respData = await fetch(_selectedFramework.templateUrl, {
+                    method: 'get',
+                    signal: signal,
+                }).then((res) => {
                     return res.text()
                 })
 
@@ -140,7 +150,10 @@ export default function CICreateDockerfileOption({
                     },
                 })
             } catch (err) {
-                showError(err)
+                // Don't show error toast or log the error as user aborted the request
+                if (!signal.aborted) {
+                    showError(err)
+                }
                 setTemplateData({
                     ...templateData,
                     [templateKey]: {
