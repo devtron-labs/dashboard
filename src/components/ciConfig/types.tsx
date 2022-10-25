@@ -4,7 +4,7 @@ import { ConfigOverrideWorkflowDetails } from '../../services/service.types';
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type';
 import { CiPipeline, CiPipelineResult, WorkflowType } from '../app/details/triggerView/types';
 import { OptionType } from '../app/types';
-import { CIPipelineDataType, DockerConfigOverrideType, FormType } from '../ciPipeline/types';
+import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType, FormType } from '../ciPipeline/types';
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type';
 
 export interface ArgsFieldSetProps {
@@ -61,6 +61,7 @@ export interface CIConfigParentState {
     sourceConfig: any
     ciConfig: CiPipelineResult
     defaultDockerConfigs: DockerConfigOverrideType
+    currentCIBuildType?: CIBuildType
 }
 
 export interface CIConfigProps {
@@ -97,6 +98,8 @@ export interface CIConfigFormProps {
     isCDPipeline: boolean
     isCiPipeline: boolean
     navItems: CustomNavItemsType[]
+    parentState: CIConfigParentState
+    setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
 }
 
 export interface AdvancedConfigOptionsProps {

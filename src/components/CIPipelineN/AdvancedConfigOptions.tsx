@@ -5,7 +5,7 @@ import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { CIBuildConfigType, DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIBuildConfigType, CIBuildType, DockerConfigOverrideType } from '../ciPipeline/types'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -22,6 +22,7 @@ export default function AdvancedConfigOptions({
         sourceConfig: null,
         ciConfig: null,
         defaultDockerConfigs: null,
+        currentCIBuildType: null,
     })
 
     const addDockerArg = (): void => {
@@ -67,7 +68,7 @@ export default function AdvancedConfigOptions({
             _form.dockerConfigOverride = {
                 dockerRegistry: parentState.ciConfig.dockerRegistry,
                 dockerRepository: parentState.ciConfig.dockerRepository,
-                ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig))
+                ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig)),
             }
         }
 
@@ -82,18 +83,12 @@ export default function AdvancedConfigOptions({
                 _form.dockerConfigOverride = {} as DockerConfigOverrideType
             }
         } else if (key === 'dockerRegistry' || key === 'dockerRepository') {
-            _form.dockerConfigOverride = {
-                ..._form.dockerConfigOverride,
-                [key]: value as string
-            }
+            _form.dockerConfigOverride[key] = value as string
         } else {
-            _form.dockerConfigOverride = {
-                ..._form.dockerConfigOverride,
-                ciBuildConfig: value as CIBuildConfigType
-            }
+            _form.dockerConfigOverride['ciBuildConfig'] = value as CIBuildConfigType
         }
 
-        // Revisit
+        // No need to pass the id in the request
         if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty('id')) {
             delete _form.dockerConfigOverride.ciBuildConfig.id
         }
@@ -186,15 +181,9 @@ export default function AdvancedConfigOptions({
                     setParentState={setParentState}
                     updateDockerConfigOverride={updateDockerConfigOverride}
                 />
-                {parentState?.loadingState === ComponentStates.loaded && renderDockerArgs()}
-                {/* {((!formData?.isDockerConfigOverridden &&
-                    parentState?.defaultDockerConfigs?.ciBuildConfig?.ciBuildType !==
-                        CIBuildType.BUILDPACK_BUILD_TYPE) ||
-                    (formData?.isDockerConfigOverridden &&
-                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType !==
-                            CIBuildType.BUILDPACK_BUILD_TYPE)) &&
-                    parentState?.loadingState === ComponentStates.loaded &&
-                    renderDockerArgs()} */}
+                {parentState?.loadingState === ComponentStates.loaded &&
+                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
+                    renderDockerArgs()}
             </div>
         </div>
     )

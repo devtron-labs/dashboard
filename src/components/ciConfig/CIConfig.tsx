@@ -124,6 +124,8 @@ export default function CIConfig({
             isCDPipeline={isCDPipeline}
             isCiPipeline={isCiPipeline}
             navItems={navItems}
+            parentState={parentState}
+            setParentState={setParentState}
         />
     )
 }

@@ -15,7 +15,13 @@ import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.sv
 import CIConfigDiffView from './CIConfigDiffView'
 import CIContainerRegistryConfig from './CIContainerRegistryConfig'
 import CIDockerFileConfig from './CIDockerFileConfig'
-import { getTargetPlatformMap } from './CIConfig.utils'
+import {
+    CI_CONFIG_FORM_VALIDATION,
+    getCIConfigFormState,
+    getTargetPlatformMap,
+    initCurrentCIBuildConfig,
+    processBuildArgs,
+} from './CIConfig.utils'
 import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
@@ -33,6 +39,8 @@ export default function CIConfigForm({
     isCDPipeline,
     isCiPipeline,
     navItems,
+    parentState,
+    setParentState,
 }: CIConfigFormProps) {
     const history = useHistory()
     const _selectedMaterial =
@@ -51,64 +59,8 @@ export default function CIConfigForm({
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
             : dockerRegistries.find((reg) => reg.isDefault)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
-        {
-            repository: { value: _selectedMaterial?.name || '', error: '' },
-            dockerfile: {
-                value:
-                    (selectedCIPipeline?.isDockerConfigOverridden
-                        ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig
-                              ?.dockerfileRelativePath
-                        : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
-                          ciConfig.ciBuildConfig.dockerBuildConfig?.dockerfileRelativePath) || 'Dockerfile',
-                error: '',
-            },
-            projectPath: {
-                value:
-                    (selectedCIPipeline?.isDockerConfigOverridden
-                        ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildPackConfig?.projectPath
-                        : ciConfig?.ciBuildConfig?.buildPackConfig &&
-                          ciConfig.ciBuildConfig.buildPackConfig?.projectPath) || '',
-                error: '',
-            },
-            registry: { value: _selectedRegistry?.id, error: '' },
-            repository_name: {
-                value: selectedCIPipeline?.isDockerConfigOverridden
-                    ? selectedCIPipeline.dockerConfigOverride?.dockerRepository
-                    : ciConfig
-                    ? ciConfig.dockerRepository
-                    : '',
-                error: '',
-            },
-        },
-        {
-            repository: {
-                required: true,
-                validator: {
-                    error: 'Repository is required',
-                    regex: /^.*$/,
-                },
-            },
-            dockerfile: {
-                required: true,
-                validator: {
-                    error: 'Dockerfile is required',
-                    regex: PATTERNS.STRING,
-                },
-            },
-            projectPath: {
-                required: false,
-            },
-            registry: {
-                required: true,
-                validatior: {
-                    error: 'registry is required',
-                    regex: PATTERNS.STRING,
-                },
-            },
-            repository_name: {
-                required: false,
-            },
-        },
+        getCIConfigFormState(ciConfig, selectedCIPipeline, _selectedMaterial, _selectedRegistry),
+        CI_CONFIG_FORM_VALIDATION,
         onValidation,
     )
     const [args, setArgs] = useState([])
@@ -133,60 +85,33 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        allowOverride &&
-            selectedCIPipeline?.isDockerConfigOverridden &&
-            selectedCIPipeline.dockerConfigOverride?.ciBuildConfig
-            ? {
-                  buildPackConfig: selectedCIPipeline.dockerConfigOverride.ciBuildConfig.buildPackConfig,
-                  ciBuildType:
-                      selectedCIPipeline.dockerConfigOverride.ciBuildConfig.ciBuildType ||
-                      CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
-                  dockerBuildConfig: selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig || {
-                      dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
-                      dockerfileContent: '',
-                  },
-                  gitMaterialId: selectedMaterial?.id,
-              }
-            : {
-                  buildPackConfig: ciConfig?.ciBuildConfig?.buildPackConfig,
-                  ciBuildType: ciConfig?.ciBuildConfig?.ciBuildType || CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
-                  dockerBuildConfig: ciConfig?.ciBuildConfig?.dockerBuildConfig || {
-                      dockerfileRelativePath: state.dockerfile.value.replace(/^\//, ''),
-                      dockerfileContent: '',
-                  },
-                  gitMaterialId: selectedMaterial?.id,
-              },
+        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value),
     )
 
     useEffect(() => {
-        let _args = []
-        if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.args) {
-            _args = Object.keys(ciConfig.ciBuildConfig.dockerBuildConfig.args).map((arg) => ({
-                k: arg,
-                v: ciConfig.ciBuildConfig.dockerBuildConfig.args[arg],
-                keyError: '',
-                valueError: '',
-            }))
-        }
-        if (_args.length === 0) {
-            _args.push({ k: '', v: '', keyError: '', valueError: '' })
-        }
-        setArgs(_args)
-
-        let _buildEnvArgs = []
-        if (currentCIBuildConfig.buildPackConfig?.args) {
-            _buildEnvArgs = Object.keys(currentCIBuildConfig.buildPackConfig.args).map((arg) => ({
-                k: arg,
-                v: currentCIBuildConfig.buildPackConfig.args[arg],
-                keyError: '',
-                valueError: '',
-            }))
-        }
-        if (_buildEnvArgs.length === 0) {
-            _buildEnvArgs.push({ k: '', v: '', keyError: '', valueError: '' })
-        }
-        setBuildEnvArgs(_buildEnvArgs)
+        initBuildArgs()
     }, [])
+
+    useEffect(() => {
+        updateParentCIBuildTypeState()
+    }, [currentCIBuildConfig.ciBuildType])
+
+    const initBuildArgs = () => {
+        // Docker build arguments
+        setArgs(processBuildArgs(ciConfig?.ciBuildConfig?.dockerBuildConfig?.args))
+
+        // Buildpack - build env arguments
+        setBuildEnvArgs(processBuildArgs(currentCIBuildConfig.buildPackConfig?.args))
+    }
+
+    const updateParentCIBuildTypeState = () => {
+        if (configOverrideView && setParentState) {
+            setParentState({
+                ...parentState,
+                currentCIBuildType: currentCIBuildConfig.ciBuildType,
+            })
+        }
+    }
 
     async function onValidation(state) {
         let args2 = args.map(({ k, v, keyError, valueError }, idx) => {
@@ -327,16 +252,30 @@ export default function CIConfigForm({
         handleOnChange(e)
 
         if (updateDockerConfigOverride) {
-            if (e.target.name === 'repository_name') {
-                updateDockerConfigOverride('dockerRepository', e.target.value)
-            } else {
-                updateDockerConfigOverride('dockerfileRelativePath', {
-                    ...currentCIBuildConfig,
-                    dockerBuildConfig: {
-                        ...currentCIBuildConfig.dockerBuildConfig,
-                        dockerfileRelativePath: e.target.value,
-                    },
-                })
+            switch (e.target.name) {
+                case 'repository_name':
+                    updateDockerConfigOverride('dockerRepository', e.target.value)
+                    break
+                case 'projectPath':
+                    updateDockerConfigOverride('projectPath', {
+                        ...currentCIBuildConfig,
+                        buildPackConfig: {
+                            ...currentCIBuildConfig.buildPackConfig,
+                            projectPath: e.target.value,
+                        },
+                    })
+                    break
+                case 'dockerfile':
+                    updateDockerConfigOverride('dockerfileRelativePath', {
+                        ...currentCIBuildConfig,
+                        dockerBuildConfig: {
+                            ...currentCIBuildConfig.dockerBuildConfig,
+                            dockerfileRelativePath: e.target.value,
+                        },
+                    })
+                    break
+                default:
+                    break
             }
         }
     }
