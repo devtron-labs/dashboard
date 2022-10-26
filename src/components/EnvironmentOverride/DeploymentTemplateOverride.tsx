@@ -180,13 +180,12 @@ export default function DeploymentTemplateOverride({
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
-                const template = result.environmentConfig.envOverrideValues || result.globalConfig
-                updateTemplateFromBasicValue(template)
+                updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues || result.globalConfig)
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,
                     result.environmentConfig.currentViewEditor,
                     result.globalConfig,
-                    result.environmentConfig.envOverrideValues
+                    result.environmentConfig.envOverrideValues,
                 )
             }
             dispatch({ type: 'setResult', value: result })
@@ -343,6 +342,10 @@ function DeploymentTemplateOverrideForm({
         e.preventDefault()
         if (!obj && state.yamlMode) {
             toast.error(error)
+            return
+        }
+        if (state.selectedChart.name === ROLLOUT_DEPLOYMENT && !state.basicFieldValuesErrorObj.isValid) {
+            toast.error('Some required fields are missing')
             return
         }
         const api =
