@@ -180,14 +180,13 @@
 
 .modal__body {
     &.modal__config-override-diff {
-        width: 1024px;
+        width: 100%;
         height: 100%;
         margin-top: 0;
 
         .config-override-diff__view {
-            height: calc(100% - 116px);
+            height: calc(100% - 56px);
         }
-
         .workflow {
             &.workflow--create {
                 margin-bottom: 0;
@@ -211,7 +210,7 @@
 
         .config-override-diff__values {
             display: grid;
-            grid-template-columns: 50% 50%;
+            grid-template-columns: 215px repeat(2, calc(50% - 108px));
             grid-template-rows: auto;
             background: white;
 

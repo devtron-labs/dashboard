@@ -1,12 +1,15 @@
-import React from 'react'
-import { noop, Progressing, VisibleModal } from '../common'
+import React, { useState } from 'react'
+import { DeleteDialog, Drawer, noop, Progressing } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { Workflow } from '../workflowEditor/Workflow'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps } from './types'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIBuildConfigDiff } from './CIBuildConfigDiff'
 
 export default function CIConfigDiffView({
     ciConfig,
@@ -23,6 +26,7 @@ export default function CIConfigDiffView({
     const { appId } = useParams<{
         appId: string
     }>()
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const wfCIMap = new Map<number, number>()
     const _configOverridenWorkflows = configOverrideWorkflows.filter((_cwf) => {
         const _ciPipeline = configOverridenPipelines?.find((_ci) => _ci.id === _cwf.ciPipelineId)
@@ -39,97 +43,8 @@ export default function CIConfigDiffView({
         globalCIConfig = {
             dockerRegistry: ciConfig.dockerRegistry,
             dockerRepository: ciConfig.dockerRepository,
-            ciBuildConfig: ciConfig.ciBuildConfig
+            ciBuildConfig: ciConfig.ciBuildConfig,
         }
-    }
-
-    const renderDetailedValue = (parentClassName: string, title: string, value: string): JSX.Element => {
-        return (
-            <div className={parentClassName}>
-                <div className="cn-6 pt-8 pl-16 pr-16 lh-16">{title}</div>
-                <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28">{value}</div>
-            </div>
-        )
-    }
-
-    const renderValueDiff = (
-        baseValue: string,
-        currentValue: string,
-        changedBGColor: boolean,
-        configName: string,
-    ): JSX.Element => {
-        return (
-            <>
-                {baseValue ? (
-                    renderDetailedValue(changedBGColor ? 'code-editor-red-diff' : '', configName, baseValue)
-                ) : (
-                    <div />
-                )}
-                {currentValue ? (
-                    renderDetailedValue(changedBGColor ? 'code-editor-green-diff' : '', configName, currentValue)
-                ) : (
-                    <div />
-                )}
-            </>
-        )
-    }
-
-    const renderConfigDiff = (_configOverridenWorkflows, wfId: string): JSX.Element => {
-        const _currentWorkflow = _configOverridenWorkflows?.find((_wf) => +wfId === _wf.id)
-        const _currentPipelineOverride = configOverridenPipelines?.find(
-            (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
-        )?.dockerConfigOverride
-        const changedDockerRegistryBGColor = globalCIConfig.dockerRegistry !== _currentPipelineOverride?.dockerRegistry
-        const changedDockerRepositoryBGColor =
-            globalCIConfig.dockerRepository !== _currentPipelineOverride?.dockerRepository
-        const changedDockerfileRelativePathBGColor =
-            globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath !==
-            _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
-        const changedGitMaterialBGColor =
-            globalCIConfig.ciBuildConfig?.gitMaterialId !==
-            _currentPipelineOverride?.ciBuildConfig?.gitMaterialId
-
-        let globalGitMaterialName, currentMaterialName
-        if (ciConfig?.materials) {
-            for (const gitMaterial of ciConfig.materials) {
-                if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
-                    globalGitMaterialName = gitMaterial.materialName
-                }
-
-                if (gitMaterial.gitMaterialId === _currentPipelineOverride?.ciBuildConfig?.gitMaterialId) {
-                    currentMaterialName = gitMaterial.materialName
-                }
-            }
-        }
-
-        return (
-            <div className="config-override-diff__values dc__border dc__bottom-radius-4">
-                {renderValueDiff(
-                    globalCIConfig.dockerRegistry,
-                    _currentPipelineOverride.dockerRegistry,
-                    changedDockerRegistryBGColor,
-                    'Container registry',
-                )}
-                {renderValueDiff(
-                    globalCIConfig.dockerRepository,
-                    _currentPipelineOverride.dockerRepository,
-                    changedDockerRepositoryBGColor,
-                    'Container Repository',
-                )}
-                {renderValueDiff(
-                    globalGitMaterialName,
-                    currentMaterialName,
-                    changedGitMaterialBGColor,
-                    'Git Repository',
-                )}
-                {renderValueDiff(
-                    globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                    _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                    changedDockerfileRelativePathBGColor,
-                    'Docker file path',
-                )}
-            </div>
-        )
     }
 
     const renderConfigDiffModalTitle = (): JSX.Element => {
@@ -149,16 +64,22 @@ export default function CIConfigDiffView({
 
     const renderViewBuildPipelineRow = (_wfId: number): JSX.Element => {
         return (
-            <div className="flex dc__content-space pl-16 pr-16 pb-10 bcn-0 dc__border-left dc__border-right">
-                <span className="fs-14 fw-4 lh-20">Build pipeline is overriden</span>
+            <div
+                className="flex dc__position-abs dc__content-space"
+                style={{
+                    top: '20px',
+                    right: '16px',
+                }}
+            >
                 <Link
                     to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${_wfId}/${
                         URLS.APP_CI_CONFIG
                     }/${wfCIMap.get(_wfId)}/build`}
-                    className="fs-14 fw-4 lh-20"
+                    className="flex mr-16"
                 >
-                    View build pipeline
+                    <EditIcon className="icon-dim-24" />
                 </Link>
+                <DeleteIcon className="icon-dim-24 scr-5 cursor" onClick={toggleDeleteDialogVisibility} />
             </div>
         )
     }
@@ -192,16 +113,22 @@ export default function CIConfigDiffView({
         return 280
     }
 
+    const toggleDeleteDialogVisibility = () => {
+        setShowDeleteDialog(!showDeleteDialog)
+    }
+
+    const deleteOverride = () => {}
+
     return (
-        <VisibleModal className="">
+        <Drawer position="right" width="87%" minWidth="1024px" maxWidth="1246px">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
                 {renderConfigDiffModalTitle()}
-                <div className="config-override-diff__view p-20 dc__window-bg dc__overflow-scroll">
+                <div className="config-override-diff__view h-100 p-20 dc__window-bg dc__overflow-scroll">
                     {processedWorkflows.processing ? (
                         <Progressing pageLoader />
                     ) : (
                         _overridenWorkflows.map((_wf) => (
-                            <div className="mb-20">
+                            <div className="mb-20 dc__position-rel">
                                 <Workflow
                                     key={_wf.id}
                                     id={+_wf.id}
@@ -222,17 +149,27 @@ export default function CIConfigDiffView({
                                     cdWorkflowList={_configOverridenWorkflows}
                                 />
                                 {renderViewBuildPipelineRow(+_wf.id)}
-                                {renderConfigDiff(_configOverridenWorkflows, _wf.id)}
+                                <CIBuildConfigDiff
+                                    _configOverridenWorkflows={_configOverridenWorkflows}
+                                    wfId={_wf.id}
+                                    configOverridenPipelines={configOverridenPipelines}
+                                    materials={ciConfig?.materials}
+                                    globalCIConfig={globalCIConfig}
+                                />
                             </div>
                         ))
                     )}
                 </div>
-                <div className="flex right dc__border-top-n1 pt-12 pb-12 pl-20 pr-20">
-                    <button className="flex cta h-36" onClick={toggleConfigOverrideDiffModal}>
-                        Got It
-                    </button>
-                </div>
+                {showDeleteDialog && (
+                    <DeleteDialog
+                        title="Delete Override"
+                        description="Are you sure you want to delete override for this pipeline"
+                        deletePrefix="Confirm"
+                        closeDelete={toggleDeleteDialogVisibility}
+                        delete={deleteOverride}
+                    />
+                )}
             </div>
-        </VisibleModal>
+        </Drawer>
     )
 }

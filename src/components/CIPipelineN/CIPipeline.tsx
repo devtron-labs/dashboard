@@ -781,7 +781,7 @@ export default function CIPipeline({
         )
     }
 
-    return ciPipelineId ? (
+    return ciPipelineId || isAdvanced ? (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             {renderCIPipelineModal()}
         </Drawer>

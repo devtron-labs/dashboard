@@ -29,10 +29,15 @@ export default function CIContainerRegistryConfig({
     const getInfoColourBarProps = () => {
         if (configOverridenPipelines?.length > 0) {
             return {
-                message: 'This configuration is overriden for build pipeline(s) of',
+                message: (
+                    <>
+                        <span className="fw-6">Overrides:</span>&nbsp;
+                        <span className="mr-4">This configuration is overriden for build pipeline(s) of</span>
+                    </>
+                ),
                 linkText: (
                     <span className="flex">
-                        {`${configOverridenPipelines.length} Workflow(s)`}
+                        {`${configOverridenPipelines.length} Workflow${configOverridenPipelines.length > 1 ? 's' : ''}`}
                         <ArrowIcon className="icon-dim-16 fcb-5 dc__flip-180" />
                     </span>
                 ),
