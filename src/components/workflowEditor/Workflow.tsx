@@ -132,18 +132,18 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             })
         } else if (webhook) {
           return _nodes.map((node: NodeAttr) => {
-            if (node.type == 'WEBHOOK') {
-              return this.renderWebhookNode(node)
-          } else if (_nodesData.cdNamesList.length > 0) {
-              return (
-                  <>
-                      {this.renderAdditionalEdge()}
-                      {this.renderCDNodes(node, ci.id, _nodesData.cdNamesList)}
-                  </>
-              )
-          }
+              if (node.type == 'WEBHOOK') {
+                  return this.renderWebhookNode(node)
+              } else if (_nodesData.cdNamesList.length > 0) {
+                  return (
+                      <>
+                          {this.renderAdditionalEdge()}
+                          {this.renderCDNodes(node, webhook.id, _nodesData.cdNamesList)}
+                      </>
+                  )
+              }
 
-          return this.renderCDNodes(node, ci.id)
+              return this.renderCDNodes(node, webhook.id)
           })
       } else {
             return this.renderAddCIpipeline()
