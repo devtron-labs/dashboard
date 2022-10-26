@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as ProhibitIcon } from '../../assets/icons/ic-prohibit.svg'
+import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { _multiSelectStyles } from './CIConfig.utils'
@@ -12,8 +12,7 @@ import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
 import { showError } from '../common'
 import Tippy from '@tippyjs/react'
-import { OptionType } from '../app/types'
-import { BuilderIdOptionType, BuildersAndFrameworksType, VersionsOptionType } from './types'
+import { BuildersAndFrameworksType } from './types'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -54,6 +53,7 @@ export default function CIDockerFileConfig({
             heading: 'I have a Dockerfile',
             info: 'Requires a Dockerfile, gives full control of the build process.',
             icon: FileIcon,
+            noIconFill: false,
             iconStroke: true,
             addDivider: true,
         },
@@ -62,6 +62,7 @@ export default function CIDockerFileConfig({
             heading: 'Create Dockerfile',
             info: 'Select from available templates and create a Dockerfile.',
             icon: AddIcon,
+            noIconFill: false,
             iconStroke: false,
             addDivider: true,
         },
@@ -69,7 +70,8 @@ export default function CIDockerFileConfig({
             id: CIBuildType.BUILDPACK_BUILD_TYPE,
             heading: 'Build without Dockerfile',
             info: 'Uses buildpack to build container image.',
-            icon: ProhibitIcon,
+            icon: BuildpackIcon,
+            noIconFill: true,
             iconStroke: false,
             addDivider: false,
         },
@@ -168,8 +170,12 @@ export default function CIDockerFileConfig({
                                 )}
                                 <div>
                                     <option.icon
-                                        className={`icon-dim-20 ${option.iconStroke ? 'sc' : 'fc'}${
-                                            isCurrentlySelected ? 'n-6' : 'b-5'
+                                        className={`icon-dim-20 ${
+                                            option.noIconFill
+                                                ? ''
+                                                : `${option.iconStroke ? 'sc' : 'fc'}${
+                                                      isCurrentlySelected ? 'n-6' : 'b-5'
+                                                  }`
                                         }`}
                                     />
                                 </div>

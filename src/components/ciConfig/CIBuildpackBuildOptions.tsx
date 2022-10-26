@@ -12,7 +12,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
-import { CIBuildConfigType, CIBuildType } from '../ciPipeline/types'
+import { CIBuildType } from '../ciPipeline/types'
 import { BuilderIdOptionType, LanguageBuilderOptionType, VersionsOptionType } from './types'
 
 export const repositoryOption = (props): JSX.Element => {
