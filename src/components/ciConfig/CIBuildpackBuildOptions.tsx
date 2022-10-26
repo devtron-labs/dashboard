@@ -267,7 +267,7 @@ export default function CIBuildpackBuildOptions({
          * - If yes & is init call then push init arg selection to buildEnvArgs array
          * - Else remove empty arg from buildEnvArgs array & proceed
          */
-        if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k) {
+        if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k && version !== 'Autodetect') {
             if (isInitCall) {
                 _buildEnvArgs[0].k = builder.BuilderLangEnvParam
                 _buildEnvArgs[0].v = version
