@@ -49,7 +49,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                     className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
                     onClick={(event) => {
                         this.props.toggleCIMenu(event)
-                        this.props.addCIPipeline('EXTERNAL-CI', this.props.workflowId)
+                        this.props.addWebhookCD(this.props.workflowId)
                     }}
                 >
                     <img src={webhook} className="br-8 mr-12 h-40" alt="external-ci" />

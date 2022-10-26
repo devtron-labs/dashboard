@@ -36,6 +36,7 @@ export interface WorkflowProps
     openEditWorkflow: (event, workflowId: number) => string
     handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
+    addWebhookCD: (workflowId?: number | string) => void
     cdWorkflowList?: any[]
 }
 
@@ -108,7 +109,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == 'CI')
-        const _nodesData = this.getNodesData(ci?.id || '')
+        const webhook = this.props.nodes.find((node) => node.type == 'WEBHOOK')
+        const _nodesData = this.getNodesData(ci?.id || webhook?.id ||'')
         const _nodes = _nodesData.nodes
 
         if (ci) {
@@ -128,7 +130,22 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
                 return this.renderCDNodes(node, ci.id)
             })
-        } else {
+        } else if (webhook) {
+          return _nodes.map((node: NodeAttr) => {
+            if (node.type == 'WEBHOOK') {
+              return this.renderWebhookNode(node)
+          } else if (_nodesData.cdNamesList.length > 0) {
+              return (
+                  <>
+                      {this.renderAdditionalEdge()}
+                      {this.renderCDNodes(node, ci.id, _nodesData.cdNamesList)}
+                  </>
+              )
+          }
+
+          return this.renderCDNodes(node, ci.id)
+          })
+      } else {
             return this.renderAddCIpipeline()
         }
     }
@@ -160,6 +177,26 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
     renderSourceNode(node) {
+        return (
+            <StaticNode
+                x={node.x}
+                y={node.y}
+                url={node.url}
+                branch={node.branch}
+                height={node.height}
+                width={node.width}
+                id={node.id}
+                key={`static-${node.id}-${node.x - node.y}`}
+                title={node.title}
+                downstreams={node.downstreams}
+                icon={node.icon}
+                sourceType={node.sourceType}
+                regex={node.regex}
+                primaryBranchAfterRegex={node.primaryBranchAfterRegex}
+            />
+        )
+    }
+    renderWebhookNode(node) {
         return (
             <StaticNode
                 x={node.x}
@@ -330,6 +367,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 top: `${this.state.top}px`,
                             }}
                             addCIPipeline={this.props.addCIPipeline}
+                            addWebhookCD={this.props.addWebhookCD}
                             toggleCIMenu={() => {
                                 this.setState({ showCIMenu: !this.state.showCIMenu })
                             }}

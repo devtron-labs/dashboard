@@ -152,6 +152,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.handleCISelect(workflowId || 0, type)
     }
 
+    addWebhookCD = (workflowId?: number | string) => {
+        this.props.history.push(`${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId || 0}/external-cd`)
+    }
+
     handleCDSelect = (
         workflowId: number | string,
         ciPipelineId: number | string,
@@ -286,15 +290,24 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         deleteWorkflow={this.deleteWorkflow}
                     />
                 </Route>
-                <Route path={`${this.props.match.path}/external-cd/:cdPipelineId?`}>
-                    <WebhookCD
-                        appName={this.state.appName}
-                        connectCDPipelines={this.getLen()}
-                        close={this.closePipeline}
-                        getWorkflows={this.getWorkflows}
-                        deleteWorkflow={this.deleteWorkflow}
-                    />
-                </Route>
+                <Route
+                    path={`${this.props.match.path}/external-cd/:cdPipelineId?`}
+                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                        const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
+                        const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
+                        return (
+                            <CDPipeline
+                                match={match}
+                                history={history}
+                                location={location}
+                                appName={this.state.appName}
+                                close={this.closePipeline}
+                                downstreamNodeSize={downstreamNodeSize}
+                                getWorkflows={this.getWorkflows}
+                            />
+                        )
+                    }}
+                />
                 {/* <Route
                     path={`${this.props.match.path}/external-ci/:ciPipelineId?`}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {
@@ -369,6 +382,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     workflowId={0}
                     showMenu={this.state.showCIMenu}
                     addCIPipeline={this.addCIPipeline}
+                    addWebhookCD={this.addWebhookCD}
                     toggleCIMenu={this.toggleCIMenu}
                     styles={{
                         left: `${this.state.cIMenuPosition.left}px`,
@@ -437,6 +451,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     openEditWorkflow={this.openEditWorkflow}
                     showDeleteDialog={this.showDeleteDialog}
                     addCIPipeline={this.addCIPipeline}
+                    addWebhookCD={this.addWebhookCD}
                 />
             )
         })

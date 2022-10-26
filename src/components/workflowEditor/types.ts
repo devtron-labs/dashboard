@@ -53,6 +53,7 @@ export interface PipelineSelectProps {
     styles: { left: string; top: string };
     toggleCIMenu: (event) => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => void;
+    addWebhookCD: (workflowId?: number | string) => void
 }
 
 export interface NoGitOpsConfiguredWarningType {
