@@ -389,9 +389,7 @@ export const DeploymentTemplateOptionsTab = ({
                                     </>
                                 }
                             >
-                                {!chartConfigLoading &&
-                                    codeEditorValue &&
-                                    isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
+                                {isBasicViewLocked && <Locked className="icon-dim-12 mr-6" />}
                                 Basic
                             </RadioGroup.Radio>
                             <RadioGroup.Radio

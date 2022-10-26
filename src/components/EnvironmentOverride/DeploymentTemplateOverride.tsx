@@ -202,23 +202,23 @@ export default function DeploymentTemplateOverride({
     async function handleOverride(e) {
         e.preventDefault()
         if (state.duplicate) {
-            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
-                const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
-                dispatch({
-                    type: 'multipleOptions',
-                    value: {
-                        basicFieldValues: _basicFieldValues,
-                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                        isBasicViewLocked: isBasicValueChanged(state.data.globalConfig),
-                    },
-                })
-            }
             //permanent delete
             if (state.data.IsOverride) {
                 dispatch({ type: 'toggleDialog' })
             } else {
                 //remove copy
-                dispatch({ type: 'removeDuplicate' })
+                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                    const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
+                    dispatch({
+                        type: 'multipleOptions',
+                        value: {
+                            basicFieldValues: _basicFieldValues,
+                            basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                            isBasicViewLocked: isBasicValueChanged(state.data.globalConfig),
+                            duplicate: null,
+                        },
+                    })
+                }
             }
         } else {
             //create copy
@@ -260,7 +260,7 @@ export default function DeploymentTemplateOverride({
         }
 
         const statesToUpdate = {}
-        if (!state.currentViewEditor) {
+        if (!state.currentViewEditor || _isBasicViewLocked !== state.isBasicViewLocked) {
             _currentViewEditor =
                 _isBasicViewLocked ||
                 state.openComparison ||
