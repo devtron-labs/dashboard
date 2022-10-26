@@ -206,10 +206,10 @@
 
 .form__row--gui-container {
     &.gui {
-        height: calc(100% - 180px);
+        height: calc(100% - 160px);
     }
     &.gui-with-warning {
-        height: calc(100% - 212px);
+        height: calc(100% - 192px);
     }
     &.scrollable {
         overflow: hidden scroll;
@@ -364,7 +364,7 @@
         }
         .form__row--gui-container {
             &.gui {
-                height: calc(100% - 240px);
+                height: calc(100% - 220px);
             }
         }
     }
