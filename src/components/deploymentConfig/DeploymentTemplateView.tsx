@@ -375,6 +375,7 @@ export const DeploymentTemplateOptionsTab = ({
                                 canSelect={!chartConfigLoading && !isBasicViewLocked && codeEditorValue}
                                 isDisabled={isBasicViewLocked}
                                 showTippy={isBasicViewLocked}
+                                tippyClass="default-white no-content-padding tippy-shadow"
                                 tippyContent={
                                     <>
                                         <div className="flexbox fw-6 p-12 dc__border-bottom-n1">

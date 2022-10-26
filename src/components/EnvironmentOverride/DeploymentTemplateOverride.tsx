@@ -180,11 +180,12 @@ export default function DeploymentTemplateOverride({
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
-                updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues)
+                const template = result.environmentConfig.envOverrideValues || result.globalConfig
+                updateTemplateFromBasicValue(template)
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,
                     result.environmentConfig.currentViewEditor,
-                    result.environmentConfig.envOverrideValues,
+                    template,
                 )
             }
             dispatch({ type: 'setResult', value: result })
@@ -200,6 +201,15 @@ export default function DeploymentTemplateOverride({
     async function handleOverride(e) {
         e.preventDefault()
         if (state.duplicate) {
+            const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
+            dispatch({
+                type: 'multipleOptions',
+                value: {
+                    basicFieldValues: _basicFieldValues,
+                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                    isBasicViewLocked: isBasicValueChanged(state.data.globalConfig),
+                },
+            })
             //permanent delete
             if (state.data.IsOverride) {
                 dispatch({ type: 'toggleDialog' })
@@ -210,11 +220,11 @@ export default function DeploymentTemplateOverride({
         } else {
             //create copy
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
-                updateTemplateFromBasicValue(state.duplicate || state.data.globalConfig)
+                updateTemplateFromBasicValue(state.data.globalConfig)
                 parseDataForView(
                     state.data.environmentConfig.isBasicViewLocked,
                     state.data.environmentConfig.currentViewEditor,
-                    state.duplicate || state.data.globalConfig,
+                    state.data.globalConfig,
                 )
             }
             dispatch({ type: 'createDuplicate', value: state.data.globalConfig })
@@ -264,7 +274,7 @@ export default function DeploymentTemplateOverride({
             statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
         }
 
-        if (!_isBasicViewLocked) {
+        if (!_isBasicViewLocked && template) {
             const _basicFieldValues = getBasicFieldValue(template)
             statesToUpdate['basicFieldValues'] = _basicFieldValues
             statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
