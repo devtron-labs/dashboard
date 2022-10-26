@@ -256,7 +256,7 @@ export default function DeploymentTemplateOverride({
                 _isBasicViewLocked ||
                 state.openComparison ||
                 state.showReadme ||
-                currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
             statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.BASIC ? false : true

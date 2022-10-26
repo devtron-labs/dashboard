@@ -110,7 +110,7 @@ export default function DeploymentConfig({
         }
         if (!currentViewEditor) {
             _currentViewEditor =
-                _isBasicViewLocked || currentServerInfo.serverInfo.installationType === InstallationType.ENTERPRISE
+                _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
             setIsBasicViewLocked(_isBasicViewLocked)

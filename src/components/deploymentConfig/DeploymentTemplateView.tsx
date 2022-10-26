@@ -862,7 +862,7 @@ export const DeploymentTemplateEditorView = ({
                 </div>
             )}
             <div
-                className={`form__row form__row--gui-container pt-20 pr-20 pl-20 scrollable ${
+                className={`form__row form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
                 }`}
             >
@@ -874,7 +874,7 @@ export const DeploymentTemplateEditorView = ({
                     <div className="w-650-px">
                         <div className="fw-6 fs-14 cn-9 mb-12">Container Port</div>
                         <div className="row-container mb-16">
-                            {renderLabel(BASIC_FIELDS.PORT, 'Port for the container', true)}
+                            {renderLabel('Port', 'Port for the container', true)}
                             <div>
                                 <input
                                     type="text"
@@ -905,7 +905,7 @@ export const DeploymentTemplateEditorView = ({
                         {basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
                             <div className="mb-12">
                                 <div className="row-container mb-12">
-                                    {renderLabel(BASIC_FIELDS.HOST, 'Host name')}
+                                    {renderLabel('Host', 'Host name')}
                                     <input
                                         type="text"
                                         name={BASIC_FIELDS.HOST}
