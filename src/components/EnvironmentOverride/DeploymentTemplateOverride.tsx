@@ -185,7 +185,8 @@ export default function DeploymentTemplateOverride({
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,
                     result.environmentConfig.currentViewEditor,
-                    template,
+                    result.globalConfig,
+                    result.environmentConfig.envOverrideValues
                 )
             }
             dispatch({ type: 'setResult', value: result })
@@ -219,14 +220,6 @@ export default function DeploymentTemplateOverride({
             }
         } else {
             //create copy
-            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
-                updateTemplateFromBasicValue(state.data.globalConfig)
-                parseDataForView(
-                    state.data.environmentConfig.isBasicViewLocked,
-                    state.data.environmentConfig.currentViewEditor,
-                    state.data.globalConfig,
-                )
-            }
             dispatch({ type: 'createDuplicate', value: state.data.globalConfig })
         }
     }
@@ -246,18 +239,22 @@ export default function DeploymentTemplateOverride({
     const parseDataForView = async (
         _isBasicViewLocked: boolean,
         _currentViewEditor: string,
-        template,
+        baseTemplate,
+        envOverrideValues
     ): Promise<void> => {
         if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
-            const {
-                result: {
-                    globalConfig: { defaultAppOverride },
-                },
-            } = await getBaseDeploymentTemplate(
-                +appId,
-                state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-            )
-            _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
+            if (!envOverrideValues) {
+                const {
+                    result: { defaultAppOverride },
+                } = await getBaseDeploymentTemplate(
+                    +appId,
+                    state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
+                    true,
+                )
+                _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
+            } else {
+                _isBasicViewLocked = isBasicValueChanged(baseTemplate, envOverrideValues)
+            }
         }
 
         const statesToUpdate = {}
@@ -275,7 +272,7 @@ export default function DeploymentTemplateOverride({
         }
 
         if (!_isBasicViewLocked) {
-            const _basicFieldValues = getBasicFieldValue(template)
+            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
             statesToUpdate['basicFieldValues'] = _basicFieldValues
             statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
         }
@@ -342,7 +339,7 @@ function DeploymentTemplateOverrideForm({
 
     async function handleSubmit(e) {
         e.preventDefault()
-        if (!obj) {
+        if (!obj && state.yamlMode) {
             toast.error(error)
             return
         }
@@ -350,7 +347,7 @@ function DeploymentTemplateOverrideForm({
             state.data.environmentConfig && state.data.environmentConfig.id > 0
                 ? updateDeploymentTemplate
                 : createDeploymentTemplate
-        const envOverrideValuesWithBasic = !state.yamlMode && patchBasicData(obj, state.basicFieldValues)
+        const envOverrideValuesWithBasic = !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
         const payload = {
             environmentId: +envId,
             envOverrideValues: envOverrideValuesWithBasic || obj,
