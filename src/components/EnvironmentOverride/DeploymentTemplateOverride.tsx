@@ -202,15 +202,17 @@ export default function DeploymentTemplateOverride({
     async function handleOverride(e) {
         e.preventDefault()
         if (state.duplicate) {
-            const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
-            dispatch({
-                type: 'multipleOptions',
-                value: {
-                    basicFieldValues: _basicFieldValues,
-                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                    isBasicViewLocked: isBasicValueChanged(state.data.globalConfig),
-                },
-            })
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
+                dispatch({
+                    type: 'multipleOptions',
+                    value: {
+                        basicFieldValues: _basicFieldValues,
+                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                        isBasicViewLocked: isBasicValueChanged(state.data.globalConfig),
+                    },
+                })
+            }
             //permanent delete
             if (state.data.IsOverride) {
                 dispatch({ type: 'toggleDialog' })

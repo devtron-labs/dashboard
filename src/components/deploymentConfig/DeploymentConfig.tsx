@@ -166,7 +166,7 @@ export default function DeploymentConfig({
             toast.error(error)
             return
         }
-        if (!basicFieldValuesErrorObj.isValid) {
+        if (selectedChart.name === ROLLOUT_DEPLOYMENT && !basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             return
         }
@@ -185,7 +185,7 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride: !yamlMode ? patchBasicData(obj, basicFieldValues) : obj,
+                valuesOverride: !yamlMode && selectedChart.name === ROLLOUT_DEPLOYMENT ? patchBasicData(obj, basicFieldValues) : obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
                 isBasicViewLocked: isBasicViewLocked,
