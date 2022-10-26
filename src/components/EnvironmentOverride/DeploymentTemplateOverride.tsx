@@ -274,7 +274,7 @@ export default function DeploymentTemplateOverride({
             statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
         }
 
-        if (!_isBasicViewLocked && template) {
+        if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
             statesToUpdate['basicFieldValues'] = _basicFieldValues
             statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
@@ -418,7 +418,8 @@ function DeploymentTemplateOverrideForm({
             return
         }
         try {
-            const parsedCodeEditorValue = YAML.parse(tempValue)
+            const parsedCodeEditorValue =
+                tempValue && tempValue !== '' ? YAML.parse(tempValue) : state.duplicate || state.data.globalConfig
             if (state.yamlMode) {
                 const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
                 dispatch({
