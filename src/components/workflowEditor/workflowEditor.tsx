@@ -22,7 +22,7 @@ import './workflowEditor.css'
 import { NodeAttr } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
-import { WebhookCD } from '../ciPipeline/WebhookCD/WebhookCDPipeline'
+import { WebhookDetails } from '../ciPipeline/WebhookCD/WebhookDetails'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     constructor(props) {
@@ -282,7 +282,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }}
                 />
                 <Route path={`${this.props.match.path}/ci-pipeline/:ciPipelineId`}>
-                    <CIPipeline
+                    {/* <CIPipeline
+                        appName={this.state.appName}
+                        connectCDPipelines={this.getLen()}
+                        close={this.closePipeline}
+                        getWorkflows={this.getWorkflows}
+                        deleteWorkflow={this.deleteWorkflow}
+                    /> */}
+                    <WebhookDetails
                         appName={this.state.appName}
                         connectCDPipelines={this.getLen()}
                         close={this.closePipeline}
