@@ -282,13 +282,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }}
                 />
                 <Route path={`${this.props.match.path}/ci-pipeline/:ciPipelineId`}>
-                    {/* <CIPipeline
+                    <CIPipeline
                         appName={this.state.appName}
                         connectCDPipelines={this.getLen()}
                         close={this.closePipeline}
                         getWorkflows={this.getWorkflows}
                         deleteWorkflow={this.deleteWorkflow}
-                    /> */}
+                    />
+                </Route>
+                <Route path={`${this.props.match.path}/webhook/:ciPipelineId`}>
                     <WebhookDetails
                         appName={this.state.appName}
                         connectCDPipelines={this.getLen()}

@@ -8,6 +8,7 @@ import {
     getCIPipelineURL,
     getCDPipelineURL,
     getExCIPipelineURL,
+    getWebhookDetailsURL,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
 import { NodeAttr } from '../../components/app/details/triggerView/types'
@@ -197,24 +198,31 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
     renderWebhookNode(node) {
-        return (
-            <StaticNode
-                x={node.x}
-                y={node.y}
-                url={node.url}
-                branch={node.branch}
-                height={node.height}
-                width={node.width}
-                id={node.id}
-                key={`static-${node.id}-${node.x - node.y}`}
-                title={node.title}
-                downstreams={node.downstreams}
-                icon={node.icon}
-                sourceType={node.sourceType}
-                regex={node.regex}
-                primaryBranchAfterRegex={node.primaryBranchAfterRegex}
-            />
-        )
+      return (
+        <CINode
+            x={node.x}
+            y={node.y}
+            height={node.height}
+            width={node.width}
+            key={`webhook-${node.id}`}
+            id={node.id}
+            workflowId={this.props.id}
+            isTrigger={false}
+            type={node.type}
+            downstreams={node.downstreams}
+            title={node.title}
+            triggerType={node.triggerType}
+            description={node.description}
+            isExternalCI={node.isExternalCI}
+            isLinkedCI={node.isLinkedCI}
+            linkedCount={node.linkedCount}
+            toggleCDMenu={() => {
+                this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
+            }}
+            to={this.openWebhookDetails(node)}
+            configDiffView={this.props.cdWorkflowList?.length > 0}
+        />
+    )
     }
 
     openCDPipeline(node: NodeAttr) {
@@ -233,6 +241,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         else if (node.isExternalCI) url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         else url = getCIPipelineURL(appId, this.props.id.toString(), node.id)
         return `${this.props.match.url}/${url}`
+    }
+
+    openWebhookDetails(node: NodeAttr) {
+        return `${this.props.match.url}/${getWebhookDetailsURL(this.props.id.toString(), node.id)}`
     }
 
     renderCINodes(node) {

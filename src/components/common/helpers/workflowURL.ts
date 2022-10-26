@@ -27,3 +27,11 @@ export function getLinkedCIPipelineURL(appId: string | number, workflowId: strin
     else
         return `${workflowId}/linked-ci`;
 }
+
+
+export function getWebhookDetailsURL(workflowId: string | number, ciPipelineId: string | number = null) {
+    if (ciPipelineId)
+        return `${workflowId}/webhook/${ciPipelineId}`;
+    else
+        return `${workflowId}/webhook`;
+}
