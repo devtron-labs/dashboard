@@ -1,5 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as CaretIcon } from '../../assets/icons/ic-chevron-down.svg'
+import { MODES } from '../../config'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import { getCIConfigDiffValues } from './CIConfig.utils'
+import { CIConfigDiffType } from './types'
 
 export function CIBuildConfigDiff({
     _configOverridenWorkflows,
@@ -9,32 +13,17 @@ export function CIBuildConfigDiff({
     globalCIConfig,
 }) {
     const [showOverrides, setShowOverrides] = useState(false)
-    const _currentWorkflow = _configOverridenWorkflows?.find((_wf) => +wfId === _wf.id)
-    const _currentPipelineOverride = configOverridenPipelines?.find(
-        (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
-    )?.dockerConfigOverride
-    const changedDockerRegistryBGColor = globalCIConfig.dockerRegistry !== _currentPipelineOverride?.dockerRegistry
-    const changedDockerRepositoryBGColor =
-        globalCIConfig.dockerRepository !== _currentPipelineOverride?.dockerRepository
-    const changedDockerfileRelativePathBGColor =
-        globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath !==
-        _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath
-    const changedGitMaterialBGColor =
-        globalCIConfig.ciBuildConfig?.gitMaterialId !== _currentPipelineOverride?.ciBuildConfig?.gitMaterialId
+    const [ciConfigDiffValues, setCIConfigDiffValues] = useState<CIConfigDiffType[]>([])
 
-    let globalGitMaterialName, currentMaterialName
-    if (materials) {
-        for (const gitMaterial of materials) {
-            if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
-                globalGitMaterialName = gitMaterial.materialName
-            }
-
-            if (gitMaterial.gitMaterialId === _currentPipelineOverride?.ciBuildConfig?.gitMaterialId) {
-                currentMaterialName = gitMaterial.materialName
-            }
+    useEffect(() => {
+        if (_configOverridenWorkflows && configOverridenPipelines) {
+            const _currentWorkflow = _configOverridenWorkflows.find((_wf) => +wfId === _wf.id)
+            const _currentPipelineOverride = configOverridenPipelines.find(
+                (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
+            )?.dockerConfigOverride
+            setCIConfigDiffValues(getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials))
         }
-    }
-
+    }, [_configOverridenWorkflows, globalCIConfig])
     const renderDetailedValue = (parentClassName: string, value: string): JSX.Element => {
         return (
             <div className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right`}>
@@ -43,13 +32,8 @@ export function CIBuildConfigDiff({
         )
     }
 
-    const renderValueDiff = (
-        baseValue: string,
-        currentValue: string,
-        changedBGColor: boolean,
-        configName: string,
-        isLastItem?: boolean,
-    ): JSX.Element => {
+    const renderValueDiff = (value: CIConfigDiffType, isLastItem?: boolean): JSX.Element => {
+        const { baseValue, overridenValue, changeBGColor, configName, showInEditor } = value
         const borderClass = isLastItem ? 'dc__border-right' : 'dc__border-right dc__border-bottom'
         const lastColumnClass = isLastItem ? '' : 'dc__border-bottom'
         return (
@@ -57,18 +41,34 @@ export function CIBuildConfigDiff({
                 <div className={`fs-13 fw-4 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right ${borderClass}`}>
                     {configName}
                 </div>
-                {baseValue ? (
-                    renderDetailedValue(`${borderClass} ${changedBGColor ? 'code-editor-red-diff' : ''}`, baseValue)
+                {showInEditor ? (
+                    <CodeEditor
+                        value={overridenValue}
+                        defaultValue={baseValue}
+                        mode={MODES.DOCKERFILE}
+                        height="300px"
+                        readOnly={true}
+                        diffView={true}
+                    />
                 ) : (
-                    <div className={borderClass} />
-                )}
-                {currentValue ? (
-                    renderDetailedValue(
-                        `${lastColumnClass} ${changedBGColor ? 'code-editor-green-diff' : ''}`,
-                        currentValue,
-                    )
-                ) : (
-                    <div className={lastColumnClass} />
+                    <>
+                        {baseValue ? (
+                            renderDetailedValue(
+                                `${borderClass} ${changeBGColor ? 'code-editor-red-diff' : ''}`,
+                                baseValue,
+                            )
+                        ) : (
+                            <div className={borderClass} />
+                        )}
+                        {overridenValue ? (
+                            renderDetailedValue(
+                                `${lastColumnClass} ${changeBGColor ? 'code-editor-green-diff' : ''}`,
+                                overridenValue,
+                            )
+                        ) : (
+                            <div className={lastColumnClass} />
+                        )}
+                    </>
                 )}
             </>
         )
@@ -94,36 +94,15 @@ export function CIBuildConfigDiff({
         setShowOverrides(!showOverrides)
     }
 
+    const lastIndex = ciConfigDiffValues.length - 1
     return (
         <div className="dc__border dc__bottom-radius-4">
             {showOverrides && (
                 <div className="config-override-diff__values">
                     {renderHeader()}
-                    {renderValueDiff(
-                        globalCIConfig.dockerRegistry,
-                        _currentPipelineOverride.dockerRegistry,
-                        changedDockerRegistryBGColor,
-                        'Container registry',
-                    )}
-                    {renderValueDiff(
-                        globalCIConfig.dockerRepository,
-                        _currentPipelineOverride.dockerRepository,
-                        changedDockerRepositoryBGColor,
-                        'Container Repository',
-                    )}
-                    {renderValueDiff(
-                        globalGitMaterialName,
-                        currentMaterialName,
-                        changedGitMaterialBGColor,
-                        'Git Repository',
-                    )}
-                    {renderValueDiff(
-                        globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                        _currentPipelineOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
-                        changedDockerfileRelativePathBGColor,
-                        'Docker file path',
-                        true,
-                    )}
+                    {ciConfigDiffValues.map((val, idx) => {
+                        return renderValueDiff(val, lastIndex === idx)
+                    })}
                 </div>
             )}
             <div

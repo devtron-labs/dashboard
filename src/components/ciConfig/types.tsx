@@ -144,3 +144,11 @@ export interface LanguageBuilderOptionType {
     Versions: VersionsOptionType[]
     BuilderLanguageMetadata: BuilderIdOptionType[]
 }
+
+export interface CIConfigDiffType {
+    configName: string,
+    changeBGColor: boolean,
+    baseValue: string,
+    overridenValue: string,
+    showInEditor?: boolean
+}
