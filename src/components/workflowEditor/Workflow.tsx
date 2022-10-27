@@ -17,6 +17,7 @@ import { WorkflowCreate } from '../app/details/triggerView/config'
 import { Link } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg'
 import trash from '../../assets/icons/misc/delete.svg'
+import { WebhookNode } from './nodes/WebhookNode'
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -199,7 +200,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
     renderWebhookNode(node) {
       return (
-        <CINode
+        <WebhookNode
             x={node.x}
             y={node.y}
             height={node.height}
@@ -209,16 +210,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             workflowId={this.props.id}
             isTrigger={false}
             type={node.type}
-            downstreams={node.downstreams}
             title={node.title}
             triggerType={node.triggerType}
             description={node.description}
             isExternalCI={node.isExternalCI}
             isLinkedCI={node.isLinkedCI}
             linkedCount={node.linkedCount}
-            toggleCDMenu={() => {
-                this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
-            }}
             to={this.openWebhookDetails(node)}
             configDiffView={this.props.cdWorkflowList?.length > 0}
         />
