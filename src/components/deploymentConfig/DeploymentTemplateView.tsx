@@ -13,6 +13,7 @@ import {
     showError,
     sortObjectArrayAlphabetically,
     Toggle,
+    useScrollable,
     versionComparator,
 } from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
@@ -640,6 +641,7 @@ export const DeploymentTemplateEditorView = ({
     setBasicFieldValuesErrorObj,
     changeEditorMode,
 }: DeploymentTemplateEditorViewProps) => {
+    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
@@ -769,6 +771,9 @@ export const DeploymentTemplateEditorView = ({
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
+            if(_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length === 1){
+              scrollToBottom(e)
+            }
         }
     }
 
@@ -866,6 +871,7 @@ export const DeploymentTemplateEditorView = ({
                 </div>
             )}
             <div
+                ref={ref}
                 className={`form__row form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
                 }`}
