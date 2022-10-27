@@ -894,6 +894,7 @@ export const DeploymentTemplateEditorView = ({
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
+                                    autoComplete="off"
                                 />
                                 {basicFieldValuesErrorObj?.port && !basicFieldValuesErrorObj.port.isValid && (
                                     <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
@@ -926,6 +927,7 @@ export const DeploymentTemplateEditorView = ({
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
                                         readOnly={readOnly}
+                                        autoComplete="off"
                                     />
                                 </div>
                                 <div className="row-container mb-4">
@@ -951,6 +953,7 @@ export const DeploymentTemplateEditorView = ({
                                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                                 onChange={handleInputChange}
                                                 readOnly={readOnly}
+                                                autoComplete="off"
                                             />
                                             <Close
                                                 className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
@@ -976,6 +979,7 @@ export const DeploymentTemplateEditorView = ({
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
+                                    autoComplete="off"
                                 />
                                 {basicFieldValuesErrorObj?.cpu && !basicFieldValuesErrorObj.cpu.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
@@ -999,6 +1003,7 @@ export const DeploymentTemplateEditorView = ({
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
+                                    autoComplete="off"
                                 />
                                 {basicFieldValuesErrorObj?.memory && !basicFieldValuesErrorObj.memory.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
@@ -1039,6 +1044,7 @@ export const DeploymentTemplateEditorView = ({
                                         onChange={handleInputChange}
                                         placeholder={BASIC_FIELDS.KEY}
                                         readOnly={readOnly}
+                                        autoComplete="off"
                                     />
                                     <textarea
                                         name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.VALUE}-${index}`}
