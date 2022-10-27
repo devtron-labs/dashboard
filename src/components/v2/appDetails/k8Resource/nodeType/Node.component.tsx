@@ -138,22 +138,30 @@ function NodeComponent({
         }
     }, [params.nodeType, podType, url, filteredNodes]);
 
+    const getPodRestartCount = (info : any) =>{
+        info.array.forEach(element => {
+            if(element.name === 'Restart Count' )return element.value //return restart count value if present
+        });
+        return 0 
+    };
+
     const getElapsedTime = (createdAt : Date) => {
-        let currentDate = new Date()
-        let timeDiffInseconds = Math.floor((currentDate.getTime() - createdAt.getTime())/1000)
-        let days = Math.floor(timeDiffInseconds/(24*60*60))
-        timeDiffInseconds = timeDiffInseconds%(24*60*60) 
-        let hrs = Math.floor(timeDiffInseconds/(60*60))
-        timeDiffInseconds = timeDiffInseconds%(60*60)
-        let mins = Math.floor(timeDiffInseconds/60)
-        let secs = timeDiffInseconds%60 
-        let elapsedTime = ""
-        if(days >= 1) elapsedTime+=(days+"d")
-        if(hrs >= 1) elapsedTime+=(hrs+"h")
-        if(elapsedTime.length > 0)return elapsedTime
-        if(mins >= 1) elapsedTime+=(mins+"m")
-        if(secs >= 1) elapsedTime+=(secs+"s")
-        return elapsedTime
+        const currentDate = new Date()
+        const elapsedTime = Math.floor((currentDate.getTime() - createdAt.getTime())/1000)
+        if (elapsedTime >= 0) {
+            const days = Math.floor(elapsedTime / (24 * 60 * 60)),
+            hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
+            mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
+            secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
+            let age = ""
+            if(days >= 1) age+=(days+"d")
+            if(hrs >= 1) age+=(hrs+"h")
+            if(age.length > 0)return age  //if age is more than hours just show age in days and hours
+            if(mins >= 1) age+=(mins+"m")
+            if(secs >= 1) age+=(secs+"s")
+            return age  //return age in minutes and seconds
+        }
+        return ""
     };
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
@@ -216,8 +224,8 @@ function NodeComponent({
                     {showHeader && !!_currentNodeHeader && (
                         <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
                             <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
-                            { (node.kind === NodeType.Pod) && (podLevelExternalLinks.length > 0) && (<div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> )}
-                            { (node.kind === NodeType.Containers) && (containerLevelExternalLinks.length > 0) && (<div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> )}  
+                            { node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
+                            { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }  
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
@@ -319,7 +327,7 @@ function NodeComponent({
                     
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {(node.kind !== 'Containers') && (node.info?.map((_info) => _info.name === 'Restart Count' ?_info.value : 0).sort((a,b) => a > b ? -1: 1)[0])}
+                                {(node.kind !== 'Containers') && getPodRestartCount(node.info)}
                             </div>
                         )}
 
