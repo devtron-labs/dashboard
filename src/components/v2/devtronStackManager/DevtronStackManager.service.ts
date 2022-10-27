@@ -21,8 +21,8 @@ export const executeModuleAction = (
     return post(`${Routes.MODULE_INFO_API}?name=${moduleName}`, moduleActionRequest)
 }
 
-export const getServerInfo = (): Promise<ServerInfoResponse> => {
-    return get(Routes.SERVER_INFO_API)
+export const getServerInfo = (withoutStatus?: boolean): Promise<ServerInfoResponse> => {
+    return get(`${Routes.SERVER_INFO_API}${withoutStatus ? '?showServerStatus=false' : ''}`)
 }
 
 export const executeServerAction = (serverActionRequest: ModuleActionRequest): Promise<ModuleActionResponse> => {
