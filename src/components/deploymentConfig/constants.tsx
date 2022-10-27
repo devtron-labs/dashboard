@@ -48,7 +48,6 @@ export const getCommonSelectStyles = (styleOverrides = {}) => {
 
 export const BASIC_FIELDS = {
   PORT: 'port',
-  CLASS_NAME: 'className',
   ENABLED: 'enabled',
   HOSTS: 'hosts',
   HOST: 'host',
@@ -68,7 +67,6 @@ export const BASIC_FIELDS = {
 
 export const BASIC_FIELD_MAPPING = {
     [BASIC_FIELDS.PORT]: '/ContainerPort/0/port',
-    [BASIC_FIELDS.CLASS_NAME]: '/ingress/className',
     [BASIC_FIELDS.ENABLED]: '/ingress/enabled',
     [BASIC_FIELDS.HOSTS]: '/ingress/hosts',
     [BASIC_FIELDS.RESOURCES]: '/resources',

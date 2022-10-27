@@ -735,8 +735,6 @@ export const DeploymentTemplateEditorView = ({
         if (e.target.name === BASIC_FIELDS.PORT) {
             e.target.value = e.target.value.replace(/\D/g, '')
             _basicFieldValues[BASIC_FIELDS.PORT] = e.target.value && Number(e.target.value)
-        } else if (e.target.name === BASIC_FIELDS.CLASS_NAME) {
-            _basicFieldValues[BASIC_FIELDS.CLASS_NAME] = e.target.value
         } else if (e.target.name === BASIC_FIELDS.HOST) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.HOST] = e.target.value
         } else if (e.target.name === BASIC_FIELDS.PATH) {
@@ -912,20 +910,6 @@ export const DeploymentTemplateEditorView = ({
                         </div>
                         {basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
                             <div className="mb-12">
-                                <div className="row-container mb-12">
-                                    {renderLabel(
-                                        'Class name',
-                                        'This is used to indicate which ingress controller should be used for routing the traffic.If the ingressClassName is omitted, cluster default Ingress class will be used.',
-                                    )}
-                                    <input
-                                        type="text"
-                                        name={BASIC_FIELDS.CLASS_NAME}
-                                        value={basicFieldValues?.[BASIC_FIELDS.CLASS_NAME]}
-                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                        onChange={handleInputChange}
-                                        readOnly={readOnly}
-                                    />
-                                </div>
                                 <div className="row-container mb-12">
                                     {renderLabel('Host', 'Host name')}
                                     <input
