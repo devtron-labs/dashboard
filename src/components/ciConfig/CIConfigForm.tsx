@@ -6,7 +6,7 @@ import { OptionType } from '../app/types'
 import { CIBuildConfigType, CIBuildType } from '../ciPipeline/types'
 import { ConfirmationDialog, Progressing, showError, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIConfigFormProps, ProcessedWorkflowsType } from './types'
+import { CIBuildArgType, CIConfigFormProps, ProcessedWorkflowsType } from './types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
@@ -41,9 +41,10 @@ export default function CIConfigForm({
     navItems,
     parentState,
     setParentState,
+    setLoadingData,
 }: CIConfigFormProps) {
     const history = useHistory()
-    const _selectedMaterial =
+    const currentMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
                   (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
@@ -51,20 +52,20 @@ export default function CIConfigForm({
             : ciConfig?.ciBuildConfig?.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
             : sourceConfig.material[0]
-    const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
-    const _selectedRegistry =
+    const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
+    const currentRegistry =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
             : ciConfig && ciConfig.dockerRegistry
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
             : dockerRegistries.find((reg) => reg.isDefault)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
-        getCIConfigFormState(ciConfig, selectedCIPipeline, _selectedMaterial, _selectedRegistry),
+        getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
         CI_CONFIG_FORM_VALIDATION,
         onValidation,
     )
-    const [args, setArgs] = useState([])
-    const [buildEnvArgs, setBuildEnvArgs] = useState([])
+    const [args, setArgs] = useState<CIBuildArgType[]>([])
+    const [buildEnvArgs, setBuildEnvArgs] = useState<CIBuildArgType[]>([])
     const [loading, setLoading] = useState(false)
     const targetPlatformMap = getTargetPlatformMap()
     let _selectedPlatforms = []
@@ -298,7 +299,7 @@ export default function CIConfigForm({
                             className="flex right dc__link"
                             rel="noreferrer noopener"
                             target="_blank"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                            href={DOCUMENTATION.APP_CREATE_CI_CONFIG}
                         >
                             <BookOpenIcon className="icon-dim-16 mr-8" />
                             <span>View documentation</span>
@@ -316,7 +317,7 @@ export default function CIConfigForm({
                     dockerRegistries={dockerRegistries}
                     registry={registry}
                     repository_name={repository_name}
-                    currentRegistry={_selectedRegistry}
+                    currentRegistry={currentRegistry}
                     handleOnChangeConfig={handleOnChangeConfig}
                     isCDPipeline={isCDPipeline}
                 />
@@ -326,7 +327,7 @@ export default function CIConfigForm({
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     selectedCIPipeline={selectedCIPipeline}
-                    _selectedMaterial={_selectedMaterial}
+                    currentMaterial={currentMaterial}
                     selectedMaterial={selectedMaterial}
                     setSelectedMaterial={setSelectedMaterial}
                     formState={state}
@@ -343,6 +344,7 @@ export default function CIConfigForm({
                     setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                    setInProgress={configOverrideView ? setLoadingData : setLoading}
                 />
             </div>
             {!configOverrideView && (

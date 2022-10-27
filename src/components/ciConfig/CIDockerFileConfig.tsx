@@ -5,14 +5,18 @@ import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
-import { _multiSelectStyles } from './CIConfig.utils'
+import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType } from '../ciPipeline/types'
-import CIBuildpackBuildOptions, { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
+import CIBuildpackBuildOptions, {
+    renderOptionIcon,
+    repositoryControls,
+    repositoryOption,
+} from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
 import { showError } from '../common'
 import Tippy from '@tippyjs/react'
-import { BuildersAndFrameworksType } from './types'
+import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -20,7 +24,7 @@ export default function CIDockerFileConfig({
     sourceConfig,
     allowOverride,
     selectedCIPipeline,
-    _selectedMaterial,
+    currentMaterial,
     selectedMaterial,
     setSelectedMaterial,
     formState,
@@ -37,7 +41,8 @@ export default function CIDockerFileConfig({
     setShowCustomPlatformWarning,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
-}) {
+    setInProgress,
+}: CIDockerFileConfigProps) {
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
     const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
         builders: [],
@@ -46,7 +51,7 @@ export default function CIDockerFileConfig({
         selectedLanguage: null,
         selectedVersion: null,
     })
-    const isBuildpackType = currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
+    const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
     const CI_BUILD_TYPE_OPTIONS = [
         {
             id: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
@@ -78,6 +83,7 @@ export default function CIDockerFileConfig({
     ]
 
     useEffect(() => {
+        setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
             .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
                 setBuildersAndFrameworks({
@@ -85,9 +91,11 @@ export default function CIDockerFileConfig({
                     builders: buildpackMetadata?.LanguageBuilder || [],
                     frameworks: dockerfileTemplate?.LanguageFrameworks || [],
                 })
+                setInProgress(false)
             })
             .catch((err) => {
                 showError(err)
+                setInProgress(false)
             })
     }, [])
 
@@ -111,6 +119,16 @@ export default function CIDockerFileConfig({
             })
         }
     }, [buildEnvArgs])
+
+    useEffect(() => {
+        if (configOverrideView) {
+            setCIBuildTypeOption(
+                (allowOverride
+                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.ciBuildType
+                    : ciConfig?.ciBuildConfig?.ciBuildType) || currentCIBuildConfig.ciBuildType,
+            )
+        }
+    }, [allowOverride])
 
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
@@ -203,57 +221,78 @@ export default function CIDockerFileConfig({
             <div className="mb-4 form-row__docker">
                 <div className="form__field">
                     <label className="form__label">Select repository containing Dockerfile</label>
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        isMulti={false}
-                        isClearable={false}
-                        options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
-                        value={configOverrideView && !allowOverride ? _selectedMaterial : selectedMaterial}
-                        styles={_multiSelectStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
-                        onChange={handleFileLocationChange}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                    {configOverrideView && !allowOverride ? (
+                        <div className="flex left">
+                            {renderOptionIcon(currentMaterial?.url)}
+                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name}</span>
+                        </div>
+                    ) : (
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            isMulti={false}
+                            isClearable={false}
+                            options={sourceConfig.material}
+                            getOptionLabel={(option) => `${option.name}`}
+                            getOptionValue={(option) => `${option.checkoutPath}`}
+                            value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                            styles={{
+                                ..._multiSelectStyles,
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: repositoryOption,
+                                Control: repositoryControls,
+                            }}
+                            onChange={handleFileLocationChange}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    )}
                     {formState.repository.error && <label className="form__error">{formState.repository.error}</label>}
                 </div>
                 <div className="form__field">
                     <label htmlFor="" className="form__label">
-                        Docker file path (relative)*
+                        Dockerfile Path (Relative)*
                     </label>
-                    <div className="docker-file-container">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={selectedMaterial?.checkoutPath}
-                        >
-                            <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                {selectedMaterial?.checkoutPath}
-                            </span>
-                        </Tippy>
-                        <input
-                            tabIndex={4}
-                            type="text"
-                            className="form__input file-name"
-                            placeholder="Dockerfile"
-                            name="dockerfile"
-                            value={
-                                configOverrideView && !allowOverride
-                                    ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
-                                    : formState.dockerfile.value
-                            }
-                            onChange={handleOnChangeConfig}
-                            autoComplete={'off'}
-                            disabled={configOverrideView && !allowOverride}
-                        />
-                    </div>
+                    {configOverrideView && !allowOverride ? (
+                        <span className="fs-14 fw-4 lh-20 cn-9">
+                            {selectedMaterial?.checkoutPath}
+                            {ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'}
+                        </span>
+                    ) : (
+                        <div className="docker-file-container">
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={selectedMaterial?.checkoutPath}
+                            >
+                                <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                    {selectedMaterial?.checkoutPath}
+                                </span>
+                            </Tippy>
+                            <input
+                                tabIndex={4}
+                                type="text"
+                                className="form__input file-name"
+                                placeholder="Dockerfile"
+                                name="dockerfile"
+                                value={
+                                    configOverrideView && !allowOverride
+                                        ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath ||
+                                          'Dockerfile'
+                                        : formState.dockerfile.value
+                                }
+                                onChange={handleOnChangeConfig}
+                                autoComplete={'off'}
+                                disabled={configOverrideView && !allowOverride}
+                            />
+                        </div>
+                    )}
                     {formState.dockerfile.error && <label className="form__error">{formState.dockerfile.error}</label>}
                 </div>
             </div>
@@ -262,8 +301,12 @@ export default function CIDockerFileConfig({
 
     return (
         <div className="white-card white-card__docker-config dc__position-rel">
-            <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">How do you want to build the container image?</h3>
-            {renderCIBuildTypeOptions()}
+            <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">
+                {configOverrideView && !allowOverride
+                    ? `Build the container image ${CI_BUILDTYPE_ALIAS[ciBuildTypeOption]}`
+                    : 'How do you want to build the container image?'}
+            </h3>
+            {(!configOverrideView || allowOverride) && renderCIBuildTypeOptions()}
             {ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE && renderSelfDockerfileBuildOption()}
             {ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE && (
                 <CICreateDockerfileOption
@@ -272,6 +315,7 @@ export default function CIDockerFileConfig({
                     frameworks={buildersAndFrameworks.frameworks}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                    setInProgress={setInProgress}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
@@ -286,7 +330,7 @@ export default function CIDockerFileConfig({
                     setBuildersAndFrameworks={setBuildersAndFrameworks}
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
-                    _selectedMaterial={_selectedMaterial}
+                    currentMaterial={currentMaterial}
                     selectedMaterial={selectedMaterial}
                     handleFileLocationChange={handleFileLocationChange}
                     repository={formState.repository}

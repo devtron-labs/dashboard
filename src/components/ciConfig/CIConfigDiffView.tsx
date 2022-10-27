@@ -50,7 +50,7 @@ export default function CIConfigDiffView({
     const renderConfigDiffModalTitle = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify bcn-0 pr-20 dc__border-bottom">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 pt-16 pb-16 pl-20 pr-20">Override details</h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0 pt-16 pb-16 pl-20 pr-20">Override Details</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -164,7 +164,7 @@ export default function CIConfigDiffView({
                     <DeleteDialog
                         title="Delete Override"
                         description="Are you sure you want to delete override for this pipeline"
-                        deletePrefix="Confirm"
+                        deletePrefix="Confirm "
                         closeDelete={toggleDeleteDialogVisibility}
                         delete={deleteOverride}
                     />

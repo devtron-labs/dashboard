@@ -12,6 +12,7 @@ export default function AdvancedConfigOptions({
     formData,
     setFormData,
     setDockerConfigOverridden,
+    setLoadingData,
 }: AdvancedConfigOptionsProps) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -153,6 +154,10 @@ export default function AdvancedConfigOptions({
         if (updateDockerConfigOverride) {
             updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
         }
+
+        if (allowOverride) {
+            
+        }
     }
 
     return (
@@ -180,6 +185,7 @@ export default function AdvancedConfigOptions({
                     parentState={parentState}
                     setParentState={setParentState}
                     updateDockerConfigOverride={updateDockerConfigOverride}
+                    setLoadingData={setLoadingData}
                 />
                 {parentState?.loadingState === ComponentStates.loaded &&
                     parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&

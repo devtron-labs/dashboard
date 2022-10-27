@@ -217,7 +217,7 @@ export interface BuildPackConfigType {
     builderLangEnvParam?: string
     currentBuilderLangEnvParam?: string
     buildPacks?: any
-    args?: Map<string, string>
+    args?: Record<string, string>
 }
 
 export interface DockerBuildConfigType {
@@ -225,7 +225,7 @@ export interface DockerBuildConfigType {
     dockerfileRelativePath: string
     dockerfilePath?: string
     dockerfileRepository?: string
-    args?: Map<string, string>
+    args?: Record<string, string>
     targetPlatform?: any
     language?: string
     languageFramework?: string

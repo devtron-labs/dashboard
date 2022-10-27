@@ -34,30 +34,30 @@ function InfoColourBar({
                 className={`${classname} info_text flex dc__content-space pt-10 pb-10 pl-16 pr-16 br-4 top fs-13 fw-4`}
                 style={styles}
             >
-                <span className="flex top">
+                <div className={`flex top ${typeof renderActionButton === 'function' ? 'mr-5' : ''}`}>
                     <div className={`icon-dim-${iconSize ?? '20'} mr-10`}>
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
-                        <span>{message}</span>
+                        <span className={linkText ? 'mr-5' : ''}>{message}</span>
                         {linkText && redirectLink && (
                             <a
                                 href={redirectLink}
                                 target="_blank"
                                 onClick={linkOnClick}
-                                className="cursor dc__link dc__underline-onhover"
+                                className="cursor dc__link dc__underline-onhover mr-5"
                             >
-                                &nbsp;{linkText}
+                                {linkText}
                             </a>
                         )}
                         {linkText && !redirectLink && linkOnClick && (
                             <div onClick={linkOnClick} className="cursor dc__link dc__underline-onhover">
-                                &nbsp;{linkText}
+                                {linkText}
                             </div>
                         )}
                     </div>
-                </span>
-                {typeof renderActionButton === 'function' && <>&nbsp;{renderActionButton()}</>}
+                </div>
+                {typeof renderActionButton === 'function' && renderActionButton()}
             </div>
         </div>
     )

@@ -8,6 +8,7 @@ import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg
 import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
+import { CIAdvancedConfigProps } from './types'
 
 export default function CIAdvancedConfig({
     configOverrideView,
@@ -20,7 +21,7 @@ export default function CIAdvancedConfig({
     targetPlatformMap,
     showCustomPlatformWarning,
     setShowCustomPlatformWarning,
-}) {
+}: CIAdvancedConfigProps) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const updateNotAllowed = configOverrideView && !allowOverride
 
@@ -122,13 +123,18 @@ export default function CIAdvancedConfig({
         }
     }
 
-    const renderBuildEnvArgs = () => {
+    const renderBuildArgs = (isDockerArgsSection?: boolean) => {
         return (
             <div>
                 <div className="flex left fs-13 fw-6 mb-8">
-                    Build env arguments
-                    <QuestionIcon className="icon-dim-16 fcn-6 ml-4" />
+                    {isDockerArgsSection ? 'Docker Build Arguments' : 'Build Env Arguments'}
+                    {!isDockerArgsSection && <QuestionIcon className="icon-dim-16 fcn-6 ml-4" />}
                 </div>
+                {!updateNotAllowed && (
+                    <div className="add-parameter fs-14 mb-8 cb-5 cursor" onClick={addArg}>
+                        <span className="fa fa-plus mr-8"></span>Add{isDockerArgsSection ? ' parameter' : ' argument'}
+                    </div>
+                )}
                 {args &&
                     args.map((arg, idx) => (
                         <div className="flexbox justify-space" key={`build-${idx}`}>
@@ -158,23 +164,11 @@ export default function CIAdvancedConfig({
                                     disabled={updateNotAllowed}
                                 />
                             </div>
-                            <Cross
-                                data-id={idx}
-                                className={`icon-dim-24 mt-6 ml-6 ${
-                                    updateNotAllowed ? 'cursor-not-allowed' : 'cursor'
-                                }`}
-                                onClick={deleteArgs}
-                            />
+                            {!updateNotAllowed && (
+                                <Cross data-id={idx} className="icon-dim-24 mt-6 ml-6 cursor" onClick={deleteArgs} />
+                            )}
                         </div>
                     ))}
-                <div
-                    className={`add-parameter fs-14 mb-20 ${
-                        updateNotAllowed ? 'cn-6 cursor-not-allowed' : 'cb-5 cursor'
-                    }`}
-                    onClick={addArg}
-                >
-                    <span className="fa fa-plus mr-8"></span>Add parameter
-                </div>
             </div>
         )
     }
@@ -184,7 +178,7 @@ export default function CIAdvancedConfig({
     }
 
     return isBuildpackType ? (
-        renderBuildEnvArgs()
+        renderBuildArgs()
     ) : (
         <>
             <div onClick={toggleCollapse} className="flex left cursor mb-20">
@@ -243,34 +237,7 @@ export default function CIAdvancedConfig({
                             </span>
                         )}
                     </div>
-                    <div>
-                        <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
-                        {args &&
-                            args.map((arg, idx) => (
-                                <KeyValueInput
-                                    keyLabel={'Key'}
-                                    valueLabel={'Value'}
-                                    {...arg}
-                                    key={idx}
-                                    index={idx}
-                                    onChange={handleArgsChange}
-                                    onDelete={(e) => {
-                                        let argsTemp = [...args]
-                                        argsTemp.splice(idx, 1)
-                                        setArgs(argsTemp)
-                                    }}
-                                    valueType="text"
-                                />
-                            ))}
-                        <div
-                            className="add-parameter pointer fs-14 cb-5 mb-20"
-                            onClick={(e) =>
-                                setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
-                            }
-                        >
-                            <span className="fa fa-plus mr-8"></span>Add parameter
-                        </div>
-                    </div>
+                    {renderBuildArgs(true)}
                 </>
             )}
         </>

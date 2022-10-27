@@ -13,23 +13,31 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { CIBuildType } from '../ciPipeline/types'
-import { BuilderIdOptionType, LanguageBuilderOptionType, VersionsOptionType } from './types'
+import {
+    BuilderIdOptionType,
+    CIBuildpackBuildOptionsProps,
+    LanguageBuilderOptionType,
+    VersionsOptionType,
+} from './types'
+
+export const renderOptionIcon = (option: string) => {
+    const optionIconAvailable = option.includes('gitlab') || option.includes('github') || option.includes('bitbucket')
+    return optionIconAvailable ? (
+        <>
+            {option.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {option.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {option.includes('bitbucket') && <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+        </>
+    ) : (
+        <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
+    )
+}
 
 export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props}>
-            {props.data.url.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-            {props.data.url.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-            {props.data.url.includes('bitbucket') && (
-                <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
-            )}
-            {props.data.url.includes('gitlab') ||
-            props.data.url.includes('github') ||
-            props.data.url.includes('bitbucket') ? null : (
-                <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
-            )}
-
+            {renderOptionIcon(props.data.url)}
             {props.label}
         </components.Option>
     )
@@ -59,7 +67,7 @@ export default function CIBuildpackBuildOptions({
     setBuildersAndFrameworks,
     configOverrideView,
     allowOverride,
-    _selectedMaterial,
+    currentMaterial,
     selectedMaterial,
     handleFileLocationChange,
     repository,
@@ -69,7 +77,7 @@ export default function CIBuildpackBuildOptions({
     setCurrentCIBuildConfig,
     buildEnvArgs,
     setBuildEnvArgs,
-}) {
+}: CIBuildpackBuildOptionsProps) {
     const [supportedLanguagesList, setSupportedLanguagesList] = useState<OptionType[]>([])
     const [builderLanguageSupportMap, setBuilderLanguageSupportMap] =
         useState<Record<string, LanguageBuilderOptionType>>()
@@ -85,7 +93,7 @@ export default function CIBuildpackBuildOptions({
         const _builderLanguageSupportMap: Record<string, LanguageBuilderOptionType> = {}
         let initOption = null
         for (const _languageBuilder of buildersAndFrameworks.builders) {
-            const versionOptions =
+            const versionOptions: VersionsOptionType[] =
                 _languageBuilder.Versions?.map((ver) => ({
                     label: ver,
                     value: ver,
@@ -174,6 +182,7 @@ export default function CIBuildpackBuildOptions({
                     value: initOption.version,
                 }
                 _currentCIBuildConfig['buildPackConfig'] = {
+                    ..._currentCIBuildConfig.buildPackConfig,
                     builderId: initOption.builderId,
                     language: initOption.language,
                     languageVersion: initOption.version,
@@ -345,8 +354,8 @@ export default function CIBuildpackBuildOptions({
 
     const formatOptionLabel = (option: VersionsOptionType) => {
         return (
-            <div className="flex left column w-100">
-                <span className="dc__ellipsis-right">{option.label}</span>
+            <div className="flex left column w-100 dc__ellipsis-right">
+                <span>{option.label}</span>
                 {option.infoText && <small className="cn-6">{option.infoText}</small>}
             </div>
         )
@@ -359,150 +368,195 @@ export default function CIBuildpackBuildOptions({
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                    <label className="form__label">Repo containing code you want to build</label>
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        isSearchable={false}
-                        options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
-                        value={configOverrideView && !allowOverride ? _selectedMaterial : selectedMaterial}
-                        styles={getCommonSelectStyle({
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
-                        onChange={handleFileLocationChange}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                    <label className="form__label">Select repository containing code</label>
+                    {configOverrideView && !allowOverride ? (
+                        <div className="flex left">
+                            {renderOptionIcon(currentMaterial?.url)}
+                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name}</span>
+                        </div>
+                    ) : (
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            isSearchable={false}
+                            options={sourceConfig.material}
+                            getOptionLabel={(option) => `${option.name}`}
+                            getOptionValue={(option) => `${option.checkoutPath}`}
+                            value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                            styles={getCommonSelectStyle({
+                                control: (base, state) => ({
+                                    ...base,
+                                    minHeight: '36px',
+                                    boxShadow: 'none',
+                                    backgroundColor: 'var(--N50)',
+                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                    cursor: 'pointer',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                    minWidth: '226px',
+                                }),
+                            })}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: repositoryOption,
+                                Control: repositoryControls,
+                            }}
+                            onChange={handleFileLocationChange}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    )}
                     {repository.error && <label className="form__error">{repository.error}</label>}
                 </div>
                 <div className="form__field">
                     <label htmlFor="" className="form__label">
-                        Project path (relative)
+                        Project Path (Relative)
                     </label>
-                    <div className="project-path-container h-36">
-                        <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                            ./
-                        </span>
-                        <input
-                            tabIndex={4}
-                            type="text"
-                            className="form__input file-name"
-                            placeholder="Project path"
-                            name="projectPath"
-                            value={projectPathVal === './' ? '' : projectPathVal}
-                            onChange={handleOnChangeConfig}
-                            autoComplete={'off'}
-                            disabled={configOverrideView && !allowOverride}
-                        />
-                    </div>
+                    {configOverrideView && !allowOverride ? (
+                        <span className="fs-14 fw-4 lh-20 cn-9">{projectPathVal || './'}</span>
+                    ) : (
+                        <div className="project-path-container h-36">
+                            <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                ./
+                            </span>
+                            <input
+                                tabIndex={4}
+                                type="text"
+                                className="form__input file-name"
+                                placeholder="Project path"
+                                name="projectPath"
+                                value={projectPathVal === './' ? '' : projectPathVal}
+                                onChange={handleOnChangeConfig}
+                                autoComplete={'off'}
+                                disabled={configOverrideView && !allowOverride}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="flex top buildpack-options">
                 <div className="form__field">
                     <label className="form__label">Language</label>
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        options={supportedLanguagesList}
-                        value={buildersAndFrameworks.selectedLanguage}
-                        isSearchable={false}
-                        styles={getCommonSelectStyle({
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        onChange={handleLanguageSelection}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                    {configOverrideView && !allowOverride ? (
+                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedLanguage?.label}</span>
+                    ) : (
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            options={supportedLanguagesList}
+                            value={buildersAndFrameworks.selectedLanguage}
+                            isSearchable={false}
+                            styles={getCommonSelectStyle({
+                                control: (base, state) => ({
+                                    ...base,
+                                    minHeight: '36px',
+                                    boxShadow: 'none',
+                                    backgroundColor: 'var(--N50)',
+                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                    cursor: 'pointer',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                    minWidth: '226px',
+                                }),
+                            })}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option,
+                            }}
+                            onChange={handleLanguageSelection}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    )}
                 </div>
                 <div className="form__field">
                     <label className="form__label">Version</label>
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
-                        options={builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions}
-                        value={buildersAndFrameworks.selectedVersion}
-                        formatOptionLabel={formatOptionLabel}
-                        isSearchable={false}
-                        styles={getCommonSelectStyle({
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                            valueContainer: (base) => ({
-                                ...base,
-                                small: {
-                                    display: 'none',
-                                },
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        onChange={handleVersionSelection}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                    {configOverrideView && !allowOverride ? (
+                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedVersion?.value}</span>
+                    ) : (
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
+                            options={
+                                builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
+                            }
+                            value={buildersAndFrameworks.selectedVersion}
+                            formatOptionLabel={formatOptionLabel}
+                            isSearchable={false}
+                            styles={getCommonSelectStyle({
+                                control: (base, state) => ({
+                                    ...base,
+                                    minHeight: '36px',
+                                    boxShadow: 'none',
+                                    backgroundColor: 'var(--N50)',
+                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                    cursor: 'pointer',
+                                }),
+                                valueContainer: (base) => ({
+                                    ...base,
+                                    small: {
+                                        display: 'none',
+                                    },
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                    minWidth: '226px',
+                                }),
+                            })}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option,
+                            }}
+                            onChange={handleVersionSelection}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    )}
                 </div>
                 <div className="form__field">
-                    <label className="form__label">Select a builder</label>
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
-                        options={
-                            builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]
-                                ?.BuilderLanguageMetadata
-                        }
-                        value={buildersAndFrameworks.selectedBuilder}
-                        isSearchable={false}
-                        styles={getCommonSelectStyle({
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        onChange={handleBuilderSelection}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                    <label className="form__label">Select a Builder</label>
+                    {configOverrideView && !allowOverride ? (
+                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
+                    ) : (
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
+                            options={
+                                builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]
+                                    ?.BuilderLanguageMetadata
+                            }
+                            value={buildersAndFrameworks.selectedBuilder}
+                            isSearchable={false}
+                            styles={getCommonSelectStyle({
+                                control: (base, state) => ({
+                                    ...base,
+                                    minHeight: '36px',
+                                    boxShadow: 'none',
+                                    backgroundColor: 'var(--N50)',
+                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                    cursor: 'pointer',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                    minWidth: '226px',
+                                }),
+                            })}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option,
+                            }}
+                            onChange={handleBuilderSelection}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    )}
                 </div>
             </div>
         </div>

@@ -5,18 +5,11 @@ import { MODES } from '../../config'
 import { OptionType } from '../app/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { copyToClipboard, Progressing, showError } from '../common'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../v2/common/ReactSelect.utils'
+import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CIBuildType } from '../ciPipeline/types'
-interface FrameworkOptionType extends OptionType {
-    templateUrl: string
-}
-
-interface TemplateDataType {
-    fetching: boolean
-    data: string
-}
+import { CICreateDockerfileOptionProps, FrameworkOptionType, TemplateDataType } from './types'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -24,7 +17,8 @@ export default function CICreateDockerfileOption({
     frameworks,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
-}) {
+    setInProgress,
+}: CICreateDockerfileOptionProps) {
     const [languages, setLanguages] = useState<OptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
     const [selectedLanguage, setSelectedLanguage] = useState<OptionType>()
@@ -115,6 +109,7 @@ export default function CICreateDockerfileOption({
             })
             setEditorValue(_currentData.data)
         } else if (_selectedFramework?.templateUrl) {
+            setInProgress(true)
             setTemplateData({
                 ...templateData,
                 [templateKey]: {
@@ -149,6 +144,7 @@ export default function CICreateDockerfileOption({
                         languageFramework: _selectedFramework?.value,
                     },
                 })
+                setInProgress(false)
             } catch (err) {
                 // Don't show error toast or log the error as user aborted the request
                 if (!signal.aborted) {
@@ -162,6 +158,7 @@ export default function CICreateDockerfileOption({
                     },
                 })
                 setEditorValue('')
+                setInProgress(false)
             }
         } else {
             setTemplateData({
@@ -249,38 +246,46 @@ export default function CICreateDockerfileOption({
         return (
             <div className="flex">
                 <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
-                <ReactSelect
-                    tabIndex={3}
-                    options={languages}
-                    value={selectedLanguage}
-                    isSearchable={false}
-                    styles={customStyles}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    onChange={handleLanguageSelection}
-                    isDisabled={configOverrideView && !allowOverride}
-                />
+                {configOverrideView && !allowOverride ? (
+                    <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
+                ) : (
+                    <ReactSelect
+                        tabIndex={3}
+                        options={languages}
+                        value={selectedLanguage}
+                        isSearchable={false}
+                        styles={customStyles}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        onChange={handleLanguageSelection}
+                        isDisabled={configOverrideView && !allowOverride}
+                    />
+                )}
                 {languageFrameworks?.get(selectedLanguage?.value)?.[0]?.value && (
                     <>
                         <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
                         <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
-                        <ReactSelect
-                            tabIndex={3}
-                            options={languageFrameworks?.get(selectedLanguage?.value) || []}
-                            value={selectedFramework}
-                            isSearchable={false}
-                            styles={customStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option,
-                            }}
-                            onChange={handleFrameworkSelection}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
+                        {configOverrideView && !allowOverride ? (
+                            <span className="fs-13 fw-6 lh-20 cn-9">{selectedFramework?.label}</span>
+                        ) : (
+                            <ReactSelect
+                                tabIndex={3}
+                                options={languageFrameworks?.get(selectedLanguage?.value) || []}
+                                value={selectedFramework}
+                                isSearchable={false}
+                                styles={customStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator,
+                                    Option,
+                                }}
+                                onChange={handleFrameworkSelection}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
+                        )}
                     </>
                 )}
                 {!editorData?.fetching && editorData?.data !== editorValue && (
@@ -336,22 +341,24 @@ export default function CICreateDockerfileOption({
                 <CodeEditor.Header>
                     <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
                         {renderLanguageOptions(editorData)}
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={copied ? 'Copied!' : 'Copy'}
-                            trigger="mouseenter click"
-                            onShow={(_tippy) => {
-                                setTimeout(() => {
-                                    _tippy.hide()
-                                    setCopied(false)
-                                }, 5000)
-                            }}
-                            interactive={true}
-                        >
-                            <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
-                        </Tippy>
+                        {(!configOverrideView || allowOverride) && (
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="bottom"
+                                content={copied ? 'Copied!' : 'Copy'}
+                                trigger="mouseenter click"
+                                onShow={(_tippy) => {
+                                    setTimeout(() => {
+                                        _tippy.hide()
+                                        setCopied(false)
+                                    }, 5000)
+                                }}
+                                interactive={true}
+                            >
+                                <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                            </Tippy>
+                        )}
                     </div>
                 </CodeEditor.Header>
             </CodeEditor>

@@ -34,8 +34,8 @@ export function CIBuildConfigDiff({
 
     const renderValueDiff = (value: CIConfigDiffType, isLastItem?: boolean): JSX.Element => {
         const { baseValue, overridenValue, changeBGColor, configName, showInEditor } = value
-        const borderClass = isLastItem ? 'dc__border-right' : 'dc__border-right dc__border-bottom'
-        const lastColumnClass = isLastItem ? '' : 'dc__border-bottom'
+        const borderClass = isLastItem ? 'dc__border-right' : 'dc__border-right dc__border-bottom-n1'
+        const lastColumnClass = isLastItem ? '' : 'dc__border-bottom-n1'
         return (
             <>
                 <div className={`fs-13 fw-4 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right ${borderClass}`}>
@@ -111,7 +111,7 @@ export function CIBuildConfigDiff({
                 }`}
                 onClick={toggleOverridesVisibility}
             >
-                {showOverrides ? 'Hide' : 'Show'} overrides
+                {showOverrides ? 'Hide Overrides' : 'Show Overrides'}
                 <CaretIcon
                     className="icon-dim-20 fcn-6 rotate ml-4"
                     style={{

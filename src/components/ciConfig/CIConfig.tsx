@@ -20,6 +20,7 @@ export default function CIConfig({
     isCDPipeline,
     isCiPipeline,
     navItems,
+    setLoadingData,
 }: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
@@ -126,6 +127,7 @@ export default function CIConfig({
             navItems={navItems}
             parentState={parentState}
             setParentState={setParentState}
+            setLoadingData={setLoadingData}
         />
     )
 }

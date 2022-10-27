@@ -3,7 +3,7 @@ import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
 import { multiSelectStyles } from '../common'
-import { CIConfigDiffType } from './types'
+import { CIBuildArgType, CIConfigDiffType } from './types'
 
 export const _multiSelectStyles = {
     ...multiSelectStyles,
@@ -88,11 +88,11 @@ export const CI_CONFIG_FORM_VALIDATION = {
 export const getCIConfigFormState = (
     ciConfig: CiPipelineResult,
     selectedCIPipeline: CIPipelineDataType,
-    _selectedMaterial: any,
-    _selectedRegistry: any,
+    currentMaterial: any,
+    currentRegistry: any,
 ) => {
     return {
-        repository: { value: _selectedMaterial?.name || '', error: '' },
+        repository: { value: currentMaterial?.name || '', error: '' },
         dockerfile: {
             value:
                 (selectedCIPipeline?.isDockerConfigOverridden
@@ -109,7 +109,7 @@ export const getCIConfigFormState = (
                       ciConfig.ciBuildConfig.buildPackConfig?.projectPath) || '',
             error: '',
         },
-        registry: { value: _selectedRegistry?.id, error: '' },
+        registry: { value: currentRegistry?.id, error: '' },
         repository_name: {
             value: selectedCIPipeline?.isDockerConfigOverridden
                 ? selectedCIPipeline.dockerConfigOverride?.dockerRepository
@@ -168,13 +168,8 @@ export const initCurrentCIBuildConfig = (
 }
 
 export const processBuildArgs = (
-    args: Map<string, string>,
-): {
-    k: string
-    v: string
-    keyError: string
-    valueError: string
-}[] => {
+    args: Record<string, string>,
+): CIBuildArgType[] => {
     const processedArgs = args
         ? Object.keys(args).map((arg) => ({
               k: arg,
@@ -200,10 +195,10 @@ export const getTargetPlatformMap = (): Map<string, boolean> => {
     return targetPlatformMap
 }
 
-const CI_BUILD_TYPE_ALIAS = {
-    [CIBuildType.SELF_DOCKERFILE_BUILD_TYPE]: 'Using Dockerfile',
-    [CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE]: 'Creating Dockerfile',
-    [CIBuildType.BUILDPACK_BUILD_TYPE]: 'Without Dockerfile',
+export const CI_BUILDTYPE_ALIAS = {
+    [CIBuildType.SELF_DOCKERFILE_BUILD_TYPE]: 'using dockerfile',
+    [CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE]: 'using customized dockerfile',
+    [CIBuildType.BUILDPACK_BUILD_TYPE]: 'without dockerfile',
 }
 
 const getDefaultDiffValues = (
@@ -214,13 +209,13 @@ const getDefaultDiffValues = (
 ): CIConfigDiffType[] => {
     return [
         {
-            configName: 'Container registry',
+            configName: 'Container Registry',
             changeBGColor: globalCIConfig.dockerRegistry !== ciConfigOverride?.dockerRegistry,
             baseValue: globalCIConfig.dockerRegistry,
             overridenValue: ciConfigOverride?.dockerRegistry,
         },
         {
-            configName: 'Container repository',
+            configName: 'Container Repository',
             changeBGColor: globalCIConfig.dockerRepository !== ciConfigOverride?.dockerRepository,
             baseValue: globalCIConfig.dockerRepository,
             overridenValue: ciConfigOverride?.dockerRepository,
@@ -228,8 +223,8 @@ const getDefaultDiffValues = (
         {
             configName: 'Build the container image',
             changeBGColor: globalCIBuildType !== ciBuildTypeOverride,
-            baseValue: CI_BUILD_TYPE_ALIAS[globalCIBuildType],
-            overridenValue: CI_BUILD_TYPE_ALIAS[ciBuildTypeOverride],
+            baseValue: CI_BUILDTYPE_ALIAS[globalCIBuildType],
+            overridenValue: CI_BUILDTYPE_ALIAS[ciBuildTypeOverride],
         },
     ]
 }
@@ -248,14 +243,14 @@ const updateSelfDockerfileDiffValues = (
         ciBuildTypeOverride === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
     ) {
         ciConfigDiffValues.push({
-            configName: 'Git repository',
+            configName: 'Git Repository',
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.gitMaterialId !== ciConfigOverride?.ciBuildConfig?.gitMaterialId,
             baseValue: globalGitMaterialName,
             overridenValue: currentMaterialName,
         })
         ciConfigDiffValues.push({
-            configName: 'Dockerfile path',
+            configName: 'Dockerfile Path',
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath !==
                 ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath,
@@ -277,7 +272,7 @@ const updateCreateDockerfileDiffValues = (
         ciBuildTypeOverride === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE
     ) {
         ciConfigDiffValues.push({
-            configName: 'Dockerfile language',
+            configName: 'Dockerfile Language',
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.dockerBuildConfig?.language !==
                 ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.language,
@@ -318,14 +313,14 @@ const updateBuildpackDiffValues = (
         ciBuildTypeOverride === CIBuildType.BUILDPACK_BUILD_TYPE
     ) {
         ciConfigDiffValues.push({
-            configName: 'Git repository',
+            configName: 'Git Repository',
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.gitMaterialId !== ciConfigOverride?.ciBuildConfig?.gitMaterialId,
             baseValue: globalGitMaterialName,
             overridenValue: currentMaterialName,
         })
         ciConfigDiffValues.push({
-            configName: 'Project path',
+            configName: 'Project Path',
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath !==
                 ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
@@ -333,7 +328,7 @@ const updateBuildpackDiffValues = (
             overridenValue: ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
         })
         ciConfigDiffValues.push({
-            configName: 'Builder language',
+            configName: 'Builder Language',
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.buildPackConfig?.language !==
                 ciConfigOverride?.ciBuildConfig?.buildPackConfig?.language,
