@@ -344,7 +344,7 @@ function DeploymentTemplateOverrideForm({
             toast.error(error)
             return
         }
-        if (state.selectedChart.name === ROLLOUT_DEPLOYMENT && !state.basicFieldValuesErrorObj.isValid) {
+        if (state.selectedChart.name === ROLLOUT_DEPLOYMENT  && !state.yamlMode && !state.basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             return
         }

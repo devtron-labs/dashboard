@@ -166,7 +166,7 @@ export default function DeploymentConfig({
             toast.error(error)
             return
         }
-        if (selectedChart.name === ROLLOUT_DEPLOYMENT && !basicFieldValuesErrorObj.isValid) {
+        if (selectedChart.name === ROLLOUT_DEPLOYMENT && !yamlMode && !basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             return
         }
