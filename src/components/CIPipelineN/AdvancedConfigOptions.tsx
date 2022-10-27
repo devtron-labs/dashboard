@@ -17,7 +17,7 @@ export default function AdvancedConfigOptions({
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
-        selectedCIPipeline: ciPipeline,
+        selectedCIPipeline: ciPipeline ? JSON.parse(JSON.stringify(ciPipeline)) : null,
         dockerRegistries: null,
         sourceConfig: null,
         ciConfig: null,

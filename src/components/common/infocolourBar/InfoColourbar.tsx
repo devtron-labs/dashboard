@@ -39,7 +39,7 @@ function InfoColourBar({
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
-                        <span>{message}</span>&nbsp;
+                        <span>{message}</span>
                         {linkText && redirectLink && (
                             <a
                                 href={redirectLink}
@@ -47,18 +47,17 @@ function InfoColourBar({
                                 onClick={linkOnClick}
                                 className="cursor dc__link dc__underline-onhover"
                             >
-                                {linkText}
+                                &nbsp;{linkText}
                             </a>
                         )}
                         {linkText && !redirectLink && linkOnClick && (
                             <div onClick={linkOnClick} className="cursor dc__link dc__underline-onhover">
-                                {linkText}
+                                &nbsp;{linkText}
                             </div>
                         )}
                     </div>
                 </span>
-                &nbsp;
-                {typeof renderActionButton === 'function' && renderActionButton()}
+                {typeof renderActionButton === 'function' && <>&nbsp;{renderActionButton()}</>}
             </div>
         </div>
     )

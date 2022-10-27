@@ -6,6 +6,12 @@
     margin-bottom: 220px;
 }
 
+.workflow-editor .open-cipipeline-banner {
+    top: 8px;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
 .create-here {
     display: flex;
     align-items: center;

@@ -26,6 +26,12 @@ export default function CIContainerRegistryConfig({
 }) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
 
+    const onClickRedirectLink = (e) => {
+        if (typeof Storage !== 'undefined') {
+            localStorage.setItem('takeMeThereClicked', '1')
+        }
+    }
+
     const getInfoColourBarProps = () => {
         if (configOverridenPipelines?.length > 0) {
             return {
@@ -53,7 +59,9 @@ export default function CIContainerRegistryConfig({
                         Container registry & docker file location for build pipelines can be overriden.
                     </span>
                     {isCDPipeline && (
-                        <Link to={`/${Routes.APP}/${appId}/${Routes.WORKFLOW_EDITOR}`}>Take me there</Link>
+                        <Link to={`/${Routes.APP}/${appId}/${Routes.WORKFLOW_EDITOR}`} onClick={onClickRedirectLink}>
+                            Take me there
+                        </Link>
                     )}
                 </>
             ),

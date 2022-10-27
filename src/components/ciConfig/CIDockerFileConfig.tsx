@@ -139,16 +139,20 @@ export default function CIDockerFileConfig({
         }
     }
 
+    const canShowTick = (id: CIBuildType) => {
+        if (configOverrideView && allowOverride && selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig) {
+            return selectedCIPipeline.dockerConfigOverride.ciBuildConfig.ciBuildType === id
+        }
+
+        return ciConfig?.ciBuildConfig?.ciBuildType === id
+    }
+
     const renderCIBuildTypeOptions = () => {
         return (
             <div className="flex mb-16">
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
-                    const isGlobalSelection =
-                        (!configOverrideView && ciConfig?.ciBuildConfig?.ciBuildType === option.id) ||
-                        (configOverrideView &&
-                            allowOverride &&
-                            selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.ciBuildType === option.id)
+                    const showTick = canShowTick(option.id)
 
                     return (
                         <Fragment key={option.id}>
@@ -163,7 +167,7 @@ export default function CIDockerFileConfig({
                                     handleCIBuildTypeOptionSelection(option.id)
                                 }}
                             >
-                                {isGlobalSelection && (
+                                {showTick && (
                                     <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
                                         <CheckIcon className="icon-dim-10 scn-0" />
                                     </div>
