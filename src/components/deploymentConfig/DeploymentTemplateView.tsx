@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import ReactSelect, { components } from 'react-select'
@@ -641,7 +641,7 @@ export const DeploymentTemplateEditorView = ({
     setBasicFieldValuesErrorObj,
     changeEditorMode,
 }: DeploymentTemplateEditorViewProps) => {
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
+    const envVariableSectionRef = useRef(null)
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
@@ -771,8 +771,10 @@ export const DeploymentTemplateEditorView = ({
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
-            if(_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length === 1){
-              scrollToBottom(e)
+            if (_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length <= 2) {
+                setTimeout(()=>{
+                  envVariableSectionRef.current.scrollIntoView()
+                },0)
             }
         }
     }
@@ -818,7 +820,7 @@ export const DeploymentTemplateEditorView = ({
                     )}
                 </div>
             )}
-            <div className="form__row form__row--code-editor-container dc__border-top dc__border-bottom">
+            <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
                     defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
                     value={value}
@@ -871,8 +873,7 @@ export const DeploymentTemplateEditorView = ({
                 </div>
             )}
             <div
-                ref={ref}
-                className={`form__row form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
+                className={`form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
                 }`}
             >
@@ -1023,7 +1024,10 @@ export const DeploymentTemplateEditorView = ({
                             </div>
                         </div>
                         {basicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map((envVariable: string, index: number) => (
-                            <div className="row-container mb-4" key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}>
+                            <div
+                                className="row-container mb-4"
+                                key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}
+                            >
                                 <div />
                                 <div>
                                     <input
@@ -1063,6 +1067,9 @@ export const DeploymentTemplateEditorView = ({
                         ))}
                     </div>
                 )}
+                <div
+                  ref={envVariableSectionRef}>
+                </div>
             </div>
             <InfoColourBar
                 message="To modify additional configurations"
