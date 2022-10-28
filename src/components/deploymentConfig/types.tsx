@@ -3,6 +3,7 @@ import { ServerError } from '../../modals/commonTypes'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import * as jsonpatch from 'fast-json-patch'
 
 export interface DeploymentObject {
     id: number | null
@@ -152,6 +153,11 @@ export interface DeploymentTemplateOptionsTabProps {
     ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
     selectedChartRefId: number
     disableVersionSelect?: boolean
+    yamlMode: boolean
+    isBasicViewLocked: boolean
+    codeEditorValue: string
+    basicFieldValuesErrorObj: BasicFieldErrorObj
+    changeEditorMode?: () => void
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -166,7 +172,7 @@ export interface DeploymentTemplateEditorViewProps {
     readme: string
     value: string
     defaultValue?: string
-    editorOnChange: (str: string) => void
+    editorOnChange: (str: string, fromBasic?: boolean) => void
     schemas: any
     charts: DeploymentChartVersionType[]
     selectedChart: DeploymentChartVersionType
@@ -175,6 +181,16 @@ export interface DeploymentTemplateEditorViewProps {
     setFetchedValues: React.Dispatch<React.SetStateAction<Record<number, string>>>
     readOnly?: boolean
     globalChartRefId?: number
+    yamlMode: boolean
+    basicFieldValues: Record<string, any>
+    setBasicFieldValues?: (
+        basicFieldValues: Record<string, any>,
+    ) => void | React.Dispatch<React.SetStateAction<Record<string, any>>>
+    basicFieldValuesErrorObj: BasicFieldErrorObj
+    setBasicFieldValuesErrorObj?: (
+      basicFieldErrorObj: BasicFieldErrorObj,
+  ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+    changeEditorMode: () => void
 }
 
 export interface EsoData {
@@ -215,4 +231,25 @@ export interface SecretFormProps {
     update: (...args) => void
     collapse: (...args) => void
     initialise?: () => void
+}
+
+export interface BasicFieldDataType {
+    isUpdated: boolean
+    dataType: string
+    value: any
+    isMandatory: boolean
+    isInvalid: boolean
+}
+
+interface ErrorObj {
+    isValid: boolean
+    message: string | null
+}
+
+export interface BasicFieldErrorObj {
+    isValid: boolean
+    port: ErrorObj
+    cpu: ErrorObj
+    memory: ErrorObj
+    envVariables: ErrorObj[]
 }

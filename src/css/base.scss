@@ -227,6 +227,10 @@ a:focus {
     clear: both;
 }
 
+.dc__word-break-all {
+    word-break: break-all;
+}
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -411,11 +415,11 @@ a:focus {
 }
 
 .dc__ellipsis-right__2nd-line {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 2;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .dc__ellipsis-left {
@@ -423,6 +427,12 @@ a:focus {
     text-overflow: ellipsis;
     white-space: nowrap;
     direction: rtl;
+}
+
+.dc__ellipsis-left {
+    &.direction-left {
+        text-align: left;
+    }
 }
 
 .anchor {
@@ -924,8 +934,8 @@ button.anchor {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
         &.healthy--node {
-          background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
-          background-size: contain, contain;
+            background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
+            background-size: contain, contain;
         }
     }
 
@@ -1044,7 +1054,7 @@ button.anchor {
 
 .gui-yaml-switch.radio-group {
     padding: 0;
-    height: 25px;
+    height: 24px;
     overflow: hidden;
     border-radius: 4px;
 
@@ -1055,19 +1065,40 @@ button.anchor {
 
     input[type='checkbox']:checked + .radio__item-label {
         border-radius: 0;
-        border: 1px solid #2c3354;
-    }
+        background-color: var(--N100);
+        color: var(--N900);
 
-    .radio:first-child input + .radio__item-label {
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
-        border-right: unset;
+        svg path {
+            stroke: var(--N900);
+        }
     }
+    .radio {
+        color: var(--N500);
 
-    .radio:last-child input + .radio__item-label {
-        border-top-right-radius: 4px;
-        border-bottom-right-radius: 4px;
-        border-left: unset;
+        svg path {
+            stroke: var(--N500);
+        }
+
+        &:hover:not(.disabled) {
+            color: var(--N900);
+
+            svg path {
+                stroke: var(--N900);
+            }
+        }
+        .radio__item-label {
+          border-right: unset;
+        }
+        &:first-child input + .radio__item-label {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        &:last-child input + .radio__item-label {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            border: 1px solid var(--N200);
+        }
     }
 }
 
@@ -1086,6 +1117,14 @@ button.anchor {
     color: var(--N900);
     border: 1px solid var(--N200);
     background-color: var(--N000);
+    &.no-content-padding{
+      .tippy-content{
+        padding: 0;
+      }
+    }
+    &.tippy-shadow{
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
 }
 
 .dc__devtron-breadcrumb {
@@ -1593,8 +1632,8 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
-.dc__no-border{
-  border: none
+.dc__no-border {
+    border: none;
 }
 
 .dc__box-shadow {
@@ -1622,6 +1661,10 @@ button.anchor {
 
 .dc__mxw-300 {
     max-width: 300px;
+}
+
+.dc__mxw-200 {
+    max-width: 200px;
 }
 
 .fw-n {
@@ -1717,8 +1760,8 @@ button.anchor {
 }
 
 .dc__no-bottom-radius {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
 .dc__left-radius-4 {
@@ -1800,6 +1843,15 @@ textarea {
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
+    }
+}
+
+.icon-color-n7 {
+    path:nth-child(1) {
+        fill: none !important;
+    }
+    path:nth-child(2) {
+        fill: var(--N700);
     }
 }
 
@@ -1893,6 +1945,10 @@ textarea {
     width: 100px;
 }
 
+.w-120 {
+    width: 120px;
+}
+
 .w-180 {
     width: 180px;
 }
@@ -1953,7 +2009,7 @@ textarea {
 // Height in pixels
 
 .dc__height-inherit {
-  height: inherit;
+    height: inherit;
 }
 
 .h-0 {
@@ -2113,6 +2169,10 @@ textarea {
 
 .mt-0-imp {
     margin-top: 0px !important;
+}
+
+.mb-0-imp {
+    margin-bottom: 0px !important;
 }
 
 .mt-120 {
