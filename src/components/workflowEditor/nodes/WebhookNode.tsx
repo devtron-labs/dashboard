@@ -13,13 +13,13 @@ export interface WebhookNodeProps {
   title: string
   type: string
   description: string
-  workflowId: number
+  workflowId?: number
   triggerType: string
   isLinkedCI: boolean
   isExternalCI: boolean
   isTrigger: boolean
   linkedCount: number
-  to: string
+  to?: string
   configDiffView?: boolean
 }
 

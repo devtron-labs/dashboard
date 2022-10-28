@@ -99,11 +99,18 @@ export function processWorkflow(
                         }
                         let cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
                         let parentType = branch.parentType == PipelineType.CI_PIPELINE ? 'CI' : 'CD'
+                        if( branch.parentType == PipelineType.CI_PIPELINE){
+                          parentType = 'CI'
+                        } else if( branch.parentType == PipelineType.WEBHOOK){
+                          parentType = PipelineType.WEBHOOK
+                        } else {
+                          parentType = 'CD'
+                        }
                         let type = cdNode.preNode ? 'PRECD' : 'CD'
                         wf.nodes
                             .filter((n) => n.id == String(branch.parentId) && n.type == parentType)
                             .forEach((node) => {
-                                ;(node.postNode ? node.postNode : node).downstreams.push(
+                                (node.postNode ? node.postNode : node).downstreams.push(
                                     type + '-' + branch.componentId,
                                 )
                                 node.downstreamNodes.push(cdNode)
@@ -139,11 +146,16 @@ export function processWorkflow(
             s.width = dimensions.staticNodeSizes.nodeWidth
         })
 
-        ciNode.x =
-            startX +
-            workflowOffset.offsetX +
-            dimensions.staticNodeSizes.nodeWidth +
-            dimensions.staticNodeSizes.distanceX
+        if (ciNode.type === 'WEBHOOK') {
+            ciNode.x = startX + workflowOffset.offsetX
+        } else {
+            ciNode.x =
+                startX +
+                workflowOffset.offsetX +
+                dimensions.staticNodeSizes.nodeWidth +
+                dimensions.staticNodeSizes.distanceX
+        }
+
         ciNode.y = startY + workflowOffset.offsetY
 
         if ((ciNode.downstreamNodes?.length ?? 0) > 0) {
@@ -330,8 +342,8 @@ function webhookToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions): 
       id: String(cdPipeline.id),
       x: 0,
       y: 0,
-      height: dimensions.cDNodeSizes.nodeHeight,
-      width: dimensions.cINodeSizes.nodeWidth,
+      height: dimensions.staticNodeSizes.nodeHeight,
+      width: dimensions.staticNodeSizes.nodeWidth,
       title: 'Webhook',
       triggerType: TriggerTypeMap[cdPipeline.triggerType?.toLowerCase() ?? ''],
       status: DEFAULT_STATUS,

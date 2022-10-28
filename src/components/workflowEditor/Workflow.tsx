@@ -200,26 +200,26 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
     renderWebhookNode(node) {
       return (
-        <WebhookNode
-            x={node.x}
-            y={node.y}
-            height={node.height}
-            width={node.width}
-            key={`webhook-${node.id}`}
-            id={node.id}
-            workflowId={this.props.id}
-            isTrigger={false}
-            type={node.type}
-            title={node.title}
-            triggerType={node.triggerType}
-            description={node.description}
-            isExternalCI={node.isExternalCI}
-            isLinkedCI={node.isLinkedCI}
-            linkedCount={node.linkedCount}
-            to={this.openWebhookDetails(node)}
-            configDiffView={this.props.cdWorkflowList?.length > 0}
-        />
-    )
+          <WebhookNode
+              x={node.x}
+              y={node.y}
+              height={node.height}
+              width={node.width}
+              key={`webhook-${node.id}`}
+              id={node.id}
+              workflowId={this.props.id}
+              isTrigger={false}
+              type={node.type}
+              title={node.title}
+              triggerType={node.triggerType}
+              description={node.description}
+              isExternalCI={node.isExternalCI}
+              isLinkedCI={node.isLinkedCI}
+              linkedCount={node.linkedCount}
+              to={this.openWebhookDetails(node)}
+              configDiffView={this.props.cdWorkflowList?.length > 0}
+          />
+      )
     }
 
     openCDPipeline(node: NodeAttr) {
