@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
-import branch from '../../../assets/icons/misc/branch.svg'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg';
-import Tippy from '@tippyjs/react'
-import { CiPipelineSourceConfig } from '../../ciPipeline/CiPipelineSourceConfig'
 
 export interface WebhookNodeProps {
   x: number
