@@ -299,41 +299,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         deleteWorkflow={this.deleteWorkflow}
                     />
                 </Route>
-                {/* <Route
-                    path={`${this.props.match.path}/webhook/:webhookId/cd-pipeline/:cdPipelineId?`}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
-                        const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
-                        return (
-                            <CDPipeline
-                                match={match}
-                                history={history}
-                                location={location}
-                                appName={this.state.appName}
-                                close={this.closePipeline}
-                                downstreamNodeSize={downstreamNodeSize}
-                                getWorkflows={this.getWorkflows}
-                            />
-                        )
-                    }}
-                /> */}
-                {/* <Route
-                    path={`${this.props.match.path}/external-ci/:ciPipelineId?`}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        return (
-                            <ExternalCIPipeline
-                                match={match}
-                                history={history}
-                                location={location}
-                                appName={this.state.appName}
-                                connectCDPipelines={this.getLen()}
-                                close={this.closePipeline}
-                                getWorkflows={this.getWorkflows}
-                                deleteWorkflow={this.deleteWorkflow}
-                            />
-                        )
-                    }}
-                /> */}
                 <Route
                     path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {

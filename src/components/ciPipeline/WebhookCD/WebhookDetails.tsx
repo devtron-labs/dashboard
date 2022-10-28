@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ButtonWithLoader, Drawer, VisibleModal } from '../../common'
+import { Drawer} from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as CopyIcon } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import { ReactComponent as BotIcon } from '../../../assets/icons/ic-bot.svg'
-import { ReactComponent as PersonIcon } from '../../../assets/icons/ic-person.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { CIPipelineType } from '../types'
 import './webhookDetails.scss'
@@ -18,15 +16,6 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
             close()
         }
     }
-    const outsideClickHandler = (evt): void => {
-        if (
-            appStatusDetailRef.current &&
-            !appStatusDetailRef.current.contains(evt.target) &&
-            typeof close === 'function'
-        ) {
-            close()
-        }
-    }
 
     useEffect(() => {
         document.addEventListener('keydown', escKeyPressHandler)
@@ -34,13 +23,6 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
             document.removeEventListener('keydown', escKeyPressHandler)
         }
     }, [escKeyPressHandler])
-
-    // useEffect(() => {
-    //     document.addEventListener('click', outsideClickHandler)
-    //     return (): void => {
-    //         document.removeEventListener('click', outsideClickHandler)
-    //     }
-    // }, [outsideClickHandler])
     return (
         <Drawer position="right" width="1000px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
