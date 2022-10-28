@@ -739,7 +739,7 @@ export function Override({ external, overridden, onClick, loading = false, type 
                     {external
                         ? `This ${type} does not have any overridable values.`
                         : overridden
-                        ? 'Restoring will discard the current overrides and base configuration will be applicable to this environment.'
+                        ? 'Deleting will discard the current overrides and base configuration will be applicable to this environment.'
                         : `Overriding will fork the ${type} for this environment. Updating the base values will no longer affect this configuration.`}
                 </div>
             </div>
