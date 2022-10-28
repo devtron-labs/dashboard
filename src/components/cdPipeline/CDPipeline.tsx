@@ -60,7 +60,7 @@ export const SwitchItemValues = {
 
 export default class CDPipeline extends Component<CDPipelineProps, CDPipelineState> {
     allStrategies: { [key: string]: any } = {}
-    isWebhookCD= window.location.href.includes('external-cd')
+    isWebhookCD= window.location.href.includes('webhook')
     validationRules
     preStage
     postStage

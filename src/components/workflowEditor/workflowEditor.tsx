@@ -19,7 +19,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.css'
-import { NodeAttr } from '../app/details/triggerView/types'
+import { NodeAttr, PipelineType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetails } from '../ciPipeline/WebhookCD/WebhookDetails'
@@ -153,7 +153,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     addWebhookCD = (workflowId?: number | string) => {
-        this.props.history.push(`${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId || 0}/external-cd`)
+        this.props.history.push(`${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId || 0}/webhook/0/cd-pipeline`)
     }
 
     handleCDSelect = (
@@ -262,7 +262,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }}
                 />
                 <Route
-                    path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG].map(
+                    path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
                         (pipeline) => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
                     )}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {
@@ -299,8 +299,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         deleteWorkflow={this.deleteWorkflow}
                     />
                 </Route>
-                <Route
-                    path={`${this.props.match.path}/external-cd/:cdPipelineId?`}
+                {/* <Route
+                    path={`${this.props.match.path}/webhook/:webhookId/cd-pipeline/:cdPipelineId?`}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {
                         const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
                         const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
@@ -316,7 +316,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             />
                         )
                     }}
-                />
+                /> */}
                 {/* <Route
                     path={`${this.props.match.path}/external-ci/:ciPipelineId?`}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {

@@ -1,9 +1,9 @@
 
-export function getCDPipelineURL(appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string = null) {
+export function getCDPipelineURL(appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string = null, isWebhookParent: boolean) {
     if (cdPipelineId)
-        return `${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline/${cdPipelineId}`;
+        return `${workflowId}/${isWebhookParent? 'webhook':'ci-pipeline'}/${ciPipelineId}/cd-pipeline/${cdPipelineId}`;
     else
-        return `${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline`;
+        return `${workflowId}/${isWebhookParent? 'webhook':'ci-pipeline'}/${ciPipelineId}/cd-pipeline`;
 }
 
 export function getCIPipelineURL(appId: string, workflowId: string, ciPipelineId: string | number = null) {

@@ -11,7 +11,7 @@ import {
     getWebhookDetailsURL,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
-import { NodeAttr } from '../../components/app/details/triggerView/types'
+import { NodeAttr, PipelineType } from '../../components/app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { Link } from 'react-router-dom'
@@ -125,12 +125,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     return (
                         <>
                             {this.renderAdditionalEdge()}
-                            {this.renderCDNodes(node, ci.id, _nodesData.cdNamesList)}
+                            {this.renderCDNodes(node, ci.id, false, _nodesData.cdNamesList)}
                         </>
                     )
                 }
 
-                return this.renderCDNodes(node, ci.id)
+                return this.renderCDNodes(node, ci.id, false)
             })
         } else if (webhook) {
           return _nodes.map((node: NodeAttr) => {
@@ -140,12 +140,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                   return (
                       <>
                           {this.renderAdditionalEdge()}
-                          {this.renderCDNodes(node, webhook.id, _nodesData.cdNamesList)}
+                          {this.renderCDNodes(node, webhook.id, true, _nodesData.cdNamesList)}
                       </>
                   )
               }
 
-              return this.renderCDNodes(node, webhook.id)
+              return this.renderCDNodes(node, webhook.id, true)
           })
       } else {
             return this.renderAddCIpipeline()
@@ -222,12 +222,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
       )
     }
 
-    openCDPipeline(node: NodeAttr) {
+    openCDPipeline(node: NodeAttr, isWebhookCD: boolean) {
         let { appId } = this.props.match.params
         return (
             this.props.match.url +
             '/' +
-            getCDPipelineURL(appId, this.props.id.toString(), String(node.connectingCiPipelineId ?? 0), node.id)
+            getCDPipelineURL(appId, this.props.id.toString(), String(node.connectingCiPipelineId ?? 0), node.id, isWebhookCD)
         )
     }
 
@@ -272,7 +272,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-    renderCDNodes(node: NodeAttr, ciPipelineId: string | number, cdNamesList?: string[]) {
+    renderCDNodes(node: NodeAttr, ciPipelineId: string | number, isWebhookCD: boolean, cdNamesList?: string[]) {
         if (this.props.cdWorkflowList?.length > 0 && !cdNamesList?.length) {
             return
         }
@@ -294,7 +294,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 toggleCDMenu={() => {
                     this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id)
                 }}
-                to={this.openCDPipeline(node)}
+                to={this.openCDPipeline(node, isWebhookCD)}
                 cdNamesList={cdNamesList}
             />
         )

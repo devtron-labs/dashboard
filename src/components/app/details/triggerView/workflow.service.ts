@@ -86,31 +86,31 @@ export function processWorkflow(
                         }
                         wf.nodes.push(ciNode)
                     } else if (branch.type == PipelineType.WEBHOOK) {
-                      let webhook = webhookMap.get(branch.componentId)
-                      if (!webhook) {
-                          return
-                      }
-                      let webhookNode = webhookToNode(webhook, dimensions)
-                      wf.nodes.push(webhookNode)
-                  } else {
+                        let webhook = webhookMap.get(branch.componentId)
+                        if (!webhook) {
+                            return
+                        }
+                        let webhookNode = webhookToNode(webhook, dimensions)
+                        wf.nodes.push(webhookNode)
+                    } else {
                         let cdPipeline = cdMap.get(branch.componentId)
                         if (!cdPipeline) {
                             return
                         }
                         let cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
                         let parentType = branch.parentType == PipelineType.CI_PIPELINE ? 'CI' : 'CD'
-                        if( branch.parentType == PipelineType.CI_PIPELINE){
-                          parentType = 'CI'
-                        } else if( branch.parentType == PipelineType.WEBHOOK){
-                          parentType = PipelineType.WEBHOOK
+                        if (branch.parentType == PipelineType.CI_PIPELINE) {
+                            parentType = 'CI'
+                        } else if (branch.parentType == PipelineType.WEBHOOK) {
+                            parentType = PipelineType.WEBHOOK
                         } else {
-                          parentType = 'CD'
+                            parentType = 'CD'
                         }
                         let type = cdNode.preNode ? 'PRECD' : 'CD'
                         wf.nodes
                             .filter((n) => n.id == String(branch.parentId) && n.type == parentType)
                             .forEach((node) => {
-                                (node.postNode ? node.postNode : node).downstreams.push(
+                                ;(node.postNode ? node.postNode : node).downstreams.push(
                                     type + '-' + branch.componentId,
                                 )
                                 node.downstreamNodes.push(cdNode)
