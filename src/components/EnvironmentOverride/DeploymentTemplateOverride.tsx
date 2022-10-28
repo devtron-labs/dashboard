@@ -55,6 +55,7 @@ export default function DeploymentTemplateOverride({
         yamlMode: true,
         isBasicViewLocked: null,
         currentViewEditor: null,
+        isBasicViewLockedInBase: null,
     }
     const memoisedReducer = useCallback(
         (state, action) => {
@@ -67,6 +68,9 @@ export default function DeploymentTemplateOverride({
                             action.value.IsOverride || state.duplicate
                                 ? action.value.environmentConfig.envOverrideValues || action.value.globalConfig
                                 : null,
+                        isBasicViewLockedInBase:
+                            action.value.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
+                            action.value.environmentConfig.isBasicViewLocked,
                     }
                 case 'setCharts':
                     // Use other latest ref id instead of selectedChartRefId on delete override action
@@ -207,16 +211,21 @@ export default function DeploymentTemplateOverride({
             } else {
                 //remove copy
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
-                    const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
-                    dispatch({
-                        type: 'multipleOptions',
-                        value: {
-                            basicFieldValues: _basicFieldValues,
-                            basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                            isBasicViewLocked: isBasicValueChanged(state.data.globalConfig),
-                            duplicate: null,
-                        },
-                    })
+                    if (state.isBasicViewLockedInBase !== null && state.isBasicViewLockedInBase !== undefined) {
+                        const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
+                        dispatch({
+                            type: 'multipleOptions',
+                            value: {
+                                basicFieldValues: _basicFieldValues,
+                                basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                                isBasicViewLocked: state.isBasicViewLockedInBase,
+                                duplicate: null,
+                            },
+                        })
+                    } else {
+                        dispatch({ type: 'removeDuplicate' })
+                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null)
+                    }
                 }
             }
         } else {
@@ -241,7 +250,7 @@ export default function DeploymentTemplateOverride({
         _isBasicViewLocked: boolean,
         _currentViewEditor: string,
         baseTemplate,
-        envOverrideValues
+        envOverrideValues,
     ): Promise<void> => {
         if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             if (!envOverrideValues) {
@@ -344,7 +353,11 @@ function DeploymentTemplateOverrideForm({
             toast.error(error)
             return
         }
-        if (state.selectedChart.name === ROLLOUT_DEPLOYMENT  && !state.yamlMode && !state.basicFieldValuesErrorObj.isValid) {
+        if (
+            state.selectedChart.name === ROLLOUT_DEPLOYMENT &&
+            !state.yamlMode &&
+            !state.basicFieldValuesErrorObj.isValid
+        ) {
             toast.error('Some required fields are missing')
             return
         }
@@ -352,7 +365,8 @@ function DeploymentTemplateOverrideForm({
             state.data.environmentConfig && state.data.environmentConfig.id > 0
                 ? updateDeploymentTemplate
                 : createDeploymentTemplate
-        const envOverrideValuesWithBasic = !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
+        const envOverrideValuesWithBasic =
+            !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
         const payload = {
             environmentId: +envId,
             envOverrideValues: envOverrideValuesWithBasic || obj,
