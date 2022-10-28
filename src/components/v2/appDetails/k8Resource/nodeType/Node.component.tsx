@@ -138,8 +138,8 @@ function NodeComponent({
         }
     }, [params.nodeType, podType, url, filteredNodes]);
 
-    const getPodRestartCount = (info : any) =>{
-        info.array.forEach(element => {
+    const getPodRestartCount = (node : iNode) =>{
+        node.info.forEach(element => {
             if(element.name === 'Restart Count' )return element.value //return restart count value if present
         });
         return 0 
@@ -327,7 +327,7 @@ function NodeComponent({
                     
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {(node.kind !== 'Containers') && getPodRestartCount(node.info)}
+                                {(node.kind !== 'Containers') && getPodRestartCount(node)}
                             </div>
                         )}
 
