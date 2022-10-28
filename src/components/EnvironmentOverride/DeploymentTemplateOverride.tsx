@@ -259,7 +259,7 @@ export default function DeploymentTemplateOverride({
         }
 
         const statesToUpdate = {}
-        if (!state.currentViewEditor || _isBasicViewLocked !== state.isBasicViewLocked) {
+        if (!state.currentViewEditor || !state.duplicate) {
             _currentViewEditor =
                 _isBasicViewLocked ||
                 state.openComparison ||
