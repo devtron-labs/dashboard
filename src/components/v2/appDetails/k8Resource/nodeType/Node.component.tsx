@@ -142,10 +142,11 @@ function NodeComponent({
     }, [params.nodeType, podType, url, filteredNodes]);
 
     const getPodRestartCount = (node : iNode) =>{
+        var RestartCount = "0"
         node.info?.forEach(element => {
-            if(element.name === 'Restart Count' )return element.value //return restart count value if present
+            if(element.name === 'Restart Count' )RestartCount = element.value
         });
-        return 0 
+        return RestartCount
     };
 
     const getElapsedTime = (createdAt : Date) => {
