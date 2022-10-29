@@ -95,7 +95,10 @@ function NodeComponent({
                     if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
                         tableHeader = ['Name', ''];
                     }else{
-                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', ''];
+                        if (externalLinks.length > 0){
+                            tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', '']; 
+                        }
                     }
                     _fcw = 'col-7';
                     break;
