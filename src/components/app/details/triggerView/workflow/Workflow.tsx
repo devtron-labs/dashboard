@@ -6,8 +6,7 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, PipelineType } from '../types'
-import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
+import { WorkflowProps, NodeAttr } from '../types'
 
 export class Workflow extends Component<WorkflowProps> {
     renderNodes() {
@@ -16,9 +15,7 @@ export class Workflow extends Component<WorkflowProps> {
                 return this.renderSourceNode(node)
             } else if (node.type === 'CI') {
                 return this.renderCINodes(node)
-            } else if (node.type === PipelineType.WEBHOOK) {
-              return this.renderWebhookNode(node)
-          } else if (node.type === 'PRECD' || node.type === 'POSTCD') {
+            } else if (node.type === 'PRECD' || node.type === 'POSTCD') {
                 return this.renderPrePostCDNodes(node)
             } else if (node.type === 'CD') {
                 return this.renderCDNodes(node)
@@ -47,26 +44,6 @@ export class Workflow extends Component<WorkflowProps> {
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
             />
         )
-    }
-    renderWebhookNode(node) {
-      return (
-          <WebhookNode
-              x={node.x}
-              y={node.y}
-              height={node.height}
-              width={node.width}
-              key={`webhook-${node.id}`}
-              id={node.id}
-              isTrigger={false}
-              type={node.type}
-              title={node.title}
-              triggerType={node.triggerType}
-              description={node.description}
-              isExternalCI={node.isExternalCI}
-              isLinkedCI={node.isLinkedCI}
-              linkedCount={node.linkedCount}
-          />
-      )
     }
 
     renderCINodes(node: NodeAttr) {

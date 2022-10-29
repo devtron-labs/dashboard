@@ -145,7 +145,7 @@ export interface NodeAttr {
     isGitSource: boolean
     isRoot: boolean
     downstreams: string[]
-    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD' | 'WEBHOOK'
+    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD'
     parentCiPipeline?: number
     parentAppId?: number
     url?: string
@@ -326,7 +326,6 @@ export interface ApplicationConditionResponse {
 export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK'
 }
 
 export interface Task {

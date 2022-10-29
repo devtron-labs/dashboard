@@ -1,4 +1,4 @@
-import { getCIConfig, getCDConfig, getWorkflowList, getExternalCIConfig } from '../../../../services/service'
+import { getCIConfig, getCDConfig, getWorkflowList } from '../../../../services/service'
 import {
     WorkflowType,
     NodeAttr,
@@ -30,13 +30,12 @@ export const getInitialWorkflows = (
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIConfig(id)]).then(
-        ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+    return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id)]).then(
+        ([workflow, ciConfig, cdConfig]) => {
             return processWorkflow(
                 workflow.result as WorkflowResult,
                 ciConfig.result as CiPipelineResult,
                 cdConfig as CdPipelineResult,
-                externalCIConfig as CdPipeline[],
                 dimensions,
                 workflowOffset,
             )
@@ -48,7 +47,6 @@ export function processWorkflow(
     workflow: WorkflowResult,
     ciResponse: CiPipelineResult,
     cdResponse: CdPipelineResult,
-    externalCIResponse: CdPipeline[],
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
@@ -62,9 +60,6 @@ export function processWorkflow(
     )
     let cdMap = new Map(
         (cdResponse?.pipelines ?? []).map((cdPipeline) => [cdPipeline.id, cdPipeline] as [number, CdPipeline]),
-    )
-    let webhookMap = new Map(
-        (externalCIResponse ?? []).map((externalCI) => [externalCI.id, externalCI] as [number, CdPipeline]),
     )
     let appName = workflow.appName
     let workflows = new Array<WorkflowType>()
@@ -85,13 +80,6 @@ export function processWorkflow(
                             return
                         }
                         wf.nodes.push(ciNode)
-                    } else if (branch.type == PipelineType.WEBHOOK) {
-                        let webhook = webhookMap.get(branch.componentId)
-                        if (!webhook) {
-                            return
-                        }
-                        let webhookNode = webhookToNode(webhook, dimensions)
-                        wf.nodes.push(webhookNode)
                     } else {
                         let cdPipeline = cdMap.get(branch.componentId)
                         if (!cdPipeline) {
@@ -99,13 +87,6 @@ export function processWorkflow(
                         }
                         let cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
                         let parentType = branch.parentType == PipelineType.CI_PIPELINE ? 'CI' : 'CD'
-                        if (branch.parentType == PipelineType.CI_PIPELINE) {
-                            parentType = 'CI'
-                        } else if (branch.parentType == PipelineType.WEBHOOK) {
-                            parentType = PipelineType.WEBHOOK
-                        } else {
-                            parentType = 'CD'
-                        }
                         let type = cdNode.preNode ? 'PRECD' : 'CD'
                         wf.nodes
                             .filter((n) => n.id == String(branch.parentId) && n.type == parentType)
@@ -146,16 +127,11 @@ export function processWorkflow(
             s.width = dimensions.staticNodeSizes.nodeWidth
         })
 
-        if (ciNode.type === 'WEBHOOK') {
-            ciNode.x = startX + workflowOffset.offsetX
-        } else {
-            ciNode.x =
-                startX +
-                workflowOffset.offsetX +
-                dimensions.staticNodeSizes.nodeWidth +
-                dimensions.staticNodeSizes.distanceX
-        }
-
+        ciNode.x =
+            startX +
+            workflowOffset.offsetX +
+            dimensions.staticNodeSizes.nodeWidth +
+            dimensions.staticNodeSizes.distanceX
         ciNode.y = startY + workflowOffset.offsetY
 
         if ((ciNode.downstreamNodes?.length ?? 0) > 0) {
@@ -166,10 +142,6 @@ export function processWorkflow(
         workflow.nodes.forEach((node) => {
             if (node.type == 'CI') {
                 node.sourceNodes && finalWorkflow.push(...node.sourceNodes)
-                finalWorkflow.push(node)
-                delete node['sourceNodes']
-            }
-            if (node.type == 'WEBHOOK') {
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
@@ -331,33 +303,6 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
     } as NodeAttr
 
     return ciNode
-}
-
-
-function webhookToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions): NodeAttr {
-  let ciNode = {
-      isSource: true,
-      isGitSource: false,
-      isRoot: false,
-      id: String(cdPipeline.id),
-      x: 0,
-      y: 0,
-      height: dimensions.staticNodeSizes.nodeHeight,
-      width: dimensions.staticNodeSizes.nodeWidth,
-      title: 'Webhook',
-      triggerType: TriggerTypeMap[cdPipeline.triggerType?.toLowerCase() ?? ''],
-      status: DEFAULT_STATUS,
-      type: 'WEBHOOK',
-      inputMaterialList: [],
-      downstreams: [],
-      isExternalCI: true,
-      isLinkedCI: false,
-      linkedCount: 0,
-      sourceNodes: [],
-      downstreamNodes: new Array<NodeAttr>(),
-  } as NodeAttr
-
-  return ciNode
 }
 
 function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {

@@ -611,7 +611,7 @@ function Form({
                     processing: true,
                 })
                 const { result } = await getWorkflowList(appId)
-                const { workflows } = processWorkflow(result, ciConfig, null, null, WorkflowCreate, WorkflowCreate.workflow)
+                const { workflows } = processWorkflow(result, ciConfig, null, WorkflowCreate, WorkflowCreate.workflow)
 
                 setProcessedWorkflows({ processing: false, workflows })
             } catch (err) {
