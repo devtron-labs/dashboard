@@ -1,59 +1,77 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { PipelineSelectProps } from './types'
-import { Modal } from '../common';
-import ci from '../../assets/img/ic-pipeline-ci@2x.png';
-import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg';
-import webhook from '../../assets/img/webhook.svg';
+import { Modal } from '../common'
+import ci from '../../assets/img/ic-pipeline-ci@2x.png'
+import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
+import webhook from '../../assets/img/webhook.svg'
 
-export class PipelineSelect extends Component<PipelineSelectProps>  {
-
+export class PipelineSelect extends Component<PipelineSelectProps> {
     renderCIMenu() {
-        return <div className="white-card pipeline-webhook" >
-            <div className="white-card__header white-card__header--pipeline-webhook">Select Pipeline</div>
-            <div className="pipeline-webhook__item" onClick={(event) => {
-                this.props.toggleCIMenu(event);
-                this.props.addCIPipeline('CI', this.props.workflowId)
-            }}>
-                <div className="pipeline-webhook__icon">
-                    <img src={ci} className="pipeline-webhook__icon" alt="ci" />
+        return (
+            <div className="white-card pipeline-webhook dc__top-radius-4">
+                <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
+                    Build container image
                 </div>
-                <div>
-                    <h4 className="pipeline-webhook__title">Continuous Integration</h4>
-                    <p className="pipeline-webhook__text">Build container image from a source code repository.</p>
+                <div
+                    className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    onClick={(event) => {
+                        this.props.toggleCIMenu(event)
+                        this.props.addCIPipeline('CI', this.props.workflowId)
+                    }}
+                >
+                    <img src={ci} className="br-8 mr-12 h-40" alt="ci" />
+                    <div>
+                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-2">Build and deploy from source code</h4>
+                        <p className="lh-16 fs-12 fw-4 cn-7 m-0">
+                            Build container image from a Git repo and deploy to an environment.
+                        </p>
+                    </div>
+                </div>
+                <div
+                    className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    onClick={(event) => {
+                        this.props.toggleCIMenu(event)
+                        this.props.addCIPipeline('LINKED-CI', this.props.workflowId)
+                    }}
+                >
+                    <img src={linkedPipeline} className="br-8 mr-12 h-40" alt="linked-ci" />
+                    <div>
+                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-2">Linked build Pipeline</h4>
+                        <p className="lh-16 fs-12 fw-4 cn-7 m-0">
+                            Use image built by another build pipeline within Devtron.
+                        </p>
+                    </div>
+                </div>
+                <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
+                    Receive container image
+                </div>
+                <div
+                    className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    onClick={(event) => {
+                        this.props.toggleCIMenu(event)
+                        this.props.addWebhookCD(this.props.workflowId)
+                    }}
+                >
+                    <img src={webhook} className="br-8 mr-12 h-40" alt="external-ci" />
+                    <div>
+                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-2">Deploy image from external service</h4>
+                        <p className="lh-16 fs-12 fw-4 cn-7 m-0">
+                            Receive container images from an external service (eg. jenkins, CircleCI, etc.) and deploy
+                            to an environment.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div className="pipeline-webhook__item" onClick={(event) => {
-                this.props.toggleCIMenu(event);
-                this.props.addCIPipeline('LINKED-CI', this.props.workflowId)
-            }}>
-                <div className="pipeline-webhook__icon">
-                    <img src={linkedPipeline} className="pipeline-webhook__icon" alt="linked-ci" />
-                </div>
-                <div>
-                    <h4 className="pipeline-webhook__title">Linked CI Pipeline</h4>
-                    <p className="pipeline-webhook__text">Refer an existing Pipeline.</p>
-                </div>
-            </div>
-            <div className="pipeline-webhook__item" onClick={(event) => {
-                this.props.toggleCIMenu(event);
-                this.props.addCIPipeline('EXTERNAL-CI', this.props.workflowId)
-            }}>
-                <div className="pipeline-webhook__icon">
-                    <img src={webhook} className="pipeline-webhook__icon" alt="external-ci" />
-                </div>
-                <div>
-                    <h4 className="pipeline-webhook__title">Incoming Webhook</h4>
-                    <p className="pipeline-webhook__text">Receive container image from external source via a service.</p>
-                </div>
-            </div>
-        </div>
+        )
     }
 
     render() {
-        if (!this.props.showMenu) return null;
-        else return <Modal onClick={this.props.toggleCIMenu}
-            style={{ ...this.props.styles }} >
-            {this.renderCIMenu()}
-        </Modal>
+        if (!this.props.showMenu) return null
+        else
+            return (
+                <Modal onClick={this.props.toggleCIMenu} style={{ ...this.props.styles }}>
+                    {this.renderCIMenu()}
+                </Modal>
+            )
     }
 }

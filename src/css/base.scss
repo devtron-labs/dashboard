@@ -244,6 +244,14 @@ a:focus {
     padding: 2px;
 }
 
+.dc__bottom-0 {
+    bottom: 0;
+}
+
+.dc__position-fixed {
+    position: fixed;
+}
+
 .dc__position-rel {
     position: relative;
 }
@@ -1079,7 +1087,7 @@ button.anchor {
             }
         }
         .radio__item-label {
-          border-right: unset;
+            border-right: unset;
         }
         &:first-child input + .radio__item-label {
             border-top-left-radius: 4px;
@@ -1109,13 +1117,13 @@ button.anchor {
     color: var(--N900);
     border: 1px solid var(--N200);
     background-color: var(--N000);
-    &.no-content-padding{
-      .tippy-content{
-        padding: 0;
-      }
+    &.no-content-padding {
+        .tippy-content {
+            padding: 0;
+        }
     }
-    &.tippy-shadow{
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    &.tippy-shadow {
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     }
 }
 
@@ -2034,6 +2042,10 @@ textarea {
 
 .h-36 {
     height: 36px !important;
+}
+
+.h-40 {
+    height: 40px !important;
 }
 
 .h-42 {

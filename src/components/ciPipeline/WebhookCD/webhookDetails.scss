@@ -1,0 +1,6 @@
+.webhook-details-container {
+    .permission-row {
+        display: grid;
+        grid-template-columns: repeat(4, 25%);
+    }
+}
