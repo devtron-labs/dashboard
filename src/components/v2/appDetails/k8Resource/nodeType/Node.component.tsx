@@ -139,7 +139,7 @@ function NodeComponent({
     }, [params.nodeType, podType, url, filteredNodes]);
 
     const getPodRestartCount = (node : iNode) =>{
-        node.info.forEach(element => {
+        node.info?.forEach(element => {
             if(element.name === 'Restart Count' )return element.value //return restart count value if present
         });
         return 0 
