@@ -144,8 +144,8 @@ function NodeComponent({
     const getPodRestartCount = (node : iNode) =>{
         var RestartCount = "0"
         node.info?.forEach(element => {
-            if(element.name === 'Restart Count' )RestartCount = element.value
-        });
+            if(element.name == 'Restart Count' )RestartCount = element.value
+        })
         return RestartCount
     };
 
@@ -342,25 +342,27 @@ function NodeComponent({
                         )}
 
                     
-                        <div className={'flex left col-1 pt-9 pb-9'}>
-                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={podLevelExternalLinks}
-                                    podName={node.name}
-                                />   
-                            )}
-                        
-                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={containerLevelExternalLinks}
-                                    podName={node['pNode']?.name}
-                                    containerName={node.name}
-                                    addExtraSpace={true}
-                                />    
-                            )}
-                        </div>
+                        {params.nodeType!== NodeType.Service.toLocaleLowerCase() && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
+                                    <NodeLevelExternalLinks
+                                        helmAppDetails={appDetails}
+                                        nodeLevelExternalLinks={podLevelExternalLinks}
+                                        podName={node.name}
+                                    />   
+                                )}
+                            
+                                {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
+                                    <NodeLevelExternalLinks
+                                        helmAppDetails={appDetails}
+                                        nodeLevelExternalLinks={containerLevelExternalLinks}
+                                        podName={node['pNode']?.name}
+                                        containerName={node.name}
+                                        addExtraSpace={true}
+                                    />    
+                                )}
+                            </div>
+                        )}
                       
 
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
