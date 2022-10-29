@@ -14,7 +14,7 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { showError } from '../common'
+import { ConditionalWrap, showError } from '../common'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
 
@@ -174,41 +174,61 @@ export default function CIDockerFileConfig({
 
                     return (
                         <Fragment key={option.id}>
-                            <div
-                                id={option.id}
-                                className={`flex top left flex-1 ${
-                                    configOverrideView ? 'h-40' : 'h-80'
-                                } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
-                                    isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
-                                }`}
-                                onClick={() => {
-                                    handleCIBuildTypeOptionSelection(option.id)
-                                }}
-                            >
-                                {showTick && (
-                                    <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
-                                        <CheckIcon className="icon-dim-10 scn-0" />
-                                    </div>
+                            <ConditionalWrap
+                                condition={configOverrideView && allowOverride}
+                                wrap={(children) => (
+                                    <Tippy
+                                        className="default-tt w-250"
+                                        arrow={false}
+                                        placement="top"
+                                        content={option.info}
+                                    >
+                                        <div className="flex top left flex-1">{children}</div>
+                                    </Tippy>
                                 )}
-                                <div>
-                                    <option.icon
-                                        className={`icon-dim-20 ${
-                                            option.noIconFill
-                                                ? ''
-                                                : `${option.iconStroke ? 'sc' : 'fc'}${
-                                                      isCurrentlySelected ? 'n-6' : 'b-5'
-                                                  }`
-                                        }`}
-                                    />
+                            >
+                                <div
+                                    id={option.id}
+                                    className={`flex top left flex-1 ${
+                                        configOverrideView ? 'h-40' : 'h-80'
+                                    } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
+                                        isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
+                                    }`}
+                                    onClick={() => {
+                                        handleCIBuildTypeOptionSelection(option.id)
+                                    }}
+                                >
+                                    {showTick && (
+                                        <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
+                                            <CheckIcon className="icon-dim-10 scn-0" />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <option.icon
+                                            className={`icon-dim-20 ${
+                                                option.noIconFill
+                                                    ? ''
+                                                    : `${option.iconStroke ? 'sc' : 'fc'}${
+                                                          isCurrentlySelected ? 'n-6' : 'b-5'
+                                                      }`
+                                            }`}
+                                        />
+                                    </div>
+                                    <div className="ml-10">
+                                        <span className={`fs-13 fw-6 lh-20 ${isCurrentlySelected ? 'cn-9' : 'cb-5'}`}>
+                                            {option.heading}
+                                        </span>
+                                        {!configOverrideView && (
+                                            <p className="fs-13 fw-4 lh-20 cn-7 m-0">{option.info}</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="ml-10">
-                                    <span className={`fs-13 fw-6 lh-20 ${isCurrentlySelected ? 'cn-9' : 'cb-5'}`}>
-                                        {option.heading}
-                                    </span>
-                                    {!configOverrideView && <p className="fs-13 fw-4 lh-20 cn-7 m-0">{option.info}</p>}
-                                </div>
-                            </div>
-                            {option.addDivider && <div className="h-48 dc__border-right-n1 mr-8 ml-8" />}
+                            </ConditionalWrap>
+                            {option.addDivider && (
+                                <div
+                                    className={`${configOverrideView ? 'h-40' : 'h-48'} dc__border-right-n1 mr-8 ml-8`}
+                                />
+                            )}
                         </Fragment>
                     )
                 })}

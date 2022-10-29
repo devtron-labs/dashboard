@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { CIBuildConfigType, CIBuildType, DockerConfigOverrideType } from '../ciPipeline/types'
+import TippyWhite from '../common/TippyWhite'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -103,7 +106,22 @@ export default function AdvancedConfigOptions({
     const renderDockerArgs = () => {
         return (
             <div>
-                <h3 className="fs-13 fw-6 cn-9 lh-20 m-0">Docker build arguments</h3>
+                <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
+                    Docker build arguments
+                    <TippyWhite
+                        className="w-300"
+                        placement="top"
+                        Icon={HelpIcon}
+                        iconClass="fcv-5"
+                        heading="Docker Build Arguments"
+                        infoText="Key/value pair will be appended as docker build arguments (--build-args)."
+                        showCloseButton={true}
+                        trigger="click"
+                        interactive={true}
+                    >
+                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    </TippyWhite>
+                </h3>
                 <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg}>
                     <Add className="add-icon mt-6" />
@@ -153,10 +171,6 @@ export default function AdvancedConfigOptions({
     const toggleAllowOverride = () => {
         if (updateDockerConfigOverride) {
             updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
-        }
-
-        if (allowOverride) {
-            
         }
     }
 

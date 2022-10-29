@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { KeyValueInput } from '../configMaps/ConfigMap'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { CIAdvancedConfigProps } from './types'
+import TippyWhite from '../common/TippyWhite'
 
 export default function CIAdvancedConfig({
     configOverrideView,
@@ -128,7 +129,24 @@ export default function CIAdvancedConfig({
             <div>
                 <div className="flex left fs-13 fw-6 mb-8">
                     {isDockerArgsSection ? 'Docker Build Arguments' : 'Build Env Arguments'}
-                    {!isDockerArgsSection && <QuestionIcon className="icon-dim-16 fcn-6 ml-4" />}
+                    <TippyWhite
+                        className="w-300"
+                        placement="top"
+                        Icon={HelpIcon}
+                        iconClass="fcv-5"
+                        heading={isDockerArgsSection ? 'Docker Build Arguments' : 'Build Env Arguments'}
+                        infoText={`Key/value pair will be appended as
+                                ${
+                                    isDockerArgsSection
+                                        ? ' docker build arguments (--build-args).'
+                                        : ' buildpack env arguments (--env).'
+                                }`}
+                        showCloseButton={true}
+                        trigger="click"
+                        interactive={true}
+                    >
+                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    </TippyWhite>
                 </div>
                 {!updateNotAllowed && (
                     <div className="add-parameter fs-14 mb-8 cb-5 cursor" onClick={addArg}>

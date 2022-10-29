@@ -10,6 +10,8 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { CIBuildType } from '../ciPipeline/types'
@@ -19,6 +21,7 @@ import {
     LanguageBuilderOptionType,
     VersionsOptionType,
 } from './types'
+import TippyWhite from '../common/TippyWhite'
 
 export const renderOptionIcon = (option: string) => {
     const optionIconAvailable = option.includes('gitlab') || option.includes('github') || option.includes('bitbucket')
@@ -410,8 +413,21 @@ export default function CIBuildpackBuildOptions({
                     {repository.error && <label className="form__error">{repository.error}</label>}
                 </div>
                 <div className="form__field">
-                    <label htmlFor="" className="form__label">
+                    <label htmlFor="" className="form__label flexbox-imp flex-align-center">
                         Project Path (Relative)
+                        <TippyWhite
+                            className="w-300"
+                            placement="top"
+                            Icon={HelpIcon}
+                            iconClass="fcv-5"
+                            heading="Project Path"
+                            infoText="In case of monorepo, specify the path of the GIT Repo for the deployment of the project."
+                            showCloseButton={true}
+                            trigger="click"
+                            interactive={true}
+                        >
+                            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        </TippyWhite>
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{projectPathVal || './'}</span>
@@ -519,7 +535,22 @@ export default function CIBuildpackBuildOptions({
                     )}
                 </div>
                 <div className="form__field">
-                    <label className="form__label">Select a Builder</label>
+                    <label className="form__label flexbox-imp flex-align-center">
+                        Select a Builder
+                        <TippyWhite
+                            className="w-300"
+                            placement="top"
+                            Icon={HelpIcon}
+                            iconClass="fcv-5"
+                            heading="Builder"
+                            infoText="Builder allows you to create your own buildpacks for the deployment of your application."
+                            showCloseButton={true}
+                            trigger="click"
+                            interactive={true}
+                        >
+                            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        </TippyWhite>
+                    </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
                     ) : (

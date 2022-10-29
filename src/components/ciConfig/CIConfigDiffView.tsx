@@ -10,6 +10,7 @@ import { CIConfigDiffViewProps } from './types'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { DockerConfigOverrideType } from '../ciPipeline/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
+import Tippy from '@tippyjs/react'
 
 export default function CIConfigDiffView({
     ciConfig,
@@ -71,20 +72,24 @@ export default function CIConfigDiffView({
                     right: '16px',
                 }}
             >
-                <Link
-                    to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${_wfId}/${
-                        URLS.APP_CI_CONFIG
-                    }/${wfCIMap.get(_wfId)}/build`}
-                    className="flex mr-16"
-                >
-                    <EditIcon className="icon-dim-24" />
-                </Link>
-                <DeleteIcon className="icon-dim-24 scr-5 cursor" onClick={toggleDeleteDialogVisibility} />
+                <Tippy className="default-tt" arrow={false} placement="top" content="Edit override">
+                    <Link
+                        to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${_wfId}/${
+                            URLS.APP_CI_CONFIG
+                        }/${wfCIMap.get(_wfId)}/build`}
+                        className="flex mr-16"
+                    >
+                        <EditIcon className="icon-dim-24" />
+                    </Link>
+                </Tippy>
+                <Tippy className="default-tt" arrow={false} placement="top" content="Delete override">
+                    <DeleteIcon className="icon-dim-24 scr-5 cursor" onClick={toggleDeleteDialogVisibility} />
+                </Tippy>
             </div>
         )
     }
 
-    // Todo: Revisit when restructuring/revamping pipeline flow paiting/rendering
+    // Todo: Revisit when restructuring/revamping pipeline flow painting/rendering
     const getWorkflowHeight = (_wf: WorkflowType) => {
         const gitMaterialCount = _wf.nodes.filter((_nd) => _nd.type === 'GIT')?.length
 
