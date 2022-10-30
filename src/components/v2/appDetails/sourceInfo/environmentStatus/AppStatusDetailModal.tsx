@@ -84,7 +84,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
 
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
-    const Rollout = nodes?.nodes?.Rollout
+    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1];
     if (
         ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -92,8 +92,8 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
         conditions[0].message
     ) {
         message = conditions[0].message
-    } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0].health.message
+    } else if (Rollout?.health?.message) {
+        message = Rollout.health.message
     }
 
     function handleShowMoreButton() {
