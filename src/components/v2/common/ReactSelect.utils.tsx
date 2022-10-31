@@ -131,7 +131,8 @@ export function customOption(label: string, icon: string, className = '', onImag
 }
 
 export function OptionWithIcon(props) {
-    const { data } = props
+    const { selectProps, data, style } = props
+    selectProps.styles.option = getCustomOptionSelectionStyle(style)
     return <components.Option {...props}>{customOption(data.label, data.icon)}</components.Option>
 }
 

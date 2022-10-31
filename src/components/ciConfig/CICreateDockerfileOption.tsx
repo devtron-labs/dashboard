@@ -191,6 +191,7 @@ export default function CICreateDockerfileOption({
             border: 'none',
             boxShadow: 'none',
             minHeight: '32px',
+            cursor: 'pointer',
         }),
         singleValue: (base) => ({
             ...base,

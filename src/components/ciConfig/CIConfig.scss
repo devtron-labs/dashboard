@@ -36,18 +36,12 @@
             flex-direction: column;
             column-gap: 8px;
 
+            .project-material-options,
             .buildpack-options,
-            .project-material-options {
+            .buildpack-language-options {
                 display: grid;
-                grid-column-gap: 8px;
-            }
-
-            .project-material-options {
                 grid-template-columns: 1fr 1fr;
-            }
-
-            .buildpack-options {
-                grid-template-columns: 226.4px 226.4px 1fr;
+                grid-column-gap: 8px;
             }
         }
 
@@ -157,10 +151,6 @@
                     margin-bottom: 16px;
                 }
 
-                .buildpack-options {
-                    grid-template-columns: 161px 161px 1fr;
-                }
-
                 .form__field {
                     margin-bottom: 0;
                 }
@@ -187,6 +177,7 @@
         .config-override-diff__view {
             height: calc(100% - 56px);
         }
+
         .workflow {
             &.workflow--create {
                 margin-bottom: 0;

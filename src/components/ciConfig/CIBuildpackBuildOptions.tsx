@@ -468,99 +468,103 @@ export default function CIBuildpackBuildOptions({
                 </div>
             </div>
             <div className="flex top buildpack-options">
-                <div className="form__field">
-                    <label className="form__label">Language</label>
-                    {configOverrideView && !allowOverride ? (
-                        <div className="flex left">
-                            {buildersAndFrameworks.selectedLanguage?.icon && (
-                                <img
-                                    src={buildersAndFrameworks.selectedLanguage.icon}
-                                    alt={buildersAndFrameworks.selectedLanguage.label}
-                                    className="icon-dim-16 mr-8"
-                                />
-                            )}
+                <div className="buildpack-language-options">
+                    <div className="form__field">
+                        <label className="form__label">Language</label>
+                        {configOverrideView && !allowOverride ? (
+                            <div className="flex left">
+                                {buildersAndFrameworks.selectedLanguage?.icon && (
+                                    <img
+                                        src={buildersAndFrameworks.selectedLanguage.icon}
+                                        alt={buildersAndFrameworks.selectedLanguage.label}
+                                        className="icon-dim-16 mr-8"
+                                    />
+                                )}
+                                <span className="fs-14 fw-4 lh-20 cn-9">
+                                    {buildersAndFrameworks.selectedLanguage?.label}
+                                </span>
+                            </div>
+                        ) : (
+                            <ReactSelect
+                                className="m-0"
+                                tabIndex={3}
+                                options={supportedLanguagesList}
+                                value={buildersAndFrameworks.selectedLanguage}
+                                isSearchable={false}
+                                styles={getCommonSelectStyle({
+                                    control: (base, state) => ({
+                                        ...base,
+                                        minHeight: '36px',
+                                        boxShadow: 'none',
+                                        backgroundColor: 'var(--N50)',
+                                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                        cursor: 'pointer',
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        marginTop: '0',
+                                        minWidth: '226px',
+                                    }),
+                                })}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator,
+                                    Option: OptionWithIcon,
+                                    ValueContainer: ValueContainerWithIcon,
+                                }}
+                                onChange={handleLanguageSelection}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
+                        )}
+                    </div>
+                    <div className="form__field">
+                        <label className="form__label">Version</label>
+                        {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
-                                {buildersAndFrameworks.selectedLanguage?.label}
+                                {buildersAndFrameworks.selectedVersion?.value}
                             </span>
-                        </div>
-                    ) : (
-                        <ReactSelect
-                            className="m-0"
-                            tabIndex={3}
-                            options={supportedLanguagesList}
-                            value={buildersAndFrameworks.selectedLanguage}
-                            isSearchable={false}
-                            styles={getCommonSelectStyle({
-                                control: (base, state) => ({
-                                    ...base,
-                                    minHeight: '36px',
-                                    boxShadow: 'none',
-                                    backgroundColor: 'var(--N50)',
-                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                    cursor: 'pointer',
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                    minWidth: '226px',
-                                }),
-                            })}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option: OptionWithIcon,
-                                ValueContainer: ValueContainerWithIcon,
-                            }}
-                            onChange={handleLanguageSelection}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
-                    )}
-                </div>
-                <div className="form__field">
-                    <label className="form__label">Version</label>
-                    {configOverrideView && !allowOverride ? (
-                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedVersion?.value}</span>
-                    ) : (
-                        <ReactSelect
-                            className="m-0"
-                            tabIndex={3}
-                            isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
-                            options={
-                                builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
-                            }
-                            value={buildersAndFrameworks.selectedVersion}
-                            formatOptionLabel={formatOptionLabel}
-                            isSearchable={false}
-                            styles={getCommonSelectStyle({
-                                control: (base, state) => ({
-                                    ...base,
-                                    minHeight: '36px',
-                                    boxShadow: 'none',
-                                    backgroundColor: 'var(--N50)',
-                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                    cursor: 'pointer',
-                                }),
-                                valueContainer: (base) => ({
-                                    ...base,
-                                    small: {
-                                        display: 'none',
-                                    },
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                    minWidth: '226px',
-                                }),
-                            })}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option,
-                            }}
-                            onChange={handleVersionSelection}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
-                    )}
+                        ) : (
+                            <ReactSelect
+                                className="m-0"
+                                tabIndex={3}
+                                isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
+                                options={
+                                    builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
+                                }
+                                value={buildersAndFrameworks.selectedVersion}
+                                formatOptionLabel={formatOptionLabel}
+                                isSearchable={false}
+                                styles={getCommonSelectStyle({
+                                    control: (base, state) => ({
+                                        ...base,
+                                        minHeight: '36px',
+                                        boxShadow: 'none',
+                                        backgroundColor: 'var(--N50)',
+                                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                        cursor: 'pointer',
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        small: {
+                                            display: 'none',
+                                        },
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        marginTop: '0',
+                                        minWidth: '226px',
+                                    }),
+                                })}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator,
+                                    Option,
+                                }}
+                                onChange={handleVersionSelection}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
+                        )}
+                    </div>
                 </div>
                 <div className="form__field">
                     <label className="form__label flexbox-imp flex-align-center">
