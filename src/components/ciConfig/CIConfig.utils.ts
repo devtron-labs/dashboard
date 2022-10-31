@@ -167,9 +167,7 @@ export const initCurrentCIBuildConfig = (
     }
 }
 
-export const processBuildArgs = (
-    args: Record<string, string>,
-): CIBuildArgType[] => {
+export const processBuildArgs = (args: Record<string, string>): CIBuildArgType[] => {
     const processedArgs = args
         ? Object.keys(args).map((arg) => ({
               k: arg,
@@ -324,8 +322,8 @@ const updateBuildpackDiffValues = (
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath !==
                 ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
-            baseValue: globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath,
-            overridenValue: ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
+            baseValue: globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath || './',
+            overridenValue: ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath || './',
         })
         ciConfigDiffValues.push({
             configName: 'Builder Language',

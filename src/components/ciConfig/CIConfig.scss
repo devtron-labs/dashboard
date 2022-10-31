@@ -29,7 +29,7 @@
     .form-row__docker {
         display: grid;
         grid-template-columns: 240px 1fr;
-        grid-column-gap: 16px;
+        grid-column-gap: 8px;
 
         &.buildpack-option-wrapper {
             display: flex;
@@ -209,9 +209,6 @@
         }
 
         .config-override-diff__values {
-            display: grid;
-            grid-template-columns: 215px repeat(2, calc(50% - 108px));
-            grid-template-rows: auto;
             background: white;
 
             .code-editor-green-diff {

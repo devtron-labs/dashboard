@@ -26,6 +26,7 @@ export default function CIConfig({
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
     const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
     const [configOverrideWorkflows, setConfigOverrideWorkflows] = useState<ConfigOverrideWorkflowDetails[]>([])
+    const [parentReloading, setParentReloading] = useState(false)
     const [loading, setLoading] = useState(
         configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
     )
@@ -87,16 +88,27 @@ export default function CIConfig({
         }
     }
 
-    async function reload() {
+    function updateLoadingState(isLoading: boolean, skipPageReload: boolean) {
+        if (!skipPageReload) {
+            setLoading(isLoading)
+        } else {
+            setParentReloading(isLoading)
+        }
+    }
+
+    async function reload(skipPageReload?: boolean) {
         try {
-            setLoading(true)
+            updateLoadingState(true, skipPageReload)
             const { result } = await getCIConfig(+appId)
             setCIConfig(result)
-            respondOnSuccess()
+
+            if (!skipPageReload) {
+                respondOnSuccess()
+            }
         } catch (err) {
             showError(err)
         } finally {
-            setLoading(false)
+            updateLoadingState(false, skipPageReload)
         }
     }
 
@@ -112,6 +124,7 @@ export default function CIConfig({
     if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
     return (
         <CIConfigForm
+            parentReloading={parentReloading}
             dockerRegistries={dockerRegistries}
             sourceConfig={sourceConfig}
             ciConfig={ciConfig}

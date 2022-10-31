@@ -84,18 +84,21 @@ export interface CIConfigProps {
 }
 
 export interface CIConfigDiffViewProps {
+    parentReloading: boolean
     ciConfig: CiPipelineResult
     configOverridenPipelines: CiPipeline[]
     configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
     processedWorkflows: ProcessedWorkflowsType
     toggleConfigOverrideDiffModal: () => void
+    reload: (skipPageReload?: boolean) => Promise<void>
 }
 
 export interface CIConfigFormProps {
+    parentReloading: boolean
     dockerRegistries: any
     sourceConfig: any
     ciConfig: CiPipelineResult
-    reload: () => Promise<void>
+    reload: (skipPageReload?: boolean) => Promise<void>
     appId: string
     selectedCIPipeline: CIPipelineDataType
     configOverrideWorkflows: ConfigOverrideWorkflowDetails[]

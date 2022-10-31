@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, PATTERNS } from '../../config'
+import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
 import { CIBuildConfigType, CIBuildType } from '../ciPipeline/types'
@@ -26,6 +26,7 @@ import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
 export default function CIConfigForm({
+    parentReloading,
     dockerRegistries,
     sourceConfig,
     ciConfig,
@@ -374,13 +375,15 @@ export default function CIConfigForm({
                 </div>
             )}
             {showCustomPlatformConfirmation && renderConfirmationModal()}
-            {showConfigOverrideDiff && (
+            {configOverridenPipelines?.length > 0 && showConfigOverrideDiff && (
                 <CIConfigDiffView
+                    parentReloading={parentReloading}
                     ciConfig={ciConfig}
                     configOverridenPipelines={configOverridenPipelines}
                     configOverrideWorkflows={configOverrideWorkflows}
                     processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
+                    reload={reload}
                 />
             )}
         </>

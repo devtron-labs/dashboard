@@ -311,7 +311,7 @@ export default function CICreateDockerfileOption({
     const handleEditorValueChange = (value: string) => {
         setEditorValue(value)
 
-        if (templateData && selectedLanguage?.value) {
+        if (templateData && currentCIBuildConfig.dockerBuildConfig?.language) {
             setCurrentCIBuildConfig({
                 ...currentCIBuildConfig,
                 dockerBuildConfig: {
