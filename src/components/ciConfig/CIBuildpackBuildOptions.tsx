@@ -24,6 +24,8 @@ import {
 import TippyWhite from '../common/TippyWhite'
 
 export const renderOptionIcon = (option: string) => {
+    if (!option) return null
+
     const optionIconAvailable = option.includes('gitlab') || option.includes('github') || option.includes('bitbucket')
     return optionIconAvailable ? (
         <>
@@ -40,7 +42,7 @@ export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props}>
-            {renderOptionIcon(props.data.url)}
+            {props.data.url && renderOptionIcon(props.data.url)}
             {props.label}
         </components.Option>
     )
@@ -376,7 +378,7 @@ export default function CIBuildpackBuildOptions({
                     } containing code`}</label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
-                            {renderOptionIcon(currentMaterial?.url)}
+                            {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
                             <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name}</span>
                         </div>
                     ) : (

@@ -133,13 +133,10 @@ export default function CIDockerFileConfig({
     const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
         formState.repository.value = selectedMaterial.name
-
-        if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('gitMaterialId', {
-                ...currentCIBuildConfig,
-                gitMaterialId: selectedMaterial.id,
-            })
-        }
+        setCurrentCIBuildConfig({
+            ...currentCIBuildConfig,
+            gitMaterialId: selectedMaterial.id,
+        })
     }
 
     const handleCIBuildTypeOptionSelection = (id: CIBuildType) => {
@@ -148,13 +145,6 @@ export default function CIDockerFileConfig({
             ...currentCIBuildConfig,
             ciBuildType: id,
         })
-
-        if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('ciBuildType', {
-                ...currentCIBuildConfig,
-                ciBuildType: id,
-            })
-        }
     }
 
     const canShowTick = (id: CIBuildType) => {
@@ -245,7 +235,7 @@ export default function CIDockerFileConfig({
                     } containing Dockerfile`}</label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
-                            {renderOptionIcon(currentMaterial?.url)}
+                            {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
                             <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name}</span>
                         </div>
                     ) : (
