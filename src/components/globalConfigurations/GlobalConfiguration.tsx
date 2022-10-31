@@ -8,7 +8,6 @@ import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { getHostURLConfiguration } from '../../services/service'
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
@@ -196,9 +195,6 @@ function NavItem({ hostURLConfig, serverMode }) {
         },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, moduleName: ModuleNameMap.NOTIFICATION },
     ]
-    let showError =
-        (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
-        !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
         getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
@@ -246,11 +242,6 @@ function NavItem({ hostURLConfig, serverMode }) {
             >
                 <div className={`flexbox flex-justify ${className || ''}`}>
                     <div>{route.name}</div>
-                    {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                        <Error className="global-configuration__error-icon icon-dim-20" />
-                    ) : (
-                        ''
-                    )}
                 </div>
             </NavLink>
         )
@@ -365,7 +356,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                                 refreshGlobalConfig={getHostURLConfig}
                                 handleChecklistUpdate={handleChecklistUpdate}
                             />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -376,7 +366,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return (
                         <div className="flexbox">
                             <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -387,7 +376,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return (
                         <div className="flexbox">
                             <Project {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -398,7 +386,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return (
                         <div className="flexbox">
                             <ClusterList {...props} serverMode={serverMode} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -409,7 +396,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return (
                         <div className="flexbox">
                             <GitProvider {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -420,7 +406,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return (
                         <div className="flexbox">
                             <Docker {...props} handleChecklistUpdate={handleChecklistUpdate} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}

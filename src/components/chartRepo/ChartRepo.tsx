@@ -207,6 +207,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             }
         }).catch((error) => {
             showError(error);
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
             setLoading(false);
         })
     }
@@ -242,6 +243,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
         catch (err) {
             showError(err)
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
         }
         finally {
             setLoading(false);

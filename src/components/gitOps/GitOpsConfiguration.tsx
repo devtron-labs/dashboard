@@ -11,7 +11,6 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
 import { withRouter } from 'react-router-dom'

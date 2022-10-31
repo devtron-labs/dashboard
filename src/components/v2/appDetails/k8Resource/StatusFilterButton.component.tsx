@@ -70,7 +70,7 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
 
     return (
         <RadioGroup
-            className="status-filter-button gui-yaml-switch"
+            className="gui-yaml-switch"
             name="yaml-mode"
             initialTab={selectedTab}
             disabled={false}

@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { Project } from './Project';
 import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './project.css';
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
