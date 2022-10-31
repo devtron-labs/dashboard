@@ -141,33 +141,43 @@ function NodeComponent({
         }
     }, [params.nodeType, podType, url, filteredNodes]);
 
-    const getPodRestartCount = (node : iNode) =>{
-        let restartCount = "0"
-        if(node.info){
-            for(const ele of node.info) {
-                if(ele.name == 'Restart Count' ){
+    const getPodRestartCount = (node: iNode) => {
+        let restartCount = '0'
+        if (node.info) {
+            for (const ele of node.info) {
+                if (ele.name === 'Restart Count') {
                     restartCount = ele.value
                     break
                 }
             }
         }
         return restartCount
-    };
+    }
 
-    const getElapsedTime = (createdAt : Date) => {
-        const currentDate = new Date()
-        const elapsedTime = Math.floor((currentDate.getTime() - createdAt.getTime())/1000)
+    const getElapsedTime = (createdAt: Date) => {
+        const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
         if (elapsedTime >= 0) {
             const days = Math.floor(elapsedTime / (24 * 60 * 60)),
-            hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
-            mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
-            secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
-            let dh = `${days}d ${hrs}h`.split(' ').filter((a)=> !a.startsWith('0')).join(' ')
-            if(dh.length > 0)return dh  //if age is more than hours just show age in days and hours
-            return `${mins}m ${secs}s`.split(' ').filter((a)=> !a.startsWith('0')).join(' ')//return age in minutes and seconds
+                hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
+                mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
+                secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
+
+            const dh = `${days}d ${hrs}h`
+                .split(' ')
+                .filter((a) => !a.startsWith('0'))
+                .join(' ')
+            // f age is more than hours just show age in days and hours
+            if (dh.length > 0) {
+                return dh
+            }
+            //return age in minutes and seconds
+            return `${mins}m ${secs}s`
+                .split(' ')
+                .filter((a) => !a.startsWith('0'))
+                .join(' ')
         }
-        return ""
-    };
+        return ''
+    }
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
