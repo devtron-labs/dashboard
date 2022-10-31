@@ -142,11 +142,16 @@ function NodeComponent({
     }, [params.nodeType, podType, url, filteredNodes]);
 
     const getPodRestartCount = (node : iNode) =>{
-        var RestartCount = "0"
-        node.info?.forEach(element => {
-            if(element.name == 'Restart Count' )RestartCount = element.value
-        })
-        return RestartCount
+        let restartCount = "0"
+        if(node.info){
+            for(const ele of node.info) {
+                if(ele.name == 'Restart Count' ){
+                    restartCount = ele.value
+                    break
+                }
+            }
+        }
+        return restartCount
     };
 
     const getElapsedTime = (createdAt : Date) => {
@@ -157,13 +162,9 @@ function NodeComponent({
             hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
             mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
             secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
-            let age = ""
-            if(days >= 1) age+=(days+"d")
-            if(hrs >= 1) age+=(hrs+"h")
-            if(age.length > 0)return age  //if age is more than hours just show age in days and hours
-            if(mins >= 1) age+=(mins+"m")
-            if(secs >= 1) age+=(secs+"s")
-            return age  //return age in minutes and seconds
+            let dh = `${days}d ${hrs}h`.split(' ').filter((a)=> !a.startsWith('0')).join(' ')
+            if(dh.length > 0)return dh  //if age is more than hours just show age in days and hours
+            return `${mins}m ${secs}s`.split(' ').filter((a)=> !a.startsWith('0')).join(' ')//return age in minutes and seconds
         }
         return ""
     };
@@ -331,7 +332,7 @@ function NodeComponent({
                     
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {(node.kind !== 'Containers') && getPodRestartCount(node)}
+                                {node.kind !== 'Containers' && getPodRestartCount(node)}
                             </div>
                         )}
 
