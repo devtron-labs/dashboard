@@ -371,7 +371,9 @@ export default function CIBuildpackBuildOptions({
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                    <label className="form__label">Select repository containing code</label>
+                    <label className="form__label">{`${
+                        configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
+                    } containing code`}</label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
                             {renderOptionIcon(currentMaterial?.url)}
@@ -536,7 +538,7 @@ export default function CIBuildpackBuildOptions({
                 </div>
                 <div className="form__field">
                     <label className="form__label flexbox-imp flex-align-center">
-                        Select a Builder
+                        {configOverrideView && !allowOverride ? 'Builder' : 'Select a Builder'}
                         <TippyWhite
                             className="w-300"
                             placement="top"

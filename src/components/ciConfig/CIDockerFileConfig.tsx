@@ -240,7 +240,9 @@ export default function CIDockerFileConfig({
         return (
             <div className="mb-4 form-row__docker">
                 <div className="form__field">
-                    <label className="form__label">Select repository containing Dockerfile</label>
+                    <label className="form__label">{`${
+                        configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
+                    } containing Dockerfile`}</label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
                             {renderOptionIcon(currentMaterial?.url)}
