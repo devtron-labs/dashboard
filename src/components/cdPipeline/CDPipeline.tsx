@@ -69,7 +69,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     constructor(props) {
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
-        const parentPipelineType = this.isWebhookCD? SourceTypeMap.WEBHOOK: (urlParams.get('parentPipelineType') ?? '').toLocaleUpperCase().replace('-', '_')
+        const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
+        const parentPipelineType = parentPipelineTypeFromURL? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_'):  this.isWebhookCD? SourceTypeMap.WEBHOOK : ''
         const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
@@ -531,7 +532,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     savePipeline() {
         this.setState({ showError: true, loadingData: true })
         let pipeline = {
-            appWorkflowId: this.isWebhookCD? 0:  +this.props.match.params.workflowId,
+            appWorkflowId: +this.props.match.params.workflowId,
             ...this.state.pipelineConfig,
             deploymentTemplate:
                 this.state.pipelineConfig.strategies.length > 0
@@ -1033,7 +1034,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <>
                 <div className="form__row form__row--flex">
-                    <div className={`w-50`}>
+                    <div className="w-50 mr-8">
                         <div className="form__label">Environment</div>
                         <ReactSelect
                             menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
@@ -1060,7 +1061,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             </span>
                         ) : null}
                     </div>
-                    <label className="flex-1 ml-16">
+                    <label className="flex-1 ml-8">
                         <span className="form__label">Namespace</span>
                         <input
                             className="form__input"

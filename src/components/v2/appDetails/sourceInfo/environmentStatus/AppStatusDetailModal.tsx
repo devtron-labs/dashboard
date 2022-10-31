@@ -62,7 +62,312 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
 
     useEffect(() => {
         try {
-            const stats = appStreamData.result.application.status.operationState.syncResult.resources.reduce(
+            const stats = (({
+              "result": {
+                "type": "MODIFIED",
+                "application": {
+                  "metadata": {
+                    "name": "bluecopa-dcd-gitsensor-bcopa-dcd",
+                    "namespace": "devtroncd",
+                    "uid": "0bca7666-f262-4ac2-8ba9-3a43bfa326fe",
+                    "resourceVersion": "264581424",
+                    "generation": 2813,
+                    "creationTimestamp": "2022-10-28T16:05:22Z",
+                    "managedFields": [{
+                        "manager": "Go-http-client",
+                        "operation": "Update",
+                        "apiVersion": "argoproj.io/v1alpha1",
+                        "time": "2022-10-31T08:47:08Z",
+                        "fieldsType": "FieldsV1",
+                        "fieldsV1": {
+                          "f:spec": {
+                            ".": {},
+                            "f:destination": {
+                              ".": {},
+                              "f:namespace": {},
+                              "f:server": {}
+                            },
+                            "f:project": {},
+                            "f:source": {
+                              ".": {},
+                              "f:helm": {
+                                ".": {},
+                                "f:valueFiles": {}
+                              },
+                              "f:path": {},
+                              "f:repoURL": {},
+                              "f:targetRevision": {}
+                            },
+                            "f:syncPolicy": {
+                              ".": {},
+                              "f:automated": {
+                                ".": {},
+                                "f:prune": {}
+                              },
+                              "f:retry": {
+                                ".": {},
+                                "f:backoff": {
+                                  ".": {},
+                                  "f:duration": {},
+                                  "f:factor": {},
+                                  "f:maxDuration": {}
+                                },
+                                "f:limit": {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "manager": "argocd-application-controller",
+                        "operation": "Update",
+                        "apiVersion": "argoproj.io/v1alpha1",
+                        "time": "2022-10-31T08:47:15Z",
+                        "fieldsType": "FieldsV1",
+                        "fieldsV1": {
+                          "f:status": {
+                            ".": {},
+                            "f:conditions": {},
+                            "f:health": {
+                              ".": {},
+                              "f:status": {}
+                            },
+                            "f:operationState": {
+                              ".": {},
+                              "f:finishedAt": {},
+                              "f:message": {},
+                              "f:operation": {
+                                ".": {},
+                                "f:initiatedBy": {
+                                  ".": {},
+                                  "f:username": {}
+                                },
+                                "f:retry": {
+                                  ".": {},
+                                  "f:backoff": {
+                                    ".": {},
+                                    "f:duration": {},
+                                    "f:factor": {},
+                                    "f:maxDuration": {}
+                                  },
+                                  "f:limit": {}
+                                },
+                                "f:sync": {
+                                  ".": {},
+                                  "f:revision": {},
+                                  "f:syncStrategy": {
+                                    ".": {},
+                                    "f:hook": {}
+                                  }
+                                }
+                              },
+                              "f:phase": {},
+                              "f:retryCount": {},
+                              "f:startedAt": {},
+                              "f:syncResult": {
+                                ".": {},
+                                "f:resources": {},
+                                "f:revision": {},
+                                "f:source": {
+                                  ".": {},
+                                  "f:helm": {
+                                    ".": {},
+                                    "f:valueFiles": {}
+                                  },
+                                  "f:path": {},
+                                  "f:repoURL": {},
+                                  "f:targetRevision": {}
+                                }
+                              }
+                            },
+                            "f:reconciledAt": {},
+                            "f:resources": {},
+                            "f:sourceType": {},
+                            "f:summary": {
+                              ".": {},
+                              "f:images": {}
+                            },
+                            "f:sync": {
+                              ".": {},
+                              "f:comparedTo": {
+                                ".": {},
+                                "f:destination": {
+                                  ".": {},
+                                  "f:namespace": {},
+                                  "f:server": {}
+                                },
+                                "f:source": {
+                                  ".": {},
+                                  "f:helm": {
+                                    ".": {},
+                                    "f:valueFiles": {}
+                                  },
+                                  "f:path": {},
+                                  "f:repoURL": {},
+                                  "f:targetRevision": {}
+                                }
+                              },
+                              "f:revision": {},
+                              "f:status": {}
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "spec": {
+                    "source": {
+                      "repoURL": "https://gitlab.com/devtron-prod-gitops/bluecopa-dcd-gitsensor.git",
+                      "path": "bluecopa-dcd-gitsensor-bcopa-dcd",
+                      "targetRevision": "master",
+                      "helm": {
+                        "valueFiles": [
+                          "values.yaml"
+                        ]
+                      }
+                    },
+                    "destination": {
+                      "server": "https://api-k8s-bluecopa-devtron.devtron.ai",
+                      "namespace": "devtroncd"
+                    },
+                    "project": "default",
+                    "syncPolicy": {
+                      "automated": {
+                        "prune": true
+                      },
+                      "retry": {
+                        "limit": 1,
+                        "backoff": {
+                          "duration": "5s",
+                          "factor": 2,
+                          "maxDuration": "5s"
+                        }
+                      }
+                    }
+                  },
+                  "status": {
+                    "resources": [{
+                        "version": "v1",
+                        "kind": "Service",
+                        "namespace": "devtroncd",
+                        "name": "git-sensor-service",
+                        "status": "Synced",
+                        "health": {
+                          "status": "Healthy"
+                        }
+                      },
+                      {
+                        "group": "apps",
+                        "version": "v1",
+                        "kind": "StatefulSet",
+                        "namespace": "devtroncd",
+                        "name": "git-sensor",
+                        "status": "Synced",
+                        "health": {
+                          "status": "Healthy",
+                          "message": "partitioned roll out complete: 1 new pods have been updated..."
+                        }
+                      },
+                      {
+                        "group": "monitoring.coreos.com",
+                        "version": "v1",
+                        "kind": "ServiceMonitor",
+                        "namespace": "devtroncd",
+                        "name": "bluecopa-dcd-gitsensor-bcopa-dcd-sm",
+                        "status": "OutOfSync",
+                        "health": {
+                          "status": "Missing"
+                        }
+                      }
+                    ],
+                    "sync": {
+                      "status": "OutOfSync",
+                      "comparedTo": {
+                        "source": {
+                          "repoURL": "https://gitlab.com/devtron-prod-gitops/bluecopa-dcd-gitsensor.git",
+                          "path": "bluecopa-dcd-gitsensor-bcopa-dcd",
+                          "targetRevision": "master",
+                          "helm": {
+                            "valueFiles": [
+                              "values.yaml"
+                            ]
+                          }
+                        },
+                        "destination": {
+                          "server": "https://api-k8s-bluecopa-devtron.devtron.ai",
+                          "namespace": "devtroncd"
+                        }
+                      },
+                      "revision": "d4482964ef6179da5bcd8e2ce6db58411e312e94"
+                    },
+                    "health": {
+                      "status": "Healthy"
+                    },
+                    "conditions": [{
+                      "type": "SyncError",
+                      "message": "Failed sync attempt to d4482964ef6179da5bcd8e2ce6db58411e312e94: one or more synchronization tasks are not valid (retried 1 times).",
+                      "lastTransitionTime": "2022-10-31T08:47:15Z"
+                    }],
+                    "reconciledAt": "2022-10-31T08:47:15Z",
+                    "operationState": {
+                      "operation": {
+                        "sync": {
+                          "revision": "d4482964ef6179da5bcd8e2ce6db58411e312e94",
+                          "syncStrategy": {
+                            "hook": {}
+                          }
+                        },
+                        "initiatedBy": {
+                          "username": "admin"
+                        },
+                        "retry": {
+                          "limit": 1,
+                          "backoff": {
+                            "duration": "5s",
+                            "factor": 2,
+                            "maxDuration": "5s"
+                          }
+                        }
+                      },
+                      "phase": "Failed",
+                      "message": "one or more synchronization tasks are not valid (retried 1 times).",
+                      "syncResult": {
+                        "resources": [{
+                          "group": "monitoring.coreos.com",
+                          "version": "v1",
+                          "kind": "ServiceMonitor",
+                          "namespace": "devtroncd",
+                          "name": "bluecopa-dcd-gitsensor-bcopa-dcd-sm",
+                          "status": "SyncFailed",
+                          "message": "the server could not find the requested resource",
+                          "syncPhase": "Sync"
+                        }],
+                        "revision": "d4482964ef6179da5bcd8e2ce6db58411e312e94",
+                        "source": {
+                          "repoURL": "https://gitlab.com/devtron-prod-gitops/bluecopa-dcd-gitsensor.git",
+                          "path": "bluecopa-dcd-gitsensor-bcopa-dcd",
+                          "targetRevision": "master",
+                          "helm": {
+                            "valueFiles": [
+                              "values.yaml"
+                            ]
+                          }
+                        }
+                      },
+                      "startedAt": "2022-10-31T08:47:08Z",
+                      "finishedAt": "2022-10-31T08:47:15Z",
+                      "retryCount": 1
+                    },
+                    "sourceType": "Helm",
+                    "summary": {
+                      "images": [
+                        "quay.io/devtron/git-sensor:a1e0e0a7-304-11232"
+                      ]
+                    }
+                  }
+                }
+              }
+            }).result.application.status.operationState.syncResult.resources).reduce(
                 (agg, curr) => {
                     agg.set(`${curr.kind}/${curr.name}`, curr)
                     return agg

@@ -35,8 +35,8 @@ export function getCDConfig(appId: number | string): Promise<CDPipelines> {
     return get(URL).then(response => response.result);
 };
 
-export function getExternalCIConfig(appId: number | string): Promise<CdPipeline[]> {
-    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}`).then(response => response.result);
+export function getExternalCIConfig(appId: number | string, webhookID?: number | string): Promise<CdPipeline[]> {
+    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}${webhookID? `/${webhookID}`: ''}`).then(response => response.result);
 };
 
 export const getGitProviderListAuth = (appId: string) => {

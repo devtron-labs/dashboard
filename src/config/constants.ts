@@ -89,6 +89,7 @@ export const Routes = {
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
     API_TOKEN: 'api-token',
+    API_TOKEN_WEBHOOK: 'api-token/webhook',
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',

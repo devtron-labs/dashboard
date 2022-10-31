@@ -34,6 +34,7 @@ export interface WorkflowProps
         ciPipelineId: number | string,
         parentPipelineType: string,
         parentPipelineId: number | string,
+        isWebhookCD?: boolean
     ) => void
     openEditWorkflow: (event, workflowId: number) => string
     handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
@@ -292,7 +293,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 triggerType={node.triggerType}
                 deploymentStrategy={node.deploymentStrategy}
                 toggleCDMenu={() => {
-                    this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id)
+                    this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id, isWebhookCD)
                 }}
                 to={this.openCDPipeline(node, isWebhookCD)}
                 cdNamesList={cdNamesList}

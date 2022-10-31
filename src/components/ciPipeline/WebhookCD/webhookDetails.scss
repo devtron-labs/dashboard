@@ -1,6 +1,42 @@
 .webhook-details-container {
-    .permission-row {
-        display: grid;
-        grid-template-columns: repeat(4, 25%);
+    .webhook-body {
+        overflow: auto;
+        height: calc(100vh - 125px);
+        .permission-row {
+            display: grid;
+            grid-template-columns: repeat(4, 25%);
+            .font-roboto {
+                font-family: Roboto;
+            }
+        }
+        .response-row {
+            display: grid;
+            grid-template-columns: 60px auto;
+            column-gap: 12px;
+        }
+
+        .tab-list {
+            .tab-list__tab {
+                .tab-hover {
+                    &:hover,
+                    &.active {
+                        color: var(--B500);
+                        &.child-tab {
+                            color: var(--N900);
+                            font-weight: bold;
+                        }
+                    }
+                }
+                .tab-list_active-tab {
+                    height: 2px;
+                    background-color: var(--B500);
+                    border-radius: 2px 2px 0px 0px;
+                    margin-top: -1px;
+                    &.child-tab {
+                        background-color: var(--N900);
+                    }
+                }
+            }
+        }
     }
 }

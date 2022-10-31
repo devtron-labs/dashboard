@@ -157,6 +157,17 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
+    monaco.editor.defineTheme('vs-alice-blue', {
+        base: 'vs',
+        inherit: true,
+        rules: [
+            //@ts-ignore
+            { background: '#F7FAFC' }
+        ],
+        colors: {
+            'editor.background': '#F7FAFC',
+        }
+    });
 
     function editorDidMount(editor, monaco) {
         if (
