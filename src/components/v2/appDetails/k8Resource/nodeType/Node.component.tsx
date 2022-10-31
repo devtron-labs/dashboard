@@ -92,7 +92,10 @@ function NodeComponent({
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', ''];
+                    if ( podLevelExternalLinks.length > 0 ) {
+                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                    }
                     _fcw = 'col-7';
                     break;
                 case NodeType.Service.toLowerCase():
@@ -132,7 +135,7 @@ function NodeComponent({
 
             setSelectedHealthyNodeCount(_healthyNodeCount);
         }
-    }, [params.nodeType, podType, url, filteredNodes]);
+    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks]);
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
