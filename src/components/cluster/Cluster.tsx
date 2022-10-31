@@ -181,7 +181,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload />
+        else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
         else {
             const moduleBasedTitle =
                 'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')

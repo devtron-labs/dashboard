@@ -349,7 +349,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         else if (this.state.view === ViewType.ERROR) {
             return <div className="global-configuration__component flex">
-                <ErrorScreenManager code={this.state.statusCode} />
+                <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
             </div>
         }
         return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
