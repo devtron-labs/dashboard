@@ -49,18 +49,18 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     )
 })
 
-function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true, isDisabled = false }) {
+function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true, isDisabled = false, tippyClass = '' }) {
     const { name, selected, select, disabled, onChange } = useRadioContext()
     return (
         <ConditionalWrap
             condition={showTippy}
             wrap={(children) => (
-                <Tippy className="default-tt w-250" arrow={false} placement="bottom" content={tippyContent}>
+                <Tippy className={`default-tt w-250 ${tippyClass}`} arrow={false} placement="bottom" content={tippyContent}>
                     {children}
                 </Tippy>
             )}
         >
-            <label className={`${className} radio`}>
+            <label className={`${className} radio ${(isDisabled || disabled)? 'disabled': ''}`}>
                 <input
                     type="checkbox"
                     value={value}

@@ -922,7 +922,7 @@ function ChartValuesView({
     const renderValuesTabs = () => {
         return (
             <RadioGroup
-                className="chart-values-view__tabs gui-yaml-switch"
+                className="gui-yaml-switch"
                 name="yaml-mode"
                 initialTab={
                     presetValueId || isCreateValueView
