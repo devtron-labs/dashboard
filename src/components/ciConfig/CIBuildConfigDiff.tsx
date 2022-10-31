@@ -104,7 +104,9 @@ export function CIBuildConfigDiff({
                     {renderHeader()}
 
                     {ciConfigDiffValues.map((val, idx) => {
-                        return renderValueDiff(val, lastIndex === idx)
+                        if (val.baseValue || val.overridenValue) {
+                            return renderValueDiff(val, lastIndex === idx)
+                        }
                     })}
                 </table>
             )}

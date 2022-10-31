@@ -322,8 +322,8 @@ const updateBuildpackDiffValues = (
             changeBGColor:
                 globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath !==
                 ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
-            baseValue: globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath || './',
-            overridenValue: ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath || './',
+            baseValue: globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath,
+            overridenValue: ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
         })
         ciConfigDiffValues.push({
             configName: 'Builder Language',
