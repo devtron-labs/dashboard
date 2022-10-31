@@ -8,6 +8,7 @@ import { DeploymentStatusDetailBreakdownType, DeploymentStatusDetailsBreakdownDa
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
+import ErrorBar from '../../../common/error/ErrorBar'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
@@ -51,19 +52,22 @@ export default function DeploymentStatusDetailBreakdown({
         )
     }
     return (
-        <div className="deployment-status-breakdown-container pl-20 pr-20">
-            {deploymentStatusDetailsBreakdownData.deploymentError && (
-                <InfoColourBar
-                    message={deploymentStatusDetailsBreakdownData.deploymentError}
-                    classname="error_bar cn-9 mb-20 lh-20"
-                    Icon={Error}
-                    iconClass="icon-dim-20"
-                />
-            )}
-            {renderStatusDetailRow('DEPLOYMENT_INITIATED')}
-            {renderStatusDetailRow('GIT_COMMIT')}
-            {renderStatusDetailRow('KUBECTL_APPLY')}
-            {renderStatusDetailRow('APP_HEALTH', true)}
-        </div>
+        <>
+            <ErrorBar />
+            <div className="deployment-status-breakdown-container pl-20 pr-20">
+                {deploymentStatusDetailsBreakdownData.deploymentError && (
+                    <InfoColourBar
+                        message={deploymentStatusDetailsBreakdownData.deploymentError}
+                        classname="error_bar cn-9 mb-20 lh-20"
+                        Icon={Error}
+                        iconClass="icon-dim-20"
+                    />
+                )}
+                {renderStatusDetailRow('DEPLOYMENT_INITIATED')}
+                {renderStatusDetailRow('GIT_COMMIT')}
+                {renderStatusDetailRow('KUBECTL_APPLY')}
+                {renderStatusDetailRow('APP_HEALTH', true)}
+            </div>
+        </>
     )
 }

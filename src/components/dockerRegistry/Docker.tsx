@@ -28,6 +28,7 @@ import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from
 import ReactSelect, { components } from 'react-select';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { AuthenticationType } from '../cluster/cluster.type';
+import ManageResgistry from './ManageResgistry';
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -81,6 +82,14 @@ function CollapsedList({
     reload,
     connection = '',
     cert = '',
+    ipsConfig={
+      id: undefined,
+      credentialType : '',
+      credentialValue: '',
+      appliedClusterIdsCsv:  '',
+      ignoredClusterIdsCsv: ''
+
+    },
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true);
@@ -215,6 +224,12 @@ function DockerForm({
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
+    const [clusterOption, setClusterOptions] = useState<any>([{ label: '', value: '' }])
+    const [blackList, setBlackList] = useState([])
+    const [whiteList, setWhiteList] = useState([])
+    const [onEdit, setOnEdit] = useState<boolean>(false)
+    const [credentialsType, setCredentialType] = useState<string>('SAME_AS_REGISTRY')
+    const [credentialValue, setCredentialValue] = useState<string>('')
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
@@ -301,6 +316,13 @@ function DockerForm({
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
                 : {}),
+                ipsConfig: {
+                  id: 1,
+                  credentialType : credentialsType,
+                  credentialValue: credentialValue,
+                  appliedClusterIdsCsv:  whiteList.map(cluster => cluster.label.join(',')) || -1,
+                  ignoredClusterIdsCsv: blackList.map(cluster => cluster.label.join(',')) || -1
+                }
         };
     };
 
@@ -692,6 +714,20 @@ function DockerForm({
                     ))}
                 </div>
             )}
+            <ManageResgistry
+            clusterOption={clusterOption}
+             setClusterOptions= { setClusterOptions}
+             blackList={blackList}
+             setBlackList={setBlackList}
+             whiteList={whiteList}
+             setWhiteList={setWhiteList}
+             onEdit={onEdit}
+             setOnEdit={setOnEdit}
+             credentialsType={credentialsType}
+             setCredentialType={setCredentialType}
+             credentialValue={credentialValue}
+             setCredentialValue={setCredentialValue}
+             />
             <div className="form__row form__buttons  ">
                 <label
                     htmlFor=""
