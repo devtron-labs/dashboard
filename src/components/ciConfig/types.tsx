@@ -123,6 +123,7 @@ export interface AdvancedConfigOptionsProps {
 
 interface LanguageBuilderType {
     Language: string
+    LanguageIcon: string
     Versions: string[]
     BuilderLanguageMetadata: {
         Id: string
@@ -136,14 +137,6 @@ interface LanguageFrameworkType {
     TemplateUrl: string
 }
 
-export interface BuildersAndFrameworksType {
-    builders: LanguageBuilderType[]
-    frameworks: LanguageFrameworkType[]
-    selectedBuilder: BuilderIdOptionType
-    selectedLanguage: OptionType
-    selectedVersion: VersionsOptionType
-}
-
 export interface BuilderIdOptionType extends OptionType {
     BuilderLangEnvParam: string
 }
@@ -152,9 +145,30 @@ export interface VersionsOptionType extends OptionType {
     infoText?: string
 }
 
+export interface LanguageOptionType extends OptionType {
+    icon: string
+}
+
+export interface BuildersAndFrameworksType {
+    builders: LanguageBuilderType[]
+    frameworks: LanguageFrameworkType[]
+    selectedBuilder: BuilderIdOptionType
+    selectedLanguage: LanguageOptionType
+    selectedVersion: VersionsOptionType
+}
+
 export interface LanguageBuilderOptionType {
+    LanguageIcon: string
     Versions: VersionsOptionType[]
     BuilderLanguageMetadata: BuilderIdOptionType[]
+}
+
+export interface InitLanguageOptionType {
+    language: string
+    icon: string
+    version: string
+    builderId: string
+    BuilderLangEnvParam: string
 }
 
 export interface CIConfigDiffType {

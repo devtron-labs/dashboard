@@ -1,9 +1,8 @@
 import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Check } from '../assets/icons/ic-check.svg'
-import DefaultIcon from '../../../assets/icons/ic-browser.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
+import { noop } from '../../common'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -119,5 +118,35 @@ export function DropdownIndicator(props) {
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" />
         </components.DropdownIndicator>
+    )
+}
+
+export function customOption(label: string, icon: string, className = '', onImageLoadError = noop) {
+    return (
+        <div className={`flex left ${className}`}>
+            {icon && <img src={icon} alt={label} className="icon-dim-16 mr-8" onError={onImageLoadError} />}
+            <span className="dc__ellipsis-right">{label}</span>
+        </div>
+    )
+}
+
+export function OptionWithIcon(props) {
+    const { data } = props
+    return <components.Option {...props}>{customOption(data.label, data.icon)}</components.Option>
+}
+
+export function ValueContainerWithIcon(props) {
+    const { selectProps } = props
+    return (
+        <components.ValueContainer {...props}>
+            {selectProps.value ? (
+                <>
+                    {customOption(selectProps.value.label, selectProps.value.icon, 'dc__position-abs pl-10 pr-10')}
+                    {React.cloneElement(props.children[1])}
+                </>
+            ) : (
+                <>{props.children}</>
+            )}
+        </components.ValueContainer>
     )
 }

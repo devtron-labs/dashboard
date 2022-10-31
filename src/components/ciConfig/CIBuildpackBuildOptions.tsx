@@ -5,6 +5,8 @@ import {
     getCommonSelectStyle,
     getCustomOptionSelectionStyle,
     Option,
+    OptionWithIcon,
+    ValueContainerWithIcon,
 } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
@@ -18,7 +20,9 @@ import { CIBuildType } from '../ciPipeline/types'
 import {
     BuilderIdOptionType,
     CIBuildpackBuildOptionsProps,
+    InitLanguageOptionType,
     LanguageBuilderOptionType,
+    LanguageOptionType,
     VersionsOptionType,
 } from './types'
 import TippyWhite from '../common/TippyWhite'
@@ -83,7 +87,7 @@ export default function CIBuildpackBuildOptions({
     buildEnvArgs,
     setBuildEnvArgs,
 }: CIBuildpackBuildOptionsProps) {
-    const [supportedLanguagesList, setSupportedLanguagesList] = useState<OptionType[]>([])
+    const [supportedLanguagesList, setSupportedLanguagesList] = useState<LanguageOptionType[]>([])
     const [builderLanguageSupportMap, setBuilderLanguageSupportMap] =
         useState<Record<string, LanguageBuilderOptionType>>()
 
@@ -94,7 +98,7 @@ export default function CIBuildpackBuildOptions({
     }, [buildersAndFrameworks.builders])
 
     const initBuilderData = () => {
-        const _supportedLanguagesList = []
+        const _supportedLanguagesList: LanguageOptionType[] = []
         const _builderLanguageSupportMap: Record<string, LanguageBuilderOptionType> = {}
         let initOption = null
         for (const _languageBuilder of buildersAndFrameworks.builders) {
@@ -109,6 +113,7 @@ export default function CIBuildpackBuildOptions({
                 infoText: 'Detect version during build time',
             })
             _builderLanguageSupportMap[_languageBuilder.Language] = {
+                LanguageIcon: _languageBuilder.LanguageIcon,
                 Versions: versionOptions,
                 BuilderLanguageMetadata:
                     _languageBuilder.BuilderLanguageMetadata?.map((_builder) => ({
@@ -120,11 +125,13 @@ export default function CIBuildpackBuildOptions({
             _supportedLanguagesList.push({
                 label: _languageBuilder.Language,
                 value: _languageBuilder.Language,
+                icon: _languageBuilder.LanguageIcon,
             })
 
             if (!initOption) {
                 initOption = {
                     language: _languageBuilder.Language,
+                    icon: _languageBuilder.LanguageIcon,
                     version: _languageBuilder.Versions[0],
                     builderId: _languageBuilder.BuilderLanguageMetadata[0].Id,
                     BuilderLangEnvParam: _languageBuilder.BuilderLanguageMetadata[0].BuilderLangEnvParam,
@@ -136,7 +143,10 @@ export default function CIBuildpackBuildOptions({
         updateConfigAndBuildersData(initOption, _builderLanguageSupportMap)
     }
 
-    const updateConfigAndBuildersData = (initOption, _builderLanguageSupportMap): void => {
+    const updateConfigAndBuildersData = (
+        initOption: InitLanguageOptionType,
+        _builderLanguageSupportMap: Record<string, LanguageBuilderOptionType>,
+    ): void => {
         const currentBuilderLangEnvParam = _builderLanguageSupportMap[
             ciBuildConfig?.buildPackConfig?.language
         ]?.BuilderLanguageMetadata?.find(
@@ -162,6 +172,7 @@ export default function CIBuildpackBuildOptions({
                 _language = {
                     label: ciBuildConfig.buildPackConfig.language,
                     value: ciBuildConfig.buildPackConfig.language,
+                    icon: _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language]?.LanguageIcon,
                 }
                 _version = {
                     label: ciBuildConfig.buildPackConfig.languageVersion,
@@ -181,6 +192,7 @@ export default function CIBuildpackBuildOptions({
                 _language = {
                     label: initOption.language,
                     value: initOption.language,
+                    icon: initOption.icon,
                 }
                 _version = {
                     label: initOption.version,
@@ -208,7 +220,7 @@ export default function CIBuildpackBuildOptions({
         setCurrentCIBuildConfig(_currentCIBuildConfig)
     }
 
-    const handleLanguageSelection = (selected: OptionType) => {
+    const handleLanguageSelection = (selected: LanguageOptionType) => {
         const _languageBuilder = builderLanguageSupportMap[selected.value]
         const _selectedVersion =
             _languageBuilder.Versions.find((ver) => ver.value === buildersAndFrameworks.selectedVersion?.value) ||
@@ -459,7 +471,18 @@ export default function CIBuildpackBuildOptions({
                 <div className="form__field">
                     <label className="form__label">Language</label>
                     {configOverrideView && !allowOverride ? (
-                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedLanguage?.label}</span>
+                        <div className="flex left">
+                            {buildersAndFrameworks.selectedLanguage?.icon && (
+                                <img
+                                    src={buildersAndFrameworks.selectedLanguage.icon}
+                                    alt={buildersAndFrameworks.selectedLanguage.label}
+                                    className="icon-dim-16 mr-8"
+                                />
+                            )}
+                            <span className="fs-14 fw-4 lh-20 cn-9">
+                                {buildersAndFrameworks.selectedLanguage?.label}
+                            </span>
+                        </div>
                     ) : (
                         <ReactSelect
                             className="m-0"
@@ -485,7 +508,8 @@ export default function CIBuildpackBuildOptions({
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
-                                Option,
+                                Option: OptionWithIcon,
+                                ValueContainer: ValueContainerWithIcon,
                             }}
                             onChange={handleLanguageSelection}
                             isDisabled={configOverrideView && !allowOverride}
