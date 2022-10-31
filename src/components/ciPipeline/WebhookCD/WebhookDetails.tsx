@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { Drawer } from '../../common'
+import { Drawer, Progressing } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as CopyIcon } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -11,7 +11,7 @@ import ReactSelect from 'react-select'
 import { OptionType } from '../../app/types'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { components } from 'react-select'
-import { getUserId, getUserRole, saveUser } from '../../userGroups/userGroup.service'
+import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { ACCESS_TYPE_MAP, MODES } from '../../../config'
 import { createGeneratedAPIToken, getWebhookAPITokenList } from '../../apiTokens/service'
@@ -65,6 +65,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         pipelineId: string
     }>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
+    const [loader, setLoader] = useState(false)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(tokenTabList[0].key)
     const [tokenName, setTokenName] = useState<string>('')
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(playgroundTabList[0].key)
@@ -79,23 +80,27 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
     const [showTokenSection, setShowTokenSection] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [sampleJSON, setSampleJSON] = useState(
-        JSON.stringify({
-            ciProjectDetails: [
-                {
-                    commitHash: '239077135f8cdeeccb7857e2851348f558cb53d3',
-                    commitTime: '2019-10-31T20:55:21+05:30',
-                    message: 'Update README.md',
-                    author: 'Suraj Gupta ',
-                },
-            ],
-            dockerImage: '445808685819.dkr.ecr.us-east-2.amazonaws.com/orch:23907713-2',
-            digest: 'test1',
-            dataSource: 'ext',
-            materialType: 'git',
-        }),
+        JSON.stringify(
+            {
+                ciProjectDetails: [
+                    {
+                        commitHash: '239077135f8cdeeccb7857e2851348f558cb53d3',
+                        commitTime: '2019-10-31T20:55:21+05:30',
+                        message: 'Update README.md',
+                        author: 'Suraj Gupta ',
+                    },
+                ],
+                dockerImage: '445808685819.dkr.ecr.us-east-2.amazonaws.com/orch:23907713-2',
+                digest: 'test1',
+                dataSource: 'ext',
+                materialType: 'git',
+            },
+            null,
+            4,
+        ),
     )
     const [sampleCURL, setSampleCURL] = useState(
-      `curl -X 'POST'
+        `curl -X 'POST'
       'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'
       -H 'Content-type: application/json'
       "ciProjectDetails": [
@@ -120,6 +125,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
     }
 
     const getData = async () => {
+        setLoader(true)
         try {
             const [userRole, webhookDetails] = await Promise.all([
                 getUserRole(),
@@ -147,8 +153,10 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                     })
                 setTokenList(sortedResult)
             }
+            setLoader(false)
         } catch (err) {
             setIsSuperAdmin(false)
+            setLoader(false)
         }
     }
 
@@ -317,6 +325,25 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         )
     }
 
+    const renderWebhookURLTokenContainer = () => {
+        return (
+            <div className="flexbox dc__content-space mb-16">
+                <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
+                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-120 dc__border-right">
+                        api-token
+                        <Help className="icon-dim-16 ml-8" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search Token"
+                        value={'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'}
+                        className="bcn-0 dc__no-border form__input"
+                    />
+                </div>
+            </div>
+        )
+    }
+
     const renderSelectTokenSection = (): JSX.Element => {
         return (
             <>
@@ -409,6 +436,14 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         )
     }
 
+    const renderCodeEditor = (value: string, height: number, MODE?: MODES): JSX.Element => {
+        return (
+            <pre className="br-4 fs-13 fw-4 cn-9">
+                <code>{value}</code>
+            </pre>
+        )
+    }
+
     const renderWebhookURLSection = (): JSX.Element | null => {
         return (
             <div className="pt-16">
@@ -418,9 +453,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 </div>
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
                 {generateTabHeader(requestBodyTabList, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
-                <div className="en-2 bw-1 br-4 p-2">
-                    <CodeEditor theme="vs-alice-blue" value={sampleJSON} mode={MODES.JSON} readOnly={true} height={300}></CodeEditor>
-                </div>
+                {renderCodeEditor(sampleJSON, 300)}
             </div>
         )
     }
@@ -431,9 +464,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 <div className="cn-9 fs-13 fw-6 mb-8">
                     Select metadata to send to Devtron. Sample JSON and cURL request will be generated accordingly.
                 </div>
-                <div className="en-2 bw-1 br-4 p-2">
-                    <CodeEditor theme="vs-alice-blue" value={sampleCURL} mode={MODES.SHELL} readOnly={true} height={300}></CodeEditor>
-                </div>
+                {renderCodeEditor(sampleCURL, 300, MODES.SHELL)}
             </div>
         )
     }
@@ -444,8 +475,9 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 <div className="cn-9 fs-13 fw-6 mb-8">Webhook URL</div>
                 {renderWebhookURLContainer()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request header</div>
-
+                {renderWebhookURLTokenContainer()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
+                {renderCodeEditor(sampleJSON, 300)}
             </div>
         )
     }
@@ -488,6 +520,25 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         )
     }
 
+    const renderResponseRow = (
+        responseCode: number,
+        responseDescription: string,
+        selectedTab: string,
+        setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
+        value: string,
+    ): JSX.Element => {
+        return (
+            <div className="response-row pt-8 pb-8">
+                <div className="fs-13 fw-4 cn-9">{responseCode}</div>
+                <div>
+                    <div className="fs-13 fw-4 cn-9 mb-16"> {responseDescription}</div>
+                    {generateTabHeader(responseTabList, selectedTab, setSelectedTab, true)}
+                    {renderCodeEditor(value, 200)}
+                </div>
+            </div>
+        )
+    }
+
     const renderResponseSection = (): JSX.Element | null => {
         return (
             <div className="bcn-0 p-16 br-4 bw-1 en-2">
@@ -497,61 +548,27 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                         <div>Code</div>
                         <div>Description</div>
                     </div>
-                    <div className="response-row pt-8 pb-8">
-                        <div>200</div>
-                        <div>
-                            <div> Create or Update helm application response</div>
-
-                            {generateTabHeader(responseTabList, selectedResponse200Tab, setResponse200Tab, true)}
-                            <div className="en-2 bw-1 br-4 p-2">
-                                <CodeEditor
-                                theme="vs-alice-blue"
-                                    value={sampleJSON}
-                                    mode={MODES.JSON}
-                                    readOnly={true}
-                                    inline
-                                    height={300}
-                                ></CodeEditor>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="response-row pt-8 pb-8">
-                        <div>400</div>
-                        <div>
-                            <div> Create or Update helm application response</div>
-
-                            {generateTabHeader(responseTabList, selectedResponse400Tab, setResponse400Tab, true)}
-                            <div className="en-2 bw-1 br-4 p-2">
-                                <CodeEditor
-                                theme="vs-alice-blue"
-                                    value={sampleJSON}
-                                    mode={MODES.JSON}
-                                    readOnly={true}
-                                    inline
-                                    height={300}
-                                ></CodeEditor>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="response-row pt-8 pb-8">
-                        <div>401</div>
-                        <div>
-                            <div> Create or Update helm application response</div>
-
-                            {generateTabHeader(responseTabList, selectedResponse401Tab, setResponse401Tab, true)}
-                            <div className="en-2 bw-1 br-4 p-2">
-                                <CodeEditor
-
-                        noParsing
-                                theme="vs-alice-blue"
-                                    value={sampleJSON}
-                                    mode={MODES.JSON}
-                                    readOnly={true}
-                                    height={300}
-                                ></CodeEditor>
-                            </div>
-                        </div>
-                    </div>
+                    {renderResponseRow(
+                        200,
+                        'Create or Update helm application response',
+                        selectedResponse200Tab,
+                        setResponse200Tab,
+                        sampleJSON,
+                    )}
+                    {renderResponseRow(
+                        400,
+                        'If request is not correct, then this error is thrown',
+                        selectedResponse400Tab,
+                        setResponse400Tab,
+                        sampleJSON,
+                    )}
+                    {renderResponseRow(
+                        401,
+                        'If the user is not authenicated, then this error is thrown',
+                        selectedResponse401Tab,
+                        setResponse401Tab,
+                        sampleJSON,
+                    )}
                 </div>
             </div>
         )
@@ -609,7 +626,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         <Drawer position="right" width="1000px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
-                {renderBodySection()}
+                {loader ? <Progressing pageLoader /> : renderBodySection()}
                 {renderFooterSection()}
             </div>
         </Drawer>
