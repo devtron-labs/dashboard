@@ -6,10 +6,24 @@
     margin-bottom: 220px;
 }
 
+@keyframes openCIPipelineBanner {
+    from {
+        top: -40px;
+    }
+
+    to {
+        top: 8px;
+    }
+}
+
 .workflow-editor .open-cipipeline-banner {
-    top: 8px;
     left: 50%;
     transform: translate(-50%, 0);
+    animation-name: openCIPipelineBanner;
+    animation-timing-function: ease;
+    animation-duration: 300ms;
+    animation-delay: 500ms;
+    animation-fill-mode: forwards;
 }
 
 .create-here {

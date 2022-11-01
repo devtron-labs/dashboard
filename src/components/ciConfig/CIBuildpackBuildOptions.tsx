@@ -391,7 +391,7 @@ export default function CIBuildpackBuildOptions({
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
                             {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
-                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name}</span>
+                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                         </div>
                     ) : (
                         <ReactSelect
@@ -469,7 +469,7 @@ export default function CIBuildpackBuildOptions({
             </div>
             <div className="flex top buildpack-options">
                 <div className="buildpack-language-options">
-                    <div className="form__field">
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">Language</label>
                         {configOverrideView && !allowOverride ? (
                             <div className="flex left">
@@ -517,7 +517,7 @@ export default function CIBuildpackBuildOptions({
                             />
                         )}
                     </div>
-                    <div className="form__field">
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">Version</label>
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
@@ -566,7 +566,7 @@ export default function CIBuildpackBuildOptions({
                         )}
                     </div>
                 </div>
-                <div className="form__field">
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label className="form__label flexbox-imp flex-align-center">
                         {configOverrideView && !allowOverride ? 'Builder' : 'Select a Builder'}
                         <TippyWhite

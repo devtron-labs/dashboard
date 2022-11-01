@@ -5,16 +5,22 @@ import { MODES } from '../../config'
 import { OptionType } from '../app/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { copyToClipboard, Progressing, showError } from '../common'
-import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
+import { DropdownIndicator, getCommonSelectStyle, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, TemplateDataType } from './types'
+import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
     allowOverride,
     frameworks,
+    sourceConfig,
+    currentMaterial,
+    selectedMaterial,
+    repository,
+    handleFileLocationChange,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
     setInProgress,
@@ -325,45 +331,98 @@ export default function CICreateDockerfileOption({
 
     const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]
     return (
-        <div className="create-dockerfile-option dc__border br-4 mb-16 dc__overflow-hidden">
-            <CodeEditor
-                loading={editorData?.fetching}
-                customLoader={
-                    <div className="h-300">
-                        <Progressing pageLoader fullHeight />
+        <>
+            <div className="form__field mb-16">
+                <label className="form__label">{`${
+                    configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
+                } containing code`}</label>
+                {configOverrideView && !allowOverride ? (
+                    <div className="flex left">
+                        {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
+                        <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                     </div>
-                }
-                value={editorValue || editorData?.data}
-                mode={MODES.DOCKERFILE}
-                height="300px"
-                readOnly={configOverrideView && !allowOverride}
-                onChange={handleEditorValueChange}
+                ) : (
+                    <ReactSelect
+                        className="m-0"
+                        tabIndex={3}
+                        isSearchable={false}
+                        options={sourceConfig.material}
+                        getOptionLabel={(option) => `${option.name}`}
+                        getOptionValue={(option) => `${option.checkoutPath}`}
+                        value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                        styles={getCommonSelectStyle({
+                            container: (base) => ({
+                                ...base,
+                                width: '50%',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: '36px',
+                                boxShadow: 'none',
+                                backgroundColor: 'var(--N50)',
+                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                cursor: 'pointer',
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                marginTop: '0',
+                                minWidth: '226px',
+                            }),
+                        })}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: repositoryOption,
+                            Control: repositoryControls,
+                        }}
+                        onChange={handleFileLocationChange}
+                        isDisabled={configOverrideView && !allowOverride}
+                    />
+                )}
+                {repository.error && <label className="form__error">{repository.error}</label>}
+            </div>
+            <div
+                className={`create-dockerfile-option dc__border br-4 dc__overflow-hidden ${
+                    configOverrideView ? '' : 'mb-16'
+                }`}
             >
-                <CodeEditor.Header>
-                    <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
-                        {renderLanguageOptions(editorData)}
-                        {(!configOverrideView || allowOverride) && (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={copied ? 'Copied!' : 'Copy'}
-                                trigger="mouseenter click"
-                                onShow={(_tippy) => {
-                                    setTimeout(() => {
-                                        _tippy.hide()
-                                        setCopied(false)
-                                    }, 5000)
-                                }}
-                                interactive={true}
-                            >
-                                <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
-                            </Tippy>
-                        )}
-                    </div>
-                </CodeEditor.Header>
-            </CodeEditor>
-            <div></div>
-        </div>
+                <CodeEditor
+                    loading={editorData?.fetching}
+                    customLoader={
+                        <div className="h-300">
+                            <Progressing pageLoader fullHeight />
+                        </div>
+                    }
+                    value={editorValue || editorData?.data}
+                    mode={MODES.DOCKERFILE}
+                    height="300px"
+                    readOnly={configOverrideView && !allowOverride}
+                    onChange={handleEditorValueChange}
+                >
+                    <CodeEditor.Header>
+                        <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
+                            {renderLanguageOptions(editorData)}
+                            {(!configOverrideView || allowOverride) && (
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="bottom"
+                                    content={copied ? 'Copied!' : 'Copy'}
+                                    trigger="mouseenter click"
+                                    onShow={(_tippy) => {
+                                        setTimeout(() => {
+                                            _tippy.hide()
+                                            setCopied(false)
+                                        }, 5000)
+                                    }}
+                                    interactive={true}
+                                >
+                                    <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                                </Tippy>
+                            )}
+                        </div>
+                    </CodeEditor.Header>
+                </CodeEditor>
+            </div>
+        </>
     )
 }

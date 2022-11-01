@@ -245,7 +245,12 @@ export interface CICreateDockerfileOptionProps {
     configOverrideView: boolean
     allowOverride: boolean
     frameworks: LanguageFrameworkType[]
+    sourceConfig: any
     currentCIBuildConfig: CIBuildConfigType
+    currentMaterial: any
+    selectedMaterial: any
+    handleFileLocationChange: (selectedMaterial) => void
+    repository: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     setInProgress: React.Dispatch<React.SetStateAction<boolean>>
 }

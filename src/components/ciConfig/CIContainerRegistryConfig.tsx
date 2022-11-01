@@ -125,9 +125,9 @@ export default function CIContainerRegistryConfig({
         <div className="white-card white-card__docker-config dc__position-rel mb-12">
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-16">Store container image at</h3>
             <div className="mb-4 form-row__docker">
-                <div className="form__field">
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label">
-                        Container Registry *
+                        Container Registry*
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
@@ -157,7 +157,7 @@ export default function CIContainerRegistryConfig({
                     )}
                     {registry.error && <label className="form__error">{registry.error}</label>}
                 </div>
-                <div className="form__field">
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label">
                         Container Repository&nbsp;
                         {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}

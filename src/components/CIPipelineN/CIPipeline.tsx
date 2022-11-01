@@ -1,8 +1,8 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, useKeyDown, VisibleModal } from '../common'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
-import { BuildStageVariable, BuildTabText, ModuleNameMap, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { BuildStageVariable, BuildTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -199,6 +199,17 @@ export default function CIPipeline({
                 showError(error)
             })
     }, [])
+
+    useEffect(() => {
+        if (
+            location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
+            ciPipelineId &&
+            typeof Storage !== 'undefined' &&
+            localStorage.getItem('takeMeThereClicked')
+        ) {
+            localStorage.removeItem('takeMeThereClicked')
+        }
+    }, [location.pathname])
 
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {

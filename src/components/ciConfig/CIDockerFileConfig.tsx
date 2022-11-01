@@ -229,14 +229,14 @@ export default function CIDockerFileConfig({
     const renderSelfDockerfileBuildOption = () => {
         return (
             <div className="mb-4 form-row__docker">
-                <div className="form__field">
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label className="form__label">{`${
                         configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
                     } containing Dockerfile`}</label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
                             {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
-                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name}</span>
+                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                         </div>
                     ) : (
                         <ReactSelect
@@ -266,7 +266,7 @@ export default function CIDockerFileConfig({
                     )}
                     {formState.repository.error && <label className="form__error">{formState.repository.error}</label>}
                 </div>
-                <div className="form__field">
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label">
                         Dockerfile Path (Relative)*
                     </label>
@@ -325,6 +325,11 @@ export default function CIDockerFileConfig({
                     configOverrideView={configOverrideView}
                     allowOverride={allowOverride}
                     frameworks={buildersAndFrameworks.frameworks}
+                    sourceConfig={sourceConfig}
+                    currentMaterial={currentMaterial}
+                    selectedMaterial={selectedMaterial}
+                    handleFileLocationChange={handleFileLocationChange}
+                    repository={formState.repository}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     setInProgress={setInProgress}
