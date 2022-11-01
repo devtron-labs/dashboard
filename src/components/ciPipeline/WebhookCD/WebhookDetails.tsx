@@ -4,6 +4,7 @@ import { Drawer, Progressing } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as CopyIcon } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { CIPipelineType } from '../types'
 import './webhookDetails.scss'
@@ -12,7 +13,6 @@ import { OptionType } from '../../app/types'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { components } from 'react-select'
 import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import { ACCESS_TYPE_MAP, MODES } from '../../../config'
 import { createGeneratedAPIToken, getWebhookAPITokenList } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
@@ -38,6 +38,14 @@ interface TokenPermissionType {
     role: string
 }
 
+interface MetadataType {
+    key: string
+    keyInObj: string[]
+    displayName: string
+    isSelected: boolean
+    readOnly: boolean
+}
+
 export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, close, deleteWorkflow }: CIPipelineType) {
     const tokenTabList: TabDetailsType[] = [
         { key: 'selectToken', value: 'Select API token' },
@@ -60,13 +68,77 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         label: format,
         value: format,
     }))
-    const { appId, pipelineId } = useParams<{
+    const { appId, webhookId } = useParams<{
         appId: string
-        pipelineId: string
+        webhookId: string
     }>()
+
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const [loader, setLoader] = useState(false)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(tokenTabList[0].key)
+    const [metadataChips, setMetadataChips] = useState<MetadataType[]>([
+        {
+            key: 'dockerImage',
+            keyInObj: ['dockerImage'],
+            displayName: 'Container image tag',
+            isSelected: true,
+            readOnly: true,
+        },
+        {
+            key: 'gitRepository',
+            keyInObj: ['ciProjectDetails', 'gitRepository'],
+            displayName: 'Git repository',
+            isSelected: false,
+            readOnly: false,
+        },
+        {
+            key: 'checkoutPath',
+            keyInObj: ['ciProjectDetails', 'checkoutPath'],
+            displayName: 'Checkout path',
+            isSelected: false,
+            readOnly: false,
+        },
+        {
+            key: 'commitHash',
+            keyInObj: ['ciProjectDetails', 'commitHash'],
+            displayName: 'Commit hash',
+            isSelected: false,
+            readOnly: false,
+        },
+        {
+            key: 'commitTime',
+            keyInObj: ['ciProjectDetails', 'commitTime'],
+            displayName: 'Date & time of commit',
+            isSelected: false,
+            readOnly: false,
+        },
+        {
+            key: 'branch',
+            keyInObj: ['ciProjectDetails', 'branch'],
+            displayName: 'Branch',
+            isSelected: false,
+            readOnly: false,
+        },
+        {
+            key: 'message',
+            keyInObj: ['ciProjectDetails', 'message'],
+            displayName: 'Commit message',
+            isSelected: false,
+            readOnly: false,
+        },
+        {
+            key: 'author',
+            keyInObj: ['ciProjectDetails', 'author'],
+            displayName: 'Author',
+            isSelected: false,
+            readOnly: false,
+        },
+    ])
+    const curlBaseValue = `curl -X 'POST'
+  'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'
+  -H 'Content-type: application/json'
+  `
+
     const [tokenName, setTokenName] = useState<string>('')
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(playgroundTabList[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(requestBodyTabList[0].key)
@@ -79,43 +151,17 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
     const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(undefined)
     const [showTokenSection, setShowTokenSection] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
-    const [sampleJSON, setSampleJSON] = useState(
-        JSON.stringify(
-            {
-                ciProjectDetails: [
-                    {
-                        commitHash: '239077135f8cdeeccb7857e2851348f558cb53d3',
-                        commitTime: '2019-10-31T20:55:21+05:30',
-                        message: 'Update README.md',
-                        author: 'Suraj Gupta ',
-                    },
-                ],
-                dockerImage: '445808685819.dkr.ecr.us-east-2.amazonaws.com/orch:23907713-2',
-                digest: 'test1',
-                dataSource: 'ext',
-                materialType: 'git',
-            },
-            null,
-            4,
-        ),
-    )
-    const [sampleCURL, setSampleCURL] = useState(
-        `curl -X 'POST'
-      'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'
-      -H 'Content-type: application/json'
-      "ciProjectDetails": [
-        {
-          "commitHash": "239077135f8cdeeccb7857e2851348f558cb53d3",
-          "commitTime": "2019-10-31T20:55:21+05:30",
-          "message": "Update README.md",
-          "author": "Suraj Gupta "
-        }
-      ],
-      "dockerImage": "445808685819.dkr.ecr.us-east-2.amazonaws.com/orch:23907713-2",
-      "digest": "test1",
-      "dataSource": "ext",
-      "materialType": "git"`,
-    )
+    const [samplePayload, setSamplePayload] = useState<any>(null)
+    const [modifiedSamplePayload, setModifiedSamplePayload] = useState<any>(null)
+    const [sampleJSON, setSampleJSON] = useState(null)
+    const [modifiedSampleJSON, setModifiedSampleJSON] = useState(null)
+    const [sampleCURL, setSampleCURL] = useState<any>(null)
+
+    const formatSampleJson = (json): string => {
+        let formattedJSON = ''
+        formattedJSON = JSON.stringify(json, null, 4)
+        return formattedJSON
+    }
 
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof close === 'function') {
@@ -127,18 +173,23 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
     const getData = async () => {
         setLoader(true)
         try {
-            const [userRole, webhookDetails] = await Promise.all([
-                getUserRole(),
-                getExternalCIConfig(appId, pipelineId),
-            ])
+            const [userRole, webhookDetails] = await Promise.all([getUserRole(), getExternalCIConfig(appId, webhookId)])
             const _isSuperAdmin = userRole?.result?.roles?.includes('role:super-admin___')
             setIsSuperAdmin(_isSuperAdmin)
             const _requiredTokenPermission = {
-                projectName: webhookDetails[0]['projectName'],
-                environmentName: webhookDetails[0]['environmentName'],
-                appName: webhookDetails[0]['appName'],
-                role: webhookDetails[0]['role'],
+                projectName: webhookDetails['projectName'],
+                environmentName: webhookDetails['environmentName'],
+                appName: webhookDetails['appName'],
+                role: webhookDetails['role'],
             }
+            const parsedPayload = JSON.parse(webhookDetails['payload'])
+            setSamplePayload(parsedPayload)
+            const _modifiedPayload = { ...parsedPayload }
+            delete _modifiedPayload.ciProjectDetails
+            const modifiedJSONString = formatSampleJson(_modifiedPayload)
+            setSampleJSON(modifiedJSONString)
+            setModifiedSamplePayload(_modifiedPayload)
+            setSampleCURL(curlBaseValue + modifiedJSONString)
             setRequiredTokenPermission(_requiredTokenPermission)
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
@@ -448,9 +499,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         return (
             <div className="pt-16">
                 {renderWebhookURLContainer()}
-                <div className="cn-9 fs-13 fw-6 mb-8">
-                    Select metadata to send to Devtron. Sample JSON and cURL request will be generated accordingly.
-                </div>
+                {renderMetadata()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
                 {generateTabHeader(requestBodyTabList, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
                 {renderCodeEditor(sampleJSON, 300)}
@@ -458,12 +507,82 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         )
     }
 
-    const renderSampleCurlSection = (): JSX.Element | null => {
+    const addMetadata = (e): void => {
+        const index = +e.currentTarget.dataset.index
+        const _metadataChips = [...metadataChips]
+        const removeData = _metadataChips[index].isSelected
+        _metadataChips[index].isSelected = !metadataChips[index].isSelected
+        const _modifiedSamplePayload = { ...modifiedSamplePayload }
+        // for (let index = 0; index < _modifiedSamplePayload.length; index++) {
+        //     const element = _modifiedSamplePayload[index]
+        if (removeData) {
+            if (_metadataChips[index].keyInObj.length === 1) {
+                delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]]
+            } else {
+                delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]]
+                if (Object.keys(_modifiedSamplePayload[_metadataChips[index].keyInObj[0]][0]).length === 0) {
+                    delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]]
+                }
+            }
+        } else {
+            if (_metadataChips[index].keyInObj.length === 1) {
+                _modifiedSamplePayload[_metadataChips[index].keyInObj[0]] =
+                    samplePayload[_metadataChips[index].keyInObj[0]]
+            } else {
+                if (!_modifiedSamplePayload[_metadataChips[index].keyInObj[0]]) {
+                    _modifiedSamplePayload[_metadataChips[index].keyInObj[0]] = [{}]
+                }
+                _modifiedSamplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]] =
+                    samplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]]
+            }
+        }
+        //}
+        setModifiedSamplePayload(_modifiedSamplePayload)
+        const _modifiedJSONString = formatSampleJson(_modifiedSamplePayload)
+        setSampleJSON(_modifiedJSONString)
+        setSampleCURL(curlBaseValue + _modifiedJSONString)
+        setMetadataChips(_metadataChips)
+    }
+
+    const renderMetadata = (): JSX.Element => {
         return (
-            <div className="pt-16">
+            <>
                 <div className="cn-9 fs-13 fw-6 mb-8">
                     Select metadata to send to Devtron. Sample JSON and cURL request will be generated accordingly.
                 </div>
+                <div className="">
+                    {metadataChips.map((metaData, index) => (
+                        <div
+                            key={`md-${index}`}
+                            className={`dc__inline-block bw-1 br-4 mr-8 mb-8 pt-2 pr-8 pb-2 pl-8 pointer ${
+                                metaData.isSelected ? 'bcb-1 eb-2' : 'en-2'
+                            }`}
+                            data-index={index}
+                            onClick={addMetadata}
+                        >
+                            <div className="flex">
+                                {!metaData.readOnly && (
+                                    <>
+                                        {metaData.isSelected ? (
+                                            <Close className="icon-dim-16 mr-5" />
+                                        ) : (
+                                            <Add className="icon-dim-16 mr-5" />
+                                        )}
+                                    </>
+                                )}
+                                <span className="fs-12 fw-4 cn-9">{metaData.displayName}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </>
+        )
+    }
+
+    const renderSampleCurlSection = (): JSX.Element | null => {
+        return (
+            <div className="pt-16">
+                {renderMetadata()}
                 {renderCodeEditor(sampleCURL, 300, MODES.SHELL)}
             </div>
         )
