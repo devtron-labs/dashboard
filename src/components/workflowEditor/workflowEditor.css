@@ -17,6 +17,7 @@
 }
 
 .workflow-editor .open-cipipeline-banner {
+    top: -40px;
     left: 50%;
     transform: translate(-50%, 0);
     animation-name: openCIPipelineBanner;
