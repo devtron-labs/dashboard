@@ -42,6 +42,8 @@ import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
 import { ServerErrors } from '../../modals/commonTypes'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import ClusterTerminal from './ClusterTerminal'
 
 export default function NodeDetails() {
     const [loader, setLoader] = useState(false)
@@ -66,6 +68,7 @@ export default function NodeDetails() {
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
     const [showAllTaints, setShowAllTaints] = useState(false)
+    const [showTerminal, setTerminal] = useState(false)
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -120,6 +123,14 @@ export default function NodeDetails() {
         }
     }, [lastDataSync])
 
+    const openTerminal = () => {
+        setTerminal(true)
+    }
+
+    const closeTerminal = () => {
+        setTerminal(false)
+    }
+
     const renderNodeDetailsTabs = (): JSX.Element => {
         return (
             <ul role="tablist" className="tab-list">
@@ -156,6 +167,17 @@ export default function NodeDetails() {
                         Node conditions
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                </li>
+                <li
+                    className="tab-list__tab pointer"
+                    onClick={() => {
+                        setSelectedTabIndex(3)
+                    }}
+                >
+                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
+                    <TerminalIcon className="cursor icon-dim-16 mt-2" onClick={openTerminal} />
+                    </div>
+                    {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
                 </li>
             </ul>
         )
@@ -888,6 +910,12 @@ export default function NodeDetails() {
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
+            {showTerminal &&
+                <ClusterTerminal
+                    clusterId={Number(clusterId)}
+                    nodeList={[nodeName]}
+                    closeTerminal={closeTerminal}
+                />}
         </div>
     )
 }

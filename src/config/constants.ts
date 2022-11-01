@@ -615,3 +615,10 @@ export const MODULE_STATUS_RETRY_COUNT = 3;
 export const MODULE_STATUS_POLLING_INTERVAL = 15000;
 export const LOGS_RETRY_COUNT = 3;
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
+
+export const shellTypes = [
+    { label: 'sh', value: 'sh' },
+    { label: 'bash', value: 'bash' },
+    { label: 'powershell', value: 'powershell' },
+    { label: 'cmd', value: 'cmd' },
+]

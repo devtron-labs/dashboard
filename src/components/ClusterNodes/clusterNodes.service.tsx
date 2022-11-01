@@ -1,5 +1,5 @@
 import { Routes } from '../../config'
-import { get, put } from '../../services/api'
+import { get, post, put } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
 import {
     ClusterCapacityResponse,
@@ -32,3 +32,16 @@ export const updateNodeManifest = (
 ): Promise<ResponseType> => {
     return put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 }
+
+export const clusterTerminalStart = (data): Promise<ResponseType> => {
+    return put(`user/terminal/start`, data)
+}
+
+export const clusterterminalUpdate = (data): Promise<ResponseType> => {
+    return post(`user/terminal/update`, data)
+}
+
+export const clusterterminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
+    return post(`user/terminal/disconnect?terminalAccessId=${terminalAccessId}`, null)
+}
+

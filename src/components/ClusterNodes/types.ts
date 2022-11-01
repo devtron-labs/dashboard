@@ -47,6 +47,7 @@ export interface ClusterDetail {
     cpu: ResourceDetail
     memory: ResourceDetail
     serverVersion: string
+    nodeNames: string[]
 }
 
 export interface NodeRowDetail {

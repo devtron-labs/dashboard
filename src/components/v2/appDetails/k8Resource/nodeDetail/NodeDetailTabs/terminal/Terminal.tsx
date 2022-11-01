@@ -24,7 +24,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
     const [popupText, setPopupText] = useState<boolean>(false);
     const isOnline = useOnline();
-    const [errorMessage, setErrorMessage] = useState<string>('')
+    const [errorMessage, setErrorMessage] = useState<string>('')    
 
     useEffect(() => {
         if (!popupText) return;
@@ -155,7 +155,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession();
         }
-    }, [terminalViewProps.socketConnection]);
+    }, [terminalViewProps.socketConnection,terminalViewProps.terminalId]);
 
     useEffect(() => {
         ReactGA.event({
@@ -249,8 +249,40 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }, [terminalViewProps.terminalCleared]);
 
+    const getClusterData = (url,count) => {
+        get(url)
+            .then((response: any) => {
+                let sessionId = response.result.userTerminalSessionId
+                if(!sessionId && count){
+                    setTimeout(() => {
+                        getClusterData(url,count-1)},3000)
+                }else{
+                    if (!terminal) {
+                        elementDidMount('#terminal-id').then(() => {
+                            createNewTerminal()
+                            postInitialize(sessionId)
+                        })
+                    } else {
+                        postInitialize(sessionId)
+                    }
+                }
+            })
+            .catch((err) => {
+                showError(err)
+                if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                    const _invalidNameErr = err.errors[0].userMessage
+                    if (_invalidNameErr.includes('Unauthorized')) {
+                        setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                    }
+                }
+            })
+    }
+
     const getNewSession = () => {
-        if (
+        if (terminalViewProps.clusterTerminal){
+            if(!terminalViewProps.terminalId) return
+        }
+        else if (
             !terminalViewProps.nodeName ||
             !terminalViewProps.containerName ||
             !terminalViewProps.shell.value ||
@@ -260,13 +292,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
 
         let url = '';
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            url = `k8s/pod/exec/session/${appDetails.appId}`;
+        if (terminalViewProps.clusterTerminal) {
+            url = `user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`
         } else {
-            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`;
+            if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+                url = `k8s/pod/exec/session/${appDetails.appId}`
+            } else {
+                url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
+            }
+            url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
         }
-        url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`;
-
+        terminalViewProps.clusterTerminal ? getClusterData(url,8) :
         get(url)
             .then((response: any) => {
                 let sessionId = response?.result.SessionID

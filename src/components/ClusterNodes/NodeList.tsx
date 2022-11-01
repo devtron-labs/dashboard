@@ -31,6 +31,8 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import ClusterTerminal from './ClusterTerminal'
 
 export default function NodeList() {
     const match = useRouteMatch()
@@ -63,6 +65,9 @@ export default function NodeList() {
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
+    const [showTerminal, setTerminal] = useState(false)
+    const [terminalclusterData, setTerminalCluster] = useState()
+    const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const pageSize = 15
 
     useEffect(() => {
@@ -548,17 +553,18 @@ export default function NodeList() {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44"
+                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox"
                 style={{ width: 'max-content', minWidth: '100%' }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
-                            className={`w-280 dc__inline-block dc__ellipsis-right mr-16 pl-20 pt-12 pb-12${
+                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-20 pt-12 pb-12${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
-                        >
-                            <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
+                        ><div className='w-100 flex left'>
+                            <div className='w-250 pr-4 dc__ellipsis-right'><NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink></div>
+                            <TerminalIcon className="cursor" onClick={() =>  openTerminal(nodeData)} /></div>
                         </div>
                     ) : (
                         <div
@@ -610,6 +616,15 @@ export default function NodeList() {
         return <Progressing pageLoader />
     }
 
+    const openTerminal = (clusterData) => {
+        setTerminalCluster(clusterData.name)
+        setTerminal(true)
+    }
+
+    const closeTerminal = () => {
+        setTerminal(false)
+    }
+
     return (
         <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
@@ -651,7 +666,13 @@ export default function NodeList() {
                                     .slice(nodeListOffset, nodeListOffset + pageSize)
                                     ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {renderPagination()}
+                            {showTerminal && terminalclusterData ? 
+                <ClusterTerminal
+                    clusterId={Number(clusterId)}
+                    nodeList={nodeList}
+                    closeTerminal={closeTerminal}
+                /> :
+            renderPagination()}
                         </>
                     )}
                 </div>

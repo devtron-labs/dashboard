@@ -10,9 +10,11 @@ import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
+import ClusterTerminal from './ClusterTerminal'
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -24,6 +26,8 @@ export default function ClusterList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
+    const [showTerminalModal, setShowTerminal] = useState(false)
+    const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
 
     const getData = () => {
         setLoader(true)
@@ -112,6 +116,15 @@ export default function ClusterList() {
         )
     }
 
+    const openTerminal = (clusterData) => {
+        setTerminalCluster(clusterData)
+        setShowTerminal(true)
+    }
+
+    const closeTerminal = () => {
+        setShowTerminal(false)
+    }
+
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
@@ -157,6 +170,7 @@ export default function ClusterList() {
                 </div>
                 <div>{clusterData.cpu?.capacity}</div>
                 <div>{clusterData.memory?.capacity}</div>
+                <TerminalIcon className="cursor" onClick={() => openTerminal(clusterData)} />
             </div>
         )
     }
@@ -185,7 +199,7 @@ export default function ClusterList() {
                 {noResults ? (
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
-                    <div style={{ minHeight: 'calc(100vh - 125px)' }}>
+                    <div className='dc__overflow-scroll' style={{ height: `calc(${showTerminalModal ? '50vh' : '100vh'} - 125px)` }}>
                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
                             <div>Connection status</div>
@@ -199,6 +213,14 @@ export default function ClusterList() {
                     </div>
                 )}
             </div>
+            {showTerminalModal && terminalclusterData && (
+                <ClusterTerminal
+                    clusterId={terminalclusterData.id}
+                    clusterName={terminalclusterData.name}
+                    nodeList={terminalclusterData.nodeNames}
+                    closeTerminal={closeTerminal}
+                />
+            )}
         </div>
     )
 }
