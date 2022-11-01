@@ -275,14 +275,13 @@ function DockerForm({
         return clusterlistMap.get(clusterId)
     })
 
-    console.log(_appliedClusterIdsCsv)
-
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
     const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
-    const [onEdit, setOnEdit] = useState<boolean>(false)
+    const [onEditWhiteList, setOnEditWhitelist] = useState<boolean>(false)
+    const [onEditBlackList, setOnEditBlacklist] = useState<boolean>(false)
     const [credentialsType, setCredentialType] = useState<string>('SAME_AS_REGISTRY')
     const [credentialValue, setCredentialValue] = useState<string>(ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
@@ -498,10 +497,10 @@ function DockerForm({
     ]
 
     const onClickShowManageModal = (): void => {
-      setManageModal(true)
+        setManageModal(true)
     }
     const onClickHideManageModal = (): void => {
-      setManageModal(false)
+        setManageModal(false)
     }
 
     const registryOptions = (props) => {
@@ -544,6 +543,9 @@ function DockerForm({
         },
     }
 
+    const appliedClusterList = whiteList?.map((_ac) => {
+        return <span className="mr-4">{_ac.label}</span>
+    })
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
@@ -779,30 +781,32 @@ function DockerForm({
 
             {!showManageModal ? (
                 <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20">
-                  <div className='flex dc__content-space'>
-                    <div className="cn-7 flex left">
-                        Registry credential access is auto injected to
-                        <Tippy
-                            className="default-tt pl-20"
-                            arrow={true}
-                            placement="top"
-                            content={
-                                <div>
-                                    <div>Manage access of registry credentials</div>
-                                    <div style={{ display: 'block', width: '160px' }}>
-                                        Clusters need permission to pull container image from private repository in the
-                                        registry. You can control which clusters have access to the pull image from
-                                        private repositories.
+                    <div className="flex dc__content-space">
+                        <div className="cn-7 flex left">
+                            Registry credential access is auto injected to
+                            <Tippy
+                                className="default-tt pl-20"
+                                arrow={true}
+                                placement="top"
+                                content={
+                                    <div>
+                                        <div>Manage access of registry credentials</div>
+                                        <div style={{ display: 'block', width: '160px' }}>
+                                            Clusters need permission to pull container image from private repository in
+                                            the registry. You can control which clusters have access to the pull image
+                                            from private repositories.
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                        >
-                            <Question className="icon-dim-20 cursor" />
-                        </Tippy>
+                                }
+                            >
+                                <Question className="icon-dim-20 cursor" />
+                            </Tippy>
+                        </div>
+                        <div className="cb-5 cursor" onClick={onClickShowManageModal}>
+                            Manage
+                        </div>
                     </div>
-                    <div className='cb-5 cursor' onClick={onClickShowManageModal}>Manage</div>
-                    </div>
-                    <div className="fw-6">Clusters except demo, devtroncd</div>
+                    <div className="fw-6">Clusters except {appliedClusterList}</div>
                 </div>
             ) : (
                 <ManageResgistry
@@ -811,8 +815,10 @@ function DockerForm({
                     setBlackList={setBlackList}
                     whiteList={whiteList}
                     setWhiteList={setWhiteList}
-                    onEdit={onEdit}
-                    setOnEdit={setOnEdit}
+                    onEditBlackList={onEditBlackList}
+                    onEditWhiteList={onEditWhiteList}
+                    setOnEditWhiteList={setOnEditWhitelist}
+                    setOnEditBlackList={setOnEditBlacklist}
                     credentialsType={credentialsType}
                     setCredentialType={setCredentialType}
                     credentialValue={credentialValue}

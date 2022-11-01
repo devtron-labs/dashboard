@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
@@ -14,11 +14,9 @@ import {
     MultiValueRemove,
     Option,
     RadioGroup,
-    showError,
 } from '../common'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { getClusterListMinWithoutAuth } from '../../services/service'
 
 export const CredentialType = {
     SAME_AS_REGISTRY: 'SAME_AS_REGISTRY',
@@ -32,20 +30,29 @@ function ManageResgistry({
     setBlackList,
     whiteList,
     setWhiteList,
-    onEdit,
-    setOnEdit,
+    onEditBlackList,
+    setOnEditBlackList,
+    setOnEditWhiteList,
+    onEditWhiteList,
     credentialsType,
     setCredentialType,
     credentialValue,
     setCredentialValue,
     onClickHideManageModal,
 }) {
-    const onClickEditConfirmation = (): void => {
-        whiteList.length > 0 ? setWhiteList([]) : setBlackList([])
+    const onClickAlertEditConfirmation = (): void => {
+        if (whiteList.length > 0) {
+            setWhiteList([])
+
+        } else {
+            setBlackList([])
+        }
+        onClickCloseButton()
     }
 
     const onClickCloseButton = () => {
-        setOnEdit(false)
+        onClickWhiteListEditHideAlertInfo()
+        onClickBlackListEditHideAlertInfo()
     }
 
     const renderActionButton = (): JSX.Element => {
@@ -56,7 +63,7 @@ function ManageResgistry({
         return (
             <div>
                 If you want to edit this, below selection will not be applicable.
-                <span className="cb-5 cursor ml-4 fw-6" onClick={onClickEditConfirmation}>
+                <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
                     Confirm to edit
                 </span>
             </div>
@@ -75,11 +82,23 @@ function ManageResgistry({
         )
     }
 
-    const onClickEditButton = () => {
-        setOnEdit(true)
+    const onClickBlackListEditShowAlertInfo = () => {
+        setOnEditBlackList(true)
     }
 
-    const renderNoSelectionview = (): JSX.Element => {
+    const onClickBlackListEditHideAlertInfo = () => {
+        setOnEditBlackList(false)
+    }
+
+    const onClickWhiteListEditShowAlertInfo = (): void => {
+        !onEditWhiteList && setOnEditWhiteList(true)
+    }
+
+    const onClickWhiteListEditHideAlertInfo = () => {
+      onEditWhiteList && setOnEditWhiteList(false)
+    }
+
+    const renderNoSelectionview = (onEdit) => {
         return (
             <div className="flex en-2 bw-1 bcn-1 pr-20">
                 <input
@@ -91,13 +110,17 @@ function ManageResgistry({
                     autoFocus
                     autoComplete="off"
                 />
-                <Edit className="cursor pr-20" onClick={onClickEditButton} />
+                <div onClick={() => onEdit()}>
+                    <Edit className="cursor pr-20" />
+                </div>
             </div>
         )
     }
+
+    console.log(onEditWhiteList)
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
-            return renderNoSelectionview()
+            return renderNoSelectionview(onClickWhiteListEditShowAlertInfo)
         } else if (whiteList.length === 0) {
             return (
                 <Select
@@ -135,20 +158,7 @@ function ManageResgistry({
 
     const renderAppliedCluster = (): JSX.Element => {
         if (blackList.length > 0) {
-            return (
-                <div className="flex en-2 bw-1 bcn-1">
-                    <input
-                        tabIndex={1}
-                        placeholder="None"
-                        className="form__input form__input__none bcn-1"
-                        name="blacklist-none"
-                        disabled={true}
-                        autoFocus
-                        autoComplete="off"
-                    />
-                    <Edit className="cursor" onClick={() => setOnEdit(true)} />
-                </div>
-            )
+            return renderNoSelectionview(onClickBlackListEditShowAlertInfo)
         } else if (blackList.length === 0) {
             return (
                 <Select
@@ -201,13 +211,13 @@ function ManageResgistry({
                 <div className="flex left cr-5 mb-6">
                     <Close className="icon-dim-16 fcr-5 mr-4" /> Do not inject credentials to clusters
                 </div>
-                {onEdit && blackList.length === 0 ? renderEditAlert() : renderIgnoredCluster()}
+                {onEditWhiteList && blackList.length === 0 ? renderEditAlert() : renderIgnoredCluster()}
 
                 <div className="flex left cg-5 mt-16 mb-6">
                     <Check className="icon-dim-16 mr-4" /> Auto-inject credentials to clusters
                 </div>
 
-                {onEdit && whiteList.length === 0 ? renderEditAlert() : renderAppliedCluster()}
+                {onEditBlackList && whiteList.length === 0 ? renderEditAlert() : renderAppliedCluster()}
 
                 <div className="dc__border-top mb-20 mt-20" />
 
@@ -252,7 +262,9 @@ function ManageResgistry({
                     </RadioGroup>
                 </div>
                 {credentialsType === CredentialType.SAME_AS_REGISTRY && (
-                    <div className='cn-7'>Registry credentials will be auto injected to have accessed by selected clusters </div>
+                    <div className="cn-7">
+                        Registry credentials will be auto injected to have accessed by selected clusters{' '}
+                    </div>
                 )}
                 {credentialsType === CredentialType.NAME && (
                     <div>
