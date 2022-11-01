@@ -5,8 +5,8 @@ import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
-import { URLS, Host, DOCUMENTATION } from '../../config'
-import { Progressing, showError } from '../common'
+import { URLS, Host, DOCUMENTATION, ARGOCDCOOKIENAME} from '../../config'
+import { Progressing, showError , getCookie} from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
@@ -32,9 +32,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
-        let queryParam = queryString.get('continue')
-
-        if (queryParam) {
+        let queryParam = queryString.get('continue')       
+        
+        //RGOCDCOOKIENAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
+        //If a user is still at login page for the first time and hasn't logged in yet then the condition becomes false.
+        //Also if the cookie is deleted/changed after some time at backend then this statement is false.
+        //queryParam is '/' for first time login, queryParam != "/" means user is inside devtron website hence
+        //making queryParam != "/" as true and if getCookie(ARGOCDCOOKIENAME) is false at the same time then toast will appear.
+        if (queryParam && (getCookie(ARGOCDCOOKIENAME) || queryParam != "/")) {
             toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {
