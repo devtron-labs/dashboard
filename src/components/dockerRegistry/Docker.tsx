@@ -41,29 +41,28 @@ export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
     const [clusterOption, setClusterOptions] = useState<any>([{ label: '', value: '' }])
 
-
     const _getInit = async () => {
-      await getClusterListMinWithoutAuth()
-          .then((clusterListRes) => {
-              if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
-                  setClusterOptions(
-                      clusterListRes.result.map((cluster) => {
-                          return {
-                              label: cluster.cluster_name,
-                              value: cluster.id,
-                          }
-                      }),
-                  )
-              }
-          })
-          .catch((err) => {
-              showError(err)
-          })
-  }
+        await getClusterListMinWithoutAuth()
+            .then((clusterListRes) => {
+                if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
+                    setClusterOptions(
+                        clusterListRes.result.map((cluster) => {
+                            return {
+                                label: cluster.cluster_name,
+                                value: cluster.id,
+                            }
+                        }),
+                    )
+                }
+            })
+            .catch((err) => {
+                showError(err)
+            })
+    }
 
-  useEffect(() => {
-      _getInit()
-  }, [])
+    useEffect(() => {
+        _getInit()
+    }, [])
 
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
@@ -88,7 +87,12 @@ export default function Docker({ ...props }) {
                 </a>
             </h5>
             {dockerRegistryList.map((docker) => (
-                <CollapsedList reload={reload} {...docker} clusterOption={clusterOption} key={docker.id || Math.random().toString(36).substr(2, 5)} />
+                <CollapsedList
+                    reload={reload}
+                    {...docker}
+                    clusterOption={clusterOption}
+                    key={docker.id || Math.random().toString(36).substr(2, 5)}
+                />
             ))}
         </section>
     )
@@ -142,7 +146,7 @@ function CollapsedList({
                         <div className={'dc__registry-icon ' + registryType}></div>
                     </List.Logo>
                 )}
-                {!id  && collapsed && (
+                {!id && collapsed && (
                     <List.Logo>
                         <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
                     </List.Logo>
@@ -164,7 +168,7 @@ function CollapsedList({
                     />
                 )}
             </List>
-            {(params.id === id || (!id && params.id === '0' )) && (
+            {(params.id === id || (!id && params.id === '0')) && (
                 <DockerForm
                     {...{
                         id,
@@ -183,7 +187,7 @@ function CollapsedList({
                         connection,
                         cert,
                         ipsConfig,
-                        clusterOption
+                        clusterOption,
                     }}
                 />
             )}
@@ -263,15 +267,15 @@ function DockerForm({
         clusterlistMap.set(currentItem.value + '', currentItem)
     }
 
-   const _ignoredClusterIdsCsv =  (ipsConfig?.ignoredClusterIdsCsv?.split(',') || []).map((clusterId) => {
-     return clusterlistMap.get(clusterId)
+    const _ignoredClusterIdsCsv = (ipsConfig?.ignoredClusterIdsCsv?.split(',') || []).map((clusterId) => {
+        return clusterlistMap.get(clusterId)
     })
 
-    const _appliedClusterIdsCsv =  (ipsConfig?.appliedClusterIdsCsv?.split(',') || []).map((clusterId) => {
-      return clusterlistMap.get(clusterId)
-     })
+    const _appliedClusterIdsCsv = (ipsConfig?.appliedClusterIdsCsv?.split(',') || []).map((clusterId) => {
+        return clusterlistMap.get(clusterId)
+    })
 
-console.log(_appliedClusterIdsCsv)
+    console.log(_appliedClusterIdsCsv)
 
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
@@ -281,7 +285,7 @@ console.log(_appliedClusterIdsCsv)
     const [onEdit, setOnEdit] = useState<boolean>(false)
     const [credentialsType, setCredentialType] = useState<string>('SAME_AS_REGISTRY')
     const [credentialValue, setCredentialValue] = useState<string>(ipsConfig?.credentialValue)
-
+    const [showManageModal, setManageModal] = useState(false)
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
@@ -492,6 +496,13 @@ console.log(_appliedClusterIdsCsv)
             tippy: 'This will enable insecure registry communication',
         },
     ]
+
+    const onClickShowManageModal = (): void => {
+      setManageModal(true)
+    }
+    const onClickHideManageModal = (): void => {
+      setManageModal(false)
+    }
 
     const registryOptions = (props) => {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -765,19 +776,50 @@ console.log(_appliedClusterIdsCsv)
                     ))}
                 </div>
             )}
-            <ManageResgistry
-                clusterOption={clusterOption}
-                blackList={blackList}
-                setBlackList={setBlackList}
-                whiteList={whiteList}
-                setWhiteList={setWhiteList}
-                onEdit={onEdit}
-                setOnEdit={setOnEdit}
-                credentialsType={credentialsType}
-                setCredentialType={setCredentialType}
-                credentialValue={credentialValue}
-                setCredentialValue={setCredentialValue}
-            />
+
+            {!showManageModal ? (
+                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20">
+                  <div className='flex dc__content-space'>
+                    <div className="cn-7 flex left">
+                        Registry credential access is auto injected to
+                        <Tippy
+                            className="default-tt pl-20"
+                            arrow={true}
+                            placement="top"
+                            content={
+                                <div>
+                                    <div>Manage access of registry credentials</div>
+                                    <div style={{ display: 'block', width: '160px' }}>
+                                        Clusters need permission to pull container image from private repository in the
+                                        registry. You can control which clusters have access to the pull image from
+                                        private repositories.
+                                    </div>
+                                </div>
+                            }
+                        >
+                            <Question className="icon-dim-20 cursor" />
+                        </Tippy>
+                    </div>
+                    <div className='cb-5 cursor' onClick={onClickShowManageModal}>Manage</div>
+                    </div>
+                    <div className="fw-6">Clusters except demo, devtroncd</div>
+                </div>
+            ) : (
+                <ManageResgistry
+                    clusterOption={clusterOption}
+                    blackList={blackList}
+                    setBlackList={setBlackList}
+                    whiteList={whiteList}
+                    setWhiteList={setWhiteList}
+                    onEdit={onEdit}
+                    setOnEdit={setOnEdit}
+                    credentialsType={credentialsType}
+                    setCredentialType={setCredentialType}
+                    credentialValue={credentialValue}
+                    setCredentialValue={setCredentialValue}
+                    onClickHideManageModal={onClickHideManageModal}
+                />
+            )}
             <div className="form__row form__buttons  ">
                 <label
                     htmlFor=""

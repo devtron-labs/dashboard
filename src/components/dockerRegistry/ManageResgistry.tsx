@@ -38,6 +38,7 @@ function ManageResgistry({
     setCredentialType,
     credentialValue,
     setCredentialValue,
+    onClickHideManageModal,
 }) {
     const onClickEditConfirmation = (): void => {
         whiteList.length > 0 ? setWhiteList([]) : setBlackList([])
@@ -193,7 +194,9 @@ function ManageResgistry({
 
     return (
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
-            <div className="bcn-1 p-16 dc__border-bottom flex left">Manage access of registry credentials</div>
+            <div className="bcn-1 p-16 dc__border-bottom flex left" onClick={onClickHideManageModal}>
+                Manage access of registry credentials
+            </div>
             <div className="p-16">
                 <div className="flex left cr-5 mb-6">
                     <Close className="icon-dim-16 fcr-5 mr-4" /> Do not inject credentials to clusters
@@ -248,6 +251,9 @@ function ManageResgistry({
                         </RadioGroup.Radio>
                     </RadioGroup>
                 </div>
+                {credentialsType === CredentialType.SAME_AS_REGISTRY && (
+                    <div className='cn-7'>Registry credentials will be auto injected to have accessed by selected clusters </div>
+                )}
                 {credentialsType === CredentialType.NAME && (
                     <div>
                         <input

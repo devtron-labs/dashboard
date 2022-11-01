@@ -9,10 +9,12 @@ import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ErrorBar from '../../../common/error/ErrorBar'
+import IndexStore from '../../../v2/appDetails/index.store'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailBreakdownType) {
+  const _appDetails = IndexStore.getAppDetails()
     const renderIcon = (iconState: string): JSX.Element => {
         switch (iconState) {
             case 'success':
@@ -53,7 +55,7 @@ export default function DeploymentStatusDetailBreakdown({
     }
     return (
         <>
-            {/* <ErrorBar /> */}
+            <ErrorBar  appDetails={_appDetails}/>
             <div className="deployment-status-breakdown-container pl-20 pr-20">
                 {deploymentStatusDetailsBreakdownData.deploymentError && (
                     <InfoColourBar
