@@ -434,15 +434,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
                     <div>
-                        <span className={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "azure_access_token" : "access_token"}>
-                            <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
-                        </span>
                         <ProtectedInput value={this.state.form.token}
                             onChange={(event) => this.handleChange(event, 'token')}
                             name="Enter token"
                             tabIndex={4}
                             error={this.state.isError.token}
-                            label={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Access Token*" : "Personal Access Token*"}
+                            label={<>{this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Access Token* " : "Personal Access Token* "}<a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK} className="cursor fs-13 onlink">(Check permissions required for PAT)</a></>}
                             labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                 </div>
