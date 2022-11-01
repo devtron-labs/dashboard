@@ -159,7 +159,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
 
 
                 <div className="app-status-detail__body">
-                <ErrorBar  />
+                <ErrorBar  appDetails={_appDetails}/>
                     {message && (
                         <div
                             className={` ${

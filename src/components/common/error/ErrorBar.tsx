@@ -3,16 +3,16 @@ import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg';
 
-function ErrorBar() {
+function ErrorBar({appDetails}) {
     return (
         <div className="er-2 bw-1 br-4 m-20 fs-13">
             <div className="bcr-1 pl-12 pr-12 pt-8 pb-8 dc__border-bottom-r2 flex left">
-              <ErrorInfo className='icon-dim-24 mr-8'/>  IMAGEPULLBACKOFF: ‘demo’ cluster does not have permission to pull container image from ‘devtron-quay’
+              <ErrorInfo className='icon-dim-24 mr-8'/>  IMAGEPULLBACKOFF: '{appDetails?.clusterName}' cluster does not have permission to pull container image from ‘devtron-quay’
                 registry.
             </div>
             <div className="pl-12 pr-12 pt-8 pb-8">
-                <span className="fw-6">How to resolve? </span> Allow ‘demo’ cluster to access credentials for
-                ‘devtron-quay’ registry and deploy again.
+                <span className="fw-6">How to resolve? </span> Allow '{appDetails?.clusterName}' cluster to access credentials for
+                ‘{appDetails?.dockerRegistryId}’ registry and deploy again.
 
             <span className='flex left'>
                 <NavLink

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     useForm,
@@ -9,26 +9,27 @@ import {
     CustomInput,
     not,
     multiSelectStyles,
-} from '../common';
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
-import { getDockerRegistryList } from '../../services/service';
-import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service';
-import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
-import { toast } from 'react-toastify';
-import { DOCUMENTATION, REGISTRY_TYPE_MAP } from '../../config';
-import Tippy from '@tippyjs/react';
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
-import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg';
-import DeleteComponent from '../../util/DeleteComponent';
-import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
-import ReactSelect, { components } from 'react-select';
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { AuthenticationType } from '../cluster/cluster.type';
-import ManageResgistry from './ManageResgistry';
+} from '../common'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
+import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
+import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { toast } from 'react-toastify'
+import { DOCUMENTATION, REGISTRY_TYPE_MAP } from '../../config'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
+import DeleteComponent from '../../util/DeleteComponent'
+import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+import ReactSelect, { components } from 'react-select'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { AuthenticationType } from '../cluster/cluster.type'
+import ManageResgistry from './ManageResgistry'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -37,15 +38,41 @@ enum CERTTYPE {
 }
 
 export default function Docker({ ...props }) {
-    const [loading, result, error, reload] = useAsync(getDockerRegistryList);
-    if (loading && !result) return <Progressing pageLoader />;
+    const [loading, result, error, reload] = useAsync(getDockerRegistryList)
+    const [clusterOption, setClusterOptions] = useState<any>([{ label: '', value: '' }])
+
+
+    const _getInit = async () => {
+      await getClusterListMinWithoutAuth()
+          .then((clusterListRes) => {
+              if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
+                  setClusterOptions(
+                      clusterListRes.result.map((cluster) => {
+                          return {
+                              label: cluster.cluster_name,
+                              value: cluster.id,
+                          }
+                      }),
+                  )
+              }
+          })
+          .catch((err) => {
+              showError(err)
+          })
+  }
+
+  useEffect(() => {
+      _getInit()
+  }, [])
+
+    if (loading && !result) return <Progressing pageLoader />
     if (error) {
-        showError(error);
-        if (!result) return null;
+        showError(error)
+        if (!result) return null
     }
-    let dockerRegistryList = result.result || [];
-    dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b));
-    dockerRegistryList = [{ id: null }].concat(dockerRegistryList);
+    let dockerRegistryList = result.result || []
+    dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
+    dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Container registries</h2>
@@ -61,10 +88,10 @@ export default function Docker({ ...props }) {
                 </a>
             </h5>
             {dockerRegistryList.map((docker) => (
-                <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />
+                <CollapsedList reload={reload} {...docker} clusterOption={clusterOption} key={docker.id || Math.random().toString(36).substr(2, 5)} />
             ))}
         </section>
-    );
+    )
 }
 
 function CollapsedList({
@@ -82,25 +109,29 @@ function CollapsedList({
     reload,
     connection = '',
     cert = '',
-    ipsConfig={
-      id: undefined,
-      credentialType : '',
-      credentialValue: '',
-      appliedClusterIdsCsv:  '',
-      ignoredClusterIdsCsv: ''
-
+    ipsConfig = {
+        id: undefined,
+        credentialType: '',
+        credentialValue: '',
+        appliedClusterIdsCsv: '',
+        ignoredClusterIdsCsv: '',
     },
+    clusterOption,
     ...rest
 }) {
-    const [collapsed, toggleCollapse] = useState(true);
+    const [collapsed, toggleCollapse] = useState(true)
+    const history = useHistory()
+    const { url, path } = useRouteMatch()
+    const params = useParams<{ id: string }>()
 
     const setToggleCollapse = () => {
-        toggleCollapse(false)
-    }
-
-    const closeDropdown = (e) => {
-        e.stopPropagation()
-        toggleCollapse((t) => !t)
+        if (id === null && params.id !== '0') {
+            history.push(`${path.replace(':id', '0')}`)
+        } else if (id && params.id !== id) {
+            history.push(`${path.replace(':id', id)}`)
+        } else {
+            history.push(`${path.replace('/:id', '')}`)
+        }
     }
 
     return (
@@ -111,7 +142,7 @@ function CollapsedList({
                         <div className={'dc__registry-icon ' + registryType}></div>
                     </List.Logo>
                 )}
-                {!id && collapsed && (
+                {!id  && collapsed && (
                     <List.Logo>
                         <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
                     </List.Logo>
@@ -127,13 +158,13 @@ function CollapsedList({
                 </div>
                 {id && (
                     <List.DropDown
-                        onClick={closeDropdown}
+                        onClick={setToggleCollapse}
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                     />
                 )}
             </List>
-            {!collapsed && (
+            {(params.id === id || (!id && params.id === '0' )) && (
                 <DockerForm
                     {...{
                         id,
@@ -151,6 +182,8 @@ function CollapsedList({
                         toggleCollapse,
                         connection,
                         cert,
+                        ipsConfig,
+                        clusterOption
                     }}
                 />
             )}
@@ -174,6 +207,8 @@ function DockerForm({
     toggleCollapse,
     connection,
     cert,
+    ipsConfig,
+    clusterOption,
     ...rest
 }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -201,13 +236,13 @@ function DockerForm({
             },
         },
         onValidation,
-    );
-    const [loading, toggleLoading] = useState(false);
-    const [Isdefault, toggleDefault] = useState(isDefault);
-    const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false);
-    const [certError, setCertInputError] = useState('');
-    let _selectedDockerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value || 'ecr'];
-    const [selectedDockerRegistryType, setSelectedDockerRegistryType] = useState(_selectedDockerRegistryType);
+    )
+    const [loading, toggleLoading] = useState(false)
+    const [Isdefault, toggleDefault] = useState(isDefault)
+    const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false)
+    const [certError, setCertInputError] = useState('')
+    let _selectedDockerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value || 'ecr']
+    const [selectedDockerRegistryType, setSelectedDockerRegistryType] = useState(_selectedDockerRegistryType)
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
@@ -220,30 +255,45 @@ function DockerForm({
                     : password,
             error: '',
         },
-    });
-    const [deleting, setDeleting] = useState(false);
-    const [confirmation, toggleConfirmation] = useState(false);
+    })
+
+    const clusterlistMap = new Map()
+    for (let index = 0; index < clusterOption.length; index++) {
+        const currentItem = clusterOption[index]
+        clusterlistMap.set(currentItem.value + '', currentItem)
+    }
+
+   const _ignoredClusterIdsCsv =  (ipsConfig?.ignoredClusterIdsCsv?.split(',') || []).map((clusterId) => {
+     return clusterlistMap.get(clusterId)
+    })
+
+    const _appliedClusterIdsCsv =  (ipsConfig?.appliedClusterIdsCsv?.split(',') || []).map((clusterId) => {
+      return clusterlistMap.get(clusterId)
+     })
+
+console.log(_appliedClusterIdsCsv)
+
+    const [deleting, setDeleting] = useState(false)
+    const [confirmation, toggleConfirmation] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
-    const [clusterOption, setClusterOptions] = useState<any>([{ label: '', value: '' }])
-    const [blackList, setBlackList] = useState([])
-    const [whiteList, setWhiteList] = useState([])
+    const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
+    const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
     const [onEdit, setOnEdit] = useState<boolean>(false)
     const [credentialsType, setCredentialType] = useState<string>('SAME_AS_REGISTRY')
-    const [credentialValue, setCredentialValue] = useState<string>('')
+    const [credentialValue, setCredentialValue] = useState<string>(ipsConfig?.credentialValue)
 
     function customHandleChange(e) {
-        setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
+        setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
 
     const handleRegistryTypeChange = (selectedRegistry) => {
-        setSelectedDockerRegistryType(selectedRegistry);
+        setSelectedDockerRegistryType(selectedRegistry)
         setCustomState((st) => ({
             ...st,
             username: { value: selectedRegistry.id.defaultValue, error: '' },
             registryUrl: { value: selectedRegistry.defaultRegistryURL, error: '' },
-        }));
-    };
-
+        }))
+    }
 
     const onECRAuthTypeChange = (e) => {
         if (e.target.value === AuthenticationType.IAM) {
@@ -252,41 +302,42 @@ function DockerForm({
                 ..._state,
                 awsAccessKeyId: { value: '', error: '' },
                 awsSecretAccessKey: { value: '', error: '' },
-            }));
+            }))
         } else {
             setIAMAuthType(false)
             setCustomState((_state) => ({
                 ..._state,
                 awsAccessKeyId: { value: awsAccessKeyId, error: '' },
                 awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
-            }));
+            }))
         }
     }
 
-
     function fetchAWSRegion(): string {
-        const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
-        let result = customState.registryUrl.value.match(pattern);
+        const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i
+        let result = customState.registryUrl.value.match(pattern)
         if (!result) {
             setCustomState((st) => ({
                 ...st,
                 registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? 'Invalid URL' : 'Mandatory' },
-            }));
-            return '';
+            }))
+            return ''
         }
-        return result[0].split('ecr.')[1];
+        return result[0].split('ecr.')[1]
     }
 
     function isValidJson(inputString: string) {
         try {
-            JSON.parse(inputString);
+            JSON.parse(inputString)
         } catch (e) {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
 
     const getRegistryPayload = (awsRegion?: string) => {
+        let appliedClusterIdsCsv = whiteList?.map((cluster) => cluster?.value)?.join(',')
+        let ignoredClusterIdsCsv = blackList?.map((cluster) => cluster?.value)?.join(',')
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -316,37 +367,37 @@ function DockerForm({
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
                 : {}),
-                ipsConfig: {
-                  id: 1,
-                  credentialType : credentialsType,
-                  credentialValue: credentialValue,
-                  appliedClusterIdsCsv:  whiteList.map(cluster => cluster.label.join(',')) || -1,
-                  ignoredClusterIdsCsv: blackList.map(cluster => cluster.label.join(',')) || -1
-                }
-        };
-    };
+            ipsConfig: {
+                id: ipsConfig.id,
+                credentialType: credentialsType,
+                credentialValue: credentialValue,
+                appliedClusterIdsCsv: appliedClusterIdsCsv,
+                ignoredClusterIdsCsv: ignoredClusterIdsCsv,
+            },
+        }
+    }
 
     async function onSave() {
-        let awsRegion;
+        let awsRegion
         if (selectedDockerRegistryType.value === 'ecr') {
-            awsRegion = fetchAWSRegion();
-            if (!awsRegion) return;
+            awsRegion = fetchAWSRegion()
+            if (!awsRegion) return
         }
-        let payload = getRegistryPayload(awsRegion);
+        let payload = getRegistryPayload(awsRegion)
 
-        const api = id ? updateRegistryConfig : saveRegistryConfig;
+        const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
-            toggleLoading(true);
-            await api(payload, id);
+            toggleLoading(true)
+            await api(payload, id)
             if (!id) {
-                toggleCollapse(true);
+                toggleCollapse(true)
             }
-            await reload();
-            toast.success('Successfully saved.');
+            await reload()
+            toast.success('Successfully saved.')
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            toggleLoading(false);
+            toggleLoading(false)
         }
     }
 
@@ -373,14 +424,14 @@ function DockerForm({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                     password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
-                }));
-                return;
+                }))
+                return
             }
         } else if (
             selectedDockerRegistryType.value === 'artifact-registry' ||
             selectedDockerRegistryType.value === 'gcr'
         ) {
-            const isValidJsonFile = isValidJson(customState.password.value);
+            const isValidJsonFile = isValidJson(customState.password.value)
             if (!customState.username.value || !customState.password.value || !isValidJsonFile) {
                 setCustomState((st) => ({
                     ...st,
@@ -389,23 +440,23 @@ function DockerForm({
                         ...st.password,
                         error: st.password.value ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',
                     },
-                }));
-                return;
+                }))
+                return
             }
         } else if (
             selectedDockerRegistryType.value === 'acr' ||
             selectedDockerRegistryType.value === 'quay' ||
             selectedDockerRegistryType.value === 'other'
         ) {
-            let error = false;
+            let error = false
             if (!customState.username.value || !customState.password.value || !customState.registryUrl.value) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                     password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }));
-                error = true;
+                }))
+                error = true
             }
             if (
                 selectedDockerRegistryType.value === 'other' &&
@@ -413,19 +464,19 @@ function DockerForm({
             ) {
                 if (state.certInput.value === '') {
                     if (!toggleCollapsedAdvancedRegistry) {
-                        setToggleCollapsedAdvancedRegistry(not);
+                        setToggleCollapsedAdvancedRegistry(not)
                     }
-                    setCertInputError('Mandatory');
-                    error = true;
+                    setCertInputError('Mandatory')
+                    error = true
                 } else {
-                    setCertInputError('');
+                    setCertInputError('')
                 }
             }
             if (error) {
-                return;
+                return
             }
         }
-        onSave();
+        onSave()
     }
 
     let advanceRegistryOptions = [
@@ -440,7 +491,7 @@ function DockerForm({
             value: CERTTYPE.INSECURE,
             tippy: 'This will enable insecure registry communication',
         },
-    ];
+    ]
 
     const registryOptions = (props) => {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -451,20 +502,20 @@ function DockerForm({
                     {props.label}
                 </div>
             </components.Option>
-        );
-    };
+        )
+    }
     const registryControls = (props) => {
-        let value = '';
+        let value = ''
         if (props.hasValue) {
-            value = props.getValue()[0].value;
+            value = props.getValue()[0].value
         }
         return (
             <components.Control {...props}>
                 <div className={'dc__registry-icon dc__git-logo ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
-        );
-    };
+        )
+    }
 
     const _multiSelectStyles = {
         ...multiSelectStyles,
@@ -478,9 +529,9 @@ function DockerForm({
                 position: 'relative',
                 paddingBottom: '0px',
                 maxHeight: '250px',
-            };
+            }
         },
-    };
+    }
 
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
@@ -715,19 +766,18 @@ function DockerForm({
                 </div>
             )}
             <ManageResgistry
-            clusterOption={clusterOption}
-             setClusterOptions= { setClusterOptions}
-             blackList={blackList}
-             setBlackList={setBlackList}
-             whiteList={whiteList}
-             setWhiteList={setWhiteList}
-             onEdit={onEdit}
-             setOnEdit={setOnEdit}
-             credentialsType={credentialsType}
-             setCredentialType={setCredentialType}
-             credentialValue={credentialValue}
-             setCredentialValue={setCredentialValue}
-             />
+                clusterOption={clusterOption}
+                blackList={blackList}
+                setBlackList={setBlackList}
+                whiteList={whiteList}
+                setWhiteList={setWhiteList}
+                onEdit={onEdit}
+                setOnEdit={setOnEdit}
+                credentialsType={credentialsType}
+                setCredentialType={setCredentialType}
+                credentialValue={credentialValue}
+                setCredentialValue={setCredentialValue}
+            />
             <div className="form__row form__buttons  ">
                 <label
                     htmlFor=""
@@ -735,7 +785,7 @@ function DockerForm({
                     onClick={
                         isDefault
                             ? () => {
-                                  toast.success('Please mark another as default.');
+                                  toast.success('Please mark another as default.')
                               }
                             : (e) => toggleDefault((t) => !t)
                     }
@@ -759,7 +809,11 @@ function DockerForm({
             </div>
             <div className={`flex right mb-20`}>
                 {id && (
-                    <button className="cta delete dc__m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
+                    <button
+                        className="cta delete dc__m-auto ml-0"
+                        type="button"
+                        onClick={() => toggleConfirmation(true)}
+                    >
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
@@ -784,5 +838,5 @@ function DockerForm({
                 />
             )}
         </form>
-    );
+    )
 }

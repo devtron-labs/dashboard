@@ -401,7 +401,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 }}
             />
             <Route
-                path={URLS.GLOBAL_CONFIG_DOCKER}
+                path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                 render={(props) => {
                     return (
                         <div className="flexbox h-100">

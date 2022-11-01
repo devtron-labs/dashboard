@@ -53,7 +53,7 @@ export default function DeploymentStatusDetailBreakdown({
     }
     return (
         <>
-            <ErrorBar />
+            {/* <ErrorBar /> */}
             <div className="deployment-status-breakdown-container pl-20 pr-20">
                 {deploymentStatusDetailsBreakdownData.deploymentError && (
                     <InfoColourBar

@@ -26,36 +26,19 @@ export const CredentialType = {
     CUSTOM_CREDENTIAL: 'CUSTOM_CREDENTIAL',
 }
 
-
-
-function ManageResgistry({clusterOption, setClusterOptions,blackList,setBlackList, whiteList, setWhiteList, onEdit, setOnEdit, credentialsType, setCredentialType, credentialValue, setCredentialValue }) {
-    const [clusterRes, setClusterRes] = useState<any>([])
-
-
-    const _getInit = async () => {
-        await getClusterListMinWithoutAuth()
-            .then((clusterListRes) => {
-                if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
-                    setClusterRes(clusterListRes.result)
-                    setClusterOptions(
-                        clusterListRes.result.map((cluster) => {
-                            return {
-                                label: cluster.id,
-                                value: cluster.cluster_name,
-                            }
-                        }),
-                    )
-                }
-            })
-            .catch((err) => {
-                showError(err)
-            })
-    }
-
-    useEffect(() => {
-        _getInit()
-    }, [])
-
+function ManageResgistry({
+    clusterOption,
+    blackList,
+    setBlackList,
+    whiteList,
+    setWhiteList,
+    onEdit,
+    setOnEdit,
+    credentialsType,
+    setCredentialType,
+    credentialValue,
+    setCredentialValue,
+}) {
     const onClickEditConfirmation = (): void => {
         whiteList.length > 0 ? setWhiteList([]) : setBlackList([])
     }
@@ -103,7 +86,6 @@ function ManageResgistry({clusterOption, setClusterOptions,blackList,setBlackLis
                     placeholder="None"
                     className="form__input form__input__none bcn-1"
                     name="blacklist-none"
-                    value={credentialValue}
                     disabled={true}
                     autoFocus
                     autoComplete="off"
@@ -143,6 +125,7 @@ function ManageResgistry({clusterOption, setClusterOptions,blackList,setBlackLis
                     name="blacklist"
                     options={clusterOption}
                     hideSelectedOptions={false}
+                    value={blackList}
                     onChange={(selected, actionMeta) => setBlackList((selected || []) as any)}
                 />
             )
@@ -158,7 +141,6 @@ function ManageResgistry({clusterOption, setClusterOptions,blackList,setBlackLis
                         placeholder="None"
                         className="form__input form__input__none bcn-1"
                         name="blacklist-none"
-                        value={credentialValue}
                         disabled={true}
                         autoFocus
                         autoComplete="off"
@@ -269,7 +251,7 @@ function ManageResgistry({clusterOption, setClusterOptions,blackList,setBlackLis
                 {credentialsType === CredentialType.NAME && (
                     <div>
                         <input
-                            tabIndex={1}
+                            tabIndex={2}
                             placeholder="Name"
                             className="form__input"
                             name={CredentialType.NAME}
@@ -281,18 +263,7 @@ function ManageResgistry({clusterOption, setClusterOptions,blackList,setBlackLis
                     </div>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
-                    <div>
-                        <input
-                            tabIndex={1}
-                            placeholder="Name"
-                            className="form__input"
-                            name={CredentialType.NAME}
-                            value={credentialValue}
-                            onChange={onClickSpecifyImagePullSecret}
-                            autoFocus
-                            autoComplete="off"
-                        />
-                    </div>
+                    <div className="" style={{ minHeight: '98px' }}></div>
                 )}
             </div>
         </div>
