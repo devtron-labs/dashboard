@@ -23,6 +23,7 @@ import {
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
     RESPONSE_TAB_LIST,
+    SELECT_TOKEN_STYLE,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
 import { MetadataType, TabDetailsType, TokenListOptionsType, TokenPermissionType, WebhookDetailType } from './types'
@@ -37,9 +38,9 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const [loader, setLoader] = useState(false)
     const [webhookExecutionLoader, setWebhookExecutionLoader] = useState(false)
+    const [generateTokenLoader, setGenerateTokenLoader] = useState(false)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
     const [metadataChips, setMetadataChips] = useState<MetadataType[]>(PAYLOAD_CHIPS_METADATA)
-
     const [tokenName, setTokenName] = useState<string>('')
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
@@ -73,7 +74,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         }
     }
 
-    const getData = async () => {
+    const getData = async (): Promise<void> => {
         setLoader(true)
         try {
             const [userRole, webhookDetails] = await Promise.all([getUserRole(), getExternalCIConfig(appId, webhookId)])
@@ -116,6 +117,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     }
 
     const generateToken = async (): Promise<void> => {
+        setGenerateTokenLoader(true)
         try {
             const payload = {
                 name: tokenName,
@@ -145,7 +147,10 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                     setGeneratedAPIToken(result.token)
                 }
             }
-        } catch (err) {}
+            setGenerateTokenLoader(false)
+        } catch (err) {
+            setGenerateTokenLoader(false)
+        }
     }
 
     useEffect(() => {
@@ -158,40 +163,6 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
             document.removeEventListener('keydown', escKeyPressHandler)
         }
     }, [escKeyPressHandler])
-
-    const outputFormatSelectStyle = {
-        control: (base, state) => ({
-            ...base,
-            border: '1px solid var(--N200)',
-            boxShadow: 'none',
-            minHeight: 'auto',
-            height: '32px',
-            fontSize: '13px',
-        }),
-        option: (base, state) => ({
-            ...base,
-            color: 'var(--N900)',
-            fontSize: '13px',
-            padding: '5px 10px',
-        }),
-        dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-        valueContainer: (base, state) => ({
-            ...base,
-            color: 'var(--N900)',
-            background: 'var(--N50) !important',
-            padding: '0px 10px',
-            display: 'flex',
-            height: '30px',
-            fontSize: '13px',
-            pointerEvents: 'all',
-            whiteSpace: 'nowrap',
-            borderRadius: '4px',
-        }),
-        indicatorsContainer: (base, state) => ({
-            ...base,
-            background: 'var(--N50) !important',
-        }),
-    }
 
     const generateTabHeader = (
         tabList: TabDetailsType[],
@@ -227,7 +198,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
-    function formatOptionLabel(option) {
+    function formatOptionLabel(option): JSX.Element {
         return (
             <div className="flexbox justify-space">
                 <span className="cn-9 fw-4">{option.label}</span>
@@ -253,15 +224,19 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         setShowTokenSection(true)
     }
 
-    const renderActionButton = () => {
-        return (
-            <span className="cb-5 cursor top fw-6" onClick={generateToken}>
-                Generate token
-            </span>
-        )
+    const renderActionButton = (): JSX.Element => {
+        if (generateTokenLoader) {
+            return <div className="w-120"><Progressing /></div>
+        } else {
+            return (
+                <span className="cb-5 cursor top fw-6" onClick={generateToken}>
+                    Generate token
+                </span>
+            )
+        }
     }
 
-    const renderWebhookURLContainer = () => {
+    const renderWebhookURLContainer = (): JSX.Element => {
         return (
             <div className="flexbox dc__content-space mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
@@ -279,7 +254,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         setTryoutAPIToken(e.target.vakue)
     }
 
-    const renderWebhookURLTokenContainer = () => {
+    const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
             <div className="flexbox dc__content-space mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
@@ -315,7 +290,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                             Option,
                             ValueContainer,
                         }}
-                        styles={outputFormatSelectStyle}
+                        styles={SELECT_TOKEN_STYLE}
                         menuPlacement="auto"
                     />
                 </div>
