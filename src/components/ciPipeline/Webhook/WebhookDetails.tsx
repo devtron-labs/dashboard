@@ -1,73 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { Drawer, Progressing } from '../../common'
+import { ButtonWithLoader, Drawer, Progressing } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as CopyIcon } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
-import { CIPipelineType } from '../types'
 import './webhookDetails.scss'
 import ReactSelect from 'react-select'
-import { OptionType } from '../../app/types'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { components } from 'react-select'
 import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
-import { ACCESS_TYPE_MAP, MODES } from '../../../config'
+import { ACCESS_TYPE_MAP } from '../../../config'
 import { createGeneratedAPIToken, getWebhookAPITokenList } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
-import { getExternalCIConfig } from '../../../services/service'
-import { TokenListType } from '../../apiTokens/authorization.type'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
+import {
+    CURL_PREFIX,
+    PAYLOAD_CHIPS_METADATA,
+    PLAYGROUND_TAB_LIST,
+    REQUEST_BODY_TAB_LIST,
+    RESPONSE_TAB_LIST,
+    TOKEN_TAB_LIST,
+} from './webhook.utils'
+import { MetadataType, TabDetailsType, TokenListOptionsType, TokenPermissionType, WebhookDetailType } from './types'
+import { executeWebhookAPI, getExternalCIConfig } from './webhook.service'
 
-interface TabDetailsType {
-    key: string
-    value: string
-}
-
-interface TokenListOptionsType extends TokenListType {
-    label: string
-    value: string
-}
-
-interface TokenPermissionType {
-    projectName: string
-    environmentName: string
-    appName: string
-    role: string
-}
-
-interface MetadataType {
-    key: string
-    keyInObj: string[]
-    displayName: string
-    isSelected: boolean
-    readOnly: boolean
-}
-
-export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, close, deleteWorkflow }: CIPipelineType) {
-    const tokenTabList: TabDetailsType[] = [
-        { key: 'selectToken', value: 'Select API token' },
-        { key: 'autoToken', value: 'Auto-generate token' },
-    ]
-    const playgroundTabList: TabDetailsType[] = [
-        { key: 'webhookURL', value: 'Webhook URL' },
-        { key: 'sampleCurl', value: 'Sample cURL request' },
-        { key: 'try', value: 'Try it out' },
-    ]
-    const requestBodyTabList: TabDetailsType[] = [
-        { key: 'json', value: 'JSON' },
-        { key: 'schema', value: 'Schema' },
-    ]
-    const responseTabList: TabDetailsType[] = [
-        { key: 'example', value: 'Example value' },
-        { key: 'schema', value: 'Schema' },
-    ]
-    const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
-        label: format,
-        value: format,
-    }))
+export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -75,76 +36,16 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
 
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const [loader, setLoader] = useState(false)
-    const [selectedTokenTab, setSelectedTokenTab] = useState<string>(tokenTabList[0].key)
-    const [metadataChips, setMetadataChips] = useState<MetadataType[]>([
-        {
-            key: 'dockerImage',
-            keyInObj: ['dockerImage'],
-            displayName: 'Container image tag',
-            isSelected: true,
-            readOnly: true,
-        },
-        {
-            key: 'gitRepository',
-            keyInObj: ['ciProjectDetails', 'gitRepository'],
-            displayName: 'Git repository',
-            isSelected: false,
-            readOnly: false,
-        },
-        {
-            key: 'checkoutPath',
-            keyInObj: ['ciProjectDetails', 'checkoutPath'],
-            displayName: 'Checkout path',
-            isSelected: false,
-            readOnly: false,
-        },
-        {
-            key: 'commitHash',
-            keyInObj: ['ciProjectDetails', 'commitHash'],
-            displayName: 'Commit hash',
-            isSelected: false,
-            readOnly: false,
-        },
-        {
-            key: 'commitTime',
-            keyInObj: ['ciProjectDetails', 'commitTime'],
-            displayName: 'Date & time of commit',
-            isSelected: false,
-            readOnly: false,
-        },
-        {
-            key: 'branch',
-            keyInObj: ['ciProjectDetails', 'branch'],
-            displayName: 'Branch',
-            isSelected: false,
-            readOnly: false,
-        },
-        {
-            key: 'message',
-            keyInObj: ['ciProjectDetails', 'message'],
-            displayName: 'Commit message',
-            isSelected: false,
-            readOnly: false,
-        },
-        {
-            key: 'author',
-            keyInObj: ['ciProjectDetails', 'author'],
-            displayName: 'Author',
-            isSelected: false,
-            readOnly: false,
-        },
-    ])
-    const curlBaseValue = `curl -X 'POST'
-  'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'
-  -H 'Content-type: application/json'
-  `
+    const [webhookExecutionLoader, setWebhookExecutionLoader] = useState(false)
+    const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
+    const [metadataChips, setMetadataChips] = useState<MetadataType[]>(PAYLOAD_CHIPS_METADATA)
 
     const [tokenName, setTokenName] = useState<string>('')
-    const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(playgroundTabList[0].key)
-    const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(requestBodyTabList[0].key)
-    const [selectedResponse200Tab, setResponse200Tab] = useState<string>(responseTabList[0].key)
-    const [selectedResponse400Tab, setResponse400Tab] = useState<string>(responseTabList[0].key)
-    const [selectedResponse401Tab, setResponse401Tab] = useState<string>(responseTabList[0].key)
+    const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
+    const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
+    const [selectedResponse200Tab, setResponse200Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
+    const [selectedResponse400Tab, setResponse400Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
+    const [selectedResponse401Tab, setResponse401Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
     const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
     const [requiredTokenPermission, setRequiredTokenPermission] = useState<TokenPermissionType>(null)
@@ -156,6 +57,8 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
     const [sampleJSON, setSampleJSON] = useState(null)
     const [modifiedSampleJSON, setModifiedSampleJSON] = useState(null)
     const [sampleCURL, setSampleCURL] = useState<any>(null)
+    const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
+    const [webhookURL, setWebhookURL] = useState<string>(null)
 
     const formatSampleJson = (json): string => {
         let formattedJSON = ''
@@ -182,6 +85,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 appName: webhookDetails['appName'],
                 role: webhookDetails['role'],
             }
+            setWebhookURL(webhookDetails['webhookUrl'])
             const parsedPayload = JSON.parse(webhookDetails['payload'])
             setSamplePayload(parsedPayload)
             const _modifiedPayload = { ...parsedPayload }
@@ -189,7 +93,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
             const modifiedJSONString = formatSampleJson(_modifiedPayload)
             setSampleJSON(modifiedJSONString)
             setModifiedSamplePayload(_modifiedPayload)
-            setSampleCURL(curlBaseValue + modifiedJSONString)
+            setSampleCURL(CURL_PREFIX + modifiedJSONString)
             setRequiredTokenPermission(_requiredTokenPermission)
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
@@ -362,18 +266,17 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
             <div className="flexbox dc__content-space mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
-                    <input
-                        type="text"
-                        placeholder="Search Token"
-                        value={'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'}
-                        className="bcn-0 dc__no-border form__input"
-                    />
+                    <input type="text" value={webhookURL} className="bcn-0 dc__no-border form__input" />
                     <button className="flex search__clear-button" type="button">
                         <CopyIcon className="icon-dim-20" />
                     </button>
                 </div>
             </div>
         )
+    }
+
+    const handleTokenChange = (e): void => {
+        setTryoutAPIToken(e.target.vakue)
     }
 
     const renderWebhookURLTokenContainer = () => {
@@ -386,9 +289,10 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                     </div>
                     <input
                         type="text"
-                        placeholder="Search Token"
-                        value={'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'}
+                        placeholder="Enter API token"
                         className="bcn-0 dc__no-border form__input"
+                        onClick={handleTokenChange}
+                        value={tryoutAPIToken}
                     />
                 </div>
             </div>
@@ -478,16 +382,16 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 )}
                 {showTokenSection && (
                     <div className="mt-16">
-                        {generateTabHeader(tokenTabList, selectedTokenTab, setSelectedTokenTab)}
-                        {selectedTokenTab === tokenTabList[0].key && renderSelectTokenSection()}
-                        {selectedTokenTab === tokenTabList[1].key && renderGenerateTokenSection()}
+                        {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                        {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                        {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
                     </div>
                 )}
             </>
         )
     }
 
-    const renderCodeEditor = (value: string, height: number, MODE?: MODES): JSX.Element => {
+    const renderCodeSnippet = (value: string): JSX.Element => {
         return (
             <pre className="br-4 fs-13 fw-4 cn-9">
                 <code>{value}</code>
@@ -501,8 +405,8 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 {renderWebhookURLContainer()}
                 {renderMetadata()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
-                {generateTabHeader(requestBodyTabList, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
-                {renderCodeEditor(sampleJSON, 300)}
+                {generateTabHeader(REQUEST_BODY_TAB_LIST, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
+                {renderCodeSnippet(sampleJSON)}
             </div>
         )
     }
@@ -513,8 +417,6 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         const removeData = _metadataChips[index].isSelected
         _metadataChips[index].isSelected = !metadataChips[index].isSelected
         const _modifiedSamplePayload = { ...modifiedSamplePayload }
-        // for (let index = 0; index < _modifiedSamplePayload.length; index++) {
-        //     const element = _modifiedSamplePayload[index]
         if (removeData) {
             if (_metadataChips[index].keyInObj.length === 1) {
                 delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]]
@@ -536,11 +438,10 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                     samplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]]
             }
         }
-        //}
         setModifiedSamplePayload(_modifiedSamplePayload)
         const _modifiedJSONString = formatSampleJson(_modifiedSamplePayload)
         setSampleJSON(_modifiedJSONString)
-        setSampleCURL(curlBaseValue + _modifiedJSONString)
+        setSampleCURL(CURL_PREFIX + _modifiedJSONString)
         setMetadataChips(_metadataChips)
     }
 
@@ -583,7 +484,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         return (
             <div className="pt-16">
                 {renderMetadata()}
-                {renderCodeEditor(sampleCURL, 300, MODES.SHELL)}
+                {renderCodeSnippet(sampleCURL)}
             </div>
         )
     }
@@ -596,7 +497,7 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 <div className="cn-9 fs-13 fw-6 mb-8">Request header</div>
                 {renderWebhookURLTokenContainer()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
-                {renderCodeEditor(sampleJSON, 300)}
+                {renderCodeSnippet(sampleJSON)}
             </div>
         )
     }
@@ -631,10 +532,16 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
     const renderPlayGroundSection = (): JSX.Element | null => {
         return (
             <div className="bcn-0 p-16 br-4 bw-1 en-2 mb-16">
-                {generateTabHeader(playgroundTabList, selectedPlaygroundTab, setSelectedPlaygroundTab)}
-                {selectedPlaygroundTab === playgroundTabList[0].key && renderWebhookURLSection()}
-                {selectedPlaygroundTab === playgroundTabList[1].key && renderSampleCurlSection()}
-                {selectedPlaygroundTab === playgroundTabList[2].key && renderTryOutSection()}
+                {generateTabHeader(PLAYGROUND_TAB_LIST, selectedPlaygroundTab, setSelectedPlaygroundTab)}
+                {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[0].key && renderWebhookURLSection()}
+                {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[1].key && renderSampleCurlSection()}
+                {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[2].key && (
+                    <>
+                        {renderTryOutSection()}
+                        {renderTryoutActionSection()}
+                        {renderActualResponseSection()}
+                    </>
+                )}
             </div>
         )
     }
@@ -651,17 +558,17 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
                 <div className="fs-13 fw-4 cn-9">{responseCode}</div>
                 <div>
                     <div className="fs-13 fw-4 cn-9 mb-16"> {responseDescription}</div>
-                    {generateTabHeader(responseTabList, selectedTab, setSelectedTab, true)}
-                    {renderCodeEditor(value, 200)}
+                    {generateTabHeader(RESPONSE_TAB_LIST, selectedTab, setSelectedTab, true)}
+                    {renderCodeSnippet(value)}
                 </div>
             </div>
         )
     }
 
-    const renderResponseSection = (): JSX.Element | null => {
+    const renderSampleResponseSection = (): JSX.Element | null => {
         return (
             <div className="bcn-0 p-16 br-4 bw-1 en-2">
-                <div className="cn-9 fs-13 fw-6 mb-8">Response</div>
+                <div className="cn-9 fs-13 fw-6 mb-8">Responses</div>
                 <div className="cn-9 fs-13 fw-6 mb-8">
                     <div className="response-row dc__border-bottom pt-8 pb-8">
                         <div>Code</div>
@@ -693,7 +600,61 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         )
     }
 
-    const renderHeaderSection = (): JSX.Element | null => {
+    const executeWebhook = async (): Promise<void> => {
+        setWebhookExecutionLoader(true)
+        try {
+            const response = await executeWebhookAPI(webhookURL, tryoutAPIToken, modifiedSamplePayload)
+            setWebhookExecutionLoader(false)
+        } catch (error) {
+            setWebhookExecutionLoader(false)
+        }
+    }
+
+    const renderTryoutActionSection = (): JSX.Element => {
+        return (
+            <div className="flex left mt-20 mb-20">
+                <ButtonWithLoader
+                    rootClassName="cta h-28 flex mr-8"
+                    onClick={executeWebhook}
+                    isLoading={webhookExecutionLoader}
+                    loaderColor="white"
+                >
+                    <PlayButton className="icon-dim-18 mr-8" />
+                    Execute
+                </ButtonWithLoader>
+                <button className="cta cancel h-28 flex">
+                    <Close className="icon-dim-18 mr-8" />
+                    Clear
+                </button>
+            </div>
+        )
+    }
+
+    const renderActualResponseSection = (): JSX.Element | null => {
+        return (
+            <div className="bcn-0 p-16 br-4 bw-1 en-2">
+                <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
+                <div className="cn-9 fs-13 fw-6 mb-8">
+                    <div className="response-row dc__border-bottom pt-8 pb-8">
+                        <div>Code</div>
+                        <div>Description</div>
+                    </div>
+                    <div className="response-row pt-8 pb-8">
+                        <div className="fs-13 fw-4 cn-9">{'responseCode'}</div>
+                        <div>
+                            <div className="fs-13 fw-4 cn-9 mb-16"> {'responseDescription'}</div>
+                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
+                            {renderCodeSnippet('value')}
+                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
+                            {renderCodeSnippet('value')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pr-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy image from external source</h2>
@@ -710,17 +671,17 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         )
     }
 
-    const renderBodySection = (): JSX.Element | null => {
+    const renderBodySection = (): JSX.Element => {
         return (
-            <div className="p-20 webhook-body">
+            <div className={`p-20 webhook-body ${isSuperAdmin ? 'super-admin-view' : ''}`}>
                 {renderTokenPermissionSection()}
                 {renderPlayGroundSection()}
-                {renderResponseSection()}
+                {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[0].key && renderSampleResponseSection()}
             </div>
         )
     }
 
-    const renderFooterSection = (): JSX.Element | null => {
+    const renderFooterSection = (): JSX.Element => {
         return (
             <div
                 className="dc__border-top flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
@@ -745,8 +706,14 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         <Drawer position="right" width="1000px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
-                {loader ? <Progressing pageLoader /> : renderBodySection()}
-                {renderFooterSection()}
+                {loader ? (
+                    <Progressing pageLoader />
+                ) : (
+                    <>
+                        {renderBodySection()}
+                        {!isSuperAdmin && renderFooterSection()}
+                    </>
+                )}
             </div>
         </Drawer>
     )

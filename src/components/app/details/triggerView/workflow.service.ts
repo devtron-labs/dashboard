@@ -1,4 +1,4 @@
-import { getCIConfig, getCDConfig, getWorkflowList, getExternalCIConfig } from '../../../../services/service'
+import { getCIConfig, getCDConfig, getWorkflowList } from '../../../../services/service'
 import {
     WorkflowType,
     NodeAttr,
@@ -13,7 +13,7 @@ import {
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
 import { isEmpty } from '../../../common'
-import { CINode } from '../../../workflowEditor/nodes/CINode'
+import { getExternalCIConfig } from '../../../ciPipeline/Webhook/webhook.service'
 
 export const getTriggerWorkflows = (
     appId,
