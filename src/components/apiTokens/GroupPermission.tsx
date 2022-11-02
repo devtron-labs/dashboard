@@ -94,26 +94,6 @@ function GroupPermission({
                 onChange={(selected) => setUserGroups((selected || []) as any)}
                 className="basic-multi-select"
             />
-            {userGroups.length > 0 && (
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '184px 1fr 24px',
-                        gridAutoRows: '48px',
-                        gridColumnGap: '16px',
-                        alignItems: 'center',
-                    }}
-                >
-                    {userGroups.map((userGroup, idx) => (
-                        <GroupRow
-                            key={idx}
-                            name={userGroup.value}
-                            description={userGroupsMap.get(userGroup.value).description}
-                            removeRow={(e) => setUserGroups((userGroups) => removeItemsFromArray(userGroups, idx, 1))}
-                        />
-                    ))}
-                </div>
-            )}
             <AppPermissions
                 data={userData}
                 directPermission={directPermission}
