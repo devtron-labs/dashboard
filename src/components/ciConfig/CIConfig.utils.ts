@@ -341,6 +341,13 @@ const updateCreateDockerfileDiffValues = (
     }
 }
 
+export const getAbsoluteProjectPath = (projectPath: string): string => {
+    if (projectPath) {
+        return projectPath.startsWith('./') ? projectPath : `./${projectPath}`
+    }
+    return './'
+}
+
 const updateBuildpackDiffValues = (
     ciConfigDiffValues: CIConfigDiffType[],
     globalCIConfig: DockerConfigOverrideType,
@@ -361,13 +368,14 @@ const updateBuildpackDiffValues = (
             baseValue: globalGitMaterialName,
             overridenValue: currentMaterialName,
         })
+
+        const baseProjectPath = getAbsoluteProjectPath(globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath),
+            overridenProjectPath = getAbsoluteProjectPath(ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath)
         ciConfigDiffValues.push({
             configName: 'Project Path',
-            changeBGColor:
-                globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath !==
-                ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
-            baseValue: globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath,
-            overridenValue: ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
+            changeBGColor: baseProjectPath !== overridenProjectPath,
+            baseValue: baseProjectPath,
+            overridenValue: overridenProjectPath,
         })
         ciConfigDiffValues.push({
             configName: 'Builder Language',

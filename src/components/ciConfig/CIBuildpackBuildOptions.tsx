@@ -14,7 +14,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { _multiSelectStyles } from './CIConfig.utils'
+import { getAbsoluteProjectPath, _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { CIBuildType } from '../ciPipeline/types'
 import {
@@ -446,7 +446,7 @@ export default function CIBuildpackBuildOptions({
                         </TippyWhite>
                     </label>
                     {configOverrideView && !allowOverride ? (
-                        <span className="fs-14 fw-4 lh-20 cn-9">{projectPathVal || './'}</span>
+                        <span className="fs-14 fw-4 lh-20 cn-9">{getAbsoluteProjectPath(projectPathVal)}</span>
                     ) : (
                         <div className="project-path-container h-36">
                             <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
@@ -477,7 +477,7 @@ export default function CIBuildpackBuildOptions({
                                     <img
                                         src={buildersAndFrameworks.selectedLanguage.icon}
                                         alt={buildersAndFrameworks.selectedLanguage.label}
-                                        className="icon-dim-16 mr-8"
+                                        className="icon-dim-20 mr-8"
                                     />
                                 )}
                                 <span className="fs-14 fw-4 lh-20 cn-9">

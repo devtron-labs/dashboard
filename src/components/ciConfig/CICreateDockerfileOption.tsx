@@ -1,15 +1,20 @@
-import Tippy from '@tippyjs/react'
 import React, { useEffect, useState } from 'react'
+import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { MODES } from '../../config'
-import { OptionType } from '../app/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { copyToClipboard, Progressing, showError } from '../common'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../v2/common/ReactSelect.utils'
+import {
+    DropdownIndicator,
+    getCommonSelectStyle,
+    Option,
+    OptionWithIcon,
+    ValueContainerWithIcon,
+} from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CIBuildType } from '../ciPipeline/types'
-import { CICreateDockerfileOptionProps, FrameworkOptionType, TemplateDataType } from './types'
+import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 import { _customStyles } from './CIConfig.utils'
 
@@ -26,9 +31,9 @@ export default function CICreateDockerfileOption({
     setCurrentCIBuildConfig,
     setInProgress,
 }: CICreateDockerfileOptionProps) {
-    const [languages, setLanguages] = useState<OptionType[]>([])
+    const [languages, setLanguages] = useState<LanguageOptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
-    const [selectedLanguage, setSelectedLanguage] = useState<OptionType>()
+    const [selectedLanguage, setSelectedLanguage] = useState<LanguageOptionType>()
     const [selectedFramework, setSelectedFramework] = useState<FrameworkOptionType>()
     const [templateData, setTemplateData] = useState<Record<string, TemplateDataType>>() // key: language-framework
     const [editorValue, setEditorValue] = useState<string>('')
@@ -39,6 +44,8 @@ export default function CICreateDockerfileOption({
     useEffect(() => {
         if (frameworks.length > 0) {
             const _languageFrameworks = new Map<string, FrameworkOptionType[]>()
+            const _languages: LanguageOptionType[] = []
+            let initIcon = ''
             for (const _framework of frameworks) {
                 if (!_languageFrameworks.has(_framework.Language)) {
                     const _frameworksList = frameworks
@@ -49,13 +56,17 @@ export default function CICreateDockerfileOption({
                             templateUrl: lf.TemplateUrl,
                         }))
                     _languageFrameworks.set(_framework.Language, _frameworksList)
+                    _languages.push({
+                        label: _framework.Language,
+                        value: _framework.Language,
+                        icon: _framework.LanguageIcon,
+                    })
+
+                    if (!initIcon && currentCIBuildConfig.dockerBuildConfig.language === _framework.Language) {
+                        initIcon = _framework.LanguageIcon
+                    }
                 }
             }
-
-            const _languages = [..._languageFrameworks.keys()].map((_lang) => ({
-                label: _lang,
-                value: _lang,
-            }))
             setLanguages(_languages)
             setLanguageFrameworks(_languageFrameworks)
 
@@ -63,6 +74,7 @@ export default function CICreateDockerfileOption({
                 ? {
                       label: currentCIBuildConfig.dockerBuildConfig.language,
                       value: currentCIBuildConfig.dockerBuildConfig.language,
+                      icon: initIcon,
                   }
                 : _languages[0]
             setSelectedLanguage(_selectedLanguage)
@@ -83,7 +95,7 @@ export default function CICreateDockerfileOption({
             ) {
                 setTemplateData({
                     ...templateData,
-                    [`${_selectedLanguage.value}-${_selectedFramework.value}`]: {
+                    [getTemplateKey(_selectedLanguage, _selectedFramework)]: {
                         fetching: false,
                         data: currentCIBuildConfig.dockerBuildConfig.dockerfileContent,
                     },
@@ -100,8 +112,12 @@ export default function CICreateDockerfileOption({
         }
     }, [frameworks])
 
-    const getTemplateData = async (_selectedLanguage, _selectedFramework) => {
-        const templateKey = `${_selectedLanguage?.value}-${_selectedFramework?.value}`
+    const getTemplateKey = (_selectedLanguage: LanguageOptionType, _selectedFramework: FrameworkOptionType) => {
+        return `${_selectedLanguage.value}-${_selectedFramework?.value || 'no-framework'}`
+    }
+
+    const getTemplateData = async (_selectedLanguage: LanguageOptionType, _selectedFramework: FrameworkOptionType) => {
+        const templateKey = getTemplateKey(_selectedLanguage, _selectedFramework)
         const _currentData = templateData?.[templateKey]
 
         if (_currentData?.fetching) {
@@ -147,8 +163,8 @@ export default function CICreateDockerfileOption({
                     dockerBuildConfig: {
                         ...currentCIBuildConfig.dockerBuildConfig,
                         dockerfileContent: respData,
-                        language: _selectedLanguage?.value,
-                        languageFramework: _selectedFramework?.value,
+                        language: _selectedLanguage.value,
+                        languageFramework: _selectedFramework.value,
                     },
                 })
                 setInProgress(false)
@@ -179,7 +195,7 @@ export default function CICreateDockerfileOption({
         }
     }
 
-    const handleLanguageSelection = (selected) => {
+    const handleLanguageSelection = (selected: LanguageOptionType) => {
         setSelectedLanguage(selected)
 
         const _selectedFramework = languageFrameworks.get(selected.value)?.[0] || null
@@ -187,16 +203,13 @@ export default function CICreateDockerfileOption({
         getTemplateData(selected, _selectedFramework)
     }
 
-    const handleFrameworkSelection = (selected) => {
+    const handleFrameworkSelection = (selected: FrameworkOptionType) => {
         setSelectedFramework(selected)
         getTemplateData(selectedLanguage, selected)
     }
 
     const resetChanges = () => {
-        const editorData =
-            templateData && selectedLanguage && selectedFramework
-                ? templateData[`${selectedLanguage.value}-${selectedFramework.value}`]
-                : null
+        const editorData = templateData && templateData[getTemplateKey(selectedLanguage, selectedFramework)]
         setEditorValue(editorData?.data)
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
@@ -214,7 +227,16 @@ export default function CICreateDockerfileOption({
             <div className="flex">
                 <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
                 {configOverrideView && !allowOverride ? (
-                    <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
+                    <div className="flex left">
+                        {selectedLanguage?.icon && (
+                            <img
+                                src={selectedLanguage.icon}
+                                alt={selectedLanguage.label}
+                                className="icon-dim-20 mr-8"
+                            />
+                        )}
+                        <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
+                    </div>
                 ) : (
                     <ReactSelect
                         tabIndex={3}
@@ -225,7 +247,8 @@ export default function CICreateDockerfileOption({
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
-                            Option,
+                            Option: OptionWithIcon,
+                            ValueContainer: ValueContainerWithIcon,
                         }}
                         onChange={handleLanguageSelection}
                         isDisabled={configOverrideView && !allowOverride}
@@ -290,9 +313,7 @@ export default function CICreateDockerfileOption({
     }
 
     const editorData =
-        templateData && selectedLanguage && selectedFramework
-            ? templateData[`${selectedLanguage.value}-${selectedFramework.value}`]
-            : null
+        templateData && selectedLanguage ? templateData[getTemplateKey(selectedLanguage, selectedFramework)] : null
     return (
         <>
             <div className="form__field mb-16">

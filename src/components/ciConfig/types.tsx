@@ -133,6 +133,7 @@ interface LanguageBuilderType {
 
 interface LanguageFrameworkType {
     Language: string
+    LanguageIcon: string
     Framework: string
     TemplateUrl: string
 }

@@ -124,7 +124,7 @@ export function DropdownIndicator(props) {
 export function customOption(label: string, icon: string, className = '', onImageLoadError = noop) {
     return (
         <div className={`flex left ${className}`}>
-            {icon && <img src={icon} alt={label} className="icon-dim-16 mr-8" onError={onImageLoadError} />}
+            {icon && <img src={icon} alt={label} className="icon-dim-20 mr-8" onError={onImageLoadError} />}
             <span className="dc__ellipsis-right">{label}</span>
         </div>
     )
@@ -142,8 +142,10 @@ export function ValueContainerWithIcon(props) {
         <components.ValueContainer {...props}>
             {selectProps.value ? (
                 <>
-                    {customOption(selectProps.value.label, selectProps.value.icon, 'dc__position-abs pl-10 pr-10')}
-                    {React.cloneElement(props.children[1])}
+                    {customOption(selectProps.value.label, selectProps.value.icon)}
+                    {React.cloneElement(props.children[1], {
+                        style: { position: 'absolute' },
+                    })}
                 </>
             ) : (
                 <>{props.children}</>
