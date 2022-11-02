@@ -39,7 +39,7 @@ function InfoColourBar({
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
-                        <span>{message}</span>&nbsp;
+                        <span>{message}</span>
                         {linkText && redirectLink && (
                             <a
                                 href={redirectLink}
@@ -57,7 +57,6 @@ function InfoColourBar({
                         )}
                     </div>
                 </span>
-                &nbsp;
                 {typeof renderActionButton === 'function' && renderActionButton()}
             </div>
         </div>
