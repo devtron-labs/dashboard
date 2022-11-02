@@ -10,6 +10,7 @@ import { getAppCheckList, getHostURLConfiguration } from '../../services/service
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 import './hosturl.css';
+import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
     constructor(props) {
@@ -123,10 +124,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     renderHostErrorMessage() {
-        return <div className="dc__hosturl-error ml-20 mr-20 mb-16 flex left">
-            <Error className="icon-dim-20 mr-8" />
-            <div>Saved host URL doesn’t match the domain address in your browser.</div>
-        </div>
+        return <InfoColourBar classname='dc__hosturl-error m-20' message="Saved host URL doesn’t match the domain address in your browser." Icon={Error} />
     }
 
     renderBlankHostField() {
@@ -145,52 +143,73 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 <ErrorScreenManager code={this.state.statusCode} />
             </section>
         }
-        return <>
-            <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
-                <h2 className="form__title">Host URL</h2>
-                <p className="form__subtitle">Host URL is the domain address at which your devtron dashboard can be reached. &nbsp; </p>
-                <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
-                    <div className="hosturl__description">
-                        <div>
-                            <div className="flex left ">
-                                <Info className="icon-dim-20 mr-8 " />
-                                <div>Host URL is the domain address at which your devtron dashboard can be reached.</div>
+        return (
+            <>
+                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
+                    <h2 className="form__title">Host URL</h2>
+                    <p className="form__subtitle">
+                        Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;{' '}
+                    </p>
+                    <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
+                        <InfoColourBar
+                            classname="hosturl__description m-20"
+                            message={
+                                <>
+                                    Host URL is the domain address at which your devtron dashboard can be reached.
+                                    <br />
+                                    It is used to reach your devtron dashboard from external sources like configured
+                                    webhooks, e-mail or slack notifications, grafana dashboard, etc.
+                                </>
+                            }
+                            Icon={Info}
+                        />
+                        {this.state.form.id && window.location.origin !== this.state.form.value
+                            ? this.renderHostErrorMessage()
+                            : ''}
+                        <div className="pl-20 pr-20">
+                            <div className="flex column left top ">
+                                <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
+                                <input
+                                    id="host"
+                                    value={this.state.form.value}
+                                    autoFocus
+                                    tabIndex={1}
+                                    type="text"
+                                    className="form__input"
+                                    placeholder={'Enter Host URL'}
+                                    onChange={(event) => this.handleChange(event)}
+                                    autoComplete="off"
+                                />
                             </div>
-                            <div className="ml-30">It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack notifications, grafana dashboard, etc.</div>
+                            {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
+                            <div className="hosturl__autodetection flex fs-12 left pt-4">
+                                <Warn className="icon-dim-16 mr-4 " />
+                                Auto-detected from your browser:
+                                <button
+                                    type="button"
+                                    onClick={(e) => this.handleHostURLLocation(window.location.origin)}
+                                    className="hosturl__url fw-4 cg-5"
+                                >
+                                    {window.location.origin}
+                                </button>
+                            </div>
+                            <div className="form__buttons pt-20">
+                                <button
+                                    type="button"
+                                    tabIndex={2}
+                                    disabled={this.state.saveLoading}
+                                    onClick={(e) => {
+                                        this.onSave()
+                                    }}
+                                    className="cta"
+                                >
+                                    {this.state.saveLoading ? <Progressing /> : this.state.form.id ? 'Update' : 'Save'}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    {(this.state.form.id && window.location.origin !== this.state.form.value) ? this.renderHostErrorMessage() : ''}
-                    <div className="pl-20 pr-20">
-                        <div className="flex column left top ">
-                            <div className="gitops__id fw-5 fs-13 mb-8">Host URL*</div>
-                            <input id="host"
-                                value={this.state.form.value}
-                                autoFocus
-                                tabIndex={1}
-                                type="text"
-                                className="form__input"
-                                placeholder={"Enter Host URL"}
-                                onChange={(event) => this.handleChange(event)}
-                                autoComplete="off" />
-                        </div>
-                        {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
-                        <div className="hosturl__autodetection flex fs-12 left pt-4">
-                            <Warn className="icon-dim-16 mr-4 " />
-                        Auto-detected from your browser:
-                        <button type="button" onClick={(e) => this.handleHostURLLocation(window.location.origin)} className="hosturl__url fw-4 cg-5"> {window.location.origin}</button>
-                        </div>
-                        <div className="form__buttons pt-20">
-                            <button type="button"
-                                tabIndex={2}
-                                disabled={this.state.saveLoading}
-                                onClick={(e) => { this.onSave() }}
-                                className="cta">
-                                {this.state.saveLoading ? <Progressing /> : this.state.form.id ? "Update" : "Save"}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </section>
-        </>
+                    </form>
+                </section>
+            </>
+        )
     }
 }
