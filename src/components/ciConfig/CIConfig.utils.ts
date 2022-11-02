@@ -5,6 +5,50 @@ import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ci
 import { multiSelectStyles } from '../common'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 
+export const _customStyles = {
+    control: (base) => ({
+        ...base,
+        border: 'none',
+        boxShadow: 'none',
+        minHeight: '32px',
+        cursor: 'pointer',
+    }),
+    singleValue: (base) => ({
+        ...base,
+        fontSize: '13px',
+        fontWeight: '600',
+        color: 'var(--N900)',
+    }),
+    option: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+    }),
+    menu: (base) => ({
+        ...base,
+        marginTop: '2px',
+        minWidth: '240px',
+    }),
+    menuList: (base) => ({
+        ...base,
+        position: 'relative',
+        paddingBottom: 0,
+        paddingTop: 0,
+        maxHeight: '250px',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        padding: 0,
+        color: 'var(--N400)',
+        transition: 'all .2s ease',
+        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    }),
+    noOptionsMessage: (base) => ({
+        ...base,
+        color: 'var(--N600)',
+    }),
+}
+
 export const _multiSelectStyles = {
     ...multiSelectStyles,
     control: (base, state) => ({

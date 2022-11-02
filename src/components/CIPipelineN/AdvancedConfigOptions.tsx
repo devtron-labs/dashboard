@@ -181,7 +181,7 @@ export default function AdvancedConfigOptions({
                 <div>
                     <h2 className="fs-14 fw-6 cn-9 lh-20 m-0">Override Options</h2>
                     <p className="fs-13 fw-4 cn-7 lh-20 m-0">
-                        Override container registry, dockerfile for this pipeline.
+                        Override container registry, container image for this pipeline
                     </p>
                 </div>
                 <button

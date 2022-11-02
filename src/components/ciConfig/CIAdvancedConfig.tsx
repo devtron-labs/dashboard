@@ -38,13 +38,18 @@ export default function CIAdvancedConfig({
         setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
     }
 
-    const handleArgsChange = (index, k, v): void => {
-        if (updateNotAllowed) {
+    const handleArgsChange = (e): void => {
+        if (updateNotAllowed || !e.target) {
             return
         }
 
+        const isKey = e.target.name === 'arg-key',
+            id = e.target.dataset.id,
+            k = isKey ? e.target.value : e.target.dataset.value,
+            v = isKey ? e.target.dataset.value : e.target.value
+
         setArgs((arr) => {
-            arr[index] = { k: k, v: v, keyError: '', valueError: '' }
+            arr[id] = { k: k, v: v, keyError: '', valueError: '' }
             return Array.from(arr)
         })
     }
@@ -158,6 +163,7 @@ export default function CIAdvancedConfig({
                         <div className="flexbox justify-space" key={`build-${idx}`}>
                             <div className="mt-8 w-100">
                                 <input
+                                    name="arg-key"
                                     className={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
                                     }`}
@@ -165,19 +171,20 @@ export default function CIAdvancedConfig({
                                     placeholder="Key"
                                     type="text"
                                     value={arg.k}
-                                    onChange={(e) => {
-                                        handleArgsChange(idx, e.target.value, arg.v)
-                                    }}
+                                    data-id={idx}
+                                    data-value={arg.v}
+                                    onChange={handleArgsChange}
                                     disabled={updateNotAllowed}
                                 />
                                 <textarea
+                                    name="arg-value"
                                     className={`build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
                                     }`}
                                     value={arg.v}
-                                    onChange={(e) => {
-                                        handleArgsChange(idx, arg.k, e.target.value)
-                                    }}
+                                    data-id={idx}
+                                    data-value={arg.k}
+                                    onChange={handleArgsChange}
                                     placeholder="Value"
                                     disabled={updateNotAllowed}
                                 />

@@ -11,6 +11,7 @@ import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwi
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, TemplateDataType } from './types'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
+import { _customStyles } from './CIConfig.utils'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -191,52 +192,11 @@ export default function CICreateDockerfileOption({
         getTemplateData(selectedLanguage, selected)
     }
 
-    const customStyles = {
-        control: (base) => ({
-            ...base,
-            border: 'none',
-            boxShadow: 'none',
-            minHeight: '32px',
-            cursor: 'pointer',
-        }),
-        singleValue: (base) => ({
-            ...base,
-            fontSize: '13px',
-            fontWeight: '600',
-            color: 'var(--N900)',
-        }),
-        option: (base, state) => ({
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-        }),
-        menu: (base) => ({
-            ...base,
-            marginTop: '2px',
-            minWidth: '240px',
-        }),
-        menuList: (base) => ({
-            ...base,
-            position: 'relative',
-            paddingBottom: 0,
-            paddingTop: 0,
-            maxHeight: '250px',
-        }),
-        dropdownIndicator: (base, state) => ({
-            ...base,
-            padding: 0,
-            color: 'var(--N400)',
-            transition: 'all .2s ease',
-            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-        }),
-        noOptionsMessage: (base) => ({
-            ...base,
-            color: 'var(--N600)',
-        }),
-    }
-
     const resetChanges = () => {
-        const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]
+        const editorData =
+            templateData && selectedLanguage && selectedFramework
+                ? templateData[`${selectedLanguage.value}-${selectedFramework.value}`]
+                : null
         setEditorValue(editorData?.data)
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
@@ -261,7 +221,7 @@ export default function CICreateDockerfileOption({
                         options={languages}
                         value={selectedLanguage}
                         isSearchable={false}
-                        styles={customStyles}
+                        styles={_customStyles}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
@@ -283,7 +243,7 @@ export default function CICreateDockerfileOption({
                                 options={languageFrameworks?.get(selectedLanguage?.value) || []}
                                 value={selectedFramework}
                                 isSearchable={false}
-                                styles={customStyles}
+                                styles={_customStyles}
                                 components={{
                                     IndicatorSeparator: null,
                                     DropdownIndicator,
@@ -329,7 +289,10 @@ export default function CICreateDockerfileOption({
         }
     }
 
-    const editorData = templateData?.[`${selectedLanguage?.value}-${selectedFramework?.value}`]
+    const editorData =
+        templateData && selectedLanguage && selectedFramework
+            ? templateData[`${selectedLanguage.value}-${selectedFramework.value}`]
+            : null
     return (
         <>
             <div className="form__field mb-16">

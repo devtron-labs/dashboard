@@ -23,7 +23,7 @@ export function CIBuildConfigDiff({
             )?.dockerConfigOverride
             setCIConfigDiffValues(getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials))
         }
-    }, [_configOverridenWorkflows, globalCIConfig])
+    }, [_configOverridenWorkflows, configOverridenPipelines, globalCIConfig])
     const renderDetailedValue = (parentClassName: string, value: string): JSX.Element => {
         return (
             <td className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right`}>
@@ -44,12 +44,13 @@ export function CIBuildConfigDiff({
                 {showInEditor ? (
                     <td colSpan={2}>
                         <CodeEditor
-                            value={overridenValue}
                             defaultValue={baseValue}
+                            value={overridenValue}
                             mode={MODES.DOCKERFILE}
                             height="300px"
                             readOnly={true}
                             diffView={true}
+                            noParsing
                         />
                     </td>
                 ) : (

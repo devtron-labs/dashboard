@@ -575,7 +575,7 @@ export default function CIBuildpackBuildOptions({
                             Icon={HelpIcon}
                             iconClass="fcv-5"
                             heading="Builder"
-                            infoText="Builder allows you to create your own buildpacks for the deployment of your application."
+                            infoText="A builder is an image that contains a set of buildpacks which provide your app's dependencies, a stack, and the OS layer for your app image."
                             showCloseButton={true}
                             trigger="click"
                             interactive={true}
