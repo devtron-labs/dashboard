@@ -5,7 +5,7 @@ import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
-import { URLS, Host, DOCUMENTATION, ARGOCDCOOKIENAME} from '../../config'
+import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
 import { Progressing, showError , getCookie} from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
@@ -34,12 +34,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         let queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')       
         
-        //RGOCDCOOKIENAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
-        //If a user is still at login page for the first time and hasn't logged in yet then the condition becomes false.
-        //Also if the cookie is deleted/changed after some time at backend then this statement is false.
-        //queryParam is '/' for first time login, queryParam != "/" means user is inside devtron website hence
-        //making queryParam != "/" as true and if getCookie(ARGOCDCOOKIENAME) is false at the same time then toast will appear.
-        if (queryParam && (getCookie(ARGOCDCOOKIENAME) || queryParam != "/")) {
+        //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
+            //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
+            //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear 
+            //at the time of first login.
+        //2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
+            //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the 
+            //login page with Please login again toast appearing.
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != "/")) {
             toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {

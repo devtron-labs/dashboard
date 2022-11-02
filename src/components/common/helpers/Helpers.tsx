@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { ARGOCDCOOKIENAME } from '../../../config';
+import { TOKEN_COOKIE_NAME } from '../../../config';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
 import * as Sentry from '@sentry/browser';
@@ -532,7 +532,7 @@ export function getCookie(sKey) {
 }
 
 export function getLoginInfo() {
-    const argocdToken = getCookie(ARGOCDCOOKIENAME);
+    const argocdToken = getCookie(TOKEN_COOKIE_NAME);
     if (argocdToken) {
         const jwts = argocdToken.split('.');
         try {
