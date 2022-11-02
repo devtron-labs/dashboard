@@ -21,16 +21,6 @@
     border-top-right-radius: 0px;
 }
 
-.access_token{
-    position: absolute;
-    margin-left: 148px;
-}
-
-.azure_access_token{
-    position: absolute;
-    margin-left: 180px; 
-}
-
 .onlink{
     color: var(--B500);
 }
