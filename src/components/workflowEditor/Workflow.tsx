@@ -227,7 +227,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return (
             this.props.match.url +
             '/' +
-            getCDPipelineURL(appId, this.props.id.toString(), String(node.connectingCiPipelineId ?? 0), node.id, isWebhookCD)
+            getCDPipelineURL(appId, this.props.id.toString(), String(node.connectingCiPipelineId ?? 0), isWebhookCD, node.id)
         )
     }
 

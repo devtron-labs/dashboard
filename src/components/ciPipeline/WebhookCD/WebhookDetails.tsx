@@ -17,6 +17,10 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         }
     }
 
+    const closeWebhook = ():void=>{
+      close()
+    }
+
     useEffect(() => {
         document.addEventListener('keydown', escKeyPressHandler)
         return (): void => {
@@ -24,16 +28,14 @@ export function WebhookDetails({ appName, connectCDPipelines, getWorkflows, clos
         }
     }, [escKeyPressHandler])
     return (
-        <Drawer position="right" width="1000px">
+        <Drawer position="right" width="1024px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pr-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy image from external source</h2>
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"
-                        onClick={() => {
-                            close()
-                        }}
+                        onClick={closeWebhook}
                     >
                         <Close className="icon-dim-24" />
                     </button>
