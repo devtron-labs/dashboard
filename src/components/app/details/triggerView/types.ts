@@ -329,6 +329,21 @@ export enum PipelineType {
     WEBHOOK = 'WEBHOOK'
 }
 
+export enum CIPipelineNodeType {
+  EXTERNAL_CI ='EXTERNAL-CI',
+  CI='CI',
+  LINKED_CI='LINKED-CI'
+}
+
+export enum WorkflowNodeType {
+    GIT= 'GIT',
+    CI = 'CI',
+    WEBHOOK = 'WEBHOOK',
+    PRE_CD = 'PRECD',
+    CD = 'CD',
+    POST_CD = 'POSTCD',
+}
+
 export interface Task {
     name?: string
     type?: string

@@ -291,7 +291,7 @@ export default function UserGroupRoute() {
     if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
-        <div className="auth-page">
+        <div>
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{

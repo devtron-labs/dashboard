@@ -67,6 +67,10 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         return formattedJSON
     }
 
+    const closeWebhook = ():void=>{
+      close()
+    }
+
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof close === 'function') {
             evt.preventDefault()
@@ -636,9 +640,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
-                    onClick={() => {
-                        close()
-                    }}
+                    onClick={closeWebhook}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -678,7 +680,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     }
 
     return (
-        <Drawer position="right" width="1000px">
+        <Drawer position="right" width="1024px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
                 {loader ? (

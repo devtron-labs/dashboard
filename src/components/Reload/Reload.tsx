@@ -1,12 +1,12 @@
 import React from 'react'
 import loadingFailure from '../../assets/img/ic-loading-failure.png';
 
-export default function Reload({ reload = null }) {
+export default function Reload({ reload = null, className = '' }) {
     function refresh(e){
         window.location.reload();
     }
     return (
-        <article className="flex" style={{ width: '100%', height: '100%' }}>
+        <article className={`flex ${className}`} style={{ width: '100%', height: '100%' }}>
             <div className="flex column" style={{ width: '250px', textAlign: 'center' }}>
                 <img src={loadingFailure} style={{ width: '100%', height: 'auto', marginBottom: '12px' }} alt="load-error" />
                 <h3 className="title dc__bold">Failed to load</h3>

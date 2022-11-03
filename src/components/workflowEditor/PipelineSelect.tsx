@@ -4,8 +4,18 @@ import { Modal } from '../common'
 import ci from '../../assets/img/ic-pipeline-ci@2x.png'
 import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 import webhook from '../../assets/img/webhook.svg'
+import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
 
 export class PipelineSelect extends Component<PipelineSelectProps> {
+    handleMenuClick = (e): void => {
+        this.props.toggleCIMenu(e)
+        const pipelineType = e.currentTarget.dataset.pipelineType
+        if (pipelineType === PipelineType.WEBHOOK) {
+            this.props.addWebhookCD(this.props.workflowId)
+        } else {
+            this.props.addCIPipeline(pipelineType, this.props.workflowId)
+        }
+    }
     renderCIMenu() {
         return (
             <div className="white-card pipeline-webhook dc__top-radius-4">
@@ -14,10 +24,8 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 </div>
                 <div
                     className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
-                    onClick={(event) => {
-                        this.props.toggleCIMenu(event)
-                        this.props.addCIPipeline('CI', this.props.workflowId)
-                    }}
+                    data-pipeline-type={CIPipelineNodeType.CI}
+                    onClick={this.handleMenuClick}
                 >
                     <img src={ci} className="br-8 mr-12 h-40" alt="ci" />
                     <div>
@@ -29,10 +37,8 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 </div>
                 <div
                     className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
-                    onClick={(event) => {
-                        this.props.toggleCIMenu(event)
-                        this.props.addCIPipeline('LINKED-CI', this.props.workflowId)
-                    }}
+                    data-pipeline-type={CIPipelineNodeType.LINKED_CI}
+                    onClick={this.handleMenuClick}
                 >
                     <img src={linkedPipeline} className="br-8 mr-12 h-40" alt="linked-ci" />
                     <div>
@@ -47,10 +53,8 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 </div>
                 <div
                     className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
-                    onClick={(event) => {
-                        this.props.toggleCIMenu(event)
-                        this.props.addWebhookCD(this.props.workflowId)
-                    }}
+                    data-pipeline-type={PipelineType.WEBHOOK}
+                    onClick={this.handleMenuClick}
                 >
                     <img src={webhook} className="br-8 mr-12 h-40" alt="external-ci" />
                     <div>

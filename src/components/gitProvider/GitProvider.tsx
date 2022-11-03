@@ -91,7 +91,7 @@ export default function GitProvider({ ...props }) {
         return <Progressing pageLoader />;
     }
     if (isErrorLoading) {
-        return <ErrorScreenManager code={error?.code} />;
+        return <ErrorScreenManager code={error?.code} reloadClass="dc__align-reload-center" />;
     }
 
     let allProviders = [
