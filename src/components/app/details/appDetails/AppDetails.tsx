@@ -461,7 +461,6 @@ export const Details: React.FC<{
                             appName={appDetails.appName}
                             environmentName={appDetails.environmentName}
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            appStreamData={streamData}
                         />
                     )}
                     {showScanDetailsModal &&

@@ -84,7 +84,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
 
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
-    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1];
+    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
     if (
         ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -158,12 +158,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                 </div>
 
                 <div className="app-status-detail__body">
-                    {appStreamData?.result?.application?.status?.conditions?.length &&
-                        appStreamData?.result?.application?.status?.conditions.map((condition) => {
-                           return condition.type.toLowerCase() === 'errimagepull' || 'imagepullbackoff' ? (
-                                <ErrorBar appDetails={_appDetails} />
-                            ) : null
-                      })}
+                    <ErrorBar appDetails={_appDetails} />
 
                     {message && (
                         <div

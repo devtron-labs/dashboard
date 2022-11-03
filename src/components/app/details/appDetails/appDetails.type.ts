@@ -86,7 +86,6 @@ export interface DeploymentStatusDetailsBreakdownDataType {
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    appStreamData?: AppStreamData
 }
 
 export interface DeploymentStatusDetailModalType{
@@ -94,7 +93,6 @@ export interface DeploymentStatusDetailModalType{
   appName: string
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-  appStreamData: AppStreamData
 }
 
 export interface ModuleConfigResponse extends ResponseType {
