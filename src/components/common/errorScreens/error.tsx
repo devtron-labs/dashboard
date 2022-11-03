@@ -3,7 +3,7 @@ import EmptyState from '../../EmptyState/EmptyState'
 import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
 
-export class ErrorScreenManager extends Component<{ code?: number; reload?: (...args) => any; subtitle?: string }> {
+export class ErrorScreenManager extends Component<{ code?: number; reload?: (...args) => any; subtitle?: string ;reloadClass?: string}> {
     getMessage() {
         switch (this.props.code) {
             case 400:
@@ -21,7 +21,7 @@ export class ErrorScreenManager extends Component<{ code?: number; reload?: (...
             case 503:
                 return 'Service Temporarily Unavailable'
             default:
-                return <Reload />
+                return <Reload className={this.props.reloadClass} />
         }
     }
     render() {
