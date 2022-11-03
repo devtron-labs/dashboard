@@ -45,7 +45,9 @@ function ManageResgistry({
     customScript,
     setCustomScript,
     appliedClusterList,
-    ignoredClusterList
+    ignoredClusterList,
+    customCredential,
+    setCustomCredential
 }) {
     const [obj, json, yaml, error] = useJsonYaml(customScript, 4, 'yaml', true)
 
@@ -107,13 +109,13 @@ function ManageResgistry({
     }
 
     const getPlaceholder = (): string => {
-      const isWhiteList = whiteList.length > 0
+        const isWhiteList = whiteList.length > 0
 
-      if(isWhiteList){
-        return `Cluster except ${appliedClusterList}`
-      }else{
-        return `All Cluster except ${ignoredClusterList}`
-      }
+        if (isWhiteList) {
+            return `Cluster except ${appliedClusterList}`
+        } else {
+            return `All Cluster except ${ignoredClusterList}`
+        }
     }
 
     const renderNoSelectionview = (onEdit) => {
@@ -216,18 +218,17 @@ function ManageResgistry({
     }
 
     const onClickSpecifyImagePullSecret = (e) => {
-        setCredentialValue(e.target.value)
-    }
 
-    // const _createImagePullSecret = {
-    //     registry_name: credentialValue.registryName,
-    //     email: '',
-    //     username: '',
-    //     password: ''
-    // }
+        setCustomCredential({
+          ...customCredential,
+          [e.target.name]: e.target.value
+        })
+    }
 
     return (
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
+{console.log(customCredential)}
+
             <div className="bcn-1 p-16 dc__border-bottom flex left" onClick={onClickHideManageModal}>
                 Manage access of registry credentials
             </div>
@@ -305,32 +306,64 @@ function ManageResgistry({
                     </div>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
-                    // <CodeEditor
-                    //     value={customScript}
-                    //     onChange={(value) => {
-                    //         setCustomScript(value)
-                    //     }}
-                    //     height={200}
-                    //     noParsing
-                    //     mode={MODES.YAML}
-                    // />
-
-                    <div>
-                      <div>
-                      <div>Registry details</div>
-                      <input
-                            tabIndex={3}
-                            placeholder="Enter registry name"
-                            className="form__input"
-                            name={'registry-name'}
-                            value={credentialValue}
-                            onChange={onClickSpecifyImagePullSecret}
-                            autoFocus
-                            autoComplete="off"
-                        />
-</div>
-
-                      </div>
+                    <div className=''>
+                        <div className="flexbox w-100 ">
+                            <div className='w-50 mr-8'>
+                                <div>Registry details</div>
+                                <input
+                                    tabIndex={3}
+                                    placeholder="Enter registry name"
+                                    className="form__input"
+                                    name='registry-details'
+                                    value={customCredential.server}
+                                    onChange={onClickSpecifyImagePullSecret}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className='w-50'>
+                                <div>Email</div>
+                                <input
+                                    tabIndex={4}
+                                    placeholder="Enter Email"
+                                    className="form__input"
+                                    name='email'
+                                    value={customCredential.email}
+                                    onChange={onClickSpecifyImagePullSecret}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                            </div>
+                        </div>
+                        <div className="flexbox w-100">
+                            <div className='w-50 mr-8'>
+                                <div>Username</div>
+                                <input
+                                    tabIndex={5}
+                                    placeholder="Enter username"
+                                    className="form__input"
+                                    name='username'
+                                    value={customCredential.username}
+                                    onChange={onClickSpecifyImagePullSecret}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className='w-50'>
+                                <div>Password</div>
+                                <input
+                                    tabIndex={6}
+                                    placeholder="Enter password"
+                                    className="form__input"
+                                    name='password'
+                                    value={customCredential.password}
+                                    onChange={onClickSpecifyImagePullSecret}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

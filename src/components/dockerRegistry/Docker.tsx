@@ -32,6 +32,8 @@ import ManageResgistry, { CredentialType } from './ManageResgistry'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import YAML from 'yaml'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import { CustomCredential } from './dockerType'
+import Reload from '../Reload/Reload'
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -42,23 +44,31 @@ enum CERTTYPE {
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
     const [clusterOption, setClusterOptions] = useState([])
+    const [clusterLoader, setClusterLoader] = useState(false)
 
     const _getInit = async () => {
+        setClusterLoader(true)
         await getClusterListMinWithoutAuth()
             .then((clusterListRes) => {
                 if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
-                    setClusterOptions(
-                        clusterListRes.result.map((cluster) => {
+                    setClusterOptions([
+                        {
+                            label: 'All clusters',
+                            value: -1,
+                        },
+                        ...clusterListRes.result.map((cluster) => {
                             return {
                                 label: cluster.cluster_name,
                                 value: cluster.id,
                             }
                         }),
-                    )
+                    ])
                 }
+                setClusterLoader(false)
             })
             .catch((err) => {
                 showError(err)
+                setClusterLoader(false)
             })
     }
 
@@ -66,11 +76,15 @@ export default function Docker({ ...props }) {
         _getInit()
     }, [])
 
-    if (loading && !result) return <Progressing pageLoader />
+    if ((loading && !result) || clusterLoader) return <Progressing pageLoader />
     if (error) {
         showError(error)
-        if (!result) return null
+        if (!result) return <Reload />
     }
+    if (clusterOption.length === 0) {
+        return <Reload />
+    }
+
     let dockerRegistryList = result.result || []
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
@@ -264,12 +278,8 @@ function DockerForm({
     })
 
     const clusterlistMap = new Map()
-  //   clusterOption.push({
-  //     label: 'All clusters',
-  //     value: -1,
-  // })
-    for (let index = 0; index < clusterOption.length; index++) {
 
+    for (let index = 0; index < clusterOption.length; index++) {
         const currentItem = clusterOption[index]
         clusterlistMap.set(currentItem.value + '', currentItem)
     }
@@ -295,6 +305,9 @@ function DockerForm({
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     const [customScript, setCustomScript] = useState(isCustomScript ? ipsConfig?.credentialValue : '')
+    const [customCredential, setCustomCredential] = useState<CustomCredential>(
+        isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : undefined,
+    )
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
@@ -558,22 +571,21 @@ function DockerForm({
     }
 
     const appliedClusterList = whiteList?.map((_ac) => {
-        return <span className="mr-4">{_ac.label}</span>
+        return _ac.label
     })
 
-    const ignoredClusterList =
-        blackList?.map((_ic) => {
-            return <span className="mr-4">{blackList.lenth > 0 ? _ic.label : ''}</span>
-        })
+    const ignoredClusterList = blackList?.map((_ic) => {
+        return _ic.label
+    })
 
     const renderRegistryCredentialText = () => {
         if (ipsConfig?.ignoredClusterIdsCsv === '-1') {
             return <div className="fw-6">No Cluster</div>
         }
         if (appliedClusterList.length >= 1) {
-            return <div className="fw-6"> Clusters except {appliedClusterList} </div>
+            return <div className="fw-6"> {`Clusters except ${appliedClusterList}`} </div>
         } else {
-            return <div className="fw-6"> Clusters: {ignoredClusterList} </div>
+            return <div className="fw-6">{` Clusters: ${ignoredClusterList}`} </div>
         }
     }
     return (
@@ -808,7 +820,7 @@ function DockerForm({
                     ))}
                 </div>
             )}
-            { !showManageModal ? (
+            {!showManageModal ? (
                 <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20">
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left">
@@ -857,6 +869,8 @@ function DockerForm({
                     setCustomScript={setCustomScript}
                     appliedClusterList={appliedClusterList}
                     ignoredClusterList={ignoredClusterList}
+                    setCustomCredential={setCustomCredential}
+                    customCredential={customCredential}
                 />
             )}
 
