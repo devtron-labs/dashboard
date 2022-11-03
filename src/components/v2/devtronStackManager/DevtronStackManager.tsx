@@ -69,6 +69,7 @@ export default function DevtronStackManager({
     const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
     useEffect(() => {
         getModuleDetails()
+        getCurrentServerInfo()
     }, [])
 
     /**
