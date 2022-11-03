@@ -28,8 +28,10 @@ import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from
 import ReactSelect, { components } from 'react-select'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { AuthenticationType } from '../cluster/cluster.type'
-import ManageResgistry from './ManageResgistry'
+import ManageResgistry, { CredentialType } from './ManageResgistry'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import YAML from 'yaml'
+import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -39,7 +41,7 @@ enum CERTTYPE {
 
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
-    const [clusterOption, setClusterOptions] = useState<any>([{ label: '', value: '' }])
+    const [clusterOption, setClusterOptions] = useState([])
 
     const _getInit = async () => {
         await getClusterListMinWithoutAuth()
@@ -262,7 +264,12 @@ function DockerForm({
     })
 
     const clusterlistMap = new Map()
+  //   clusterOption.push({
+  //     label: 'All clusters',
+  //     value: -1,
+  // })
     for (let index = 0; index < clusterOption.length; index++) {
+
         const currentItem = clusterOption[index]
         clusterlistMap.set(currentItem.value + '', currentItem)
     }
@@ -275,6 +282,8 @@ function DockerForm({
         return clusterlistMap.get(clusterId)
     })
 
+    const isCustomScript = ipsConfig?.credentialType === CredentialType.CUSTOM_CREDENTIAL
+
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
@@ -282,9 +291,11 @@ function DockerForm({
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
     const [onEditWhiteList, setOnEditWhitelist] = useState<boolean>(false)
     const [onEditBlackList, setOnEditBlacklist] = useState<boolean>(false)
-    const [credentialsType, setCredentialType] = useState<string>('SAME_AS_REGISTRY')
-    const [credentialValue, setCredentialValue] = useState<string>(ipsConfig?.credentialValue)
+    const [credentialsType, setCredentialType] = useState<string>(ipsConfig?.credentialType)
+    const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
+    const [customScript, setCustomScript] = useState(isCustomScript ? ipsConfig?.credentialValue : '')
+
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
@@ -373,7 +384,10 @@ function DockerForm({
             ipsConfig: {
                 id: ipsConfig.id,
                 credentialType: credentialsType,
-                credentialValue: credentialValue,
+                credentialValue:
+                    credentialsType === CredentialType.CUSTOM_CREDENTIAL
+                        ? JSON.stringify(YAML.parse(customScript))
+                        : credentialValue,
                 appliedClusterIdsCsv: appliedClusterIdsCsv,
                 ignoredClusterIdsCsv: ignoredClusterIdsCsv,
             },
@@ -546,6 +560,22 @@ function DockerForm({
     const appliedClusterList = whiteList?.map((_ac) => {
         return <span className="mr-4">{_ac.label}</span>
     })
+
+    const ignoredClusterList =
+        blackList?.map((_ic) => {
+            return <span className="mr-4">{blackList.lenth > 0 ? _ic.label : ''}</span>
+        })
+
+    const renderRegistryCredentialText = () => {
+        if (ipsConfig?.ignoredClusterIdsCsv === '-1') {
+            return <div className="fw-6">No Cluster</div>
+        }
+        if (appliedClusterList.length >= 1) {
+            return <div className="fw-6"> Clusters except {appliedClusterList} </div>
+        } else {
+            return <div className="fw-6"> Clusters: {ignoredClusterList} </div>
+        }
+    }
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
@@ -778,8 +808,7 @@ function DockerForm({
                     ))}
                 </div>
             )}
-
-            {!showManageModal ? (
+            { !showManageModal ? (
                 <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20">
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left">
@@ -806,7 +835,7 @@ function DockerForm({
                             Manage
                         </div>
                     </div>
-                    <div className="fw-6">Clusters except {appliedClusterList}</div>
+                    {renderRegistryCredentialText()}
                 </div>
             ) : (
                 <ManageResgistry
@@ -824,8 +853,13 @@ function DockerForm({
                     credentialValue={credentialValue}
                     setCredentialValue={setCredentialValue}
                     onClickHideManageModal={onClickHideManageModal}
+                    customScript={customScript}
+                    setCustomScript={setCustomScript}
+                    appliedClusterList={appliedClusterList}
+                    ignoredClusterList={ignoredClusterList}
                 />
             )}
+
             <div className="form__row form__buttons  ">
                 <label
                     htmlFor=""

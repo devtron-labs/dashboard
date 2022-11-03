@@ -157,9 +157,14 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                     </span>
                 </div>
 
-
                 <div className="app-status-detail__body">
-                <ErrorBar  appDetails={_appDetails}/>
+                    {appStreamData?.result?.application?.status?.conditions?.length &&
+                        appStreamData?.result?.application?.status?.conditions.map((condition) => {
+                           return condition.type.toLowerCase() === 'errimagepull' || 'imagepullbackoff' ? (
+                                <ErrorBar appDetails={_appDetails} />
+                            ) : null
+                      })}
+
                     {message && (
                         <div
                             className={` ${

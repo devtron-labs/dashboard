@@ -13,6 +13,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
+    appStreamData
 }: DeploymentStatusDetailBreakdownType) {
   const _appDetails = IndexStore.getAppDetails()
     const renderIcon = (iconState: string): JSX.Element => {
@@ -55,7 +56,13 @@ export default function DeploymentStatusDetailBreakdown({
     }
     return (
         <>
-            <ErrorBar  appDetails={_appDetails}/>
+         {appStreamData?.result?.application?.status?.conditions?.length &&
+                        appStreamData?.result?.application?.status?.conditions.map((condition) => {
+                          return  condition.type.toLowerCase() === 'errimagepull' || 'imagepullbackoff' ? (
+                                <ErrorBar appDetails={_appDetails} />
+                            ) : null
+                      })}
+
             <div className="deployment-status-breakdown-container pl-20 pr-20">
                 {deploymentStatusDetailsBreakdownData.deploymentError && (
                     <InfoColourBar

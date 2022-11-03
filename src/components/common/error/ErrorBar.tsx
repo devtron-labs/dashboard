@@ -4,12 +4,13 @@ import { URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
 
 function ErrorBar({ appDetails }) {
-  const history = useHistory()
     return (
         <div className="er-2 bw-1 br-4 m-20 fs-13">
+      {console.log(appDetails)}
+
             <div className="bcr-1 pl-12 pr-12 pt-8 pb-8 dc__border-bottom-r2 flex left">
-                <ErrorInfo className="icon-dim-24 mr-8" /> <span className="mr-8">IMAGEPULLBACKOFF:</span>{' '}
-                {!appDetails.ipsAccessProvided ? (
+                <ErrorInfo className="icon-dim-24 mr-8" /> <span className="mr-8">IMAGEPULLBACKOFF:</span>
+                {!appDetails?.ipsAccessProvided ? (
                     <div>
                         '{appDetails?.clusterName}' cluster does not have permission to pull container image from ‘
                         {appDetails?.dockerRegistryId}’ registry.
@@ -21,7 +22,7 @@ function ErrorBar({ appDetails }) {
                     </div>
                 )}
             </div>
-            {!appDetails.ipsAccessProvided ? (
+            {!appDetails?.ipsAccessProvided ? (
                 <div className="pl-12 pr-12 pt-8 pb-8">
                     <div className="fw-6">How to resolve? </div>
                     1. Allow '{appDetails?.clusterName}' cluster to access credentials for ‘

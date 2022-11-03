@@ -14,9 +14,12 @@ import {
     MultiValueRemove,
     Option,
     RadioGroup,
+    useJsonYaml,
 } from '../common'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { MODES } from '../../config'
+import CodeEditor from '../CodeEditor/CodeEditor'
 
 export const CredentialType = {
     SAME_AS_REGISTRY: 'SAME_AS_REGISTRY',
@@ -39,11 +42,16 @@ function ManageResgistry({
     credentialValue,
     setCredentialValue,
     onClickHideManageModal,
+    customScript,
+    setCustomScript,
+    appliedClusterList,
+    ignoredClusterList
 }) {
+    const [obj, json, yaml, error] = useJsonYaml(customScript, 4, 'yaml', true)
+
     const onClickAlertEditConfirmation = (): void => {
         if (whiteList.length > 0) {
             setWhiteList([])
-
         } else {
             setBlackList([])
         }
@@ -95,7 +103,17 @@ function ManageResgistry({
     }
 
     const onClickWhiteListEditHideAlertInfo = () => {
-      onEditWhiteList && setOnEditWhiteList(false)
+        onEditWhiteList && setOnEditWhiteList(false)
+    }
+
+    const getPlaceholder = (): string => {
+      const isWhiteList = whiteList.length > 0
+
+      if(isWhiteList){
+        return `Cluster except ${appliedClusterList}`
+      }else{
+        return `All Cluster except ${ignoredClusterList}`
+      }
     }
 
     const renderNoSelectionview = (onEdit) => {
@@ -103,7 +121,7 @@ function ManageResgistry({
             <div className="flex en-2 bw-1 bcn-1 pr-20">
                 <input
                     tabIndex={1}
-                    placeholder="None"
+                    placeholder={getPlaceholder()}
                     className="form__input form__input__none bcn-1"
                     name="blacklist-none"
                     disabled={true}
@@ -117,7 +135,6 @@ function ManageResgistry({
         )
     }
 
-    console.log(onEditWhiteList)
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
             return renderNoSelectionview(onClickWhiteListEditShowAlertInfo)
@@ -202,6 +219,13 @@ function ManageResgistry({
         setCredentialValue(e.target.value)
     }
 
+    // const _createImagePullSecret = {
+    //     registry_name: credentialValue.registryName,
+    //     email: '',
+    //     username: '',
+    //     password: ''
+    // }
+
     return (
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
             <div className="bcn-1 p-16 dc__border-bottom flex left" onClick={onClickHideManageModal}>
@@ -281,7 +305,32 @@ function ManageResgistry({
                     </div>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
-                    <div className="" style={{ minHeight: '98px' }}></div>
+                    // <CodeEditor
+                    //     value={customScript}
+                    //     onChange={(value) => {
+                    //         setCustomScript(value)
+                    //     }}
+                    //     height={200}
+                    //     noParsing
+                    //     mode={MODES.YAML}
+                    // />
+
+                    <div>
+                      <div>
+                      <div>Registry details</div>
+                      <input
+                            tabIndex={3}
+                            placeholder="Enter registry name"
+                            className="form__input"
+                            name={'registry-name'}
+                            value={credentialValue}
+                            onChange={onClickSpecifyImagePullSecret}
+                            autoFocus
+                            autoComplete="off"
+                        />
+</div>
+
+                      </div>
                 )}
             </div>
         </div>

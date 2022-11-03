@@ -154,6 +154,11 @@ export interface AppDetails {
     clusterId?: number;
     notes?: string;
     deploymentAppType?: DeploymentAppType
+    ipsAccessProvided?: boolean
+    externalCi?: boolean
+    clusterName?: string
+    dockerRegistryId?: string
+
 }
 
 interface MaterialInfo {

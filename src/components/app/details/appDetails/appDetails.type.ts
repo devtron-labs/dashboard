@@ -1,4 +1,5 @@
 import { ResponseType } from '../../../../services/service.types'
+import { AppStreamData } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -85,6 +86,7 @@ export interface DeploymentStatusDetailsBreakdownDataType {
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+    appStreamData?: AppStreamData
 }
 
 export interface DeploymentStatusDetailModalType{
@@ -92,6 +94,7 @@ export interface DeploymentStatusDetailModalType{
   appName: string
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+  appStreamData: AppStreamData
 }
 
 export interface ModuleConfigResponse extends ResponseType {

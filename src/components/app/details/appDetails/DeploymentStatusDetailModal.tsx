@@ -12,6 +12,7 @@ export default function DeploymentStatusDetailModal({
     appName,
     environmentName,
     deploymentStatusDetailsBreakdownData,
+    appStreamData
 }: DeploymentStatusDetailModalType) {
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const escKeyPressHandler = (evt): void => {
@@ -90,6 +91,7 @@ export default function DeploymentStatusDetailModal({
                 <div style={{ height: 'calc(100vh - 90px)' }} className="bcn-0">
                     <DeploymentStatusDetailBreakdown
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        appStreamData={appStreamData}
                     />
                 </div>
             </div>
