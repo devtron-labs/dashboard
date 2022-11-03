@@ -191,7 +191,7 @@ export default function NavigationRoutes() {
         })
 
         try {
-            const { result } = await getServerInfo(withoutStatus)
+            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'))
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
@@ -241,9 +241,6 @@ export default function NavigationRoutes() {
                             match={match}
                             location={location}
                             serverMode={serverMode}
-                            fetchingServerInfo={currentServerInfo.fetchingServerInfo}
-                            serverInfo={currentServerInfo.serverInfo}
-                            getCurrentServerInfo={getCurrentServerInfo}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
                         />
