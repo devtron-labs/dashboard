@@ -761,24 +761,30 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         }}
                     />
                 </div>
-                {isESO && <InfoColourBar
-                    classname="info_bar cn-9 mt-16 lh-20"
-                    message={<ExternalSecretHelpNote />}
-                    Icon={InfoIcon}
-                    iconSize={20}
-                />}
+                {isESO && (
+                    <InfoColourBar
+                        classname="info_bar cn-9 mt-16 lh-20"
+                        message={<ExternalSecretHelpNote />}
+                        Icon={InfoIcon}
+                        iconSize={20}
+                    />
+                )}
             </div>
             {externalType === 'KubernetesSecret' ? (
-                <div className="dc__info-container mb-24">
-                    <Info className="icon-dim-20" />
-                    <div className="flex column left">
-                        <div className="dc__info-title">Using External Secrets</div>
-                        <div className="dc__info-subtitle">
-                            Secret will not be created by system. However, they will be used inside the pod. Please make
-                            sure that secret with the same name is present in the environment.
+                <InfoColourBar
+                    classname="info_bar cn-9 mt-16 mb-16 lh-20"
+                    message={
+                        <div className="flex column left">
+                            <div className="dc__info-title">Mount Existing Kubernetes Secret</div>
+                            <div className="dc__info-subtitle">
+                                Secret will not be created by system. However, they will be used inside the pod. Please
+                                make sure that secret with the same name is present in the environment.
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    }
+                    Icon={InfoIcon}
+                    iconSize={20}
+                />
             ) : null}
             <div className="form-row">
                 <label className="form__label">Name*</label>

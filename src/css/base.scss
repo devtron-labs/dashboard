@@ -2242,3 +2242,10 @@ textarea::placeholder {
 .dc__italic-font-style {
     font-style: italic !important;
 }
+
+.dc__align-reload-center {
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+}
