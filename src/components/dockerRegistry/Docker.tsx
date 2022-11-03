@@ -282,11 +282,11 @@ function DockerForm({
 
     const _ignoredClusterIdsCsv = !ipsConfig
         ? []
-        : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != -1
+        : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != "-1"
         ? ipsConfig.ignoredClusterIdsCsv.split(',').map((clusterId) => {
               return clusterlistMap.get(clusterId)
           })
-        : !ipsConfig.appliedClusterIdsCsv || ipsConfig.ignoredClusterIdsCsv === -1
+        : !ipsConfig.appliedClusterIdsCsv || ipsConfig.ignoredClusterIdsCsv === "-1"
         ? clusterOption
         : []
 
@@ -406,7 +406,7 @@ function DockerForm({
                         ? JSON.stringify(customCredential)
                         : credentialValue,
                 appliedClusterIdsCsv: appliedClusterIdsCsv,
-                ignoredClusterIdsCsv: whiteList.length === 0 && blackList.length ? '-1' : ignoredClusterIdsCsv,
+                ignoredClusterIdsCsv: whiteList.length === 0 && blackList.length === 0 ? '-1' : ignoredClusterIdsCsv,
             },
         }
     }
