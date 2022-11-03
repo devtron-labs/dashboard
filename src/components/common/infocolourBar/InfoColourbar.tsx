@@ -34,7 +34,7 @@ function InfoColourBar({
                 className={`${classname} info_text flex dc__content-space pt-8 pb-8 pl-16 pr-16 br-4 top fs-13 fw-4`}
                 style={styles}
             >
-                <span className="flex top">
+                <div className="flex top">
                     <div className={`icon-dim-${iconSize ?? '20'} mr-10`}>
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass} mr-8`} />
                     </div>
@@ -56,7 +56,7 @@ function InfoColourBar({
                             </div>
                         )}
                     </div>
-                </span>
+                </div>
                 &nbsp;
                 {typeof renderActionButton === 'function' && renderActionButton()}
             </div>

@@ -29,9 +29,7 @@ import ReactSelect, { components } from 'react-select'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageResgistry, { CredentialType } from './ManageResgistry'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import YAML from 'yaml'
-import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CustomCredential } from './dockerType'
 import Reload from '../Reload/Reload'
 
@@ -51,18 +49,14 @@ export default function Docker({ ...props }) {
         await getClusterListMinWithoutAuth()
             .then((clusterListRes) => {
                 if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
-                    setClusterOptions([
-                        {
-                            label: 'All clusters',
-                            value: -1,
-                        },
-                        ...clusterListRes.result.map((cluster) => {
+                    setClusterOptions(
+                        clusterListRes.result.map((cluster) => {
                             return {
                                 label: cluster.cluster_name,
                                 value: cluster.id,
                             }
                         }),
-                    ])
+                    )
                 }
                 setClusterLoader(false)
             })
@@ -130,7 +124,7 @@ function CollapsedList({
     connection = '',
     cert = '',
     ipsConfig = {
-        id: undefined,
+        id: 0,
         credentialType: '',
         credentialValue: '',
         appliedClusterIdsCsv: '',
@@ -204,6 +198,7 @@ function CollapsedList({
                         cert,
                         ipsConfig,
                         clusterOption,
+                        setToggleCollapse,
                     }}
                 />
             )}
@@ -229,6 +224,7 @@ function DockerForm({
     cert,
     ipsConfig,
     clusterOption,
+    setToggleCollapse,
     ...rest
 }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -284,13 +280,21 @@ function DockerForm({
         clusterlistMap.set(currentItem.value + '', currentItem)
     }
 
-    const _ignoredClusterIdsCsv = (ipsConfig?.ignoredClusterIdsCsv?.split(',') || []).map((clusterId) => {
-        return clusterlistMap.get(clusterId)
-    })
+    const _ignoredClusterIdsCsv = !ipsConfig
+        ? []
+        : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != -1
+        ? ipsConfig.ignoredClusterIdsCsv.split(',').map((clusterId) => {
+              return clusterlistMap.get(clusterId)
+          })
+        : !ipsConfig.appliedClusterIdsCsv || ipsConfig.ignoredClusterIdsCsv === -1
+        ? clusterOption
+        : []
 
-    const _appliedClusterIdsCsv = (ipsConfig?.appliedClusterIdsCsv?.split(',') || []).map((clusterId) => {
-        return clusterlistMap.get(clusterId)
-    })
+    const _appliedClusterIdsCsv = ipsConfig?.appliedClusterIdsCsv
+        ? ipsConfig.appliedClusterIdsCsv.split(',').map((clusterId) => {
+              return clusterlistMap.get(clusterId)
+          })
+        : []
 
     const isCustomScript = ipsConfig?.credentialType === CredentialType.CUSTOM_CREDENTIAL
 
@@ -299,12 +303,12 @@ function DockerForm({
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
     const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
-    const [onEditWhiteList, setOnEditWhitelist] = useState<boolean>(false)
-    const [onEditBlackList, setOnEditBlacklist] = useState<boolean>(false)
-    const [credentialsType, setCredentialType] = useState<string>(ipsConfig?.credentialType)
+    const [blackListEnabled, setBlackListEnabled] = useState<boolean>(_appliedClusterIdsCsv.length === 0)
+    const [credentialsType, setCredentialType] = useState<string>(
+        ipsConfig?.credentialType || CredentialType.SAME_AS_REGISTRY,
+    )
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
-    const [customScript, setCustomScript] = useState(isCustomScript ? ipsConfig?.credentialValue : '')
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
         isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : undefined,
     )
@@ -395,14 +399,14 @@ function DockerForm({
                   }
                 : {}),
             ipsConfig: {
-                id: ipsConfig.id,
+                id: 0 || ipsConfig.id,
                 credentialType: credentialsType,
                 credentialValue:
                     credentialsType === CredentialType.CUSTOM_CREDENTIAL
-                        ? JSON.stringify(YAML.parse(customScript))
+                        ? JSON.stringify(customCredential)
                         : credentialValue,
                 appliedClusterIdsCsv: appliedClusterIdsCsv,
-                ignoredClusterIdsCsv: ignoredClusterIdsCsv,
+                ignoredClusterIdsCsv: whiteList.length === 0 && blackList.length ? '-1' : ignoredClusterIdsCsv,
             },
         }
     }
@@ -582,12 +586,13 @@ function DockerForm({
         if (ipsConfig?.ignoredClusterIdsCsv === '-1') {
             return <div className="fw-6">No Cluster</div>
         }
-        if (appliedClusterList.length >= 1) {
+        if (appliedClusterList.length > 0) {
             return <div className="fw-6"> {`Clusters except ${appliedClusterList}`} </div>
         } else {
             return <div className="fw-6">{` Clusters: ${ignoredClusterList}`} </div>
         }
     }
+
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
@@ -856,17 +861,13 @@ function DockerForm({
                     setBlackList={setBlackList}
                     whiteList={whiteList}
                     setWhiteList={setWhiteList}
-                    onEditBlackList={onEditBlackList}
-                    onEditWhiteList={onEditWhiteList}
-                    setOnEditWhiteList={setOnEditWhitelist}
-                    setOnEditBlackList={setOnEditBlacklist}
+                    blackListEnabled={blackListEnabled}
+                    setBlackListEnabled={setBlackListEnabled}
                     credentialsType={credentialsType}
                     setCredentialType={setCredentialType}
                     credentialValue={credentialValue}
                     setCredentialValue={setCredentialValue}
                     onClickHideManageModal={onClickHideManageModal}
-                    customScript={customScript}
-                    setCustomScript={setCustomScript}
                     appliedClusterList={appliedClusterList}
                     ignoredClusterList={ignoredClusterList}
                     setCustomCredential={setCustomCredential}
@@ -913,7 +914,7 @@ function DockerForm({
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
-                <button className="cta mr-16 cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                <button className="cta mr-16 cancel" type="button" onClick={setToggleCollapse}>
                     Cancel
                 </button>
                 <button className="cta" type="submit" disabled={loading}>

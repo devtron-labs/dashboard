@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
@@ -18,8 +18,7 @@ import {
 } from '../common'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { MODES } from '../../config'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 
 export const CredentialType = {
     SAME_AS_REGISTRY: 'SAME_AS_REGISTRY',
@@ -33,40 +32,53 @@ function ManageResgistry({
     setBlackList,
     whiteList,
     setWhiteList,
-    onEditBlackList,
-    setOnEditBlackList,
-    setOnEditWhiteList,
-    onEditWhiteList,
+    blackListEnabled,
+    setBlackListEnabled,
     credentialsType,
     setCredentialType,
     credentialValue,
     setCredentialValue,
     onClickHideManageModal,
-    customScript,
-    setCustomScript,
     appliedClusterList,
     ignoredClusterList,
     customCredential,
-    setCustomCredential
+    setCustomCredential,
 }) {
-    const [obj, json, yaml, error] = useJsonYaml(customScript, 4, 'yaml', true)
+    const [showAlertBar, setAlertBar] = useState(false)
 
+    const toggleBlackListEnabled = () => {
+        setBlackListEnabled(!blackListEnabled)
+    }
     const onClickAlertEditConfirmation = (): void => {
         if (whiteList.length > 0) {
             setWhiteList([])
-        } else {
+        }
+        if (blackList.length > 0) {
             setBlackList([])
         }
-        onClickCloseButton()
+        toggleBlackListEnabled()
+        onClickHideAlertInfo()
     }
 
-    const onClickCloseButton = () => {
-        onClickWhiteListEditHideAlertInfo()
-        onClickBlackListEditHideAlertInfo()
+    const onClickShowAlertInfo = () => {
+        setAlertBar(true)
+    }
+
+    const onClickHideAlertInfo = (): void => {
+        setAlertBar(false)
+    }
+
+    const getPlaceholder = (): string => {
+        const isWhiteList = whiteList.length > 0
+        if (isWhiteList) {
+            return `Cluster except ${appliedClusterList}`
+        } else {
+            return `All Cluster except ${ignoredClusterList}`
+        }
     }
 
     const renderActionButton = (): JSX.Element => {
-        return <Close className="cursor" onClick={onClickCloseButton} />
+        return <Close className="cursor icon-dim-16" onClick={onClickHideAlertInfo} />
     }
 
     const renderAlertMessage = () => {
@@ -92,55 +104,29 @@ function ManageResgistry({
         )
     }
 
-    const onClickBlackListEditShowAlertInfo = () => {
-        setOnEditBlackList(true)
-    }
-
-    const onClickBlackListEditHideAlertInfo = () => {
-        setOnEditBlackList(false)
-    }
-
-    const onClickWhiteListEditShowAlertInfo = (): void => {
-        !onEditWhiteList && setOnEditWhiteList(true)
-    }
-
-    const onClickWhiteListEditHideAlertInfo = () => {
-        onEditWhiteList && setOnEditWhiteList(false)
-    }
-
-    const getPlaceholder = (): string => {
-        const isWhiteList = whiteList.length > 0
-
-        if (isWhiteList) {
-            return `Cluster except ${appliedClusterList}`
-        } else {
-            return `All Cluster except ${ignoredClusterList}`
-        }
-    }
-
-    const renderNoSelectionview = (onEdit) => {
+    const renderNoSelectionview = () => {
         return (
-            <div className="flex en-2 bw-1 bcn-1 pr-20">
-                <input
-                    tabIndex={1}
-                    placeholder={getPlaceholder()}
-                    className="form__input form__input__none bcn-1"
-                    name="blacklist-none"
-                    disabled={true}
-                    autoFocus
-                    autoComplete="off"
-                />
-                <div onClick={() => onEdit()}>
-                    <Edit className="cursor pr-20" />
-                </div>
+            <div className="flex dc__content-space en-2 bw-1 bcn-1 br-4 pl-10 pr-10 pt-8 pb-8">
+                <div className="bcn-1 cursor-not-allowed">{getPlaceholder()}</div>
+                <Edit className="cursor icon-dim-16" onClick={onClickShowAlertInfo} />
             </div>
         )
     }
 
+    const renderNotDefinedView = (key: string): JSX.Element => {
+        return (
+            <div className="flex dc__content-space en-2 bw-1 bcn-1 br-4 pl-10 pr-10 pt-8 pb-8">
+                <div className="bcn-1 cursor-not-allowed">Not defined</div>
+                <Edit className="cursor icon-dim-16" onClick={toggleBlackListEnabled} />
+            </div>
+        )
+    }
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
-            return renderNoSelectionview(onClickWhiteListEditShowAlertInfo)
-        } else if (whiteList.length === 0) {
+            return renderNoSelectionview()
+        } else if (whiteList.length === 0 && !blackListEnabled) {
+            return renderNotDefinedView('blacklist')
+        } else {
             return (
                 <Select
                     isDisabled={whiteList.length > 0}
@@ -177,7 +163,9 @@ function ManageResgistry({
 
     const renderAppliedCluster = (): JSX.Element => {
         if (blackList.length > 0) {
-            return renderNoSelectionview(onClickBlackListEditShowAlertInfo)
+            return renderNoSelectionview()
+        } else if (blackList.length === 0 && blackListEnabled) {
+            return renderNotDefinedView('whitelist')
         } else if (blackList.length === 0) {
             return (
                 <Select
@@ -218,31 +206,37 @@ function ManageResgistry({
     }
 
     const onClickSpecifyImagePullSecret = (e) => {
-
-        setCustomCredential({
-          ...customCredential,
-          [e.target.name]: e.target.value
-        })
+        if (credentialsType === CredentialType.NAME) {
+            setCredentialValue(e.target.value)
+        } else {
+            setCustomCredential({
+                ...customCredential,
+                [e.target.name]: e.target.value,
+            })
+        }
     }
 
     return (
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
-{console.log(customCredential)}
-
-            <div className="bcn-1 p-16 dc__border-bottom flex left" onClick={onClickHideManageModal}>
-                Manage access of registry credentials
+            <div
+                className="p-16 dc__border-bottom flex dc__content-space"
+                style={{ backgroundColor: 'var(--N50)' }}
+                onClick={onClickHideManageModal}
+            >
+                <div>Manage access of registry credentials</div>
+                <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>
             <div className="p-16">
                 <div className="flex left cr-5 mb-6">
                     <Close className="icon-dim-16 fcr-5 mr-4" /> Do not inject credentials to clusters
                 </div>
-                {onEditWhiteList && blackList.length === 0 ? renderEditAlert() : renderIgnoredCluster()}
+                {showAlertBar && !blackListEnabled && whiteList.length > 0 ? renderEditAlert() : renderIgnoredCluster()}
 
                 <div className="flex left cg-5 mt-16 mb-6">
                     <Check className="icon-dim-16 mr-4" /> Auto-inject credentials to clusters
                 </div>
 
-                {onEditBlackList && whiteList.length === 0 ? renderEditAlert() : renderAppliedCluster()}
+                {showAlertBar && blackListEnabled && blackList.length > 0 ? renderEditAlert() : renderAppliedCluster()}
 
                 <div className="dc__border-top mb-20 mt-20" />
 
@@ -306,29 +300,29 @@ function ManageResgistry({
                     </div>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
-                    <div className=''>
+                    <div className="">
                         <div className="flexbox w-100 ">
-                            <div className='w-50 mr-8'>
+                            <div className="w-50 mr-8">
                                 <div>Registry details</div>
                                 <input
                                     tabIndex={3}
                                     placeholder="Enter registry name"
                                     className="form__input"
-                                    name='registry-details'
-                                    value={customCredential.server}
+                                    name="server"
+                                    value={customCredential?.server}
                                     onChange={onClickSpecifyImagePullSecret}
                                     autoFocus
                                     autoComplete="off"
                                 />
                             </div>
-                            <div className='w-50'>
+                            <div className="w-50">
                                 <div>Email</div>
                                 <input
                                     tabIndex={4}
                                     placeholder="Enter Email"
                                     className="form__input"
-                                    name='email'
-                                    value={customCredential.email}
+                                    name="email"
+                                    value={customCredential?.email}
                                     onChange={onClickSpecifyImagePullSecret}
                                     autoFocus
                                     autoComplete="off"
@@ -336,27 +330,27 @@ function ManageResgistry({
                             </div>
                         </div>
                         <div className="flexbox w-100">
-                            <div className='w-50 mr-8'>
+                            <div className="w-50 mr-8">
                                 <div>Username</div>
                                 <input
                                     tabIndex={5}
                                     placeholder="Enter username"
                                     className="form__input"
-                                    name='username'
-                                    value={customCredential.username}
+                                    name="username"
+                                    value={customCredential?.username}
                                     onChange={onClickSpecifyImagePullSecret}
                                     autoFocus
                                     autoComplete="off"
                                 />
                             </div>
-                            <div className='w-50'>
+                            <div className="w-50">
                                 <div>Password</div>
                                 <input
                                     tabIndex={6}
                                     placeholder="Enter password"
                                     className="form__input"
-                                    name='password'
-                                    value={customCredential.password}
+                                    name="password"
+                                    value={customCredential?.password}
                                     onChange={onClickSpecifyImagePullSecret}
                                     autoFocus
                                     autoComplete="off"
