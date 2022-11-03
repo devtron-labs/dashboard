@@ -195,6 +195,7 @@ export interface Info {
     name: string;
 }
 export interface Node {
+    createdAt: Date;
     health: Health;
     kind: NodeType;
     name: string;
