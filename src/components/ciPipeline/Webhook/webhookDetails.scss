@@ -17,6 +17,11 @@
             grid-template-columns: 60px auto;
             column-gap: 12px;
         }
+        .json-schema-row {
+            display: grid;
+            grid-template-columns: 120px 80px 80px auto;
+            column-gap: 12px;
+        }
 
         .tab-list {
             .tab-list__tab {

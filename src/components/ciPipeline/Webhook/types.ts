@@ -32,7 +32,7 @@ interface PayloadOptionType {
     isSelected: boolean
 }
 
-interface SchemaType {
+export interface SchemaType {
     child: Record<string, SchemaType> | null
     dataType: string
     description: string

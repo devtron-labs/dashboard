@@ -25,13 +25,7 @@ import {
     SELECT_TOKEN_STYLE,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
-import {
-    TabDetailsType,
-    TokenListOptionsType,
-    TokenPermissionType,
-    WebhookDetailsType,
-    WebhookDetailType,
-} from './types'
+import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig } from './webhook.service'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -110,10 +104,12 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                     _webhookDetails.environmentName,
                     _webhookDetails.appName,
                 )
-                const sortedResult = result?.sort((a, b) => a['name'].localeCompare(b['name']))
-                    .map((tokenData) => {
-                        return { label: tokenData.name, value: tokenData.id, ...tokenData }
-                    }) || []
+                const sortedResult =
+                    result
+                        ?.sort((a, b) => a['name'].localeCompare(b['name']))
+                        .map((tokenData) => {
+                            return { label: tokenData.name, value: tokenData.id, ...tokenData }
+                        }) || []
                 setTokenList(sortedResult)
             }
             setLoader(false)
@@ -420,6 +416,30 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
+    const renderSchema = (schemaData: Record<string, SchemaType>): JSX.Element => {
+        return (
+            <div className="dc__border-top">
+                <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">
+                    <span>Name</span>
+                    <span>Type</span>
+                    <span>Mandatory</span>
+                    <span>Description</span>
+                </div>
+                {Object.keys(schemaData).map((key) => {
+                    const data = schemaData[key]
+                    return (
+                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-12">
+                            <span>{key}</span>
+                            <span>{data.child ? <a>{key}</a> : data.dataType}</span>
+                            <span>{data.optional ? 'false' : 'true'}</span>
+                            <span>{data.description}</span>
+                        </div>
+                    )
+                })}
+            </div>
+        )
+    }
+
     const renderWebhookURLSection = (): JSX.Element | null => {
         return (
             <div className="pt-16">
@@ -427,7 +447,8 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                 {renderMetadata()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
                 {generateTabHeader(REQUEST_BODY_TAB_LIST, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
-                {renderCodeSnippet(sampleJSON)}
+                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[0].key && renderCodeSnippet(sampleJSON)}
+                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[1].key && renderSchema(webhookDetails.schema)}
             </div>
         )
     }
