@@ -1,11 +1,18 @@
 import { Routes } from '../../../config'
 import { get } from '../../../services/api'
-import { CdPipeline } from '../../app/details/triggerView/types'
+import { WebhookDetailsResponse, WebhookDetailsType, WebhookListResponse } from './types'
 
-export function getExternalCIConfig(appId: number | string, webhookID?: number | string): Promise<CdPipeline[]> {
-    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}${webhookID ? `/${webhookID}` : ''}`).then(
-        (response) => response.result,
-    )
+export function getExternalCIList(
+    appId: number | string
+): Promise<WebhookListResponse> {
+    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}`)
+}
+
+export function getExternalCIConfig(
+    appId: number | string,
+    webhookID: number | string,
+): Promise<WebhookDetailsResponse> {
+    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}/${webhookID}`)
 }
 
 export async function executeWebhookAPI(webhookUrl: string, token: string, data?: object): Promise<any> {

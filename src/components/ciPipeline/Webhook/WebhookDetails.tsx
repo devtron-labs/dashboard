@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ButtonWithLoader, Drawer, Progressing } from '../../common'
+import { ButtonWithLoader, copyToClipboard, Drawer, Progressing, showError } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as CopyIcon } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
+import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import './webhookDetails.scss'
 import ReactSelect from 'react-select'
@@ -19,28 +19,33 @@ import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
 import {
     CURL_PREFIX,
-    PAYLOAD_CHIPS_METADATA,
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
     RESPONSE_TAB_LIST,
     SELECT_TOKEN_STYLE,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
-import { MetadataType, TabDetailsType, TokenListOptionsType, TokenPermissionType, WebhookDetailType } from './types'
+import {
+    TabDetailsType,
+    TokenListOptionsType,
+    TokenPermissionType,
+    WebhookDetailsType,
+    WebhookDetailType,
+} from './types'
 import { executeWebhookAPI, getExternalCIConfig } from './webhook.service'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 
 export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
     }>()
-
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const [loader, setLoader] = useState(false)
     const [webhookExecutionLoader, setWebhookExecutionLoader] = useState(false)
     const [generateTokenLoader, setGenerateTokenLoader] = useState(false)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
-    const [metadataChips, setMetadataChips] = useState<MetadataType[]>(PAYLOAD_CHIPS_METADATA)
     const [tokenName, setTokenName] = useState<string>('')
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
@@ -49,17 +54,16 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     const [selectedResponse401Tab, setResponse401Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
     const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
-    const [requiredTokenPermission, setRequiredTokenPermission] = useState<TokenPermissionType>(null)
     const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(undefined)
     const [showTokenSection, setShowTokenSection] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [samplePayload, setSamplePayload] = useState<any>(null)
     const [modifiedSamplePayload, setModifiedSamplePayload] = useState<any>(null)
     const [sampleJSON, setSampleJSON] = useState(null)
-    const [modifiedSampleJSON, setModifiedSampleJSON] = useState(null)
     const [sampleCURL, setSampleCURL] = useState<any>(null)
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
-    const [webhookURL, setWebhookURL] = useState<string>(null)
+    const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
+    const [copied, setCopied] = useState(false)
 
     const formatSampleJson = (json): string => {
         let formattedJSON = ''
@@ -67,8 +71,8 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         return formattedJSON
     }
 
-    const closeWebhook = ():void=>{
-      close()
+    const closeWebhook = (): void => {
+        close()
     }
 
     const escKeyPressHandler = (evt): void => {
@@ -81,36 +85,35 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     const getData = async (): Promise<void> => {
         setLoader(true)
         try {
-            const [userRole, webhookDetails] = await Promise.all([getUserRole(), getExternalCIConfig(appId, webhookId)])
-            const _isSuperAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            const [{ result: _userRole }, { result: _webhookDetails }] = await Promise.all([
+                getUserRole(),
+                getExternalCIConfig(appId, webhookId),
+            ])
+            const _isSuperAdmin = _userRole?.superAdmin
             setIsSuperAdmin(_isSuperAdmin)
-            const _requiredTokenPermission = {
-                projectName: webhookDetails['projectName'],
-                environmentName: webhookDetails['environmentName'],
-                appName: webhookDetails['appName'],
-                role: webhookDetails['role'],
-            }
-            setWebhookURL(webhookDetails['webhookUrl'])
-            const parsedPayload = JSON.parse(webhookDetails['payload'])
-            setSamplePayload(parsedPayload)
+            _webhookDetails.payloadOption.map((option) => {
+                option.isSelected = option.key === 'dockerImage'
+                option.optional = option.key !== 'dockerImage'
+                return option
+            })
+            setWebhookDetails(_webhookDetails)
+            const parsedPayload = JSON.parse(_webhookDetails['payload'])
             const _modifiedPayload = { ...parsedPayload }
             delete _modifiedPayload.ciProjectDetails
             const modifiedJSONString = formatSampleJson(_modifiedPayload)
+            setSamplePayload(_modifiedPayload)
             setSampleJSON(modifiedJSONString)
-            setModifiedSamplePayload(_modifiedPayload)
             setSampleCURL(CURL_PREFIX + modifiedJSONString)
-            setRequiredTokenPermission(_requiredTokenPermission)
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
-                    _requiredTokenPermission.projectName,
-                    _requiredTokenPermission.environmentName,
-                    _requiredTokenPermission.appName,
+                    _webhookDetails.projectName,
+                    _webhookDetails.environmentName,
+                    _webhookDetails.appName,
                 )
-                const sortedResult = result
-                    .sort((a, b) => a['name'].localeCompare(b['name']))
+                const sortedResult = result?.sort((a, b) => a['name'].localeCompare(b['name']))
                     .map((tokenData) => {
                         return { label: tokenData.name, value: tokenData.id, ...tokenData }
-                    })
+                    }) || []
                 setTokenList(sortedResult)
             }
             setLoader(false)
@@ -137,9 +140,9 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                     roleFilters: [
                         {
                             entity: EntityTypes.DIRECT,
-                            entityName: requiredTokenPermission.projectName,
-                            environment: requiredTokenPermission.environmentName,
-                            team: requiredTokenPermission.projectName,
+                            entityName: webhookDetails.projectName,
+                            environment: webhookDetails.environmentName,
+                            team: webhookDetails.projectName,
                             action: ActionTypes.TRIGGER,
                             accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
                         },
@@ -154,6 +157,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
             setGenerateTokenLoader(false)
         } catch (err) {
             setGenerateTokenLoader(false)
+            showError(err)
         }
     }
 
@@ -230,7 +234,11 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
 
     const renderActionButton = (): JSX.Element => {
         if (generateTokenLoader) {
-            return <div className="w-120"><Progressing /></div>
+            return (
+                <div className="w-120">
+                    <Progressing />
+                </div>
+            )
         } else {
             return (
                 <span className="cb-5 cursor top fw-6" onClick={generateToken}>
@@ -245,10 +253,27 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
             <div className="flexbox dc__content-space mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
-                    <input type="text" value={webhookURL} className="bcn-0 dc__no-border form__input" />
-                    <button className="flex search__clear-button" type="button">
-                        <CopyIcon className="icon-dim-20" />
-                    </button>
+                    <input type="text" value={webhookDetails?.webhookUrl} className="bcn-0 dc__no-border form__input" />
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="bottom"
+                        content={copied ? 'Copied!' : 'Copy'}
+                        trigger="mouseenter click"
+                        onShow={(instance) => {
+                            setCopied(false)
+                        }}
+                        interactive={true}
+                    >
+                        <Clipboard
+                            className="pointer hover-only icon-dim-16"
+                            onClick={() => {
+                                copyToClipboard(webhookDetails?.webhookUrl, () => {
+                                    setCopied(true)
+                                })
+                            }}
+                        />
+                    </Tippy>
                 </div>
             </div>
         )
@@ -278,6 +303,37 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
+    const renderSelectedToken = (titlePrefix: string, token: string): JSX.Element => {
+        return (
+            <div>
+                <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
+                <div className="fs-13 font-roboto flexbox" style={{ wordBreak: 'break-word' }}>
+                    {token}
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="bottom"
+                        content={copied ? 'Copied!' : 'Copy'}
+                        trigger="mouseenter click"
+                        onShow={(instance) => {
+                            setCopied(false)
+                        }}
+                        interactive={true}
+                    >
+                        <Clipboard
+                            className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                            onClick={() => {
+                                copyToClipboard(token, () => {
+                                    setCopied(true)
+                                })
+                            }}
+                        />
+                    </Tippy>
+                </div>
+            </div>
+        )
+    }
+
     const renderSelectTokenSection = (): JSX.Element => {
         return (
             <>
@@ -298,14 +354,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                         menuPlacement="auto"
                     />
                 </div>
-                {selectedToken?.value && (
-                    <div>
-                        <div className="cn-7 mt-16 mb-8 fs-13">Selected API token</div>
-                        <div className="fs-13 font-roboto" style={{ wordBreak: 'break-word' }}>
-                            {selectedToken.token}
-                        </div>
-                    </div>
-                )}
+                {selectedToken?.value && renderSelectedToken('Selected', selectedToken.token)}
             </>
         )
     }
@@ -326,14 +375,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
                     />
-                    {generatedAPIToken && (
-                        <>
-                            <div className="mt-16 mb-8">Generated API token</div>
-                            <div className="fs-13 font-roboto" style={{ wordBreak: 'break-word' }}>
-                                {generatedAPIToken}
-                            </div>
-                        </>
-                    )}
+                    {generatedAPIToken && renderSelectedToken('Generated', generatedAPIToken)}
                 </div>
                 {!generatedAPIToken && (
                     <InfoColourBar
@@ -392,36 +434,43 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
 
     const addMetadata = (e): void => {
         const index = +e.currentTarget.dataset.index
-        const _metadataChips = [...metadataChips]
-        const removeData = _metadataChips[index].isSelected
-        _metadataChips[index].isSelected = !metadataChips[index].isSelected
-        const _modifiedSamplePayload = { ...modifiedSamplePayload }
-        if (removeData) {
-            if (_metadataChips[index].keyInObj.length === 1) {
-                delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]]
-            } else {
-                delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]]
-                if (Object.keys(_modifiedSamplePayload[_metadataChips[index].keyInObj[0]][0]).length === 0) {
-                    delete _modifiedSamplePayload[_metadataChips[index].keyInObj[0]]
+        const _webhookDetails = { ...webhookDetails }
+        const currentOption = _webhookDetails.payloadOption[index]
+        if (!currentOption.optional) {
+            return
+        }
+        const _samplePayload = { ...samplePayload }
+        if (currentOption.isSelected) {
+            for (let index = 0; index < currentOption.keyObject.length; index++) {
+                const currentKeys = currentOption.keyObject[index].split('.')
+                if (currentKeys.length === 1) {
+                    delete _samplePayload[currentKeys[0]]
+                } else {
+                    delete _samplePayload[currentKeys[0]][0][currentKeys[1]]
+                    if (Object.keys(_samplePayload[currentKeys[0]][0]).length === 0) {
+                        delete _samplePayload[currentKeys[0]]
+                    }
                 }
             }
         } else {
-            if (_metadataChips[index].keyInObj.length === 1) {
-                _modifiedSamplePayload[_metadataChips[index].keyInObj[0]] =
-                    samplePayload[_metadataChips[index].keyInObj[0]]
-            } else {
-                if (!_modifiedSamplePayload[_metadataChips[index].keyInObj[0]]) {
-                    _modifiedSamplePayload[_metadataChips[index].keyInObj[0]] = [{}]
+            for (let index = 0; index < currentOption.keyObject.length; index++) {
+                const currentKeys = currentOption.keyObject[index].split('.')
+                if (currentKeys.length === 1) {
+                    _samplePayload[currentKeys[0]] = ''
+                } else {
+                    if (!_samplePayload[currentKeys[0]]) {
+                        _samplePayload[currentKeys[0]] = [{}]
+                    }
+                    _samplePayload[currentKeys[0]][0][currentKeys[1]] = ''
                 }
-                _modifiedSamplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]] =
-                    samplePayload[_metadataChips[index].keyInObj[0]][0][_metadataChips[index].keyInObj[1]]
             }
         }
-        setModifiedSamplePayload(_modifiedSamplePayload)
-        const _modifiedJSONString = formatSampleJson(_modifiedSamplePayload)
+        _webhookDetails.payloadOption[index].isSelected = !currentOption.isSelected
+        setWebhookDetails(_webhookDetails)
+        setSamplePayload(_samplePayload)
+        const _modifiedJSONString = formatSampleJson(_samplePayload)
         setSampleJSON(_modifiedJSONString)
-        setSampleCURL(CURL_PREFIX + _modifiedJSONString)
-        setMetadataChips(_metadataChips)
+        setSampleCURL(CURL_PREFIX.replace('{webhookURL}', webhookDetails.webhookUrl) + _modifiedJSONString)
     }
 
     const renderMetadata = (): JSX.Element => {
@@ -431,26 +480,26 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                     Select metadata to send to Devtron. Sample JSON and cURL request will be generated accordingly.
                 </div>
                 <div className="">
-                    {metadataChips.map((metaData, index) => (
+                    {webhookDetails?.payloadOption.map((option, index) => (
                         <div
                             key={`md-${index}`}
-                            className={`dc__inline-block bw-1 br-4 mr-8 mb-8 pt-2 pr-8 pb-2 pl-8 pointer ${
-                                metaData.isSelected ? 'bcb-1 eb-2' : 'en-2'
-                            }`}
+                            className={`dc__inline-block bw-1 br-4 mr-8 mb-8 pt-2 pr-8 pb-2 pl-8 ${
+                                option.isSelected ? 'bcb-1 eb-2' : 'en-2'
+                            } ${option.optional ? 'pointer' : ''}`}
                             data-index={index}
                             onClick={addMetadata}
                         >
                             <div className="flex">
-                                {!metaData.readOnly && (
+                                {option.optional && (
                                     <>
-                                        {metaData.isSelected ? (
+                                        {option.isSelected ? (
                                             <Close className="icon-dim-16 mr-5" />
                                         ) : (
                                             <Add className="icon-dim-16 mr-5" />
                                         )}
                                     </>
                                 )}
-                                <span className="fs-12 fw-4 cn-9">{metaData.displayName}</span>
+                                <span className="fs-12 fw-4 cn-9">{option.label}</span>
                             </div>
                         </div>
                     ))}
@@ -498,10 +547,10 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                     <span>Role</span>
                 </div>
                 <div className="permission-row pt-8 pb-8">
-                    <span>{requiredTokenPermission?.projectName}</span>
-                    <span>{requiredTokenPermission?.environmentName}</span>
-                    <span>{requiredTokenPermission?.appName}</span>
-                    <span>{requiredTokenPermission?.role}</span>
+                    <span>{webhookDetails?.projectName}</span>
+                    <span>{webhookDetails?.environmentName}</span>
+                    <span>{webhookDetails?.appName}</span>
+                    <span>{webhookDetails?.role}</span>
                 </div>
                 {renderTokenSection()}
             </div>
@@ -582,7 +631,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     const executeWebhook = async (): Promise<void> => {
         setWebhookExecutionLoader(true)
         try {
-            const response = await executeWebhookAPI(webhookURL, tryoutAPIToken, modifiedSamplePayload)
+            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, modifiedSamplePayload)
             setWebhookExecutionLoader(false)
         } catch (error) {
             setWebhookExecutionLoader(false)
@@ -637,11 +686,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pr-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy image from external source</h2>
-                <button
-                    type="button"
-                    className="dc__transparent flex icon-dim-24"
-                    onClick={closeWebhook}
-                >
+                <button type="button" className="dc__transparent flex icon-dim-24" onClick={closeWebhook}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -658,6 +703,12 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
+    const copySharableURL = (): void => {
+        copyToClipboard(window.location.href, () => {
+            toast.success('URL copied successfully')
+        })
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
@@ -671,8 +722,8 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                         user.
                     </span>
                 </div>
-                <button className="cta flex h-36">
-                    <CopyIcon className="icon-dim-20 mr-8" />
+                <button className="cta flex h-36" onClick={copySharableURL}>
+                    <Clipboard className="mr-8 icon-dim-16" />
                     Copy shareable link
                 </button>
             </div>

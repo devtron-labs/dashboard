@@ -14,7 +14,8 @@ import {
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
 import { isEmpty } from '../../../common'
-import { getExternalCIConfig } from '../../../ciPipeline/Webhook/webhook.service'
+import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
+import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 
 export const getTriggerWorkflows = (
     appId,
@@ -31,13 +32,13 @@ export const getInitialWorkflows = (
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIConfig(id)]).then(
+    return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
         ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
             return processWorkflow(
                 workflow.result as WorkflowResult,
                 ciConfig.result as CiPipelineResult,
                 cdConfig as CdPipelineResult,
-                externalCIConfig as CdPipeline[],
+                externalCIConfig.result as WebhookDetailsType[],
                 dimensions,
                 workflowOffset,
             )
@@ -49,7 +50,7 @@ export function processWorkflow(
     workflow: WorkflowResult,
     ciResponse: CiPipelineResult,
     cdResponse: CdPipelineResult,
-    externalCIResponse: CdPipeline[],
+    externalCIResponse: WebhookDetailsType[],
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
@@ -65,7 +66,7 @@ export function processWorkflow(
         (cdResponse?.pipelines ?? []).map((cdPipeline) => [cdPipeline.id, cdPipeline] as [number, CdPipeline]),
     )
     const webhookMap = new Map(
-        (externalCIResponse ?? []).map((externalCI) => [externalCI.id, externalCI] as [number, CdPipeline]),
+        (externalCIResponse ?? []).map((externalCI) => [externalCI.id, externalCI] as [number, WebhookDetailsType]),
     )
     const appName = workflow.appName
     let workflows = new Array<WorkflowType>()
@@ -335,18 +336,17 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
 }
 
 
-function webhookToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions): NodeAttr {
+function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowDimensions): NodeAttr {
   return {
       isSource: true,
       isGitSource: false,
       isRoot: false,
-      id: String(cdPipeline.id),
+      id: String(webhookDetails.id),
       x: 0,
       y: 0,
       height: dimensions.staticNodeSizes.nodeHeight,
       width: dimensions.staticNodeSizes.nodeWidth,
       title: 'Webhook',
-      triggerType: TriggerTypeMap[cdPipeline.triggerType?.toLowerCase() ?? ''],
       status: DEFAULT_STATUS,
       type: WorkflowNodeType.WEBHOOK,
       inputMaterialList: [],

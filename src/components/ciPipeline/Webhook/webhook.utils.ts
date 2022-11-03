@@ -1,65 +1,4 @@
-import { OptionType } from "../../app/types";
-import { MetadataType, TabDetailsType } from "./types";
-
-export const PAYLOAD_CHIPS_METADATA: MetadataType[] = [
-  {
-      key: 'dockerImage',
-      keyInObj: ['dockerImage'],
-      displayName: 'Container image tag',
-      isSelected: true,
-      readOnly: true,
-  },
-  {
-      key: 'gitRepository',
-      keyInObj: ['ciProjectDetails', 'gitRepository'],
-      displayName: 'Git repository',
-      isSelected: false,
-      readOnly: false,
-  },
-  {
-      key: 'checkoutPath',
-      keyInObj: ['ciProjectDetails', 'checkoutPath'],
-      displayName: 'Checkout path',
-      isSelected: false,
-      readOnly: false,
-  },
-  {
-      key: 'commitHash',
-      keyInObj: ['ciProjectDetails', 'commitHash'],
-      displayName: 'Commit hash',
-      isSelected: false,
-      readOnly: false,
-  },
-  {
-      key: 'commitTime',
-      keyInObj: ['ciProjectDetails', 'commitTime'],
-      displayName: 'Date & time of commit',
-      isSelected: false,
-      readOnly: false,
-  },
-  {
-      key: 'branch',
-      keyInObj: ['ciProjectDetails', 'branch'],
-      displayName: 'Branch',
-      isSelected: false,
-      readOnly: false,
-  },
-  {
-      key: 'message',
-      keyInObj: ['ciProjectDetails', 'message'],
-      displayName: 'Commit message',
-      isSelected: false,
-      readOnly: false,
-  },
-  {
-      key: 'author',
-      keyInObj: ['ciProjectDetails', 'author'],
-      displayName: 'Author',
-      isSelected: false,
-      readOnly: false,
-  },
-]
-
+import { TabDetailsType } from "./types";
 
 export const TOKEN_TAB_LIST: TabDetailsType[] = [
   { key: 'selectToken', value: 'Select API token' },
@@ -79,10 +18,11 @@ export const RESPONSE_TAB_LIST: TabDetailsType[] = [
   { key: 'schema', value: 'Schema' },
 ]
 
-export const CURL_PREFIX = `curl -X 'POST'
-'https://demo1.devtron.info:32443/orchestrator/webhook/ext-ci'
--H 'Content-type: application/json'
-`
+export const CURL_PREFIX = `curl --location --request POST
+'{webhookURL}'
+--header 'Content-Type: application/json'
+--header 'token: {token}'
+--data-raw '`
 
 export const SELECT_TOKEN_STYLE = {
     control: (base, state) => ({
