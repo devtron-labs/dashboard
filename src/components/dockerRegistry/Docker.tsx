@@ -836,7 +836,7 @@ function DockerForm({
             {!showManageModal ? (
                 <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20">
                     <div className="flex dc__content-space">
-                        <div className="cn-7 flex left">
+                        <div className="cn-7 flex left fs-13">
                             Registry credential access is auto injected to
                             <Tippy
                                 className="default-tt pl-20"
@@ -844,7 +844,7 @@ function DockerForm({
                                 placement="top"
                                 content={
                                     <div>
-                                        <div>Manage access of registry credentials</div>
+                                        <div className='fw-6'>Manage access of registry credentials</div>
                                         <div style={{ display: 'block', width: '160px' }}>
                                             Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image
@@ -853,7 +853,7 @@ function DockerForm({
                                     </div>
                                 }
                             >
-                                <Question className="icon-dim-20 cursor" />
+                                <Question className="icon-dim-20 cursor ml-8" />
                             </Tippy>
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
@@ -19,6 +20,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
+import Tippy from '@tippyjs/react'
 
 function ManageRegistry({
     clusterOption,
@@ -38,7 +40,7 @@ function ManageRegistry({
     customCredential,
     setCustomCredential,
     setErrorValidation,
-    errorValidation
+    errorValidation,
 }: ManageRegistryType) {
     const [showAlertBar, setAlertBar] = useState<boolean>(false)
 
@@ -79,12 +81,12 @@ function ManageRegistry({
 
     const renderAlertMessage = () => {
         return (
-            <div>
-                If you want to edit this, below selection will not be applicable.
+            <>
+                If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
                 <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
                     Confirm to edit
                 </span>
-            </div>
+            </>
         )
     }
 
@@ -204,12 +206,12 @@ function ManageRegistry({
     const onClickSpecifyImagePullSecret = (e) => {
         if (credentialsType === CredentialType.NAME) {
             setCredentialValue(e.target.value)
-            if (!e.target.value){
-               setErrorValidation(true)
-               return null
-              }else{
+            if (!e.target.value) {
+                setErrorValidation(true)
+                return null
+            } else {
                 setErrorValidation(false)
-              }
+            }
         } else {
             setCustomCredential({
                 ...customCredential,
@@ -225,7 +227,26 @@ function ManageRegistry({
                 style={{ backgroundColor: 'var(--N50)' }}
                 onClick={onClickHideManageModal}
             >
-                <div>Manage access of registry credentials</div>
+                <div className="flex left">
+                    <div className="fw-6">Manage access of registry credentials</div>
+                    <Tippy
+                        className="default-tt pl-20"
+                        arrow={true}
+                        placement="top"
+                        content={
+                            <div>
+                                <div className="fw-6">Manage access of registry credentials</div>
+                                <div style={{ display: 'block', width: '160px' }}>
+                                    Clusters need permission to pull container image from private repository in the
+                                    registry. You can control which clusters have access to the pull image from private
+                                    repositories.
+                                </div>
+                            </div>
+                        }
+                    >
+                        <Question className="icon-dim-20 cursor ml-8" />
+                    </Tippy>
+                </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>
             <div className="p-16">
@@ -310,10 +331,10 @@ function ManageRegistry({
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
-                    <div className="">
-                        <div className="flexbox w-100 ">
+                    <div className="cn-7 ">
+                        <div className="flexbox w-100 mb-16">
                             <div className="w-50 mr-8">
-                                <div>Registry details</div>
+                                <div className='mb-6'> Registry URL</div>
                                 <input
                                     tabIndex={3}
                                     placeholder="Enter registry name"
@@ -326,7 +347,7 @@ function ManageRegistry({
                                 />
                             </div>
                             <div className="w-50">
-                                <div>Email</div>
+                                <div className='mb-6'>Email</div>
                                 <input
                                     tabIndex={4}
                                     placeholder="Enter Email"
@@ -341,7 +362,7 @@ function ManageRegistry({
                         </div>
                         <div className="flexbox w-100">
                             <div className="w-50 mr-8">
-                                <div>Username</div>
+                                <div className='mb-6'>Username</div>
                                 <input
                                     tabIndex={5}
                                     placeholder="Enter username"
@@ -354,7 +375,7 @@ function ManageRegistry({
                                 />
                             </div>
                             <div className="w-50">
-                                <div>Password</div>
+                                <div className='mb-6'>Password</div>
                                 <input
                                     tabIndex={6}
                                     placeholder="Enter password"
