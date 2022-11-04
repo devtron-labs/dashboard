@@ -209,17 +209,48 @@ export enum CIBuildType {
     BUILDPACK_BUILD_TYPE = 'buildpack-build',
 }
 
+export interface BuildPackConfigType {
+    builderId: string
+    language: string
+    languageVersion: string
+    projectPath: string
+    builderLangEnvParam?: string
+    currentBuilderLangEnvParam?: string
+    buildPacks?: any
+    args?: Record<string, string>
+}
+
+export interface DockerBuildConfigType {
+    dockerfileContent: string
+    dockerfileRelativePath: string
+    dockerfilePath?: string
+    dockerfileRepository?: string
+    args?: Record<string, string>
+    targetPlatform?: any
+    language?: string
+    languageFramework?: string
+}
+
 export interface CIBuildConfigType {
-    buildPackConfig: any
+    buildPackConfig: BuildPackConfigType
     ciBuildType: CIBuildType
-    dockerBuildConfig: {
-        DockerfileContent: string
-        dockerfileRelativePath: string
-        args?: Map<string, string>
-        targetPlatform?: any
-    }
+    dockerBuildConfig: DockerBuildConfigType
     gitMaterialId: number
     id?: number
+}
+
+export const DockerConfigOverrideKeys = {
+    id: 'id',
+    ciBuildConfig: 'ciBuildConfig',
+    buildPackConfig: 'buildPackConfig',
+    dockerBuildConfig: 'dockerBuildConfig',
+    isDockerConfigOverridden: 'isDockerConfigOverridden',
+    dockerRegistry: 'dockerRegistry',
+    dockerRepository: 'dockerRepository',
+    repository_name: 'repository_name',
+    projectPath: 'projectPath',
+    dockerfile: 'dockerfile',
+    dockerfileRelativePath: 'dockerfileRelativePath',
 }
 
 export interface DockerConfigOverrideType {
