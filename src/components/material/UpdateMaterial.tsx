@@ -8,6 +8,7 @@ import { MaterialView } from './MaterialView';
 interface UpdateMaterialProps {
     appId: number;
     isMultiGit: boolean;
+    preventRepoDelete: boolean;
     material: GitMaterialType;
     providers: any[];
     isGitProviderValid;
@@ -212,6 +213,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
             appId= {this.props.appId}
             reload = {this.props.reload}
+            preventRepoDelete={this.props.preventRepoDelete}
         />
     }
 }
