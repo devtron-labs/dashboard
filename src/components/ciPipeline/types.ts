@@ -239,6 +239,20 @@ export interface CIBuildConfigType {
     id?: number
 }
 
+export const DockerConfigOverrideKeys = {
+    id: 'id',
+    ciBuildConfig: 'ciBuildConfig',
+    buildPackConfig: 'buildPackConfig',
+    dockerBuildConfig: 'dockerBuildConfig',
+    isDockerConfigOverridden: 'isDockerConfigOverridden',
+    dockerRegistry: 'dockerRegistry',
+    dockerRepository: 'dockerRepository',
+    repository_name: 'repository_name',
+    projectPath: 'projectPath',
+    dockerfile: 'dockerfile',
+    dockerfileRelativePath: 'dockerfileRelativePath',
+}
+
 export interface DockerConfigOverrideType {
     dockerRegistry: string
     dockerRepository: string

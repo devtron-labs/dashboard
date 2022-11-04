@@ -204,7 +204,7 @@ export default function CIConfigDiffView({
                                 />
                                 {renderViewBuildPipelineRow(+_wf.id)}
                                 <CIBuildConfigDiff
-                                    _configOverridenWorkflows={_configOverridenWorkflows}
+                                    configOverridenWorkflows={_configOverridenWorkflows}
                                     wfId={_wf.id}
                                     configOverridenPipelines={configOverridenPipelines}
                                     materials={ciConfig?.materials}

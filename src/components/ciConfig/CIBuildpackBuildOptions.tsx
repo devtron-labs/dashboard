@@ -16,7 +16,7 @@ import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.s
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getAbsoluteProjectPath, _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
-import { CIBuildType } from '../ciPipeline/types'
+import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
     BuilderIdOptionType,
     CIBuildpackBuildOptionsProps,
@@ -178,7 +178,7 @@ export default function CIBuildpackBuildOptions({
                     label: ciBuildConfig.buildPackConfig.languageVersion,
                     value: ciBuildConfig.buildPackConfig.languageVersion,
                 }
-                _currentCIBuildConfig['buildPackConfig'] = {
+                _currentCIBuildConfig[DockerConfigOverrideKeys.buildPackConfig] = {
                     ...ciBuildConfig.buildPackConfig,
                     builderLangEnvParam: currentBuilderLangEnvParam,
                     currentBuilderLangEnvParam: currentBuilderLangEnvParam,
@@ -198,7 +198,7 @@ export default function CIBuildpackBuildOptions({
                     label: initOption.version,
                     value: initOption.version,
                 }
-                _currentCIBuildConfig['buildPackConfig'] = {
+                _currentCIBuildConfig[DockerConfigOverrideKeys.buildPackConfig] = {
                     ..._currentCIBuildConfig.buildPackConfig,
                     builderId: initOption.builderId,
                     language: initOption.language,

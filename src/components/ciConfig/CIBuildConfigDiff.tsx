@@ -3,27 +3,27 @@ import { ReactComponent as CaretIcon } from '../../assets/icons/ic-chevron-down.
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getCIConfigDiffValues } from './CIConfig.utils'
-import { CIConfigDiffType } from './types'
+import { CIBuildConfigDiffProps, CIConfigDiffType } from './types'
 
 export function CIBuildConfigDiff({
-    _configOverridenWorkflows,
+    configOverridenWorkflows,
     wfId,
     configOverridenPipelines,
     materials,
     globalCIConfig,
-}) {
+}: CIBuildConfigDiffProps) {
     const [showOverrides, setShowOverrides] = useState(false)
     const [ciConfigDiffValues, setCIConfigDiffValues] = useState<CIConfigDiffType[]>([])
 
     useEffect(() => {
-        if (_configOverridenWorkflows && configOverridenPipelines) {
-            const _currentWorkflow = _configOverridenWorkflows.find((_wf) => +wfId === _wf.id)
+        if (configOverridenWorkflows && configOverridenPipelines) {
+            const _currentWorkflow = configOverridenWorkflows.find((_wf) => +wfId === _wf.id)
             const _currentPipelineOverride = configOverridenPipelines.find(
                 (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
             )?.dockerConfigOverride
             setCIConfigDiffValues(getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials))
         }
-    }, [_configOverridenWorkflows, configOverridenPipelines, globalCIConfig])
+    }, [configOverridenWorkflows, configOverridenPipelines, globalCIConfig])
     const renderDetailedValue = (parentClassName: string, value: string): JSX.Element => {
         return (
             <td className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right`}>

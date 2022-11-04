@@ -9,6 +9,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 
 export default function CIContainerRegistryConfig({
     appId,
@@ -74,7 +75,7 @@ export default function CIContainerRegistryConfig({
         registry.value = selectedRegistry.id
 
         if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('dockerRegistry', selectedRegistry.id)
+            updateDockerConfigOverride(DockerConfigOverrideKeys.dockerRegistry, selectedRegistry.id)
         }
     }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { ServerError } from '../../modals/commonTypes'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
-import { CiPipeline, CiPipelineResult, WorkflowType } from '../app/details/triggerView/types'
+import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import {
     CIBuildConfigType,
@@ -286,4 +286,12 @@ export interface CIAdvancedConfigProps {
     targetPlatformMap: any
     showCustomPlatformWarning: any
     setShowCustomPlatformWarning: any
+}
+
+export interface CIBuildConfigDiffProps {
+    configOverridenWorkflows: ConfigOverrideWorkflowDetails[]
+    wfId: string
+    configOverridenPipelines: CiPipeline[]
+    materials: Material[]
+    globalCIConfig: DockerConfigOverrideType
 }

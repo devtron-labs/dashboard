@@ -7,7 +7,7 @@ import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { CIBuildConfigType, CIBuildType, DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
 import TippyWhite from '../common/TippyWhite'
 
 export default function AdvancedConfigOptions({
@@ -57,7 +57,7 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
-    const updateDockerConfigOverride = (key: string, value: CIBuildConfigType | boolean | string) => {
+    const updateDockerConfigOverride = (key: string, value: CIBuildConfigType | boolean | string): void => {
         // Shallow copy all data from formData to _form
         const _form = {
             ...formData,
@@ -77,7 +77,7 @@ export default function AdvancedConfigOptions({
         }
 
         // Update the specific config value present at different level from dockerConfigOverride
-        if (key === 'isDockerConfigOverridden') {
+        if (key === DockerConfigOverrideKeys.isDockerConfigOverridden) {
             const _value = value as boolean
             _form.isDockerConfigOverridden = _value
             setAllowOverride(_value)
@@ -86,14 +86,17 @@ export default function AdvancedConfigOptions({
             if (!_value) {
                 _form.dockerConfigOverride = {} as DockerConfigOverrideType
             }
-        } else if (key === 'dockerRegistry' || key === 'dockerRepository') {
+        } else if (
+            key === DockerConfigOverrideKeys.dockerRegistry ||
+            key === DockerConfigOverrideKeys.dockerRepository
+        ) {
             _form.dockerConfigOverride[key] = value as string
         } else {
-            _form.dockerConfigOverride['ciBuildConfig'] = value as CIBuildConfigType
+            _form.dockerConfigOverride[DockerConfigOverrideKeys.ciBuildConfig] = value as CIBuildConfigType
         }
 
         // No need to pass the id in the request
-        if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty('id')) {
+        if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
             delete _form.dockerConfigOverride.ciBuildConfig.id
         }
 
@@ -164,13 +167,13 @@ export default function AdvancedConfigOptions({
         )
     }
 
-    const toggleAdvancedOptions = () => {
+    const toggleAdvancedOptions = (): void => {
         setCollapsedSection(!collapsedSection)
     }
 
-    const toggleAllowOverride = () => {
+    const toggleAllowOverride = (): void => {
         if (updateDockerConfigOverride) {
-            updateDockerConfigOverride('isDockerConfigOverridden', !allowOverride)
+            updateDockerConfigOverride(DockerConfigOverrideKeys.isDockerConfigOverridden, !allowOverride)
         }
     }
 

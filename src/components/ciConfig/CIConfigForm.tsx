@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
-import { CIBuildConfigType, CIBuildType } from '../ciPipeline/types'
+import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { ConfirmationDialog, Progressing, showError, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
 import { CIBuildArgType, CIConfigFormProps, ProcessedWorkflowsType } from './types'
@@ -148,7 +148,7 @@ export default function CIConfigForm({
 
         const _ciBuildConfig = { ...currentCIBuildConfig }
         if (_ciBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE && _ciBuildConfig.buildPackConfig) {
-            _ciBuildConfig['buildPackConfig'] = {
+            _ciBuildConfig[DockerConfigOverrideKeys.buildPackConfig] = {
                 builderId: _ciBuildConfig.buildPackConfig.builderId,
                 language: _ciBuildConfig.buildPackConfig.language,
                 languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
@@ -159,7 +159,7 @@ export default function CIConfigForm({
                 }, {}),
             }
         } else {
-            _ciBuildConfig['dockerBuildConfig'] = {
+            _ciBuildConfig[DockerConfigOverrideKeys.dockerBuildConfig] = {
                 ..._ciBuildConfig.dockerBuildConfig,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
@@ -255,11 +255,11 @@ export default function CIConfigForm({
 
         if (updateDockerConfigOverride) {
             switch (e.target.name) {
-                case 'repository_name':
-                    updateDockerConfigOverride('dockerRepository', e.target.value)
+                case DockerConfigOverrideKeys.repository_name:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerRepository, e.target.value)
                     break
-                case 'projectPath':
-                    updateDockerConfigOverride('projectPath', {
+                case DockerConfigOverrideKeys.projectPath:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.projectPath, {
                         ...currentCIBuildConfig,
                         buildPackConfig: {
                             ...currentCIBuildConfig.buildPackConfig,
@@ -267,8 +267,8 @@ export default function CIConfigForm({
                         },
                     })
                     break
-                case 'dockerfile':
-                    updateDockerConfigOverride('dockerfileRelativePath', {
+                case DockerConfigOverrideKeys.dockerfile:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.dockerfileRelativePath, {
                         ...currentCIBuildConfig,
                         dockerBuildConfig: {
                             ...currentCIBuildConfig.dockerBuildConfig,
