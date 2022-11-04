@@ -5,7 +5,6 @@ import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
 import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import './docker.scss'
 import Select from 'react-select'
 import {
     ClearIndicator,
@@ -99,7 +98,7 @@ function ManageRegistry({
         )
     }
 
-    const renderNoSelectionview = () => {
+    const renderNoSelectionView = (): JSX.Element => {
         return (
             <div className="flex dc__content-space en-2 bw-1 bcn-1 br-4 pl-10 pr-10 pt-8 pb-8">
                 <div className="bcn-1 cursor-not-allowed">{getPlaceholder()}</div>
@@ -118,7 +117,7 @@ function ManageRegistry({
     }
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
-            return renderNoSelectionview()
+            return renderNoSelectionView()
         } else if (whiteList.length === 0 && !blackListEnabled) {
             return renderNotDefinedView('blacklist')
         } else {
@@ -158,7 +157,7 @@ function ManageRegistry({
 
     const renderAppliedCluster = (): JSX.Element => {
         if (blackList.length > 0) {
-            return renderNoSelectionview()
+            return renderNoSelectionView()
         } else if (blackList.length === 0 && blackListEnabled) {
             return renderNotDefinedView('whitelist')
         } else if (blackList.length === 0) {
@@ -237,7 +236,7 @@ function ManageRegistry({
 
                 <div className="flex left mb-16 cn-7">
                     <Bulb className="icon-dim-16 mr-8" />
-                    Define credentials{' '}
+                    Define credentials
                 </div>
                 <div className="flex left mb-16">
                     <RadioGroup
@@ -277,7 +276,7 @@ function ManageRegistry({
                 </div>
                 {credentialsType === CredentialType.SAME_AS_REGISTRY && (
                     <div className="cn-7">
-                        Registry credentials will be auto injected to have accessed by selected clusters{' '}
+                        Registry credentials will be auto injected to have accessed by selected clusters
                     </div>
                 )}
                 {credentialsType === CredentialType.NAME && (
