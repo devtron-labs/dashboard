@@ -41,6 +41,7 @@ export interface WorkflowProps
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
     addWebhookCD: (workflowId?: number | string) => void
     cdWorkflowList?: any[]
+    showWebhookTippy?: boolean
 }
 
 interface WorkflowState {

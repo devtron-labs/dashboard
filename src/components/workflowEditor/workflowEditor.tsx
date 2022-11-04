@@ -152,7 +152,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     addWebhookCD = (workflowId?: number | string) => {
-        this.props.history.push(`${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId || 0}/webhook/0/cd-pipeline`)
+        this.props.history.push(
+            `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId || 0}/webhook/0/cd-pipeline`,
+        )
     }
 
     handleCDSelect = (
@@ -160,9 +162,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         ciPipelineId: number | string,
         parentPipelineType: string,
         parentPipelineId?: number | string,
-        isWebhookCD?: boolean
+        isWebhookCD?: boolean,
     ) => {
-      const ciURL = isWebhookCD? `webhook/0`: `ci-pipeline/${ciPipelineId}`
+        const ciURL = isWebhookCD ? `webhook/0` : `ci-pipeline/${ciPipelineId}`
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/${ciURL}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
         if (this.state.noGitOpsConfiguration) {
             this.setState({
@@ -194,6 +196,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         environmentId?: number,
         environmentName?: string,
         successTitle?: string,
+        showWebhookTippy?: boolean,
     ) => {
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
         this.props.history.push(LINK)
@@ -207,6 +210,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 })
             }, 700)
         }
+        if (showWebhookTippy) {
+            this.setState({ showWebhookTippy: true })
+        }
+
         //update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) {
             this.props.respondOnSuccess()
@@ -263,7 +270,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }}
                 />
                 <Route
-                    path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
+                    path={[
+                        URLS.APP_EXTERNAL_CI_CONFIG,
+                        URLS.APP_LINKED_CI_CONFIG,
+                        URLS.APP_CI_CONFIG,
+                        PipelineType.WEBHOOK,
+                    ].map(
                         (pipeline) => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
                     )}
                     render={({ location, history, match }: { location: any; history: any; match: any }) => {
@@ -425,6 +437,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showDeleteDialog={this.showDeleteDialog}
                     addCIPipeline={this.addCIPipeline}
                     addWebhookCD={this.addWebhookCD}
+                    showWebhookTippy={this.state.showWebhookTippy}
                 />
             )
         })

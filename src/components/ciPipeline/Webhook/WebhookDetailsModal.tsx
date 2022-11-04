@@ -12,7 +12,7 @@ import ReactSelect from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { components } from 'react-select'
 import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
-import { ACCESS_TYPE_MAP } from '../../../config'
+import { ACCESS_TYPE_MAP, MODES } from '../../../config'
 import { createGeneratedAPIToken, getWebhookAPITokenList } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
@@ -29,6 +29,7 @@ import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, W
 import { executeWebhookAPI, getExternalCIConfig } from './webhook.service'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
+import CodeEditor from '../../CodeEditor/CodeEditor'
 
 export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
@@ -43,7 +44,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     const [tokenName, setTokenName] = useState<string>('')
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
-    const [webhookResponse, setWebhookResponse] = useState<string>(RESPONSE_TAB_LIST[0].key)
+    const [webhookResponse, setWebhookResponse] = useState<Object>(null)
     const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
     const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(undefined)
@@ -124,6 +125,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
             delete _modifiedPayload.ciProjectDetails
             const modifiedJSONString = formatSampleJson(_modifiedPayload)
             setSamplePayload(_modifiedPayload)
+            setModifiedSamplePayload(_modifiedPayload)
             setSampleJSON(modifiedJSONString)
             setSampleCURL(CURL_PREFIX + modifiedJSONString)
             if (_isSuperAdmin) {
@@ -437,9 +439,32 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
         )
     }
 
-    const renderCodeSnippet = (value: string): JSX.Element => {
+    const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel">
+                {showCopyOption && (
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="bottom"
+                        content={copied ? 'Copied!' : 'Copy'}
+                        trigger="mouseenter click"
+                        onShow={(instance) => {
+                            setCopied(false)
+                        }}
+                        interactive={true}
+                    >
+                        <Clipboard
+                            className="pointer hover-only icon-dim-16 dc__position-abs"
+                            style={{ right: '8px' }}
+                            onClick={() => {
+                                copyToClipboard(value, () => {
+                                    setCopied(true)
+                                })
+                            }}
+                        />
+                    </Tippy>
+                )}
                 <code>{value}</code>
             </pre>
         )
@@ -495,7 +520,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                 {renderMetadata()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
                 {generateTabHeader(REQUEST_BODY_TAB_LIST, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
-                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[0].key && renderCodeSnippet(sampleJSON)}
+                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[0].key && renderCodeSnippet(sampleJSON, true)}
                 {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[1].key && renderSchemaSection(webhookDetails.schema)}
             </div>
         )
@@ -509,15 +534,19 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
             return
         }
         const _samplePayload = { ...samplePayload }
+        const _modifiedSamplePayload = { ...modifiedSamplePayload }
         if (currentOption.isSelected) {
             for (let index = 0; index < currentOption.payloadKey.length; index++) {
                 const currentKeys = currentOption.payloadKey[index].split('.')
                 if (currentKeys.length === 1) {
                     delete _samplePayload[currentKeys[0]]
+                    delete _modifiedSamplePayload[currentKeys[0]]
                 } else {
                     delete _samplePayload[currentKeys[0]][0][currentKeys[1]]
+                    delete _modifiedSamplePayload[currentKeys[0]][0][currentKeys[1]]
                     if (Object.keys(_samplePayload[currentKeys[0]][0]).length === 0) {
                         delete _samplePayload[currentKeys[0]]
+                        delete _modifiedSamplePayload[currentKeys[0]]
                     }
                 }
             }
@@ -526,11 +555,14 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                 const currentKeys = currentOption.payloadKey[index].split('.')
                 if (currentKeys.length === 1) {
                     _samplePayload[currentKeys[0]] = ''
+                    _modifiedSamplePayload[currentKeys[0]] = ''
                 } else {
                     if (!_samplePayload[currentKeys[0]]) {
                         _samplePayload[currentKeys[0]] = [{}]
+                        _modifiedSamplePayload[currentKeys[0]] = [{}]
                     }
                     _samplePayload[currentKeys[0]][0][currentKeys[1]] = ''
+                    _modifiedSamplePayload[currentKeys[0]][0][currentKeys[1]] = ''
                 }
             }
         }
@@ -538,6 +570,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
         setWebhookDetails(_webhookDetails)
         setSamplePayload(_samplePayload)
         const _modifiedJSONString = formatSampleJson(_samplePayload)
+        setModifiedSamplePayload(_modifiedSamplePayload)
         setSampleJSON(_modifiedJSONString)
         setSampleCURL(CURL_PREFIX.replace('{webhookURL}', webhookDetails.webhookUrl) + _modifiedJSONString)
     }
@@ -581,7 +614,24 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
         return (
             <div className="pt-16">
                 {renderMetadata()}
-                {renderCodeSnippet(sampleCURL)}
+                {renderCodeSnippet(sampleCURL, true)}
+            </div>
+        )
+    }
+
+    const changePayload = (codeEditorData: string): void => {
+        setModifiedSamplePayload(JSON.parse(codeEditorData))
+    }
+
+    const renderCodeEditor = (): JSX.Element => {
+        return (
+            <div className="br-4 fs-13 fw-4 cn-9 en-2 bw-1 p-2 pr-5">
+                <CodeEditor
+                    value={formatSampleJson(modifiedSamplePayload)}
+                    onChange={changePayload}
+                    height="300px"
+                    mode={MODES.JSON}
+                />
             </div>
         )
     }
@@ -594,7 +644,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                 <div className="cn-9 fs-13 fw-6 mb-8">Request header</div>
                 {renderWebhookURLTokenContainer()}
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
-                {renderCodeSnippet(sampleJSON)}
+                {renderCodeEditor()}
             </div>
         )
     }
@@ -643,26 +693,6 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
         )
     }
 
-    // const renderResponseRow = (
-    //     responseCode: number,
-    //     responseDescription: string,
-    //     selectedTab: string,
-    //     setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
-    //     value: string,
-    // ): JSX.Element => {
-    //     return (
-    //         <div className="response-row pt-8 pb-8">
-    //             <div className="fs-13 fw-4 cn-9">{responseCode}</div>
-    //             <div>
-    //                 <div className="fs-13 fw-4 cn-9 mb-16"> {responseDescription}</div>
-    //                 {generateTabHeader(RESPONSE_TAB_LIST, selectedTab, setSelectedTab, true)}
-    //                 {renderCodeSnippet(value)}
-    //                 {renderSchemaSection}
-    //             </div>
-    //         </div>
-    //     )
-    // }
-
     const setSelectedResponseTab = (selectedTab: string, index: number): void => {
         const _webhookDetails = { ...webhookDetails }
         _webhookDetails.responses[index].selectedTab = selectedTab
@@ -703,18 +733,28 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     }
 
     const executeWebhook = async (): Promise<void> => {
+        if (!tryoutAPIToken) {
+            toast.error('API token is required field')
+            return
+        }
         setWebhookExecutionLoader(true)
         try {
-            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, samplePayload)
+            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, modifiedSamplePayload)
+            setWebhookResponse(response)
             setWebhookExecutionLoader(false)
         } catch (error) {
             setWebhookExecutionLoader(false)
+            setWebhookResponse(error)
         }
+    }
+
+    const clearWebhookResponse = (): void => {
+        setWebhookResponse(null)
     }
 
     const renderTryoutActionSection = (): JSX.Element => {
         return (
-            <div className="flex left mt-20 mb-20">
+            <div className="flex left mt-20">
                 <ButtonWithLoader
                     rootClassName="cta h-28 flex mr-8"
                     onClick={executeWebhook}
@@ -724,7 +764,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                     <PlayButton className="icon-dim-18 mr-8" />
                     Execute
                 </ButtonWithLoader>
-                <button className="cta cancel h-28 flex">
+                <button className="cta cancel h-28 flex" onClick={clearWebhookResponse}>
                     <Close className="icon-dim-18 mr-8" />
                     Clear
                 </button>
@@ -733,27 +773,31 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     }
 
     const renderActualResponseSection = (): JSX.Element | null => {
-        return (
-            <div className="bcn-0 p-16 br-4 bw-1 en-2">
-                <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
-                <div className="cn-9 fs-13 fw-6 mb-8">
-                    <div className="response-row dc__border-bottom pt-8 pb-8">
-                        <div>Code</div>
-                        <div>Description</div>
-                    </div>
-                    <div className="response-row pt-8 pb-8">
-                        <div className="fs-13 fw-4 cn-9">{'responseCode'}</div>
-                        <div>
-                            <div className="fs-13 fw-4 cn-9 mb-16"> {'responseDescription'}</div>
-                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                            {renderCodeSnippet('value')}
-                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
-                            {renderCodeSnippet('value')}
+        if (!webhookResponse) {
+            return null
+        } else {
+            return (
+                <div className="mt-16">
+                    <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
+                    <div className="cn-9 fs-13 fw-6 mb-8">
+                        <div className="response-row dc__border-bottom pt-8 pb-8">
+                            <div>Code</div>
+                            <div>Description</div>
+                        </div>
+                        <div className="response-row pt-8 pb-8">
+                            <div className="fs-13 fw-4 cn-9">{'responseCode'}</div>
+                            <div>
+                                <div className="fs-13 fw-4 cn-9 mb-16"> {'responseDescription'}</div>
+                                <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
+                                {renderCodeSnippet('value')}
+                                <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
+                                {renderCodeSnippet('value')}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        }
     }
 
     const renderHeaderSection = (): JSX.Element => {

@@ -25,6 +25,7 @@ export interface WorkflowEditState {
     showNoGitOpsWarningPopup?: boolean
     cdLink?: string
     noGitOpsConfiguration?: boolean
+    showWebhookTippy?: boolean
 }
 
 export interface WorkflowEditProps
