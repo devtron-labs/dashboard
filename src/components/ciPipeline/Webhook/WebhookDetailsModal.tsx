@@ -30,7 +30,7 @@ import { executeWebhookAPI, getExternalCIConfig } from './webhook.service'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 
-export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookDetailType) {
+export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -278,7 +278,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
             <div className="flexbox dc__content-space mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
-                    <input type="text" value={webhookDetails?.webhookUrl} className="bcn-0 dc__no-border form__input" />
+                    <div className="bcn-0 pl-8 w-100">{webhookDetails?.webhookUrl}</div>
                     <Tippy
                         className="default-tt"
                         arrow={false}
