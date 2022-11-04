@@ -310,9 +310,9 @@ function DockerForm({
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
-        isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : undefined,
+        isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : '',
     )
-    const [errorValidation, setErrorValidation] = useState<boolean>(false)
+    const [errorValidation, setErrorValidation] = useState<boolean>(true)
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
@@ -413,7 +413,13 @@ function DockerForm({
     }
 
     async function onSave() {
-        if(errorValidation) return null
+      let _isValidated
+      if(credentialsType === CredentialType.NAME && !credentialValue){
+        setErrorValidation(true)
+        _isValidated = false
+       }
+
+        if(errorValidation && !_isValidated) return
         let awsRegion
         if (selectedDockerRegistryType.value === 'ecr') {
             awsRegion = fetchAWSRegion()
