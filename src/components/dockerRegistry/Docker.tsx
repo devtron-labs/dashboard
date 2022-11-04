@@ -413,10 +413,11 @@ function DockerForm({
     }
 
     async function onSave() {
-      let _isValidated
+      let _isValidated = true
       if(credentialsType === CredentialType.NAME && !credentialValue){
+        let _isValidated
         setErrorValidation(true)
-        _isValidated = false
+        _isValidated=false
        }
 
         if(errorValidation && !_isValidated) return
