@@ -16,13 +16,13 @@ function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, is
 
     return (
         <div className="common-guide__container">
-            <div className={`deploy-manage__header h-300 dc__window-bg bcn-1`}>
+            <div className={`deploy-manage__header mh-300 dc__window-bg bcn-1`}>
                 {showCloseIcon && (
                     <button type="button" className="w-100 flex right dc__transparent p-20" onClick={onClickCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 )}
-                <div className={`${showCloseIcon ? 'deploy-manage__upper top' : 'h-300'} flex`}>
+                <div className={`${showCloseIcon ? 'deploy-manage__upper top' : 'mh-300'} flex`}>
                     <div className="deploy__title flex center">
                         {isGuidePage && (
                             <div className="bcn-0 deploy_arrow flex cursor" onClick={onClickedGoBack}>

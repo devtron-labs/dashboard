@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
-import { Progressing, showError, ErrorScreenManager, DeleteDialog, VisibleModal } from '../common'
+import { Progressing, showError, ErrorScreenManager, DeleteDialog } from '../common'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
@@ -16,12 +16,15 @@ import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.css'
 import { NodeAttr } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     constructor(props) {
@@ -45,12 +48,27 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showSuccessScreen: false,
             showNoGitOpsWarningPopup: false,
             cdLink: '',
-            noGitOpsConfiguration: false
+            noGitOpsConfiguration: false,
+            showOpenCIPipelineBanner:
+                typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
         }
     }
 
     componentDidMount() {
         this.getWorkflows()
+    }
+
+    componentWillUnmount() {
+        this.removeTakeMeThereClickedItem()
+    }
+
+    removeTakeMeThereClickedItem = () => {
+        if (typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked')) {
+            localStorage.removeItem('takeMeThereClicked')
+            this.setState({
+                showOpenCIPipelineBanner: false,
+            })
+        }
     }
 
     getWorkflows = () => {
@@ -432,6 +450,28 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         })
     }
 
+    renderOpenCIPipelineBanner = () => {
+        return (
+            <div className="open-cipipeline-banner dc__position-abs">
+                <InfoColourBar
+                    classname="bcv-5 cn-9 lh-20"
+                    message={
+                        <div className="flex fs-13 fw-4 lh-20 cn-0">
+                            Open a build pipeline to override
+                            <CloseIcon
+                                className="icon-dim-12 fcn-0 ml-8 cursor"
+                                onClick={this.removeTakeMeThereClickedItem}
+                            />
+                        </div>
+                    }
+                    Icon={HelpIcon}
+                    iconSize={20}
+                    iconClass="fcn-0"
+                />
+            </div>
+        )
+    }
+
     render() {
         if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -494,6 +534,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     {this.state.showNoGitOpsWarningPopup && (
                         <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning}/>
                     )}
+                    {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
                 </div>
             )
         }
