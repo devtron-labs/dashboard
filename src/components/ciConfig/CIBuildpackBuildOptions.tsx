@@ -30,12 +30,14 @@ import TippyWhite from '../common/TippyWhite'
 export const renderOptionIcon = (option: string) => {
     if (!option) return null
 
-    const optionIconAvailable = option.includes('gitlab') || option.includes('github') || option.includes('bitbucket')
-    return optionIconAvailable ? (
+    const isGitLab = option.includes('gitlab')
+    const isGitHub = option.includes('github')
+    const isBitBucket = option.includes('bitbucket')
+    return isGitLab || isGitHub || isBitBucket ? (
         <>
-            {option.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-            {option.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-            {option.includes('bitbucket') && <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {isGitLab && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {isGitHub && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {isBitBucket && <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />}
         </>
     ) : (
         <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
