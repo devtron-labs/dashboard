@@ -92,19 +92,27 @@ function NodeComponent({
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', ''];
-                    if ( podLevelExternalLinks.length > 0 ) {
-                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                    // tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', ''];
+                    // if ( podLevelExternalLinks.length > 0 ) {
+                    //     tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                    // }
+                    // _fcw = 'col-7';
+                    if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
+                        tableHeader = ['Name', ''];
+                    }else {
+                        tableHeader = ['Name', 'Ready', ''];
                     }
-                    _fcw = 'col-7';
+                    _fcw = 'col-10';
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ['Name', 'URL', ''];
                     _fcw = 'col-6';
                     break;
                 default:
-                    tableHeader = ['Name','',''];
-                    _fcw = 'col-10';
+                    // tableHeader = ['Name','',''];
+                    // _fcw = 'col-10';
+                    tableHeader = ['Name', ''];
+                    _fcw = 'col-11';
                     break;
             }
 
@@ -135,45 +143,45 @@ function NodeComponent({
 
             setSelectedHealthyNodeCount(_healthyNodeCount);
         }
-    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks]);
+    }, [params.nodeType, podType, url, filteredNodes]);// , podLevelExternalLinks]);
 
-    const getPodRestartCount = (node: iNode) => {
-        let restartCount = '0'
-        if (node.info) {
-            for (const ele of node.info) {
-                if (ele.name === 'Restart Count') {
-                    restartCount = ele.value
-                    break
-                }
-            }
-        }
-        return restartCount
-    }
-
-    const getElapsedTime = (createdAt: Date) => {
-        const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
-        if (elapsedTime >= 0) {
-            const days = Math.floor(elapsedTime / (24 * 60 * 60)),
-                hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
-                mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
-                secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
-
-            const dh = `${days}d ${hrs}h`
-                .split(' ')
-                .filter((a) => !a.startsWith('0'))
-                .join(' ')
-            // f age is more than hours just show age in days and hours
-            if (dh.length > 0) {
-                return dh
-            }
-            //return age in minutes and seconds
-            return `${mins}m ${secs}s`
-                .split(' ')
-                .filter((a) => !a.startsWith('0'))
-                .join(' ')
-        }
-        return ''
-    }
+    // const getPodRestartCount = (node: iNode) => {
+    //     let restartCount = '0'
+    //     if (node.info) {
+    //         for (const ele of node.info) {
+    //             if (ele.name === 'Restart Count') {
+    //                 restartCount = ele.value
+    //                 break
+    //             }
+    //         }
+    //     }
+    //     return restartCount
+    // }
+    //
+    // const getElapsedTime = (createdAt: Date) => {
+    //     const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
+    //     if (elapsedTime >= 0) {
+    //         const days = Math.floor(elapsedTime / (24 * 60 * 60)),
+    //             hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
+    //             mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
+    //             secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
+    //
+    //         const dh = `${days}d ${hrs}h`
+    //             .split(' ')
+    //             .filter((a) => !a.startsWith('0'))
+    //             .join(' ')
+    //         // f age is more than hours just show age in days and hours
+    //         if (dh.length > 0) {
+    //             return dh
+    //         }
+    //         //return age in minutes and seconds
+    //         return `${mins}m ${secs}s`
+    //             .split(' ')
+    //             .filter((a) => !a.startsWith('0'))
+    //             .join(' ')
+    //     }
+    //     return ''
+    // }
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
@@ -233,10 +241,12 @@ function NodeComponent({
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && !!_currentNodeHeader && (
-                        <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
-                            <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
-                            { node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
-                            { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }  
+                        // <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
+                        //     <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
+                        //     { node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
+                        //     { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
+                        <div className="fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
+                            <span>{node.kind}</span>
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
@@ -307,6 +317,22 @@ function NodeComponent({
                                     })}
                                 </div>
                             </div>
+                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={podLevelExternalLinks}
+                                    podName={node.name}
+                                />
+                            )}
+                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={containerLevelExternalLinks}
+                                    podName={node['pNode']?.name}
+                                    containerName={node.name}
+                                    addExtraSpace={true}
+                                />
+                            )}
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -336,40 +362,40 @@ function NodeComponent({
                             </div>
                         )}
                     
-                        {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
-                                {node.kind !== 'Containers' && getPodRestartCount(node)}
-                            </div>
-                        )}
+                        {/*{params.nodeType === NodeType.Pod.toLowerCase() && (*/}
+                        {/*    <div className={'flex left col-1 pt-9 pb-9'}>*/}
+                        {/*        {node.kind !== 'Containers' && getPodRestartCount(node)}*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
 
-                        {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
-                                {getElapsedTime(new Date(node.createdAt))}
-                            </div>
-                        )}
+                        {/*{params.nodeType === NodeType.Pod.toLowerCase() && (*/}
+                        {/*    <div className={'flex left col-1 pt-9 pb-9'}>*/}
+                        {/*        {getElapsedTime(new Date(node.createdAt))}*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
 
-                    
-                        {params.nodeType!== NodeType.Service.toLocaleLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
-                                {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
-                                    <NodeLevelExternalLinks
-                                        helmAppDetails={appDetails}
-                                        nodeLevelExternalLinks={podLevelExternalLinks}
-                                        podName={node.name}
-                                    />   
-                                )}
-                            
-                                {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
-                                    <NodeLevelExternalLinks
-                                        helmAppDetails={appDetails}
-                                        nodeLevelExternalLinks={containerLevelExternalLinks}
-                                        podName={node['pNode']?.name}
-                                        containerName={node.name}
-                                        addExtraSpace={true}
-                                    />    
-                                )}
-                            </div>
-                        )}
+
+                        {/*{params.nodeType!== NodeType.Service.toLocaleLowerCase() && (*/}
+                        {/*    <div className={'flex left col-1 pt-9 pb-9'}>*/}
+                        {/*        {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    */}
+                        {/*            <NodeLevelExternalLinks*/}
+                        {/*                helmAppDetails={appDetails}*/}
+                        {/*                nodeLevelExternalLinks={podLevelExternalLinks}*/}
+                        {/*                podName={node.name}*/}
+                        {/*            />   */}
+                        {/*        )}*/}
+                        {/*    */}
+                        {/*        {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    */}
+                        {/*            <NodeLevelExternalLinks*/}
+                        {/*                helmAppDetails={appDetails}*/}
+                        {/*                nodeLevelExternalLinks={containerLevelExternalLinks}*/}
+                        {/*                podName={node['pNode']?.name}*/}
+                        {/*                containerName={node.name}*/}
+                        {/*                addExtraSpace={true}*/}
+                        {/*            />    */}
+                        {/*        )}*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
                       
 
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
