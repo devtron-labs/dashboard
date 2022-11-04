@@ -11,7 +11,7 @@ import {
     getWebhookDetailsURL,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
-import { NodeAttr, PipelineType } from '../../components/app/details/triggerView/types'
+import { CIPipelineNodeType, NodeAttr, PipelineType, WorkflowNodeType } from '../../components/app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { Link } from 'react-router-dom'
@@ -37,8 +37,8 @@ export interface WorkflowProps
         isWebhookCD?: boolean
     ) => void
     openEditWorkflow: (event, workflowId: number) => string
-    handleCISelect: (workflowId: string | number, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
-    addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => void
+    handleCISelect: (workflowId: string | number, type: CIPipelineNodeType) => void
+    addCIPipeline: (type: CIPipelineNodeType) => void
     addWebhookCD: (workflowId?: number | string) => void
     cdWorkflowList?: any[]
     showWebhookTippy?: boolean
@@ -112,16 +112,16 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     renderNodes() {
-        const ci = this.props.nodes.find((node) => node.type == 'CI')
-        const webhook = this.props.nodes.find((node) => node.type == 'WEBHOOK')
+        const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)
+        const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
         const _nodesData = this.getNodesData(ci?.id || webhook?.id ||'')
         const _nodes = _nodesData.nodes
 
         if (ci) {
             return _nodes.map((node: NodeAttr) => {
-                if (node.type == 'GIT') {
+                if (node.type == WorkflowNodeType.GIT) {
                     return this.renderSourceNode(node)
-                } else if (node.type == 'CI') {
+                } else if (node.type == WorkflowNodeType.CI) {
                     return this.renderCINodes(node)
                 } else if (_nodesData.cdNamesList.length > 0) {
                     return (
@@ -136,7 +136,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             })
         } else if (webhook) {
           return _nodes.map((node: NodeAttr) => {
-              if (node.type == 'WEBHOOK') {
+              if (node.type == WorkflowNodeType.WEBHOOK) {
                   return this.renderWebhookNode(node)
               } else if (_nodesData.cdNamesList.length > 0) {
                   return (
@@ -209,15 +209,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
               width={node.width}
               key={`webhook-${node.id}`}
               id={node.id}
-              workflowId={this.props.id}
-              isTrigger={false}
-              type={node.type}
-              title={node.title}
-              triggerType={node.triggerType}
-              description={node.description}
-              isExternalCI={node.isExternalCI}
-              isLinkedCI={node.isLinkedCI}
-              linkedCount={node.linkedCount}
               to={this.openWebhookDetails(node)}
               configDiffView={this.props.cdWorkflowList?.length > 0}
           />
@@ -336,7 +327,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderWorkflow() {
         let ciPipelineId = 0
-        let ciPipeline = this.props.nodes.find((nd) => nd.type == 'CI')
+        let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
 

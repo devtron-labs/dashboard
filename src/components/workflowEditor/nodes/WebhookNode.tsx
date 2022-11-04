@@ -2,33 +2,19 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { ConditionalWrap } from '../../common'
+import { WebhookNodeProps } from '../types'
 
-export interface WebhookNodeProps {
-    x: number
-    y: number
-    width: number
-    height: number
-    id: number
-    title: string
-    type: string
-    description: string
-    workflowId?: number
-    triggerType: string
-    isLinkedCI: boolean
-    isExternalCI: boolean
-    isTrigger: boolean
-    linkedCount: number
-    to?: string
-    configDiffView?: boolean
-}
-
-export class WebhookNode extends Component<WebhookNodeProps> {
-    renderWebhookCard() {
+export function WebhookNode({ x, y, width, height, id, to, configDiffView }: WebhookNodeProps) {
+    const renderWebhookCard = (): JSX.Element => {
         return (
-            <div className="workflow-node cursor pl-10">
+            <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
                 <ConditionalWrap
-                    condition={!!this.props.to}
-                    wrap={(children) => <Link to={this.props.to} className="dc__no-decor">{children}</Link>}
+                    condition={!!to}
+                    wrap={(children) => (
+                        <Link to={to} className="dc__no-decor">
+                            {children}
+                        </Link>
+                    )}
                 >
                     <div className="workflow-node__title flex">
                         <div className="workflow-node__full-width-minus-Icon">
@@ -42,19 +28,17 @@ export class WebhookNode extends Component<WebhookNodeProps> {
         )
     }
 
-    render() {
-        return (
-            <foreignObject
-                className="data-hj-whitelist"
-                key={`static-${this.props.id}`}
-                x={this.props.x}
-                y={this.props.y}
-                width={this.props.width}
-                height={this.props.height}
-                style={{ overflow: 'visible' }}
-            >
-                {this.renderWebhookCard()}
-            </foreignObject>
-        )
-    }
+    return (
+        <foreignObject
+            className="data-hj-whitelist"
+            key={`static-${id}`}
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            style={{ overflow: 'visible' }}
+        >
+            {renderWebhookCard()}
+        </foreignObject>
+    )
 }

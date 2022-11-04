@@ -469,9 +469,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    handleTriggerTypeChange = (e) => {
+    handleTriggerTypeChange = (selectedTriggerType: string) => {
         let { pipelineConfig } = { ...this.state }
-        pipelineConfig.triggerType = e.target.dataset.triggerType
+        pipelineConfig.triggerType = selectedTriggerType
         this.setState({ pipelineConfig })
     }
 
@@ -1104,8 +1104,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                       className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
                           this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
                       }`}
-                      data-triggerType={TriggerType.Auto}
-                      onClick={this.handleTriggerTypeChange}
+                      onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
                   >
                       <BotIcon className="icon-dim-20 mr-12" />
                       <div>
@@ -1117,8 +1116,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                       className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
                           this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
                       }`}
-                      data-triggerType={TriggerType.Manual}
-                      onClick={this.handleTriggerTypeChange}
+                      onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
                   >
                       <PersonIcon className="icon-dim-20 mr-12" />
                       <div>
