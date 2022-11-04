@@ -10,11 +10,14 @@ import { Moment12HourFormat } from '../../../../config'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ErrorBar from '../../../common/error/ErrorBar'
 import IndexStore from '../../../v2/appDetails/index.store'
+import { useRouteMatch } from 'react-router-dom'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
+    const { url } = useRouteMatch();
+
     const renderIcon = (iconState: string): JSX.Element => {
         switch (iconState) {
             case 'success':
@@ -55,7 +58,7 @@ export default function DeploymentStatusDetailBreakdown({
     }
     return (
         <>
-            <ErrorBar appDetails={_appDetails} />
+           {url.includes('/cd-details') ? null :  <ErrorBar appDetails={_appDetails} /> }
 
             <div className="deployment-status-breakdown-container pl-20 pr-20">
                 {deploymentStatusDetailsBreakdownData.deploymentError && (
