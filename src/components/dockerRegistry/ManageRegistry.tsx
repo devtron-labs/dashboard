@@ -19,14 +19,9 @@ import {
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
+import { CredentialType, ManageRegistryType } from './dockerType'
 
-export const CredentialType = {
-    SAME_AS_REGISTRY: 'SAME_AS_REGISTRY',
-    NAME: 'NAME',
-    CUSTOM_CREDENTIAL: 'CUSTOM_CREDENTIAL',
-}
-
-function ManageResgistry({
+function ManageRegistry({
     clusterOption,
     blackList,
     setBlackList,
@@ -43,7 +38,7 @@ function ManageResgistry({
     ignoredClusterList,
     customCredential,
     setCustomCredential,
-}) {
+}: ManageRegistryType) {
     const [showAlertBar, setAlertBar] = useState(false)
 
     const toggleBlackListEnabled = () => {
@@ -364,4 +359,4 @@ function ManageResgistry({
     )
 }
 
-export default ManageResgistry
+export default ManageRegistry
