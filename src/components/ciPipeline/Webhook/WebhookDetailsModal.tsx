@@ -305,7 +305,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     }
 
     const handleTokenChange = (e): void => {
-        setTryoutAPIToken(e.target.vakue)
+        setTryoutAPIToken(e.target.value)
     }
 
     const renderWebhookURLTokenContainer = (): JSX.Element => {
@@ -320,7 +320,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                         type="text"
                         placeholder="Enter API token"
                         className="bcn-0 dc__no-border form__input"
-                        onClick={handleTokenChange}
+                        onChange={handleTokenChange}
                         value={tryoutAPIToken}
                     />
                 </div>
@@ -697,27 +697,6 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                             </div>
                         </div>
                     ))}
-                    {/* {renderResponseRow(
-                        200,
-                        'Create or Update helm application response',
-                        selectedResponse200Tab,
-                        setResponse200Tab,
-                        sampleJSON,
-                    )}
-                    {renderResponseRow(
-                        400,
-                        'If request is not correct, then this error is thrown',
-                        selectedResponse400Tab,
-                        setResponse400Tab,
-                        sampleJSON,
-                    )}
-                    {renderResponseRow(
-                        401,
-                        'If the user is not authenicated, then this error is thrown',
-                        selectedResponse401Tab,
-                        setResponse401Tab,
-                        sampleJSON,
-                    )} */}
                 </div>
             </div>
         )
@@ -726,7 +705,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     const executeWebhook = async (): Promise<void> => {
         setWebhookExecutionLoader(true)
         try {
-            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, modifiedSamplePayload)
+            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, samplePayload)
             setWebhookExecutionLoader(false)
         } catch (error) {
             setWebhookExecutionLoader(false)
