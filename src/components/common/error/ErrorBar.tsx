@@ -5,7 +5,7 @@ import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInf
 import { AppDetails } from '../../v2/appDetails/appDetails.type'
 
 function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
-    let isImagePullBackOff
+    let isImagePullBackOff = false
     for (let index = 0; index < appDetails.resourceTree.nodes.length; index++) {
         const node = appDetails.resourceTree.nodes[index]
         if (node.info?.length) {
