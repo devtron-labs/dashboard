@@ -43,9 +43,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     const [tokenName, setTokenName] = useState<string>('')
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
-    const [selectedResponse200Tab, setResponse200Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
-    const [selectedResponse400Tab, setResponse400Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
-    const [selectedResponse401Tab, setResponse401Tab] = useState<string>(RESPONSE_TAB_LIST[0].key)
+    const [webhookResponse, setWebhookResponse] = useState<string>(RESPONSE_TAB_LIST[0].key)
     const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
     const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(undefined)
@@ -76,6 +74,31 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         }
     }
 
+    const flattenObject = (ob: Object, tableName: string): Record<string, SchemaType> => {
+        let toReturn = {}
+        toReturn[tableName] = {}
+        for (let key in ob) {
+            if (!ob.hasOwnProperty(key)) continue
+            const currentElement = ob[key]
+            if (currentElement.child) {
+                var flatObject = flattenObject(
+                    currentElement.dataType === 'Array' ? currentElement.child[0] : currentElement.child,
+                    key,
+                )
+                currentElement.createLink = true
+                currentElement.dataType = key
+                delete currentElement.child
+                for (var x in flatObject) {
+                    if (!flatObject.hasOwnProperty(x)) continue
+                    toReturn[key] = flatObject[x]
+                }
+            }
+
+            toReturn[tableName][key] = currentElement
+        }
+        return toReturn
+    }
+
     const getData = async (): Promise<void> => {
         setLoader(true)
         try {
@@ -86,9 +109,14 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
             const _isSuperAdmin = _userRole?.superAdmin
             setIsSuperAdmin(_isSuperAdmin)
             _webhookDetails.payloadOption.map((option) => {
-                option.isSelected = option.key === 'dockerImage'
-                option.optional = option.key !== 'dockerImage'
+                option.isSelected = option.mandatory
                 return option
+            })
+            _webhookDetails.schema = flattenObject(_webhookDetails.schema, 'root')
+            _webhookDetails.responses.map((response) => {
+                response.description.schema = flattenObject(response.description.schema, 'root')
+                response.selectedTab = RESPONSE_TAB_LIST[0].key
+                return response
             })
             setWebhookDetails(_webhookDetails)
             const parsedPayload = JSON.parse(_webhookDetails['payload'])
@@ -171,11 +199,12 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
     const generateTabHeader = (
         tabList: TabDetailsType[],
         selectedTab: string,
-        setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
+        setSelectedTab: (selectedTab: string, index: number) => void | React.Dispatch<React.SetStateAction<string>>,
         isChildTab?: boolean,
+        index?: number,
     ): JSX.Element => {
         const tabClickHandler = (e): void => {
-            setSelectedTab(e.currentTarget.dataset.key)
+            setSelectedTab(e.currentTarget.dataset.key, index)
         }
         return (
             <ul role="tablist" className={`tab-list ${isChildTab ? '' : 'dc__border-bottom'}`}>
@@ -416,7 +445,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
-    const renderSchema = (schemaData: Record<string, SchemaType>): JSX.Element => {
+    const renderSchema = (schemaData: SchemaType): JSX.Element => {
         return (
             <div className="dc__border-top">
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">
@@ -430,7 +459,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                     return (
                         <div className="json-schema-row pt-8 pb-8 fw-4 fs-12">
                             <span>{key}</span>
-                            <span>{data.child ? <a>{key}</a> : data.dataType}</span>
+                            <span>{data.createLink ? <a>{key}</a> : data.dataType}</span>
                             <span>{data.optional ? 'false' : 'true'}</span>
                             <span>{data.description}</span>
                         </div>
@@ -440,7 +469,26 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
-    const renderWebhookURLSection = (): JSX.Element | null => {
+    const renderSchemaSection = (schema: Record<string, SchemaType>): JSX.Element => {
+        return (
+            <div>
+                {renderSchema(schema['root'])}
+                {Object.keys(schema).map((key) => {
+                    const data = schema[key]
+                    if (key === 'root') return null
+                    else
+                        return (
+                            <>
+                                <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
+                                {renderSchema(schema[key])}
+                            </>
+                        )
+                })}
+            </div>
+        )
+    }
+
+    const renderWebhookURLSection = (): JSX.Element => {
         return (
             <div className="pt-16">
                 {renderWebhookURLContainer()}
@@ -448,7 +496,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
                 {generateTabHeader(REQUEST_BODY_TAB_LIST, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
                 {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[0].key && renderCodeSnippet(sampleJSON)}
-                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[1].key && renderSchema(webhookDetails.schema)}
+                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[1].key && renderSchemaSection(webhookDetails.schema)}
             </div>
         )
     }
@@ -457,13 +505,13 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         const index = +e.currentTarget.dataset.index
         const _webhookDetails = { ...webhookDetails }
         const currentOption = _webhookDetails.payloadOption[index]
-        if (!currentOption.optional) {
+        if (currentOption.mandatory) {
             return
         }
         const _samplePayload = { ...samplePayload }
         if (currentOption.isSelected) {
-            for (let index = 0; index < currentOption.keyObject.length; index++) {
-                const currentKeys = currentOption.keyObject[index].split('.')
+            for (let index = 0; index < currentOption.payloadKey.length; index++) {
+                const currentKeys = currentOption.payloadKey[index].split('.')
                 if (currentKeys.length === 1) {
                     delete _samplePayload[currentKeys[0]]
                 } else {
@@ -474,8 +522,8 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                 }
             }
         } else {
-            for (let index = 0; index < currentOption.keyObject.length; index++) {
-                const currentKeys = currentOption.keyObject[index].split('.')
+            for (let index = 0; index < currentOption.payloadKey.length; index++) {
+                const currentKeys = currentOption.payloadKey[index].split('.')
                 if (currentKeys.length === 1) {
                     _samplePayload[currentKeys[0]] = ''
                 } else {
@@ -506,12 +554,12 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                             key={`md-${index}`}
                             className={`dc__inline-block bw-1 br-4 mr-8 mb-8 pt-2 pr-8 pb-2 pl-8 ${
                                 option.isSelected ? 'bcb-1 eb-2' : 'en-2'
-                            } ${option.optional ? 'pointer' : ''}`}
+                            } ${option.mandatory ? '' : 'pointer'}`}
                             data-index={index}
                             onClick={addMetadata}
                         >
                             <div className="flex">
-                                {option.optional && (
+                                {!option.mandatory && (
                                     <>
                                         {option.isSelected ? (
                                             <Close className="icon-dim-16 mr-5" />
@@ -595,23 +643,30 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
         )
     }
 
-    const renderResponseRow = (
-        responseCode: number,
-        responseDescription: string,
-        selectedTab: string,
-        setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
-        value: string,
-    ): JSX.Element => {
-        return (
-            <div className="response-row pt-8 pb-8">
-                <div className="fs-13 fw-4 cn-9">{responseCode}</div>
-                <div>
-                    <div className="fs-13 fw-4 cn-9 mb-16"> {responseDescription}</div>
-                    {generateTabHeader(RESPONSE_TAB_LIST, selectedTab, setSelectedTab, true)}
-                    {renderCodeSnippet(value)}
-                </div>
-            </div>
-        )
+    // const renderResponseRow = (
+    //     responseCode: number,
+    //     responseDescription: string,
+    //     selectedTab: string,
+    //     setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
+    //     value: string,
+    // ): JSX.Element => {
+    //     return (
+    //         <div className="response-row pt-8 pb-8">
+    //             <div className="fs-13 fw-4 cn-9">{responseCode}</div>
+    //             <div>
+    //                 <div className="fs-13 fw-4 cn-9 mb-16"> {responseDescription}</div>
+    //                 {generateTabHeader(RESPONSE_TAB_LIST, selectedTab, setSelectedTab, true)}
+    //                 {renderCodeSnippet(value)}
+    //                 {renderSchemaSection}
+    //             </div>
+    //         </div>
+    //     )
+    // }
+
+    const setSelectedResponseTab = (selectedTab: string, index: number): void => {
+        const _webhookDetails = { ...webhookDetails }
+        _webhookDetails.responses[index].selectedTab = selectedTab
+        setWebhookDetails(_webhookDetails)
     }
 
     const renderSampleResponseSection = (): JSX.Element | null => {
@@ -623,7 +678,26 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                         <div>Code</div>
                         <div>Description</div>
                     </div>
-                    {renderResponseRow(
+                    {webhookDetails?.responses.map((response, index) => (
+                        <div className="response-row pt-8 pb-8">
+                            <div className="fs-13 fw-4 cn-9">{response.code}</div>
+                            <div>
+                                <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
+                                {generateTabHeader(
+                                    RESPONSE_TAB_LIST,
+                                    response.selectedTab,
+                                    setSelectedResponseTab,
+                                    true,
+                                    index,
+                                )}
+                                {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[0].key &&
+                                    renderCodeSnippet(formatSampleJson(response.description.exampleValue))}
+                                {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[1].key &&
+                                    renderSchemaSection(response.description.schema)}
+                            </div>
+                        </div>
+                    ))}
+                    {/* {renderResponseRow(
                         200,
                         'Create or Update helm application response',
                         selectedResponse200Tab,
@@ -643,7 +717,7 @@ export function WebhookDetails({ getWorkflows, close, deleteWorkflow }: WebhookD
                         selectedResponse401Tab,
                         setResponse401Tab,
                         sampleJSON,
-                    )}
+                    )} */}
                 </div>
             </div>
         )

@@ -26,9 +26,9 @@ export interface TokenPermissionType {
 
 interface PayloadOptionType {
     key: string
-    keyObject: string[]
+    payloadKey: string[]
     label: string
-    optional: boolean
+    mandatory: boolean
     isSelected: boolean
 }
 
@@ -38,13 +38,19 @@ export interface SchemaType {
     description: string
     example: string
     optional: boolean
+    createLink?: boolean
+}
+
+interface APIResponseDescriptionType {
+    description: string
+    exampleValue: Object
+    schema: Record<string, SchemaType>
 }
 
 interface APIResponseType {
     code: string
-    description: string
-    json: Object
-    schema: Record<string, SchemaType>
+    description: APIResponseDescriptionType
+    selectedTab: string
 }
 export interface WebhookDetailsType {
     accessKey: string
