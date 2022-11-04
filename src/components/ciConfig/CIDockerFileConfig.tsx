@@ -272,8 +272,9 @@ export default function CIDockerFileConfig({
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">
-                            {selectedMaterial?.checkoutPath}
-                            {ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'}
+                            {`${selectedMaterial?.checkoutPath}/${
+                                ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
+                            }`.replace('//', '/')}
                         </span>
                     ) : (
                         <div className="docker-file-container">
