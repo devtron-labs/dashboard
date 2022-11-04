@@ -1,7 +1,6 @@
 import { RouteComponentProps } from 'react-router';
 import { HostURLConfig } from '../../services/service.types';
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types';
-import { CIPipelineDataType } from '../ciPipeline/types';
 
 export interface WorkflowEditState {
     view: string;
@@ -27,6 +26,7 @@ export interface WorkflowEditState {
     cdLink?: string
     noGitOpsConfiguration?: boolean
     showWebhookTippy?: boolean
+    showOpenCIPipelineBanner?: boolean
 }
 
 export interface WorkflowEditProps

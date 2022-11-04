@@ -203,13 +203,60 @@ export interface BuildStageType {
     steps: StepType[]
 }
 
+export enum CIBuildType {
+    SELF_DOCKERFILE_BUILD_TYPE = 'self-dockerfile-build',
+    MANAGED_DOCKERFILE_BUILD_TYPE = 'managed-dockerfile-build',
+    BUILDPACK_BUILD_TYPE = 'buildpack-build',
+}
+
+export interface BuildPackConfigType {
+    builderId: string
+    language: string
+    languageVersion: string
+    projectPath: string
+    builderLangEnvParam?: string
+    currentBuilderLangEnvParam?: string
+    buildPacks?: any
+    args?: Record<string, string>
+}
+
+export interface DockerBuildConfigType {
+    dockerfileContent: string
+    dockerfileRelativePath: string
+    dockerfilePath?: string
+    dockerfileRepository?: string
+    args?: Record<string, string>
+    targetPlatform?: any
+    language?: string
+    languageFramework?: string
+}
+
+export interface CIBuildConfigType {
+    buildPackConfig: BuildPackConfigType
+    ciBuildType: CIBuildType
+    dockerBuildConfig: DockerBuildConfigType
+    gitMaterialId: number
+    id?: number
+}
+
+export const DockerConfigOverrideKeys = {
+    id: 'id',
+    ciBuildConfig: 'ciBuildConfig',
+    buildPackConfig: 'buildPackConfig',
+    dockerBuildConfig: 'dockerBuildConfig',
+    isDockerConfigOverridden: 'isDockerConfigOverridden',
+    dockerRegistry: 'dockerRegistry',
+    dockerRepository: 'dockerRepository',
+    repository_name: 'repository_name',
+    projectPath: 'projectPath',
+    dockerfile: 'dockerfile',
+    dockerfileRelativePath: 'dockerfileRelativePath',
+}
+
 export interface DockerConfigOverrideType {
     dockerRegistry: string
     dockerRepository: string
-    dockerBuildConfig: {
-        gitMaterialId: number
-        dockerfileRelativePath: string
-    }
+    ciBuildConfig: CIBuildConfigType
 }
 
 export interface FormType {

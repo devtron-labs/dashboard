@@ -133,7 +133,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             <div className="mt-16 flex left">
                                 <div className="w-50 mr-8">
                                     <label className="form__label mb-6">
-                                        Source type <span className="cr-5"> *</span>
+                                        Source Type <span className="cr-5"> *</span>
                                     </label>
                                     <ReactSelect
                                         className="workflow-ci__source"
