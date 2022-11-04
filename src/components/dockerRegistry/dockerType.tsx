@@ -36,4 +36,6 @@ export interface ManageRegistryType{
   ignoredClusterList: OptionType[]
   customCredential: CustomCredential
   setCustomCredential: React.Dispatch<React.SetStateAction<CustomCredential>>
+  setErrorValidation:  React.Dispatch<React.SetStateAction<boolean>>
+  errorValidation: boolean
 }

@@ -312,6 +312,7 @@ function DockerForm({
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
         isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : undefined,
     )
+    const [errorValidation, setErrorValidation] = useState<boolean>(false)
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
@@ -412,6 +413,7 @@ function DockerForm({
     }
 
     async function onSave() {
+        if(errorValidation) return null
         let awsRegion
         if (selectedDockerRegistryType.value === 'ecr') {
             awsRegion = fetchAWSRegion()
@@ -872,6 +874,8 @@ function DockerForm({
                     ignoredClusterList={ignoredClusterList}
                     setCustomCredential={setCustomCredential}
                     customCredential={customCredential}
+                    setErrorValidation={setErrorValidation}
+                    errorValidation={errorValidation}
                 />
             )}
 

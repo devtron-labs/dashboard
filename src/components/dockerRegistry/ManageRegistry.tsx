@@ -5,6 +5,7 @@ import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
 import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import error from '../../assets/icons/misc/errorInfo.svg'
 import Select from 'react-select'
 import {
     ClearIndicator,
@@ -13,7 +14,6 @@ import {
     MultiValueRemove,
     Option,
     RadioGroup,
-    useJsonYaml,
 } from '../common'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
@@ -37,8 +37,10 @@ function ManageRegistry({
     ignoredClusterList,
     customCredential,
     setCustomCredential,
+    setErrorValidation,
+    errorValidation
 }: ManageRegistryType) {
-    const [showAlertBar, setAlertBar] = useState(false)
+    const [showAlertBar, setAlertBar] = useState<boolean>(false)
 
     const toggleBlackListEnabled = () => {
         setBlackListEnabled(!blackListEnabled)
@@ -202,6 +204,12 @@ function ManageRegistry({
     const onClickSpecifyImagePullSecret = (e) => {
         if (credentialsType === CredentialType.NAME) {
             setCredentialValue(e.target.value)
+            if (!e.target.value){
+               setErrorValidation(true)
+               return null
+              }else{
+                setErrorValidation(false)
+              }
         } else {
             setCustomCredential({
                 ...customCredential,
@@ -280,18 +288,26 @@ function ManageRegistry({
                     </div>
                 )}
                 {credentialsType === CredentialType.NAME && (
-                    <div>
-                        <input
-                            tabIndex={2}
-                            placeholder="Name"
-                            className="form__input"
-                            name={CredentialType.NAME}
-                            value={credentialValue}
-                            onChange={onClickSpecifyImagePullSecret}
-                            autoFocus
-                            autoComplete="off"
-                        />
-                    </div>
+                    <>
+                        <div>
+                            <input
+                                tabIndex={2}
+                                placeholder="Name"
+                                className="form__input"
+                                name={CredentialType.NAME}
+                                value={credentialValue}
+                                onChange={onClickSpecifyImagePullSecret}
+                                autoFocus
+                                autoComplete="off"
+                            />
+                        </div>
+                        {errorValidation && (
+                            <span className="form__error">
+                                <img src={error} alt="" className="form__icon" />
+                                This is a required Field
+                            </span>
+                        )}
+                    </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
                     <div className="">
