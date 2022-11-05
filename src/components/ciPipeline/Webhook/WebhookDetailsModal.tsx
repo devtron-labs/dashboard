@@ -785,9 +785,9 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                             <div>Description</div>
                         </div>
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9">{'responseCode'}</div>
+                            <div className="fs-13 fw-4 cn-9">{'000'}</div>
                             <div>
-                                <div className="fs-13 fw-4 cn-9 mb-16"> {'responseDescription'}</div>
+                                <div className="fs-13 fw-4 cn-9 mb-16"> {'Some error'}</div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
                                 {renderCodeSnippet('value')}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
