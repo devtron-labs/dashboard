@@ -772,9 +772,9 @@ export const DeploymentTemplateEditorView = ({
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
             if (_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length <= 2) {
-                setTimeout(()=>{
-                  envVariableSectionRef.current.scrollIntoView()
-                },0)
+                setTimeout(() => {
+                    envVariableSectionRef.current.scrollIntoView()
+                }, 0)
             }
         }
     }
@@ -912,7 +912,7 @@ export const DeploymentTemplateEditorView = ({
                                 <Toggle
                                     selected={basicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleIngressEnabledToggle}
-                                    disabled={readOnly}
+                                    disabled={readOnly || basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
                                 />
                             </div>
                         </div>
@@ -1029,10 +1029,7 @@ export const DeploymentTemplateEditorView = ({
                             </div>
                         </div>
                         {basicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map((envVariable: string, index: number) => (
-                            <div
-                                className="row-container mb-4"
-                                key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}
-                            >
+                            <div className="row-container mb-4" key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}>
                                 <div />
                                 <div>
                                     <input
@@ -1073,9 +1070,7 @@ export const DeploymentTemplateEditorView = ({
                         ))}
                     </div>
                 )}
-                <div
-                  ref={envVariableSectionRef}>
-                </div>
+                <div ref={envVariableSectionRef}></div>
             </div>
             <InfoColourBar
                 message="To modify additional configurations"
