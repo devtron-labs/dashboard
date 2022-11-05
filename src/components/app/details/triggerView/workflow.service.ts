@@ -181,6 +181,12 @@ export function processWorkflow(
                     dn.parentPipelineType = WorkflowNodeType.CD
                     dn.parentEnvironmentName = node.environmentName
                 })
+                if (
+                    dimensions.type === WorkflowDimensionType.CREATE &&
+                    node.parentPipelineType === PipelineType.WEBHOOK
+                ) {
+                    node.x = node.x - 40
+                }
                 node.preNode && finalWorkflow.push(node.preNode)
                 finalWorkflow.push(node)
                 node.postNode && finalWorkflow.push(node.postNode)
@@ -335,28 +341,27 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
     return ciNode
 }
 
-
 function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowDimensions): NodeAttr {
-  return {
-      isSource: true,
-      isGitSource: false,
-      isRoot: false,
-      id: String(webhookDetails.id),
-      x: 0,
-      y: 0,
-      height: dimensions.staticNodeSizes.nodeHeight,
-      width: dimensions.staticNodeSizes.nodeWidth,
-      title: 'Webhook',
-      status: DEFAULT_STATUS,
-      type: WorkflowNodeType.WEBHOOK,
-      inputMaterialList: [],
-      downstreams: [],
-      isExternalCI: true,
-      isLinkedCI: false,
-      linkedCount: 0,
-      sourceNodes: [],
-      downstreamNodes: new Array<NodeAttr>(),
-  } as NodeAttr
+    return {
+        isSource: true,
+        isGitSource: false,
+        isRoot: false,
+        id: String(webhookDetails.id),
+        x: 0,
+        y: 0,
+        height: dimensions.staticNodeSizes.nodeHeight,
+        width: dimensions.staticNodeSizes.nodeWidth,
+        title: 'Webhook',
+        status: DEFAULT_STATUS,
+        type: WorkflowNodeType.WEBHOOK,
+        inputMaterialList: [],
+        downstreams: [],
+        isExternalCI: true,
+        isLinkedCI: false,
+        linkedCount: 0,
+        sourceNodes: [],
+        downstreamNodes: new Array<NodeAttr>(),
+    } as NodeAttr
 }
 
 function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {
