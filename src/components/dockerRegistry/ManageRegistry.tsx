@@ -61,8 +61,11 @@ function ManageRegistry({
     }
 
     const getPlaceholder = (): string => {
+        console.log(blackList, whiteList)
         const isWhiteList = whiteList.length > 0
-        if (isWhiteList) {
+        if ((whiteList.length === 0 && blackList.length === 5) || (blackList.length === 0 && whiteList.length === 5)) {
+            return 'None'
+        } else if (isWhiteList) {
             return `Cluster except ${appliedClusterList}`
         } else {
             return `All Cluster except ${ignoredClusterList}`
@@ -135,7 +138,10 @@ function ManageRegistry({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') {
             setBlackList([])
-        } else if ((args[0].action === 'select-option' && args[0].option.value === '-1') || (!areAllOptionsSelected &&  _selectedOption.length === clusterOption.length - 1)) {
+        } else if (
+            (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+            (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
+        ) {
             setBlackList(clusterOption)
         } else if (areAllOptionsSelected) {
             setBlackList(_selectedOption.filter((option) => option.value !== '-1'))
@@ -143,16 +149,19 @@ function ManageRegistry({
     }
 
     const onWhiteListClusterSelection = (_selectedOption, ...args) => {
-      setWhiteList((_selectedOption || []) as any)
-      const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
-      if (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') {
-          setWhiteList([])
-      } else if ((args[0].action === 'select-option' && args[0].option.value === '-1') || (!areAllOptionsSelected &&  _selectedOption.length === clusterOption.length - 1)) {
-          setWhiteList(clusterOption)
-      } else if (areAllOptionsSelected) {
-          setWhiteList(_selectedOption.filter((option) => option.value !== '-1'))
-      }
-  }
+        setWhiteList((_selectedOption || []) as any)
+        const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
+        if (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') {
+            setWhiteList([])
+        } else if (
+            (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+            (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
+        ) {
+            setWhiteList(clusterOption)
+        } else if (areAllOptionsSelected) {
+            setWhiteList(_selectedOption.filter((option) => option.value !== '-1'))
+        }
+    }
 
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
@@ -228,7 +237,7 @@ function ManageRegistry({
                     options={clusterOption}
                     hideSelectedOptions={false}
                     value={whiteList}
-                    onChange={(selected, { ...args}) => onWhiteListClusterSelection(selected, { ...args })}
+                    onChange={(selected, { ...args }) => onWhiteListClusterSelection(selected, { ...args })}
                 />
             )
         }
