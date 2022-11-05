@@ -6,16 +6,6 @@ export function getGeneratedAPITokenList(): Promise<ResponseType> {
     return get(Routes.API_TOKEN)
 }
 
-export function getWebhookAPITokenList(
-    projectName: string,
-    environmentName: string,
-    appName: string,
-): Promise<ResponseType> {
-    return get(
-        `${Routes.API_TOKEN_WEBHOOK}?projectName=${projectName}&environmentName=${environmentName}&appName=${appName}`,
-    )
-}
-
 export function createGeneratedAPIToken(payload): Promise<ResponseType> {
     return post(Routes.API_TOKEN, payload)
 }

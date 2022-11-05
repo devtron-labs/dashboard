@@ -156,7 +156,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.setState(
                     {
                         strategies,
-                        isAdvanced: !this.isWebhookCD && this.props.match.params.cdPipelineId ? true : false,
+                        isAdvanced: this.props.match.params.cdPipelineId ? true : false,
                         view: this.props.match.params.cdPipelineId ? ViewType.LOADING : ViewType.FORM,
                     },
                     () => {
