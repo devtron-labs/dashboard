@@ -21,7 +21,7 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
     }
 
     return (
-        appDetails && isImagePullBackOff && !appDetails?.externalCi && (
+        appDetails && isImagePullBackOff && !appDetails.externalCi && (
             <div className="er-2 bw-1 br-4 m-20 fs-13">
                 <div className="bcr-1 pl-12 pr-12 pt-8 pb-8 dc__border-bottom-r2 flex left">
                     <ErrorInfo className="icon-dim-24 mr-8" /> <span className="mr-8">IMAGEPULLBACKOFF:</span>

@@ -317,10 +317,10 @@ function ManageRegistry({
                         name="credentials"
                         initialTab={
                             credentialsType === CredentialType.SAME_AS_REGISTRY
-                                ? 'SAME_AS_REGISTRY'
+                                ? CredentialType.SAME_AS_REGISTRY
                                 : credentialsType === CredentialType.NAME
-                                ? 'NAME'
-                                : 'CUSTOM_CREDENTIAL'
+                                ? CredentialType.NAME
+                                : CredentialType.CUSTOM_CREDENTIAL=''
                         }
                         disabled={false}
                         onChange={onHandleCredentialTypeChange}

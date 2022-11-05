@@ -32,27 +32,27 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
     if (conditions.length === 0 && !isImagePullBackOff) return null
 
     const renderConditionErrorMessage = () => {
-        return !appDetails?.ipsAccessProvided ? (
+        return !appDetails.ipsAccessProvided ? (
             <div onClick={showApplicationDetailedModal}>
-                '{appDetails?.clusterName}' cluster does not have permission to pull container image from ‘
-                {appDetails?.dockerRegistryId}’ registry. <span className="cb-5 cursor fw-6">How to resolve?</span>
+                '{appDetails.clusterName}' cluster does not have permission to pull container image from ‘
+                {appDetails.dockerRegistryId}’ registry. <span className="cb-5 cursor fw-6">How to resolve?</span>
             </div>
         ) : (
             <div onClick={showApplicationDetailedModal}>
-                {appDetails?.clusterName} cluster could not pull container image from
-                {appDetails?.dockerRegistryId}’ registry.<span className="cb-5 cursor fw-6">How to resolve?</span>
+                {appDetails.clusterName} cluster could not pull container image from
+                {appDetails.dockerRegistryId}’ registry.<span className="cb-5 cursor fw-6">How to resolve?</span>
             </div>
         )
     }
 
-    return (
+    return (appDetails &&
         <div className="top flex left column w-100 bcr-1 pl-25 pr-25 mb-16">
             <div className="flex left w-100 " style={{ height: '56px' }}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
-                <span className="cr-5 fs-14 fw-6">{conditions.length + (isImagePullBackOff && !appDetails?.externalCi ? 1 : 0)} Errors</span>
+                <span className="cr-5 fs-14 fw-6">{conditions.length + (isImagePullBackOff && !appDetails.externalCi ? 1 : 0)} Errors</span>
                 {collapsed && (
                     <span className="fs-12 cn-9 ml-24 w-80 dc__ellipsis-right">
-                        {isImagePullBackOff && !appDetails?.externalCi && 'IMAGEPULLBACKOFF'}
+                        {isImagePullBackOff && !appDetails.externalCi && 'IMAGEPULLBACKOFF'}
                         {conditions.length > 0 && ', '}
                         {conditions.map((condition) => condition.type).join(', ')}
                     </span>
@@ -74,7 +74,7 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
                                 <td className="pl-24 pb-8">{condition.message}</td>
                             </tr>
                         ))}
-                        {isImagePullBackOff && !appDetails?.externalCi && (
+                        {isImagePullBackOff && !appDetails.externalCi && (
                             <tr>
                                 <td className="pb-8" style={{ minWidth: '200px' }}>
                                     ImagePullBackOff

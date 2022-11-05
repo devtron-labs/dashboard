@@ -9,7 +9,7 @@ import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
 
-export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType,  }: DeploymentDetailStepsType) {
+export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
