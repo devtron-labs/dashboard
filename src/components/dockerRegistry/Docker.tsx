@@ -32,6 +32,8 @@ import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
 import Reload from '../Reload/Reload'
+import TippyWhite from '../common/TippyWhite'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -408,15 +410,19 @@ function DockerForm({
                         ? JSON.stringify(customCredential)
                         : credentialValue,
                 appliedClusterIdsCsv: appliedClusterIdsCsv,
-                ignoredClusterIdsCsv: whiteList.length === 0 && (blackList.length === 0  || blackList.findIndex((cluster) => cluster.value === '-1' ) >= 0) ? '-1' : ignoredClusterIdsCsv,
+                ignoredClusterIdsCsv:
+                    whiteList.length === 0 &&
+                    (blackList.length === 0 || blackList.findIndex((cluster) => cluster.value === '-1') >= 0)
+                        ? '-1'
+                        : ignoredClusterIdsCsv,
             },
         }
     }
 
     async function onSave() {
         if (credentialsType === CredentialType.NAME && !credentialValue) {
-          setErrorValidation(true)
-          return
+            setErrorValidation(true)
+            return
         }
 
         let awsRegion
@@ -833,27 +839,26 @@ function DockerForm({
                 </div>
             )}
             {!showManageModal ? (
-                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20">
+                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20 fs-13">
                     <div className="flex dc__content-space">
-                        <div className="cn-7 flex left fs-13">
+                        <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
-                            <Tippy
-                                className="default-tt pl-20"
-                                arrow={true}
+                            <TippyWhite
+                                className="w-332"
                                 placement="top"
-                                content={
-                                    <div>
-                                        <div className="fw-6">Manage access of registry credentials</div>
-                                        <div style={{ display: 'block', width: '160px' }}>
-                                            Clusters need permission to pull container image from private repository in
+                                Icon={HelpIcon}
+                                iconClass="fcv-5"
+                                heading="Manage access of registry credentials"
+                                infoText="Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
-                                        </div>
-                                    </div>
-                                }
+                                        "
+                                showCloseButton={true}
+                                trigger="click"
+                                interactive={true}
                             >
-                                <Question className="icon-dim-20 cursor ml-8" />
-                            </Tippy>
+                                <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                            </TippyWhite>
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>
                             Manage

@@ -8,7 +8,7 @@ interface TippyWhiteProps {
     Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     iconClass?: string
     heading: string
-    infoText?: string
+    infoText?: string | JSX.Element
     showCloseButton?: boolean
     interactive?: boolean
     trigger?: string

@@ -13,8 +13,8 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
-import Tippy from '@tippyjs/react'
-import { OptionType } from '../userGroups/userGroups.types'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
+import TippyWhite from '../common/TippyWhite'
 
 function ManageRegistry({
     clusterOption,
@@ -172,6 +172,7 @@ function ManageRegistry({
             return (
                 <Select
                     isDisabled={whiteList.length > 0}
+                    placeholder= 'Select cluster'
                     components={{
                         MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
                         DropdownIndicator: null,
@@ -218,6 +219,7 @@ function ManageRegistry({
                         MultiValueRemove,
                         Option,
                     }}
+                    placeholder= 'Select cluster'
                     isDisabled={blackList.length > 0}
                     styles={{
                         ...multiSelectStyles,
@@ -273,23 +275,22 @@ function ManageRegistry({
             >
                 <div className="flex left">
                     <div className="fw-6">Manage access of registry credentials</div>
-                    <Tippy
-                        className="default-tt pl-20"
-                        arrow={true}
-                        placement="top"
-                        content={
-                            <div>
-                                <div className="fw-6">Manage access of registry credentials</div>
-                                <div style={{ display: 'block', width: '160px' }}>
-                                    Clusters need permission to pull container image from private repository in the
-                                    registry. You can control which clusters have access to the pull image from private
-                                    repositories.
-                                </div>
-                            </div>
-                        }
-                    >
-                        <Question className="icon-dim-20 cursor ml-8" />
-                    </Tippy>
+                    <TippyWhite
+                                className="w-332"
+                                placement="top"
+                                Icon={HelpIcon}
+                                iconClass="fcv-5"
+                                heading="Manage access of registry credentials"
+                                infoText="Clusters need permission to pull container image from private repository in
+                                            the registry. You can control which clusters have access to the pull image
+                                            from private repositories.
+                                        "
+                                showCloseButton={true}
+                                trigger="click"
+                                interactive={true}
+                            >
+                                <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                            </TippyWhite>
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>
@@ -381,7 +382,7 @@ function ManageRegistry({
                                 <div className="mb-6"> Registry URL</div>
                                 <input
                                     tabIndex={3}
-                                    placeholder="Enter registry name"
+                                    placeholder="Enter registry URL"
                                     className="form__input"
                                     name="server"
                                     value={customCredential?.server}
