@@ -1,5 +1,5 @@
 .white-card__docker-config {
-    padding: 20px 24px 12px 24px;
+    padding: 16px;
 
     .form-row {
         margin-bottom: 24px;
@@ -29,7 +29,21 @@
     .form-row__docker {
         display: grid;
         grid-template-columns: 240px 1fr;
-        grid-column-gap: 16px;
+        grid-column-gap: 8px;
+
+        &.buildpack-option-wrapper {
+            display: flex;
+            flex-direction: column;
+            column-gap: 8px;
+
+            .project-material-options,
+            .buildpack-options,
+            .buildpack-language-options {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 8px;
+            }
+        }
 
         .popup-button {
             height: 40px;
@@ -46,7 +60,8 @@
                 bottom: 0;
             }
 
-            .docker-flie-container {
+            .docker-file-container,
+            .project-path-container {
                 display: flex;
 
                 .checkout-path-container {
@@ -96,6 +111,25 @@
         padding: 2px;
         padding-left: 6px;
     }
+
+    .build-type-selection {
+        top: 0;
+        right: 0;
+        border-bottom-left-radius: 4px;
+        border-top-right-radius: 3px;
+
+        svg {
+            path {
+                stroke-width: 4px;
+            }
+        }
+    }
+
+    .create-dockerfile-option {
+        .code-editor__header {
+            background-color: white;
+        }
+    }
 }
 
 .docker__dropdown {
@@ -111,39 +145,37 @@
         padding: 24px 0 16px;
         margin-bottom: 0;
 
-        .white-card__docker-config {
-            padding: 16px;
-
-            .form-row__docker {
-                align-items: flex-end;
-
-                &:last-of-type {
-                    margin-bottom: 0;
-
-                    .form__field {
-                        margin-bottom: 0;
-                    }
+        .form-row__docker {
+            &.buildpack-option-wrapper {
+                .project-material-options {
+                    margin-bottom: 16px;
                 }
-            }
-        }
 
-        .allow-config-override {
-            &.cta {
-                top: 16px;
-                right: 16px;
+                .form__field {
+                    margin-bottom: 0;
+                }
             }
         }
     }
 }
 
+.app-compose__main {
+    .save-build-configuration {
+        bottom: 0;
+        right: 0;
+        padding: 12px 20px;
+        width: calc(100% - 240px);
+    }
+}
+
 .modal__body {
     &.modal__config-override-diff {
-        width: 1024px;
+        width: 100%;
         height: 100%;
         margin-top: 0;
 
         .config-override-diff__view {
-            height: calc(100% - 116px);
+            height: calc(100% - 56px);
         }
 
         .workflow {
@@ -168,9 +200,6 @@
         }
 
         .config-override-diff__values {
-            display: grid;
-            grid-template-columns: 50% 50%;
-            grid-template-rows: auto;
             background: white;
 
             .code-editor-green-diff {

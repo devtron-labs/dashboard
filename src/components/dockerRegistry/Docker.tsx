@@ -86,7 +86,7 @@ export default function Docker({ ...props }) {
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">Container registries</h2>
-            <h5 className="form__subtitle">
+            <p className="form__subtitle">
                 Manage your organization’s container registries.&nbsp;
                 <a
                     className="dc__link"
@@ -96,7 +96,7 @@ export default function Docker({ ...props }) {
                 >
                     Learn more
                 </a>
-            </h5>
+            </p>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
                     reload={reload}

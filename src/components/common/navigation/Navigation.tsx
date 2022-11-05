@@ -18,7 +18,7 @@ import { getLoginInfo } from '../index'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
-import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
@@ -93,9 +93,6 @@ const NavigationStack = {
 }
 interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
-    fetchingServerInfo: boolean
-    serverInfo: ServerInfo
-    getCurrentServerInfo: (section: string) => Promise<void>
     moduleInInstallingState: string
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
 }

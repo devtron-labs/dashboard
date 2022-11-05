@@ -123,7 +123,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string): { navItem
             currentStep: completedSteps,
         },
         {
-            title: 'Docker Build Config',
+            title: 'Build Configuration',
             href: `/app/${appId}/edit/docker-build-config`,
             stage: STAGE_NAME.CI_CONFIG,
             isLocked: !isUnlocked.dockerBuildConfig,
@@ -356,12 +356,19 @@ export default function AppConfig() {
         return null
     }
 
+    function getAdditionalParentClass() {
+        return location.pathname.includes(`/${URLS.APP_DOCKER_CONFIG}`) ||
+            (typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1')
+            ? 'dc__position-rel'
+            : ''
+    }
+
     if (state.view === ViewType.LOADING) return <Progressing pageLoader />
     else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />
     else
         return (
             <>
-                <div className="app-compose">
+                <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
                         className={`app-compose__nav flex column left top dc__position-rel dc__overflow-scroll ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
@@ -461,7 +468,7 @@ function AppComposeRouter({
     isCDPipeline,
     environments,
     setEnvironments,
-    workflowsRes
+    workflowsRes,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -485,15 +492,12 @@ function AppComposeRouter({
                     </Route>
                     {isUnlocked.dockerBuildConfig && (
                         <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
-                            <>
-                                <CIConfig respondOnSuccess={respondOnSuccess} />
-                                <NextButton
-                                    currentStageName={STAGE_NAME.CI_CONFIG}
-                                    navItems={navItems}
-                                    isDisabled={!isUnlocked.deploymentTemplate}
-                                    isCiPipeline={isCiPipeline}
-                                />
-                            </>
+                            <CIConfig
+                                respondOnSuccess={respondOnSuccess}
+                                isCDPipeline={isCDPipeline}
+                                isCiPipeline={isCiPipeline}
+                                navItems={navItems}
+                            />
                         </Route>
                     )}
                     {isUnlocked.deploymentTemplate && (
