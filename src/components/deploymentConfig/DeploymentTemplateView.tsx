@@ -827,7 +827,7 @@ export const DeploymentTemplateEditorView = ({
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={schemas}
-                    loading={chartConfigLoading || !value || fetchingValues}
+                    loading={chartConfigLoading || value === undefined || fetchingValues}
                     height={getCodeEditorHeight(isUnSet, isEnvOverride, openComparison, showReadme)}
                     diffView={openComparison}
                     readOnly={readOnly}
