@@ -49,14 +49,15 @@ export default function Docker({ ...props }) {
         await getClusterListMinWithoutAuth()
             .then((clusterListRes) => {
                 if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
-                    setClusterOptions(
-                        clusterListRes.result.map((cluster) => {
+                    setClusterOptions([
+                        { label: 'All clusters', value: '-1' },
+                        ...clusterListRes.result.map((cluster) => {
                             return {
                                 label: cluster.cluster_name,
                                 value: cluster.id,
                             }
                         }),
-                    )
+                    ])
                 }
                 setClusterLoader(false)
             })
@@ -282,11 +283,11 @@ function DockerForm({
 
     const _ignoredClusterIdsCsv = !ipsConfig
         ? []
-        : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != "-1"
+        : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != '-1'
         ? ipsConfig.ignoredClusterIdsCsv.split(',').map((clusterId) => {
               return clusterlistMap.get(clusterId)
           })
-        : !ipsConfig.appliedClusterIdsCsv || ipsConfig.ignoredClusterIdsCsv === "-1"
+        : !ipsConfig.appliedClusterIdsCsv || ipsConfig.ignoredClusterIdsCsv === '-1'
         ? clusterOption
         : []
 
@@ -312,7 +313,7 @@ function DockerForm({
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
         isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : '',
     )
-    const [errorValidation, setErrorValidation] = useState<boolean>(true)
+    const [errorValidation, setErrorValidation] = useState<boolean>(false)
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
@@ -407,19 +408,17 @@ function DockerForm({
                         ? JSON.stringify(customCredential)
                         : credentialValue,
                 appliedClusterIdsCsv: appliedClusterIdsCsv,
-                ignoredClusterIdsCsv: whiteList.length === 0 && blackList.length === 0 ? '-1' : ignoredClusterIdsCsv,
+                ignoredClusterIdsCsv: whiteList.length === 0 && (blackList.length === 0  || blackList.findIndex((cluster) => cluster.value === '-1' ) >= 0) ? '-1' : ignoredClusterIdsCsv,
             },
         }
     }
 
     async function onSave() {
-      let _isValidated = true
-      if(credentialsType === CredentialType.NAME && !credentialValue){
-        setErrorValidation(true)
-        _isValidated=false
-       }
+        if (credentialsType === CredentialType.NAME && !credentialValue) {
+          setErrorValidation(true)
+          return
+        }
 
-        if(errorValidation && !_isValidated) return
         let awsRegion
         if (selectedDockerRegistryType.value === 'ecr') {
             awsRegion = fetchAWSRegion()
@@ -595,9 +594,9 @@ function DockerForm({
             return <div className="fw-6">No Cluster</div>
         }
         if (appliedClusterList.length > 0) {
-            return <div className="fw-6"> {`Clusters except ${appliedClusterList}`} </div>
+            return <div className="fw-6"> {`Clusters: ${appliedClusterList}`} </div>
         } else {
-            return <div className="fw-6">{` Clusters: ${ignoredClusterList}`} </div>
+            return <div className="fw-6">{` Clusters except ${ignoredClusterList}`} </div>
         }
     }
 
@@ -844,7 +843,7 @@ function DockerForm({
                                 placement="top"
                                 content={
                                     <div>
-                                        <div className='fw-6'>Manage access of registry credentials</div>
+                                        <div className="fw-6">Manage access of registry credentials</div>
                                         <div style={{ display: 'block', width: '160px' }}>
                                             Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image

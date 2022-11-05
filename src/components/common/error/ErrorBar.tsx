@@ -68,13 +68,12 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
                         <div className="mt-16 flex left">
                             <span className="mr-8 fw-6">Already provided permission?</span>
                             Redeploy the application
-                            <a
+                            <NavLink
+                                to={`app/${appDetails.appId}/edit/workflow`}
                                 className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
-                                target="_blank"
-                                href={`app/${appDetails.appId}/edit/workflow`}
                             >
-                                Go to Deploy&nbsp;&nbsp;
-                            </a>
+                                 Go to Deploy&nbsp;&nbsp;
+                            </NavLink>
                         </div>
                         <div className="flex left">
                             <span className="mr-8 fw-6">Facing issues??</span>
