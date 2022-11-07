@@ -599,6 +599,7 @@ function DockerForm({
         if (ipsConfig?.ignoredClusterIdsCsv === '-1') {
             return <div className="fw-6">No Cluster</div>
         }
+        console.log(ipsConfig?.appliedClusterList)
         if (appliedClusterList.length > 0) {
             return <div className="fw-6"> {`Clusters: ${appliedClusterList}`} </div>
         } else {
