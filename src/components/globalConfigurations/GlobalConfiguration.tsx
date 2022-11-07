@@ -157,7 +157,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             isAvailableInEA: true,
         },
         { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        { name: 'Container Registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
     ]
 
     const ConfigOptional = [

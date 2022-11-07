@@ -308,12 +308,12 @@ function DockerForm({
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
     const [blackListEnabled, setBlackListEnabled] = useState<boolean>(_appliedClusterIdsCsv.length === 0)
     const [credentialsType, setCredentialType] = useState<string>(
-        ipsConfig?.credentialType || CredentialType.SAME_AS_REGISTRY,
+        ipsConfig?.credentialType
     )
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
-        isCustomScript ? JSON.parse(ipsConfig?.credentialValue) : '',
+        isCustomScript && (ipsConfig?.credentialValue) ? JSON.parse(ipsConfig?.credentialValue) : '',
     )
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
 

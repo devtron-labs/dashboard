@@ -62,7 +62,10 @@ function ManageRegistry({
 
     const getPlaceholder = (): string => {
         const isWhiteList = whiteList.length > 0
-        if ((whiteList.length === 0 && blackList.length === clusterOption.length ) || (blackList.length === 0 && whiteList.length === clusterOption.length)) {
+        if (
+            (whiteList.length === 0 && blackList.length === clusterOption.length) ||
+            (blackList.length === 0 && whiteList.length === clusterOption.length)
+        ) {
             return 'None'
         } else if (isWhiteList) {
             return `Cluster except ${appliedClusterList}`
@@ -75,7 +78,7 @@ function ManageRegistry({
         return <Close className="cursor icon-dim-16" onClick={onClickHideAlertInfo} />
     }
 
-    const renderAlertMessage = () => {
+    const renderAlertMessage = (): JSX.Element => {
         return (
             <>
                 If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
@@ -135,7 +138,7 @@ function ManageRegistry({
     const onBlackListClusterSelection = (_selectedOption, ...args) => {
         setBlackList((_selectedOption || []) as any)
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
-        if (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') {
+        if ((args[0].action === 'remove-value' || args[0].action === 'deselect-option') && args[0].removedValue.value === '-1') {
             setBlackList([])
         } else if (
             (args[0].action === 'select-option' && args[0].option.value === '-1') ||
@@ -171,7 +174,7 @@ function ManageRegistry({
             return (
                 <Select
                     isDisabled={whiteList.length > 0}
-                    placeholder= 'Select cluster'
+                    placeholder="Select cluster"
                     components={{
                         MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
                         DropdownIndicator: null,
@@ -218,7 +221,7 @@ function ManageRegistry({
                         MultiValueRemove,
                         Option,
                     }}
-                    placeholder= 'Select cluster'
+                    placeholder="Select cluster"
                     isDisabled={blackList.length > 0}
                     styles={{
                         ...multiSelectStyles,
@@ -275,21 +278,21 @@ function ManageRegistry({
                 <div className="flex left">
                     <div className="fw-6">Manage access of registry credentials</div>
                     <TippyWhite
-                                className="w-332"
-                                placement="top"
-                                Icon={HelpIcon}
-                                iconClass="fcv-5"
-                                heading="Manage access of registry credentials"
-                                infoText="Clusters need permission to pull container image from private repository in
+                        className="w-332"
+                        placement="top"
+                        Icon={HelpIcon}
+                        iconClass="fcv-5"
+                        heading="Manage access of registry credentials"
+                        infoText="Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
                                         "
-                                showCloseButton={true}
-                                trigger="click"
-                                interactive={true}
-                            >
-                                <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                            </TippyWhite>
+                        showCloseButton={true}
+                        trigger="click"
+                        interactive={true}
+                    >
+                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    </TippyWhite>
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>
@@ -316,11 +319,8 @@ function ManageRegistry({
                         className="gui-yaml-switch"
                         name="credentials"
                         initialTab={
-                            credentialsType === CredentialType.SAME_AS_REGISTRY
-                                ? CredentialType.SAME_AS_REGISTRY
-                                : credentialsType === CredentialType.NAME
-                                ? CredentialType.NAME
-                                : CredentialType.CUSTOM_CREDENTIAL=''
+                            credentialsType || CredentialType.SAME_AS_REGISTRY
+
                         }
                         disabled={false}
                         onChange={onHandleCredentialTypeChange}
