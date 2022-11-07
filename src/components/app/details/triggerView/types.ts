@@ -260,6 +260,7 @@ export interface WorkflowType {
     height: number
     nodes: NodeAttr[]
     dag: any
+    showTippy?: boolean
 }
 
 export interface WebhookPayloadDataResponse {

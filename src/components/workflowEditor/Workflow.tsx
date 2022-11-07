@@ -9,6 +9,7 @@ import {
     getCDPipelineURL,
     getExCIPipelineURL,
     getWebhookDetailsURL,
+    ConditionalWrap,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
 import { CIPipelineNodeType, NodeAttr, PipelineType, WorkflowNodeType } from '../../components/app/details/triggerView/types'
@@ -18,6 +19,8 @@ import { Link } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { WebhookNode } from './nodes/WebhookNode'
+import Tippy from '@tippyjs/react'
+import WebhookTippyCard from './nodes/WebhookTippyCard'
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -42,12 +45,14 @@ export interface WorkflowProps
     addWebhookCD: (workflowId?: number | string) => void
     cdWorkflowList?: any[]
     showWebhookTippy?: boolean
+    hideWebhookTippy?: () => void
 }
 
 interface WorkflowState {
     top: number
     left: number
     showCIMenu: boolean
+    hideWebhookTippy: boolean
 }
 
 export class Workflow extends Component<WorkflowProps, WorkflowState> {
@@ -57,6 +62,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             showCIMenu: false,
             top: 0,
             left: 0,
+            hideWebhookTippy: false
         }
     }
 
@@ -211,7 +217,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
               id={node.id}
               to={this.openWebhookDetails(node)}
               configDiffView={this.props.cdWorkflowList?.length > 0}
-              showWebhookTippy={this.props.showWebhookTippy}
           />
       )
     }
@@ -329,10 +334,28 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderWorkflow() {
         let ciPipelineId = 0
         let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
+        let webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
 
         return (
+          <ConditionalWrap
+          condition={this.props.showWebhookTippy && !this.state.hideWebhookTippy}
+          wrap={(children) => (
+              <Tippy
+                  placement="top-start"
+                  arrow={true}
+                  trigger="manual"
+                  visible={this.props.showWebhookTippy}
+                  render={() => <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy}/>}
+                  showOnCreate={true}
+                  interactive
+                  onClickOutside={this.props.hideWebhookTippy}
+              >
+                  {children}
+              </Tippy>
+          )}
+      >
             <div
                 className="mb-20 workflow workflow--create"
                 style={{ minWidth: typeof this.props.width === 'string' ? this.props.width : `${this.props.width}px` }}
@@ -378,6 +401,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     )}
                 </div>
             </div>
+            </ConditionalWrap>
         )
     }
 

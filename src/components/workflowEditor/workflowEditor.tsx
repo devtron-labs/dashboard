@@ -20,7 +20,7 @@ import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.css'
-import { NodeAttr, PipelineType } from '../app/details/triggerView/types'
+import { NodeAttr, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
@@ -53,6 +53,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
         }
+        this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
 
     componentDidMount() {
@@ -77,23 +78,32 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.checkGitOpsConfiguration()
         getCreateWorkflows(this.props.match.params.appId)
             .then((result) => {
-                const allCINodeMap = new Map(
-                    result.workflows
-                        .flatMap((wf) => wf.nodes.filter((node) => node.type == 'CI'))
-                        .map((ciPipeline) => [ciPipeline.id, ciPipeline] as [string, NodeAttr]),
-                )
-                const allDeploymentNodeMap = new Map(
-                    result.workflows
-                        .flatMap((wf) => wf.nodes.filter((node) => node.type == 'CD'))
-                        .map((cdPipeline) => [cdPipeline.id, cdPipeline] as [string, NodeAttr]),
-                )
-
+                const allCINodeMap = new Map()
+                const allDeploymentNodeMap = new Map()
+                for (let index = 0; index < result.workflows?.length; index++) {
+                    const workFlow = result.workflows[index]
+                    for (let index = 0; index < workFlow.nodes?.length; index++) {
+                        const node = workFlow.nodes[index]
+                        if (node.type === WorkflowNodeType.CI) {
+                            allCINodeMap.set(node.id, node)
+                        } else if (node.type === WorkflowNodeType.CD) {
+                            if (
+                                node.parentPipelineType === PipelineType.WEBHOOK &&
+                                this.state.envToShowWebhookTippy === node.environmentId
+                            ) {
+                                workFlow.showTippy = true
+                            }
+                            allDeploymentNodeMap.set(node.id, node)
+                        }
+                    }
+                }
                 this.setState({
                     appName: result.appName,
                     workflows: result.workflows,
                     allCINodeMap: allCINodeMap,
                     allDeploymentNodeMap: allDeploymentNodeMap,
                     view: ViewType.FORM,
+                    envToShowWebhookTippy: -1
                 })
             })
             .catch((errors) => {
@@ -431,9 +441,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
     }
 
+    hideWebhookTippy () {
+        const _wf = this.state.workflows.map((wf) => {
+            return { ...wf, showTippy: false }
+        })
+        this.setState({ workflows: _wf })
+    }
+
     renderWorkflows() {
         return this.state.workflows.map((wf) => {
-          console.log(this.state.envToShowWebhookTippy,wf.envId)
             return (
                 <Workflow
                     id={wf.id}
@@ -453,7 +469,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showDeleteDialog={this.showDeleteDialog}
                     addCIPipeline={this.addCIPipeline}
                     addWebhookCD={this.addWebhookCD}
-                    showWebhookTippy={this.state.envToShowWebhookTippy === wf.envId}
+                    showWebhookTippy={wf.showTippy}
+                    hideWebhookTippy={this.hideWebhookTippy}
                 />
             )
         })
