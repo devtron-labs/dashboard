@@ -138,30 +138,40 @@ function ManageRegistry({
     const onBlackListClusterSelection = (_selectedOption, ...args) => {
         setBlackList((_selectedOption || []) as any)
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
-        if ((args[0].action === 'remove-value' || args[0].action === 'deselect-option') && args[0].removedValue.value === '-1') {
-            setBlackList([])
-        } else if (
-            (args[0].action === 'select-option' && args[0].option.value === '-1') ||
-            (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
-        ) {
-            setBlackList(clusterOption)
-        } else if (areAllOptionsSelected) {
-            setBlackList(_selectedOption.filter((option) => option.value !== '-1'))
+        if (args.length > 0) {
+            if (
+                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
+                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+            ) {
+                setBlackList([])
+            } else if (
+                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
+            ) {
+                setBlackList(clusterOption)
+            } else if (areAllOptionsSelected) {
+                setBlackList(_selectedOption.filter((option) => option.value !== '-1'))
+            }
         }
     }
 
     const onWhiteListClusterSelection = (_selectedOption, ...args) => {
         setWhiteList((_selectedOption || []) as any)
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
-        if (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') {
-            setWhiteList([])
-        } else if (
-            (args[0].action === 'select-option' && args[0].option.value === '-1') ||
-            (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
-        ) {
-            setWhiteList(clusterOption)
-        } else if (areAllOptionsSelected) {
-            setWhiteList(_selectedOption.filter((option) => option.value !== '-1'))
+        if (args.length > 0) {
+            if (
+                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
+                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+            ) {
+                setWhiteList([])
+            } else if (
+                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
+            ) {
+                setWhiteList(clusterOption)
+            } else if (areAllOptionsSelected) {
+                setWhiteList(_selectedOption.filter((option) => option.value !== '-1'))
+            }
         }
     }
 
@@ -318,10 +328,7 @@ function ManageRegistry({
                     <RadioGroup
                         className="gui-yaml-switch"
                         name="credentials"
-                        initialTab={
-                            credentialsType || CredentialType.SAME_AS_REGISTRY
-
-                        }
+                        initialTab={credentialsType || CredentialType.SAME_AS_REGISTRY}
                         disabled={false}
                         onChange={onHandleCredentialTypeChange}
                     >
