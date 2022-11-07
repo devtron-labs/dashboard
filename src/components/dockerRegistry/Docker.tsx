@@ -596,10 +596,12 @@ function DockerForm({
     })
 
     const renderRegistryCredentialText = () => {
-        if (ipsConfig?.ignoredClusterIdsCsv === '-1') {
+        if (ipsConfig?.ignoredClusterIdsCsv === '-1' || ignoredClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0) {
             return <div className="fw-6">No Cluster</div>
         }
-        console.log(ipsConfig?.appliedClusterList)
+        if( appliedClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0){
+          return <div className="fw-6">All Clusters</div>
+        }
         if (appliedClusterList.length > 0) {
             return <div className="fw-6"> {`Clusters: ${appliedClusterList}`} </div>
         } else {

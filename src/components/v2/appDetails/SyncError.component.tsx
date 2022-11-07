@@ -15,7 +15,7 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
     const conditions = appStreamData?.result?.application?.status?.conditions || []
 
     let isImagePullBackOff
-    for (let index = 0; index < appDetails.resourceTree.nodes.length; index++) {
+    for (let index = 0; index < appDetails?.resourceTree?.nodes?.length; index++) {
         const node = appDetails.resourceTree.nodes[index]
         if (node.info?.length) {
             for (let index = 0; index < node.info.length; index++) {

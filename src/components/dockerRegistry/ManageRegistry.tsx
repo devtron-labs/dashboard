@@ -61,7 +61,6 @@ function ManageRegistry({
     }
 
     const getPlaceholder = (): string => {
-        console.log(blackList, whiteList)
         const isWhiteList = whiteList.length > 0
         if ((whiteList.length === 0 && blackList.length === clusterOption.length ) || (blackList.length === 0 && whiteList.length === clusterOption.length)) {
             return 'None'
