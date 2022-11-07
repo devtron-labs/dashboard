@@ -25,7 +25,7 @@ import {
     updateTemplateFromBasicValue,
     validateBasicView,
 } from './DeploymentConfig.utils'
-import { EDITOR_VIEW } from './constants'
+import { BASIC_FIELDS, EDITOR_VIEW } from './constants'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -119,6 +119,9 @@ export default function DeploymentConfig({
         }
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
+            if (_basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 || !_basicFieldValues[BASIC_FIELDS.PORT] || !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] || !_basicFieldValues[BASIC_FIELDS.RESOURCES]) {
+                setIsBasicViewLocked(true)
+            }
             setBasicFieldValues(_basicFieldValues)
             setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }
@@ -185,7 +188,10 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride: !yamlMode && selectedChart.name === ROLLOUT_DEPLOYMENT ? patchBasicData(obj, basicFieldValues) : obj,
+                valuesOverride:
+                    !yamlMode && selectedChart.name === ROLLOUT_DEPLOYMENT
+                        ? patchBasicData(obj, basicFieldValues)
+                        : obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
                 isBasicViewLocked: isBasicViewLocked,
