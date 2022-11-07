@@ -229,7 +229,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             }, 700)
         }
         if (showWebhookTippy) {
-            this.setState({ showWebhookTippy: true })
+            this.setState({ workflowIdToShowWebhookTippy: 0 })
         }
 
         //update isCDpipeline in AppCompose
@@ -455,7 +455,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showDeleteDialog={this.showDeleteDialog}
                     addCIPipeline={this.addCIPipeline}
                     addWebhookCD={this.addWebhookCD}
-                    showWebhookTippy={this.state.showWebhookTippy}
+                    showWebhookTippy={this.state.workflowIdToShowWebhookTippy === wf.id}
                 />
             )
         })
