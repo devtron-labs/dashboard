@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ButtonWithLoader, copyToClipboard, Drawer, Progressing, showError } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
+import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import './webhookDetails.scss'
 import ReactSelect from 'react-select'
@@ -31,7 +33,7 @@ import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 
-export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: WebhookDetailType) {
+export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -42,6 +44,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     const [generateTokenLoader, setGenerateTokenLoader] = useState(false)
     const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
     const [tokenName, setTokenName] = useState<string>('')
+    const [showTokenNameError, setTokenNameError] = useState(false)
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
     const [webhookResponse, setWebhookResponse] = useState<Object>(null)
@@ -55,6 +58,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     const [sampleJSON, setSampleJSON] = useState(null)
     const [sampleCURL, setSampleCURL] = useState<any>(null)
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
+    const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
     const [copied, setCopied] = useState(false)
 
@@ -150,6 +154,10 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
     }
 
     const generateToken = async (): Promise<void> => {
+        if (!tokenName) {
+            setTokenNameError(true)
+            return
+        }
         setGenerateTokenLoader(true)
         try {
             const payload = {
@@ -308,15 +316,36 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
 
     const handleTokenChange = (e): void => {
         setTryoutAPIToken(e.target.value)
+        if (e.target.value) {
+            setTryoutAPITokenError(false)
+        }
     }
 
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
-            <div className="flexbox dc__content-space mb-16">
+            <div className="mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
                     <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-120 dc__border-right">
                         api-token
-                        <Help className="icon-dim-16 ml-8" />
+                        <Tippy
+                            className="default-white no-content-padding tippy-shadow w-300"
+                            arrow={false}
+                            placement="top"
+                            content={
+                                <>
+                                    <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                        <Help className="icon-dim-20 mr-6 fcv-5" />
+                                        <span className="fs-14 fw-6 cn-9">Why is API token required?</span>
+                                    </div>
+                                    <div className="fs-13 fw-4 cn-9 p-12">
+                                        API token is required to allow requests from an external service. Use an API
+                                        token with the permissions mentioned in the above section.
+                                    </div>
+                                </>
+                            }
+                        >
+                            <Question className="icon-dim-16 ml-8" />
+                        </Tippy>
                     </div>
                     <input
                         type="text"
@@ -326,6 +355,12 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                         value={tryoutAPIToken}
                     />
                 </div>
+                    {showTryoutAPITokenError && (
+                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                            <span>API Token is required to execute webhook</span>
+                        </span>
+                    )}
             </div>
         )
     }
@@ -388,6 +423,9 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
 
     const handleTokenNameChange = (e): void => {
         setTokenName(e.target.value)
+        if (e.target.value) {
+            setTokenNameError(false)
+        }
     }
 
     const renderGenerateTokenSection = (): JSX.Element => {
@@ -402,6 +440,12 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
                     />
+                    {showTokenNameError && (
+                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                            <span>Token name is required to generate token</span>
+                        </span>
+                    )}
                     {generatedAPIToken && renderSelectedToken('Generated', generatedAPIToken)}
                 </div>
                 {!generatedAPIToken && (
@@ -482,7 +526,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                 {Object.keys(schemaData).map((key) => {
                     const data = schemaData[key]
                     return (
-                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-12">
+                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-13">
                             <span>{key}</span>
                             <span>{data.createLink ? <a>{key}</a> : data.dataType}</span>
                             <span>{data.optional ? 'false' : 'true'}</span>
@@ -734,7 +778,7 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
 
     const executeWebhook = async (): Promise<void> => {
         if (!tryoutAPIToken) {
-            toast.error('API token is required field')
+            setTryoutAPITokenError(true)
             return
         }
         setWebhookExecutionLoader(true)
@@ -764,10 +808,12 @@ export function WebhookDetailsModal({ getWorkflows, close, deleteWorkflow }: Web
                     <PlayButton className="icon-dim-18 mr-8" />
                     Execute
                 </ButtonWithLoader>
-                <button className="cta cancel h-28 flex" onClick={clearWebhookResponse}>
-                    <Close className="icon-dim-18 mr-8" />
-                    Clear
-                </button>
+                {webhookResponse && (
+                    <button className="cta cancel h-28 flex" onClick={clearWebhookResponse}>
+                        <Close className="icon-dim-18 mr-8" />
+                        Clear
+                    </button>
+                )}
             </div>
         )
     }

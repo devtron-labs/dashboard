@@ -211,6 +211,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
               id={node.id}
               to={this.openWebhookDetails(node)}
               configDiffView={this.props.cdWorkflowList?.length > 0}
+              showWebhookTippy={this.props.showWebhookTippy}
           />
       )
     }

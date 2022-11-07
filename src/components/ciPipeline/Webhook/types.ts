@@ -2,9 +2,7 @@ import { ResponseType } from '../../../services/service.types'
 import { TokenListType } from '../../apiTokens/authorization.type'
 
 export interface WebhookDetailType {
-    getWorkflows: () => void
     close: () => void
-    deleteWorkflow: (appId?: string, workflowId?: number) => any
 }
 
 export interface TabDetailsType {

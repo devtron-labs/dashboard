@@ -51,6 +51,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             noGitOpsConfiguration: false,
             showOpenCIPipelineBanner:
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
+            envToShowWebhookTippy: -1,
         }
     }
 
@@ -228,13 +229,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 })
             }, 700)
         }
-        if (showWebhookTippy) {
-            this.setState({ workflowIdToShowWebhookTippy: 0 })
-        }
 
         //update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) {
             this.props.respondOnSuccess()
+            if (showWebhookTippy) {
+                this.setState({ envToShowWebhookTippy: environmentId })
+            }
         }
     }
 
@@ -308,6 +309,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 close={this.closePipeline}
                                 downstreamNodeSize={downstreamNodeSize}
                                 getWorkflows={this.getWorkflows}
+                                deleteWorkflow={this.deleteWorkflow}
                             />
                         )
                     }}
@@ -322,11 +324,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     />
                 </Route>
                 <Route path={`${this.props.match.path}/webhook/:webhookId`}>
-                    <WebhookDetailsModal
-                        close={this.closePipeline}
-                        getWorkflows={this.getWorkflows}
-                        deleteWorkflow={this.deleteWorkflow}
-                    />
+                    <WebhookDetailsModal close={this.closePipeline} />
                 </Route>
                 <Route
                     path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
@@ -375,11 +373,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <button
                     type="button"
                     className="cta dc__no-decor flex mb-20"
-                    style={{ width: '170px' }}
                     onClick={this.toggleCIMenu}
                 >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                    New Build Pipeline
+                    New workflow
                 </button>
                 <PipelineSelect
                     workflowId={0}
@@ -455,7 +452,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showDeleteDialog={this.showDeleteDialog}
                     addCIPipeline={this.addCIPipeline}
                     addWebhookCD={this.addWebhookCD}
-                    showWebhookTippy={this.state.workflowIdToShowWebhookTippy === wf.id}
+                    showWebhookTippy={this.state.envToShowWebhookTippy === wf.envId}
                 />
             )
         })

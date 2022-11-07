@@ -15,6 +15,7 @@ import {
     DeleteDialog,
     CHECKBOX_VALUE,
     sortObjectArrayAlphabetically,
+    Drawer,
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
@@ -52,6 +53,7 @@ import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { PipelineType } from '../app/details/triggerView/types'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -60,7 +62,7 @@ export const SwitchItemValues = {
 
 export default class CDPipeline extends Component<CDPipelineProps, CDPipelineState> {
     allStrategies: { [key: string]: any } = {}
-    isWebhookCD= window.location.href.includes('webhook')
+    isWebhookCD = window.location.href.includes('webhook')
     validationRules
     preStage
     postStage
@@ -70,7 +72,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
         const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
-        const parentPipelineType = parentPipelineTypeFromURL? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_'):  this.isWebhookCD? SourceTypeMap.WEBHOOK : ''
+        const parentPipelineType = parentPipelineTypeFromURL
+            ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
+            : this.isWebhookCD
+            ? SourceTypeMap.WEBHOOK
+            : ''
         const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
@@ -82,7 +88,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig: {
                 id: null,
                 environmentId: 0,
-                ciPipelineId: this.isWebhookCD? 0:  +this.props.match.params.ciPipelineId,
+                ciPipelineId: this.isWebhookCD ? 0 : +this.props.match.params.ciPipelineId,
                 triggerType: TriggerType.Auto,
                 name: '',
                 strategies: [],
@@ -139,7 +145,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     escFunction(event) {
         if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
-          this.props.close()
+            this.props.close()
         }
     }
 
@@ -588,13 +594,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         envName = selectedEnv.name
                     }
                     this.props.close(
-                        true,
+                        this.state.pipelineConfig.parentPipelineType !== PipelineType.WEBHOOK,
                         this.state.pipelineConfig.environmentId,
                         envName,
                         this.props.match.params.cdPipelineId
                             ? 'Deployment pipeline updated'
                             : 'Deployment pipeline created',
-                            !this.props.match.params.cdPipelineId
+                        true || !this.props.match.params.cdPipelineId,
                     )
                     this.props.getWorkflows()
                 }
@@ -649,8 +655,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 if (response.result) {
                     toast.success('Pipeline Deleted')
                     this.setState({ loadingData: false })
-                    this.props.getWorkflows()
                     this.props.close()
+                    if(this.state.pipelineConfig.parentPipelineType === PipelineType.WEBHOOK){
+                      this.props.deleteWorkflow(this.props.match.params.appId, +this.props.match.params.workflowId)
+                    }
                 }
             })
             .catch((error: ServerErrors) => {
@@ -1096,48 +1104,53 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderTriggerType() {
-      return (
-          <>
-              <p className="fs-14 fw-6 cn-9 mb-8">When do you want to deploy</p>
-              <div className="flex mb-20">
-                  <div
-                      className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
-                          this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                      }`}
-                      onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
-                  >
-                      <BotIcon className="icon-dim-20 mr-12" />
-                      <div>
-                          <div>Automatic</div>
-                          <div>Deploy everytime a new image is received</div>
-                      </div>
-                  </div>
-                  <div
-                      className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
-                          this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                      }`}
-                      onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
-                  >
-                      <PersonIcon className="icon-dim-20 mr-12" />
-                      <div>
-                          <div>Manual</div>
-                          <div>Select and deploy from available images</div>
-                      </div>
-                  </div>
-              </div>
-          </>
-      )
+        return (
+            <>
+                <p className="fs-14 fw-6 cn-9 mb-8">When do you want to deploy</p>
+                <div className="flex mb-20">
+                    <div
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
+                            this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                        }`}
+                        onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
+                    >
+                        <BotIcon className="icon-dim-20 mr-12" />
+                        <div>
+                            <div>Automatic</div>
+                            <div>Deploy everytime a new image is received</div>
+                        </div>
+                    </div>
+                    <div
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
+                            this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                        }`}
+                        onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
+                    >
+                        <PersonIcon className="icon-dim-20 mr-12" />
+                        <div>
+                            <div>Manual</div>
+                            <div>Select and deploy from available images</div>
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
     }
 
     renderWebhookWarning() {
-      return (
-          <InfoColourBar
-              message="Connecting to external CI service: A webhook url and sample JSON will be generated after the pipeline is created."
-              classname="bw-1 bcv-1 ev-2 bcv-1 fs-12 mt-20"
-              Icon={Help}
-              iconClass="fcv-5 h-20"
-          />
-      )
+        return (
+            <InfoColourBar
+                message={
+                    <div>
+                        <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample JSON
+                        will be generated after the pipeline is created.
+                    </div>
+                }
+                classname="bw-1 bcv-1 ev-2 bcv-1 fs-12 mt-20"
+                Icon={Help}
+                iconClass="fcv-5 h-20"
+            />
+        )
     }
 
     renderAdvancedCD() {
@@ -1308,16 +1321,36 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    render() {
+    renderCDPipelineModal() {
         return (
-            <VisibleModal className="">
-                <form className="modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius" onSubmit={this.savePipeline}>
+            <>
+                <form
+                    className={
+                        this.props.match.params.cdPipelineId || this.state.isAdvanced
+                            ? `bcn-0`
+                            : `modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius`
+                    }
+                    onSubmit={this.savePipeline}
+                >
                     {this.renderHeader()}
-                    <div className="p-20" style={{ maxHeight: 'calc(100vh - 164px)', overflowY: 'scroll' }}>
+                    <div
+                        className="p-20"
+                        style={{
+                            maxHeight:
+                                this.props.match.params.cdPipelineId || this.state.isAdvanced
+                                    ? `calc(100vh - 125px)`
+                                    : `calc(100vh - 164px)`,
+                            overflowY: 'scroll',
+                        }}
+                    >
                         {this.renderCDPipelineBody()}
                     </div>
                     {this.state.view !== ViewType.LOADING && (
-                        <div className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${(this.isWebhookCD && !this.props.match.params.cdPipelineId)? 'right': 'flex-justify' }`}>
+                        <div
+                            className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                                this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
+                            }`}
+                        >
                             {this.renderSecondaryButton()}
                             <ButtonWithLoader
                                 rootClassName="cta cta--workflow"
@@ -1331,7 +1364,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     )}
                 </form>
                 {this.renderDeleteCDModal()}
-            </VisibleModal>
+            </>
+        )
+    }
+
+    render() {
+        return this.props.match.params.cdPipelineId || this.state.isAdvanced ? (
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {this.renderCDPipelineModal()}
+            </Drawer>
+        ) : (
+            <VisibleModal className="">{this.renderCDPipelineModal()}</VisibleModal>
         )
     }
 }

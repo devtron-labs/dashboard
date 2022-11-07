@@ -25,7 +25,7 @@ export interface WorkflowEditState {
     showNoGitOpsWarningPopup?: boolean
     cdLink?: string
     noGitOpsConfiguration?: boolean
-    workflowIdToShowWebhookTippy?: number
+    envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
 }
 
@@ -87,4 +87,5 @@ export interface WebhookNodeProps {
   id: number
   to?: string
   configDiffView?: boolean
+  showWebhookTippy?: boolean
 }
