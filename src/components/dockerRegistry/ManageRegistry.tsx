@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
-import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
+import { ReactComponent as Document } from '../../assets/icons/ic-note-upward.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -336,8 +337,8 @@ function ManageRegistry({
                             value={CredentialType.SAME_AS_REGISTRY}
                             canSelect={credentialValue !== CredentialType.SAME_AS_REGISTRY}
                         >
-                            <Document className="icon-dim-12 fcn-7 mr-8" />
-                            Same as registry credentials
+                            <Document className="icon-dim-12 mr-8" />
+                            Use registry credentials
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
                             value={CredentialType.NAME}
@@ -355,9 +356,13 @@ function ManageRegistry({
                     </RadioGroup>
                 </div>
                 {credentialsType === CredentialType.SAME_AS_REGISTRY && (
-                    <div className="cn-7">
-                        Registry credentials will be auto injected to have accessed by selected clusters
-                    </div>
+                    <InfoColourBar
+                        message="Clusters will be auto-injected wuth the provided registry credentials."
+                        classname="info_bar"
+                        Icon={InfoIcon}
+                        iconClass="icon-dim-20"
+                        renderActionButton={renderActionButton}
+                    />
                 )}
                 {credentialsType === CredentialType.NAME && (
                     <>
