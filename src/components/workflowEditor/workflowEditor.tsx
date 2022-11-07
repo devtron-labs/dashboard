@@ -233,9 +233,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         //update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) {
             this.props.respondOnSuccess()
-            if (showWebhookTippy) {
-                this.setState({ envToShowWebhookTippy: environmentId })
-            }
+        }
+        if (showWebhookTippy) {
+            this.setState({ envToShowWebhookTippy: environmentId })
         }
     }
 
@@ -433,6 +433,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     renderWorkflows() {
         return this.state.workflows.map((wf) => {
+          console.log(this.state.envToShowWebhookTippy,wf.envId)
             return (
                 <Workflow
                     id={wf.id}

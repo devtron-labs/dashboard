@@ -23,7 +23,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                     Build container image
                 </div>
                 <div
-                    className="pipeline-select-item flexbox pt-8 pr-12 pb-8 pl-12 mb- pointer"
+                    className="pipeline-select-item flexbox p-12 mb- pointer"
                     data-pipeline-type={CIPipelineNodeType.CI}
                     onClick={this.handleMenuClick}
                 >
@@ -36,7 +36,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                     </div>
                 </div>
                 <div
-                    className="pipeline-select-item flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={CIPipelineNodeType.LINKED_CI}
                     onClick={this.handleMenuClick}
                 >
@@ -52,7 +52,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                     Receive container image
                 </div>
                 <div
-                    className="pipeline-select-item flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={PipelineType.WEBHOOK}
                     onClick={this.handleMenuClick}
                 >
