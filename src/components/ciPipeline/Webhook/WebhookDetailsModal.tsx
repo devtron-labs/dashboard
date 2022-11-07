@@ -488,7 +488,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel">
                 {showCopyOption && (
                     <Tippy
-                        className="default-tt"
+                        className="default-tt font-open-sans"
                         arrow={false}
                         placement="bottom"
                         content={copied ? 'Copied!' : 'Copy'}
