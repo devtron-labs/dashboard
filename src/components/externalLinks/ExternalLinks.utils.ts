@@ -82,6 +82,8 @@ export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
     return new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
 }
 
+export const availableVariables = ['{appName}', '{appId}', '{envId}', '{namespace}', '{podName}', '{containerName}']
+
 export const getParsedURL = (
     isAppLevel: boolean,
     url: string,
