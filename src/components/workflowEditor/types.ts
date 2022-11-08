@@ -87,6 +87,7 @@ export interface WebhookNodeProps {
     id: number
     to?: string
     configDiffView?: boolean
+    toggleCDMenu?: () => void
 }
 
 export interface WebhookTippyType {

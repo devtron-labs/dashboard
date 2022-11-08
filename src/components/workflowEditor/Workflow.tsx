@@ -217,6 +217,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
               id={node.id}
               to={this.openWebhookDetails(node)}
               configDiffView={this.props.cdWorkflowList?.length > 0}
+              toggleCDMenu={() => {
+                  this.props.handleCDSelect(this.props.id, node.id, PipelineType.WEBHOOK, node.id, true)
+              }}
           />
       )
     }
@@ -351,6 +354,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                   showOnCreate={true}
                   interactive
                   onClickOutside={this.props.hideWebhookTippy}
+                  delay={500}
+                  animation="fade"
               >
                   {children}
               </Tippy>

@@ -18,7 +18,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
     }
     renderCIMenu() {
         return (
-            <div className="white-card pipeline-select-container dc__top-radius-4 p-0">
+            <div className="white-card pipeline-select-container br-4 p-0">
                 <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
                     Build container image
                 </div>
@@ -48,7 +48,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                         </p>
                     </div>
                 </div>
-                <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
+                <div className="dc__window-bg pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
                     Receive container image
                 </div>
                 <div

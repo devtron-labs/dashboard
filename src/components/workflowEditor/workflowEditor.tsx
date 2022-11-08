@@ -135,7 +135,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     toggleCIMenu = (event) => {
         let { top, left } = event.target.getBoundingClientRect()
-        top = top + 41
+        top = top - 20
+        left = left - 85
         this.setState({
             cIMenuPosition: {
                 top: top,

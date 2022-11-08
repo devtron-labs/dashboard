@@ -325,7 +325,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div className="mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-120 dc__border-right">
+                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100-px dc__border-right">
                         api-token
                         <Tippy
                             className="default-white no-content-padding tippy-shadow w-300"
@@ -344,7 +344,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 </>
                             }
                         >
-                            <Question className="icon-dim-16 ml-8" />
+                            <Question className="icon-dim-16 ml-7" />
                         </Tippy>
                     </div>
                     <input
@@ -849,7 +849,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pr-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy image from external source</h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Webhook Details</h2>
                 <button type="button" className="dc__transparent flex icon-dim-24" onClick={closeWebhook}>
                     <Close className="icon-dim-24" />
                 </button>
@@ -895,7 +895,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     return (
-        <Drawer position="right" width="1024px">
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
                 {loader ? (

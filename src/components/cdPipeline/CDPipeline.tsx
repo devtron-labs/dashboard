@@ -712,7 +712,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderHeader() {
-        const title = this.isWebhookCD
+        const title = this.isWebhookCD && this.props.match.params.workflowId === '0'
             ? 'Deploy image from external source'
             : this.props.match.params.cdPipelineId
             ? 'Edit deployment pipeline'
@@ -1304,7 +1304,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         />
                     </>
                 )}
-                {this.renderWebhookWarning()}
+                {this.isWebhookCD && !this.state.pipelineConfig.parentPipelineId && this.renderWebhookWarning()}
             </>
         )
     }
@@ -1336,32 +1336,36 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div
                         className="p-20"
                         style={{
-                            maxHeight:
+                            minHeight:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced
                                     ? `calc(100vh - 125px)`
-                                    : `calc(100vh - 164px)`,
+                                    : `auto`,
+
+                            maxHeight:
+                            this.props.match.params.cdPipelineId || this.state.isAdvanced
+                                ? `auto`
+                                : `calc(100vh - 164px)`,
                             overflowY: 'scroll',
                         }}
                     >
                         {this.renderCDPipelineBody()}
                     </div>
-                    {this.state.view !== ViewType.LOADING && (
-                        <div
-                            className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                                this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
-                            }`}
+
+                    <div
+                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                            this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
+                        }`}
+                    >
+                        {this.renderSecondaryButton()}
+                        <ButtonWithLoader
+                            rootClassName="cta cta--workflow"
+                            onClick={this.savePipeline}
+                            isLoading={this.state.loadingData}
+                            loaderColor="white"
                         >
-                            {this.renderSecondaryButton()}
-                            <ButtonWithLoader
-                                rootClassName="cta cta--workflow"
-                                onClick={this.savePipeline}
-                                isLoading={this.state.loadingData}
-                                loaderColor="white"
-                            >
-                                {this.props.match.params.cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'}
-                            </ButtonWithLoader>
-                        </div>
-                    )}
+                            {this.props.match.params.cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'}
+                        </ButtonWithLoader>
+                    </div>
                 </form>
                 {this.renderDeleteCDModal()}
             </>
