@@ -21,7 +21,6 @@ export interface ExternalLink {
     id?: number
     monitoringToolId: number
     name: string
-    description: string
     url: string
     clusterIds: any[]
     updatedOn?: string
@@ -32,7 +31,6 @@ export interface LinkAction {
     invalidTool?: boolean
     name: string
     invalidName?: boolean
-    description: string
     clusters: MultiValue<OptionType>
     invalidClusters?: boolean
     urlTemplate: string
@@ -103,7 +101,6 @@ export interface AppLevelExternalLinksType {
     helmAppDetails?: HelmAppDetails
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    isOverviewPage?: boolean
 }
 
 export interface NodeLevelExternalLinksType  {
@@ -116,7 +113,6 @@ export interface NodeLevelExternalLinksType  {
 }
 
 export interface ExternalLinksAndToolsType {
-    fetchingExternalLinks?: boolean
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
 }

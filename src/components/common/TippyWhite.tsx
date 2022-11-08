@@ -13,8 +13,6 @@ interface TippyWhiteProps {
     interactive?: boolean
     trigger?: string
     additionalContent?: ReactNode
-    documentationLink?: string
-    documentationLinkText?: string
     children: React.ReactElement<any>
 }
 
@@ -31,8 +29,6 @@ export default function TippyWhite({
     interactive,
     trigger,
     additionalContent,
-    documentationLink,
-    documentationLinkText,
     children,
 }: TippyWhiteProps) {
     const tippyRef = useRef(null)
@@ -64,19 +60,6 @@ export default function TippyWhite({
                 </div>
                 {infoText && <div className="fs-13 fw-4 cn-9 p-12">{infoText}</div>}
                 {additionalContent}
-                {documentationLink && (
-                    <div className="pl-12 pb-12">
-                        <a
-                            href={documentationLink}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            className="cb-5"
-                            onClick={closeTippy}
-                        >
-                            {documentationLinkText || 'Learn more'}
-                        </a>
-                    </div>
-                )}
             </>
         )
     }

@@ -1,23 +1,26 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
-import { AddLinkButton, NoExternalLinksView, NoMatchingResults } from './ExternalLinks.component'
+import {
+    AddExternalLinkDialog,
+    AddLinkButton,
+    AppliedFilterChips,
+    ClusterFilter,
+    DeleteExternalLinkDialog,
+    NoExternalLinksView,
+    NoMatchingResults,
+    SearchInput,
+} from './ExternalLinks.component'
 import { useHistory, useLocation } from 'react-router-dom'
+import './externalLinks.scss'
 import { getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
 import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
 import { getClusterListMin } from '../../services/service'
 import { OptionType } from '../app/types'
-import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { MultiValue } from 'react-select'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION } from '../../config'
-import TippyWhite from '../common/TippyWhite'
-import { AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
-import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
-import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import './externalLinks.scss'
 
 function ExternalLinks() {
     const history = useHistory()
@@ -182,10 +185,7 @@ function ExternalLinks() {
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
                 </div>
                 <div className="external-links__cell--cluster">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Description</span>
-                </div>
-                <div className="external-links__cell--cluster">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Scope</span>
+                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Cluster</span>
                 </div>
                 <div className="external-links__cell--url__template">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Url Template</span>
@@ -214,9 +214,6 @@ function ExternalLinks() {
                                 <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
                                     {link.name}
                                 </div>
-                                <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
-                                    {link.description || '-'}
-                                </div>
                                 <div className="external-links__cell--cluster cn-9 fs-13 dc__ellipsis-right">
                                     {getClusterLabel(link)}
                                 </div>
@@ -224,13 +221,13 @@ function ExternalLinks() {
                                     {link.url}
                                 </div>
                                 <div className="external-link-actions">
-                                    <EditIcon
+                                    <Edit
                                         className="icon-dim-20 cursor mr-16"
                                         onClick={() => {
                                             editLink(link)
                                         }}
                                     />
-                                    <DeleteIcon
+                                    <Delete
                                         className="icon-dim-20 cursor"
                                         onClick={() => {
                                             setSelectedLink(link)
@@ -252,29 +249,22 @@ function ExternalLinks() {
 
         return (
             <div className="external-links-wrapper">
-                <div className="flex dc__content-space mb-16">
-                    <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
-                        External links
-                        <TippyWhite
-                            placement={'bottom'}
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
-                            heading="External links"
-                            infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
-                    links will be available in the App details page."
-                            documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
-                        </TippyWhite>
-                    </h3>
-                    <div className="cta-search-filter-container flex">
-                        {renderSearchFilterWrapper()}
-                        <div className="h-20 dc__border-right mr-8 ml-8" />
-                        <AddLinkButton handleOnClick={handleAddLinkClick} />
-                    </div>
+                <h4 className="title cn-9 fs-16 fw-6 mb-5">External links</h4>
+                <p className="subtitle cn-9 fs-12">
+                    Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
+                    links will be available in the App details page.&nbsp;
+                    <a
+                        href={DOCUMENTATION.EXTERNAL_LINKS}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="cb-5"
+                    >
+                        Learn more
+                    </a>
+                </p>
+                <div className="cta-search-filter-container flex dc__content-space mb-16">
+                    <AddLinkButton handleOnClick={handleAddLinkClick} />
+                    {renderSearchFilterWrapper()}
                 </div>
                 {appliedClusters.length > 0 && (
                     <AppliedFilterChips
@@ -333,7 +323,7 @@ function ExternalLinks() {
         <div className={`external-links-container ${errorStatusCode > 0 ? 'error-view' : ''}`}>
             {renderExternalLinksContainer()}
             {showAddLinkDialog && (
-                <AddExternalLink
+                <AddExternalLinkDialog
                     handleDialogVisibility={handleDialogVisibility}
                     selectedLink={selectedLink}
                     monitoringTools={monitoringTools}

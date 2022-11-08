@@ -1570,10 +1570,6 @@ button.anchor {
     align-items: flex-start !important;
 }
 
-.dc__align-items-center {
-    align-items: center !important;
-}
-
 .dc__align-center {
     text-align: center !important;
 }
@@ -1803,8 +1799,7 @@ button.anchor {
 }
 
 input,
-textarea,
-.bc-n50 {
+textarea {
     background-color: var(--N50);
 }
 
@@ -2111,10 +2106,6 @@ textarea,
     line-height: 22px;
 }
 
-.lh-24 {
-    line-height: 24px;
-}
-
 .lh-28 {
     line-height: 28px;
 }
@@ -2222,10 +2213,6 @@ textarea,
 
 .dc__column-gap-24 {
     column-gap: 24px;
-}
-
-.dc__gap-8 {
-    gap: 8px;
 }
 
 .dc__flip-180 {
