@@ -17,7 +17,7 @@ import TippyWhite from '../common/TippyWhite'
 import { AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import './ExternalLinks.scss'
+import './externalLinks.scss'
 
 function ExternalLinks() {
     const history = useHistory()

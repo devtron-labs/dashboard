@@ -21,8 +21,8 @@ import {
     MONITORING_TOOL_ICONS,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import './ExternalLinks.component.scss'
 import { OptionType } from '../app/types'
+import './externalLinks.component.scss'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
