@@ -48,7 +48,7 @@ interface APIResponseDescriptionType {
 interface APIResponseType {
     code: string
     description: APIResponseDescriptionType
-    selectedTab: string
+    selectedTab?: string
 }
 export interface WebhookDetailsType {
     accessKey: string
