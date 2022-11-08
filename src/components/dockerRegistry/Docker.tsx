@@ -440,6 +440,7 @@ function DockerForm({
                 toggleCollapse(true)
             }
             await reload()
+            await setToggleCollapse()
             toast.success('Successfully saved.')
         } catch (err) {
             showError(err)

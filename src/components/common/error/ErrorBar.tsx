@@ -77,7 +77,7 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
                                     <span className="mr-8 fw-6">Already provided permission?</span>
                                     Redeploy the application.
                                     <NavLink
-                                        to={`app/${appDetails.appId}/edit/workflow`}
+                                        to={`/app/${appDetails.appId}/edit/workflow`}
                                         className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
                                     >
                                         &nbsp; Go to Deploy

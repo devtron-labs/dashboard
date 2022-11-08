@@ -16,6 +16,13 @@ import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-
 import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import TippyWhite from '../common/TippyWhite'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
+
+export function DropdownIndicator(props) {
+  return <components.DropdownIndicator {...props}>
+      <ArrowDown className="icon-dim-24 icon-n4" />
+  </components.DropdownIndicator>
+}
 
 function ManageRegistry({
     clusterOption,
@@ -188,7 +195,8 @@ function ManageRegistry({
                     placeholder="Select cluster"
                     components={{
                         MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
-                        DropdownIndicator: null,
+                        DropdownIndicator,
+                        IndicatorSeparator: null,
                         ClearIndicator,
                         MultiValueRemove,
                         Option,
@@ -227,7 +235,7 @@ function ManageRegistry({
                 <Select
                     components={{
                         MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
-                        DropdownIndicator: null,
+                        DropdownIndicator,
                         ClearIndicator,
                         MultiValueRemove,
                         Option,
