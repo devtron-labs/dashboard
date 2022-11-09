@@ -349,7 +349,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 </>
                             }
                         >
-                            <Question className="icon-dim-16 ml-7" />
+                            <Question className="icon-dim-16 ml-6" />
                         </Tippy>
                     </div>
                     <input
