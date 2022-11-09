@@ -150,6 +150,7 @@ export const ChartTypeVersionOptions = ({
     isUnSet,
     disableVersionSelect,
     charts,
+    chartsMetadata,
     selectedChart,
     selectChart,
     selectedChartRefId,
@@ -215,6 +216,7 @@ export const ChartTypeVersionOptions = ({
             {isShowChartSelectorModal && (
                 <ChartSelectorModal
                     charts={charts}
+                    chartsMetadata={chartsMetadata}
                     selectedChartRefId={selectedChartRefId}
                     selectChart={selectChart}
                     selectedChart={selectedChart}
@@ -287,6 +289,7 @@ export const DeploymentTemplateOptionsTab = ({
     handleReadMeClick,
     isUnSet,
     charts,
+    chartsMetadata,
     selectedChart,
     selectChart,
     selectedChartRefId,
@@ -304,6 +307,7 @@ export const DeploymentTemplateOptionsTab = ({
                     <ChartTypeVersionOptions
                         isUnSet={isUnSet}
                         charts={charts}
+                        chartsMetadata={chartsMetadata}
                         selectedChart={selectedChart}
                         selectChart={selectChart}
                         selectedChartRefId={selectedChartRefId}

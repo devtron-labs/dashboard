@@ -10,7 +10,7 @@ import {
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from './DeploymentTemplateView'
-import { BasicFieldErrorObj, DeploymentChartVersionType, DeploymentConfigProps } from './types'
+import { BasicFieldErrorObj, ChartMetaDataType, DeploymentChartVersionType, DeploymentConfigProps } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
@@ -37,6 +37,7 @@ export default function DeploymentConfig({
 }: DeploymentConfigProps) {
     const { currentServerInfo } = useContext(mainContext)
     const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
+    const [chartsMetadata, setChartsMetadata] = useState<Record<string, ChartMetaDataType>>({})
     const [selectedChartRefId, selectChartRefId] = useState(0)
     const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
     const [template, setTemplate] = useState('')
@@ -84,9 +85,10 @@ export default function DeploymentConfig({
         setChartConfigLoading(true)
         try {
             const {
-                result: { chartRefs, latestAppChartRef, latestChartRef },
+                result: { chartRefs, latestAppChartRef, latestChartRef, chartMetadata },
             } = await getChartReferences(+appId)
             setCharts(chartRefs)
+            setChartsMetadata(chartMetadata)
             let selectedChartId: number = latestAppChartRef || latestChartRef
             let chart = chartRefs.find((chart) => chart.id === selectedChartId)
             selectChartRefId(selectedChartId)
@@ -299,6 +301,7 @@ export default function DeploymentConfig({
                     handleReadMeClick={handleReadMeClick}
                     isUnSet={isUnSet}
                     charts={charts}
+                    chartsMetadata={chartsMetadata}
                     selectedChart={selectedChart}
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}

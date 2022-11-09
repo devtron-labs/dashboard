@@ -118,6 +118,7 @@ export interface ChartTypeVersionOptionsProps {
     isUnSet: boolean
     disableVersionSelect?: boolean
     charts: DeploymentChartVersionType[]
+    chartsMetadata?: Record<string, ChartMetaDataType>
     selectedChart: DeploymentChartVersionType
     selectChart: (
         selectedChart: DeploymentChartVersionType,
@@ -148,6 +149,7 @@ export interface DeploymentTemplateOptionsTabProps {
     handleReadMeClick: () => void
     isUnSet: boolean
     charts: DeploymentChartVersionType[]
+    chartsMetadata?: Record<string, ChartMetaDataType>
     selectedChart: DeploymentChartVersionType
     selectChart: (
         selectedChart: DeploymentChartVersionType,
@@ -189,8 +191,8 @@ export interface DeploymentTemplateEditorViewProps {
     ) => void | React.Dispatch<React.SetStateAction<Record<string, any>>>
     basicFieldValuesErrorObj: BasicFieldErrorObj
     setBasicFieldValuesErrorObj?: (
-      basicFieldErrorObj: BasicFieldErrorObj,
-  ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+        basicFieldErrorObj: BasicFieldErrorObj,
+    ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
     changeEditorMode: () => void
 }
 
@@ -256,11 +258,16 @@ export interface BasicFieldErrorObj {
 }
 
 export interface ChartSelectorModalType {
-  charts: DeploymentChartVersionType[]
-  selectedChartRefId: number
-  selectedChart: DeploymentChartVersionType
-  selectChart: (
-      selectedChart: DeploymentChartVersionType,
-  ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
-  toggleChartSelectorModal: () => void
+    charts: DeploymentChartVersionType[]
+    chartsMetadata?: Record<string, ChartMetaDataType>
+    selectedChartRefId: number
+    selectedChart: DeploymentChartVersionType
+    selectChart: (
+        selectedChart: DeploymentChartVersionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
+    toggleChartSelectorModal: () => void
+}
+
+export interface ChartMetaDataType {
+    string: { chartDescription: string }
 }

@@ -10,6 +10,7 @@ import { chartDocumentationLink, chartTypeTab, chartTypeTabKeys, recommendedChar
 
 export default function ChartSelectorModal({
     charts,
+    chartsMetadata,
     selectedChartRefId,
     selectedChart,
     selectChart,
@@ -106,7 +107,7 @@ export default function ChartSelectorModal({
                                             )}
                                         </div>
                                         <div className="fs-12 fw-4 cn-7">
-                                            {chart.description}&nbsp;
+                                            {chartsMetadata?.[chart.name]?.['chartDescription']}&nbsp;
                                             {chartDocumentationLink[chart.name] && (
                                                 <a
                                                     className="dc__no-decor"
