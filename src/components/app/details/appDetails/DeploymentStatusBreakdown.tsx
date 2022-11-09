@@ -58,7 +58,7 @@ export default function DeploymentStatusDetailBreakdown({
     }
     return (
         <>
-            {url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
+            {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
 
             <div className="deployment-status-breakdown-container pl-20 pr-20">
                 {deploymentStatusDetailsBreakdownData.deploymentError && (
