@@ -8,6 +8,7 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import './webhookDetails.scss'
 import ReactSelect from 'react-select'
@@ -32,6 +33,7 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
+import Reload from '../../Reload/Reload'
 
 export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
@@ -61,6 +63,8 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
     const [copied, setCopied] = useState(false)
+    const [selectedSchema, setSelectedSchema] = useState<string>('')
+    const [errorInGetData, setErrorInGetData] = useState(false)
 
     const formatSampleJson = (json): string => {
         let formattedJSON = ''
@@ -147,9 +151,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                 setTokenList(sortedResult)
             }
             setLoader(false)
-        } catch (err) {
+        } catch (error) {
             setIsSuperAdmin(false)
             setLoader(false)
+            setErrorInGetData(true)
         }
     }
 
@@ -355,12 +360,12 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         value={tryoutAPIToken}
                     />
                 </div>
-                    {showTryoutAPITokenError && (
-                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                            <span>API Token is required to execute webhook</span>
-                        </span>
-                    )}
+                {showTryoutAPITokenError && (
+                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                        <span>API Token is required to execute webhook</span>
+                    </span>
+                )}
             </div>
         )
     }
@@ -514,9 +519,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         )
     }
 
-    const renderSchema = (schemaData: SchemaType): JSX.Element => {
+    const handleSchemaClick = (schemaName: string): void => {
+        setSelectedSchema(schemaName)
+        setTimeout(() => {
+            setSelectedSchema('')
+        }, 5000)
+    }
+
+    const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
         return (
-            <div className="dc__border-top">
+            <div className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}>
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">
                     <span>Name</span>
                     <span>Type</span>
@@ -527,8 +539,19 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     const data = schemaData[key]
                     return (
                         <div className="json-schema-row pt-8 pb-8 fw-4 fs-13">
-                            <span>{key}</span>
-                            <span>{data.createLink ? <a>{key}</a> : data.dataType}</span>
+                            <span className="dc__ellipsis-right">{key}</span>
+                            <span className="dc__ellipsis-right">
+                                {data.createLink ? (
+                                    <span
+                                        className="cb-5 cursor"
+                                        onClick={() => handleSchemaClick(schemaName + '-' + key)}
+                                    >
+                                        {key}
+                                    </span>
+                                ) : (
+                                    data.dataType
+                                )}
+                            </span>
                             <span>{data.optional ? 'false' : 'true'}</span>
                             <span>{data.description}</span>
                         </div>
@@ -538,10 +561,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         )
     }
 
-    const renderSchemaSection = (schema: Record<string, SchemaType>): JSX.Element => {
+    const renderSchemaSection = (schema: Record<string, SchemaType>, schemaName: string): JSX.Element => {
         return (
             <div>
-                {renderSchema(schema['root'])}
+                {renderSchema(schema['root'], schemaName + '-root')}
                 {Object.keys(schema).map((key) => {
                     const data = schema[key]
                     if (key === 'root') return null
@@ -549,7 +572,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         return (
                             <>
                                 <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
-                                {renderSchema(schema[key])}
+                                {renderSchema(schema[key], schemaName + '-root' + '-' + key)}
                             </>
                         )
                 })}
@@ -565,7 +588,8 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                 <div className="cn-9 fs-13 fw-6 mb-8">Request body</div>
                 {generateTabHeader(REQUEST_BODY_TAB_LIST, selectedRequestBodyTab, setRequestBodyPlaygroundTab, true)}
                 {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[0].key && renderCodeSnippet(sampleJSON, true)}
-                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[1].key && renderSchemaSection(webhookDetails.schema)}
+                {selectedRequestBodyTab === REQUEST_BODY_TAB_LIST[1].key &&
+                    renderSchemaSection(webhookDetails.schema, 'requestBody')}
             </div>
         )
     }
@@ -636,7 +660,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             onClick={addMetadata}
                         >
                             <div className="flex">
-                                {!option.mandatory && (
+                                {option.mandatory ? (
+                                    <Tag className="icon-dim-12 mr-5" />
+                                ) : (
                                     <>
                                         {option.isSelected ? (
                                             <Close className="icon-dim-16 mr-5" />
@@ -767,7 +793,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[0].key &&
                                     renderCodeSnippet(formatSampleJson(response.description.exampleValue))}
                                 {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[1].key &&
-                                    renderSchemaSection(response.description.schema)}
+                                    renderSchemaSection(response.description.schema, 'response-' + index)}
                             </div>
                         </div>
                     ))}
@@ -833,7 +859,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         <div className="response-row pt-8 pb-8">
                             <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
                             <div>
-                                <div className="fs-13 fw-4 cn-9 mb-16"> {webhookResponse?.['description']?.['description']}</div>
+                                <div className="fs-13 fw-4 cn-9 mb-16">
+                                    {' '}
+                                    {webhookResponse?.['description']?.['description']}
+                                </div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
                                 {renderCodeSnippet('value')}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
@@ -877,7 +906,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div
                 className="dc__border-top flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
-                style={{ width: '1000px' }}
+                style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 <div className="flexbox pt-8 pb-8">
                     <Help className="icon-dim-20 fcv-5 mr-8" />
@@ -894,18 +923,26 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         )
     }
 
+    const renderPageDetails = (): JSX.Element => {
+        if (loader) {
+            return <Progressing pageLoader />
+        } else if (errorInGetData) {
+            return <Reload />
+        } else {
+            return (
+                <>
+                    {renderBodySection()}
+                    {!isSuperAdmin && renderFooterSection()}
+                </>
+            )
+        }
+    }
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
-                {loader ? (
-                    <Progressing pageLoader />
-                ) : (
-                    <>
-                        {renderBodySection()}
-                        {!isSuperAdmin && renderFooterSection()}
-                    </>
-                )}
+                {renderPageDetails()}
             </div>
         </Drawer>
     )

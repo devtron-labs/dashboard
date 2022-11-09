@@ -52,7 +52,6 @@ interface WorkflowState {
     top: number
     left: number
     showCIMenu: boolean
-    hideWebhookTippy: boolean
 }
 
 export class Workflow extends Component<WorkflowProps, WorkflowState> {
@@ -62,7 +61,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             showCIMenu: false,
             top: 0,
             left: 0,
-            hideWebhookTippy: false
         }
     }
 
@@ -343,7 +341,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
         return (
           <ConditionalWrap
-          condition={this.props.showWebhookTippy && !this.state.hideWebhookTippy}
+          condition={this.props.showWebhookTippy}
           wrap={(children) => (
               <Tippy
                   placement="top-start"

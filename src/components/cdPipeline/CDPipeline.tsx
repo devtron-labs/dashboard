@@ -1336,7 +1336,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div
                         className="p-20"
                         style={{
-                            minHeight:
+                            height:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced
                                     ? `calc(100vh - 125px)`
                                     : `auto`,

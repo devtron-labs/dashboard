@@ -85,7 +85,7 @@
 }
 
 .webhook-tippy-card-container .webhook-tippy-card {
-    background-color: #2d3452;
+    background-color: var(--tippy-card-black-bg);
     position: fixed;
     z-index: 6;
     right: 20px;
@@ -99,7 +99,7 @@
 .webhook-tippy-card-container .arrow-down {
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-top: 12px solid #2d3452;
+  border-top: 12px solid var(--tippy-card-black-bg);
   right: 50%;
   position: fixed;
   top: 85px;
