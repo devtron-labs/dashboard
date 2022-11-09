@@ -42,7 +42,7 @@ const AppDetailsComponent = ({
 
             <SyncErrorComponent appStreamData={streamData}/>
             <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
-            <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />s
+            <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
         </div>
     );
 };

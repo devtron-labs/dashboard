@@ -1,5 +1,4 @@
 import React, { useState, useRef,  useEffect } from 'react'
-
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { not } from '../../common'
@@ -13,30 +12,34 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
 }) => {
 
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
-    const appDetails = useRef(IndexStore.getAppDetails());
+    const appDetails = IndexStore.getAppDetails();
     const conditions = appStreamData?.result?.application?.status?.conditions || []
+    const isImagePullBackOff = useRef(null)
 
-    if (!appDetails) return null
+    useEffect(() => {
+      if (isImagePullBackOff.current) {
+        for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
+          const node = appDetails.resourceTree.nodes[index]
+          if (node.info?.length) {
+              for (let index = 0; index < node.info.length; index++) {
+                  const info = node.info[index]
+                  if (
+                      info.value.toLowerCase() === ErrorType.ERRIMAGEPULL ||
+                      info.value.toLowerCase() === ErrorType.IMAGEPULLBACKOFF
+                  ) {
+                    isImagePullBackOff.current = true
+                      break
+                  }
+              }
+              if (isImagePullBackOff) break
+          }
+      }
+      }
+  }, [appDetails])
 
-    let isImagePullBackOff
-    for (let index = 0; index < appDetails.current?.resourceTree?.nodes?.length; index++) {
-        const node = appDetails.current.resourceTree.nodes[index]
-        if (node.info?.length) {
-            for (let index = 0; index < node.info.length; index++) {
-                const info = node.info[index]
-                if (
-                    info.value.toLowerCase() === ErrorType.ERRIMAGEPULL ||
-                    info.value.toLowerCase() === ErrorType.IMAGEPULLBACKOFF
-                ) {
-                    isImagePullBackOff = true
-                    break
-                }
-            }
-            if (isImagePullBackOff) break
-        }
-    }
 
-    if (conditions.length === 0 && !isImagePullBackOff) return null
+
+    if (!appDetails || (conditions.length === 0 && !isImagePullBackOff)) return null
 
     const toggleErrorHeader = () => {
         toggleCollapsed(not)
@@ -47,11 +50,11 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
                 <span className="cr-5 fs-14 fw-6">
-                    {conditions.length + (isImagePullBackOff && !appDetails.current.externalCi ? 1 : 0)} Errors
+                    {conditions.length + (isImagePullBackOff && !appDetails.externalCi ? 1 : 0)} Errors
                 </span>
                 {collapsed && (
                     <span className="cn-9 ml-24 w-80 dc__ellipsis-right">
-                        {isImagePullBackOff && !appDetails.current.externalCi && 'IMAGEPULLBACKOFF'}
+                        {isImagePullBackOff && !appDetails.externalCi && 'IMAGEPULLBACKOFF'}
                         {conditions.length > 0 && ', '}
                         {conditions.map((condition) => condition.type).join(', ')}
                     </span>
@@ -70,11 +73,11 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
                                 <td className="pl-24 pb-8">{condition.message}</td>
                             </tr>
                         ))}
-                        {isImagePullBackOff && !appDetails.current.externalCi && (
+                        {isImagePullBackOff && !appDetails.externalCi && (
                             <tr>
                                 <td className="pb-8 min-width">ImagePullBackOff</td>
                                 <td className="pl-24 pb-8">
-                                    {renderErrorHeaderMessage(appDetails.current, 'sync-error', showApplicationDetailedModal)}
+                                    {renderErrorHeaderMessage(appDetails, 'sync-error', showApplicationDetailedModal)}
                                 </td>
                             </tr>
                         )}
