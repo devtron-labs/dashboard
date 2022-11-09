@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, Progressing, sortOptionsByValue, useAsync } from '../../../common'
+import { handleUTCTime, Progressing, showError, sortOptionsByValue, useAsync } from '../../../common'
 import { AppDetails, AppOverviewProps, LabelTagsType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
@@ -11,8 +11,7 @@ import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
 import './AppOverview.scss'
-import { ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
-import { fetchAppDetailsInTime } from '../../service'
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
@@ -37,11 +36,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(appId), [appId])
 
     useEffect(() => {
-        getEnvAndAppDetails()
-    }, [otherEnvsLoading, otherEnvsResult])
-
-    useEffect(() => {
-        if (appMetaInfo && appMetaInfo.appName) {
+        if (appMetaInfo?.appName) {
             const labelOptionRes = appMetaInfo.labels?.map((_label) => {
                 return {
                     label: `${_label.key.toString()}:${_label.value.toString()}`,
@@ -53,36 +48,34 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         }
     }, [appMetaInfo])
 
-    // Revisit once new API changes are introduced
-    const getEnvAndAppDetails = async () => {
-        if (!otherEnvsLoading && otherEnvsResult.result?.length > 0) {
-            const { result } = await fetchAppDetailsInTime(appId, otherEnvsResult.result[0].environmentId, 25000)
-            setAppDetails(result)
-            if (result?.clusterId) {
-                Promise.all([getMonitoringTools(), getExternalLinks(result.clusterId)])
-                    .then(([monitoringToolsRes, externalLinksRes]) => {
-                        setExternalLinksAndTools({
-                            fetchingExternalLinks: false,
-                            externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
-                            monitoringTools:
-                                monitoringToolsRes.result
-                                    ?.map((tool) => ({
-                                        label: tool.name,
-                                        value: tool.id,
-                                        icon: tool.icon,
-                                    }))
-                                    .sort(sortOptionsByValue) || [],
-                        })
-                    })
-                    .catch((e) => {
-                        setExternalLinksAndTools({
-                            fetchingExternalLinks: false,
-                            externalLinks: [],
-                            monitoringTools: [],
-                        })
-                    })
-            }
-        }
+    useEffect(() => {
+        getExternalLinksDetails()
+    }, [appId])
+
+    const getExternalLinksDetails = (): void => {
+        Promise.all([getMonitoringTools(), getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)])
+            .then(([monitoringToolsRes, externalLinksRes]) => {
+                setExternalLinksAndTools({
+                    fetchingExternalLinks: false,
+                    externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                    monitoringTools:
+                        monitoringToolsRes.result
+                            ?.map((tool) => ({
+                                label: tool.name,
+                                value: tool.id,
+                                icon: tool.icon,
+                            }))
+                            .sort(sortOptionsByValue) || [],
+                })
+            })
+            .catch((e) => {
+                showError(e)
+                setExternalLinksAndTools({
+                    fetchingExternalLinks: false,
+                    externalLinks: [],
+                    monitoringTools: [],
+                })
+            })
     }
 
     const toggleChangeProjectModal = () => {
@@ -214,9 +207,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                         {_env.environmentName}
                                     </Link>
                                     <span className="fs-13 fw-4 cn-7">
-                                        {_env.lastDeployedTime
-                                            ? handleUTCTime(_env.lastDeployedTime, true)
-                                            : 'Not deployed'}
+                                        {_env.lastDeployed ? handleUTCTime(_env.lastDeployed, true) : 'Not deployed'}
                                     </span>
                                 </div>
                             ))}
