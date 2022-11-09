@@ -192,8 +192,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         parentPipelineId?: number | string,
         isWebhookCD?: boolean,
     ) => {
-        const ciURL = isWebhookCD ? `webhook/0` : `ci-pipeline/${ciPipelineId}`
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/${ciURL}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        const ciURL = isWebhookCD
+            ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
+            : `${PipelineType.CI_PIPELINE.toLowerCase()}/${ciPipelineId}`
+        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+            URLS.APP_WORKFLOW_CONFIG
+        }/${workflowId}/${ciURL}/${PipelineType.CD_PIPELINE.toLowerCase()}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
         if (this.state.noGitOpsConfiguration) {
             this.setState({
                 showNoGitOpsWarningPopup: true,
