@@ -454,6 +454,7 @@ export const Details: React.FC<{
                             close={hideDeploymentDetailModal}
                             appName={appDetails.appName}
                             environmentName={appDetails.environmentName}
+                            streamData={streamData}
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         />
                     )}

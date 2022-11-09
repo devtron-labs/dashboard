@@ -11,6 +11,7 @@ export default function DeploymentStatusDetailModal({
     close,
     appName,
     environmentName,
+    streamData,
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailModalType) {
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
@@ -46,7 +47,7 @@ export default function DeploymentStatusDetailModal({
     return (
         <Drawer position="right" width="1024px">
             <div className="deployment-status-breakdown-modal-container bcn-0" ref={appStatusDetailRef}>
-                <div className="dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
+                <div className="dc__box-shadow pb-12 pt-12 bcn-0">
                     <div className="title flex dc__content-space pl-20 pr-20 ">
                         <div>
                             <div className="cn-9 fs-16 fw-6">
@@ -87,9 +88,10 @@ export default function DeploymentStatusDetailModal({
                         </span>
                     </div>
                 </div>
-                <div style={{ height: 'calc(100vh - 90px)' }} className="bcn-0">
+                <div style={{ height: 'calc(100vh - 70px)' }} className="bcn-1 dc__overflow-scroll pb-20">
                     <DeploymentStatusDetailBreakdown
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        streamData={streamData}
                     />
                 </div>
             </div>

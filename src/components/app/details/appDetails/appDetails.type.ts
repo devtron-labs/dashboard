@@ -1,4 +1,5 @@
 import { ResponseType } from '../../../../services/service.types'
+import { AppStreamData } from '../../types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -43,12 +44,25 @@ export interface SecurityVulnerabilititesProps {
     onClick: () => void
 }
 
+export interface SyncStageResourceDetail {
+    id: number
+    InstalledAppVersionHistoryId?: number  
+    CdWorkflowRunnerId?: number 
+    resourceName: string 
+    resourceKind: string    
+    resourcePhase: string 
+    HookType: string
+    resourceStatus: string
+    statusMessage: string 
+}
+
 export interface DeploymentStatusDetailsTimelineType {
     id: number
     cdWorkflowRunnerId: number
     status: string
     statusDetail: string
     statusTime: string
+    resourceDetails: SyncStageResourceDetail[]
 }
 
 export interface DeploymentStatusDetailsType {
@@ -67,6 +81,9 @@ interface DeploymentStatusDetailRow {
     displayText: string
     displaySubText: string
     time: string
+    resourceDetails?: any,
+    isCollapsed?: boolean,
+    kubeList?: {icon: any, message: string}[]
 }
 export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentStatus: string
@@ -85,6 +102,7 @@ export interface DeploymentStatusDetailsBreakdownDataType {
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+    streamData?: AppStreamData
 }
 
 export interface DeploymentStatusDetailModalType{
@@ -92,6 +110,7 @@ export interface DeploymentStatusDetailModalType{
   appName: string
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+  streamData: AppStreamData
 }
 
 export interface ModuleConfigResponse extends ResponseType {

@@ -58,32 +58,10 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
     }
     const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [showSeeMore, setShowSeeMore] = useState(true)
-    const [currentFilter, setCurrentFilter] = useState('')
-
-    useEffect(() => {
-        try {
-            const stats = appStreamData.result.application.status.operationState.syncResult.resources.reduce(
-                (agg, curr) => {
-                    agg.set(`${curr.kind}/${curr.name}`, curr)
-                    return agg
-                },
-                new Map(),
-            )
-            setNodeStatusMap(stats)
-        } catch (error) {}
-    }, [appStreamData])
-
-    function getNodeMessage(kind: string, name: string) {
-        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-            const { message } = nodeStatusMap.get(`${kind}/${name}`)
-            return message
-        }
-        return ''
-    }
 
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
-    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1];
+    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
     if (
         ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -116,12 +94,6 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
             typeof close === 'function'
         ) {
             close()
-        }
-    }
-
-    const onFilterClick = (selectedFilter: string): void => {
-        if (currentFilter !== selectedFilter.toLowerCase()) {
-            setCurrentFilter(selectedFilter.toLowerCase())
         }
     }
 
@@ -173,50 +145,119 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                             {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree.status.toUpperCase()]}
                         </div>
                     )}
-                    <div className="pt-16 pl-20 pb-8">
-                        <div className="flexbox pr-20 w-100">
-                            <div>
-                                <StatusFilterButtonComponent nodes={flattenedNodes} handleFilterClick={onFilterClick} />
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="app-status-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
-                            {APP_STATUS_HEADERS.map((headerKey, index) => (
-                                <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
-                                    {headerKey}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="resource-list fs-13">
-                            {flattenedNodes
-                                .filter(
-                                    (nodeDetails) =>
-                                        currentFilter === 'all' ||
-                                        nodeDetails.health.status?.toLowerCase() === currentFilter,
-                                )
-                                .map((nodeDetails) => (
-                                    <div
-                                        className="app-status-row pt-8 pr-20 pb-8 pl-20"
-                                        key={`${nodeDetails.kind}/${nodeDetails.name}`}
-                                    >
-                                        <div>{nodeDetails.kind}</div>
-                                        <div>{nodeDetails.name}</div>
-                                        <div
-                                            className={`app-summary__status-name f-${
-                                                nodeDetails.health.status ? nodeDetails.health.status.toLowerCase() : ''
-                                            }`}
-                                        >
-                                            {nodeDetails.status ? nodeDetails.status : nodeDetails.health.status}
-                                        </div>
-                                        <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
+                    <AppStatusDetailsChart appStreamData={appStreamData} />
                 </div>
             </div>
         </Drawer>
+    )
+}
+
+export function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = false }) {
+    const _appDetails = IndexStore.getAppDetails()
+    const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
+    const [currentFilter, setCurrentFilter] = useState('')
+
+    useEffect(() => {
+        try {
+            const stats = appStreamData.result.application.status.operationState.syncResult.resources.reduce(
+                (agg, curr) => {
+                    agg.set(`${curr.kind}/${curr.name}`, curr)
+                    return agg
+                },
+                new Map(),
+            )
+            setNodeStatusMap(stats)
+        } catch (error) {}
+    }, [appStreamData])
+
+    const nodes: AggregatedNodes = useMemo(() => {
+        return aggregateNodes(_appDetails.resourceTree?.nodes || [], _appDetails.resourceTree?.podMetadata || [])
+    }, [_appDetails])
+    const nodesKeyArray = Object.keys(nodes?.nodes || {})
+    let flattenedNodes = []
+    if (nodesKeyArray.length > 0) {
+        for (let index = 0; index < nodesKeyArray.length; index++) {
+            const element = nodes.nodes[nodesKeyArray[index]]
+            element.forEach((childElement) => {
+                childElement.health && flattenedNodes.push(childElement)
+            })
+        }
+        flattenedNodes.sort((a, b) => {
+            return (
+                STATUS_SORTING_ORDER[a.health.status?.toLowerCase()] -
+                STATUS_SORTING_ORDER[b.health.status?.toLowerCase()]
+            )
+        })
+    }
+
+    function getNodeMessage(kind: string, name: string) {
+        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
+            const { message } = nodeStatusMap.get(`${kind}/${name}`)
+            return message
+        }
+        return ''
+    }
+
+    const onFilterClick = (selectedFilter: string): void => {
+        if (currentFilter !== selectedFilter.toLowerCase()) {
+            setCurrentFilter(selectedFilter.toLowerCase())
+        }
+    }
+
+    console.log(flattenedNodes);
+    
+
+    const filteredFlattendNodes = () => {
+        if(filterRemoveHealth){
+            return flattenedNodes.filter((node) => node.health.status !== 'Healthy')
+         }else{
+            return flattenedNodes
+         }
+    }
+
+    return (
+        <>
+            <div className="pt-16 pl-20 pb-8">
+                <div className="flexbox pr-20 w-100">
+                    <div>
+                        <StatusFilterButtonComponent nodes={filteredFlattendNodes()} handleFilterClick={onFilterClick} />
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div className="app-status-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
+                    {APP_STATUS_HEADERS.map((headerKey, index) => (
+                        <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
+                            {headerKey}
+                        </div>
+                    ))}
+                </div>
+                <div className="resource-list fs-13">
+                    {filteredFlattendNodes()
+                        .filter(
+                            (nodeDetails) =>
+                                currentFilter === 'all' || nodeDetails.health.status?.toLowerCase() === currentFilter,
+                        )
+                        .map((nodeDetails) => (
+                            <div
+                                className="app-status-row pt-8 pr-20 pb-8 pl-20"
+                                key={`${nodeDetails.kind}/${nodeDetails.name}`}
+                            >
+                                <div>{nodeDetails.kind}</div>
+                                <div>{nodeDetails.name}</div>
+                                <div
+                                    className={`app-summary__status-name f-${
+                                        nodeDetails.health.status ? nodeDetails.health.status.toLowerCase() : ''
+                                    }`}
+                                >
+                                    {nodeDetails.status ? nodeDetails.status : nodeDetails.health.status}
+                                </div>
+                                <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
+                            </div>
+                        ))}
+                </div>
+            </div>
+        </>
     )
 }
 
