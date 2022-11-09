@@ -32,7 +32,7 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { EDITOR_VIEW } from '../deploymentConfig/constants'
+import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
 
 export default function DeploymentTemplateOverride({
     parentState,
@@ -213,12 +213,21 @@ export default function DeploymentTemplateOverride({
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
                     if (state.isBasicViewLockedInBase !== null && state.isBasicViewLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
+                        let _isBasicViewLocked =false
+                        if (
+                            _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                            !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                            !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                            !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+                        ) {
+                            _isBasicViewLocked = true
+                        }
                         dispatch({
                             type: 'multipleOptions',
                             value: {
                                 basicFieldValues: _basicFieldValues,
                                 basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                                isBasicViewLocked: state.isBasicViewLockedInBase,
+                                isBasicViewLocked: state.isBasicViewLockedInBase || _isBasicViewLocked,
                                 duplicate: null,
                             },
                         })
@@ -283,6 +292,14 @@ export default function DeploymentTemplateOverride({
 
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
+            if (
+                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+            ) {
+                statesToUpdate['isBasicViewLocked'] = true
+            }
             statesToUpdate['basicFieldValues'] = _basicFieldValues
             statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
         }

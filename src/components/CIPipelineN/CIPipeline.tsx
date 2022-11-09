@@ -1,8 +1,8 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, useKeyDown, VisibleModal } from '../common'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
-import { BuildStageVariable, BuildTabText, ModuleNameMap, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { BuildStageVariable, BuildTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -199,6 +199,17 @@ export default function CIPipeline({
                 showError(error)
             })
     }, [])
+
+    useEffect(() => {
+        if (
+            location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
+            ciPipelineId &&
+            typeof Storage !== 'undefined' &&
+            localStorage.getItem('takeMeThereClicked')
+        ) {
+            localStorage.removeItem('takeMeThereClicked')
+        }
+    }, [location.pathname])
 
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
@@ -663,7 +674,7 @@ export default function CIPipeline({
             <li className="tab-list__tab">
                 <NavLink
                     replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
+                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox dc__capitalize"
                     activeClassName="active"
                     to={toLink}
                     onClick={() => {
@@ -677,8 +688,8 @@ export default function CIPipeline({
         )
     }
 
-    return (
-        <VisibleModal className="">
+    const renderCIPipelineModal = () => {
+        return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
@@ -708,6 +719,7 @@ export default function CIPipeline({
                     value={{
                         formData,
                         setFormData,
+                        setLoadingData,
                         addNewTask,
                         configurationType,
                         setConfigurationType,
@@ -778,6 +790,14 @@ export default function CIPipeline({
                 )}
                 {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </div>
-        </VisibleModal>
+        )
+    }
+
+    return ciPipelineId || isAdvanced ? (
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            {renderCIPipelineModal()}
+        </Drawer>
+    ) : (
+        <VisibleModal className="">{renderCIPipelineModal()}</VisibleModal>
     )
 }

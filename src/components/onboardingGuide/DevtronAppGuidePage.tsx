@@ -24,7 +24,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
 
     return (
         <div className="guide-container">
-            <div className="flex h-300 guide-header column">
+            <div className="flex mh-300 guide-header column">
                 <h1 className="fw-6 mb-8">Create your first application</h1>
                 <p className="fs-14 cn-7">{renderSubTitle()}</p>
             </div>

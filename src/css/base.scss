@@ -1596,6 +1596,10 @@ button.anchor {
     border: 1px solid var(--N200);
 }
 
+.dc__border-n1 {
+    border: 1px solid var(--N100);
+}
+
 .dc__border-transparent {
     border: 1px solid transparent;
 }
@@ -2040,6 +2044,10 @@ textarea {
     height: 36px !important;
 }
 
+.h-40 {
+    height: 40px !important;
+}
+
 .h-42 {
     height: 42px !important;
 }
@@ -2056,7 +2064,15 @@ textarea {
     height: 60px !important;
 }
 
+.h-80 {
+    height: 80px !important;
+}
+
 .h-300 {
+    height: 300px !important;
+}
+
+.mh-300 {
     min-height: 300px;
 }
 
@@ -2131,6 +2147,10 @@ textarea {
 // Margin in pixels
 .dc__m-auto {
     margin: auto;
+}
+
+.m-0-imp {
+    margin: 0 !important;
 }
 
 .m-tb-20 {
@@ -2225,4 +2245,11 @@ textarea::placeholder {
 
 .dc__italic-font-style {
     font-style: italic !important;
+}
+
+.dc__align-reload-center {
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
 }
