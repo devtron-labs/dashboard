@@ -198,7 +198,6 @@ function ManageRegistry({
                     components={{
                         MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
                         DropdownIndicator,
-                        IndicatorSeparator: null,
                         ClearIndicator,
                         MultiValueRemove,
                         Option,
@@ -214,6 +213,10 @@ function ManageRegistry({
                             margin: '0 8px 0 0',
                             padding: '1px',
                         }),
+                        indicatorSeparator: (base) => ({
+                          ...base,
+                         display: blackList.length > 0 ? 'block' : 'none'
+                      })
                     }}
                     closeMenuOnSelect={false}
                     isMulti
@@ -255,6 +258,10 @@ function ManageRegistry({
                             margin: '0 8px 0 0',
                             padding: '1px',
                         }),
+                        indicatorSeparator: (base) => ({
+                          ...base,
+                         display: whiteList.length > 0 ? 'block' : 'none'
+                      })
                     }}
                     closeMenuOnSelect={false}
                     isMulti
@@ -347,7 +354,7 @@ function ManageRegistry({
                             value={CredentialType.SAME_AS_REGISTRY}
                             canSelect={credentialValue !== CredentialType.SAME_AS_REGISTRY}
                         >
-                            <Document className="icon-dim-12 mr-8" />
+                            <Document className="dc__m-auto" />
                             Use Registry Credentials
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
