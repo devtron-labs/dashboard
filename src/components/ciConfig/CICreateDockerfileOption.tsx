@@ -378,6 +378,7 @@ export default function CICreateDockerfileOption({
                     }
                     value={editorValue || editorData?.data}
                     mode={MODES.DOCKERFILE}
+                    noParsing={true}
                     height="300px"
                     readOnly={configOverrideView && !allowOverride}
                     onChange={handleEditorValueChange}
