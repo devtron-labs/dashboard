@@ -8,7 +8,6 @@ import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreak
 import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
-
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()

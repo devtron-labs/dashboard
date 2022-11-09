@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
-import { ErrorBarType } from './errorType'
+import { ErrorBarType, ErrorType } from './errorType'
 import { renderErrorHeaderMessage } from './error.utils'
 
 export default function ErrorBar({ appDetails }: ErrorBarType) {
@@ -13,7 +13,7 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
         if (node.info?.length) {
             for (let index = 0; index < node.info.length; index++) {
                 const info = node.info[index]
-                if (info.value.toLowerCase() === 'errimagepull' || info.value.toLowerCase() === 'imagepullbackoff') {
+                if (info.value.toLowerCase() === ErrorType.ERRIMAGEPULL || info.value.toLowerCase() === ErrorType.IMAGEPULLBACKOFF) {
                     isImagePullBackOff = true
                     break
                 }

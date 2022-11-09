@@ -2010,6 +2010,11 @@ textarea {
     width: auto;
 }
 
+//min width
+.min-w-200 {
+  min-width: '200px'
+}
+
 // Height in pixels
 
 .dc__height-inherit {
@@ -2062,6 +2067,10 @@ textarea {
 
 .h-48 {
     height: 48px !important;
+}
+
+.h-56 {
+  height: 56px !important;
 }
 
 .h-60 {
