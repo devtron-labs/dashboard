@@ -23,7 +23,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                     Build container image
                 </div>
                 <div
-                    className="pipeline-select-item flexbox p-12 mb- pointer"
+                    className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={CIPipelineNodeType.CI}
                     onClick={this.handleMenuClick}
                 >

@@ -62,6 +62,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             top: 0,
             left: 0,
         }
+        this.renderWebhookTippyContent = this.renderWebhookTippyContent.bind(this)
     }
 
     setPosition = (top: number, left: number) => {
@@ -332,10 +333,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.props.showDeleteDialog(this.props.id)
     }
 
+    renderWebhookTippyContent() {
+      let webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
+      return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
+    }
+
     renderWorkflow() {
         let ciPipelineId = 0
         let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
-        let webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
 
@@ -348,7 +353,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                   arrow={true}
                   trigger="manual"
                   visible={this.props.showWebhookTippy}
-                  render={() => <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy}/>}
+                  render={this.renderWebhookTippyContent}
                   showOnCreate={true}
                   interactive
                   onClickOutside={this.props.hideWebhookTippy}

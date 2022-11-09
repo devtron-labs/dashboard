@@ -135,8 +135,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     toggleCIMenu = (event) => {
         let { top, left } = event.target.getBoundingClientRect()
-        top = top - 20
-        left = left - 85
         this.setState({
             cIMenuPosition: {
                 top: top,
@@ -375,33 +373,32 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderNewBuildPipelineButton(openAtTop: boolean) {
-        let top = this.state.cIMenuPosition.top
-        if (openAtTop) {
-            top = top - 382 + 100
-        }
-        return (
-            <>
-                <button
-                    type="button"
-                    className="cta dc__no-decor flex mb-20"
-                    onClick={this.toggleCIMenu}
-                >
-                    <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                    New workflow
-                </button>
-                <PipelineSelect
-                    workflowId={0}
-                    showMenu={this.state.showCIMenu}
-                    addCIPipeline={this.addCIPipeline}
-                    addWebhookCD={this.addWebhookCD}
-                    toggleCIMenu={this.toggleCIMenu}
-                    styles={{
-                        left: `${this.state.cIMenuPosition.left}px`,
-                        top: `${top}px`,
-                    }}
-                />
-            </>
-        )
+      let { top, left } = this.state.cIMenuPosition
+      if (openAtTop) {
+          top = top - 382 + 80
+          left = left - 85
+      } else {
+          top = top + 40
+      }
+      return (
+          <>
+              <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.toggleCIMenu}>
+                  <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
+                  New workflow
+              </button>
+              <PipelineSelect
+                  workflowId={0}
+                  showMenu={this.state.showCIMenu}
+                  addCIPipeline={this.addCIPipeline}
+                  addWebhookCD={this.addWebhookCD}
+                  toggleCIMenu={this.toggleCIMenu}
+                  styles={{
+                      left: `${left}px`,
+                      top: `${top}px`,
+                  }}
+              />
+          </>
+      )
     }
 
     renderEmptyState() {

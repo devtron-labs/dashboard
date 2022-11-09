@@ -7,6 +7,13 @@ import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
 export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu }: WebhookNodeProps) {
+    const addNewCD = (event): void => {
+        event.stopPropagation()
+        let { top, left } = event.target.getBoundingClientRect()
+        top = top + 25
+        toggleCDMenu()
+    }
+
     const renderWebhookCard = (): JSX.Element => {
         return (
             <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
@@ -37,15 +44,7 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                                 <span style={{ display: 'block', width: '145px' }}> Add deployment pipeline </span>
                             }
                         >
-                            <Add
-                                className="icon-dim-18 fcb-5"
-                                onClick={(event: any) => {
-                                    event.stopPropagation()
-                                    let { top, left } = event.target.getBoundingClientRect()
-                                    top = top + 25
-                                    toggleCDMenu()
-                                }}
-                            />
+                            <Add className="icon-dim-18 fcb-5" onClick={addNewCD} />
                         </Tippy>
                     </button>
                 )}
