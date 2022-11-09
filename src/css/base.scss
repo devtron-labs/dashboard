@@ -1637,7 +1637,7 @@ button.anchor {
 }
 
 .dc__no-border {
-    border: none;
+    border: none !important;
 }
 
 .dc__box-shadow {
@@ -2098,6 +2098,10 @@ textarea {
 }
 
 // Line height
+.lh-14 {
+  line-height: 14px;
+}
+
 .lh-16 {
     line-height: 16px;
 }

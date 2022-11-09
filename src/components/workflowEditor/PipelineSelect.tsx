@@ -18,47 +18,47 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
     }
     renderCIMenu() {
         return (
-            <div className="white-card pipeline-webhook dc__top-radius-4">
+            <div className="white-card pipeline-select-container br-4 p-0">
                 <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
                     Build container image
                 </div>
                 <div
-                    className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={CIPipelineNodeType.CI}
                     onClick={this.handleMenuClick}
                 >
                     <img src={ci} className="br-8 mr-12 h-40" alt="ci" />
                     <div>
-                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-2">Build and deploy from source code</h4>
+                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-4">Build and deploy from source code</h4>
                         <p className="lh-16 fs-12 fw-4 cn-7 m-0">
                             Build container image from a Git repo and deploy to an environment.
                         </p>
                     </div>
                 </div>
                 <div
-                    className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={CIPipelineNodeType.LINKED_CI}
                     onClick={this.handleMenuClick}
                 >
                     <img src={linkedPipeline} className="br-8 mr-12 h-40" alt="linked-ci" />
                     <div>
-                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-2">Linked build Pipeline</h4>
+                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-4">Linked build Pipeline</h4>
                         <p className="lh-16 fs-12 fw-4 cn-7 m-0">
                             Use image built by another build pipeline within Devtron.
                         </p>
                     </div>
                 </div>
-                <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
+                <div className="dc__window-bg pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
                     Receive container image
                 </div>
                 <div
-                    className="flexbox pt-8 pr-12 pb-8 pl-12 pointer"
+                    className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={PipelineType.WEBHOOK}
                     onClick={this.handleMenuClick}
                 >
                     <img src={webhook} className="br-8 mr-12 h-40" alt="external-ci" />
                     <div>
-                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-2">Deploy image from external service</h4>
+                        <h4 className="fs-13 fw-6 cn-9 mt-0 mb-4">Deploy image from external service</h4>
                         <p className="lh-16 fs-12 fw-4 cn-7 m-0">
                             Receive container images from an external service (eg. jenkins, CircleCI, etc.) and deploy
                             to an environment.

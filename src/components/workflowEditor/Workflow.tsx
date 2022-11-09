@@ -9,6 +9,7 @@ import {
     getCDPipelineURL,
     getExCIPipelineURL,
     getWebhookDetailsURL,
+    ConditionalWrap,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
 import { CIPipelineNodeType, NodeAttr, PipelineType, WorkflowNodeType } from '../../components/app/details/triggerView/types'
@@ -18,6 +19,8 @@ import { Link } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { WebhookNode } from './nodes/WebhookNode'
+import Tippy from '@tippyjs/react'
+import WebhookTippyCard from './nodes/WebhookTippyCard'
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -34,12 +37,15 @@ export interface WorkflowProps
         ciPipelineId: number | string,
         parentPipelineType: string,
         parentPipelineId: number | string,
+        isWebhookCD?: boolean
     ) => void
     openEditWorkflow: (event, workflowId: number) => string
     handleCISelect: (workflowId: string | number, type: CIPipelineNodeType) => void
     addCIPipeline: (type: CIPipelineNodeType) => void
     addWebhookCD: (workflowId?: number | string) => void
     cdWorkflowList?: any[]
+    showWebhookTippy?: boolean
+    hideWebhookTippy?: () => void
 }
 
 interface WorkflowState {
@@ -56,6 +62,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             top: 0,
             left: 0,
         }
+        this.renderWebhookTippyContent = this.renderWebhookTippyContent.bind(this)
     }
 
     setPosition = (top: number, left: number) => {
@@ -209,6 +216,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
               id={node.id}
               to={this.openWebhookDetails(node)}
               configDiffView={this.props.cdWorkflowList?.length > 0}
+              toggleCDMenu={() => {
+                  this.props.handleCDSelect(this.props.id, node.id, PipelineType.WEBHOOK, node.id, true)
+              }}
           />
       )
     }
@@ -283,7 +293,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 triggerType={node.triggerType}
                 deploymentStrategy={node.deploymentStrategy}
                 toggleCDMenu={() => {
-                    this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id)
+                    this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id, isWebhookCD)
                 }}
                 to={this.openCDPipeline(node, isWebhookCD)}
                 cdNamesList={cdNamesList}
@@ -323,6 +333,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.props.showDeleteDialog(this.props.id)
     }
 
+    renderWebhookTippyContent() {
+      const webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
+      return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
+    }
+
     renderWorkflow() {
         let ciPipelineId = 0
         let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
@@ -330,51 +345,73 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const configDiffView = this.props.cdWorkflowList?.length > 0
 
         return (
-            <div
-                className="mb-20 workflow workflow--create"
-                style={{ minWidth: typeof this.props.width === 'string' ? this.props.width : `${this.props.width}px` }}
+            <ConditionalWrap
+                condition={this.props.showWebhookTippy}
+                wrap={(children) => (
+                    <Tippy
+                        placement="top-start"
+                        arrow={true}
+                        trigger="manual"
+                        visible={this.props.showWebhookTippy}
+                        render={this.renderWebhookTippyContent}
+                        showOnCreate={true}
+                        interactive
+                        onClickOutside={this.props.hideWebhookTippy}
+                        delay={500}
+                        animation="fade"
+                    >
+                        {children}
+                    </Tippy>
+                )}
             >
-                <div className="workflow__header">
-                    <span className="workflow__name">{this.props.name}</span>
-                    {!configDiffView && (
-                        <>
-                            <Link to={this.props.openEditWorkflow(null, this.props.id)}>
-                                <button type="button" className="dc__transparent">
-                                    <img src={edit} alt="edit" className="icon-dim-18" />
+                <div
+                    className="mb-20 workflow workflow--create"
+                    style={{
+                        minWidth: typeof this.props.width === 'string' ? this.props.width : `${this.props.width}px`,
+                    }}
+                >
+                    <div className="workflow__header">
+                        <span className="workflow__name">{this.props.name}</span>
+                        {!configDiffView && (
+                            <>
+                                <Link to={this.props.openEditWorkflow(null, this.props.id)}>
+                                    <button type="button" className="dc__transparent">
+                                        <img src={edit} alt="edit" className="icon-dim-18" />
+                                    </button>
+                                </Link>
+                                <button
+                                    type="button"
+                                    className="dc__align-right dc__transparent"
+                                    onClick={this.toggleShowDeleteDialog}
+                                >
+                                    <img src={trash} alt="delete" />
                                 </button>
-                            </Link>
-                            <button
-                                type="button"
-                                className="dc__align-right dc__transparent"
-                                onClick={this.toggleShowDeleteDialog}
-                            >
-                                <img src={trash} alt="delete" />
-                            </button>
-                        </>
-                    )}
+                            </>
+                        )}
+                    </div>
+                    <div className="workflow__body">
+                        <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
+                            {this.renderEdgeList()}
+                            {this.renderNodes()}
+                        </svg>
+                        {!configDiffView && (
+                            <PipelineSelect
+                                workflowId={this.props.id}
+                                showMenu={this.state.showCIMenu}
+                                styles={{
+                                    left: `${this.state.left}px`,
+                                    top: `${this.state.top}px`,
+                                }}
+                                addCIPipeline={this.props.addCIPipeline}
+                                addWebhookCD={this.props.addWebhookCD}
+                                toggleCIMenu={() => {
+                                    this.setState({ showCIMenu: !this.state.showCIMenu })
+                                }}
+                            />
+                        )}
+                    </div>
                 </div>
-                <div className="workflow__body">
-                    <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
-                        {this.renderEdgeList()}
-                        {this.renderNodes()}
-                    </svg>
-                    {!configDiffView && (
-                        <PipelineSelect
-                            workflowId={this.props.id}
-                            showMenu={this.state.showCIMenu}
-                            styles={{
-                                left: `${this.state.left}px`,
-                                top: `${this.state.top}px`,
-                            }}
-                            addCIPipeline={this.props.addCIPipeline}
-                            addWebhookCD={this.props.addWebhookCD}
-                            toggleCIMenu={() => {
-                                this.setState({ showCIMenu: !this.state.showCIMenu })
-                            }}
-                        />
-                    )}
-                </div>
-            </div>
+            </ConditionalWrap>
         )
     }
 
