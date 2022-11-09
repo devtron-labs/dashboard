@@ -65,6 +65,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [copied, setCopied] = useState(false)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
+    const schemaRef = useRef<Array<HTMLDivElement | null>>([])
 
     const formatSampleJson = (json): string => {
         return JSON.stringify(json, null, 4)
@@ -81,7 +82,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         }
     }
 
-    const flattenObject = (ob: any, tableName: string): Record<string, SchemaType> => {
+    const flattenObject = (ob: Record<string, any>, tableName: string): Record<string, SchemaType> => {
         let toReturn = {}
         toReturn[tableName] = {}
         for (let key in ob) {
@@ -519,6 +520,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const handleSchemaClick = (schemaName: string): void => {
         setSelectedSchema(schemaName)
+        schemaRef.current[schemaName]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
         setTimeout(() => {
             setSelectedSchema('')
         }, 5000)
@@ -526,7 +528,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
         return (
-            <div className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}>
+            <div
+                ref={(el) => (schemaRef.current[schemaName] = el)}
+                className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}
+            >
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">
                     <span>Name</span>
                     <span>Type</span>
