@@ -403,7 +403,7 @@ function ManageRegistry({
                                 <div className="mb-6"> Registry URL</div>
                                 <input
                                     tabIndex={3}
-                                    placeholder="Enter Registry URL"
+                                    placeholder="Enter registry URL"
                                     className="form__input"
                                     name="server"
                                     value={customCredential?.server}
@@ -416,7 +416,7 @@ function ManageRegistry({
                                 <div className="mb-6">Email</div>
                                 <input
                                     tabIndex={4}
-                                    placeholder="Enter Email"
+                                    placeholder="Enter email"
                                     className="form__input"
                                     name="email"
                                     value={customCredential?.email}
@@ -431,7 +431,7 @@ function ManageRegistry({
                                 <div className="mb-6">Username</div>
                                 <input
                                     tabIndex={5}
-                                    placeholder="Enter Username"
+                                    placeholder="Enter username"
                                     className="form__input"
                                     name="username"
                                     value={customCredential?.username}
@@ -444,7 +444,7 @@ function ManageRegistry({
                                 <div className="mb-6">Password</div>
                                 <input
                                     tabIndex={6}
-                                    placeholder="Enter Password"
+                                    placeholder="Enter password"
                                     className="form__input"
                                     name="password"
                                     value={customCredential?.password}
