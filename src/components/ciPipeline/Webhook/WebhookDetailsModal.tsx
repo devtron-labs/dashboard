@@ -67,9 +67,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [errorInGetData, setErrorInGetData] = useState(false)
 
     const formatSampleJson = (json): string => {
-        let formattedJSON = ''
-        formattedJSON = JSON.stringify(json, null, 4)
-        return formattedJSON
+        return JSON.stringify(json, null, 4)
     }
 
     const closeWebhook = (): void => {
@@ -83,7 +81,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         }
     }
 
-    const flattenObject = (ob: Object, tableName: string): Record<string, SchemaType> => {
+    const flattenObject = (ob: any, tableName: string): Record<string, SchemaType> => {
         let toReturn = {}
         toReturn[tableName] = {}
         for (let key in ob) {

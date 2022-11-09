@@ -9,7 +9,7 @@ import { WebhookNodeProps } from '../types'
 export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu }: WebhookNodeProps) {
     const addNewCD = (event): void => {
         event.stopPropagation()
-        let { top, left } = event.target.getBoundingClientRect()
+        let { top } = event.target.getBoundingClientRect()
         top = top + 25
         toggleCDMenu()
     }
