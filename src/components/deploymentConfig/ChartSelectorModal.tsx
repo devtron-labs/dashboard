@@ -2,18 +2,11 @@ import React, { useState } from 'react'
 import { RadioGroup, sortObjectArrayAlphabetically, versionComparator, VisibleModal } from '../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
-import { DeploymentChartVersionType } from './types'
+import { ChartSelectorModalType } from './types'
 import { SortingOrder } from '../app/types'
+import { chartDocumentationLink, chartTypeTab, chartTypeTabKeys, recommendedChartName } from './constants'
 
-interface ChartSelectorModalType {
-    charts: DeploymentChartVersionType[]
-    selectedChartRefId: number
-    selectedChart: DeploymentChartVersionType
-    selectChart: (
-        selectedChart: DeploymentChartVersionType,
-    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
-    toggleChartSelectorModal: () => void
-}
+
 
 export default function ChartSelectorModal({
     charts,
@@ -22,9 +15,6 @@ export default function ChartSelectorModal({
     selectChart,
     toggleChartSelectorModal,
 }: ChartSelectorModalType) {
-    const chartTypeTabKeys = { DEVTRON_CHART: 'devtronChart', CUSTOM_CHARTS: 'customCharts' }
-    const chartTypeTab = { devtronChart: 'Charts by Devtron', customCharts: 'Custom charts' }
-    const recommendedChartName = 'Rollout Deployment'
     const [selectedChartTypeTab, setSelectedChartTypeTab] = useState(
         selectedChart?.['userUploaded'] ? chartTypeTabKeys.CUSTOM_CHARTS : chartTypeTabKeys.DEVTRON_CHART,
     )
@@ -110,12 +100,23 @@ export default function ChartSelectorModal({
                                         <div>
                                             <span className="fs-13 fw-6 cn-9">{chart.name}</span>
                                             {recommendedChartName === chart.name && (
-                                                <span className="">Recommended</span>
+                                                <span className="pl-6 pr-6 bw-1 ev-2 br-4 bcv-1 ml-12">
+                                                    Recommended
+                                                </span>
                                             )}
                                         </div>
                                         <div className="fs-12 fw-4 cn-7">
-                                            {chart.description ||
-                                                'case actually while we installed argocd and gitops not configure in between that time user created any app so that time user will face that issue , but in no gitops it is working fine'}
+                                            {chart.description}&nbsp;
+                                            {chartDocumentationLink[chart.name] && (
+                                                <a
+                                                    className="dc__no-decor"
+                                                    href={chartDocumentationLink[chart.name]}
+                                                    target="_blank"
+                                                    rel="noreferrer noopener"
+                                                >
+                                                    Learn more
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="w-20">

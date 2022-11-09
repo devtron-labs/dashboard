@@ -254,3 +254,13 @@ export interface BasicFieldErrorObj {
     memory: ErrorObj
     envVariables: ErrorObj[]
 }
+
+export interface ChartSelectorModalType {
+  charts: DeploymentChartVersionType[]
+  selectedChartRefId: number
+  selectedChart: DeploymentChartVersionType
+  selectChart: (
+      selectedChart: DeploymentChartVersionType,
+  ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
+  toggleChartSelectorModal: () => void
+}
