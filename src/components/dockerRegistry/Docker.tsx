@@ -50,7 +50,7 @@ export default function Docker({ ...props }) {
         setClusterLoader(true)
         await getClusterListMinWithoutAuth()
             .then((clusterListRes) => {
-                if (clusterListRes.result && Array.isArray(clusterListRes.result)) {
+                if (Array.isArray(clusterListRes.result)) {
                     setClusterOptions([
                         { label: 'All clusters', value: '-1' },
                         ...clusterListRes.result.map((cluster) => {
@@ -87,7 +87,7 @@ export default function Docker({ ...props }) {
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     return (
         <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-            <h2 className="form__title">Container registries</h2>
+            <h2 className="form__title">Container Registries</h2>
             <p className="form__subtitle">
                 Manage your organization’s container registries.&nbsp;
                 <a
@@ -308,12 +308,12 @@ function DockerForm({
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
     const [blackListEnabled, setBlackListEnabled] = useState<boolean>(_appliedClusterIdsCsv.length === 0)
     const [credentialsType, setCredentialType] = useState<string>(
-        ipsConfig?.credentialType
+        ipsConfig?.credentialType || CredentialType.SAME_AS_REGISTRY,
     )
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
-        isCustomScript && (ipsConfig?.credentialValue) ? JSON.parse(ipsConfig?.credentialValue) : '',
+        isCustomScript && ipsConfig?.credentialValue ? JSON.parse(ipsConfig?.credentialValue) : '',
     )
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
 
@@ -597,11 +597,14 @@ function DockerForm({
     })
 
     const renderRegistryCredentialText = () => {
-        if (ipsConfig?.ignoredClusterIdsCsv === '-1' || ignoredClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0) {
+        if (
+            ipsConfig?.ignoredClusterIdsCsv === '-1' ||
+            ignoredClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0
+        ) {
             return <div className="fw-6">No Cluster</div>
         }
-        if( appliedClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0){
-          return <div className="fw-6">All Clusters</div>
+        if (appliedClusterList.findIndex((cluster) => cluster === 'All clusters') >= 0) {
+            return <div className="fw-6">All Clusters</div>
         }
         if (appliedClusterList.length > 0) {
             return <div className="fw-6"> {`Clusters: ${appliedClusterList}`} </div>
@@ -628,7 +631,7 @@ function DockerForm({
             <div className="form__row form__row--two-third">
                 <div className="flex left column top">
                     <label htmlFor="" className="form__label w-100">
-                        Registry type*
+                        Registry Type*
                     </label>
                     <ReactSelect
                         className="m-0 w-100"

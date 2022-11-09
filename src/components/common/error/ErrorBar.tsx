@@ -2,9 +2,9 @@ import React from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
-import { AppDetails } from '../../v2/appDetails/appDetails.type'
+import { ErrorBarType } from './errorType'
 
-function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
+export default function ErrorBar({ appDetails }: ErrorBarType) {
     let isImagePullBackOff = false
     for (let index = 0; index < appDetails?.resourceTree?.nodes?.length; index++) {
         const node = appDetails?.resourceTree?.nodes[index]
@@ -27,7 +27,7 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
             <div className="er-2 bw-1 br-4 m-20 fs-13">
                 <div className="bcr-1 pl-12 pr-12 pt-8 pb-8 dc__border-bottom-r2 flex left">
                     <ErrorInfo className="icon-dim-24 mr-8" /> <span className="mr-8">IMAGEPULLBACKOFF:</span>
-                    {!appDetails.ipsAccessProvided ? (
+                    {/* {!appDetails.ipsAccessProvided ? (
                         <div>
                             '{appDetails.clusterName}' cluster does not have permission to pull container image from ‘
                             {appDetails.dockerRegistryId}’ registry.
@@ -37,7 +37,14 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
                             '{appDetails.clusterName}' cluster could not pull container image from '
                             {appDetails.dockerRegistryId}’ registry.
                         </div>
-                    )}
+                    )} */}
+                    {
+                        <div>
+                            '{appDetails.clusterName}' cluster
+                            {!appDetails.ipsAccessProvided ? ' does not have permission to' : ' could not'} pull container
+                            image from ‘{appDetails.dockerRegistryId}’ registry.
+                        </div>
+                    }
                 </div>
                 {!appDetails.ipsAccessProvided ? (
                     <div className="pl-12 pr-12 pt-8 pb-8">
@@ -73,26 +80,26 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
                             2. Provided credentials may be invalid.
                         </div>
                         <div className="pl-12 pr-12 pt-8 pb-8" style={{ background: 'var(--N50)' }}>
-                                <div className="flex left">
-                                    <span className="mr-8 fw-6">Already provided permission?</span>
-                                    Redeploy the application.
-                                    <NavLink
-                                        to={`/app/${appDetails.appId}/edit/workflow`}
-                                        className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
-                                    >
-                                        &nbsp; Go to Deploy
-                                    </NavLink>
-                                </div>
-                                <div className="flex left">
-                                    <span className="mr-8 fw-6">Facing issues?</span>
-                                    <a
-                                        href="https://discord.devtron.ai/"
-                                        className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
-                                        target="_blank"
-                                    >
-                                        Chat with support
-                                    </a>
-                                </div>
+                            <div className="flex left">
+                                <span className="mr-8 fw-6">Already provided permission?</span>
+                                Redeploy the application.
+                                <NavLink
+                                    to={`/app/${appDetails.appId}/edit/workflow`}
+                                    className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
+                                >
+                                    &nbsp; Go to Deploy
+                                </NavLink>
+                            </div>
+                            <div className="flex left">
+                                <span className="mr-8 fw-6">Facing issues?</span>
+                                <a
+                                    href="https://discord.devtron.ai/"
+                                    className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
+                                    target="_blank"
+                                >
+                                    Chat with support
+                                </a>
+                            </div>
                         </div>
                     </>
                 )}
@@ -100,5 +107,3 @@ function ErrorBar({ appDetails }: { appDetails: AppDetails }) {
         )
     )
 }
-
-export default ErrorBar

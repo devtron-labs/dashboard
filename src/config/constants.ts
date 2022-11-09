@@ -428,7 +428,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file*',
+            label: 'Service Account JSON file*',
             defaultValue: '',
             placeholder: 'Paste json file content here',
         },
@@ -451,7 +451,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file*',
+            label: 'Service Account JSON file*',
             defaultValue: '',
             placeholder: 'Paste json file content here',
         },

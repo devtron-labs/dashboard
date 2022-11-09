@@ -397,8 +397,8 @@ export const Details: React.FC<{
         )
     }
 
-      const showApplicationDetailedModal = (): void => {
-        toggleDetailedStatus && toggleDetailedStatus(true)
+    const showApplicationDetailedModal = (): void => {
+         toggleDetailedStatus(true)
     }
 
     return <React.Fragment>

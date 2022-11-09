@@ -16,12 +16,14 @@ import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-
 import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import TippyWhite from '../common/TippyWhite'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 
 export function DropdownIndicator(props) {
-  return <components.DropdownIndicator {...props}>
-      <ArrowDown className="icon-dim-24 icon-n4" />
-  </components.DropdownIndicator>
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDown className="icon-dim-24 icon-n4" />
+        </components.DropdownIndicator>
+    )
 }
 
 function ManageRegistry({
@@ -346,7 +348,7 @@ function ManageRegistry({
                             canSelect={credentialValue !== CredentialType.SAME_AS_REGISTRY}
                         >
                             <Document className="icon-dim-12 mr-8" />
-                            Use registry credentials
+                            Use Registry Credentials
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
                             value={CredentialType.NAME}
@@ -365,7 +367,7 @@ function ManageRegistry({
                 </div>
                 {credentialsType === CredentialType.SAME_AS_REGISTRY && (
                     <InfoColourBar
-                        message="Clusters will be auto-injected wuth the provided registry credentials."
+                        message="Clusters will be auto-injected with the provided registry credentials."
                         classname="info_bar"
                         Icon={InfoIcon}
                         iconClass="icon-dim-20"
