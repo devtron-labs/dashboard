@@ -7,7 +7,11 @@ export const renderErrorHeaderMessage = (appDetails: AppDetails, key: string, on
             '{appDetails.clusterName}' cluster
             {!appDetails.ipsAccessProvided ? ' does not have permission to' : ' could not'} pull container image from ‘
             {appDetails.dockerRegistryId}’ registry.
-            {key === 'sync-error' && <span className="cb-5 cursor fw-6 ml-8" onClick={onClickActionButton}>How to resolve?</span>}
+            {key === 'sync-error' && (
+                <span className="cb-5 cursor fw-6 ml-8" onClick={onClickActionButton}>
+                    How to resolve?
+                </span>
+            )}
         </div>
     )
 }
