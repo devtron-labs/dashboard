@@ -181,7 +181,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     addWebhookCD = (workflowId?: number | string) => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId || 0}/webhook/0/cd-pipeline`,
+            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+              URLS.APP_WORKFLOW_CONFIG
+          }/${workflowId || 0}/${PipelineType.WEBHOOK.toLowerCase()}/0/${PipelineType.CD_PIPELINE.toLowerCase()}`,
         )
     }
 
