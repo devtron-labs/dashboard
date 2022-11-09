@@ -78,6 +78,7 @@ export interface DeploymentChartVersionType {
     id: number | string
     version: string
     name: string
+    description?: string
 }
 
 export type DeploymentChartOptionkind = 'base' | 'env' | 'chartVersion' | 'deployment'

@@ -369,3 +369,31 @@
         }
     }
 }
+
+.chart-selector-modal {
+    width: 800px;
+    .chart-selector-row-list {
+        max-height: 500px;
+        overflow: auto;
+        .chart-row {
+            .blue-tick {
+                path {
+                    stroke: var(--B500);
+                }
+            }
+            &:last-child {
+                border-bottom-left-radius: 4px;
+                border-bottom-right-radius: 4px;
+            }
+            .use-chart {
+                display: none;
+            }
+            &:hover {
+                background-color: var(--N50);
+                .use-chart {
+                    display: block;
+                }
+            }
+        }
+    }
+}

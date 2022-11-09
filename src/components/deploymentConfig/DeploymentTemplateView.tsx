@@ -8,6 +8,7 @@ import {
     CHECKBOX_VALUE,
     ConditionalWrap,
     isVersionLessThanOrEqualToTarget,
+    not,
     Progressing,
     RadioGroup,
     showError,
@@ -28,6 +29,7 @@ import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -48,6 +50,7 @@ import { BASIC_FIELDS, getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
+import ChartSelectorModal from './ChartSelectorModal'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -151,57 +154,21 @@ export const ChartTypeVersionOptions = ({
     selectChart,
     selectedChartRefId,
 }: ChartTypeVersionOptionsProps) => {
-    const uniqueChartsByDevtron = new Map<string, boolean>(),
-        uniqueCustomCharts = new Map<string, boolean>()
-    let devtronCharts = [],
-        customCharts = []
-
-    for (let chart of charts) {
-        const chartName = chart.name
-        if (chart['userUploaded']) {
-            if (!uniqueCustomCharts.get(chartName)) {
-                uniqueCustomCharts.set(chartName, true)
-                customCharts.push(chart)
-            }
-        } else if (!uniqueChartsByDevtron.get(chartName)) {
-            uniqueChartsByDevtron.set(chartName, true)
-            devtronCharts.push(chart)
-        }
-    }
-    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
-    customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
-
-    const groupedChartOptions = [
-        {
-            label: 'Charts by Devtron',
-            options: devtronCharts,
-        },
-        {
-            label: 'Custom charts',
-            options: customCharts.length === 0 ? [{ name: 'No options' }] : customCharts,
-        },
-    ]
+    const [isShowChartSelectorModal, setIsShowChartSelectorModal] = useState(false)
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
               .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
         : []
 
-    const onSelectChartType = (selected) => {
-        const filteredCharts = charts.filter((chart) => chart.name == selected.name)
-        const selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
-        if (selectedChart) {
-            selectChart(selectedChart)
-        } else {
-            const sortedFilteredCharts = filteredCharts.sort((a, b) =>
-                versionComparator(a, b, 'version', SortingOrder.DESC),
-            )
-            selectChart(sortedFilteredCharts[sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0])
-        }
-    }
-
     const onSelectChartVersion = (selected) => {
         selectChart(selected)
+    }
+
+    const toggleChartSelectorModal = (): void => {
+        if (isUnSet && charts.length > 0) {
+            setIsShowChartSelectorModal(not)
+        }
     }
 
     return (
@@ -212,40 +179,10 @@ export const ChartTypeVersionOptions = ({
         >
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
-                {isUnSet ? (
-                    <ReactSelect
-                        options={groupedChartOptions}
-                        isMulti={false}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.name}`}
-                        value={selectedChart}
-                        classNamePrefix="chart_select"
-                        isOptionDisabled={(option) => !option.id}
-                        isSearchable={false}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                            MenuList: ChartMenuList,
-                        }}
-                        styles={getCommonSelectStyles({
-                            menu: (base, state) => ({
-                                ...base,
-                                margin: '0',
-                                width: '250px',
-                            }),
-                            menuList: (base) => ({
-                                ...base,
-                                position: 'relative',
-                                paddingBottom: '0px',
-                                maxHeight: '250px',
-                            }),
-                        })}
-                        onChange={onSelectChartType}
-                    />
-                ) : (
-                    <span className="fs-13 fw-6 cn-9">{selectedChart?.name}</span>
-                )}
+                <span className={`fs-13 fw-6 cn-9 flex ${isUnSet ? 'pointer' : ''}`} onClick={toggleChartSelectorModal}>
+                    {selectedChart?.name}
+                    {isUnSet && <Dropdown className="pointer rotate(0)" />}
+                </span>
             </div>
             <div className="chart-version-options">
                 <span className="fs-13 fw-4 cn-9">Chart version:</span>
@@ -275,6 +212,15 @@ export const ChartTypeVersionOptions = ({
                     />
                 )}
             </div>
+            {isShowChartSelectorModal && (
+                <ChartSelectorModal
+                    charts={charts}
+                    selectedChartRefId={selectedChartRefId}
+                    selectChart={selectChart}
+                    selectedChart={selectedChart}
+                    toggleChartSelectorModal={toggleChartSelectorModal}
+                />
+            )}
         </div>
     )
 }
