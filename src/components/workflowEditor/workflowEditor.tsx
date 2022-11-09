@@ -183,7 +183,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.history.push(
             `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
               URLS.APP_WORKFLOW_CONFIG
-          }/${workflowId || 0}/${PipelineType.WEBHOOK.toLowerCase()}/0/${PipelineType.CD_PIPELINE.toLowerCase()}`,
+          }/${workflowId || 0}/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}`,
         )
     }
 
@@ -199,7 +199,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             : `${PipelineType.CI_PIPELINE.toLowerCase()}/${ciPipelineId}`
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
-        }/${workflowId}/${ciURL}/${PipelineType.CD_PIPELINE.toLowerCase()}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
         if (this.state.noGitOpsConfiguration) {
             this.setState({
                 showNoGitOpsWarningPopup: true,
