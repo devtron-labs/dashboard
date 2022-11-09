@@ -80,10 +80,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
-                for (let index = 0; index < result.workflows?.length; index++) {
-                    const workFlow = result.workflows[index]
-                    for (let index = 0; index < workFlow.nodes?.length; index++) {
-                        const node = workFlow.nodes[index]
+                for (const workFlow of result.workflows) {
+                    for (const node of workFlow.nodes) {
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
