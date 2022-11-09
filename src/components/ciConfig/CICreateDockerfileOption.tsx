@@ -90,8 +90,8 @@ export default function CICreateDockerfileOption({
             if (
                 currentCIBuildConfig.dockerBuildConfig.language &&
                 _selectedLanguage.value === currentCIBuildConfig.dockerBuildConfig.language &&
-                currentCIBuildConfig.dockerBuildConfig.languageFramework &&
-                _selectedFramework.value === currentCIBuildConfig.dockerBuildConfig.languageFramework
+                (!currentCIBuildConfig.dockerBuildConfig.languageFramework ||
+                    _selectedFramework.value === currentCIBuildConfig.dockerBuildConfig.languageFramework)
             ) {
                 setTemplateData({
                     ...templateData,
