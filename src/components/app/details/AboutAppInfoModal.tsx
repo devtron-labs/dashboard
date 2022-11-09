@@ -4,10 +4,10 @@ import { Progressing, showError, VisibleModal } from '../../common'
 import TagLabelSelect from './TagLabelSelect'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { createOption, handleKeyDown, TAG_VALIDATION_MESSAGE, validateTags } from '../appLabelCommon'
-import ReactSelect from 'react-select'
+import ReactSelect, { ActionMeta, InputActionMeta } from 'react-select'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
-import { AboutAppInfoModalProps, LabelTagsType, NumberOptionType } from '../types'
+import { AboutAppInfoModalProps, LabelTagsType, NumberOptionType, OptionType } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
 
@@ -40,7 +40,7 @@ export default function AboutAppInfoModal({
         }
     }, [appMetaInfo, fetchingProjects, projectsList])
 
-    const renderAboutModalInfoHeader = () => {
+    const renderAboutModalInfoHeader = (): JSX.Element => {
         return (
             <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
                 <h2 className="fs-20 cn-9 fw-6 m-0">{isChangeProjectView ? 'Change project' : 'Manage tags'}</h2>
@@ -51,7 +51,7 @@ export default function AboutAppInfoModal({
         )
     }
 
-    const renderValidationMessaging = () => {
+    const renderValidationMessaging = (): JSX.Element => {
         if (labelTags.tagError !== '') {
             return (
                 <div className="flex left cr-5 fs-11 mt-6">
@@ -62,11 +62,11 @@ export default function AboutAppInfoModal({
         }
     }
 
-    const handleProjectSelection = (selected: NumberOptionType) => {
+    const handleProjectSelection = (selected: NumberOptionType): void => {
         setSelectedProject(selected)
     }
 
-    const renderProjectSelect = () => {
+    const renderProjectSelect = (): JSX.Element => {
         return (
             <ReactSelect
                 options={projectsOptions}
@@ -92,7 +92,7 @@ export default function AboutAppInfoModal({
         )
     }
 
-    const setAppTagLabel = () => {
+    const setAppTagLabel = (): void => {
         const newTag = labelTags.inputTagValue.split(',').map((e) => {
             e = e.trim()
             return createOption(e)
@@ -114,19 +114,19 @@ export default function AboutAppInfoModal({
         return true
     }
 
-    const handleKeyDownEvent = (e) => {
+    const handleKeyDownEvent = (e): void => {
         handleKeyDown(labelTags, setAppTagLabel, e)
     }
 
-    function handleInputChange(inputTagValue) {
-        setLabelTags((tags) => ({ ...tags, inputTagValue: inputTagValue, tagError: '' }))
+    function handleInputChange(newValue: string, actionMeta: InputActionMeta): void {
+        setLabelTags((tags) => ({ ...tags, inputTagValue: newValue, tagError: '' }))
     }
 
-    function handleTagsChange(newValue: any, actionMeta: any) {
+    function handleTagsChange(newValue: OptionType[], actionMeta: ActionMeta<any>): void {
         setLabelTags((tags) => ({ ...tags, tags: newValue || [], tagError: '' }))
     }
 
-    function handleCreatableBlur(e) {
+    function handleCreatableBlur(e): void {
         labelTags.inputTagValue = labelTags.inputTagValue.trim()
         if (!labelTags.inputTagValue) {
             return
@@ -139,10 +139,9 @@ export default function AboutAppInfoModal({
         }
     }
 
-    const handleSaveAction = async (e) => {
+    const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
-        const validForm = validateForm()
-        if (!validForm) {
+        if (!validateForm()) {
             return
         }
         setSubmitting(true)
@@ -188,7 +187,7 @@ export default function AboutAppInfoModal({
         }
     }
 
-    const projectChangeMessage = () => {
+    const projectChangeMessage = (): JSX.Element => {
         return (
             <>
                 <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
@@ -203,7 +202,7 @@ export default function AboutAppInfoModal({
         )
     }
 
-    const renderAboutModalInfo = () => {
+    const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
                 <div className="cn-7 p-20">

@@ -65,6 +65,20 @@ export const ClusterFilter = ({
         setSelectedCluster(appliedClusters)
     }
 
+    const onMenuOpenHandler = () => {
+        handleMenuState(true)
+    }
+
+    const onBlurHandler = () => {
+        setClusterSearchInput('')
+    }
+
+    const onInputChangeHandler = (value: string, actionMeta: InputActionMeta) => {
+        if (actionMeta.action === 'input-change') {
+            setClusterSearchInput(value)
+        }
+    }
+
     return (
         <div className="filters-wrapper">
             <ReactSelect
@@ -78,17 +92,11 @@ export const ClusterFilter = ({
                 isSearchable={true}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                onMenuOpen={() => handleMenuState(true)}
+                onMenuOpen={onMenuOpenHandler}
                 onMenuClose={handleCloseFilter}
                 inputValue={clusterSearchInput}
-                onBlur={() => {
-                    setClusterSearchInput('')
-                }}
-                onInputChange={(value: string, actionMeta: InputActionMeta) => {
-                    if (actionMeta.action === 'input-change') {
-                        setClusterSearchInput(value)
-                    }
-                }}
+                onBlur={onBlurHandler}
+                onInputChange={onInputChangeHandler}
                 components={{
                     Option,
                     ValueContainer,
@@ -187,7 +195,7 @@ export const AppliedFilterChips = ({
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
-    const removeAllFilters = (): void => {
+    const removeAllFilters = (e): void => {
         setAppliedClusters([])
         queryParams.delete('clusters')
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
@@ -207,13 +215,7 @@ export const AppliedFilterChips = ({
                     </div>
                 )
             })}
-            <button
-                type="button"
-                className="saved-filters__clear-btn fs-13"
-                onClick={() => {
-                    removeAllFilters()
-                }}
-            >
+            <button type="button" className="saved-filters__clear-btn fs-13" onClick={removeAllFilters}>
                 Clear All Filters
             </button>
         </div>

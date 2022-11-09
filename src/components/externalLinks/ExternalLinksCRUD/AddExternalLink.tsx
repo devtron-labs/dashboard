@@ -109,6 +109,17 @@ export default function AddExternalLink({
         setLinksData([...linksData])
     }
 
+    const onMonitoringToolSelectionHandler = (key: number, selected: OptionType, link: LinkAction) => {
+        handleLinksDataActions('onMonitoringToolSelection', key, selected)
+
+        if (
+            selected.label.toLowerCase() !== 'other' &&
+            (!link.name || monitoringTools.findIndex((tool) => tool.label === link.name) !== -1)
+        ) {
+            handleLinksDataActions('onNameChange', key, selected.label)
+        }
+    }
+
     const linksLen = linksData.length
 
     const renderConfigureLinkActionColumn = (): JSX.Element => {
@@ -136,17 +147,9 @@ export default function AddExternalLink({
                                             : link.clusters
                                     }
                                     monitoringTools={monitoringTools}
-                                    onMonitoringToolSelection={(key, selected) => {
-                                        handleLinksDataActions('onMonitoringToolSelection', key, selected)
-
-                                        if (
-                                            selected.label.toLowerCase() !== 'other' &&
-                                            (!link.name ||
-                                                monitoringTools.findIndex((tool) => tool.label === link.name) !== -1)
-                                        ) {
-                                            handleLinksDataActions('onNameChange', key, selected.label)
-                                        }
-                                    }}
+                                    onMonitoringToolSelection={(key, selected) =>
+                                        onMonitoringToolSelectionHandler(key, selected, link)
+                                    }
                                     onClusterSelection={(key, selected) =>
                                         handleLinksDataActions('onClusterSelection', key, selected)
                                     }

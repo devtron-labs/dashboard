@@ -256,7 +256,7 @@ function ExternalLinks() {
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
                         External links
                         <TippyWhite
-                            placement={'bottom'}
+                            placement="bottom"
                             Icon={HelpIcon}
                             iconClass="fcv-5"
                             heading="External links"
