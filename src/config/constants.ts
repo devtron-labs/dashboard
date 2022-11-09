@@ -381,7 +381,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Password/Token (recommended)*',
+            label: 'Password/Token (Recommended)*',
             defaultValue: '',
             placeholder: '',
         },

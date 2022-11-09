@@ -403,7 +403,7 @@ function ManageRegistry({
                                 <div className="mb-6"> Registry URL</div>
                                 <input
                                     tabIndex={3}
-                                    placeholder="Enter registry URL"
+                                    placeholder="Enter Registry URL"
                                     className="form__input"
                                     name="server"
                                     value={customCredential?.server}
@@ -431,7 +431,7 @@ function ManageRegistry({
                                 <div className="mb-6">Username</div>
                                 <input
                                     tabIndex={5}
-                                    placeholder="Enter username"
+                                    placeholder="Enter Username"
                                     className="form__input"
                                     name="username"
                                     value={customCredential?.username}
@@ -444,7 +444,7 @@ function ManageRegistry({
                                 <div className="mb-6">Password</div>
                                 <input
                                     tabIndex={6}
-                                    placeholder="Enter password"
+                                    placeholder="Enter Password"
                                     className="form__input"
                                     name="password"
                                     value={customCredential?.password}

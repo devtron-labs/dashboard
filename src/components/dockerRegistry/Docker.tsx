@@ -41,6 +41,7 @@ enum CERTTYPE {
     SECURE_WITH_CERT = 'secure-with-cert',
 }
 
+
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList)
     const [clusterOption, setClusterOptions] = useState([])
@@ -301,6 +302,13 @@ function DockerForm({
 
     const isCustomScript = ipsConfig?.credentialType === CredentialType.CUSTOM_CREDENTIAL
 
+    const defaultCustomCredential = {
+      server: '',
+      email: '',
+      username: '',
+      password: ''
+    }
+
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
@@ -313,7 +321,7 @@ function DockerForm({
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
-        isCustomScript && ipsConfig?.credentialValue ? JSON.parse(ipsConfig?.credentialValue) : '',
+        isCustomScript && ipsConfig?.credentialValue ? JSON.parse(ipsConfig.credentialValue) : defaultCustomCredential,
     )
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
 
@@ -403,7 +411,7 @@ function DockerForm({
                   }
                 : {}),
             ipsConfig: {
-                id: 0 || ipsConfig.id,
+                id: ipsConfig.id,
                 credentialType: credentialsType,
                 credentialValue:
                     credentialsType === CredentialType.CUSTOM_CREDENTIAL

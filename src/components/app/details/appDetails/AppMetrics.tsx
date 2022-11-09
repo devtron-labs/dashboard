@@ -389,6 +389,10 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig, addSpace }) {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);
 
+    const toggleHeader = () => {
+      toggleCollapsed(not)
+    }
+
     let subtitle = '';
     if (!isConfigured) {
         subtitle = 'We could not connect to prometheus endpoint. Please configure data source and try reloading this page.';
@@ -398,7 +402,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
     }
     return (
         <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor ${addSpace}`}>
-            <div  onClick={(e) => toggleCollapsed(not)} className="flex left w-100 lh-20">
+            <div  onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
                     APPLICATION METRICS
