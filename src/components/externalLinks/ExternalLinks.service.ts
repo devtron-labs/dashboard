@@ -2,6 +2,7 @@ import { Routes } from '../../config'
 import { get, post, put, trash } from '../../services/api'
 import {
     ExternalLink,
+    ExternalLinkIdentifierType,
     ExternalLinkResponse,
     ExternalLinkUpdateResponse,
     MonitoringToolResponse,
@@ -11,8 +12,30 @@ export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
     return get(`${Routes.EXTERNAL_LINKS_API}/tools`)
 }
 
-export const getExternalLinks = (clusterId?: number): Promise<ExternalLinkResponse> => {
-    return get(`${Routes.EXTERNAL_LINKS_API}${clusterId ? `?clusterId=${clusterId}` : ''}`)
+export const getExternalLinks = (
+    clusterId?: number,
+    identifier?: string,
+    type?: ExternalLinkIdentifierType,
+): Promise<ExternalLinkResponse> => {
+    let _url = Routes.EXTERNAL_LINKS_API
+
+    if (clusterId >= 0 || identifier || type) {
+        const queryParams = {
+            clusterId: clusterId >= 0 ? `${clusterId}` : '0',
+            identifier: identifier,
+            type: type?.toString(),
+        }
+
+        for (const param in queryParams) {
+            if (!queryParams[param]) {
+                delete queryParams[param]
+            }
+        }
+
+        _url += `?${new URLSearchParams(queryParams).toString()}`
+    }
+
+    return get(_url)
 }
 
 export const saveExternalLinks = (request: ExternalLink[]): Promise<ExternalLinkUpdateResponse> => {

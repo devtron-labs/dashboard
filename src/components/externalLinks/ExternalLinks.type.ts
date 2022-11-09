@@ -1,9 +1,9 @@
-import React from "react"
-import { MultiValue } from "react-select"
-import { ResponseType } from "../../services/service.types"
-import { AppDetails, OptionType } from "../app/types"
-import { ActionResponse } from "../external-apps/ExternalAppService"
-import { AppDetails as HelmAppDetails } from "../v2/appDetails/appDetails.type"
+import React from 'react'
+import { MultiValue } from 'react-select'
+import { ResponseType } from '../../services/service.types'
+import { AppDetails, OptionType } from '../app/types'
+import { ActionResponse } from '../external-apps/ExternalAppService'
+import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
 
 export interface OptionTypeWithIcon {
     label: string
@@ -21,6 +21,7 @@ export interface ExternalLink {
     id?: number
     monitoringToolId: number
     name: string
+    description: string
     url: string
     clusterIds: any[]
     updatedOn?: string
@@ -31,6 +32,7 @@ export interface LinkAction {
     invalidTool?: boolean
     name: string
     invalidName?: boolean
+    description: string
     clusters: MultiValue<OptionType>
     invalidClusters?: boolean
     urlTemplate: string
@@ -47,8 +49,8 @@ export interface ConfigureLinkActionType {
     monitoringTools: MultiValue<OptionTypeWithIcon>
     onMonitoringToolSelection: (key: number, selected: OptionType) => void
     onClusterSelection: (key: number, selected: MultiValue<OptionType>) => void
-    onNameChange: (key: number, name: string) => void,
-    onUrlTemplateChange: (key: number, urlTemplate: string) => void,
+    onNameChange: (key: number, name: string) => void
+    onUrlTemplateChange: (key: number, urlTemplate: string) => void
     deleteLinkData: (key: number) => void
 }
 
@@ -86,7 +88,7 @@ export interface AddExternalLinkType {
     setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
 }
 
-export interface DeleteExternalLinkType  {
+export interface DeleteExternalLinkType {
     selectedLink: ExternalLink
     isAPICallInProgress: boolean
     setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>
@@ -101,9 +103,10 @@ export interface AppLevelExternalLinksType {
     helmAppDetails?: HelmAppDetails
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    isOverviewPage?: boolean
 }
 
-export interface NodeLevelExternalLinksType  {
+export interface NodeLevelExternalLinksType {
     appDetails?: AppDetails
     helmAppDetails?: HelmAppDetails
     nodeLevelExternalLinks: OptionTypeWithIcon[]
@@ -113,6 +116,13 @@ export interface NodeLevelExternalLinksType  {
 }
 
 export interface ExternalLinksAndToolsType {
+    fetchingExternalLinks?: boolean
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+}
+
+export enum ExternalLinkIdentifierType {
+    DevtronApp = 'devtron-app',
+    DevtronInstalledApp = 'devtron-installed-app',
+    ExternalHelmApp = 'external-helm-app',
 }
