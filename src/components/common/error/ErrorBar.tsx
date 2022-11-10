@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { AppDetailsErrorType, URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
@@ -6,21 +6,29 @@ import { ErrorBarType } from './errorType'
 import { renderErrorHeaderMessage } from './error.utils'
 
 export default function ErrorBar({ appDetails }: ErrorBarType) {
-    if (!appDetails || !appDetails.resourceTree || !appDetails.resourceTree.nodes || appDetails.externalCi ) return null
-    let isImagePullBackOff = false
-    for (let index = 0; index < appDetails.resourceTree.nodes.length; index++) {
+  const isImagePullBackOff = useRef(null)
+
+  useEffect(() => {
+    if (isImagePullBackOff.current) {
+      for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
         const node = appDetails.resourceTree.nodes[index]
         if (node.info?.length) {
             for (let index = 0; index < node.info.length; index++) {
                 const info = node.info[index]
-                if (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL || info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF) {
-                    isImagePullBackOff = true
+                if (
+                    info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                    info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
+                ) {
+                  isImagePullBackOff.current = true
                     break
                 }
             }
             if (isImagePullBackOff) break
         }
     }
+    }
+}, [appDetails])
+    if (!appDetails || !appDetails.resourceTree || !appDetails.resourceTree.nodes || appDetails.externalCi ) return null
 
     return (
         isImagePullBackOff && (
