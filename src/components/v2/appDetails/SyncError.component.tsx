@@ -4,9 +4,10 @@ import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-
 import { not } from '../../common'
 import IndexStore from './index.store'
 import { renderErrorHeaderMessage } from '../../common/error/error.utils'
-import { ErrorType } from '../../common/error/errorType'
+import { SyncErrorType } from './appDetails.type'
+import { AppDetailsErrorType } from '../../../config'
 
-const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal? }> = ({
+const SyncErrorComponent: React.FC<SyncErrorType> = ({
     appStreamData,
     showApplicationDetailedModal,
 }) => {
@@ -24,8 +25,8 @@ const SyncErrorComponent: React.FC<{ appStreamData; showApplicationDetailedModal
               for (let index = 0; index < node.info.length; index++) {
                   const info = node.info[index]
                   if (
-                      info.value.toLowerCase() === ErrorType.ERRIMAGEPULL ||
-                      info.value.toLowerCase() === ErrorType.IMAGEPULLBACKOFF
+                      info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                      info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
                   ) {
                     isImagePullBackOff.current = true
                       break

@@ -1,8 +1,8 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { URLS } from '../../../config'
+import { AppDetailsErrorType, URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
-import { ErrorBarType, ErrorType } from './errorType'
+import { ErrorBarType } from './errorType'
 import { renderErrorHeaderMessage } from './error.utils'
 
 export default function ErrorBar({ appDetails }: ErrorBarType) {
@@ -13,7 +13,7 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
         if (node.info?.length) {
             for (let index = 0; index < node.info.length; index++) {
                 const info = node.info[index]
-                if (info.value.toLowerCase() === ErrorType.ERRIMAGEPULL || info.value.toLowerCase() === ErrorType.IMAGEPULLBACKOFF) {
+                if (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL || info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF) {
                     isImagePullBackOff = true
                     break
                 }
@@ -45,6 +45,7 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
                         </div>
                         2. Redeploy the application after allowing access
                         <span className="flex left">
+                           {/* Will add document link once available */}
                             {/* <NavLink
                                 to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}`}
                                 className="cb-5 fs-13 anchor w-auto dc__no-decor flex ml-8"
