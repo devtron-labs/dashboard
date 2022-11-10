@@ -16,6 +16,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     useEffect(() => {
         for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
             const node = appDetails.resourceTree.nodes[index]
+            let _isImagePullBackOff = false
             if (node.info?.length) {
                 for (let index = 0; index < node.info.length; index++) {
                     const info = node.info[index]
@@ -23,11 +24,15 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
                         info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
                         info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
                     ) {
-                        setIsImagePullBackOff(true)
+                        _isImagePullBackOff = true
                         break
                     }
                 }
-                if (isImagePullBackOff) break
+
+                if (_isImagePullBackOff) {
+                    setIsImagePullBackOff(true)
+                    break
+                }
             }
         }
     }, [appDetails])
