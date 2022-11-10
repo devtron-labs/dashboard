@@ -299,15 +299,15 @@ function ManageRegistry({
     const renderImagepullSecretMessage = () => {
         return (
             <>
-                Use secrets with image pull&nbsp;
+                Use the&nbsp;
                 <a
                     className="dc__link"
-                    href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/"
+                    href="https://docs.devtron.ai/v/v0.6/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
                     target="_blank"
                 >
-                    secret created via CLI
+                    image pull secret name created via CLI
                 </a>
-                . The secrets must be present in the namespaces you're deploying to.
+                . The secret must be present in the namespaces you're deploying to.
             </>
         )
     }
