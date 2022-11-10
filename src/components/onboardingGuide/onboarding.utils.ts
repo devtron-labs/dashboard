@@ -11,7 +11,8 @@ export const POSTHOG_EVENT_ONBOARDING = {
     CONNECT_CHART_REPOSITORY: 'Connect chart repository',
     TOOLTIP_OKAY: 'Tooltip okay',
     TOOLTIP_DONT_SHOW_AGAIN: 'Tooltip Dont show again',
-    HELP: 'Clicked Help'
+    HELP: 'Clicked Help',
+    SKIP_AND_EXPLORE_DEVTRON : 'Skip and explore Devtron on your own',
 }
 
 export const LOGIN_COUNT = 'login-count'

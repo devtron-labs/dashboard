@@ -123,6 +123,7 @@ function OnboardingGuide({
                         <NavLink
                             to={`${URLS.APP}/${URLS.APP_LIST}`}
                             className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
+                            data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                         >
                             Skip and explore Devtron on your own
                         </NavLink>
