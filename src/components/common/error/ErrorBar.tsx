@@ -66,7 +66,7 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
                 ) : (
                     <>
                         <div className="pl-12 pr-12 pt-8 pb-8">
-                            <div className="fw-6">How to resolve? </div>
+                            <div className="fw-6">Possible issues? </div>
                             1. Provided credentials may not have permission to pull image from ‘
                             {appDetails.dockerRegistryId}’ registry. <br />
                             2. Provided credentials may be invalid.
