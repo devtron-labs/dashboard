@@ -107,7 +107,7 @@ export default function ChartSelectorModal({
                                             )}
                                         </div>
                                         <div className="fs-12 fw-4 cn-7">
-                                            {chartsMetadata?.[chart.name]?.['chartDescription']}&nbsp;
+                                            {chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description}&nbsp;
                                             {chartDocumentationLink[chart.name] && (
                                                 <a
                                                     className="dc__no-decor"
