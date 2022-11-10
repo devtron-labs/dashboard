@@ -214,9 +214,9 @@ function ManageRegistry({
                             padding: '1px',
                         }),
                         indicatorSeparator: (base) => ({
-                          ...base,
-                         display: blackList.length > 0 ? 'block' : 'none'
-                      })
+                            ...base,
+                            display: blackList.length > 0 ? 'block' : 'none',
+                        }),
                     }}
                     closeMenuOnSelect={false}
                     isMulti
@@ -259,9 +259,9 @@ function ManageRegistry({
                             padding: '1px',
                         }),
                         indicatorSeparator: (base) => ({
-                          ...base,
-                         display: whiteList.length > 0 ? 'block' : 'none'
-                      })
+                            ...base,
+                            display: whiteList.length > 0 ? 'block' : 'none',
+                        }),
                     }}
                     closeMenuOnSelect={false}
                     isMulti
@@ -404,62 +404,32 @@ function ManageRegistry({
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
-                    <div className="cn-7 ">
-                        <div className="flexbox w-100 mb-16">
-                            <div className="w-50 mr-8">
-                                <div className="mb-6"> Registry URL</div>
-                                <input
-                                    tabIndex={3}
-                                    placeholder="Enter registry URL"
-                                    className="form__input"
-                                    name="server"
-                                    value={customCredential?.server}
-                                    onChange={onClickSpecifyImagePullSecret}
-                                    autoFocus
-                                    autoComplete="off"
-                                />
-                            </div>
-                            <div className="w-50">
-                                <div className="mb-6">Email</div>
-                                <input
-                                    tabIndex={4}
-                                    placeholder="Enter email"
-                                    className="form__input"
-                                    name="email"
-                                    value={customCredential?.email}
-                                    onChange={onClickSpecifyImagePullSecret}
-                                    autoFocus
-                                    autoComplete="off"
-                                />
-                            </div>
+                    <div className="flexbox w-100 cn-7">
+                        <div className="w-50 mr-8">
+                            <div className="mb-6">Username</div>
+                            <input
+                                tabIndex={5}
+                                placeholder="Enter username"
+                                className="form__input"
+                                name="username"
+                                value={customCredential?.username}
+                                onChange={onClickSpecifyImagePullSecret}
+                                autoFocus
+                                autoComplete="off"
+                            />
                         </div>
-                        <div className="flexbox w-100">
-                            <div className="w-50 mr-8">
-                                <div className="mb-6">Username</div>
-                                <input
-                                    tabIndex={5}
-                                    placeholder="Enter username"
-                                    className="form__input"
-                                    name="username"
-                                    value={customCredential?.username}
-                                    onChange={onClickSpecifyImagePullSecret}
-                                    autoFocus
-                                    autoComplete="off"
-                                />
-                            </div>
-                            <div className="w-50">
-                                <div className="mb-6">Password</div>
-                                <input
-                                    tabIndex={6}
-                                    placeholder="Enter password"
-                                    className="form__input"
-                                    name="password"
-                                    value={customCredential?.password}
-                                    onChange={onClickSpecifyImagePullSecret}
-                                    autoFocus
-                                    autoComplete="off"
-                                />
-                            </div>
+                        <div className="w-50">
+                            <div className="mb-6">Password</div>
+                            <input
+                                tabIndex={6}
+                                placeholder="Enter password"
+                                className="form__input"
+                                name="password"
+                                value={customCredential?.password}
+                                onChange={onClickSpecifyImagePullSecret}
+                                autoFocus
+                                autoComplete="off"
+                            />
                         </div>
                     </div>
                 )}
