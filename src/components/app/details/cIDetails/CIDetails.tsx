@@ -741,7 +741,7 @@ const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promi
         if (error) {
             showError(error)
         } else {
-            toast.success('Build cancelled.')
+            toast.success('Build Aborted')
             setAbortConfiguration(false)
         }
     }
@@ -818,6 +818,7 @@ const HistoryLogs: React.FC<{
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
         triggerDetails.status.toLowerCase() !== 'succeeded',
     )
+    triggerDetails.status = triggerDetails.status.toLowerCase()==="cancelled" ? "ABORTED" : triggerDetails.status
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
 
     return (
