@@ -296,6 +296,22 @@ function ManageRegistry({
         }
     }
 
+    const renderImagepullSecretMessage = () => {
+        return (
+            <>
+                Use secrets with image pull&nbsp;
+                <a
+                    className="dc__link"
+                    href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/"
+                    target="_blank"
+                >
+                    secret created via CLI
+                </a>
+                . The secrets must be present in the namespaces you're deploying to.
+            </>
+        )
+    }
+
     return (
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
             <div
@@ -354,7 +370,7 @@ function ManageRegistry({
                             value={CredentialType.SAME_AS_REGISTRY}
                             canSelect={credentialValue !== CredentialType.SAME_AS_REGISTRY}
                         >
-                            <Document className="dc__m-auto" />
+                            <Document className="mr-8" />
                             Use Registry Credentials
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
@@ -362,13 +378,6 @@ function ManageRegistry({
                             canSelect={credentialValue !== CredentialType.NAME}
                         >
                             <Bulb className="icon-dim-12 mr-8" /> Specify Image Pull Secret
-                        </RadioGroup.Radio>
-                        <RadioGroup.Radio
-                            value={CredentialType.CUSTOM_CREDENTIAL}
-                            canSelect={credentialValue !== CredentialType.CUSTOM_CREDENTIAL}
-                        >
-                            <Add className="icon-dim-16 fcn-7 mr-8" />
-                            Create Image Pull secret
                         </RadioGroup.Radio>
                     </RadioGroup>
                 </div>
@@ -383,18 +392,23 @@ function ManageRegistry({
                 )}
                 {credentialsType === CredentialType.NAME && (
                     <>
-                        <div>
-                            <input
-                                tabIndex={2}
-                                placeholder="Name"
-                                className="form__input"
-                                name={CredentialType.NAME}
-                                value={credentialValue}
-                                onChange={onClickSpecifyImagePullSecret}
-                                autoFocus
-                                autoComplete="off"
-                            />
-                        </div>
+                        <InfoColourBar
+                            message={renderImagepullSecretMessage()}
+                            classname="info_bar"
+                            Icon={InfoIcon}
+                            iconClass="icon-dim-20"
+                        />
+                        <input
+                            tabIndex={2}
+                            placeholder="Enter image pull secret seperated by comma"
+                            className="form__input mt-8"
+                            name={CredentialType.NAME}
+                            value={credentialValue}
+                            onChange={onClickSpecifyImagePullSecret}
+                            autoFocus
+                            autoComplete="off"
+                        />
+
                         {errorValidation && (
                             <span className="form__error">
                                 <img src={error} alt="" className="form__icon" />
@@ -405,6 +419,34 @@ function ManageRegistry({
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
                     <div className="flexbox w-100 cn-7">
+                        <div className="flexbox w-100 mb-16">
+                            <div className="w-50 mr-8">
+                                <div className="mb-6"> Registry URL</div>
+                                <input
+                                    tabIndex={3}
+                                    placeholder="Enter registry URL"
+                                    className="form__input"
+                                    name="server"
+                                    value={customCredential?.server}
+                                    onChange={onClickSpecifyImagePullSecret}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className="w-50">
+                                <div className="mb-6">Email</div>
+                                <input
+                                    tabIndex={4}
+                                    placeholder="Enter email"
+                                    className="form__input"
+                                    name="email"
+                                    value={customCredential?.email}
+                                    onChange={onClickSpecifyImagePullSecret}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                            </div>
+                        </div>
                         <div className="w-50 mr-8">
                             <div className="mb-6">Username</div>
                             <input
