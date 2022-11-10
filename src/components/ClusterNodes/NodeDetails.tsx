@@ -68,7 +68,6 @@ export default function NodeDetails() {
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
     const [showAllTaints, setShowAllTaints] = useState(false)
-    const [showTerminal, setTerminal] = useState(false)
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -123,14 +122,6 @@ export default function NodeDetails() {
         }
     }, [lastDataSync])
 
-    const openTerminal = () => {
-        setTerminal(true)
-    }
-
-    const closeTerminal = () => {
-        setTerminal(false)
-    }
-
     const renderNodeDetailsTabs = (): JSX.Element => {
         return (
             <ul role="tablist" className="tab-list">
@@ -175,7 +166,7 @@ export default function NodeDetails() {
                     }}
                 >
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                    <TerminalIcon className="cursor icon-dim-16 mt-2" onClick={openTerminal} />
+                    <TerminalIcon className="cursor icon-dim-16 mt-2"/>
                     </div>
                     {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
                 </li>
@@ -887,11 +878,20 @@ export default function NodeDetails() {
         )
     }
 
+    const renderTerminal = () => {
+        return <ClusterTerminal
+        clusterId={Number(clusterId)}
+        nodeList={[nodeName]}
+    />
+    }
+
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
         } else if (selectedTabIndex === 2) {
             return renderConditions()
+        } else if (selectedTabIndex === 3) {
+            return renderTerminal()
         } else {
             return renderSummary()
         }
@@ -910,12 +910,6 @@ export default function NodeDetails() {
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
-            {showTerminal &&
-                <ClusterTerminal
-                    clusterId={Number(clusterId)}
-                    nodeList={[nodeName]}
-                    closeTerminal={closeTerminal}
-                />}
         </div>
     )
 }

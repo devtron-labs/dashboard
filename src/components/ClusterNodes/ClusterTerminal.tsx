@@ -23,7 +23,7 @@ export default function ClusterTerminal({
     clusterId: number
     clusterName?: string
     nodeList: string[]
-    closeTerminal: () => void
+    closeTerminal?: () => void
 }) {
     const [selectedContainerName, setSelectedContainerName] = useState({ label: nodeList[0], value: nodeList[0] })
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
