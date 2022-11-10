@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { AppDetailsErrorType, URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
@@ -6,29 +6,30 @@ import { ErrorBarType } from './errorType'
 import { renderErrorHeaderMessage } from './error.utils'
 
 export default function ErrorBar({ appDetails }: ErrorBarType) {
-  const isImagePullBackOff = useRef(null)
+    const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
-  useEffect(() => {
-    if (isImagePullBackOff.current) {
-      for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
-        const node = appDetails.resourceTree.nodes[index]
-        if (node.info?.length) {
-            for (let index = 0; index < node.info.length; index++) {
-                const info = node.info[index]
-                if (
-                    info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
-                    info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
-                ) {
-                  isImagePullBackOff.current = true
-                    break
+    useEffect(() => {
+        for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
+            const node = appDetails.resourceTree.nodes[index]
+            if (node.info?.length) {
+                for (let index = 0; index < node.info.length; index++) {
+                    const info = node.info[index]
+                    if (
+                        info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                        info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
+                    ) {
+                        setIsImagePullBackOff(true)
+                        break
+                    }
                 }
+                if (isImagePullBackOff) break
             }
-            if (isImagePullBackOff) break
         }
+    }, [appDetails])
+
+    if (!appDetails || !appDetails.resourceTree || !appDetails.resourceTree.nodes || appDetails.externalCi) {
+        return null
     }
-    }
-}, [appDetails])
-    if (!appDetails || !appDetails.resourceTree || !appDetails.resourceTree.nodes || appDetails.externalCi ) return null
 
     return (
         isImagePullBackOff && (
@@ -53,7 +54,7 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
                         </div>
                         2. Redeploy the application after allowing access
                         <span className="flex left">
-                           {/* Will add document link once available */}
+                            {/* Will add document link once available */}
                             {/* <NavLink
                                 to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}`}
                                 className="cb-5 fs-13 anchor w-auto dc__no-decor flex ml-8"

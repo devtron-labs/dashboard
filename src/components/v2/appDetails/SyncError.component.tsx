@@ -1,4 +1,4 @@
-import React, { useState, useRef,  useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { not } from '../../common'
@@ -7,40 +7,34 @@ import { renderErrorHeaderMessage } from '../../common/error/error.utils'
 import { SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'
 
-const SyncErrorComponent: React.FC<SyncErrorType> = ({
-    appStreamData,
-    showApplicationDetailedModal,
-}) => {
-
+const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
-    const appDetails = IndexStore.getAppDetails();
+    const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
+    const appDetails = IndexStore.getAppDetails()
     const conditions = appStreamData?.result?.application?.status?.conditions || []
-    const isImagePullBackOff = useRef(null)
 
     useEffect(() => {
-      if (isImagePullBackOff.current) {
         for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
-          const node = appDetails.resourceTree.nodes[index]
-          if (node.info?.length) {
-              for (let index = 0; index < node.info.length; index++) {
-                  const info = node.info[index]
-                  if (
-                      info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
-                      info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
-                  ) {
-                    isImagePullBackOff.current = true
-                      break
-                  }
-              }
-              if (isImagePullBackOff) break
-          }
-      }
-      }
-  }, [appDetails])
+            const node = appDetails.resourceTree.nodes[index]
+            if (node.info?.length) {
+                for (let index = 0; index < node.info.length; index++) {
+                    const info = node.info[index]
+                    if (
+                        info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                        info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
+                    ) {
+                        setIsImagePullBackOff(true)
+                        break
+                    }
+                }
+                if (isImagePullBackOff) break
+            }
+        }
+    }, [appDetails])
 
-
-
-    if (!appDetails || (conditions.length === 0 && !isImagePullBackOff)) return null
+    if (!appDetails || (conditions.length === 0 && !isImagePullBackOff)) {
+        return null
+    }
 
     const toggleErrorHeader = () => {
         toggleCollapsed(not)
