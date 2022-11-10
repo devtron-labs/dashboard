@@ -664,7 +664,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         >
                             <div className="flex">
                                 {option.mandatory ? (
-                                    <Tag className="icon-dim-12 mr-5" />
+                                    <Tag className="icon-dim-16 mr-5" />
                                 ) : (
                                     <>
                                         {option.isSelected ? (
