@@ -4,35 +4,44 @@ import { AppDetailsErrorType, URLS } from '../../../config'
 import { ReactComponent as ErrorInfo } from '../../../assets/icons/misc/errorInfo.svg'
 import { ErrorBarType } from './errorType'
 import { renderErrorHeaderMessage } from './error.utils'
+import { AppType } from '../../v2/appDetails/appDetails.type'
 
 export default function ErrorBar({ appDetails }: ErrorBarType) {
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
     useEffect(() => {
-        for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
-            const node = appDetails.resourceTree.nodes[index]
-            let _isImagePullBackOff = false
-            if (node.info?.length) {
-                for (let index = 0; index < node.info.length; index++) {
-                    const info = node.info[index]
-                    if (
-                        info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
-                        info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
-                    ) {
-                        _isImagePullBackOff = true
+        if (appDetails.appType === AppType.DEVTRON_APP) {
+            for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
+                const node = appDetails.resourceTree.nodes[index]
+                let _isImagePullBackOff = false
+                if (node.info?.length) {
+                    for (let index = 0; index < node.info.length; index++) {
+                        const info = node.info[index]
+                        if (
+                            info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                            info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
+                        ) {
+                            _isImagePullBackOff = true
+                            break
+                        }
+                    }
+
+                    if (_isImagePullBackOff) {
+                        setIsImagePullBackOff(true)
                         break
                     }
-                }
-
-                if (_isImagePullBackOff) {
-                    setIsImagePullBackOff(true)
-                    break
                 }
             }
         }
     }, [appDetails])
 
-    if (!appDetails || !appDetails.resourceTree || !appDetails.resourceTree.nodes || appDetails.externalCi) {
+    if (
+        !appDetails ||
+        appDetails.appType !== AppType.DEVTRON_APP ||
+        !appDetails.resourceTree ||
+        !appDetails.resourceTree.nodes ||
+        appDetails.externalCi
+    ) {
         return null
     }
 
