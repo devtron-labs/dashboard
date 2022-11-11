@@ -40,10 +40,9 @@ const AppDetailsComponent = ({
                 <EnvironmentStatusComponent appStreamData={streamData}/>
             </div>
 
-            <SyncErrorComponent appStreamData={streamData} />
+            <SyncErrorComponent appStreamData={streamData}/>
             <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
             <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
-            
         </div>
     );
 };
