@@ -818,7 +818,6 @@ const HistoryLogs: React.FC<{
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
         triggerDetails.status.toLowerCase() !== 'succeeded',
     )
-    triggerDetails.status = triggerDetails.status.toLowerCase()==="cancelled" ? "ABORTED" : triggerDetails.status
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
 
     return (
