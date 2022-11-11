@@ -523,7 +523,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         schemaRef.current[schemaName]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
         setTimeout(() => {
             setSelectedSchema('')
-        }, 5000)
+        }, 2000)
     }
 
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
@@ -693,7 +693,11 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const changePayload = (codeEditorData: string): void => {
-        setModifiedSamplePayload(JSON.parse(codeEditorData))
+        try {
+            setModifiedSamplePayload(JSON.parse(codeEditorData))
+        } catch (error) {
+            setModifiedSamplePayload({})
+        }
     }
 
     const renderCodeEditor = (): JSX.Element => {
@@ -704,6 +708,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     onChange={changePayload}
                     height="300px"
                     mode={MODES.JSON}
+                    noParsing
                 />
             </div>
         )
@@ -863,13 +868,12 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16">
-                                    {' '}
                                     {webhookResponse?.['description']?.['description']}
                                 </div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                                {renderCodeSnippet('value')}
+                                {renderCodeSnippet(webhookResponse?.['bodyText'])}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
-                                {renderCodeSnippet('value')}
+                                {renderCodeSnippet(webhookResponse?.['headers'])}
                             </div>
                         </div>
                     </div>
@@ -913,7 +917,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             >
                 <div className="flexbox pt-8 pb-8">
                     <Help className="icon-dim-20 fcv-5 mr-8" />
-                    <span>
+                    <span className="fs-13">
                         Only super admin users can generate API tokens. Share the webhook details with a super admin
                         user.
                     </span>

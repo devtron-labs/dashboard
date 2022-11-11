@@ -16,7 +16,7 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
 
     const renderWebhookCard = (): JSX.Element => {
         return (
-            <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
+            <>
                 <ConditionalWrap
                     condition={!!to}
                     wrap={(children) => (
@@ -25,12 +25,14 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                         </Link>
                     )}
                 >
-                    <div className="workflow-node__title flex">
-                        <div className="workflow-node__full-width-minus-Icon">
-                            <span className="workflow-node__text-light">Webhook</span>
-                            <div className="dc__ellipsis-left">External source</div>
+                    <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
+                        <div className="workflow-node__title flex">
+                            <div className="workflow-node__full-width-minus-Icon">
+                                <span className="workflow-node__text-light">Webhook</span>
+                                <div className="dc__ellipsis-left">External source</div>
+                            </div>
+                            <Webhook className="icon-dim-20" />
                         </div>
-                        <Webhook className="icon-dim-20" />
                     </div>
                 </ConditionalWrap>
 
@@ -48,7 +50,7 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                         </Tippy>
                     </button>
                 )}
-            </div>
+            </>
         )
     }
 

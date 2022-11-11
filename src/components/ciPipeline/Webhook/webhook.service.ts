@@ -37,6 +37,11 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
     }
     options['credentials'] = 'include' as RequestCredentials
     return fetch(webhookUrl, options).then((response) => {
-        return response.json()
+        return {
+            code: response['code'],
+            description: response['description'],
+            headers: response.headers,
+            bodyText: response.text(),
+        }
     })
 }
