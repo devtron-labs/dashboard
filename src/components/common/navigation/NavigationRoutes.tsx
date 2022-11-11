@@ -174,10 +174,10 @@ export default function NavigationRoutes() {
             }
         }
         getServerMode()
-        getCurrentServerInfo()
+        getCurrentServerInfo(null, true)
     }, [])
 
-    const getCurrentServerInfo = async (section?: string) => {
+    const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
         if (
             currentServerInfo.fetchingServerInfo ||
             (section === 'navigation' && currentServerInfo.serverInfo && location.pathname.includes('/stack-manager'))
@@ -191,7 +191,7 @@ export default function NavigationRoutes() {
         })
 
         try {
-            const { result } = await getServerInfo()
+            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'))
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
@@ -231,6 +231,7 @@ export default function NavigationRoutes() {
                     moduleInInstallingState,
                     setModuleInInstallingState,
                     installedModuleMap,
+                    currentServerInfo
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -240,9 +241,6 @@ export default function NavigationRoutes() {
                             match={match}
                             location={location}
                             serverMode={serverMode}
-                            fetchingServerInfo={currentServerInfo.fetchingServerInfo}
-                            serverInfo={currentServerInfo.serverInfo}
-                            getCurrentServerInfo={getCurrentServerInfo}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
                         />

@@ -1,4 +1,5 @@
 import React from 'react'
+import { toast } from 'react-toastify'
 
 export class ToastBody extends React.Component<{
     title: string
@@ -48,4 +49,16 @@ export class ToastBodyWithButton extends React.Component<{
             </div>
         )
     }
+}
+
+export const toastAccessDenied = (subtitle?: string) => {
+    return toast.info(
+        <ToastBody
+            title="Access denied"
+            subtitle={subtitle || "You do not have required access to perform this action"}
+        />,
+        {
+            className: 'devtron-toast unauthorized',
+        },
+    )
 }

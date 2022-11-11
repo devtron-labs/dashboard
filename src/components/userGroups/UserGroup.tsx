@@ -21,6 +21,7 @@ import {
     mapByKey,
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
+    ErrorScreenNotAuthorized,
 } from '../common'
 import {
     getUserList,
@@ -290,7 +291,7 @@ export default function UserGroupRoute() {
     if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
-        <div className="auth-page">
+        <div>
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
@@ -348,7 +349,7 @@ const UserGroupList: React.FC<{
 
     useEffect(() => {
         if (!error) return
-        showError(error)
+        showError(error,true,true)
     }, [error])
 
     useEffectAfterMount(() => {
@@ -534,6 +535,8 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
+        
+    if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
     if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result.filter(
         (userOrGroup) =>

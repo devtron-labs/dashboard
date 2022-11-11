@@ -45,3 +45,43 @@ export const getCommonSelectStyles = (styleOverrides = {}) => {
         ...styleOverrides,
     }
 }
+
+export const BASIC_FIELDS = {
+    CONTAINER_PORT: 'container_port',
+    PORT: 'port',
+    INGRESS: 'ingress',
+    ENABLED: 'enabled',
+    HOSTS: 'hosts',
+    HOST: 'host',
+    PATHS: 'paths',
+    PATH: 'path',
+    RESOURCES: 'resources',
+    RESOURCES_CPU: 'resources_cpu',
+    RESOURCES_MEMORY: 'resources_memory',
+    LIMITS: 'limits',
+    REQUESTS: 'requests',
+    CPU: 'cpu',
+    MEMORY: 'memory',
+    ENV_VARIABLES: 'envVariables',
+    KEY: 'key',
+    VALUE: 'value',
+}
+
+export const BASIC_FIELD_MAPPING = {
+    [BASIC_FIELDS.PORT]: '/ContainerPort/0/port',
+    [BASIC_FIELDS.ENABLED]: '/ingress/enabled',
+    [BASIC_FIELDS.HOSTS]: '/ingress/hosts',
+    [BASIC_FIELDS.RESOURCES]: '/resources',
+    [BASIC_FIELDS.ENV_VARIABLES]: '/EnvVariables',
+}
+
+export const BASIC_FIELD_PARENT_PATH = {
+    [BASIC_FIELDS.CONTAINER_PORT]: '/ContainerPort',
+    [BASIC_FIELDS.INGRESS]: '/ingress/enabled',
+}
+
+export const EDITOR_VIEW = {
+    UNDEFINED: 'UNDEFINED',
+    BASIC: 'BASIC',
+    ADVANCED: 'ADVANCED',
+}

@@ -15,7 +15,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
-import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers';
+import { ConditionalWrap, sortObjectArrayAlphabetically } from '../common/helpers/Helpers';
 import DeleteComponent from '../../util/DeleteComponent';
 import {deleteMaterial} from './material.service';
 import { DeleteComponentsName, DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE, DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
@@ -86,6 +86,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             fetchSubmodules: this.props.material.fetchSubmodules ? true : false
         }
     }
+    }
+
+    preventRepoDeleteContent = () => {
+        return <>
+            <h2 className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">Cannot Delete!</h2>
+            <p className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">At least one repository is required.</p>
+        </>
     }
 
     renderForm() {
@@ -248,11 +255,30 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     </Checkbox>
                 </div>
             </label>
-            <div className={`form__buttons`}>
+            <div className="form__buttons">
                     {this.props.material.id && (
-                            <button className="cta delete dc__m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
+                        <ConditionalWrap
+                            condition={this.props.preventRepoDelete}
+                            wrap={(children) => (
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={this.preventRepoDeleteContent()}
+                                >
+                                    <div className="dc__m-auto ml-0">{children}</div>
+                                </Tippy>
+                            )}
+                        >
+                            <button
+                                className="cta delete dc__m-auto ml-0"
+                                type="button"
+                                onClick={this.toggleConfirmation}
+                                disabled={this.props.preventRepoDelete}
+                            >
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
+                        </ConditionalWrap>
                     )}
                         {this.props.isMultiGit ? (
                             <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>

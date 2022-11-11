@@ -93,7 +93,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }
 
     return (
-        <article className={`collapsed-list dc__clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list dc__clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
                 <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}</List.Logo>
                 <div className="flex left">
@@ -207,6 +207,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             }
         }).catch((error) => {
             showError(error);
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
             setLoading(false);
         })
     }
@@ -242,6 +243,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
         catch (err) {
             showError(err)
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
         }
         finally {
             setLoading(false);

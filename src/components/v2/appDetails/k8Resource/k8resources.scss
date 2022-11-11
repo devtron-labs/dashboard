@@ -36,6 +36,11 @@
     width: 83.33333333%;
 }
 
+.col-7 {
+    flex: 0 0 auto;
+    width: 58.3333333%;
+}
+
 .col-11 {
     flex: 0 0 auto;
     width: 91.66666667%;
@@ -65,42 +70,4 @@
     padding-right: calc(var(--bs-gutter-x) * 0.5);
     padding-left: calc(var(--bs-gutter-x) * 0.5);
     margin-top: var(--bs-gutter-y);
-}
-
-.status-filter-button.gui-yaml-switch.radio-group {
-  height: 24px;
-
-  input[type='checkbox']:checked + .radio__item-label {
-      background-color: var(--N100);
-      color: var(--N900);
-      border: 1px solid var(--N200);
-
-      svg path {
-          stroke: var(--N900);
-      }
-  }
-
-  .radio {
-      color: var(--N500);
-
-      svg path {
-          stroke: var(--N500);
-      }
-
-      &:hover {
-          color: var(--N900);
-
-          svg path {
-              stroke: var(--N900);
-          }
-      }
-
-      &:first-child input + .radio__item-label {
-          border-right: unset;
-      }
-
-      &:last-child input + .radio__item-label {
-          border-left: unset;
-      }
-  }
 }
