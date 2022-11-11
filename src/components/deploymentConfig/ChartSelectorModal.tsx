@@ -6,8 +6,6 @@ import { ChartSelectorModalType } from './types'
 import { SortingOrder } from '../app/types'
 import { chartDocumentationLink, chartTypeTab, chartTypeTabKeys, recommendedChartName } from './constants'
 
-
-
 export default function ChartSelectorModal({
     charts,
     chartsMetadata,
@@ -63,7 +61,7 @@ export default function ChartSelectorModal({
                     <div className="fw-6 fs-16">Select chart</div>
                     <Close className="icon-dim-24 pointer" onClick={toggleChartSelectorModal} />
                 </div>
-                <div>
+                <div style={{ minHeight: '500px' }}>
                     {customCharts.length > 0 && (
                         <div className="p-16">
                             <RadioGroup
@@ -106,19 +104,23 @@ export default function ChartSelectorModal({
                                                 </span>
                                             )}
                                         </div>
-                                        <div className="fs-12 fw-4 cn-7">
-                                            {chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description}&nbsp;
-                                            {chartDocumentationLink[chart.name] && (
-                                                <a
-                                                    className="dc__no-decor"
-                                                    href={chartDocumentationLink[chart.name]}
-                                                    target="_blank"
-                                                    rel="noreferrer noopener"
-                                                >
-                                                    Learn more
-                                                </a>
-                                            )}
-                                        </div>
+                                        {(chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description) && (
+                                            <div className="fs-12 fw-4 cn-7">
+                                                {chartsMetadata?.[chart.name]?.['chartDescription'] ||
+                                                    chart.description}
+                                                &nbsp;
+                                                {chartDocumentationLink[chart.name] && (
+                                                    <a
+                                                        className="dc__no-decor"
+                                                        href={chartDocumentationLink[chart.name]}
+                                                        target="_blank"
+                                                        rel="noreferrer noopener"
+                                                    >
+                                                        Learn more
+                                                    </a>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="w-20">
                                         {chart.name === selectedChart?.name ? (

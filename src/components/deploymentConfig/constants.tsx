@@ -94,4 +94,4 @@ export const chartDocumentationLink = {
     'CronJob & Job': DOCUMENTATION.CHART_DEPLOY,
     'Rollout Deployment': DOCUMENTATION.CHART_DEPLOY,
 }
-export const recommendedChartName = 'Rollout Deployment'
+export const recommendedChartName = 'Deployment'
