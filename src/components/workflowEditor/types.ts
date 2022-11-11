@@ -77,6 +77,7 @@ export interface CDNodeProps {
     to: string
     toggleCDMenu: () => void
     cdNamesList?: string[]
+    hideWebhookTippy?:  () => void
 }
 
 export interface WebhookNodeProps {
@@ -88,6 +89,7 @@ export interface WebhookNodeProps {
     to?: string
     configDiffView?: boolean
     toggleCDMenu?: () => void
+    hideWebhookTippy?:  () => void
 }
 
 export interface WebhookTippyType {

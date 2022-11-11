@@ -24,6 +24,7 @@ export interface CINodeProps {
     to: string
     toggleCDMenu: () => void
     configDiffView?: boolean
+    hideWebhookTippy?:  () => void
 }
 
 export class CINode extends Component<CINodeProps> {
@@ -47,7 +48,7 @@ export class CINode extends Component<CINodeProps> {
         const pipeline = this.props.isLinkedCI ? 'Build: Linked' : this.props.isExternalCI ? 'Build: External' : 'Build'
         return (
             <>
-                <Link to={this.props.to} className="dc__no-decor">
+                <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                     <div className="workflow-node cursor">
                         {this.props.linkedCount > 0 && (
                             <Tippy
