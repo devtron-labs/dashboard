@@ -871,7 +871,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                     {webhookResponse?.['description']?.['description']}
                                 </div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                                {renderCodeSnippet(webhookResponse?.['bodyText'])}
+                                {renderCodeSnippet(webhookResponse?.['responseBody'])}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
                                 {renderCodeSnippet(webhookResponse?.['headers'])}
                             </div>
