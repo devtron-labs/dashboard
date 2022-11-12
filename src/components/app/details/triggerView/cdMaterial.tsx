@@ -412,21 +412,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 : this.renderVulnerabilities(mat)}
                         </>
                     )}
-                    <button
-                        type="button"
-                        className="material-history__changes-btn"
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            this.props.toggleSourceInfo(index)
-                        }}
-                    >
-                        {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                        <img
-                            src={arrow}
-                            alt=""
-                            style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                        />
-                    </button>
+                    {mat.materialInfo.length > 0 && (
+                        <button
+                            type="button"
+                            className="material-history__changes-btn"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                this.props.toggleSourceInfo(index)
+                            }}
+                        >
+                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                            <img
+                                src={arrow}
+                                alt=""
+                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                            />
+                        </button>
+                    )}
                 </div>
             )
         })
