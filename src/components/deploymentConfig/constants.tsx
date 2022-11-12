@@ -91,7 +91,7 @@ export const EDITOR_VIEW = {
 export const chartTypeTabKeys = { DEVTRON_CHART: 'devtronChart', CUSTOM_CHARTS: 'customCharts' }
 export const chartTypeTab = { devtronChart: 'Charts by Devtron', customCharts: 'Custom charts' }
 export const chartDocumentationLink = {
-    'CronJob & Job': DOCUMENTATION.CHART_DEPLOY,
-    'Rollout Deployment': DOCUMENTATION.CHART_DEPLOY,
+    'CronJob & Job': DOCUMENTATION.JOB_CRONJOB,
+    'Rollout Deployment': DOCUMENTATION.ROLLOUT,
 }
 export const recommendedChartName = 'Deployment'

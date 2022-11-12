@@ -34,7 +34,7 @@ export default function ChartSelectorDropdown({
             devtronCharts.push(chart)
         }
     }
-    devtronCharts = sortObjectArrayAlphabetically(devtronCharts.concat(devtronCharts), 'name')
+    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
     customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
 
     const onSelectChartType = (selectedChartName: string) => {

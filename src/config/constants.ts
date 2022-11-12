@@ -10,7 +10,7 @@ export const Routes = {
     API_VERSION_V2: 'v2',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
-    USER_CHECK_ROLE:'user/check/roles',
+    USER_CHECK_ROLE: 'user/check/roles',
 
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
@@ -176,7 +176,7 @@ export const Routes = {
     SSO_CREATE: 'sso/create',
     SSO_UPDATE: 'sso/update',
     INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
-    EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls'
+    EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls',
 }
 
 export const ViewType = {
@@ -211,7 +211,7 @@ export const PATTERNS = {
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
-    URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/
+    URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
 }
 
 export const TriggerType = {
@@ -264,8 +264,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/permission-groups`,
     HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
     BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline#build-stage`,
-    PRE_POST_BUILD_STAGE:
-        `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
+    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
     CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts`,
     CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts#prerequisites`,
     ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/install-devtron#devtron-admin-credentials`,
@@ -275,6 +274,8 @@ export const DOCUMENTATION = {
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/usage/applications/creating-application/deployment-template/rollout-deployment`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -561,23 +562,23 @@ export const EXTERNAL_TYPES = {
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 
 export const ModuleNameMap = {
-  ARGO_CD: 'argo-cd',
-  CICD: 'cicd',
-  SECURITY: 'security.clair',
-  BLOB_STORAGE: 'blob-storage',
-  GRAFANA: 'monitoring.grafana',
-  NOTIFICATION: 'notifier'
+    ARGO_CD: 'argo-cd',
+    CICD: 'cicd',
+    SECURITY: 'security.clair',
+    BLOB_STORAGE: 'blob-storage',
+    GRAFANA: 'monitoring.grafana',
+    NOTIFICATION: 'notifier',
 }
 
 export const BUILD_STATUS = {
-  NOT_TRIGGERED: 'not triggered'
+    NOT_TRIGGERED: 'not triggered',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
-  MESSAGE: 'message',
-  START_OF_STREAM: 'START_OF_STREAM',
-  END_OF_STREAM: 'END_OF_STREAM',
-  ERROR: 'error'
+    MESSAGE: 'message',
+    START_OF_STREAM: 'START_OF_STREAM',
+    END_OF_STREAM: 'END_OF_STREAM',
+    ERROR: 'error',
 }
 
 export const TERMINAL_STATUS_MAP = {
@@ -591,35 +592,37 @@ export const TERMINAL_STATUS_MAP = {
 }
 
 export const POD_STATUS = {
-  PENDING: 'Pending'
+    PENDING: 'Pending',
 }
 
 export const CLUSTER_COMMAND = {
-    k8Cluster:{
-        heading: "K8s cluster providers",
-        clusterName: "K8s",
+    k8Cluster: {
+        heading: 'K8s cluster providers',
+        clusterName: 'K8s',
         title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
-        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
+        command:
+            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml',
     },
-    microK8s:{
-        heading: "MicroK8s",
-        clusterName: "microK8s",
-        title: "MicroK8s is a light weight Kubernetes cluster",
-        command: "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml"
-    }
+    microK8s: {
+        heading: 'MicroK8s',
+        clusterName: 'microK8s',
+        title: 'MicroK8s is a light weight Kubernetes cluster',
+        command:
+            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml",
+    },
 }
 
 export enum KIND {
     INGRESS = 'Ingress',
-    SERVICE = 'Service'
+    SERVICE = 'Service',
 }
 
-export const MODULE_STATUS_RETRY_COUNT = 3;
-export const MODULE_STATUS_POLLING_INTERVAL = 15000;
-export const LOGS_RETRY_COUNT = 3;
+export const MODULE_STATUS_RETRY_COUNT = 3
+export const MODULE_STATUS_POLLING_INTERVAL = 15000
+export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 
 export enum AppDetailsErrorType {
-  ERRIMAGEPULL= 'errimagepull',
-  IMAGEPULLBACKOFF ='imagepullbackoff'
+    ERRIMAGEPULL = 'errimagepull',
+    IMAGEPULLBACKOFF = 'imagepullbackoff',
 }
