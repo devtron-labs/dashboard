@@ -50,7 +50,7 @@ import { BASIC_FIELDS, getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
-import ChartSelectorModal from './ChartSelectorModal'
+import ChartSelectorDropdown from './ChartSelectorDropdown'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -155,7 +155,6 @@ export const ChartTypeVersionOptions = ({
     selectChart,
     selectedChartRefId,
 }: ChartTypeVersionOptionsProps) => {
-    const [isShowChartSelectorModal, setIsShowChartSelectorModal] = useState(false)
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
@@ -166,12 +165,6 @@ export const ChartTypeVersionOptions = ({
         selectChart(selected)
     }
 
-    const toggleChartSelectorModal = (): void => {
-        if (isUnSet && charts.length > 0) {
-            setIsShowChartSelectorModal(not)
-        }
-    }
-
     return (
         <div
             className={`chart-type-version-options pr-16 pt-8 pb-8 ${
@@ -180,10 +173,14 @@ export const ChartTypeVersionOptions = ({
         >
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
-                <span className={`fs-13 fw-6 cn-9 flex ${isUnSet ? 'pointer' : ''}`} onClick={toggleChartSelectorModal}>
-                    {selectedChart?.name}
-                    {isUnSet && <Dropdown className="pointer rotate(0)" />}
-                </span>
+                <ChartSelectorDropdown
+                    charts={charts}
+                    chartsMetadata={chartsMetadata}
+                    selectedChartRefId={selectedChartRefId}
+                    selectChart={selectChart}
+                    selectedChart={selectedChart}
+                    isUnSet={isUnSet}
+                />
             </div>
             <div className="chart-version-options">
                 <span className="fs-13 fw-4 cn-9">Chart version:</span>
@@ -213,16 +210,6 @@ export const ChartTypeVersionOptions = ({
                     />
                 )}
             </div>
-            {isShowChartSelectorModal && (
-                <ChartSelectorModal
-                    charts={charts}
-                    chartsMetadata={chartsMetadata}
-                    selectedChartRefId={selectedChartRefId}
-                    selectChart={selectChart}
-                    selectedChart={selectedChart}
-                    toggleChartSelectorModal={toggleChartSelectorModal}
-                />
-            )}
         </div>
     )
 }

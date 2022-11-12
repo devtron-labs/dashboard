@@ -370,11 +370,14 @@
     }
 }
 
-.chart-selector-modal {
-    width: 800px;
+.chart-selector-container {
+    width: 400px;
+    max-height: 350px;
+    overflow: auto;
+    .top-0 {
+        top: 0;
+    }
     .chart-selector-row-list {
-        max-height: 500px;
-        overflow: auto;
         .chart-row {
             .blue-tick {
                 path {
@@ -388,7 +391,7 @@
             .use-chart {
                 display: none;
             }
-            &:hover {
+            &:hover:not(.bcb-1) {
                 background-color: var(--N50);
                 .use-chart {
                     display: block;

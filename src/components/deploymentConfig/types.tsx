@@ -265,7 +265,7 @@ export interface ChartSelectorModalType {
     selectChart: (
         selectedChart: DeploymentChartVersionType,
     ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
-    toggleChartSelectorModal: () => void
+    isUnSet: boolean
 }
 
 export interface ChartMetaDataType {
