@@ -695,9 +695,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const changePayload = (codeEditorData: string): void => {
         try {
             setModifiedSamplePayload(JSON.parse(codeEditorData))
-        } catch (error) {
-            setModifiedSamplePayload({})
-        }
+        } catch (error) {}
     }
 
     const renderCodeEditor = (): JSX.Element => {
@@ -868,7 +866,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16">
-                                    {webhookResponse?.['description']?.['description']}
+                                    {webhookResponse?.['description']?.['description'] || '-'}
                                 </div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
                                 {renderCodeSnippet(webhookResponse?.['responseBody'])}
