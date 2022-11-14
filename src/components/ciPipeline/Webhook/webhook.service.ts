@@ -40,7 +40,8 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
     return fetch(webhookUrl, options)
         .then((response) => {
             for (const header of response.headers) {
-                responseHeaderString = `${responseHeaderString} ${header[0]} : ${header[1]} \\`
+                responseHeaderString = `${responseHeaderString} ${header[0]} : ${header[1]}
+                `
             }
             return response.json()
         })
