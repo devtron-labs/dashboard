@@ -12,7 +12,7 @@ export const POSTHOG_EVENT_ONBOARDING = {
     TOOLTIP_OKAY: 'Tooltip okay',
     TOOLTIP_DONT_SHOW_AGAIN: 'Tooltip Dont show again',
     HELP: 'Clicked Help',
-    SKIP_AND_EXPLORE_DEVTRON : 'Skip and explore Devtron on your own',
+    SKIP_AND_EXPLORE_DEVTRON : 'SkippedOnboarding',
 }
 
 export const LOGIN_COUNT = 'login-count'
