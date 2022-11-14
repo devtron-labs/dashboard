@@ -41,7 +41,7 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
             const responseJSON = JSON.parse(text)
             return {
                 code: responseJSON['code'],
-                description: responseJSON['result'],
+                result: responseJSON['result'],
                 headers: response.headers,
                 bodyText: text,
             }

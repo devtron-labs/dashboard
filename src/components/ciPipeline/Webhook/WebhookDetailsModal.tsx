@@ -134,7 +134,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setSamplePayload(_modifiedPayload)
             setModifiedSamplePayload(_modifiedPayload)
             setSampleJSON(modifiedJSONString)
-            setSampleCURL(CURL_PREFIX + modifiedJSONString)
+            setSampleCURL(CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}',modifiedJSONString))
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
                     _webhookDetails.projectName,
@@ -167,7 +167,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             const payload = {
                 name: tokenName,
                 description: '',
-                expireAtInMs: getDateInMilliseconds(30),
+                expireAtInMs: 0,
             }
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
@@ -643,7 +643,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         const _modifiedJSONString = formatSampleJson(_samplePayload)
         setModifiedSamplePayload(_modifiedSamplePayload)
         setSampleJSON(_modifiedJSONString)
-        setSampleCURL(CURL_PREFIX.replace('{webhookURL}', webhookDetails.webhookUrl) + _modifiedJSONString)
+        setSampleCURL(CURL_PREFIX.replace('{data}', _modifiedJSONString))
     }
 
     const renderMetadata = (): JSX.Element => {
@@ -866,7 +866,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16">
-                                    {webhookResponse?.['description']?.['description'] || '-'}
+                                    {webhookResponse?.['result'] || '-'}
                                 </div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
                                 {renderCodeSnippet(webhookResponse?.['responseBody'])}
