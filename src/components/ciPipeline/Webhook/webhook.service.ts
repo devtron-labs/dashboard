@@ -36,15 +36,20 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
         body: data ? JSON.stringify(data) : undefined,
     }
     options['credentials'] = 'include' as RequestCredentials
-    return fetch(webhookUrl, options).then((response) => {
-        return response.text().then(function (text) {
-            const responseJSON = JSON.parse(text)
+    let responseHeaderString = ''
+    return fetch(webhookUrl, options)
+        .then((response) => {
+            for (const header of response.headers) {
+                responseHeaderString = `${responseHeaderString} ${header[0]} : ${header[1]} \\`
+            }
+            return response.json()
+        })
+        .then(function (data) {
             return {
-                code: responseJSON['code'],
-                result: responseJSON['result'],
-                headers: response.headers,
-                bodyText: text,
+                code: data['code'],
+                result: data['status'],
+                headers: responseHeaderString,
+                bodyText: JSON.stringify(data),
             }
         })
-    })
 }

@@ -869,7 +869,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                     {webhookResponse?.['result'] || '-'}
                                 </div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                                {renderCodeSnippet(webhookResponse?.['responseBody'])}
+                                {renderCodeSnippet(webhookResponse?.['bodyText'])}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
                                 {renderCodeSnippet(webhookResponse?.['headers'])}
                             </div>
