@@ -8,13 +8,10 @@ import {
     CHECKBOX_VALUE,
     ConditionalWrap,
     isVersionLessThanOrEqualToTarget,
-    not,
     Progressing,
     RadioGroup,
     showError,
-    sortObjectArrayAlphabetically,
     Toggle,
-    useScrollable,
     versionComparator,
 } from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
@@ -29,7 +26,6 @@ import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -126,23 +122,6 @@ const getComparisonTippyContent = (isComparisonAvailable: boolean, isEnvOverride
             <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
             <p className="fs-12 fw-4 lh-18 m-0">No deployment pipelines are created</p>
         </>
-    )
-}
-
-const ChartMenuList = (props) => {
-    return (
-        <components.MenuList {...props}>
-            {props.children}
-            <NavLink
-                to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor dc__bottom-radius-4"
-                target="_blank"
-                rel="noreferrer noopener"
-            >
-                <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom upload-icon-stroke" />
-                Upload custom chart
-            </NavLink>
-        </components.MenuList>
     )
 }
 

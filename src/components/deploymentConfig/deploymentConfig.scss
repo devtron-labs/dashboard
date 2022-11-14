@@ -377,26 +377,4 @@
     .top-0 {
         top: 0;
     }
-    .chart-selector-row-list {
-        .chart-row {
-            .blue-tick {
-                path {
-                    stroke: var(--B500);
-                }
-            }
-            &:last-child {
-                border-bottom-left-radius: 4px;
-                border-bottom-right-radius: 4px;
-            }
-            .use-chart {
-                display: none;
-            }
-            &:hover:not(.bcb-1) {
-                background-color: var(--N50);
-                .use-chart {
-                    display: block;
-                }
-            }
-        }
-    }
 }

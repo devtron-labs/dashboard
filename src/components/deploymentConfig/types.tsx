@@ -269,5 +269,5 @@ export interface ChartSelectorModalType {
 }
 
 export interface ChartMetaDataType {
-    string: { chartDescription: string }
+    chartDescription: string
 }

@@ -37,7 +37,7 @@ export default function ChartSelectorDropdown({
     devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
     customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
 
-    const onSelectChartType = (selectedChartName: string) => {
+    const onSelectChartType = (selectedChartName: string): void => {
         const filteredCharts = charts.filter((chart) => chart.name == selectedChartName)
         const selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
         if (selectedChart) {
@@ -50,23 +50,23 @@ export default function ChartSelectorDropdown({
         }
     }
 
-    const changeSelectedTab = (e): void => {
-        setSelectedChartTypeTab(e.target.value)
+    const changeSelectedTab = (event): void => {
+        setSelectedChartTypeTab(event.target.value)
     }
 
     const stopPropagation = (event): void => {
         event.stopPropagation()
     }
 
+    const setPopupState = (isOpen: boolean): void => {
+        togglePopup(isOpen)
+    }
+
     if (!isUnSet) {
-        return (
-            <>
-                <span className="fs-13 fw-6 cn-9 flex pointer">{selectedChart?.name}</span>
-            </>
-        )
+        return <span className="fs-13 fw-6 cn-9 flex pointer">{selectedChart?.name}</span>
     } else {
         return (
-            <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose>
+            <PopupMenu onToggleCallback={setPopupState} autoClose>
                 <PopupMenu.Button isKebab>
                     <span className="fs-13 fw-6 cn-9 flex pointer">
                         {selectedChart?.name || 'Select Chart'}
@@ -105,14 +105,14 @@ export default function ChartSelectorDropdown({
                                 </RadioGroup>
                             </div>
                         )}
-                        <div className="chart-selector-row-list pt-4 pb-4">
+                        <div className="pt-4 pb-4">
                             {(selectedChartTypeTab === chartTypeTabKeys.DEVTRON_CHART
                                 ? devtronCharts
                                 : customCharts
                             ).map((chart, index) => (
                                 <div
                                     key={`${selectedChartTypeTab}-${index}`}
-                                    className={`p-12 chart-row pointer ${
+                                    className={`p-12 pointer ${
                                         chart.name === selectedChart?.name ? ' bcb-1' : ''
                                     }`}
                                     onClick={() => onSelectChartType(chart.name)}
