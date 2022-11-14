@@ -78,6 +78,7 @@ export interface DeploymentChartVersionType {
     id: number | string
     version: string
     name: string
+    description?: string
 }
 
 export type DeploymentChartOptionkind = 'base' | 'env' | 'chartVersion' | 'deployment'
@@ -117,6 +118,7 @@ export interface ChartTypeVersionOptionsProps {
     isUnSet: boolean
     disableVersionSelect?: boolean
     charts: DeploymentChartVersionType[]
+    chartsMetadata?: Record<string, ChartMetaDataType>
     selectedChart: DeploymentChartVersionType
     selectChart: (
         selectedChart: DeploymentChartVersionType,
@@ -147,6 +149,7 @@ export interface DeploymentTemplateOptionsTabProps {
     handleReadMeClick: () => void
     isUnSet: boolean
     charts: DeploymentChartVersionType[]
+    chartsMetadata?: Record<string, ChartMetaDataType>
     selectedChart: DeploymentChartVersionType
     selectChart: (
         selectedChart: DeploymentChartVersionType,
@@ -188,8 +191,8 @@ export interface DeploymentTemplateEditorViewProps {
     ) => void | React.Dispatch<React.SetStateAction<Record<string, any>>>
     basicFieldValuesErrorObj: BasicFieldErrorObj
     setBasicFieldValuesErrorObj?: (
-      basicFieldErrorObj: BasicFieldErrorObj,
-  ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+        basicFieldErrorObj: BasicFieldErrorObj,
+    ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
     changeEditorMode: () => void
 }
 
@@ -252,4 +255,19 @@ export interface BasicFieldErrorObj {
     cpu: ErrorObj
     memory: ErrorObj
     envVariables: ErrorObj[]
+}
+
+export interface ChartSelectorModalType {
+    charts: DeploymentChartVersionType[]
+    chartsMetadata?: Record<string, ChartMetaDataType>
+    selectedChartRefId: number
+    selectedChart: DeploymentChartVersionType
+    selectChart: (
+        selectedChart: DeploymentChartVersionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
+    isUnSet: boolean
+}
+
+export interface ChartMetaDataType {
+    chartDescription: string
 }
