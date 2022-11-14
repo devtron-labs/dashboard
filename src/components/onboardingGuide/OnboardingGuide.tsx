@@ -135,7 +135,7 @@ function OnboardingGuide({
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                             onClick={handleSkipOnboarding}
                         >
-                            Skip and explore Devtron on your own
+                            {POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                         </NavLink>
                         <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
                     </div>

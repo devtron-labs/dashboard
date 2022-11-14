@@ -13,7 +13,7 @@ export const getInstalledAppDetail = (_appId: number, _envId: number) => {
 };
 
 export const getSaveTelemtry = (appId: string) => {
-  return get(`${Routes.HELM_RELEASE_APP_DETAIL_API}/save-telemetry/?appId=${appId}|devtroncd|devtron`)
+  return get(`${Routes.HELM_RELEASE_APP_DETAIL_API}/save-telemetry/?appId=${appId}`)
 }
 
 export const deleteResource = (nodeDetails, appDetails, envId) => {
