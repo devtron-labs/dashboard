@@ -64,6 +64,11 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const handleDescriptionChange = (e): void => {
         const chartData = { ...chartDetail }
         chartData.description = e.target.value
+        if (chartDetail.description.length > 250) {
+            setDescriptionLengthError(true)
+        } else {
+            setDescriptionLengthError(false)
+        }
         setChartDetail(chartData)
     }
 
@@ -131,7 +136,6 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                             value={chartDetail.description}
                             onChange={handleDescriptionChange}
                             disabled={loadingData}
-                            maxLength={250}
                         ></textarea>
                         {descriptionLengthError && (
                             <span className="form__error">
