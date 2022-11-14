@@ -13,7 +13,7 @@ export const getInstalledAppDetail = (_appId: number, _envId: number) => {
 };
 
 export const getSaveTelemtry = (_appId: number) => {
-  return get(`application/app/save-telemetry/?appId=${_appId}|devtroncd|devtron`)
+  return get(`app/save-telemetry/?appId=${_appId}|devtroncd|devtron`)
 }
 
 export const deleteResource = (nodeDetails, appDetails, envId) => {

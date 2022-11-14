@@ -25,8 +25,8 @@ const AppDetailsComponent = ({
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
 
     useEffect(() => {
-     if( appDetails?.appType?.toString() === AppType.EXTERNAL_HELM_CHART.toString()){
-      getSaveTelemtry(Number(params.appId))
+     if( appDetails?.appType?.toString() === AppType.EXTERNAL_HELM_CHART.toString() && params.appId){
+      getSaveTelemtry(+params.appId)
      }
     },[])
 
