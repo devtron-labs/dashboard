@@ -3,7 +3,7 @@ import { PopupMenu, RadioGroup, sortObjectArrayAlphabetically, versionComparator
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ChartSelectorModalType } from './types'
 import { SortingOrder } from '../app/types'
-import { chartDocumentationLink, chartTypeTab, chartTypeTabKeys, recommendedChartName } from './constants'
+import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS, RECOMMENDED_CHART_NAME } from './constants'
 
 export default function ChartSelectorDropdown({
     charts,
@@ -15,7 +15,7 @@ export default function ChartSelectorDropdown({
 }: ChartSelectorModalType) {
     const [popupOpen, togglePopup] = useState(false)
     const [selectedChartTypeTab, setSelectedChartTypeTab] = useState(
-        selectedChart?.['userUploaded'] ? chartTypeTabKeys.CUSTOM_CHARTS : chartTypeTabKeys.DEVTRON_CHART,
+        selectedChart?.['userUploaded'] ? CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS : CHART_TYPE_TAB_KEYS.DEVTRON_CHART,
     )
     const uniqueChartsByDevtron = new Map<string, boolean>(),
         uniqueCustomCharts = new Map<string, boolean>()
@@ -91,22 +91,22 @@ export default function ChartSelectorDropdown({
                                     onChange={changeSelectedTab}
                                 >
                                     <RadioGroup.Radio
-                                        value={chartTypeTabKeys.DEVTRON_CHART}
-                                        canSelect={selectedChartTypeTab !== chartTypeTabKeys.DEVTRON_CHART}
+                                        value={CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
+                                        canSelect={selectedChartTypeTab !== CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
                                     >
-                                        {chartTypeTab[chartTypeTabKeys.DEVTRON_CHART]}
+                                        {CHART_TYPE_TAB[CHART_TYPE_TAB_KEYS.DEVTRON_CHART]}
                                     </RadioGroup.Radio>
                                     <RadioGroup.Radio
-                                        value={chartTypeTabKeys.CUSTOM_CHARTS}
-                                        canSelect={selectedChartTypeTab !== chartTypeTabKeys.CUSTOM_CHARTS}
+                                        value={CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS}
+                                        canSelect={selectedChartTypeTab !== CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS}
                                     >
-                                        {chartTypeTab[chartTypeTabKeys.CUSTOM_CHARTS]}
+                                        {CHART_TYPE_TAB[CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS]}
                                     </RadioGroup.Radio>
                                 </RadioGroup>
                             </div>
                         )}
                         <div className="pt-4 pb-4">
-                            {(selectedChartTypeTab === chartTypeTabKeys.DEVTRON_CHART
+                            {(selectedChartTypeTab === CHART_TYPE_TAB_KEYS.DEVTRON_CHART
                                 ? devtronCharts
                                 : customCharts
                             ).map((chart, index) => (
@@ -125,7 +125,7 @@ export default function ChartSelectorDropdown({
                                         >
                                             {chart.name}
                                         </span>
-                                        {recommendedChartName === chart.name && (
+                                        {RECOMMENDED_CHART_NAME === chart.name && (
                                             <span className="pl-6 pr-6 bw-1 ev-2 br-4 bcv-1 ml-12">Recommended</span>
                                         )}
                                     </div>
@@ -133,10 +133,10 @@ export default function ChartSelectorDropdown({
                                         <div className="fs-12 fw-4 cn-7">
                                             {chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description}
                                             &nbsp;
-                                            {chartDocumentationLink[chart.name] && (
+                                            {CHART_DOCUMENTATION_LINK[chart.name] && (
                                                 <a
                                                     className="dc__no-decor"
-                                                    href={chartDocumentationLink[chart.name]}
+                                                    href={CHART_DOCUMENTATION_LINK[chart.name]}
                                                     target="_blank"
                                                     rel="noreferrer noopener"
                                                     onClick={stopPropagation}
