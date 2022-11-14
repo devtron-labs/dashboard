@@ -10,17 +10,16 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
     useEffect(() => {
-        if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
-            for (let index = 0; index < appDetails.resourceTree.nodes.length; index++) {
+        if (appDetails.appType === AppType.DEVTRON_APP) {
+            for (let index = 0; index < appDetails.resourceTree?.nodes?.length; index++) {
                 const node = appDetails.resourceTree.nodes[index]
                 let _isImagePullBackOff = false
                 if (node.info?.length) {
                     for (let index = 0; index < node.info.length; index++) {
                         const info = node.info[index]
                         if (
-                            info.value &&
-                            (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
-                                info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF)
+                            info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                            info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF
                         ) {
                             _isImagePullBackOff = true
                             break
