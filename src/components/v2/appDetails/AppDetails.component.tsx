@@ -26,7 +26,7 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
      if( appDetails?.appType?.toString() === AppType.EXTERNAL_HELM_CHART.toString() && params.appId){
-      getSaveTelemtry(+params.appId)
+      getSaveTelemtry(params.appId)
      }
     },[])
 

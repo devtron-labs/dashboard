@@ -12,8 +12,8 @@ export const getInstalledAppDetail = (_appId: number, _envId: number) => {
     return get(`app/detail?app-id=${_appId}&env-id=${_envId}`);
 };
 
-export const getSaveTelemtry = (_appId: number) => {
-  return get(`app/save-telemetry/?appId=${_appId}|devtroncd|devtron`)
+export const getSaveTelemtry = (appId: string) => {
+  return get(`${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}|devtroncd|devtron`)
 }
 
 export const deleteResource = (nodeDetails, appDetails, envId) => {
