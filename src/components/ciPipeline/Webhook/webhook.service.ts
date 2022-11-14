@@ -50,7 +50,7 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
                 code: data['code'],
                 result: data['status'],
                 headers: responseHeaderString,
-                bodyText: JSON.stringify(data),
+                bodyText: JSON.stringify(data, null, 4),
             }
         })
 }
