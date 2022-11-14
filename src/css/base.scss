@@ -1632,8 +1632,12 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
-.dc__no-border {
-    border: none;
+.dc__border-bottom-r2 {
+  border-bottom: solid 1px var(--R200);
+}
+
+.dc__no-border{
+  border: none
 }
 
 .dc__box-shadow {
@@ -1970,6 +1974,10 @@ textarea,
     width: 300px;
 }
 
+.w-332 {
+  width: 332px;
+}
+
 .w-400 {
     width: 400px;
 }
@@ -2005,6 +2013,11 @@ textarea,
 
 .w-auto {
     width: auto;
+}
+
+//min width
+.min-w-200 {
+  min-width: 200px
 }
 
 // Height in pixels
@@ -2059,6 +2072,10 @@ textarea,
 
 .h-48 {
     height: 48px !important;
+}
+
+.h-56 {
+  height: 56px !important;
 }
 
 .h-60 {
@@ -2258,7 +2275,7 @@ textarea::placeholder {
 
 .dc__align-reload-center {
     position: absolute;
-    top: 50%; 
-    left: 50%; 
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
 }

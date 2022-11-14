@@ -382,7 +382,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Password/Token (recommended)*',
+            label: 'Password/Token (Recommended: Token)*',
             defaultValue: '',
             placeholder: '',
         },
@@ -396,12 +396,12 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
         defaultRegistryURL: '',
         registryURL: {
-            label: 'Registry url/Login server*',
+            label: 'Registry URL/Login Server*',
             defaultValue: '',
             placeholder: 'Eg. xxx.azurecr.io',
         },
         id: {
-            label: 'Username/Registry name*',
+            label: 'Username/Registry Name*',
             defaultValue: '',
             placeholder: '',
         },
@@ -429,7 +429,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file*',
+            label: 'Service Account JSON File*',
             defaultValue: '',
             placeholder: 'Paste json file content here',
         },
@@ -452,7 +452,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file*',
+            label: 'Service Account JSON File*',
             defaultValue: '',
             placeholder: 'Paste json file content here',
         },
@@ -619,3 +619,8 @@ export const MODULE_STATUS_RETRY_COUNT = 3;
 export const MODULE_STATUS_POLLING_INTERVAL = 15000;
 export const LOGS_RETRY_COUNT = 3;
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
+
+export enum AppDetailsErrorType {
+  ERRIMAGEPULL= 'errimagepull',
+  IMAGEPULLBACKOFF ='imagepullbackoff'
+}

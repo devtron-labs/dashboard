@@ -154,6 +154,11 @@ export interface AppDetails {
     clusterId?: number;
     notes?: string;
     deploymentAppType?: DeploymentAppType
+    ipsAccessProvided?: boolean
+    externalCi?: boolean
+    clusterName?: string
+    dockerRegistryId?: string
+
 }
 
 interface MaterialInfo {
@@ -195,6 +200,7 @@ export interface Info {
     name: string;
 }
 export interface Node {
+    createdAt: Date;
     health: Health;
     kind: NodeType;
     name: string;
@@ -356,4 +362,9 @@ export interface AppStatusDetailType {
 export interface StatusFilterButtonType {
   nodes: Array<Node>
   handleFilterClick?: (selectedFilter: string) => void
+}
+
+export interface SyncErrorType {
+  appStreamData: AppStreamData
+  showApplicationDetailedModal? : () => void
 }

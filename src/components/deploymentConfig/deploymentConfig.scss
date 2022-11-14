@@ -104,7 +104,8 @@
 
         .form-submit-cta {
             &.cta {
-                min-width: 116px;
+                min-width: 125px;
+                padding: 0 8px;
                 &.disabled {
                     opacity: 0.5;
                     cursor: not-allowed;

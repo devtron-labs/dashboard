@@ -79,6 +79,7 @@ import { TriggerUrlModal } from '../../list/TriggerUrl';
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
 import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
 import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
+import SyncErrorComponent from '../../../v2/appDetails/SyncError.component';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -404,6 +405,10 @@ export const Details: React.FC<{
         )
     }
 
+    const showApplicationDetailedModal = (): void => {
+         toggleDetailedStatus(true)
+    }
+
     return <React.Fragment>
          <div className="w-100 pt-16 pr-20 pb-16 pl-20">
                         <SourceInfo
@@ -420,7 +425,7 @@ export const Details: React.FC<{
                             triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
                         />
                     </div>
-                    <SyncError appStreamData={streamData} />
+                    <SyncErrorComponent showApplicationDetailedModal={showApplicationDetailedModal} appStreamData={streamData} />
                     <SecurityVulnerabilitites
                         imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
                         severityCount={lastExecutionDetail.severityCount}
@@ -1106,51 +1111,6 @@ export function TimeRangeSelector({
         </div>
     );
 }
-
-const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
-    const [collapsed, toggleCollapsed] = useState<boolean>(true);
-    if (
-        !appStreamData?.result?.application?.status?.conditions ||
-        appStreamData?.result?.application?.status?.conditions?.length === 0
-    )
-        return null;
-    return (
-        <div className="top flex left column w-100 bcr-1 pl-25 pr-25">
-            <div className="flex left w-100 " style={{ height: '56px' }}>
-                <AlertTriangle className="icon-dim-20 mr-8" />
-                <span className="cr-5 fs-14 fw-6">
-                    {appStreamData?.result?.application?.status?.conditions?.length} Errors
-                </span>
-                {collapsed && (
-                    <span className="fs-12 cn-9 ml-24">
-                        {appStreamData?.result?.application?.status?.conditions
-                            .map((condition) => condition.type)
-                            .join(',')}
-                    </span>
-                )}
-                <DropDownIcon
-                    style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                    className="icon-dim-20 rotate pointer"
-                    onClick={(e) => toggleCollapsed(not)}
-                />
-            </div>
-            {!collapsed && (
-                <table className="mb-8">
-                    <tbody>
-                        {appStreamData?.result?.application?.status?.conditions.map((condition) => (
-                            <tr>
-                                <td className="pb-8" style={{ minWidth: '200px' }}>
-                                    {condition.type}
-                                </td>
-                                <td className="pl-24 pb-8">{condition.message}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    );
-};
 
 export function SyncStatusMessage(app: Application) {
     const rev = app.status.sync.revision || app.spec.source.targetRevision || 'HEAD';
