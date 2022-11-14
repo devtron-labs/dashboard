@@ -153,7 +153,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     return (
                         <>
                             {
-                                (_gitCommit.Commit || (_gitCommit.WebhookData && _gitCommit.WebhookData.Id)) &&
+                                (_gitCommit.Commit || (_gitCommit.WebhookData && _gitCommit.WebhookData.Data)) &&
                                 <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                     <GitCommitInfoGeneric
                                         materialUrl={mat.url}
