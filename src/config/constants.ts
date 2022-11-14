@@ -219,6 +219,11 @@ export const TriggerType = {
     Manual: 'MANUAL',
 }
 
+export const DeploymentAppType = {
+    GitOps: 'argo_cd',
+    Helm: 'helm'
+}
+
 export const TriggerTypeMap = {
     automatic: 'Auto',
     manual: 'Manual',
