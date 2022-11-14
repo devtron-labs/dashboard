@@ -8,6 +8,7 @@ import './environmentStatus.scss'
 import { APP_STATUS_CUSTOM_MESSAGES, APP_STATUS_HEADERS } from '../../../../../config'
 import { StatusFilterButtonComponent } from '../../k8Resource/StatusFilterButton.component'
 import { AppStatusDetailType, NodeStatus } from '../../appDetails.type'
+import ErrorBar from '../../../../common/error/ErrorBar'
 
 interface NodeStreamMap {
     group: string
@@ -83,7 +84,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
 
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
-    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1];
+    const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
     if (
         ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -157,6 +158,8 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                 </div>
 
                 <div className="app-status-detail__body">
+                    <ErrorBar appDetails={_appDetails} />
+
                     {message && (
                         <div
                             className={` ${
@@ -167,6 +170,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                             {_hasMoreData && renderShowMoreButton()}
                         </div>
                     )}
+
                     {showAppStatusMessage && (
                         <div className="bcn-1 cn-9 pt-10 pb-10 pl-20 pr-20">
                             <span className="fw-6 ">Message: </span>
