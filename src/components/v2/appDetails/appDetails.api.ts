@@ -12,6 +12,10 @@ export const getInstalledAppDetail = (_appId: number, _envId: number) => {
     return get(`app/detail?app-id=${_appId}&env-id=${_envId}`);
 };
 
+export const getSaveTelemtry = (_appId: number) => {
+  return get(`application/app/save-telemetry/?appId=${_appId}|devtroncd|devtron`)
+}
+
 export const deleteResource = (nodeDetails, appDetails, envId) => {
     if (!nodeDetails.group) nodeDetails.group = '';
     if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {

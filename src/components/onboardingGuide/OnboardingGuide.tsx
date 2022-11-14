@@ -16,18 +16,17 @@ function OnboardingGuide({
     onClickedDeployManageCardClicked,
     isGettingStartedClicked,
 }: OnboardingGuideProps) {
-
-  useEffect(() => {
-    return () => {
-      if (loginCount === 0) {
-          const updatedPayload = {
-              key: LOGIN_COUNT,
-              value: '1',
-          }
-          updateLoginCount(updatedPayload)
-      }
-    }
-  }, [])
+    useEffect(() => {
+        return () => {
+            if (loginCount === 0) {
+                const updatedPayload = {
+                    key: LOGIN_COUNT,
+                    value: '1',
+                }
+                updateLoginCount(updatedPayload)
+            }
+        }
+    }, [])
 
     const match = useRouteMatch()
     const history = useHistory()
@@ -37,8 +36,8 @@ function OnboardingGuide({
     }
 
     const redirectDeployCardToCICD = (): string => {
-      return  serverMode === SERVER_MODE.FULL
-            ?`${URLS.APP}/${URLS.APP_LIST}`
+        return serverMode === SERVER_MODE.FULL
+            ? `${URLS.APP}/${URLS.APP_LIST}`
             : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
     }
 
@@ -52,6 +51,16 @@ function OnboardingGuide({
 
     const onClickPreviewCard = (e) => {
         handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.PREVIEW)
+    }
+
+    const handleSkipOnboarding = () => {
+        if (loginCount === 0) {
+            const updatedPayload = {
+                key: POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON,
+                value: true,
+            }
+            updateLoginCount(updatedPayload)
+        }
     }
 
     return (
@@ -124,6 +133,7 @@ function OnboardingGuide({
                             to={`${URLS.APP}/${URLS.APP_LIST}`}
                             className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
+                            onClick={handleSkipOnboarding}
                         >
                             Skip and explore Devtron on your own
                         </NavLink>
