@@ -131,7 +131,7 @@ export default function ChartSelectorDropdown({
                                     </div>
                                     {(chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description) && (
                                         <div className="fs-12 fw-4 cn-7">
-                                            {chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description}
+                                            {chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description.substring(0, 250)}
                                             &nbsp;
                                             {CHART_DOCUMENTATION_LINK[chart.name] && (
                                                 <a

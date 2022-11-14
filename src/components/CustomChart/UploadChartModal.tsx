@@ -5,6 +5,7 @@ import { uploadChart, validateChart } from './customChart.service'
 import errorImage from '../../assets/img/ic_upload_chart_error.png'
 import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from './types'
@@ -15,6 +16,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [errorData, setErrorData] = useState<{ title: string; message: string[] }>({ title: '', message: [] })
     const [loadingData, setLoadingData] = useState(false)
+    const [descriptionLengthError, setDescriptionLengthError] = useState(false)
 
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
@@ -23,6 +25,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
         validateChart(formData)
             .then((response: ChartUploadResponse) => {
                 setChartDetail(response.result)
+                setDescriptionLengthError(response.result.description?.length > 250)
                 setUploadState(UPLOAD_STATE.SUCCESS)
             })
             .catch((error) => {
@@ -66,6 +69,10 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
 
     const onCancelUpload = (actionType: string): void => {
         if (actionType === 'Save') {
+            if (descriptionLengthError || chartDetail.description.length > 250) {
+                setDescriptionLengthError(true)
+                return
+            }
             setLoadingData(true)
         }
         const chartData = { ...chartDetail }
@@ -124,7 +131,14 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                             value={chartDetail.description}
                             onChange={handleDescriptionChange}
                             disabled={loadingData}
+                            maxLength={250}
                         ></textarea>
+                        {descriptionLengthError && (
+                            <span className="form__error">
+                                <Error className="form__icon form__icon--error" />
+                                Maximum 250 characters allowed
+                            </span>
+                        )}
                     </div>
                 </div>
             </>
