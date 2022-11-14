@@ -155,6 +155,7 @@ export const Routes = {
     HELM_APP_HIBERNATE_API: 'application/hibernate',
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
     EXTERNAL_LINKS_API: 'external-links',
+    GET_ALL_APPS: 'app/allApps',
     MODULE_INFO_API: 'module',
     SERVER_INFO_API: 'server',
     LOG_PODNAME_API: 'k8s/resource/inception/info',

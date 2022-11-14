@@ -6,7 +6,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { AppliedFilterChipsType, ClusterFilterType, URLModificationType } from '../externalLinks/ExternalLinks.type'
 import { OptionType } from '../app/types'
 import { URLS } from '../../config'
-import { MenuList, ValueContainer } from './ExternalLinks.component'
+import { FilterMenuList, ValueContainer } from './ExternalLinks.component'
 import { multiSelectStyles, Option } from '../common'
 import { customMultiSelectStyles } from './ExternalLinks.utils'
 
@@ -16,8 +16,9 @@ export const ClusterFilter = ({
     setAppliedClusters,
     queryParams,
     history,
+    url
 }: ClusterFilterType): JSX.Element => {
-    const [selectedCluster, setSelectedCluster] = useState<MultiValue<OptionType>>([])
+    const [selectedCluster, setSelectedCluster] = useState<OptionType[]>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [clusterSearchInput, setClusterSearchInput] = useState('')
 
@@ -48,7 +49,7 @@ export const ClusterFilter = ({
             queryParams.delete('clusters')
         }
 
-        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+        history.push(`${url}?${queryParams.toString()}`)
     }
 
     const handleMenuState = (menuOpenState: boolean): void => {
@@ -56,7 +57,7 @@ export const ClusterFilter = ({
         setMenuOpen(menuOpenState)
     }
 
-    const handleSelectedFilters = (selected: MultiValue<OptionType>): void => {
+    const handleSelectedFilters = (selected): void => {
         setSelectedCluster(selected)
     }
 
@@ -102,7 +103,7 @@ export const ClusterFilter = ({
                     ValueContainer,
                     IndicatorSeparator: null,
                     ClearIndicator: null,
-                    MenuList: (props) => <MenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />,
+                    MenuList: (props) => <FilterMenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />,
                 }}
                 styles={{
                     ...multiSelectStyles,
@@ -119,7 +120,7 @@ export const ClusterFilter = ({
     )
 }
 
-export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.Element => {
+export const SearchInput = ({ queryParams, history, url }: URLModificationType): JSX.Element => {
     const [searchTerm, setSearchTerm] = useState(queryParams.get('search') || '')
     const [searchApplied, setSearchApplied] = useState(!!queryParams.get('search'))
 
@@ -139,7 +140,7 @@ export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.
                 queryParams.set('search', searchTerm)
             }
 
-            history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+            history.push(`${url}?${queryParams.toString()}`)
         }
     }
 
@@ -148,7 +149,7 @@ export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.
         setSearchApplied(false)
 
         queryParams.delete('search')
-        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+        history.push(`${url}?${queryParams.toString()}`)
     }
 
     return (
@@ -178,6 +179,7 @@ export const AppliedFilterChips = ({
     setAppliedClusters,
     queryParams,
     history,
+    url
 }: AppliedFilterChipsType): JSX.Element => {
     const removeFilter = (filter: OptionType): void => {
         const filteredClusters = appliedClusters.filter((cluster) => cluster.value !== filter.value)
@@ -192,13 +194,13 @@ export const AppliedFilterChips = ({
             queryParams.delete('clusters')
         }
 
-        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+        history.push(`${url}?${queryParams.toString()}`)
     }
 
     const removeAllFilters = (e): void => {
         setAppliedClusters([])
         queryParams.delete('clusters')
-        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+        history.push(`${url}?${queryParams.toString()}`)
     }
 
     return (

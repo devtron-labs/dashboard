@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { multiSelectStyles } from '../common'
 import ReactSelect, { components } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
-import { DOCUMENTATION } from '../../config'
+import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { DOCUMENTATION, URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
     ExternalLink,
@@ -23,6 +24,8 @@ import {
 } from './ExternalLinks.utils'
 import { OptionType } from '../app/types'
 import './externalLinks.component.scss'
+import { UserRoleType } from '../userGroups/userGroups.types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -33,22 +36,61 @@ export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }):
     )
 }
 
-export const NoExternalLinksView = ({ handleAddLinkClick }: { handleAddLinkClick: () => void }): JSX.Element => {
+export const ExternalLinksLearnMore = (): JSX.Element => {
+    return (
+        <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
+            Learn more
+        </a>
+    )
+}
+
+export const NoExternalLinksView = ({
+    handleAddLinkClick,
+    isAppConfigView,
+    userRole,
+    history,
+}: {
+    handleAddLinkClick: () => void
+    isAppConfigView: boolean
+    userRole: UserRoleType
+    history: any
+}): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyExternalLinks} alt="Empty external links" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="title">Connect any monitoring tool for a seamless debugging experience</h4>
+                <h4 className="title">Add external links</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>
-                Quickly access any monitoring tool in your stack without losing context of the microserve, pod or
-                container you're interested in.
+                <>
+                    Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    {isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
+                    page.&nbsp;
+                    <ExternalLinksLearnMore />
+                </>
             </EmptyState.Subtitle>
             <EmptyState.Button>
                 <AddLinkButton handleOnClick={handleAddLinkClick} />
             </EmptyState.Button>
+            {isAppConfigView && (
+                <InfoColourBar
+                    message={
+                        userRole === UserRoleType.SuperAdmin
+                            ? 'Only links editable by application admins are shown here. To check all configured links,'
+                            : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
+                    }
+                    classname="info_bar dc__mxw-300 fs-12 pl-12 pr-12 m-20"
+                    Icon={InfoIcon}
+                    iconClass="h-20"
+                    linkText={
+                        userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'
+                    }
+                    internalLink={true}
+                    redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                />
+            )}
         </EmptyState>
     )
 }
@@ -133,9 +175,7 @@ export const AppLevelExternalLinks = ({
         return (
             <div className="flex left flex-wrap">
                 Configure frequently visited links to quickly access from here.&nbsp;
-                <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
-                    Learn more
-                </a>
+                <ExternalLinksLearnMore />
             </div>
         )
     }
@@ -145,7 +185,7 @@ export const AppLevelExternalLinks = ({
             <div className="app-level__external-links flex left mb-14">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon">
-                        <Link className="external-links-icon icon-dim-20 fc-9" />
+                        <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
                     </div>
                 )}
                 <div className="flex left flex-wrap">
@@ -263,7 +303,7 @@ export const ValueContainer = (props): JSX.Element => {
     )
 }
 
-export const MenuList = (props): JSX.Element => {
+export const FilterMenuList = (props): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
@@ -276,21 +316,82 @@ export const MenuList = (props): JSX.Element => {
     )
 }
 
-export const customOption = (data: OptionTypeWithIcon, className = '') => {
+export const ToolsMenuList = (props): JSX.Element => {
+    const lastIndex = props.options?.length - 1
     return (
-        <div className={`flex left ${className}`}>
-            <img
-                src={MONITORING_TOOL_ICONS[data.label.toLowerCase()] || MONITORING_TOOL_ICONS.other}
-                alt={data.label}
-                style={{
-                    width: '20px',
-                    height: '20px',
-                    marginRight: '12px',
-                }}
-                onError={onImageLoadError}
-            />
-            <span className="dc__ellipsis-right">{data.label}</span>
-        </div>
+        <components.MenuList {...props}>
+            <>
+                {props.options ? (
+                    <div
+                        style={{
+                            display: 'grid',
+                            rowGap: '10px',
+                        }}
+                    >
+                        {props.options.map((_opt, idx) => (
+                            <Fragment key={_opt.label}>
+                                <div
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(4, 20px)',
+                                        gap: '12px',
+                                    }}
+                                >
+                                    {_opt.options?.map((_option) => {
+                                        return customOption(
+                                            _option,
+                                            (_option) => props.selectOption(_option),
+                                            _option.label === props.selectProps?.value?.label,
+                                            true,
+                                            true,
+                                        )
+                                    })}
+                                </div>
+                                {lastIndex !== idx && <div className="dc__border-bottom-n1 mt-10 mb-10" />}
+                            </Fragment>
+                        ))}
+                    </div>
+                ) : (
+                    <span className="flex p-8 cn-5">No options</span>
+                )}
+            </>
+        </components.MenuList>
+    )
+}
+
+export const customOption = (
+    data: OptionTypeWithIcon,
+    onClick?: (selected: OptionTypeWithIcon) => void,
+    isSelected?: boolean,
+    noMarginRight?: boolean,
+    noDefaultIcon?: boolean,
+) => {
+    const _src = MONITORING_TOOL_ICONS[data.label.toLowerCase()] || (noDefaultIcon ? '' : MONITORING_TOOL_ICONS.webpage)
+
+    const onClickHandler = (e) => {
+        e.stopPropagation()
+        if (onClick) {
+            onClick(data)
+        }
+    }
+
+    return (
+        _src && (
+            <div className={`flex left ${isSelected ? 'bcb-1' : ''}`} key={data.label} onClick={onClickHandler}>
+                <Tippy className="default-tt" arrow={false} placement="top" content={data.label}>
+                    <img
+                        src={_src}
+                        alt={data.label}
+                        style={{
+                            width: '20px',
+                            height: '20px',
+                            marginRight: noMarginRight ? '0px' : '12px',
+                        }}
+                        onError={onImageLoadError}
+                    />
+                </Tippy>
+            </div>
+        )
     )
 }
 
@@ -305,8 +406,12 @@ export const customValueContainerWithIcon = (props) => {
         <components.ValueContainer {...props}>
             {selectProps.value ? (
                 <>
-                    {!props.selectProps.menuIsOpen && customOption(selectProps.value, 'absolute-option')}
-                    {React.cloneElement(props.children[1])}
+                    {customOption(selectProps.value)}
+                    {React.cloneElement(props.children[1], {
+                        style: {
+                            position: 'absolute',
+                        },
+                    })}
                 </>
             ) : (
                 <>{props.children}</>

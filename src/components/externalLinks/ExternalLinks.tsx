@@ -1,44 +1,51 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
 import { AddLinkButton, NoExternalLinksView, NoMatchingResults } from './ExternalLinks.component'
-import { useHistory, useLocation } from 'react-router-dom'
-import { getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
-import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { getAllApps, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
+import {
+    ExternalLink,
+    ExternalLinkIdentifierType,
+    IdentifierOptionType,
+    OptionTypeWithIcon,
+} from './ExternalLinks.type'
 import { getClusterListMin } from '../../services/service'
 import { OptionType } from '../app/types'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
-import { MultiValue } from 'react-select'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION } from '../../config'
 import TippyWhite from '../common/TippyWhite'
 import { AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
+import { UserRoleType } from '../userGroups/userGroups.types'
 import './externalLinks.scss'
 
-function ExternalLinks() {
+function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolean; userRole?: UserRoleType }) {
     const history = useHistory()
     const location = useLocation()
+    const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const [isLoading, setLoading] = useState(false)
     const [isAPICallInProgress, setAPICallInProgress] = useState(false)
     const [showAddLinkDialog, setShowAddLinkDialog] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const [monitoringTools, setMonitoringTools] = useState<MultiValue<OptionTypeWithIcon>>([])
+    const [monitoringTools, setMonitoringTools] = useState<OptionTypeWithIcon[]>([])
     const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
-    const [clusters, setClusters] = useState<MultiValue<OptionType>>([])
-    const [appliedClusters, setAppliedClusters] = useState<MultiValue<OptionType>>([])
+    const [clusters, setClusters] = useState<IdentifierOptionType[]>([])
+    const [allApps, setAllApps] = useState<IdentifierOptionType[]>([])
+    const [appliedClusters, setAppliedClusters] = useState<OptionType[]>([])
     const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
 
     useEffect(() => {
         setLoading(true)
-        Promise.all([getMonitoringTools(), getExternalLinks(), getClusterListMin()])
-            .then(([monitoringToolsRes, externalLinksRes, clustersResp]) => {
+        Promise.all([getMonitoringTools(), getExternalLinks(), getClusterListMin(), getAllApps()])
+            .then(([monitoringToolsRes, externalLinksRes, clustersResp, allAppsResp]) => {
                 setExternalLinks(externalLinksRes.result?.sort(sortByUpdatedOn) || [])
                 setMonitoringTools(
                     monitoringToolsRes.result
@@ -46,6 +53,7 @@ function ExternalLinks() {
                             label: tool.name,
                             value: tool.id,
                             icon: tool.icon,
+                            category: tool.category,
                         }))
                         .sort(sortOptionsByValue) || [],
                 )
@@ -54,6 +62,16 @@ function ExternalLinks() {
                         ?.map((cluster) => ({
                             label: cluster.cluster_name,
                             value: `${cluster.id}`,
+                            type: ExternalLinkIdentifierType.Cluster,
+                        }))
+                        .sort(sortOptionsByLabel) || [],
+                )
+                setAllApps(
+                    allAppsResp.result
+                        ?.map((_app) => ({
+                            label: _app.appName,
+                            value: _app.appId,
+                            type: _app.type as ExternalLinkIdentifierType,
                         }))
                         .sort(sortOptionsByLabel) || [],
                 )
@@ -111,7 +129,8 @@ function ExternalLinks() {
         } else if (_appliedClustersIds.length > 0) {
             return externalLinks.filter(
                 (link) =>
-                    link.clusterIds.length === 0 || link.clusterIds.some((id) => _appliedClustersIds.includes(`${id}`)),
+                    link.identifiers.length === 0 ||
+                    link.identifiers.some((_identifier) => _appliedClustersIds.includes(`${_identifier.clusterId}`)),
             )
         }
 
@@ -147,26 +166,27 @@ function ExternalLinks() {
     const renderSearchFilterWrapper = (): JSX.Element => {
         return (
             <div className="search-filter-wrapper">
-                <SearchInput queryParams={queryParams} history={history} />
+                <SearchInput queryParams={queryParams} history={history} url={url} />
                 <ClusterFilter
                     clusters={clusters}
                     appliedClusters={appliedClusters}
                     setAppliedClusters={setAppliedClusters}
                     queryParams={queryParams}
                     history={history}
+                    url={url}
                 />
             </div>
         )
     }
 
     const getClusterLabel = (link: ExternalLink): string => {
-        if (link.clusterIds.length === 0) {
+        if (link.identifiers.length === 0) {
             return 'All clusters'
-        } else if (link.clusterIds.length > 1) {
-            return `${link.clusterIds.length} clusters`
+        } else if (link.identifiers.length > 1) {
+            return `${link.identifiers.length} clusters`
         }
 
-        return clusters.find((cluster) => +cluster.value === link.clusterIds[0])?.label || '1 cluster'
+        return clusters.find((cluster) => +cluster.value === link.identifiers[0].clusterId)?.label || '1 cluster'
     }
 
     const editLink = (link: ExternalLink): void => {
@@ -282,6 +302,7 @@ function ExternalLinks() {
                         setAppliedClusters={setAppliedClusters}
                         queryParams={queryParams}
                         history={history}
+                        url={url}
                     />
                 )}
                 <div className="external-links">
@@ -321,7 +342,14 @@ function ExternalLinks() {
                 </div>
             )
         } else if (!externalLinks || externalLinks.length === 0) {
-            return <NoExternalLinksView handleAddLinkClick={handleAddLinkClick} />
+            return (
+                <NoExternalLinksView
+                    isAppConfigView={isAppConfigView}
+                    userRole={userRole}
+                    handleAddLinkClick={handleAddLinkClick}
+                    history={history}
+                />
+            )
         } else {
             return renderExternalLinksView()
         }
@@ -337,7 +365,12 @@ function ExternalLinks() {
                     handleDialogVisibility={handleDialogVisibility}
                     selectedLink={selectedLink}
                     monitoringTools={monitoringTools}
-                    clusters={[{ label: 'All clusters', value: '*' }].concat(clusters)}
+                    allApps={[
+                        { label: 'All applications', value: '*', type: ExternalLinkIdentifierType.AllApps },
+                    ].concat(allApps)}
+                    clusters={[{ label: 'All clusters', value: '*', type: ExternalLinkIdentifierType.Cluster }].concat(
+                        clusters,
+                    )}
                     setExternalLinks={setExternalLinks}
                 />
             )}

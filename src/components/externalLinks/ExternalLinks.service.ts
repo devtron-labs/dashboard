@@ -5,6 +5,7 @@ import {
     ExternalLinkIdentifierType,
     ExternalLinkResponse,
     ExternalLinkUpdateResponse,
+    GetAllAppResponseType,
     MonitoringToolResponse,
 } from './ExternalLinks.type'
 
@@ -48,4 +49,8 @@ export const updateExternalLink = (request: ExternalLink): Promise<ExternalLinkU
 
 export const deleteExternalLink = (externalLinkId: number): Promise<ExternalLinkUpdateResponse> => {
     return trash(`${Routes.EXTERNAL_LINKS_API}?id=${externalLinkId}`)
+}
+
+export const getAllApps = (): Promise<GetAllAppResponseType> => {
+    return get(Routes.GET_ALL_APPS)
 }
