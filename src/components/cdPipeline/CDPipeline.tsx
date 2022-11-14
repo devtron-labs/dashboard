@@ -48,6 +48,7 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
+import {pipe} from "rxjs";
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -288,6 +289,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             runPreStageInEnv: pipelineConfigFromRes.runPreStageInEnv || false,
             runPostStageInEnv: pipelineConfigFromRes.runPostStageInEnv || false,
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
+            deploymentAppType: pipelineConfigFromRes.deploymentAppType || ''
         }
         this.preStage = pipelineConfigFromRes.preStage.config || ''
         this.postStage = pipelineConfigFromRes.postStage.config || ''
@@ -968,6 +970,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     value={this.state.pipelineConfig.deploymentAppType}
                     name="deployment-app-type"
                     onChange={this.handleDeploymentAppTypeChange}
+                    disabled={!!this.props.match.params.cdPipelineId}
                 >
                     <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
                     <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
@@ -1204,7 +1207,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <>
                         {this.renderEnvAndNamespace()}
                         {this.renderTriggerType()}
-                        {this.props.match.params.cdPipelineId ? null: this.renderDeploymentAppType()}
+                        {this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </>
                 ) : null}
