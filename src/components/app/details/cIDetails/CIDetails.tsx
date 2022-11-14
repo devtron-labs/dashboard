@@ -1142,24 +1142,30 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return (
-        <div
-            key={gitTrigger?.Commit}
-            className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
-            style={{ width: 'min( 100%, 800px )' }}
-        >
-            <GitCommitInfoGeneric
-                materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
-                showMaterialInfo={true}
-                commitInfo={gitTrigger}
-                materialSourceType={
-                    gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
-                }
-                selectedCommitInfo={''}
-                materialSourceValue={
-                    gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
-                }
-            />
-        </div>
+        <>
+            {
+                (gitTrigger?.Commit || (gitTrigger?.WebhookData && gitTrigger?.WebhookData?.Data)) &&
+                <div
+                    key={gitTrigger?.Commit}
+                    className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                    style={{width: 'min( 100%, 800px )'}}
+                >
+                    <GitCommitInfoGeneric
+                        materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
+                        showMaterialInfo={true}
+                        commitInfo={gitTrigger}
+                        materialSourceType={
+                            gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
+                        }
+                        selectedCommitInfo={''}
+                        materialSourceValue={
+                            gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
+                        }
+                    />
+                </div>
+            }
+        </>
+
     )
 }
 
