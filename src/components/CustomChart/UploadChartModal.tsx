@@ -16,7 +16,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [errorData, setErrorData] = useState<{ title: string; message: string[] }>({ title: '', message: [] })
     const [loadingData, setLoadingData] = useState(false)
-    const [descriptionLengthError, setDescriptionLengthError] = useState(false)
+    const [isDescriptionLengthError, setDescriptionLengthError] = useState(false)
 
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
@@ -74,7 +74,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
 
     const onCancelUpload = (actionType: string): void => {
         if (actionType === 'Save') {
-            if (descriptionLengthError || chartDetail.description.length > 250) {
+            if (isDescriptionLengthError || chartDetail.description.length > 250) {
                 setDescriptionLengthError(true)
                 return
             }
@@ -137,7 +137,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                             onChange={handleDescriptionChange}
                             disabled={loadingData}
                         ></textarea>
-                        {descriptionLengthError && (
+                        {isDescriptionLengthError && (
                             <span className="form__error">
                                 <Error className="form__icon form__icon--error" />
                                 Maximum 250 characters allowed

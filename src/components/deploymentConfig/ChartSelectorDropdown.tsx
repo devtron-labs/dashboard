@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { PopupMenu, RadioGroup, sortObjectArrayAlphabetically, versionComparator, VisibleModal } from '../common'
+import { PopupMenu, RadioGroup, sortObjectArrayAlphabetically, stopPropagation, versionComparator, VisibleModal } from '../common'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ChartSelectorModalType } from './types'
+import { ChartSelectorModalType, DeploymentChartVersionType } from './types'
 import { SortingOrder } from '../app/types'
 import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS, RECOMMENDED_CHART_NAME } from './constants'
 
@@ -22,7 +22,7 @@ export default function ChartSelectorDropdown({
     let devtronCharts = [],
         customCharts = []
 
-    for (let chart of charts) {
+    for (const chart of charts) {
         const chartName = chart.name
         if (chart['userUploaded']) {
             if (!uniqueCustomCharts.get(chartName)) {
@@ -52,10 +52,6 @@ export default function ChartSelectorDropdown({
 
     const changeSelectedTab = (event): void => {
         setSelectedChartTypeTab(event.target.value)
-    }
-
-    const stopPropagation = (event): void => {
-        event.stopPropagation()
     }
 
     const setPopupState = (isOpen: boolean): void => {
@@ -109,7 +105,7 @@ export default function ChartSelectorDropdown({
                             {(selectedChartTypeTab === CHART_TYPE_TAB_KEYS.DEVTRON_CHART
                                 ? devtronCharts
                                 : customCharts
-                            ).map((chart, index) => (
+                            ).map((chart: DeploymentChartVersionType, index: number) => (
                                 <div
                                     key={`${selectedChartTypeTab}-${index}`}
                                     className={`p-12 pointer ${

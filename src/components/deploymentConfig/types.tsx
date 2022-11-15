@@ -118,7 +118,7 @@ export interface ChartTypeVersionOptionsProps {
     isUnSet: boolean
     disableVersionSelect?: boolean
     charts: DeploymentChartVersionType[]
-    chartsMetadata?: Record<string, ChartMetaDataType>
+    chartsMetadata?: Record<string, ChartMetadataType>
     selectedChart: DeploymentChartVersionType
     selectChart: (
         selectedChart: DeploymentChartVersionType,
@@ -149,7 +149,7 @@ export interface DeploymentTemplateOptionsTabProps {
     handleReadMeClick: () => void
     isUnSet: boolean
     charts: DeploymentChartVersionType[]
-    chartsMetadata?: Record<string, ChartMetaDataType>
+    chartsMetadata?: Record<string, ChartMetadataType>
     selectedChart: DeploymentChartVersionType
     selectChart: (
         selectedChart: DeploymentChartVersionType,
@@ -259,7 +259,7 @@ export interface BasicFieldErrorObj {
 
 export interface ChartSelectorModalType {
     charts: DeploymentChartVersionType[]
-    chartsMetadata?: Record<string, ChartMetaDataType>
+    chartsMetadata?: Record<string, ChartMetadataType>
     selectedChartRefId: number
     selectedChart: DeploymentChartVersionType
     selectChart: (
@@ -268,6 +268,6 @@ export interface ChartSelectorModalType {
     isUnSet: boolean
 }
 
-export interface ChartMetaDataType {
+export interface ChartMetadataType {
     chartDescription: string
 }

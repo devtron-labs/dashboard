@@ -10,7 +10,7 @@ import {
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from './DeploymentTemplateView'
-import { BasicFieldErrorObj, ChartMetaDataType, DeploymentChartVersionType, DeploymentConfigProps } from './types'
+import { BasicFieldErrorObj, ChartMetadataType, DeploymentChartVersionType, DeploymentConfigProps } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
@@ -37,7 +37,7 @@ export default function DeploymentConfig({
 }: DeploymentConfigProps) {
     const { currentServerInfo } = useContext(mainContext)
     const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
-    const [chartsMetadata, setChartsMetadata] = useState<Record<string, ChartMetaDataType>>({})
+    const [chartsMetadata, setChartsMetadata] = useState<Record<string, ChartMetadataType>>({})
     const [selectedChartRefId, selectChartRefId] = useState(0)
     const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
     const [template, setTemplate] = useState('')
