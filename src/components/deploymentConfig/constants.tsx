@@ -1,3 +1,5 @@
+import { DOCUMENTATION } from '../../config'
+
 export const ConfigType = {
     DEPLOYMENT: 'DEPLOYMENT',
     CONFIGMAP: 'CONFIGMAP',
@@ -85,3 +87,11 @@ export const EDITOR_VIEW = {
     BASIC: 'BASIC',
     ADVANCED: 'ADVANCED',
 }
+
+export const CHART_TYPE_TAB_KEYS = { DEVTRON_CHART: 'devtronChart', CUSTOM_CHARTS: 'customCharts' }
+export const CHART_TYPE_TAB = { devtronChart: 'Charts by Devtron', customCharts: 'Custom charts' }
+export const CHART_DOCUMENTATION_LINK = {
+    'CronJob & Job': DOCUMENTATION.JOB_CRONJOB,
+    'Rollout Deployment': DOCUMENTATION.ROLLOUT,
+}
+export const RECOMMENDED_CHART_NAME = 'Deployment'
