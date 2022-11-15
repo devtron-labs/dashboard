@@ -21,7 +21,7 @@ export const RESPONSE_TAB_LIST: TabDetailsType[] = [
 export const CURL_PREFIX = `curl --location --request POST \\
 '{webhookURL}' \\
 --header 'Content-Type: application/json' \\
---header 'token: {token}' \\
+--header 'api-token: {token}' \\
 --data-raw '{data}'`
 
 export const SELECT_TOKEN_STYLE = {

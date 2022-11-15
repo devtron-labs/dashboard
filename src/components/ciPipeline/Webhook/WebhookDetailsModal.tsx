@@ -140,7 +140,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setModifiedSampleString(modifiedJSONString)
             setSampleJSON(modifiedJSONString)
             setSampleCURL(
-                CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
+                CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl)
+                    .replace('{webhookURL}', _webhookDetails.webhookUrl)
+                    .replace('{data}', modifiedJSONString),
             )
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
