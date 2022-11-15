@@ -85,13 +85,14 @@ export default function HelmAppList({
     }, [externalHelmAppsList]);
 
     useEffect(() => {
+      updateDataSyncing(true);
         if (serverMode == SERVER_MODE.EA_ONLY) {
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
                 _getExternalHelmApps()
+                updateDataSyncing(false)
             }
         } else {
-            updateDataSyncing(true);
             getDevtronInstalledHelmApps(clusterIdsCsv)
                 .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
                     setDevtronInstalledHelmAppsList(

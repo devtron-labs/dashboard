@@ -99,10 +99,10 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
+        this.props.updateDataSyncing(true);
         let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
-        this.props.updateDataSyncing(true);
         state.sortRule = {
             key: request.sortBy,
             order: request.sortOrder,

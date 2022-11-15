@@ -113,6 +113,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
     const renderDataSyncingText = () => {
         return <div className="dc__loading-dots">Syncing</div>
     }
+
     useEffect(() => {
       let interval
         if (isDataSyncing) {
@@ -936,12 +937,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                             </span>
                         )}
                     {params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps && (
-                        <div className="flex left">
-                            <span className="mr-10">
-                                <Progressing />
-                            </span>
-                            <span>Fetching apps...</span>
-                        </div>
+                       renderDataSyncingText()
                     )}
                 </div>
             </div>
