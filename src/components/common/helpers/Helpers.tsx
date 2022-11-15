@@ -519,7 +519,7 @@ export function useOnline() {
     return online;
 }
 
-export function getCookie(sKey) { 
+export function getCookie(sKey) {
     if (!sKey) {
         return null;
     }
@@ -997,4 +997,8 @@ export const elementDidMount = (identifier: string): Promise<unknown> => {
 // Setting expiry time in local storage for specified action key
 export const setActionWithExpiry = (key: string, days: number): void => {
   localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
+}
+
+export const stopPropagation = (event): void => {
+  event.stopPropagation()
 }
