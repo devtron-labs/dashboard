@@ -41,6 +41,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         webhookId: string
     }>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
+    const responseSectionRef = useRef<HTMLDivElement>(null)
     const [loader, setLoader] = useState(false)
     const [webhookExecutionLoader, setWebhookExecutionLoader] = useState(false)
     const [generateTokenLoader, setGenerateTokenLoader] = useState(false)
@@ -134,7 +135,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setSamplePayload(_modifiedPayload)
             setModifiedSamplePayload(_modifiedPayload)
             setSampleJSON(modifiedJSONString)
-            setSampleCURL(CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}',modifiedJSONString))
+            setSampleCURL(
+                CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
+            )
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
                     _webhookDetails.projectName,
@@ -821,6 +824,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         } catch (error) {
             setWebhookExecutionLoader(false)
             setWebhookResponse(error)
+        } finally {
+            setTimeout(() => {
+                responseSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }, 500)
         }
     }
 
@@ -855,7 +862,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             return null
         } else {
             return (
-                <div className="mt-16">
+                <div className="mt-16" ref={responseSectionRef}>
                     <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
                     <div className="cn-9 fs-13 fw-6 mb-8">
                         <div className="response-row dc__border-bottom pt-8 pb-8">
@@ -865,9 +872,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         <div className="response-row pt-8 pb-8">
                             <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
                             <div>
-                                <div className="fs-13 fw-4 cn-9 mb-16">
-                                    {webhookResponse?.['result'] || '-'}
-                                </div>
+                                <div className="fs-13 fw-4 cn-9 mb-16">{webhookResponse?.['result'] || '-'}</div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
                                 {renderCodeSnippet(webhookResponse?.['bodyText'])}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
