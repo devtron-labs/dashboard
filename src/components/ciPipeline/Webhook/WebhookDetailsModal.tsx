@@ -18,7 +18,6 @@ import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
 import { ACCESS_TYPE_MAP, MODES } from '../../../config'
 import { createGeneratedAPIToken } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
-import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
 import {
     CURL_PREFIX,
@@ -58,6 +57,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [samplePayload, setSamplePayload] = useState<any>(null)
     const [modifiedSamplePayload, setModifiedSamplePayload] = useState<any>(null)
+    const [modifiedSampleString, setModifiedSampleString] = useState<string>(null)
     const [sampleJSON, setSampleJSON] = useState(null)
     const [sampleCURL, setSampleCURL] = useState<any>(null)
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
@@ -134,6 +134,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             const modifiedJSONString = formatSampleJson(_modifiedPayload)
             setSamplePayload(_modifiedPayload)
             setModifiedSamplePayload(_modifiedPayload)
+            setModifiedSampleString(modifiedJSONString)
             setSampleJSON(modifiedJSONString)
             setSampleCURL(
                 CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
@@ -645,6 +646,8 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         setSamplePayload(_samplePayload)
         const _modifiedJSONString = formatSampleJson(_samplePayload)
         setModifiedSamplePayload(_modifiedSamplePayload)
+
+        setModifiedSampleString(_modifiedJSONString)
         setSampleJSON(_modifiedJSONString)
         setSampleCURL(CURL_PREFIX.replace('{data}', _modifiedJSONString))
     }
@@ -668,14 +671,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             <div className="flex">
                                 {option.mandatory ? (
                                     <Tag className="icon-dim-16 mr-5" />
+                                ) : option.isSelected ? (
+                                    <Close className="icon-dim-16 mr-5" />
                                 ) : (
-                                    <>
-                                        {option.isSelected ? (
-                                            <Close className="icon-dim-16 mr-5" />
-                                        ) : (
-                                            <Add className="icon-dim-16 mr-5" />
-                                        )}
-                                    </>
+                                    <Add className="icon-dim-16 mr-5" />
                                 )}
                                 <span className="fs-12 fw-4 cn-9">{option.label}</span>
                             </div>
@@ -697,7 +696,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const changePayload = (codeEditorData: string): void => {
         try {
-            setModifiedSamplePayload(JSON.parse(codeEditorData))
+          setModifiedSampleString(codeEditorData)
         } catch (error) {}
     }
 
@@ -705,7 +704,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div className="br-4 fs-13 fw-4 cn-9 en-2 bw-1 p-2 pr-5">
                 <CodeEditor
-                    value={formatSampleJson(modifiedSamplePayload)}
+                    value={modifiedSampleString}
                     onChange={changePayload}
                     height="300px"
                     mode={MODES.JSON}
@@ -816,9 +815,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setTryoutAPITokenError(true)
             return
         }
+        let _modifiedPayload
+        try {
+          _modifiedPayload = JSON.parse(modifiedSampleString)
+        } catch (error) {
+          toast.error('Invalid JSON')
+          return
+        }
         setWebhookExecutionLoader(true)
         try {
-            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, modifiedSamplePayload)
+            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, _modifiedPayload)
             setWebhookResponse(response)
             setWebhookExecutionLoader(false)
         } catch (error) {

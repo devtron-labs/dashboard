@@ -31,7 +31,7 @@ export async function executeWebhookAPI(webhookUrl: string, token: string, data?
             Accept: 'application/json',
             'Content-Type': 'application/json',
             'Access-Control-Allow-Credentials': 'true',
-            'api-token': token,
+            'token': token,
         },
         body: data ? JSON.stringify(data) : undefined,
     }
