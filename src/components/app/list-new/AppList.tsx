@@ -114,18 +114,19 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         return <div className="dc__loading-dots">Syncing</div>
     }
     useEffect(() => {
+      let interval
         if (isDataSyncing) {
             setLastDataSyncTimeString(renderDataSyncingText)
         } else {
             const _lastDataSyncTime = Date()
             setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-            const interval = setInterval(() => {
+             interval = setInterval(() => {
                 setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
             }, 1000)
-            return () => {
-                clearInterval(interval)
-            }
         }
+        return () => {
+          interval && clearInterval(interval)
+      }
     }, [isDataSyncing])
 
     useEffect(() => {
