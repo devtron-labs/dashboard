@@ -10,7 +10,7 @@ import { useEventSource } from '../../common';
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component';
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
-import { getSaveTelemtry } from './appDetails.api';
+import { getSaveTelemetry } from './appDetails.api';
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -26,7 +26,7 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
      if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){
-      getSaveTelemtry(params.appId)
+      getSaveTelemetry(params.appId)
      }
     },[])
 
