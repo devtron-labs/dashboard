@@ -5,7 +5,7 @@ import {
     AggregatedNodes,
     PodMetadatum,
 } from '../../types';
-import { getVersionArr, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common';
+import { getVersionArr, handleUTCTime, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common';
 import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
@@ -421,7 +421,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
       },
   }
 
-  const lastFetchedTime = moment(data?.statusLastFetchedAt).startOf('hour').fromNow(); 
+  const lastFetchedTime = handleUTCTime(data?.statusLastFetchedAt,true)
   const phases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
   let tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
       currentPhase: '',
