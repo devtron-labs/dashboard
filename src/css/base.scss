@@ -1637,11 +1637,11 @@ button.anchor {
 }
 
 .dc__border-bottom-r2 {
-  border-bottom: solid 1px var(--R200);
+    border-bottom: solid 1px var(--R200);
 }
 
-.dc__no-border{
-  border: none !important;
+.dc__no-border {
+    border: none !important;
 }
 
 .dc__box-shadow {
@@ -1978,7 +1978,7 @@ textarea {
 }
 
 .w-332 {
-  width: 332px;
+    width: 332px;
 }
 
 .w-400 {
@@ -2020,7 +2020,7 @@ textarea {
 
 //min width
 .min-w-200 {
-  min-width: 200px
+    min-width: 200px;
 }
 
 // Height in pixels
@@ -2078,7 +2078,7 @@ textarea {
 }
 
 .h-56 {
-  height: 56px !important;
+    height: 56px !important;
 }
 
 .h-60 {
@@ -2116,7 +2116,7 @@ textarea {
 
 // Line height
 .lh-14 {
-  line-height: 14px;
+    line-height: 14px;
 }
 
 .lh-16 {
@@ -2277,4 +2277,8 @@ textarea::placeholder {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.dc__break-word {
+    word-break: break-word;
 }
