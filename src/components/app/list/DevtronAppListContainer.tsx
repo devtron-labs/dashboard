@@ -102,6 +102,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
+        this.props.updateDataSyncing(true);
         state.sortRule = {
             key: request.sortBy,
             order: request.sortOrder,
@@ -137,8 +138,9 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 showError(errors);
                 this.setState({ code: errors.code, view: ViewType.ERROR });
             }
+        }).finally(() => {
+          this.props.updateDataSyncing(false);
         })
-        this.props.updateLastDataSync();
     }
 
     handleEditApp = (appId: number): void => {
@@ -171,7 +173,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             isSuperAdmin={this.props.isSuperAdmin}
             appListCount={this.props.appListCount}
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
-            lastSyncTextOnLoading={this.props.lastSyncTextOnLoading}
+            updateDataSyncing= {this.props.updateDataSyncing}
         />
     }
 }

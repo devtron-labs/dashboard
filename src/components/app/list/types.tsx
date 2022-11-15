@@ -51,12 +51,11 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     serverMode? : string;
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;
-    updateLastDataSync : () => void;
     appListCount: number
     isSuperAdmin: boolean
     openDevtronAppCreateModel: (event) => void
     setAppCount: React.Dispatch<React.SetStateAction<number>>
-    lastSyncTextOnLoading: (string) => void
+    updateDataSyncing: (loading: boolean) => void
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
@@ -71,7 +70,7 @@ export interface AppListViewProps extends AppListState, RouteComponentProps<{}> 
   appListCount: number
   isSuperAdmin: boolean
   openDevtronAppCreateModel: (event) => void
-  lastSyncTextOnLoading:  (string) => void
+  updateDataSyncing: (loading: boolean) => void
 }
 
 export interface AppListResponse {

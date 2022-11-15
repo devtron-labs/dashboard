@@ -13,25 +13,6 @@ import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
 
 export class AppListView extends Component<AppListViewProps>{
 
-  componentDidMount(): void {
-      this.getLastSyncTextOnLoading()
-  }
-
-  getLastSyncTextOnLoading = () => {
-    const _lastDataSyncTime = Date()
-    if (this.props.view === AppListViewType.LOADING) {
-      this.props.lastSyncTextOnLoading('Syncing')
-    } else {
-        this.props.lastSyncTextOnLoading('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
-            this.props.lastSyncTextOnLoading('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }
-  }
-
     renderEnvironmentList(app) {
         let len = app.environments.length;
         if (len) {
