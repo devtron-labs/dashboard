@@ -370,3 +370,12 @@
         }
     }
 }
+
+.chart-selector-container {
+    width: 400px;
+    max-height: 350px;
+    overflow: auto;
+    .top-0 {
+        top: 0;
+    }
+}
