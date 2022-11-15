@@ -693,7 +693,7 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
     
     return (
         <div className="flex column left">
-            <div className={`${status} fs-14 fw-6 ${colorClass}`}>{status}</div>
+            <div className={`${status} fs-14 fw-6 ${colorClass}`}>{status && status.toLowerCase()==='cancelled' ? 'ABORTED' : status}</div>
             <div className="flex left">
                 {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
                     <time className="cn-7 fs-12 mr-12">
@@ -746,7 +746,7 @@ const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promi
         if (error) {
             showError(error)
         } else {
-            toast.success('Build cancelled.')
+            toast.success('Build Aborted')
             setAbortConfiguration(false)
         }
     }

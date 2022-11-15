@@ -104,7 +104,8 @@
 
         .form-submit-cta {
             &.cta {
-                min-width: 116px;
+                min-width: 125px;
+                padding: 0 8px;
                 &.disabled {
                     opacity: 0.5;
                     cursor: not-allowed;
@@ -367,5 +368,14 @@
                 height: calc(100% - 220px);
             }
         }
+    }
+}
+
+.chart-selector-container {
+    width: 400px;
+    max-height: 350px;
+    overflow: auto;
+    .top-0 {
+        top: 0;
     }
 }

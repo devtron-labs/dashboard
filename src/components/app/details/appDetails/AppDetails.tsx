@@ -79,6 +79,7 @@ import { TriggerUrlModal } from '../../list/TriggerUrl';
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
 import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
 import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
+import SyncErrorComponent from '../../../v2/appDetails/SyncError.component';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -391,135 +392,140 @@ export const Details: React.FC<{
         )
     }
 
-    return (
-        <React.Fragment>
-            <div className="w-100 pt-16 pr-20 pb-16 pl-20">
-                <SourceInfo
-                    appDetails={appDetails}
-                    setDetailed={toggleDetailedStatus}
-                    environments={environments}
-                    showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
-                    showUrlInfo={isAppDeployment ? setUrlInfo : null}
-                    showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
-                    deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                    deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
-                    triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
-                />
-            </div>
-            <SyncError appStreamData={streamData} />
-            <SecurityVulnerabilitites
-                imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
-                severityCount={lastExecutionDetail.severityCount}
-                onClick={() => {
-                    toggleScanDetailsModal(true)
-                }}
-            />
-            {environment && (
-                <AppMetrics
-                    appName={appDetails.appName}
-                    addExtraSpace={!isExternalToolAvailable}
-                    environment={environment}
-                    podMap={aggregatedNodes.nodes.Pod}
-                    k8sVersion={appDetails.k8sVersion}
-                />
-            )}
-            {isExternalToolAvailable && (
-                <AppLevelExternalLinks
-                    appDetails={appDetails}
-                    externalLinks={externalLinksAndTools.externalLinks}
-                    monitoringTools={externalLinksAndTools.monitoringTools}
-                />
-            )}
-            <NodeTreeDetailTab
-                appDetails={appDetails}
-                externalLinks={externalLinksAndTools.externalLinks}
-                monitoringTools={externalLinksAndTools.monitoringTools}
-                isDevtronApp={true}
-            />
-            <Switch>
-                <Route exact path={`${path}/status`}>
-                    <DeploymentStatusDetailModal
-                        appName={appDetails.appName}
-                        environmentName={appDetails.environmentName}
-                        streamData={streamData}
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+    const showApplicationDetailedModal = (): void => {
+        toggleDetailedStatus(true)
+   }
+
+    return (<React.Fragment>
+         <div className="w-100 pt-16 pr-20 pb-16 pl-20">
+                        <SourceInfo
+                            appDetails={appDetails}
+                            setDetailed={toggleDetailedStatus}
+                            environments={environments}
+                            showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
+                            showUrlInfo={isAppDeployment ? setUrlInfo : null}
+                            showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                            deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
+                            deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
+                            deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
+                            triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
+                        />
+                    </div>
+                    <SyncErrorComponent showApplicationDetailedModal={showApplicationDetailedModal} appStreamData={streamData} />
+                    <SecurityVulnerabilitites
+                        imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
+                        severityCount={lastExecutionDetail.severityCount}
+                        onClick={() => {
+                            toggleScanDetailsModal(true)
+                        }}
                     />
-                </Route>
-            </Switch>
-            {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    appStreamData={streamData}
-                    showAppStatusMessage={false}
-                />
-            )}
-            {showScanDetailsModal && (
-                <ScanDetailsModal
-                    showAppInfo={false}
-                    uniqueId={{
-                        imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
-                        appId: params.appId,
-                        envId: params.envId,
-                    }}
-                    close={() => {
-                        toggleScanDetailsModal(false)
-                    }}
-                />
-            )}
-            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
-            {commitInfo && (
-                <TriggerInfoModal
-                    appId={appDetails?.appId}
-                    ciArtifactId={appDetails?.ciArtifactId}
-                    close={() => showCommitInfo(false)}
-                />
-            )}
-            {hibernateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
+                    {environment && (
+                        <AppMetrics
+                            appName={appDetails.appName}
+                            addExtraSpace={!isExternalToolAvailable}
+                            environment={environment}
+                            podMap={aggregatedNodes.nodes.Pod}
+                            k8sVersion={appDetails.k8sVersion}
+                        />
+                    )}
+                    {isExternalToolAvailable && (
+                        <AppLevelExternalLinks
+                            appDetails={appDetails}
+                            externalLinks={externalLinksAndTools.externalLinks}
+                            monitoringTools={externalLinksAndTools.monitoringTools}
+                        />
+                    )}
+                    <NodeTreeDetailTab
+                        appDetails={appDetails}
+                        externalLinks={externalLinksAndTools.externalLinks}
+                        monitoringTools={externalLinksAndTools.monitoringTools}
+                        isDevtronApp={true}
                     />
-                    <ConfirmationDialog.Body
-                        title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
-                            appDetails.appName
-                        }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be
-                                <b className="mr-4 ml-4">
-                                    scaled
-                                    {hibernateConfirmationModal === 'hibernate'
-                                        ? ' down to 0 '
-                                        : ' up to its original count '}
-                                    on {appDetails.environmentName}
-                                </b>
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p className="mt-16">Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            className="cta cancel"
-                            disabled={hibernating}
-                            onClick={(e) => setHibernateConfirmationModal('')}
-                        >
-                            Cancel
-                        </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hibernateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
-                                'Restore App'
-                            )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
+                    {detailedStatus && (
+                          <AppStatusDetailModal
+                              close={hideAppDetailsStatus}
+                              appStreamData={streamData}
+                              showAppStatusMessage={false}
+                          />
+                    )}
+                    <Switch>
+                        <Route exact path={`${path}/status`}>
+                            <DeploymentStatusDetailModal
+                                appName={appDetails.appName}
+                                environmentName={appDetails.environmentName}
+                                streamData={streamData}
+                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                            />
+                        </Route>
+                    </Switch>
+                    {showScanDetailsModal &&
+                        <ScanDetailsModal
+                            showAppInfo={false}
+                            uniqueId={{
+                                imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
+                                appId: params.appId,
+                                envId: params.envId,
+                            }}
+                            close={() => {
+                                toggleScanDetailsModal(false)
+                            }}
+                        />
+                    }
+                    {urlInfo && (
+                        <TriggerUrlModal
+                            appId={params.appId}
+                            envId={params.envId}
+                            close={() => setUrlInfo(false)}
+                        />
+                    )}
+                    {commitInfo && (
+                        <TriggerInfoModal
+                            appId={appDetails?.appId}
+                            ciArtifactId={appDetails?.ciArtifactId}
+                            close={() => showCommitInfo(false)}
+                        />
+                    )}
+                    {hibernateConfirmationModal && (
+                        <ConfirmationDialog>
+                            <ConfirmationDialog.Icon
+                                src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
+                            />
+                            <ConfirmationDialog.Body
+                                title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
+                                    appDetails.appName
+                                }' on '${appDetails.environmentName}'`}
+                                subtitle={
+                                    <p>
+                                        Pods for this application will be
+                                        <b className='mr-4 ml-4'>
+                                            scaled
+                                            {hibernateConfirmationModal === 'hibernate'
+                                                ? ' down to 0 '
+                                                : ' up to its original count '}
+                                            on {appDetails.environmentName}
+                                        </b>
+                                        environment.
+                                    </p>
+                                }
+                            >
+                                <p className='mt-16'>Are you sure you want to continue?</p>
+                            </ConfirmationDialog.Body>
+                            <ConfirmationDialog.ButtonGroup>
+                                <button className="cta cancel" disabled={hibernating} onClick={(e) => setHibernateConfirmationModal('')}>
+                                    Cancel
+                                </button>
+                                <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                                    {hibernating ? (
+                                        <Progressing />
+                                    ) : hibernateConfirmationModal === 'hibernate' ? (
+                                        `Hibernate App`
+                                    ) : (
+                                        'Restore App'
+                                    )}
+                                </button>
+                            </ConfirmationDialog.ButtonGroup>
+                        </ConfirmationDialog>
+                    )}
         </React.Fragment>
     )
 };
@@ -1094,51 +1100,6 @@ export function TimeRangeSelector({
         </div>
     );
 }
-
-const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }) => {
-    const [collapsed, toggleCollapsed] = useState<boolean>(true);
-    if (
-        !appStreamData?.result?.application?.status?.conditions ||
-        appStreamData?.result?.application?.status?.conditions?.length === 0
-    )
-        return null;
-    return (
-        <div className="top flex left column w-100 bcr-1 pl-25 pr-25">
-            <div className="flex left w-100 " style={{ height: '56px' }}>
-                <AlertTriangle className="icon-dim-20 mr-8" />
-                <span className="cr-5 fs-14 fw-6">
-                    {appStreamData?.result?.application?.status?.conditions?.length} Errors
-                </span>
-                {collapsed && (
-                    <span className="fs-12 cn-9 ml-24">
-                        {appStreamData?.result?.application?.status?.conditions
-                            .map((condition) => condition.type)
-                            .join(',')}
-                    </span>
-                )}
-                <DropDownIcon
-                    style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                    className="icon-dim-20 rotate pointer"
-                    onClick={(e) => toggleCollapsed(not)}
-                />
-            </div>
-            {!collapsed && (
-                <table className="mb-8">
-                    <tbody>
-                        {appStreamData?.result?.application?.status?.conditions.map((condition) => (
-                            <tr>
-                                <td className="pb-8" style={{ minWidth: '200px' }}>
-                                    {condition.type}
-                                </td>
-                                <td className="pl-24 pb-8">{condition.message}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    );
-};
 
 export function SyncStatusMessage(app: Application) {
     const rev = app.status.sync.revision || app.spec.source.targetRevision || 'HEAD';

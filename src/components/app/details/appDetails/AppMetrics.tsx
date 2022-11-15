@@ -389,6 +389,10 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig, addSpace }) {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);
 
+    const toggleHeader = () => {
+      toggleCollapsed(not)
+    }
+
     let subtitle = '';
     if (!isConfigured) {
         subtitle = 'We could not connect to prometheus endpoint. Please configure data source and try reloading this page.';
@@ -397,8 +401,8 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
         subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
     }
     return (
-        <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
-            <div className="flex left w-100 lh-20">
+        <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor ${addSpace}`}>
+            <div  onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
                     APPLICATION METRICS
@@ -411,7 +415,6 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
                 <DropDownIcon
                     style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
                     className="icon-dim-20 rotate pointer"
-                    onClick={(e) => toggleCollapsed(not)}
                 />
             </div>
             {!collapsed &&

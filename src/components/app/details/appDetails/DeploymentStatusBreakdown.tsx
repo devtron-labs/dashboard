@@ -7,7 +7,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
 import { DeploymentStatusDetailBreakdownType, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
 import moment from 'moment'
-import { APP_STATUS_HEADERS, Moment12HourFormat } from '../../../../config'
+import { APP_STATUS_HEADERS, Moment12HourFormat, URLS } from '../../../../config'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import '../../../../components/v2/appDetails/sourceInfo/environmentStatus/environmentStatus.scss'
@@ -15,14 +15,20 @@ import { AppStatusDetailsChart } from '../../../v2/appDetails/sourceInfo/environ
 import { AppStreamData } from '../../types'
 import { getManualSync } from '../../service'
 import { showError } from '../../../common'
-import { useParams } from 'react-router-dom'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { ShowMoreText } from '../../../common/ShowMoreText'
+import ErrorBar from '../../../common/error/ErrorBar'
+import IndexStore from '../../../v2/appDetails/index.store'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
     streamData,
 }: DeploymentStatusDetailBreakdownType) {
-    return (
+    const _appDetails = IndexStore.getAppDetails()
+    const { url } = useRouteMatch()
+    
+    return (<>
+        {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
         <div className="deployment-status-breakdown-container pl-20 pr-20 pt-20 pb-20">
             <RenderStatusDetailRow
                 type="DEPLOYMENT_INITIATED"
@@ -46,7 +52,7 @@ export default function DeploymentStatusDetailBreakdown({
                 deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                 streamData={streamData}
             />
-        </div>
+        </div></>
     )
 }
 
