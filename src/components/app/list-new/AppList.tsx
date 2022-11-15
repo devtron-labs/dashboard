@@ -109,20 +109,36 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     }, [])
 
     // update lasy sync time on tab change
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
+
+    // useEffect(() => {
+        // const _lastDataSyncTime = Date()
+        // setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+        // const interval = setInterval(() => {
+        //     setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+        // }, 1000)
+        // return () => {
+        //     clearInterval(interval)
+        // }
+    //     lastSyncTextOnLoading()
+    // }, [lastDataSync])
 
     useEffect(() => {
         setParsedPayloadOnUrlChange(onRequestUrlChange())
     }, [location.search])
+
+    const lastSyncTextOnLoading = (text) => {
+      return setLastDataSyncTimeString(text)
+      // setLastDataSyncTimeString('Syncing')
+
+      // const _lastDataSyncTime = Date()
+      // setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+      // const interval = setInterval(() => {
+      //     setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+      // }, 1000)
+      // return () => {
+      //     clearInterval(interval)
+      // }
+    }
 
     const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters: any[], currentTab: string): void => {
         // return if not single cluster
@@ -1034,6 +1050,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                                         isSuperAdmin={isSuperAdmin}
                                         openDevtronAppCreateModel={openDevtronAppCreateModel}
                                         setAppCount={setAppCount}
+                                        lastSyncTextOnLoading={lastSyncTextOnLoading}
                                     />
                                 )}
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&

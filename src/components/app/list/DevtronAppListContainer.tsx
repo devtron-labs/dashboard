@@ -171,6 +171,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             isSuperAdmin={this.props.isSuperAdmin}
             appListCount={this.props.appListCount}
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
+            lastSyncTextOnLoading={this.props.lastSyncTextOnLoading}
         />
     }
 }

@@ -4,27 +4,33 @@ import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../.
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
-import { App, AppListState, OrderBy, SortBy } from './types';
+import { App, AppListState, AppListViewProps, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
 import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
-interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
-    expandRow: (app: App | null) => void;
-    closeExpandedRow: () => void;
-    sort: (key: string) => void;
-    handleEditApp: (appId: number) => void;
-    redirectToAppDetails: (app, envId: number) => string;
-    clearAll: () => void;
-    changePage: (pageNo: number) => void;
-    changePageSize: (size: number) => void;
-    appListCount: number
-    isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
-}
 
 export class AppListView extends Component<AppListViewProps>{
+
+  componentDidMount(): void {
+      this.getLastSyncTextOnLoading()
+  }
+
+  getLastSyncTextOnLoading = () => {
+    const _lastDataSyncTime = Date()
+    if (this.props.view === AppListViewType.LOADING) {
+      this.props.lastSyncTextOnLoading('Syncing')
+    } else {
+        this.props.lastSyncTextOnLoading('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+        const interval = setInterval(() => {
+            this.props.lastSyncTextOnLoading('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+        }, 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }
+  }
 
     renderEnvironmentList(app) {
         let len = app.environments.length;

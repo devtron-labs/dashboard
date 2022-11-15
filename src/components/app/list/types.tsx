@@ -56,6 +56,22 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     isSuperAdmin: boolean
     openDevtronAppCreateModel: (event) => void
     setAppCount: React.Dispatch<React.SetStateAction<number>>
+    lastSyncTextOnLoading: (string) => void
+}
+
+export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
+  expandRow: (app: App | null) => void;
+  closeExpandedRow: () => void;
+  sort: (key: string) => void;
+  handleEditApp: (appId: number) => void;
+  redirectToAppDetails: (app, envId: number) => string;
+  clearAll: () => void;
+  changePage: (pageNo: number) => void;
+  changePageSize: (size: number) => void;
+  appListCount: number
+  isSuperAdmin: boolean
+  openDevtronAppCreateModel: (event) => void
+  lastSyncTextOnLoading:  (string) => void
 }
 
 export interface AppListResponse {
