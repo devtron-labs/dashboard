@@ -62,13 +62,11 @@
 
             .docker-file-container,
             .project-path-container {
-                display: flex;
-
+                display: grid;
+                grid-template-columns: fit-content(200px) auto;
                 .checkout-path-container {
                     padding: 8px 10px;
                     border-radius: 4px 0 0 4px;
-                    max-width: 200px;
-                    min-width: 30px;
                 }
 
                 .file-name {
