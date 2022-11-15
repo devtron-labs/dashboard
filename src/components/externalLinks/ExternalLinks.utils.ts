@@ -20,6 +20,7 @@ import PerformanceIcon from '../../assets/icons/tools/ic-link-performance.png'
 import ReportIcon from '../../assets/icons/tools/ic-link-report.png'
 import SwaggerIcon from '../../assets/icons/tools/ic-link-swagger.png'
 import WebpageIcon from '../../assets/icons/tools/ic-link-webpage.png'
+import { multiSelectStyles } from '../common'
 
 export const MONITORING_TOOL_ICONS = {
     cloudwatch: CloudwatchlIcon,
@@ -43,6 +44,7 @@ export const MONITORING_TOOL_ICONS = {
 }
 
 export const customMultiSelectStyles = {
+    ...multiSelectStyles,
     menu: (base, state) => ({
         ...base,
         top: 'auto',
@@ -68,7 +70,7 @@ export const customMultiSelectStyles = {
     control: (base, state) => ({
         ...base,
         width: '160px',
-        minHeight: '32px',
+        minHeight: '36px',
         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
         backgroundColor: 'var(--N50)',
         justifyContent: 'flex-start',

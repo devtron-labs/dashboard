@@ -1,11 +1,25 @@
-import React, { useState } from 'react'
-import ReactSelect, { InputActionMeta } from 'react-select'
+import React, { useEffect, useState } from 'react'
+import ReactSelect, { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { OptionType } from '../../app/types'
-import { multiSelectStyles, Option } from '../../common'
+import { tempMultiSelectStyles } from '../../ciConfig/CIConfig.utils'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    ClearIndicator,
+    MultiValueRemove,
+    noop,
+    Option,
+} from '../../common'
 import { formatOptionLabelClusters, ValueContainer } from '../ExternalLinks.component'
-import { ExternalLinkScopeType, IdentifierOptionType, LinkAction, OptionTypeWithIcon } from '../ExternalLinks.type'
+import {
+    ExternalLinkIdentifierType,
+    ExternalLinkScopeType,
+    IdentifierOptionType,
+    LinkAction,
+    OptionTypeWithIcon,
+} from '../ExternalLinks.type'
 import { customMultiSelectStyles } from '../ExternalLinks.utils'
+import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 
 export default function IdentifierSelector({
     index,
@@ -24,83 +38,125 @@ export default function IdentifierSelector({
     handleLinksDataActions: (
         action: string,
         key?: number,
-        value?: string | boolean | OptionType[] | OptionTypeWithIcon,
+        value?: string | boolean | IdentifierOptionType[] | OptionTypeWithIcon,
     ) => void
     getErrorLabel: (field: string, type?: string) => JSX.Element
 }) {
-    const [clusterSearchInput, setClusterSearchInput] = useState('')
+    const [identifierSearchInput, setIdentifierSearchInput] = useState('')
+
+    useEffect(() => {
+        clearIdentifierSearchInput()
+    }, [link.type])
+
+    const clearIdentifierSearchInput = () => {
+        if (identifierSearchInput) {
+            setIdentifierSearchInput('')
+        }
+    }
+
     const handleClusterSelection = (selected) => {
         handleLinksDataActions('onClusterSelection', index, selected)
     }
 
     const handleOnBlur = (e) => {
-        setClusterSearchInput('')
+        clearIdentifierSearchInput()
     }
 
     const handleOnInputChange = (value: string, actionMeta: InputActionMeta) => {
         if (actionMeta.action === 'input-change') {
-            setClusterSearchInput(value)
+            setIdentifierSearchInput(value)
         }
     }
 
-    // const platformMenuList = (props): JSX.Element => {
-    //     return (
-    //         <components.MenuList {...props}>
-    //             <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-    //                 Type to enter a target platform. Press Enter to accept.
-    //             </div>
-    //             {props.children}
-    //         </components.MenuList>
-    //     )
-    // }
+    const identifierMenuList = (props): JSX.Element => {
+        return (
+            <components.MenuList {...props}>
+                {identifierSearchInput ? (
+                    <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
+                        <AddIcon className="icon-dim-16 fcb-5 mr-8" />
+                        <span className="fs-13 fw-4 lh-20 cb-5">External helm app ‘apache-chart’</span>
+                    </div>
+                ) : (
+                    <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
+                        Enter app name for externally deployed helm apps
+                    </div>
+                )}
+                {props.children}
+            </components.MenuList>
+        )
+    }
 
-    // const noMatchingPlatformOptions = (): string => {
-    //     return 'No matching options'
-    // }
+    const noMatchingIdentifierOptions = (): string => {
+        return 'No matching options'
+    }
 
-    // const platformOption = (props): JSX.Element => {
-    //     const { selectOption, data } = props
-    //     return (
-    //         <div
-    //             onClick={(e) => selectOption(data)}
-    //             className="flex left pl-12"
-    //             style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
-    //         >
-    //             {!data.__isNew__ && (
-    //                 <input
-    //                     checked={props.isSelected}
-    //                     type="checkbox"
-    //                     style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
-    //                 />
-    //             )}
-    //             <div className="flex left column w-100">
-    //                 <components.Option className="w-100 option-label-padding" {...props} />
-    //             </div>
-    //         </div>
-    //     )
-    // }
-    // const handlePlatformChange = (selectedValue): void => {
-    //     setSelectedTargetPlatforms(selectedValue)
-    // }
+    const markOptionAsExternalApp = () => {
+        handleLinksDataActions('onAppSelection', index, [
+            ...selectedIdentifiers,
+            {
+                label: identifierSearchInput,
+                value: identifierSearchInput,
+                type: ExternalLinkIdentifierType.ExternalHelmApp,
+            },
+        ])
+        clearIdentifierSearchInput()
+    }
 
-    // const handleCreatableBlur = (event): void => {
-    //     if (event.target.value) {
-    //         setSelectedTargetPlatforms([
-    //             ...selectedTargetPlatforms,
-    //             {
-    //                 label: event.target.value,
-    //                 value: event.target.value,
-    //             },
-    //         ])
-    //         if (!showCustomPlatformWarning) {
-    //             setShowCustomPlatformWarning(!targetPlatformMap.get(event.target.value))
-    //         }
-    //     } else {
-    //         setShowCustomPlatformWarning(
-    //             selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
-    //         )
-    //     }
-    // }
+    const identifierMultiValueContainer = (props) => {
+        const { children, data, innerProps, selectProps } = props
+        const { label, value, type } = data
+
+        if (
+            !props.selectProps.value.some((_val) => _val.type === ExternalLinkIdentifierType.ExternalHelmApp) &&
+            props.selectProps.value.length === props.selectProps.options.length &&
+            value !== '*'
+        ) {
+            return null
+        }
+
+        return (
+            <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
+                <div className="pl-4 pr-4">
+                    {type === ExternalLinkIdentifierType.ExternalHelmApp && (
+                        <span className="fs-12 fw-6 cn-9 lh-20 dc__border-right pr-6 mr-6">Ext helm app</span>
+                    )}
+                    <span className="fs-12 fw-4 cn-9 lh-20">{label}</span>
+                </div>
+                {children[1]}
+            </components.MultiValueContainer>
+        )
+    }
+
+    const identifierOption = (props): JSX.Element => {
+        const { isSelected, data } = props
+        return (
+            <components.Option {...props}>
+                <div className="flex left cursor w-100">
+                    {!data.__isNew__ ? (
+                        <Checkbox
+                            isChecked={isSelected}
+                            rootClassName="link-identifier-option mb-0-imp"
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={noop}
+                        >
+                            <span className="fs-13 fw-4 lh-20 cn-9">{data.label}</span>
+                        </Checkbox>
+                    ) : (
+                        <span className="fs-13 fw-4 lh-20 cn-9">{data.label}</span>
+                    )}
+                </div>
+            </components.Option>
+        )
+    }
+    const handleAppChange = (selectedValue): void => {
+        handleLinksDataActions('onAppSelection', index, selectedValue)
+    }
+
+    const handleCreatableBlur = (event): void => {
+        if (event.target.value) {
+            clearIdentifierSearchInput()
+        }
+    }
 
     const handleKeyDown = (event): void => {
         if (event.key === 'Enter' || event.key === 'Tab') {
@@ -123,7 +179,7 @@ export default function IdentifierSelector({
                         isMulti={true}
                         hideSelectedOptions={false}
                         closeMenuOnSelect={false}
-                        inputValue={clusterSearchInput}
+                        inputValue={identifierSearchInput}
                         onBlur={handleOnBlur}
                         onInputChange={handleOnInputChange}
                         components={{
@@ -133,7 +189,6 @@ export default function IdentifierSelector({
                             Option,
                         }}
                         styles={{
-                            ...multiSelectStyles,
                             ...customMultiSelectStyles,
                             menuList: (base, state) => ({
                                 ...customMultiSelectStyles.menuList(base, state),
@@ -152,34 +207,55 @@ export default function IdentifierSelector({
                 </>
             ) : (
                 <>
-                    {/* <CreatableSelect
-                        value={selectedTargetPlatforms}
+                    <label>Applications*</label>
+                    <CreatableSelect
+                        value={selectedIdentifiers}
                         isMulti={true}
                         components={{
-                            ClearIndicator: null,
                             IndicatorSeparator: null,
-                            Option: platformOption,
-                            MenuList: platformMenuList,
+                            ClearIndicator,
+                            MultiValueRemove,
+                            Option: identifierOption,
+                            MenuList: identifierMenuList,
+                            MultiValueContainer: identifierMultiValueContainer,
                         }}
-                        styles={tempMultiSelectStyles}
+                        styles={{
+                            ...tempMultiSelectStyles,
+                            placeholder: (base) => ({
+                                ...base,
+                                color: 'var(--N500)',
+                            }),
+                            control: (base, state) => ({
+                                ...tempMultiSelectStyles.control(base, state),
+                                minHeight: '36px',
+                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
+                                backgroundColor: 'var(--N50)',
+                                cursor: 'pointer',
+                            }),
+                        }}
                         closeMenuOnSelect={false}
-                        name="targetPlatform"
-                        placeholder="Type to select or create"
-                        options={TARGET_PLATFORM_LIST}
+                        inputValue={identifierSearchInput}
+                        onInputChange={handleOnInputChange}
+                        name="link-applications"
+                        placeholder="Select or enter app name"
+                        options={allApps}
                         className="basic-multi-select mb-4"
-                        classNamePrefix="target-platform__select"
-                        onChange={handlePlatformChange}
+                        classNamePrefix="link-applications__select"
+                        onChange={handleAppChange}
                         hideSelectedOptions={false}
-                        noOptionsMessage={noMatchingPlatformOptions}
+                        noOptionsMessage={noMatchingIdentifierOptions}
                         onBlur={handleCreatableBlur}
                         isValidNewOption={() => false}
                         onKeyDown={handleKeyDown}
                         captureMenuScroll={false}
-                    /> */}
+                    />
                 </>
             )}
             {link.invalidIdentifiers &&
-                getErrorLabel(link.type === ExternalLinkScopeType.ClusterLevel ? 'clusters' : 'applications')}
+                getErrorLabel(
+                    'identifiers',
+                    link.type === ExternalLinkScopeType.ClusterLevel ? 'clusters' : 'applications',
+                )}
         </div>
     )
 }

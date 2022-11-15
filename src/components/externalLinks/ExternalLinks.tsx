@@ -6,6 +6,7 @@ import { getAllApps, getExternalLinks, getMonitoringTools } from './ExternalLink
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
+    ExternalLinkScopeType,
     IdentifierOptionType,
     OptionTypeWithIcon,
 } from './ExternalLinks.type'
@@ -70,7 +71,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                     allAppsResp.result
                         ?.map((_app) => ({
                             label: _app.appName,
-                            value: _app.appId,
+                            value: `${_app.appId}|${_app.appName}|${_app.type}`,
                             type: _app.type as ExternalLinkIdentifierType,
                         }))
                         .sort(sortOptionsByLabel) || [],
@@ -167,26 +168,28 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
         return (
             <div className="search-filter-wrapper">
                 <SearchInput queryParams={queryParams} history={history} url={url} />
-                <ClusterFilter
+                {!isAppConfigView && <ClusterFilter
                     clusters={clusters}
                     appliedClusters={appliedClusters}
                     setAppliedClusters={setAppliedClusters}
                     queryParams={queryParams}
                     history={history}
                     url={url}
-                />
+                />}
             </div>
         )
     }
 
-    const getClusterLabel = (link: ExternalLink): string => {
-        if (link.identifiers.length === 0) {
-            return 'All clusters'
-        } else if (link.identifiers.length > 1) {
-            return `${link.identifiers.length} clusters`
-        }
+    const getScopeLabel = (link: ExternalLink): string => {
+        const _identifiersLen = link.identifiers.length
+        const _labelPostfix = `${link.type === ExternalLinkScopeType.ClusterLevel ? 'cluster' : 'application'}${
+            _identifiersLen === 0 || _identifiersLen > 1 ? 's' : ''
+        }`
 
-        return clusters.find((cluster) => +cluster.value === link.identifiers[0].clusterId)?.label || '1 cluster'
+        if (_identifiersLen === 0) {
+            return `All ${_labelPostfix}`
+        }
+        return `${_identifiersLen} ${_labelPostfix}`
     }
 
     const editLink = (link: ExternalLink): void => {
@@ -237,8 +240,8 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                                 <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
                                     {link.description || '-'}
                                 </div>
-                                <div className="external-links__cell--cluster cn-9 fs-13 dc__ellipsis-right">
-                                    {getClusterLabel(link)}
+                                <div className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right">
+                                    {getScopeLabel(link)}
                                 </div>
                                 <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
                                     {link.url}
@@ -296,7 +299,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         <AddLinkButton handleOnClick={handleAddLinkClick} />
                     </div>
                 </div>
-                {appliedClusters.length > 0 && (
+                {!isAppConfigView && appliedClusters.length > 0 && (
                     <AppliedFilterChips
                         appliedClusters={appliedClusters}
                         setAppliedClusters={setAppliedClusters}

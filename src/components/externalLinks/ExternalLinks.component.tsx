@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { multiSelectStyles } from '../common'
 import ReactSelect, { components } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
@@ -23,9 +22,9 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { OptionType } from '../app/types'
-import './externalLinks.component.scss'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import './externalLinks.component.scss'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -240,7 +239,6 @@ export const NodeLevelExternalLinks = ({
                         Option,
                     }}
                     styles={{
-                        ...multiSelectStyles,
                         ...customMultiSelectStyles,
                         menu: (base) => ({
                             ...base,

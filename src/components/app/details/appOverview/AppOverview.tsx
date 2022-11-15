@@ -137,9 +137,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     const renderLabelTags = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                    <TagIcon className="icon-dim-20 mr-8" />
-                    Tags
+                <div className="flex left dc__content-space mb-12 w-100">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                        <TagIcon className="icon-dim-20 mr-8" />
+                        Tags
+                    </div>
+                    <div className="flex fs-12 fw-4 lh-16 cn-5 cursor" onClick={toggleTagsUpdateModal}>
+                        <EditIcon className="icon-dim-16 scn-5 mr-4" />
+                        Edit tags
+                    </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
                     {currentLabelTags.tags.length > 0 ? (
@@ -151,13 +157,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     ) : (
                         <span className="fs-13 fw-4 cn-7">No tags added.</span>
                     )}
-                    <span
-                        className="flex fs-12 fw-4 lh-16 cn-9 pt-4 pb-4 pl-6 pr-6 cursor bc-n50 dc__border br-4"
-                        onClick={toggleTagsUpdateModal}
-                    >
-                        <EditIcon className="icon-dim-16 mr-4" />
-                        Add/Edit tags
-                    </span>
                 </div>
             </div>
         )

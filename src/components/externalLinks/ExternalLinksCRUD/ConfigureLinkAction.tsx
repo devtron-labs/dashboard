@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
-import { Checkbox, CHECKBOX_VALUE, multiSelectStyles } from '../../common'
+import { Checkbox, CHECKBOX_VALUE } from '../../common'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-help-outline.svg'
@@ -101,7 +101,6 @@ export default function ConfigureLinkAction({
                         MenuList: ToolsMenuList,
                     }}
                     styles={{
-                        ...multiSelectStyles,
                         ...customMultiSelectStyles,
                         menuList: (base, state) => ({
                             ...customMultiSelectStyles.menuList(base, state),
@@ -213,7 +212,7 @@ export default function ConfigureLinkAction({
                 <div className="flex left">
                     <Checkbox
                         isChecked={link.isEditable}
-                        rootClassName="mb-0-imp"
+                        rootClassName="link-admin-scope mb-0-imp"
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={onEditableFlagToggle}
                     >

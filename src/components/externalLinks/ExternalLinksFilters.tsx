@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import ReactSelect, { InputActionMeta, MultiValue } from 'react-select'
+import ReactSelect, { InputActionMeta } from 'react-select'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { AppliedFilterChipsType, ClusterFilterType, URLModificationType } from '../externalLinks/ExternalLinks.type'
 import { OptionType } from '../app/types'
-import { URLS } from '../../config'
 import { FilterMenuList, ValueContainer } from './ExternalLinks.component'
-import { multiSelectStyles, Option } from '../common'
+import { Option } from '../common'
 import { customMultiSelectStyles } from './ExternalLinks.utils'
 
 export const ClusterFilter = ({
@@ -106,7 +105,6 @@ export const ClusterFilter = ({
                     MenuList: (props) => <FilterMenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />,
                 }}
                 styles={{
-                    ...multiSelectStyles,
                     ...customMultiSelectStyles,
                     menuList: (base) => ({
                         ...base,

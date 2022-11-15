@@ -1,14 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION } from '../../../config'
 import { OptionType } from '../../app/types'
-import { createGroupedItemsByKey, Drawer, Progressing, showError, VisibleModal } from '../../common'
+import { createGroupedItemsByKey, Drawer, Progressing, showError } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {
     AddExternalLinkType,
     ExternalLink,
+    ExternalLinkIdentifierType,
     ExternalLinkScopeType,
     IdentifierOptionType,
     LinkAction,
@@ -43,19 +42,6 @@ export default function AddExternalLink({
     useEffect(() => {
         if (selectedLink) {
             const monitoringTool = monitoringTools.find((tool) => tool.value === selectedLink.monitoringToolId)
-            const selectedIdentifiers =
-                selectedLink.type === ExternalLinkScopeType.ClusterLevel
-                    ? selectedLink.identifiers.length === 0
-                        ? clusters
-                        : clusters.filter((cluster) =>
-                              selectedLink.identifiers.some((_identifier) => _identifier.clusterId === +cluster.value),
-                          )
-                    : selectedLink.identifiers.length === 0
-                    ? allApps
-                    : allApps.filter((app) =>
-                          selectedLink.identifiers.some((_identifier) => _identifier.identifier === app.value),
-                      )
-
             setLinksData([
                 {
                     tool: {
@@ -66,7 +52,7 @@ export default function AddExternalLink({
                     name: selectedLink.name,
                     description: selectedLink.description,
                     urlTemplate: selectedLink.url,
-                    identifiers: selectedIdentifiers,
+                    identifiers: initSelectedIdentifiers(),
                     isEditable: selectedLink.isEditable,
                     type: selectedLink.type,
                 },
@@ -91,6 +77,52 @@ export default function AddExternalLink({
             ])
         }
     }, [])
+
+    const initSelectedIdentifiers = () => {
+        const selectedIdentifiers =
+            selectedLink.identifiers.length === 0
+                ? selectedLink.type === ExternalLinkScopeType.ClusterLevel
+                    ? clusters
+                    : allApps
+                : []
+
+        if (selectedIdentifiers.length === 0) {
+            if (selectedLink.type === ExternalLinkScopeType.ClusterLevel) {
+                for (const _selectedIdentifier of selectedLink.identifiers) {
+                    const _seletedCluster = clusters.find(
+                        (_cluster) => _selectedIdentifier.clusterId === +_cluster.value,
+                    )
+
+                    if (_seletedCluster) {
+                        selectedIdentifiers.push(_seletedCluster)
+                    }
+                }
+            } else {
+                for (const _selectedIdentifier of selectedLink.identifiers) {
+                    if (_selectedIdentifier.type === ExternalLinkIdentifierType.ExternalHelmApp) {
+                        selectedIdentifiers.push({
+                            label: _selectedIdentifier.identifier,
+                            value: _selectedIdentifier.identifier,
+                            type: _selectedIdentifier.type,
+                        })
+                    } else {
+                        const _seletedApp = allApps.find((_app) => {
+                            const _appValue = _app.value.split('|')
+                            return (
+                                _selectedIdentifier.identifier === _appValue[0] &&
+                                _selectedIdentifier.type === _appValue[2]
+                            )
+                        })
+                        if (_seletedApp) {
+                            selectedIdentifiers.push(_seletedApp)
+                        }
+                    }
+                }
+            }
+        }
+
+        return selectedIdentifiers
+    }
 
     const handleLinksDataActions = (
         action: string,
@@ -122,20 +154,33 @@ export default function AddExternalLink({
                 linksData[key].tool = value as OptionTypeWithIcon
                 break
             case 'onClusterSelection':
+            case 'onAppSelection':
                 const _selectedOption = value as IdentifierOptionType[]
                 const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '*') !== -1
                 const areAllOptionsAlredySeleted =
                     Array.isArray(linksData[key].identifiers) && linksData[key].identifiers[0]?.value === '*'
-
+                const allOptions =
+                    action === 'onClusterSelection'
+                        ? [{ label: 'All clusters', value: '*', type: ExternalLinkIdentifierType.Cluster }]
+                        : [{ label: 'All applications', value: '*', type: ExternalLinkIdentifierType.AllApps }]
+                const identifiersLength = action === 'onClusterSelection' ? clusters.length : allApps.length
                 let _newSelections = []
+
                 if (areAllOptionsSelected && !areAllOptionsAlredySeleted) {
-                    _newSelections = [{ label: 'All clusters', value: '*' }]
+                    _newSelections = allOptions
                 } else if (!areAllOptionsSelected && areAllOptionsAlredySeleted) {
                     _newSelections = []
-                } else if (areAllOptionsSelected && _selectedOption.length !== clusters.length) {
+                } else if (areAllOptionsSelected && _selectedOption.length !== identifiersLength) {
                     _newSelections = _selectedOption.filter((option) => option.value !== '*')
-                } else if (!areAllOptionsSelected && _selectedOption.length === clusters.length - 1) {
-                    _newSelections = [{ label: 'All clusters', value: '*' }]
+                } else if (
+                    !areAllOptionsSelected &&
+                    (action === 'onClusterSelection' ||
+                        !_selectedOption.some(
+                            (_option) => _option.type === ExternalLinkIdentifierType.ExternalHelmApp,
+                        )) &&
+                    _selectedOption.length === identifiersLength - 1
+                ) {
+                    _newSelections = allOptions
                 } else {
                     _newSelections = _selectedOption
                 }
@@ -291,8 +336,13 @@ export default function AddExternalLink({
         return identifiers.findIndex((_identifier) => _identifier.value === '*') === -1
             ? identifiers.map((identifier) => ({
                   type: identifier.type,
-                  identifier: identifier.value,
-                  clusterId: identifier.value,
+                  identifier:
+                      identifier.type === ExternalLinkIdentifierType.Cluster
+                          ? ''
+                          : identifier.type === ExternalLinkIdentifierType.ExternalHelmApp
+                          ? identifier.value
+                          : identifier.value.split('|')[0],
+                  clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? identifier.value : 0,
               }))
             : []
     }

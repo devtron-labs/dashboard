@@ -58,6 +58,16 @@
                     }
                 }
 
+                .link-identifiers {
+                    .link-applications__select__multi-value__label {
+                        padding: 0 4px;
+                    }
+
+                    .link-applications__select__multi-value__remove {
+                        padding-top: 2px;
+                    }
+                }
+
                 .link-identifiers,
                 .link-text-area {
                     label {
@@ -216,6 +226,17 @@
             display: flex;
             justify-content: flex-end;
             padding: 16px 20px;
+        }
+    }
+
+    .link-admin-scope,
+    .link-identifier-option {
+        .form__checkbox-container {
+            margin-left: -5px;
+        }
+    
+        .form__checkbox-label {
+            margin-left: 8px;
         }
     }
 }
