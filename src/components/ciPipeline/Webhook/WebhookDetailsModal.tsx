@@ -130,6 +130,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setWebhookDetails(_webhookDetails)
             const parsedPayload = JSON.parse(_webhookDetails['payload'])
             const _modifiedPayload = { ...parsedPayload }
+            if (_modifiedPayload.dockerImage) {
+                _modifiedPayload.dockerImage = ''
+            }
             delete _modifiedPayload.ciProjectDetails
             const modifiedJSONString = formatSampleJson(_modifiedPayload)
             setSamplePayload(_modifiedPayload)
@@ -696,7 +699,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const changePayload = (codeEditorData: string): void => {
         try {
-          setModifiedSampleString(codeEditorData)
+            setModifiedSampleString(codeEditorData)
         } catch (error) {}
     }
 
@@ -817,10 +820,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         }
         let _modifiedPayload
         try {
-          _modifiedPayload = JSON.parse(modifiedSampleString)
+            _modifiedPayload = JSON.parse(modifiedSampleString)
         } catch (error) {
-          toast.error('Invalid JSON')
-          return
+            toast.error('Invalid JSON')
+            return
         }
         setWebhookExecutionLoader(true)
         try {
