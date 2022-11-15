@@ -8,6 +8,10 @@ import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreak
 import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
+import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
+import { URLS } from '../../../../config'
+
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -54,19 +58,38 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         }
     }, [])
 
-    return deploymentStatus === 'Aborted' ? (
+    const redirectToDeploymentStatus = () => {
+        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/status`
+        history.push(newUrl)
+    }
+
+    return deploymentStatus === 'Aborted' || deploymentStatusDetailsBreakdownData.deploymentStatus === 'superseded' ? (
         <div className="flexbox deployment-aborted">
             <CDEmptyState
-                title="This deployment was aborted"
-                subtitle="This deployment was aborted as a successive deployment was triggered before this deployment could complete."
+                title="Deployment failed"
+                subtitle="A new deployment was initiated before this deployment completed."
             />
         </div>
     ) : deploymentListLoader ? (
         <Progressing pageLoader />
+    ) : deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed === false ? (
+        <div className="h-100 flex">
+            <CDEmptyState
+                title="Deployment in progress"
+                imgSource={mechanicalOperation}
+                actionButtonStyle="bcb-5 cn-0"
+                ActionButtonIcon={Arrow}
+                actionHandler={redirectToDeploymentStatus}
+                subtitle="This deployment is in progress. Click on Check status to know the live status."
+                actionButtonText="Check live status"
+                actionButtonIconRight={true}
+            />
+        </div>
     ) : (
-        <div className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 m-16" style={{ width: 'min( 100%, 800px )' }}>
+        <div className="dc__mxw-1000 mw-800">
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                streamData={null}
             />
         </div>
     )

@@ -203,10 +203,7 @@ export function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = fals
             setCurrentFilter(selectedFilter.toLowerCase())
         }
     }
-
-    console.log(flattenedNodes);
     
-
     const filteredFlattendNodes = () => {
         if(filterRemoveHealth){
             return flattenedNodes.filter((node) => node.health.status !== 'Healthy')

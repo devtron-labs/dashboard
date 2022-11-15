@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
-import K8ResourceComponent from './k8Resource/K8Resource.component';
-import './appDetails.scss';
-import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
-import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg';
-import { ReactComponent as Cross } from '../../../assets/icons/ic-close.svg';
-import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
-import { NavLink, Route, Switch } from 'react-router-dom';
-import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
-import { URLS } from '../../../config';
-import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
-import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject, NodeType, AppDetails } from './appDetails.type';
-import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
-import Tippy from '@tippyjs/react';
-import IndexStore from './index.store';
-import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
+import React, { useState, useEffect, useRef } from 'react'
+import K8ResourceComponent from './k8Resource/K8Resource.component'
+import './appDetails.scss'
+import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg'
+import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
+import { ReactComponent as Cross } from '../../../assets/icons/ic-close.svg'
+import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
+import { NavLink, Route, Switch, useLocation } from 'react-router-dom'
+import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router'
+import { URLS } from '../../../config'
+import AppDetailsStore, { AppDetailsTabs } from './appDetails.store'
+import { useSharedState } from '../utils/useSharedState'
+import { ApplicationObject, NodeType, AppDetails } from './appDetails.type'
+import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
+import Tippy from '@tippyjs/react'
+import IndexStore from './index.store'
+import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 
 function NodeTreeDetailTab({
     appDetails,
@@ -28,6 +28,7 @@ function NodeTreeDetailTab({
     isDevtronApp?: boolean
 }) {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
+    const location = useLocation()
     const { path, url } = useRouteMatch()
     const history = useHistory()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
@@ -249,7 +250,7 @@ function NodeTreeDetailTab({
                                 )
                             }}
                         />
-                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
+                        {!location.pathname.includes('status') && <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />}
                     </Switch>
                 </>
             )}
@@ -257,5 +258,4 @@ function NodeTreeDetailTab({
     )
 }
 
-
-export default NodeTreeDetailTab;
+export default NodeTreeDetailTab

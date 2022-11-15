@@ -443,3 +443,7 @@ export const getIngressServiceUrls = (params: { appId?: string; envId: string; i
     })
     return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)
 }
+
+export function getManualSync(params: {appId: string, envId: string}): Promise<ResponseType> {
+    return get(`${Routes.MANUAL_SYNC}/${params.appId}/${params.envId}`)
+}

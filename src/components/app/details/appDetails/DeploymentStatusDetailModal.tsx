@@ -5,18 +5,26 @@ import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
 import moment from 'moment'
-import { Moment12HourFormat } from '../../../../config'
+import { Moment12HourFormat, URLS } from '../../../../config'
+import { useHistory, useParams } from 'react-router-dom'
 
 export default function DeploymentStatusDetailModal({
-    close,
     appName,
     environmentName,
     streamData,
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailModalType) {
+    const history = useHistory()
+    const { appId, envId} = useParams<{appId: string , envId: string}>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
+
+    const close = () => {
+        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`
+        history.replace(newUrl)
+    }
+
     const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof close === 'function') {
+        if (evt && evt.key === 'Escape') {
             evt.preventDefault()
             close()
         }
@@ -24,12 +32,12 @@ export default function DeploymentStatusDetailModal({
     const outsideClickHandler = (evt): void => {
         if (
             appStatusDetailRef.current &&
-            !appStatusDetailRef.current.contains(evt.target) &&
-            typeof close === 'function'
+            !appStatusDetailRef.current.contains(evt.target)
         ) {
             close()
         }
     }
+
     useEffect(() => {
         document.addEventListener('keydown', escKeyPressHandler)
         return (): void => {
@@ -60,27 +68,6 @@ export default function DeploymentStatusDetailModal({
                                     {deploymentStatusDetailsBreakdownData.deploymentStatusText}
                                 </span>
                                 <span className="dc__bullet mr-8 ml-8 mt-10"></span>
-                                {deploymentStatusDetailsBreakdownData.deploymentStatus === 'inprogress' ? (
-                                    <>
-                                        <Timer className="icon-dim-16 mt-3 mr-5 timer-icon" />
-                                        <span className="fs-13">
-                                            {handleUTCTime(
-                                                deploymentStatusDetailsBreakdownData.deploymentTriggerTime,
-                                                true,
-                                            )}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span className="fs-13">
-                                        {deploymentStatusDetailsBreakdownData.deploymentEndTime !==
-                                        '0001-01-01T00:00:00Z'
-                                            ? moment(
-                                                  deploymentStatusDetailsBreakdownData.deploymentEndTime,
-                                                  'YYYY-MM-DDTHH:mm:ssZ',
-                                              ).format(Moment12HourFormat)
-                                            : '-'}
-                                    </span>
-                                )}
                             </div>
                         </div>
                         <span className="cursor" onClick={close}>

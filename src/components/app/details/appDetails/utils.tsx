@@ -13,6 +13,7 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes, DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
+import moment from 'moment';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -375,7 +376,7 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     return url;
 }
 
-export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetailsType): DeploymentStatusDetailsBreakdownDataType=>{
+export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetailsType): DeploymentStatusDetailsBreakdownDataType => {
   const deploymentData = {
       deploymentStatus: 'inprogress',
       deploymentStatusText: 'In progress',
@@ -383,6 +384,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
       deploymentEndTime: data?.deploymentFinishedOn || '',
       deploymentError: '',
       triggeredBy: data?.triggeredBy || '',
+      nonDeploymentError: '',
       deploymentStatusBreakdown: {
           DEPLOYMENT_INITIATED: {
               icon: 'success',
@@ -394,11 +396,14 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               icon: '',
               displayText: 'Push manifest to Git',
               displaySubText: '',
+              timelineStatus: '',
               time: '',
+              isCollapsed: true,
           },
           KUBECTL_APPLY: {
               icon: '',
               displayText: 'Apply manifest to Kubernetes',
+              timelineStatus: '',
               displaySubText: '',
               time: '',
               resourceDetails: [],
@@ -408,13 +413,21 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           APP_HEALTH: {
               icon: '',
               displayText: 'Propogate manifest to Kubernetes resources',
+              timelineStatus: '',
               displaySubText: '',
               time: '',
               isCollapsed: true,
           },
       },
   }
-  console.log(data);
+
+  const lastFetchedTime = moment(data?.statusLastFetchedAt).startOf('hour').fromNow(); 
+  const phases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
+  let tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
+      currentPhase: '',
+      currentTableData: [{ icon: 'success', message: 'Started by Argo CD' }],
+  }
+
   if (data?.timelines?.length) {
       for (let index = data.timelines.length - 1; index >= 0; index--) {
           const element = data.timelines[index]
@@ -427,40 +440,39 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
               deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
               deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = true
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = true
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
           } else if (element['status'] === 'FAILED') {
               deploymentData.deploymentStatus = 'failed'
               deploymentData.deploymentStatusText = 'Failed'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
               deploymentData.deploymentError = element['statusDetail']
-          } else if (element['status'] === 'TIMED_OUT'){
-             if (deploymentData.deploymentStatus !== 'failed' && deploymentData.deploymentStatus !== 'succeeded' ){
-                console.log('hello');
-                
-                deploymentData.deploymentStatus = 'failed'
-                deploymentData.deploymentStatusText = 'Time Out'
-                deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Time Out'
-                deploymentData.deploymentError = element['statusDetail']
-             }
+          }  else if (element['status'] === 'DEPLOYMENT_SUPERSEDED') {
+            deploymentData.deploymentStatus = 'superseded'
+        } else if ( index === data.timelines.length - 1 && (element['status'] === 'TIMED_OUT' || element['status'] === 'UNABLE_TO_FETCH_STATUS')){
+            if(element['status'] === 'TIMED_OUT') {
+                deploymentData.deploymentStatus = 'timed_out'
+                deploymentData.deploymentStatusText = 'Timed out'
+            } else if(element['status'] === 'UNABLE_TO_FETCH_STATUS') {
+                deploymentData.deploymentStatus = 'unable_to_fetch'
+                deploymentData.deploymentStatusText = 'Unable to fetch status'
+            }
+            deploymentData.deploymentError = `Below resources did not become healthy within 10 mins. Resource status shown below was last fetched ${lastFetchedTime}. ${data.statusFetchCount} retries failed.`
           } else if (element['status'].includes('KUBECTL_APPLY')) {
-            const phases = ["PreSync", "Sync", "PostSync", "Skip", "SyncFail"]
-              let tableData: {currentPhase: string, currentTableData: {icon: string, phase?: string, message: string}[]} = {
-                currentPhase: '',
-                currentTableData: [{icon: 'success', message: 'Started by Argo CD'}]
-              }
-              phases.forEach((phase) => {
-                for(let item of element.resourceDetails){
-                    if(phase === item.resourcePhase){
-                        tableData.currentPhase = phase
-                        if(item.resourceStatus === 'failed'){
-
+              if(element?.resourceDetails){
+                phases.forEach((phase) => {
+                    for(let item of element.resourceDetails){
+                        if(phase === item.resourcePhase){
+                            tableData.currentPhase = phase
+                            if(item.resourceStatus === 'failed'){
+    
+                            }
+                            tableData.currentTableData.push({icon: 'success',phase: phase, message: `${phase}: Create and update resources based on manifest` })
+                            return
                         }
-                        tableData.currentTableData.push({icon: 'success',phase: phase, message: `${phase}: Create and update resources based on manifest` })
-                        return
                     }
-                }
-              })
-            //   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = element.resourceDetails.filter((item) => item.resourcePhase ===  tableData.currentPhase)
+                  })
+              }
               if (
                   element['status'] === 'KUBECTL_APPLY_STARTED' &&
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
@@ -472,22 +484,45 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
-                    //   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = []
                   } else if (deploymentData.deploymentStatus === 'succeeded') {
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                } else if (deploymentData.deploymentStatus === 'timed_out') {
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = deploymentData.deploymentError
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map((item) => {
+                        return {
+                            icon: item.phase === tableData.currentPhase ? 'failed' : 'success',
+                            message: item.message
+                        }
+                      })
+                }  else if (deploymentData.deploymentStatus === 'unable_to_fetch') {
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'disconnect'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = deploymentData.deploymentError
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map((item) => {
+                        return {
+                            icon: item.phase === tableData.currentPhase ? 'failed' : 'success',
+                            message: item.message
+                        }
+                      })
                 } else {
-                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
-                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
-                  }
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map((item) => {
-                    return {
-                        icon: item.phase === tableData.currentPhase ? 'loading' : 'success',
-                        message: item.message
-                    }
-                  })
-                  
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = element.statusDetail
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map(
+                        (item) => {
+                            return {
+                                icon: item.phase === tableData.currentPhase ? 'loading' : 'success',
+                                message: item.message,
+                            }
+                        },
+                    )
+                }
               } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = []
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
@@ -499,10 +534,21 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
 
                   if (deploymentData.deploymentStatus === 'inprogress') {
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = false
                   } else if(deploymentData.deploymentStatus  === 'failed'){
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'failed'
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
-                  }
+                  } else if (deploymentData.deploymentStatus === 'timed_out') {
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = ''
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.timelineStatus = deploymentData.deploymentError
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = false
+                } else if (deploymentData.deploymentStatus === 'unable_to_fetch') {
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'disconnect'
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.timelineStatus = deploymentData.deploymentError
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = false
+                }
               }
           } else if (element['status'].includes('GIT_COMMIT')) {
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['statusTime']
@@ -511,11 +557,19 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
                   deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.isCollapsed = false
                   deploymentData.deploymentStatus = 'failed'
                   deploymentData.deploymentStatusText = 'Failed'
-                  deploymentData.deploymentError = element['statusDetail']
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.timelineStatus = element['statusDetail']
               } else {
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+                  if (deploymentData.deploymentStatus === 'failed') {
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+                      deploymentData.nonDeploymentError = 'KUBECTL_APPLY'
+                  } else 
                   if (
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
                       deploymentData.deploymentStatus === 'inprogress'
@@ -544,6 +598,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
                   deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
                   deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+                  deploymentData.nonDeploymentError = 'GIT_COMMIT'
                 } else if(deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon !== 'failed'){
                   if(deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === ''){
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'

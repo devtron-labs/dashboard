@@ -46,14 +46,13 @@ export interface SecurityVulnerabilititesProps {
 
 export interface SyncStageResourceDetail {
     id: number
-    InstalledAppVersionHistoryId?: number  
-    CdWorkflowRunnerId?: number 
-    resourceName: string 
-    resourceKind: string    
-    resourcePhase: string 
-    HookType: string
+    cdWorkflowRunnerId: number
+    resourceGroup: string
+    resourceKind: string
+    resourceName: string
+    resourcePhase: string
     resourceStatus: string
-    statusMessage: string 
+    statusMessage: string
 }
 
 export interface DeploymentStatusDetailsTimelineType {
@@ -62,13 +61,15 @@ export interface DeploymentStatusDetailsTimelineType {
     status: string
     statusDetail: string
     statusTime: string
-    resourceDetails: SyncStageResourceDetail[]
+    resourceDetails?: SyncStageResourceDetail[]
 }
 
 export interface DeploymentStatusDetailsType {
     deploymentFinishedOn: string
     deploymentStartedOn: string
     triggeredBy: string
+    statusFetchCount: number
+    statusLastFetchedAt: string
     timelines: DeploymentStatusDetailsTimelineType[]
 }
 
@@ -83,7 +84,8 @@ interface DeploymentStatusDetailRow {
     time: string
     resourceDetails?: any,
     isCollapsed?: boolean,
-    kubeList?: {icon: any, message: string}[]
+    kubeList?: {icon: any, message: string}[],
+    timelineStatus?: string
 }
 export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentStatus: string
@@ -92,6 +94,7 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentEndTime: string
     deploymentError: string
     triggeredBy: string
+    nonDeploymentError: string
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
         GIT_COMMIT: DeploymentStatusDetailRow
@@ -106,7 +109,6 @@ export interface DeploymentStatusDetailBreakdownType {
 }
 
 export interface DeploymentStatusDetailModalType{
-  close: () => void
   appName: string
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType

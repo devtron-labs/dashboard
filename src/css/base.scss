@@ -1663,6 +1663,10 @@ button.anchor {
     max-width: 200px;
 }
 
+.dc__mxw-1000 {
+    max-width: 1000px;
+}
+
 .fw-n {
     font-weight: normal !important;
 }
@@ -1935,6 +1939,10 @@ textarea {
 
 .mw-48 {
     min-width: 48px;
+}
+
+.mw-800 {
+    min-width: 800px;
 }
 
 .w-100-px {
@@ -2248,4 +2256,11 @@ textarea::placeholder {
     top: 50%; 
     left: 50%; 
     transform: translate(-50%, -50%);
+}
+
+.dc__truncate {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }

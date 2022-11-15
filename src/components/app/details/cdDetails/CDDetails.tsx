@@ -292,6 +292,16 @@ export default function CDDetails() {
     )
 }
 
+export const triggerStatus = (triggerDetailStatus) => {
+    if(triggerDetailStatus === 'Aborted' || triggerDetailStatus === 'Degraded') {
+        return 'Failed'
+    }else if (triggerDetailStatus === 'Healthy') {
+        return 'Succeeded'
+    } else {
+        return triggerDetailStatus
+    }
+}
+
 const DeploymentCard: React.FC<{
     triggerDetails: History
 }> = ({ triggerDetails }) => {
@@ -299,6 +309,7 @@ const DeploymentCard: React.FC<{
     const { pathname } = useLocation()
     const currentTab = pathname.split('/').pop()
     const { triggerId, ...rest } = useParams<{ triggerId: string }>()
+
     return (
         <ConditionalWrap
             condition={Array.isArray(triggerDetails?.ciMaterials)}
@@ -328,7 +339,7 @@ const DeploymentCard: React.FC<{
                     }}
                 >
                     <div
-                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(triggerDetails.status)
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     />

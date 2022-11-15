@@ -1796,7 +1796,9 @@ table.resource-tree {
     &.f-inprogress {
         color: #ff7e5b;
     }
-    &.f-failed {
+    &.f-failed,
+    &.f-timed_out,
+    &.f-unable_to_fetch {
         color: var(--red);
     }
   }
