@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey, Drawer, Progressing, showError } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
@@ -17,10 +18,12 @@ import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import './AddExternalLink.scss'
 import { ExternalLinksLearnMore } from '../ExternalLinks.component'
+import './AddExternalLink.scss'
 
 export default function AddExternalLink({
+    appId,
+    isAppConfigView,
     monitoringTools,
     clusters,
     allApps,
@@ -249,6 +252,7 @@ export default function AddExternalLink({
                         return (
                             <Fragment key={`ConfigureLinkAction-${idx}`}>
                                 <ConfigureLinkAction
+                                    isAppConfigView={isAppConfigView}
                                     index={idx}
                                     link={link}
                                     clusters={clusters}
@@ -352,11 +356,9 @@ export default function AddExternalLink({
             const validatedLinksData = getValidatedLinksData()
             const invalidData = validatedLinksData.some(
                 (link) =>
-                    link.invalidTool ||
+                    (!isAppConfigView && (link.invalidTool || link.invalidIdentifiers || link.invalidProtocol)) ||
                     link.invalidName ||
-                    link.invalidIdentifiers ||
-                    link.invalidUrlTemplate ||
-                    link.invalidProtocol,
+                    link.invalidUrlTemplate,
             )
 
             if (invalidData) {
@@ -372,10 +374,10 @@ export default function AddExternalLink({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
                     description: link.description || '',
-                    type: link.type,
+                    type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
                     identifiers: processIdentifiers(link.identifiers),
                     url: link.urlTemplate,
-                    isEditable: link.isEditable,
+                    isEditable: isAppConfigView ? true : link.isEditable,
                 }
 
                 const { result } = await updateExternalLink(payload)
@@ -388,21 +390,33 @@ export default function AddExternalLink({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
                     description: link.description || '',
-                    type: link.type,
-                    identifiers: processIdentifiers(link.identifiers),
+                    type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
+                    identifiers: isAppConfigView
+                        ? [
+                              {
+                                  type: ExternalLinkIdentifierType.DevtronApp,
+                                  identifier: appId,
+                                  clusterId: 0,
+                              },
+                          ]
+                        : processIdentifiers(link.identifiers),
                     url: link.urlTemplate,
-                    isEditable: link.isEditable,
+                    isEditable: isAppConfigView ? true : link.isEditable,
                 }))
 
                 // Reversing because on 'Add another', new link fields are added & displayed at the top of linksData
-                const { result } = await saveExternalLinks(payload.reverse())
+                const { result } = await (isAppConfigView
+                    ? saveExternalLinks(payload.reverse(), ExternalLinkIdentifierType.DevtronApp, appId)
+                    : saveExternalLinks(payload.reverse()))
 
                 if (result?.success) {
                     toast.success('Saved successfully!')
                 }
             }
 
-            const { result } = await getExternalLinks()
+            const { result } = await (isAppConfigView
+                ? getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+                : getExternalLinks())
             setExternalLinks(result?.sort(sortByUpdatedOn) || [])
             setSavingLinks(false)
             handleDialogVisibility()

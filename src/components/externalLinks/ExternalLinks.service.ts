@@ -39,7 +39,7 @@ export const getExternalLinks = (
     return get(_url)
 }
 
-export const saveExternalLinks = (request: ExternalLink[]): Promise<ExternalLinkUpdateResponse> => {
+export const saveExternalLinks = (request: ExternalLink[], type?: ExternalLinkIdentifierType, identifier?: string): Promise<ExternalLinkUpdateResponse> => {
     return post(Routes.EXTERNAL_LINKS_API, request)
 }
 

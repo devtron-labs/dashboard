@@ -5,8 +5,10 @@ import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 interface TippyWhiteProps {
     className?: string
     placement: 'top' | 'bottom' | 'right' | 'left'
-    Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    iconPath?: string
     iconClass?: string
+    onImageLoadError?: (e) => void
     heading: string
     infoText?: string
     showCloseButton?: boolean
@@ -24,7 +26,9 @@ export default function TippyWhite({
     className,
     placement,
     Icon,
+    iconPath,
     iconClass,
+    onImageLoadError,
     heading,
     infoText,
     showCloseButton,
@@ -57,12 +61,31 @@ export default function TippyWhite({
     const getTippyContent = () => {
         return (
             <>
-                <div className="flex p-12 dc__border-bottom-n1">
-                    <Icon className={`icon-dim-20 mr-6 ${iconClass}`} />
-                    <span className="fs-14 fw-6 cn-9">{heading}</span>
-                    {showCloseButton && <CloseIcon className="icon-dim-16 fcn-9 ml-auto cursor" onClick={closeTippy} />}
+                <div className="tippy-white-heading dc__word-break-all dc__hyphens-auto flex left p-12 dc__border-bottom-n1">
+                    {iconPath ? (
+                        <img
+                            className={`icon-dim-20 mr-6 ${iconClass || ''}`}
+                            src={iconPath}
+                            alt={heading}
+                            onError={onImageLoadError}
+                        />
+                    ) : (
+                        <div className="icon-dim-20 mr-6">
+                            <Icon className={`icon-dim-20 ${iconClass || ''}`} />
+                        </div>
+                    )}
+                    <span className={`fs-14 fw-6 cn-9 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>
+                    {showCloseButton && (
+                        <div className="icon-dim-16 ml-auto">
+                            <CloseIcon className="icon-dim-16 fcn-9 cursor" onClick={closeTippy} />
+                        </div>
+                    )}
                 </div>
-                {infoText && <div className="fs-13 fw-4 cn-9 p-12">{infoText}</div>}
+                {infoText && (
+                    <div className="tippy-white-info dc__word-break-all dc__hyphens-auto fs-13 fw-4 cn-9 p-12">
+                        {infoText}
+                    </div>
+                )}
                 {additionalContent}
                 {documentationLink && (
                     <div className="pl-12 pb-12">
@@ -83,12 +106,12 @@ export default function TippyWhite({
 
     return (
         <Tippy
-            className={`default-white no-content-padding tippy-shadow ${className}`}
+            className={`tippy-white-container default-white no-content-padding tippy-shadow ${className}`}
             arrow={false}
             interactive={interactive || false}
             placement={placement}
             content={getTippyContent()}
-            trigger={trigger || 'mouseover'}
+            trigger={trigger || 'mouseenter'}
             onMount={onTippyMount}
         >
             {children}

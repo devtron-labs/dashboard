@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
 import { AddLinkButton, NoExternalLinksView, NoMatchingResults } from './ExternalLinks.component'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { getAllApps, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
 import {
     ExternalLink,
@@ -26,6 +26,7 @@ import { UserRoleType } from '../userGroups/userGroups.types'
 import './externalLinks.scss'
 
 function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolean; userRole?: UserRoleType }) {
+    const { appId } = useParams<{ appId: string }>()
     const history = useHistory()
     const location = useLocation()
     const { url } = useRouteMatch()
@@ -45,7 +46,12 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
 
     useEffect(() => {
         setLoading(true)
-        Promise.all([getMonitoringTools(), getExternalLinks(), getClusterListMin(), getAllApps()])
+        Promise.all([
+            getMonitoringTools(),
+            isAppConfigView ? getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp) : getExternalLinks(),
+            getClusterListMin(),
+            getAllApps(),
+        ])
             .then(([monitoringToolsRes, externalLinksRes, clustersResp, allAppsResp]) => {
                 setExternalLinks(externalLinksRes.result?.sort(sortByUpdatedOn) || [])
                 setMonitoringTools(
@@ -168,14 +174,16 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
         return (
             <div className="search-filter-wrapper">
                 <SearchInput queryParams={queryParams} history={history} url={url} />
-                {!isAppConfigView && <ClusterFilter
-                    clusters={clusters}
-                    appliedClusters={appliedClusters}
-                    setAppliedClusters={setAppliedClusters}
-                    queryParams={queryParams}
-                    history={history}
-                    url={url}
-                />}
+                {!isAppConfigView && (
+                    <ClusterFilter
+                        clusters={clusters}
+                        appliedClusters={appliedClusters}
+                        setAppliedClusters={setAppliedClusters}
+                        queryParams={queryParams}
+                        history={history}
+                        url={url}
+                    />
+                )}
             </div>
         )
     }
@@ -199,7 +207,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
 
     const renderExternalLinksHeader = (): JSX.Element => {
         return (
-            <div className="external-links__header">
+            <div className={`external-links__header ${isAppConfigView ? 'app-config-view' : ''}`}>
                 <div className="external-links__cell--icon"></div>
                 <div className="external-links__cell--tool__name">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
@@ -207,9 +215,11 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                 <div className="external-links__cell--cluster">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Description</span>
                 </div>
-                <div className="external-links__cell--cluster">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Scope</span>
-                </div>
+                {!isAppConfigView && (
+                    <div className="external-links__cell--cluster">
+                        <span className="external-links__cell-header cn-7 fs-12 fw-6">Scope</span>
+                    </div>
+                )}
                 <div className="external-links__cell--url__template">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Url Template</span>
                 </div>
@@ -223,7 +233,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                 {filteredExternalLinks.map((link, idx) => {
                     return (
                         <Fragment key={`external-link-${idx}`}>
-                            <div className="external-link">
+                            <div className={`external-link ${isAppConfigView ? 'app-config-view' : ''}`}>
                                 <div className="external-links__cell--icon">
                                     <img
                                         src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
@@ -240,9 +250,11 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                                 <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
                                     {link.description || '-'}
                                 </div>
-                                <div className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right">
-                                    {getScopeLabel(link)}
-                                </div>
+                                {!isAppConfigView && (
+                                    <div className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right">
+                                        {getScopeLabel(link)}
+                                    </div>
+                                )}
                                 <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
                                     {link.url}
                                 </div>
@@ -365,6 +377,8 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             {renderExternalLinksContainer()}
             {showAddLinkDialog && (
                 <AddExternalLink
+                    appId={appId}
+                    isAppConfigView={isAppConfigView}
                     handleDialogVisibility={handleDialogVisibility}
                     selectedLink={selectedLink}
                     monitoringTools={monitoringTools}

@@ -80,7 +80,7 @@ export const ClusterFilter = ({
     }
 
     return (
-        <div className="filters-wrapper">
+        <div className="filters-wrapper ml-8">
             <ReactSelect
                 menuIsOpen={isMenuOpen}
                 placeholder="Cluster : All"
@@ -111,6 +111,10 @@ export const ClusterFilter = ({
                         borderRadius: '4px',
                         paddingTop: 0,
                         paddingBottom: 0,
+                    }),
+                    control: (base, state) => ({
+                        ...customMultiSelectStyles.control(base, state),
+                        minHeight: '32px',
                     }),
                 }}
             />
@@ -158,7 +162,7 @@ export const SearchInput = ({ queryParams, history, url }: URLModificationType):
                 name="app_search_input"
                 autoComplete="off"
                 value={searchTerm}
-                placeholder="Search by name or tool name"
+                placeholder="Search"
                 className="search__input bcn-1"
                 onKeyDown={filterExternalLinksUsingSearch}
                 onChange={handleSearchTermChange}

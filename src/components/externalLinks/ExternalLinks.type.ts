@@ -9,6 +9,7 @@ export interface OptionTypeWithIcon {
     value: any
     icon: string
     category?: number
+    description?: string
 }
 
 export interface IdentifierOptionType {
@@ -58,6 +59,7 @@ export interface LinkAction {
 }
 
 export interface ConfigureLinkActionType {
+    isAppConfigView: boolean
     index: number
     link: LinkAction
     showDelete: boolean
@@ -101,6 +103,8 @@ export interface ClusterFilterType extends AppliedClustersType, URLModificationT
 }
 
 export interface AddExternalLinkType {
+    appId: string
+    isAppConfigView: boolean
     monitoringTools: OptionTypeWithIcon[]
     clusters: IdentifierOptionType[]
     allApps: IdentifierOptionType[]

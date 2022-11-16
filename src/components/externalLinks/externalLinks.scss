@@ -68,10 +68,10 @@
             .search-wrapper {
                 display: flex;
                 align-items: center;
-                width: 250px;
+                width: 200px;
                 height: 32px;
                 position: relative;
-                margin-right: 12px;
+                margin-right: 0;
 
                 .search__input {
                     height: 32px;
@@ -176,6 +176,10 @@
                     display: flex;
                 }
             }
+
+            &.app-config-view {
+                grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) minmax(100px, 59%) 56px;
+            }
         }
     }
 
@@ -205,5 +209,9 @@
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         margin-bottom: 1px;
+
+        &.app-config-view {
+            grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) minmax(100px, 59%) 56px;
+        }
     }
 }

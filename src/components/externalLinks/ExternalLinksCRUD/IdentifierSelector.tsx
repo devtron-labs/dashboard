@@ -150,6 +150,7 @@ export default function IdentifierSelector({
     }
     const handleAppChange = (selectedValue): void => {
         handleLinksDataActions('onAppSelection', index, selectedValue)
+        clearIdentifierSearchInput()
     }
 
     const handleCreatableBlur = (event): void => {

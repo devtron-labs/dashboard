@@ -25,6 +25,8 @@ import { OptionType } from '../app/types'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import './externalLinks.component.scss'
+import TippyWhite from '../common/TippyWhite'
+import { ConditionalWrap } from '../common'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -141,6 +143,7 @@ export const AppLevelExternalLinks = ({
                     label: link.name,
                     value: link.url,
                     icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                    description: link.description,
                 })),
             )
         } else {
@@ -150,12 +153,20 @@ export const AppLevelExternalLinks = ({
 
     const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
         return (
-            <Tippy
-                key={`${linkOption.label}-${idx}`}
-                className="default-tt"
-                arrow={false}
-                placement="top"
-                content={`${linkOption.label} (opens in new tab)`}
+            <ConditionalWrap
+                condition={!!linkOption.description}
+                wrap={(children) => (
+                    <TippyWhite
+                        key={`${linkOption.label}-${idx}`}
+                        className="w-300"
+                        placement="top"
+                        iconPath={linkOption.icon}
+                        heading={linkOption.label}
+                        infoText={linkOption.description}
+                    >
+                        {children}
+                    </TippyWhite>
+                )}
             >
                 <a
                     key={linkOption.label}
@@ -166,7 +177,7 @@ export const AppLevelExternalLinks = ({
                     <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
                     <span className="dc__ellipsis-right">{linkOption.label}</span>
                 </a>
-            </Tippy>
+            </ConditionalWrap>
         )
     }
 
@@ -206,10 +217,27 @@ export const NodeLevelExternalLinks = ({
     const details = appDetails || helmAppDetails
 
     const Option = (props: any): JSX.Element => {
+        if (!details) {
+            return null
+        }
+
         const { data } = props
 
         return (
-            <Tippy className="default-tt" arrow={false} placement="left" content={`${data.label} (opens in new tab)`}>
+            <ConditionalWrap
+                condition={!!data.description}
+                wrap={(children) => (
+                    <TippyWhite
+                        className="w-300"
+                        placement="left"
+                        iconPath={data.icon}
+                        heading={data.label}
+                        infoText={data.description}
+                    >
+                        {children}
+                    </TippyWhite>
+                )}
+            >
                 <a
                     key={data.label}
                     href={getParsedURL(false, data.value, details, podName, containerName)}
@@ -219,7 +247,7 @@ export const NodeLevelExternalLinks = ({
                     <img src={data.icon} alt={data.label} onError={onImageLoadError} />
                     <span className="dc__ellipsis-right">{data.label}</span>
                 </a>
-            </Tippy>
+            </ConditionalWrap>
         )
     }
 

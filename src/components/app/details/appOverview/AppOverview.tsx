@@ -10,11 +10,11 @@ import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
-import './AppOverview.scss'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
+import './AppOverview.scss'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -32,7 +32,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         externalLinks: [],
         monitoringTools: [],
     })
-    const [appDetails, setAppDetails] = useState<AppDetails>()
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(appId), [appId])
 
     useEffect(() => {
@@ -142,8 +141,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         <TagIcon className="icon-dim-20 mr-8" />
                         Tags
                     </div>
-                    <div className="flex fs-12 fw-4 lh-16 cn-5 cursor" onClick={toggleTagsUpdateModal}>
-                        <EditIcon className="icon-dim-16 scn-5 mr-4" />
+                    <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
+                        <EditIcon className="icon-dim-16 scn-7 mr-4" />
                         Edit tags
                     </div>
                 </div>
@@ -175,7 +174,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 ) : (
                     <AppLevelExternalLinks
                         isOverviewPage={true}
-                        appDetails={appDetails}
+                        appDetails={
+                            {
+                                appId: +appId,
+                                appName: appMetaInfo?.appName,
+                            } as AppDetails
+                        }
                         externalLinks={externalLinksAndTools.externalLinks}
                         monitoringTools={externalLinksAndTools.monitoringTools}
                     />

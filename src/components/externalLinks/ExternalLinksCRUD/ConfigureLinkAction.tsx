@@ -13,6 +13,7 @@ import TippyWhite from '../../common/TippyWhite'
 import IdentifierSelector from './IdentifierSelector'
 
 export default function ConfigureLinkAction({
+    isAppConfigView,
     index,
     link,
     clusters,
@@ -161,43 +162,47 @@ export default function ConfigureLinkAction({
                         onChange={onDescriptionChange}
                     />
                 </div>
-                <div className="link-scope flex left">
-                    <label className="mr-16">Show link in:</label>
-                    <RadioGroup
-                        className="external-link-scope__radio-group"
-                        value={linkScope}
-                        name={`external-link-scope-${index}`}
-                        onChange={handleLinkScope}
-                    >
-                        <RadioGroupItem value={ExternalLinkScopeType.AppLevel}>
-                            <span
-                                className={`dc__no-text-transform ${
-                                    linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
-                                }`}
-                            >
-                                Specific applications
-                            </span>
-                        </RadioGroupItem>
-                        <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel}>
-                            <span
-                                className={`dc__no-text-transform ${
-                                    linkScope === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
-                                }`}
-                            >
-                                All apps in specific clusters
-                            </span>
-                        </RadioGroupItem>
-                    </RadioGroup>
-                </div>
-                <IdentifierSelector
-                    index={index}
-                    link={link}
-                    selectedIdentifiers={selectedIdentifiers}
-                    clusters={clusters}
-                    allApps={allApps}
-                    handleLinksDataActions={handleLinksDataActions}
-                    getErrorLabel={getErrorLabel}
-                />
+                {!isAppConfigView && (
+                    <div className="link-scope flex left">
+                        <label className="mr-16">Show link in:</label>
+                        <RadioGroup
+                            className="external-link-scope__radio-group"
+                            value={linkScope}
+                            name={`external-link-scope-${index}`}
+                            onChange={handleLinkScope}
+                        >
+                            <RadioGroupItem value={ExternalLinkScopeType.AppLevel}>
+                                <span
+                                    className={`dc__no-text-transform ${
+                                        linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
+                                    }`}
+                                >
+                                    Specific applications
+                                </span>
+                            </RadioGroupItem>
+                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel}>
+                                <span
+                                    className={`dc__no-text-transform ${
+                                        linkScope === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
+                                    }`}
+                                >
+                                    All apps in specific clusters
+                                </span>
+                            </RadioGroupItem>
+                        </RadioGroup>
+                    </div>
+                )}
+                {!isAppConfigView && (
+                    <IdentifierSelector
+                        index={index}
+                        link={link}
+                        selectedIdentifiers={selectedIdentifiers}
+                        clusters={clusters}
+                        allApps={allApps}
+                        handleLinksDataActions={handleLinksDataActions}
+                        getErrorLabel={getErrorLabel}
+                    />
+                )}
                 <div className="link-text-area">
                     <label>URL Template*</label>
                     <textarea
@@ -209,29 +214,31 @@ export default function ConfigureLinkAction({
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
                 </div>
-                <div className="flex left">
-                    <Checkbox
-                        isChecked={link.isEditable}
-                        rootClassName="link-admin-scope mb-0-imp"
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={onEditableFlagToggle}
-                    >
-                        <span className="fs-13 fw-4 lh-20 cn-9">App admins can edit</span>
-                    </Checkbox>
-                    <TippyWhite
-                        className="w-300"
-                        placement="top"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5"
-                        heading="Who can edit this link?"
-                        infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
-                        showCloseButton={true}
-                        trigger="click"
-                        interactive={true}
-                    >
-                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </TippyWhite>
-                </div>
+                {!isAppConfigView && (
+                    <div className="flex left">
+                        <Checkbox
+                            isChecked={link.isEditable}
+                            rootClassName="link-admin-scope mb-0-imp"
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={onEditableFlagToggle}
+                        >
+                            <span className="fs-13 fw-4 lh-20 cn-9">App admins can edit</span>
+                        </Checkbox>
+                        <TippyWhite
+                            className="w-300"
+                            placement="top"
+                            Icon={HelpIcon}
+                            iconClass="fcv-5"
+                            heading="Who can edit this link?"
+                            infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
+                            showCloseButton={true}
+                            trigger="click"
+                            interactive={true}
+                        >
+                            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        </TippyWhite>
+                    </div>
+                )}
             </div>
             {showDelete && (
                 <div className="link-delete cursor">
