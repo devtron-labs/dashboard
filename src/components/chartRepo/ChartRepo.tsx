@@ -134,7 +134,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 required: true,
                 validators: [
                   { error: 'Name is required', regex: /^.*$/ },
-                  { error: 'Minimum 5 characters required', regex: /^.{5,}$/ },
               ]
             },
             url: {
