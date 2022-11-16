@@ -6,7 +6,6 @@
 
     &.error-view {
         min-width: 100%;
-        height: 100%;
     }
 
     .empty-state {
@@ -55,6 +54,7 @@
     .external-links-wrapper {
         max-width: 1200px;
         margin: auto;
+
         .cta-search-filter-container {
             .add-link.cta {
                 height: 32px;
@@ -149,6 +149,7 @@
 
     .external-links {
         min-height: 465px;
+        height: calc(100% - 48px);
         background: #ffffff;
         border: 1px solid var(--N200);
         box-sizing: border-box;

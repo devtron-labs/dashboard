@@ -286,7 +286,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
         const filteredLinksLen = filteredExternalLinks.length
 
         return (
-            <div className="external-links-wrapper">
+            <div className="external-links-wrapper h-100 dc__overflow-hidden">
                 <div className="flex dc__content-space mb-16">
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
                         External links
@@ -320,7 +320,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         url={url}
                     />
                 )}
-                <div className="external-links">
+                <div className="external-links dc__overflow-hidden">
                     {isAPICallInProgress ? (
                         <Progressing pageLoader />
                     ) : (
@@ -332,7 +332,9 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                             {filteredLinksLen > 0 && (
                                 <>
                                     {renderExternalLinksHeader()}
-                                    {renderExternalLinks(filteredLinksLen)}
+                                    <div className="h-100 dc__overflow-scroll">
+                                        {renderExternalLinks(filteredLinksLen)}
+                                    </div>
                                 </>
                             )}
                         </>
@@ -373,7 +375,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
     return isLoading ? (
         <Progressing pageLoader />
     ) : (
-        <div className={`external-links-container ${errorStatusCode > 0 ? 'error-view' : ''}`}>
+        <div className={`external-links-container h-100 ${errorStatusCode > 0 ? 'error-view' : ''}`}>
             {renderExternalLinksContainer()}
             {showAddLinkDialog && (
                 <AddExternalLink

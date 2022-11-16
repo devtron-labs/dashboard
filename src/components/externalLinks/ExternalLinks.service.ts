@@ -13,13 +13,7 @@ export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
     return get(`${Routes.EXTERNAL_LINKS_API}/tools`)
 }
 
-export const getExternalLinks = (
-    clusterId?: number,
-    identifier?: string,
-    type?: ExternalLinkIdentifierType,
-): Promise<ExternalLinkResponse> => {
-    let _url = Routes.EXTERNAL_LINKS_API
-
+const appendQueryParams = (url: string, clusterId?: number, identifier?: string, type?: ExternalLinkIdentifierType) => {
     if (clusterId >= 0 || identifier || type) {
         const queryParams = {
             clusterId: clusterId >= 0 ? `${clusterId}` : '0',
@@ -33,18 +27,37 @@ export const getExternalLinks = (
             }
         }
 
-        _url += `?${new URLSearchParams(queryParams).toString()}`
+        url += `?${new URLSearchParams(queryParams).toString()}`
     }
 
+    return url
+}
+
+export const getExternalLinks = (
+    clusterId?: number,
+    identifier?: string,
+    type?: ExternalLinkIdentifierType,
+): Promise<ExternalLinkResponse> => {
+    const _url = appendQueryParams(Routes.EXTERNAL_LINKS_API, clusterId, identifier, type)
     return get(_url)
 }
 
-export const saveExternalLinks = (request: ExternalLink[], type?: ExternalLinkIdentifierType, identifier?: string): Promise<ExternalLinkUpdateResponse> => {
-    return post(Routes.EXTERNAL_LINKS_API, request)
+export const saveExternalLinks = (
+    request: ExternalLink[],
+    type?: ExternalLinkIdentifierType,
+    identifier?: string,
+): Promise<ExternalLinkUpdateResponse> => {
+    const _url = appendQueryParams(Routes.EXTERNAL_LINKS_API, 0, identifier, type)
+    return post(_url, request)
 }
 
-export const updateExternalLink = (request: ExternalLink): Promise<ExternalLinkUpdateResponse> => {
-    return put(Routes.EXTERNAL_LINKS_API, request)
+export const updateExternalLink = (
+    request: ExternalLink,
+    type?: ExternalLinkIdentifierType,
+    identifier?: string,
+): Promise<ExternalLinkUpdateResponse> => {
+    const _url = appendQueryParams(Routes.EXTERNAL_LINKS_API, 0, identifier, type)
+    return put(_url, request)
 }
 
 export const deleteExternalLink = (externalLinkId: number): Promise<ExternalLinkUpdateResponse> => {

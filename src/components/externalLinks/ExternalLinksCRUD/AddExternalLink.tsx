@@ -380,7 +380,9 @@ export default function AddExternalLink({
                     isEditable: isAppConfigView ? true : link.isEditable,
                 }
 
-                const { result } = await updateExternalLink(payload)
+                const { result } = await (isAppConfigView
+                    ? updateExternalLink(payload, ExternalLinkIdentifierType.DevtronApp, appId)
+                    : updateExternalLink(payload))
 
                 if (result?.success) {
                     toast.success('Updated successfully!')
