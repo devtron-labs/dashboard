@@ -15,7 +15,7 @@ import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
@@ -154,7 +154,7 @@ export default function DeploymentConfig({
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
-            if (selectedChart.name === ROLLOUT_DEPLOYMENT) {
+            if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(defaultAppOverride)
                 parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
             }
@@ -171,7 +171,7 @@ export default function DeploymentConfig({
             toast.error(error)
             return
         }
-        if (selectedChart.name === ROLLOUT_DEPLOYMENT && !yamlMode && !basicFieldValuesErrorObj.isValid) {
+        if ((selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) && !yamlMode && !basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             return
         }
@@ -191,7 +191,7 @@ export default function DeploymentConfig({
                 appId: +appId,
                 chartRefId: selectedChart.id,
                 valuesOverride:
-                    !yamlMode && selectedChart.name === ROLLOUT_DEPLOYMENT
+                    !yamlMode && (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT)
                         ? patchBasicData(obj, basicFieldValues)
                         : obj,
                 defaultAppOverride: template,

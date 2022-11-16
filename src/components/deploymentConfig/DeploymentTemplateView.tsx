@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import ReactSelect, { components } from 'react-select'
-import { DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -145,7 +145,7 @@ export const ChartTypeVersionOptions = ({
     return (
         <div
             className={`chart-type-version-options pr-16 pt-8 pb-8 ${
-                disableVersionSelect || selectedChart?.name !== ROLLOUT_DEPLOYMENT ? '' : 'dc__border-right'
+                disableVersionSelect || selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT ? '' : 'dc__border-right'
             }`}
         >
             <div className="chart-type-options">
@@ -277,7 +277,7 @@ export const DeploymentTemplateOptionsTab = ({
                         selectedChartRefId={selectedChartRefId}
                         disableVersionSelect={disableVersionSelect}
                     />
-                    {selectedChart?.name === ROLLOUT_DEPLOYMENT && (
+                    {(selectedChart?.name === ROLLOUT_DEPLOYMENT || selectedChart?.name! == DEPLOYMENT) && (
                         <RadioGroup
                             className="gui-yaml-switch pl-16"
                             name="yaml-mode"
@@ -722,7 +722,8 @@ export const DeploymentTemplateEditorView = ({
         setBasicFieldValues(_basicFieldValues)
     }
 
-    return yamlMode || selectedChart.name !== ROLLOUT_DEPLOYMENT ? (
+    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT)
+      ? (
         <>
             {showReadme && (
                 <div className="dt-readme dc__border-right">
@@ -1007,87 +1008,88 @@ export const DeploymentConfigFormCTA = ({
     disableButton,
     currentChart,
     toggleAppMetrics,
-    selectedChart
+    selectedChart,
 }: DeploymentConfigFormCTAProps) => {
     const _disabled = disableButton || loading
 
     return (
-         selectedChart &&
-        <div
-            className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
-                showAppMetricsToggle ? 'dc__content-space' : 'right'
-            }`}
-        >
-            {showAppMetricsToggle && (
-                <div className="form-app-metrics-cta flex top left">
-                    {loading ? (
-                        <Progressing
-                            styles={{
-                                width: 'auto',
-                                marginRight: '16px',
-                            }}
-                        />
-                    ) : (
-                        <Checkbox
-                            rootClassName={`mt-2 mr-8 ${!selectedChart.isAppMetricsSupported ? 'dc__o-5' : ''}`}
-                            isChecked={isAppMetricsEnabled}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={toggleAppMetrics}
-                            disabled={disableCheckbox || !selectedChart.isAppMetricsSupported}
-                        />
-                    )}
-                    <div className="flex column left">
-                        <div className="fs-13 mb-4">
-                            <b className="fw-6 cn-9 mr-8">Show application metrics</b>
-                            <a
-                                href={DOCUMENTATION.APP_METRICS}
-                                target="_blank"
-                                className="fw-4 cb-5 dc__underline-onhover"
-                            >
-                                Learn more
-                            </a>
-                        </div>
-                        <div className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}>
-                            {!selectedChart.isAppMetricsSupported
-                                ? `Application metrics is not supported for ${selectedChart.name} version.`
-                                : 'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).'}
+        selectedChart && (
+            <div
+                className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
+                    showAppMetricsToggle ? 'dc__content-space' : 'right'
+                }`}
+            >
+                {showAppMetricsToggle && (
+                    <div className="form-app-metrics-cta flex top left">
+                        {loading ? (
+                            <Progressing
+                                styles={{
+                                    width: 'auto',
+                                    marginRight: '16px',
+                                }}
+                            />
+                        ) : (
+                            <Checkbox
+                                rootClassName={`mt-2 mr-8 ${!selectedChart.isAppMetricsSupported ? 'dc__o-5' : ''}`}
+                                isChecked={isAppMetricsEnabled}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={toggleAppMetrics}
+                                disabled={disableCheckbox || !selectedChart.isAppMetricsSupported}
+                            />
+                        )}
+                        <div className="flex column left">
+                            <div className="fs-13 mb-4">
+                                <b className="fw-6 cn-9 mr-8">Show application metrics</b>
+                                <a
+                                    href={DOCUMENTATION.APP_METRICS}
+                                    target="_blank"
+                                    className="fw-4 cb-5 dc__underline-onhover"
+                                >
+                                    Learn more
+                                </a>
+                            </div>
+                            <div className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}>
+                                {!selectedChart.isAppMetricsSupported
+                                    ? `Application metrics is not supported for ${selectedChart.name} version.`
+                                    : 'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).'}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-            <ConditionalWrap
-                condition={isEnvOverride && disableButton}
-                wrap={(children) => (
-                    <Tippy
-                        className="default-tt w-200"
-                        arrow={false}
-                        placement="top"
-                        content="Base configurations are being inherited for this environment. Allow override to fork and edit."
-                    >
-                        {children}
-                    </Tippy>
                 )}
-            >
-                <button
-                    className={`form-submit-cta cta flex h-36 ${_disabled ? 'disabled' : ''}`}
-                    type={_disabled ? 'button' : 'submit'}
-                >
-                    {loading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            {!isEnvOverride && !isCiPipeline ? (
-                                <>
-                                    Save & Next
-                                    <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
-                                </>
-                            ) : (
-                                'Save changes'
-                            )}
-                        </>
+                <ConditionalWrap
+                    condition={isEnvOverride && disableButton}
+                    wrap={(children) => (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top"
+                            content="Base configurations are being inherited for this environment. Allow override to fork and edit."
+                        >
+                            {children}
+                        </Tippy>
                     )}
-                </button>
-            </ConditionalWrap>
-        </div>
+                >
+                    <button
+                        className={`form-submit-cta cta flex h-36 ${_disabled ? 'disabled' : ''}`}
+                        type={_disabled ? 'button' : 'submit'}
+                    >
+                        {loading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                {!isEnvOverride && !isCiPipeline ? (
+                                    <>
+                                        Save & Next
+                                        <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
+                                    </>
+                                ) : (
+                                    'Save changes'
+                                )}
+                            </>
+                        )}
+                    </button>
+                </ConditionalWrap>
+            </div>
+        )
     )
 }

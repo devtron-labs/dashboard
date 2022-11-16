@@ -1,10 +1,5 @@
 import { DOCUMENTATION } from '../../config'
 
-export const ConfigType = {
-    DEPLOYMENT: 'DEPLOYMENT',
-    CONFIGMAP: 'CONFIGMAP',
-}
-
 export const getCommonSelectStyles = (styleOverrides = {}) => {
     return {
         control: (base, state) => ({
@@ -93,5 +88,5 @@ export const CHART_TYPE_TAB = { devtronChart: 'Charts by Devtron', customCharts:
 export const CHART_DOCUMENTATION_LINK = {
     'Job & CronJob': DOCUMENTATION.JOB_CRONJOB,
     'Rollout Deployment': DOCUMENTATION.ROLLOUT,
+    'Deployment': DOCUMENTATION.DEPLOYMENT
 }
-export const RECOMMENDED_CHART_NAME = 'Deployment'

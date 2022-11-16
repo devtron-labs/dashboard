@@ -3,7 +3,8 @@ import { PopupMenu, RadioGroup, sortObjectArrayAlphabetically, stopPropagation, 
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ChartSelectorModalType, DeploymentChartVersionType } from './types'
 import { SortingOrder } from '../app/types'
-import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS, RECOMMENDED_CHART_NAME } from './constants'
+import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
+import { DEPLOYMENT } from '../../config'
 
 export default function ChartSelectorDropdown({
     charts,
@@ -21,7 +22,6 @@ export default function ChartSelectorDropdown({
         uniqueCustomCharts = new Map<string, boolean>()
     let devtronCharts = [],
         customCharts = []
-
     for (const chart of charts) {
         const chartName = chart.name
         if (chart['userUploaded']) {
@@ -121,7 +121,7 @@ export default function ChartSelectorDropdown({
                                         >
                                             {chart.name}
                                         </span>
-                                        {RECOMMENDED_CHART_NAME === chart.name && (
+                                        {DEPLOYMENT === chart.name && (
                                             <span className="pl-6 pr-6 bw-1 ev-2 br-4 bcv-1 ml-12">Recommended</span>
                                         )}
                                     </div>
