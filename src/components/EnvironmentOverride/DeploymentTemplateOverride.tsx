@@ -619,6 +619,7 @@ function DeploymentTemplateOverrideForm({
                         isAppMetricsEnabled={state.data.appMetrics}
                         currentChart={state.selectedChart}
                         toggleAppMetrics={handleAppMetrics}
+                        isAppMetricsSupported={state.selectedChart && state.selectedChart.isAppMetricsSupported}
                     />
                 )}
             </form>

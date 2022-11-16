@@ -79,6 +79,7 @@ export interface DeploymentChartVersionType {
     version: string
     name: string
     description?: string
+    isAppMetricsSupported: boolean
 }
 
 export type DeploymentChartOptionkind = 'base' | 'env' | 'chartVersion' | 'deployment'
@@ -104,6 +105,7 @@ export interface DeploymentConfigFormCTAProps {
     disableButton?: boolean
     currentChart: DeploymentChartVersionType
     toggleAppMetrics: () => void
+    isAppMetricsSupported: boolean
 }
 
 export interface CompareWithDropdownProps {

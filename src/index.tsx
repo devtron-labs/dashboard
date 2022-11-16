@@ -103,7 +103,7 @@ if (!window || !window._env_) {
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
-        APPLICATION_METRICS_ENABLED: false,
+        APPLICATION_METRICS_ENABLED: true,
         POSTHOG_ENABLED: false,
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,

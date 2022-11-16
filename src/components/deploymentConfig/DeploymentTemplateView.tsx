@@ -1009,6 +1009,7 @@ export const DeploymentConfigFormCTA = ({
     disableButton,
     currentChart,
     toggleAppMetrics,
+    isAppMetricsSupported
 }: DeploymentConfigFormCTAProps) => {
     const isUnSupportedChartVersion =
         showAppMetricsToggle &&
@@ -1053,7 +1054,7 @@ export const DeploymentConfigFormCTA = ({
                         </div>
                         <div className={`fs-13 fw-4 ${isUnSupportedChartVersion ? 'cr-5' : 'cn-7'}`}>
                             {isUnSupportedChartVersion
-                                ? 'Application metrics is not supported for the selected chart version. Select a different chart version.'
+                                ? `Application metrics is not supported for ${isAppMetricsSupported ? 'Knative chart' :  'the selected chart version. Select a different chart version.'}`
                                 : 'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).'}
                         </div>
                     </div>
