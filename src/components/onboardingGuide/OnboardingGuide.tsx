@@ -56,7 +56,7 @@ function OnboardingGuide({
     const handleSkipOnboarding = () => {
         const updatedPayload = {
             key: POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON,
-            value: true,
+            value: 'true',
         }
         updateLoginCount(updatedPayload)
     }
