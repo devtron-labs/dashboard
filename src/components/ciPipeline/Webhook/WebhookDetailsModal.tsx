@@ -147,7 +147,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
                     _webhookDetails.projectName,
-                    _webhookDetails.environmentName,
+                    _webhookDetails.environmentIdentifier,
                     _webhookDetails.appName,
                 )
                 const sortedResult =
