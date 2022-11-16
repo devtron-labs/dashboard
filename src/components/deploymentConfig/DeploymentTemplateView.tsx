@@ -7,7 +7,6 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     ConditionalWrap,
-    isVersionLessThanOrEqualToTarget,
     Progressing,
     RadioGroup,
     showError,
@@ -15,7 +14,6 @@ import {
     versionComparator,
 } from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
-import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as Arrows } from '../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -1009,15 +1007,12 @@ export const DeploymentConfigFormCTA = ({
     disableButton,
     currentChart,
     toggleAppMetrics,
-    isAppMetricsSupported
+    selectedChart
 }: DeploymentConfigFormCTAProps) => {
-    const isUnSupportedChartVersion =
-        showAppMetricsToggle &&
-        currentChart.name === ROLLOUT_DEPLOYMENT &&
-        isVersionLessThanOrEqualToTarget(currentChart.version, [3, 7, 0])
     const _disabled = disableButton || loading
 
     return (
+         selectedChart &&
         <div
             className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
                 showAppMetricsToggle ? 'dc__content-space' : 'right'
@@ -1034,11 +1029,11 @@ export const DeploymentConfigFormCTA = ({
                         />
                     ) : (
                         <Checkbox
-                            rootClassName="mt-2 mr-8"
+                            rootClassName={`mt-2 mr-8 ${!selectedChart.isAppMetricsSupported ? 'dc__o-5' : ''}`}
                             isChecked={isAppMetricsEnabled}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={toggleAppMetrics}
-                            disabled={disableCheckbox || isUnSupportedChartVersion}
+                            disabled={disableCheckbox || !selectedChart.isAppMetricsSupported}
                         />
                     )}
                     <div className="flex column left">
@@ -1052,9 +1047,9 @@ export const DeploymentConfigFormCTA = ({
                                 Learn more
                             </a>
                         </div>
-                        <div className={`fs-13 fw-4 ${isUnSupportedChartVersion ? 'cr-5' : 'cn-7'}`}>
-                            {isUnSupportedChartVersion
-                                ? `Application metrics is not supported for ${isAppMetricsSupported ? 'Knative chart' :  'the selected chart version. Select a different chart version.'}`
+                        <div className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}>
+                            {!selectedChart.isAppMetricsSupported
+                                ? `Application metrics is not supported for ${selectedChart.name} version.`
                                 : 'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).'}
                         </div>
                     </div>

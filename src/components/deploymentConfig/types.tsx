@@ -105,7 +105,7 @@ export interface DeploymentConfigFormCTAProps {
     disableButton?: boolean
     currentChart: DeploymentChartVersionType
     toggleAppMetrics: () => void
-    isAppMetricsSupported: boolean
+    selectedChart: DeploymentChartVersionType,
 }
 
 export interface CompareWithDropdownProps {

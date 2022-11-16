@@ -286,7 +286,6 @@ export default function DeploymentConfig({
 
     return (
         <div className={`app-compose__deployment-config ${openComparison || showReadme ? 'full-view' : 'h-100'}`}>
-       {   console.log(selectedChart)}
             <form
                 action=""
                 className={`white-card__deployment-config p-0 bcn-0 h-100 ${openComparison ? 'comparison-view' : ''}`}
@@ -349,7 +348,7 @@ export default function DeploymentConfig({
                         isCiPipeline={isCiPipeline}
                         currentChart={selectedChart}
                         toggleAppMetrics={toggleAppMetrics}
-                        isAppMetricsSupported={selectedChart && selectedChart.isAppMetricsSupported}
+                        selectedChart={selectedChart}
                     />
                 )}
             </form>
