@@ -54,13 +54,11 @@ function OnboardingGuide({
     }
 
     const handleSkipOnboarding = () => {
-        if (loginCount === 1) {
-            const updatedPayload = {
-                key: POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON,
-                value: true,
-            }
-            updateLoginCount(updatedPayload)
+        const updatedPayload = {
+            key: POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON,
+            value: true,
         }
+        updateLoginCount(updatedPayload)
     }
 
     return (
