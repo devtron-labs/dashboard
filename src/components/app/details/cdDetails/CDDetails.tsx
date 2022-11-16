@@ -292,7 +292,7 @@ export default function CDDetails() {
     )
 }
 
-export const triggerStatus = (triggerDetailStatus) => {
+export const triggerStatus = (triggerDetailStatus: string): string => {
     if(triggerDetailStatus === 'Aborted' || triggerDetailStatus === 'Degraded') {
         return 'Failed'
     }else if (triggerDetailStatus === 'Healthy') {

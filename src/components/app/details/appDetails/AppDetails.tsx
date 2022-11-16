@@ -449,7 +449,7 @@ export const Details: React.FC<{
                           />
                     )}
                     <Switch>
-                        <Route exact path={`${path}/status`}>
+                        <Route exact path={`${path}${URLS.DEPLOYMENT_STATUS}`}>
                             <DeploymentStatusDetailModal
                                 appName={appDetails.appName}
                                 environmentName={appDetails.environmentName}

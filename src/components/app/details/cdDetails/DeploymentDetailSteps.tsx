@@ -59,7 +59,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     }, [])
 
     const redirectToDeploymentStatus = () => {
-        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/status`
+        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}${URLS.DEPLOYMENT_STATUS}`
         history.push(newUrl)
     }
 
@@ -86,7 +86,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
             />
         </div>
     ) : (
-        <div className="dc__mxw-1000 mw-800">
+        <div className="dc__mxw-1000 min-w-800">
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 streamData={null}
