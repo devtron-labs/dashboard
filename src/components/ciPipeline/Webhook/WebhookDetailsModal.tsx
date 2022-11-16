@@ -188,7 +188,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         {
                             entity: EntityTypes.DIRECT,
                             entityName: webhookDetails.appName,
-                            environment: webhookDetails.environmentName,
+                            environment: webhookDetails.environmentIdentifier,
                             team: webhookDetails.projectName,
                             action: ActionTypes.TRIGGER,
                             accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
