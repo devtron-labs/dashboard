@@ -11,7 +11,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
             <>
                 Tip:
                 <a
-                    className="dc__link-n9"
+                    className="dc__link"
                     href={DEVTRON_NODE_DEPLOY_VIDEO}
                     rel="noreferrer noopener"
                     target="_blank"
