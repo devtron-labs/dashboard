@@ -40,7 +40,7 @@ import {
     UpdateApplicationButton,
     AppNameInput,
     ErrorScreenWithInfo,
-    ValueNameInput,
+    ValueNameInput, DeploymentAppSelector,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -108,7 +108,7 @@ function ChartValuesView({
                   }
                 : chartValuesFromParent,
             installedConfigFromParent,
-            chartVersionsDataFromParent,
+            chartVersionsDataFromParent
         ),
     )
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
@@ -710,6 +710,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
+                    deploymentAppType: commonState.deploymentAppType
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -1045,6 +1046,14 @@ function ChartValuesView({
         }
     }
 
+    const handleDeploymentAppTypeSelection = (event) => {
+        dispatch({
+            type: ChartValuesViewActionTypes.selectedDeploymentApp,
+            payload: event.target.value
+        })
+
+    }
+
     const handleVersionSelection = (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
         dispatch({
             type: ChartValuesViewActionTypes.multipleOptions,
@@ -1230,7 +1239,18 @@ function ChartValuesView({
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
-                        )}
+
+                        )
+                        }
+                        {
+                            (isDeployChartView) && (
+                                <DeploymentAppSelector
+                                    commonState={commonState}
+                                    isUpdate={isUpdate}
+                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                />
+                            )
+                        }
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {!isDeployChartView && (
                             <ChartRepoSelector

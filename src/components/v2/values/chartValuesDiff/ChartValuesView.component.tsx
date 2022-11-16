@@ -27,7 +27,7 @@ import {
     ChartValuesViewActionTypes,
     ChartValuesViewAction,
     ValueNameInputType,
-    AppNameInputType,
+    AppNameInputType, DeploymentAppSelectorType, DeploymentAppType,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -39,6 +39,7 @@ import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
+import {RadioGroup, RadioGroupItem} from "../../../common/formFields/RadioGroup";
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -83,6 +84,33 @@ export const ChartEnvironmentSelector = ({
                 options={environments}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
+        </div>
+
+    )
+}
+
+export const DeploymentAppSelector = ({
+    commonState,
+    isUpdate,
+    handleDeploymentAppTypeSelection
+
+}: DeploymentAppSelectorType): JSX.Element =>{
+    return (
+        <div className="form__row form__row--w-100 fw-4">
+            <div className="form__row">
+                <label className="form__label form__label--sentence dc__bold">
+                    How do you want to deploy?
+                </label>
+                <RadioGroup
+                    value={commonState.deploymentAppType}
+                    name="DeploymentAppTypeGroup"
+                    onChange={handleDeploymentAppTypeSelection}
+                    disabled={isUpdate}
+                >
+                    <RadioGroupItem value={DeploymentAppType.helm}> Helm </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppType.gitops}> GitOps </RadioGroupItem>
+                </RadioGroup>
+            </div>
         </div>
     )
 }

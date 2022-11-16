@@ -64,6 +64,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [projects, setProjects] = useState([])
     const [loading, setLoading] = useState(false);
     const [selectedVersion, selectVersion] = useState(appStoreVersion)
+    const [deploymentAppType, setDeploymentAppType] = useState("")
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
     const [selectedProject, selectProject] = useState<{ label: string; value: number }>()
     const [chartVersionsData, setChartVersionsData] = useState<{ version: string, id: number }[]>([]);
@@ -208,6 +209,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
                     clusterId: selectedEnvironment.clusterId,
                     namespace: selectedEnvironment.namespace,
+                    deploymentAppType: deploymentAppType,
                     appStoreVersion: selectedVersion,
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
@@ -563,6 +565,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 }
                             </div>
                         }
+
+
                         <div className="form__row form__row--flex form__row--w-100">
                             {
                                 isUpdate === null ?
