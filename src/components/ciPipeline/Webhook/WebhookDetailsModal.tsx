@@ -187,7 +187,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     roleFilters: [
                         {
                             entity: EntityTypes.DIRECT,
-                            entityName: webhookDetails.projectName,
+                            entityName: webhookDetails.appName,
                             environment: webhookDetails.environmentName,
                             team: webhookDetails.projectName,
                             action: ActionTypes.TRIGGER,
