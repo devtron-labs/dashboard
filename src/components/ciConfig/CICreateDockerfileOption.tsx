@@ -90,8 +90,8 @@ export default function CICreateDockerfileOption({
             if (
                 currentCIBuildConfig.dockerBuildConfig.language &&
                 _selectedLanguage.value === currentCIBuildConfig.dockerBuildConfig.language &&
-                currentCIBuildConfig.dockerBuildConfig.languageFramework &&
-                _selectedFramework.value === currentCIBuildConfig.dockerBuildConfig.languageFramework
+                (!currentCIBuildConfig.dockerBuildConfig.languageFramework ||
+                    _selectedFramework.value === currentCIBuildConfig.dockerBuildConfig.languageFramework)
             ) {
                 setTemplateData({
                     ...templateData,
@@ -378,6 +378,7 @@ export default function CICreateDockerfileOption({
                     }
                     value={editorValue || editorData?.data}
                     mode={MODES.DOCKERFILE}
+                    noParsing={true}
                     height="300px"
                     readOnly={configOverrideView && !allowOverride}
                     onChange={handleEditorValueChange}

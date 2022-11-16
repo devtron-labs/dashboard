@@ -11,9 +11,7 @@ import {
     Progressing,
     RadioGroup,
     showError,
-    sortObjectArrayAlphabetically,
     Toggle,
-    useScrollable,
     versionComparator,
 } from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
@@ -48,6 +46,7 @@ import { BASIC_FIELDS, getCommonSelectStyles } from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
+import ChartSelectorDropdown from './ChartSelectorDropdown'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -126,79 +125,20 @@ const getComparisonTippyContent = (isComparisonAvailable: boolean, isEnvOverride
     )
 }
 
-const ChartMenuList = (props) => {
-    return (
-        <components.MenuList {...props}>
-            {props.children}
-            <NavLink
-                to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor dc__bottom-radius-4"
-                target="_blank"
-                rel="noreferrer noopener"
-            >
-                <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom upload-icon-stroke" />
-                Upload custom chart
-            </NavLink>
-        </components.MenuList>
-    )
-}
-
 export const ChartTypeVersionOptions = ({
     isUnSet,
     disableVersionSelect,
     charts,
+    chartsMetadata,
     selectedChart,
     selectChart,
     selectedChartRefId,
 }: ChartTypeVersionOptionsProps) => {
-    const uniqueChartsByDevtron = new Map<string, boolean>(),
-        uniqueCustomCharts = new Map<string, boolean>()
-    let devtronCharts = [],
-        customCharts = []
-
-    for (let chart of charts) {
-        const chartName = chart.name
-        if (chart['userUploaded']) {
-            if (!uniqueCustomCharts.get(chartName)) {
-                uniqueCustomCharts.set(chartName, true)
-                customCharts.push(chart)
-            }
-        } else if (!uniqueChartsByDevtron.get(chartName)) {
-            uniqueChartsByDevtron.set(chartName, true)
-            devtronCharts.push(chart)
-        }
-    }
-    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
-    customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
-
-    const groupedChartOptions = [
-        {
-            label: 'Charts by Devtron',
-            options: devtronCharts,
-        },
-        {
-            label: 'Custom charts',
-            options: customCharts.length === 0 ? [{ name: 'No options' }] : customCharts,
-        },
-    ]
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
               .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
         : []
-
-    const onSelectChartType = (selected) => {
-        const filteredCharts = charts.filter((chart) => chart.name == selected.name)
-        const selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
-        if (selectedChart) {
-            selectChart(selectedChart)
-        } else {
-            const sortedFilteredCharts = filteredCharts.sort((a, b) =>
-                versionComparator(a, b, 'version', SortingOrder.DESC),
-            )
-            selectChart(sortedFilteredCharts[sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0])
-        }
-    }
 
     const onSelectChartVersion = (selected) => {
         selectChart(selected)
@@ -212,40 +152,14 @@ export const ChartTypeVersionOptions = ({
         >
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
-                {isUnSet ? (
-                    <ReactSelect
-                        options={groupedChartOptions}
-                        isMulti={false}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.name}`}
-                        value={selectedChart}
-                        classNamePrefix="chart_select"
-                        isOptionDisabled={(option) => !option.id}
-                        isSearchable={false}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                            MenuList: ChartMenuList,
-                        }}
-                        styles={getCommonSelectStyles({
-                            menu: (base, state) => ({
-                                ...base,
-                                margin: '0',
-                                width: '250px',
-                            }),
-                            menuList: (base) => ({
-                                ...base,
-                                position: 'relative',
-                                paddingBottom: '0px',
-                                maxHeight: '250px',
-                            }),
-                        })}
-                        onChange={onSelectChartType}
-                    />
-                ) : (
-                    <span className="fs-13 fw-6 cn-9">{selectedChart?.name}</span>
-                )}
+                <ChartSelectorDropdown
+                    charts={charts}
+                    chartsMetadata={chartsMetadata}
+                    selectedChartRefId={selectedChartRefId}
+                    selectChart={selectChart}
+                    selectedChart={selectedChart}
+                    isUnSet={isUnSet}
+                />
             </div>
             <div className="chart-version-options">
                 <span className="fs-13 fw-4 cn-9">Chart version:</span>
@@ -341,6 +255,7 @@ export const DeploymentTemplateOptionsTab = ({
     handleReadMeClick,
     isUnSet,
     charts,
+    chartsMetadata,
     selectedChart,
     selectChart,
     selectedChartRefId,
@@ -358,6 +273,7 @@ export const DeploymentTemplateOptionsTab = ({
                     <ChartTypeVersionOptions
                         isUnSet={isUnSet}
                         charts={charts}
+                        chartsMetadata={chartsMetadata}
                         selectedChart={selectedChart}
                         selectChart={selectChart}
                         selectedChartRefId={selectedChartRefId}
