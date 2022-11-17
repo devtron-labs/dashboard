@@ -416,10 +416,13 @@ export default function AddExternalLink({
                 }
             }
 
-            const { result } = await (isAppConfigView
-                ? getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
-                : getExternalLinks())
-            setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+            if (isAppConfigView) {
+                const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+                setExternalLinks(result?.filter((_link) => _link.isEditable).sort(sortByUpdatedOn) || [])
+            } else {
+                const { result } = await getExternalLinks()
+                setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+            }
             setSavingLinks(false)
             handleDialogVisibility()
         } catch (e) {

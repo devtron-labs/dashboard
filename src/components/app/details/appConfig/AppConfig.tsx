@@ -485,7 +485,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline, canShowExternalLinks }:
                 if (item.stage === 'EXTERNAL_LINKS') {
                     return (
                         canShowExternalLinks && (
-                            <div>
+                            <div key={item.stage}>
                                 {item.stage === 'EXTERNAL_LINKS' && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
                                 {renderNavItem(item)}
                             </div>

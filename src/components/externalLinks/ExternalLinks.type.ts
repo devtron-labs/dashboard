@@ -115,6 +115,8 @@ export interface AddExternalLinkType {
 }
 
 export interface DeleteExternalLinkType {
+    appId: string
+    isAppConfigView: boolean
     selectedLink: ExternalLink
     isAPICallInProgress: boolean
     setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>

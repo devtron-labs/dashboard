@@ -45,55 +45,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
 
     useEffect(() => {
-        setLoading(true)
-        Promise.all([
-            getMonitoringTools(),
-            isAppConfigView ? getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp) : getExternalLinks(),
-            getClusterListMin(),
-            getAllApps(),
-        ])
-            .then(([monitoringToolsRes, externalLinksRes, clustersResp, allAppsResp]) => {
-                setExternalLinks(
-                    (isAppConfigView
-                        ? externalLinksRes.result?.filter((_link) => _link.isEditable)
-                        : externalLinksRes.result
-                    )?.sort(sortByUpdatedOn) || [],
-                )
-                setMonitoringTools(
-                    monitoringToolsRes.result
-                        ?.map((tool) => ({
-                            label: tool.name,
-                            value: tool.id,
-                            icon: tool.icon,
-                            category: tool.category,
-                        }))
-                        .sort(sortOptionsByValue) || [],
-                )
-                setClusters(
-                    clustersResp.result
-                        ?.map((cluster) => ({
-                            label: cluster.cluster_name,
-                            value: `${cluster.id}`,
-                            type: ExternalLinkIdentifierType.Cluster,
-                        }))
-                        .sort(sortOptionsByLabel) || [],
-                )
-                setAllApps(
-                    allAppsResp.result
-                        ?.map((_app) => ({
-                            label: _app.appName,
-                            value: `${_app.appId}|${_app.appName}|${_app.type}`,
-                            type: _app.type as ExternalLinkIdentifierType,
-                        }))
-                        .sort(sortOptionsByLabel) || [],
-                )
-                setLoading(false)
-            })
-            .catch((e) => {
-                showError(e)
-                setErrorStatusCode(e.code)
-                setLoading(false)
-            })
+        initExternalLinksData()
     }, [])
 
     useEffect(() => {
@@ -129,6 +81,65 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             }
         }
     }, [location.search, externalLinks])
+
+    const initExternalLinksData = () => {
+        setLoading(true)
+        const allPromises = [getMonitoringTools(), getClusterListMin()]
+
+        if (isAppConfigView) {
+            allPromises.push(getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp))
+        } else {
+            allPromises.push(getExternalLinks())
+            allPromises.push(getAllApps())
+        }
+
+        Promise.all(allPromises)
+            .then(([monitoringToolsRes, clustersResp, externalLinksRes, allAppsResp]) => {
+                setExternalLinks(
+                    (isAppConfigView
+                        ? externalLinksRes.result?.filter((_link) => _link.isEditable)
+                        : externalLinksRes.result
+                    )?.sort(sortByUpdatedOn) || [],
+                )
+                setMonitoringTools(
+                    monitoringToolsRes.result
+                        ?.map((tool) => ({
+                            label: tool.name,
+                            value: tool.id,
+                            icon: tool.icon,
+                            category: tool.category,
+                        }))
+                        .sort(sortOptionsByValue) || [],
+                )
+                setClusters(
+                    clustersResp.result
+                        ?.map((cluster) => ({
+                            label: cluster.cluster_name,
+                            value: `${cluster.id}`,
+                            type: ExternalLinkIdentifierType.Cluster,
+                        }))
+                        .sort(sortOptionsByLabel) || [],
+                )
+
+                if (!isAppConfigView) {
+                    setAllApps(
+                        allAppsResp.result
+                            ?.map((_app) => ({
+                                label: _app.appName,
+                                value: `${_app.appId}|${_app.appName}|${_app.type}`,
+                                type: _app.type as ExternalLinkIdentifierType,
+                            }))
+                            .sort(sortOptionsByLabel) || [],
+                    )
+                }
+                setLoading(false)
+            })
+            .catch((e) => {
+                showError(e)
+                setErrorStatusCode(e.code)
+                setLoading(false)
+            })
+    }
 
     const filterByClusterIds = (_appliedClustersIds: string[]): ExternalLink[] => {
         /**
@@ -405,6 +416,8 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             )}
             {showDeleteDialog && selectedLink && (
                 <DeleteExternalLinkDialog
+                    appId={appId}
+                    isAppConfigView={isAppConfigView}
                     selectedLink={selectedLink}
                     isAPICallInProgress={isAPICallInProgress}
                     setAPICallInProgress={setAPICallInProgress}

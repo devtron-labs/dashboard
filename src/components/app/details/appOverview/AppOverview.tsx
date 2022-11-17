@@ -205,7 +205,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         </div>
                         <div className="env-deployments-info-body">
                             {otherEnvsResult.result.map((_env) => (
-                                <div className="env-deployments-info-row display-grid dc__align-items-center">
+                                <div
+                                    key={`${_env.environmentName}-${_env.environmentId}`}
+                                    className="env-deployments-info-row display-grid dc__align-items-center"
+                                >
                                     <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}>
                                         {_env.environmentName}
                                     </Link>

@@ -157,10 +157,10 @@ export const AppLevelExternalLinks = ({
     const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
         return (
             <ConditionalWrap
+                key={`${linkOption.label}-${idx}`}
                 condition={!!linkOption.description}
                 wrap={(children) => (
                     <TippyWhite
-                        key={`${linkOption.label}-${idx}`}
                         className="w-300"
                         placement={isOverviewPage ? 'bottom' : 'top'}
                         iconPath={linkOption.icon}
