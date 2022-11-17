@@ -103,7 +103,7 @@ function ChartHeaderComponent() {
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
-                        activeClassName="active fcb-5"
+                        activeClassName="active"
                         to={`${match.url}/${URLS.APP_VALUES}`}
                         className="tab-list__tab-link flex"
                         onClick={(event) => {
