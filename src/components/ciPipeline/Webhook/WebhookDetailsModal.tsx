@@ -57,7 +57,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [samplePayload, setSamplePayload] = useState<any>(null)
     const [modifiedSamplePayload, setModifiedSamplePayload] = useState<any>(null)
-    const [modifiedSampleString, setModifiedSampleString] = useState<string>(null)
+    const [modifiedSampleString, setModifiedSampleString] = useState<string>('')
     const [sampleJSON, setSampleJSON] = useState(null)
     const [sampleCURL, setSampleCURL] = useState<any>(null)
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
@@ -139,10 +139,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setModifiedSamplePayload(_modifiedPayload)
             setModifiedSampleString(modifiedJSONString)
             setSampleJSON(modifiedJSONString)
+            //creating sample curl by replacing the actuall wehook url and appending sample data
             setSampleCURL(
-                CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl)
-                    .replace('{webhookURL}', _webhookDetails.webhookUrl)
-                    .replace('{data}', modifiedJSONString),
+                CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
             )
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
@@ -654,7 +653,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
         setModifiedSampleString(_modifiedJSONString)
         setSampleJSON(_modifiedJSONString)
-        setSampleCURL(CURL_PREFIX.replace('{data}', _modifiedJSONString))
+        setSampleCURL(CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', _modifiedJSONString))
     }
 
     const renderMetadata = (): JSX.Element => {
