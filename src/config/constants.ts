@@ -276,7 +276,7 @@ export const DOCUMENTATION = {
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
-    DEPLOYMENT: ``
+    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/deployment-template`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
