@@ -590,8 +590,8 @@ export default function DevtronStackManager({
                                         title={'Integration installation status'}
                                         appStatusText={
                                             selectedModule.installationStatus == ModuleStatus.INSTALLING
-                                                ? 'Installing integration'
-                                                : 'Integration installation timed out'
+                                                ? 'Installing'
+                                                : 'Timeout'
                                         }
                                         appStatus={
                                             selectedModule.installationStatus == ModuleStatus.INSTALLING
