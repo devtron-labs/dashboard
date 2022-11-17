@@ -162,7 +162,7 @@ export const AppLevelExternalLinks = ({
                     <TippyWhite
                         key={`${linkOption.label}-${idx}`}
                         className="w-300"
-                        placement="top"
+                        placement={isOverviewPage ? 'bottom' : 'top'}
                         iconPath={linkOption.icon}
                         heading={linkOption.label}
                         infoText={linkOption.description}

@@ -53,7 +53,12 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             getAllApps(),
         ])
             .then(([monitoringToolsRes, externalLinksRes, clustersResp, allAppsResp]) => {
-                setExternalLinks(externalLinksRes.result?.sort(sortByUpdatedOn) || [])
+                setExternalLinks(
+                    (isAppConfigView
+                        ? externalLinksRes.result?.filter((_link) => _link.isEditable)
+                        : externalLinksRes.result
+                    )?.sort(sortByUpdatedOn) || [],
+                )
                 setMonitoringTools(
                     monitoringToolsRes.result
                         ?.map((tool) => ({

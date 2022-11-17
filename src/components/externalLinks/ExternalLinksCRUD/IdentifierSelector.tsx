@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactSelect, { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { tempMultiSelectStyles } from '../../ciConfig/CIConfig.utils'
-import {
-    Checkbox,
-    CHECKBOX_VALUE,
-    ClearIndicator,
-    MultiValueRemove,
-    noop,
-    Option,
-} from '../../common'
+import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop, Option } from '../../common'
 import { formatOptionLabelClusters, ValueContainer } from '../ExternalLinks.component'
 import {
     ExternalLinkIdentifierType,
@@ -74,7 +67,7 @@ export default function IdentifierSelector({
                 {identifierSearchInput ? (
                     <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
                         <AddIcon className="icon-dim-16 fcb-5 mr-8" />
-                        <span className="fs-13 fw-4 lh-20 cb-5">External helm app ‘apache-chart’</span>
+                        <span className="fs-13 fw-4 lh-20 cb-5">External helm app ‘{identifierSearchInput}’</span>
                     </div>
                 ) : (
                     <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
