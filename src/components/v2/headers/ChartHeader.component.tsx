@@ -23,7 +23,7 @@ function ChartHeaderComponent() {
         const newUrl = generatePath(path, { appId: selected.installedAppId, envId: selected.environmentId })
         history.push(newUrl)
     }
-console.log(match)
+
     function getInstalledCharts(queryString: string) {
         let url = `${Routes.CHART_INSTALLED}`
         if (queryString) {
@@ -113,7 +113,7 @@ console.log(match)
                             })
                         }}
                     >
-                        <Settings className={`tab-list__icon icon-dim-16 fcn-7 mr-4`} />
+                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
                         Configure
                     </NavLink>
                 </li>
