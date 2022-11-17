@@ -382,7 +382,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox dc__break-word">
+                <div className="fs-13 font-roboto flexbox dc__word-break-word">
                     {token}
                     <Tippy
                         className="default-tt"
@@ -498,7 +498,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__break-word">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break-word">
                 {showCopyOption && (
                     <Tippy
                         className="default-tt font-open-sans"
