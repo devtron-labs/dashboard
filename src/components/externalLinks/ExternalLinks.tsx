@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
-import { AddLinkButton, NoExternalLinksView, NoMatchingResults } from './ExternalLinks.component'
+import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { getAllApps, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
 import {
@@ -320,7 +320,11 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         url={url}
                     />
                 )}
-                <div className="external-links dc__overflow-hidden">
+                <div
+                    className={`external-links dc__overflow-hidden ${
+                        isAppConfigView ? 'app-config-view__listing' : ''
+                    }`}
+                >
                     {isAPICallInProgress ? (
                         <Progressing pageLoader />
                     ) : (
@@ -340,6 +344,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         </>
                     )}
                 </div>
+                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView={true} />}
             </div>
         )
     }

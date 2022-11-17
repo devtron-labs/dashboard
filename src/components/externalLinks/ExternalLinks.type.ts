@@ -2,6 +2,7 @@ import React from 'react'
 import { ResponseType } from '../../services/service.types'
 import { AppDetails, OptionType } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
+import { UserRoleType } from '../userGroups/userGroups.types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
 
 export interface OptionTypeWithIcon {
@@ -167,4 +168,9 @@ export interface GetAllAppType {
 
 export interface GetAllAppResponseType extends ResponseType {
     result?: GetAllAppType[]
+}
+
+export interface RoleBasedInfoNoteProps {
+    userRole: UserRoleType
+    listingView?: boolean
 }

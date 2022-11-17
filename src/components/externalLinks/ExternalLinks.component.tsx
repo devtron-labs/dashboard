@@ -11,6 +11,7 @@ import {
     ExternalLink,
     NodeLevelExternalLinksType,
     OptionTypeWithIcon,
+    RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import Tippy from '@tippyjs/react'
@@ -75,24 +76,26 @@ export const NoExternalLinksView = ({
             <EmptyState.Button>
                 <AddLinkButton handleOnClick={handleAddLinkClick} />
             </EmptyState.Button>
-            {isAppConfigView && (
-                <InfoColourBar
-                    message={
-                        userRole === UserRoleType.SuperAdmin
-                            ? 'Only links editable by application admins are shown here. To check all configured links,'
-                            : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
-                    }
-                    classname="info_bar dc__mxw-300 fs-12 pl-12 pr-12 m-20"
-                    Icon={InfoIcon}
-                    iconClass="h-20"
-                    linkText={
-                        userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'
-                    }
-                    internalLink={true}
-                    redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-                />
-            )}
+            {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
         </EmptyState>
+    )
+}
+
+export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
+    return (
+        <InfoColourBar
+            message={
+                userRole === UserRoleType.SuperAdmin
+                    ? 'Only links editable by application admins are shown here. To check all configured links,'
+                    : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
+            }
+            classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-16' : 'dc__mxw-300 m-20'}`}
+            Icon={InfoIcon}
+            iconClass="h-20"
+            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
+            internalLink={true}
+            redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+        />
     )
 }
 

@@ -155,6 +155,10 @@
         box-sizing: border-box;
         border-radius: 8px;
 
+        &.app-config-view__listing {
+            height: calc(100% - 110px);
+        }
+
         .empty-state {
             height: 465px !important;
         }
