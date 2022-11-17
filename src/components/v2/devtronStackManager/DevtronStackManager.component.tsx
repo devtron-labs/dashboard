@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {NavLink, RouteComponentProps, useHistory, useLocation} from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     InstallationType,
     InstallationWrapperType,
@@ -8,31 +8,38 @@ import {
     ModuleDetailsViewType,
     ModuleInstallationStatusType,
     ModuleListingViewType,
-    ModuleResourceStatus,
     ModuleStatus,
     StackManagerNavItemType,
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
 } from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
-import {ReactComponent as DiscoverIcon} from '../../../assets/icons/ic-compass.svg'
-import {ReactComponent as InstalledIcon} from '../../../assets/icons/ic-check.svg'
-import {ReactComponent as ErrorIcon} from '../../../assets/icons/ic-error-exclamation.svg'
-import {ReactComponent as InstallIcon} from '../../../assets/icons/ic-arrow-forward.svg'
-import {ReactComponent as RetryInstallIcon} from '../../../assets/icons/ic-arrow-clockwise.svg'
-import {ReactComponent as SuccessIcon} from '../../../assets/icons/appstatus/healthy.svg'
-import {ReactComponent as UpToDateIcon} from '../../../assets/icons/ic-celebration.svg'
-import {ReactComponent as Chat} from '../../../assets/icons/ic-chat-circle-dots.svg'
-import {ReactComponent as Info} from '../../../assets/icons/info-filled.svg'
-import {ReactComponent as Warning} from '../../../assets/icons/ic-warning.svg'
-import {ReactComponent as Note} from '../../../assets/icons/ic-note.svg'
-import {ReactComponent as CloseIcon} from '../../../assets/icons/ic-close.svg'
-import {Checkbox, CHECKBOX_VALUE, ConditionalWrap, Progressing, showError, ToastBody, VisibleModal,} from '../../common'
+import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
+import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
+import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as InstallIcon } from '../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as RetryInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
+import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/healthy.svg'
+import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
+import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
+import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
+import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    ConditionalWrap,
+    Progressing,
+    showError,
+    ToastBody,
+    VisibleModal,
+} from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import {DOCUMENTATION, ModuleNameMap, URLS} from '../../../config'
+import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 import {
     AboutSection,
     DEVTRON_UPGRADE_MESSAGE,
@@ -44,13 +51,10 @@ import {
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
-import {MarkDown} from '../../charts/discoverChartDetail/DiscoverChartDetails'
+import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
-import AppStatusDetailModal from "../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal";
-import {AppDetails, AppType} from "../appDetails/appDetails.type";
-import IndexStore from "../appDetails/index.store";
 
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
@@ -307,48 +311,14 @@ const InstallationStatus = ({
     latestVersionAvailable,
     isCICDModule,
     moduleDetails,
-    showResourceStatusModal,
     setShowResourceStatusModal,
 }: ModuleInstallationStatusType): JSX.Element => {
+    const openCheckResourceStatusModal = (e) => {
+        e.stopPropagation()
 
-    function buildResourceStatusModalData(moduleResourcesStatus : ModuleResourceStatus[]) : any {
-        let _nodes = []
-        let _resources = []
-        moduleResourcesStatus?.forEach((moduleResourceStatus) => {
-            let _resource  = {
-                group : moduleResourceStatus.group,
-                version: moduleResourceStatus.version,
-                kind : moduleResourceStatus.kind,
-                name: moduleResourceStatus.name,
-                health : {
-                    status : moduleResourceStatus.healthStatus,
-                    message: moduleResourceStatus.healthMessage,
-                },
-            }
-            _nodes.push(_resource);
-            _resources.push(_resource);
-        })
-        let _appStreamData = {
-            result : {
-                application : {
-                    status : {
-                        operationState : {
-                            syncResult : {
-                                resources : _resources,
-                            }
-                        }
-                    }
-                }
-            }
+        if (setShowResourceStatusModal) {
+            setShowResourceStatusModal(true)
         }
-        let _appDetail : AppDetails = JSON.parse(JSON.stringify({
-            resourceTree : {
-                nodes : _nodes,
-                status : "INTEGRATION_INSTALLING",
-            }
-        }));
-        IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-        return _appStreamData
     }
 
     return (
@@ -395,24 +365,15 @@ const InstallationStatus = ({
                           }`}
                 </div>
             )}
-            {
-                (!isCICDModule && moduleDetails && (installationStatus == ModuleStatus.INSTALLING ||  installationStatus === ModuleStatus.TIMEOUT)) &&
-                <>
-                    <a className="mt-8 dc__no-decor fs-13 fw-6 cursor" onClick={() => setShowResourceStatusModal(true)}>Check resource status</a>
-                    {showResourceStatusModal && (
-                        <AppStatusDetailModal
-                            close={() => {
-                                setShowResourceStatusModal(false)
-                            }}
-                            appStreamData={buildResourceStatusModalData(moduleDetails.moduleResourcesStatus)}
-                            showAppStatusMessage={true}
-                            title={"Integration installation status"}
-                            appStatusText={installationStatus == ModuleStatus.INSTALLING ? 'Installing integration' : 'Integration installation timed out'}
-                            appStatus={installationStatus == ModuleStatus.INSTALLING ? 'progressing' : 'degraded'}
-                        />
-                    )}
-                </>
-            }
+            {!isCICDModule &&
+                moduleDetails &&
+                (installationStatus == ModuleStatus.INSTALLING || installationStatus === ModuleStatus.TIMEOUT) && (
+                    <>
+                        <a className="mt-8 dc__no-decor fs-13 fw-6 cursor" onClick={openCheckResourceStatusModal}>
+                            Check resource status
+                        </a>
+                    </>
+                )}
             {appName &&
                 installationStatus !== ModuleStatus.NOT_INSTALLED &&
                 installationStatus !== ModuleStatus.INSTALLED &&
@@ -516,7 +477,6 @@ export const InstallationWrapper = ({
     setShowPreRequisiteConfirmationModal,
     preRequisiteChecked,
     setPreRequisiteChecked,
-    showResourceStatusModal,
     setShowResourceStatusModal,
 }: InstallationWrapperType): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
@@ -766,7 +726,6 @@ export const InstallationWrapper = ({
                                 latestVersionAvailable={latestVersionAvailable}
                                 isCICDModule={moduleName === ModuleNameMap.CICD}
                                 moduleDetails={moduleDetails}
-                                showResourceStatusModal={showResourceStatusModal}
                                 setShowResourceStatusModal={setShowResourceStatusModal}
                             />
                         )}
@@ -802,7 +761,6 @@ export const ModuleDetailsView = ({
     handleActionTrigger,
     history,
     location,
-    showResourceStatusModal,
     setShowResourceStatusModal,
 }: ModuleDetailsViewType): JSX.Element | null => {
     const queryParams = new URLSearchParams(location.search)
@@ -846,7 +804,6 @@ export const ModuleDetailsView = ({
                     updateActionTrigger={(isActionTriggered) =>
                         handleActionTrigger(`moduleAction-${moduleDetails.name?.toLowerCase()}`, isActionTriggered)
                     }
-                    showResourceStatusModal={showResourceStatusModal}
                     setShowResourceStatusModal={setShowResourceStatusModal}
                 />
             </div>

@@ -1,6 +1,6 @@
-import React, {Suspense, useCallback, useContext, useEffect, useRef, useState} from 'react'
-import {Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation} from 'react-router-dom'
-import {ModuleNameMap, SERVER_MODE, URLS} from '../../../config'
+import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
+import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import {
     ErrorBoundary,
     ErrorScreenManager,
@@ -17,22 +17,26 @@ import {
     NavItem,
     StackPageHeader,
 } from './DevtronStackManager.component'
-import {getAllModules, getLogPodName, getModuleInfo, getReleasesNotes} from './DevtronStackManager.service'
+import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
 import {
     AllModuleInfoResponse,
     InstallationType,
     LogPodNameResponse,
     ModuleDetails,
     ModuleInfo,
+    ModuleResourceStatus,
     ModuleStatus,
     ReleaseNotesResponse,
     ServerInfo,
     StackDetailsType,
 } from './DevtronStackManager.type'
-import {mainContext} from '../../common/navigation/NavigationRoutes'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
-import {getVersionConfig, isGitopsConfigured} from '../../../services/service'
-import {toast} from 'react-toastify'
+import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
+import { toast } from 'react-toastify'
+import IndexStore from '../appDetails/index.store'
+import { AppDetails, AppType } from '../appDetails/appDetails.type'
+import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -359,6 +363,52 @@ export default function DevtronStackManager({
             })
     }
 
+    const closeCheckResourceStatusModal = () => {
+        setShowResourceStatusModal(false)
+    }
+
+    const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
+        const _nodes = []
+        const _resources = []
+        moduleResourcesStatus?.forEach((moduleResourceStatus) => {
+            const _resource = {
+                group: moduleResourceStatus.group,
+                version: moduleResourceStatus.version,
+                kind: moduleResourceStatus.kind,
+                name: moduleResourceStatus.name,
+                health: {
+                    status: moduleResourceStatus.healthStatus,
+                    message: moduleResourceStatus.healthMessage,
+                },
+            }
+            _nodes.push(_resource)
+            _resources.push(_resource)
+        })
+        const _appStreamData = {
+            result: {
+                application: {
+                    status: {
+                        operationState: {
+                            syncResult: {
+                                resources: _resources,
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        const _appDetail: AppDetails = JSON.parse(
+            JSON.stringify({
+                resourceTree: {
+                    nodes: _nodes,
+                    status: 'INTEGRATION_INSTALLING',
+                },
+            }),
+        )
+        IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
+        return _appStreamData
+    }
+
     /**
      * This is to handle the module selection
      */
@@ -414,7 +464,6 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
-                        showResourceStatusModal={showResourceStatusModal}
                         setShowResourceStatusModal={setShowResourceStatusModal}
                     />
                 </Route>
@@ -430,7 +479,6 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
-                        showResourceStatusModal={showResourceStatusModal}
                         setShowResourceStatusModal={setShowResourceStatusModal}
                     />
                 </Route>
@@ -532,6 +580,26 @@ export default function DevtronStackManager({
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body />
+                                {showResourceStatusModal && selectedModule && (
+                                    <AppStatusDetailModal
+                                        close={closeCheckResourceStatusModal}
+                                        appStreamData={buildResourceStatusModalData(
+                                            selectedModule.moduleResourcesStatus,
+                                        )}
+                                        showAppStatusMessage={true}
+                                        title={'Integration installation status'}
+                                        appStatusText={
+                                            selectedModule.installationStatus == ModuleStatus.INSTALLING
+                                                ? 'Installing integration'
+                                                : 'Integration installation timed out'
+                                        }
+                                        appStatus={
+                                            selectedModule.installationStatus == ModuleStatus.INSTALLING
+                                                ? 'progressing'
+                                                : 'degraded'
+                                        }
+                                    />
+                                )}
                             </ErrorBoundary>
                         </Suspense>
                     </section>
