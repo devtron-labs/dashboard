@@ -357,6 +357,7 @@ export interface AppStatusDetailType {
     close: () => void
     appStreamData: any
     showAppStatusMessage?: boolean
+    title? : string
 }
 
 export interface StatusFilterButtonType {

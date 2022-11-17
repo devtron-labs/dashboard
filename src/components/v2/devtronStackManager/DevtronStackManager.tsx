@@ -1,13 +1,13 @@
-import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
-import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
+import React, {Suspense, useCallback, useContext, useEffect, useRef, useState} from 'react'
+import {Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation} from 'react-router-dom'
+import {ModuleNameMap, SERVER_MODE, URLS} from '../../../config'
 import {
     ErrorBoundary,
     ErrorScreenManager,
     Progressing,
     showError,
-    useInterval,
     ToastBody3 as UpdateToast,
+    useInterval,
 } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
@@ -17,7 +17,7 @@ import {
     NavItem,
     StackPageHeader,
 } from './DevtronStackManager.component'
-import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
+import {getAllModules, getLogPodName, getModuleInfo, getReleasesNotes} from './DevtronStackManager.service'
 import {
     AllModuleInfoResponse,
     InstallationType,
@@ -29,10 +29,10 @@ import {
     ServerInfo,
     StackDetailsType,
 } from './DevtronStackManager.type'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
+import {mainContext} from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
-import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
-import { toast } from 'react-toastify'
+import {getVersionConfig, isGitopsConfigured} from '../../../services/service'
+import {toast} from 'react-toastify'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -67,6 +67,7 @@ export default function DevtronStackManager({
 
     const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)
     const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
+    const [showResourceStatusModal, setShowResourceStatusModal] = useState(false)
     useEffect(() => {
         getModuleDetails()
         getCurrentServerInfo()
@@ -203,6 +204,7 @@ export default function DevtronStackManager({
                     const currentModule = {
                         ..._stackDetails.discoverModulesList[currentModuleIndex],
                         installationStatus: result.status,
+                        moduleResourcesStatus: result.moduleResourcesStatus,
                     }
                     setSelectedModule({
                         ...currentModule,
@@ -282,6 +284,7 @@ export default function DevtronStackManager({
                         const _moduleDetails: ModuleDetails = {
                             ...currentModule,
                             installationStatus: result?.status,
+                            moduleResourcesStatus: result?.moduleResourcesStatus,
                         }
 
                         /**
@@ -411,6 +414,8 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
+                        showResourceStatusModal={showResourceStatusModal}
+                        setShowResourceStatusModal={setShowResourceStatusModal}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -425,6 +430,8 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
+                        showResourceStatusModal={showResourceStatusModal}
+                        setShowResourceStatusModal={setShowResourceStatusModal}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>

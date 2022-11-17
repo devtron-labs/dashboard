@@ -112,7 +112,7 @@ if (!window || !window._env_) {
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
-        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        CENTRAL_API_ENDPOINT: 'https://api.devtron.ai',
         HIDE_DEPLOYMENT_GROUPS: true
     }
 }

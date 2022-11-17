@@ -28,7 +28,7 @@ const STATUS_SORTING_ORDER = {
     [NodeStatus.Healthy]: 4,
 }
 
-function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: AppStatusDetailType) {
+function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage, title }: AppStatusDetailType) {
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
@@ -145,7 +145,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
             <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
                 <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
                     <div>
-                        <div className="title cn-9 fs-16 fw-6 mb-4">App status detail</div>
+                        <div className="title cn-9 fs-16 fw-6 mb-4">{title ? title : "App status detail"}</div>
                         <div
                             className={`subtitle app-summary__status-name fw-6 fs-13 f-${_appDetails.resourceTree.status.toLowerCase()} mr-16`}
                         >
