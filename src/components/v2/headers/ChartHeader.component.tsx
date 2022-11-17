@@ -9,20 +9,21 @@ import { get } from '../../../services/api'
 import { handleUTCTime } from '../../common'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import PageHeader from '../../common/header/PageHeader'
-
+import '../../app/details/app.css'
 function ChartHeaderComponent() {
     const match = useRouteMatch()
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string; appName: string }>()
-    const { path } = useRouteMatch()
+    const { path, url } = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
     function handleBreadcrumbChartChange(selected) {
         const newUrl = generatePath(path, { appId: selected.installedAppId, envId: selected.environmentId })
         history.push(newUrl)
     }
-
+console.log(match)
     function getInstalledCharts(queryString: string) {
         let url = `${Routes.CHART_INSTALLED}`
         if (queryString) {
@@ -102,9 +103,9 @@ function ChartHeaderComponent() {
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
-                        activeClassName="active"
+                        activeClassName="active fcb-5"
                         to={`${match.url}/${URLS.APP_VALUES}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
@@ -112,7 +113,8 @@ function ChartHeaderComponent() {
                             })
                         }}
                     >
-                        Values
+                        <Settings className={`tab-list__icon icon-dim-16 fcn-7 mr-4`} />
+                        Configure
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
