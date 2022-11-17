@@ -11,7 +11,7 @@ import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import PageHeader from '../../common/header/PageHeader'
-import '../../app/details/app.css'
+
 function ChartHeaderComponent() {
     const match = useRouteMatch()
     const history = useHistory()
