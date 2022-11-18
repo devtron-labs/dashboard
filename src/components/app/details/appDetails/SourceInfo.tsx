@@ -159,9 +159,7 @@ export function SourceInfo({
                                             {message && (
                                                 <span className="select-material-message">{message.slice(0, 30)}</span>
                                             )}
-                                            {message?.length > 30 && (
-                                                <span className="more-message cb-5 fw-6">Details</span>
-                                            )}
+                                                <span className={`${message?.length > 30 ? 'more-message': ''} cb-5 fw-6`}>Details</span>
                                         </>
                                     )}
                                 </div>

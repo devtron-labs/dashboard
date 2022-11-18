@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
-import { APP_STATUS_HEADERS, Moment12HourFormat, TIMELINE_STATUS } from '../../../../config'
+import { APP_STATUS_HEADERS, DEPLOYMENT_STATUS, Moment12HourFormat, TIMELINE_STATUS } from '../../../../config'
 import { showError } from '../../../common'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { AppStatusDetailsChart } from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import { getManualSync } from '../../service'
 import { AppStreamData } from '../../types'
-import { DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
+import { DeploymentStatusDetailRowType, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
@@ -16,22 +16,21 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 
-export function RenderStatusDetailRow({
+export function DeploymentStatusDetailRow({
     type,
     hideVerticalConnector,
     deploymentDetailedData,
     streamData,
-}: {
-    type: string
-    hideVerticalConnector?: boolean
-    deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
-    streamData?: AppStreamData
-}) {
+}: DeploymentStatusDetailRowType) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [collapsed, toggleCollapsed] = useState<boolean>(
         deploymentDetailedData.deploymentStatusBreakdown[type].isCollapsed,
     )
-    const appHealthDropDownlist = ['inprogress', 'unable_to_fetch', 'timed_out']
+    const appHealthDropDownlist = ['inprogress', 'failed', 'disconnect', 'timed_out']
+
+    useEffect(() => {
+        toggleCollapsed(deploymentDetailedData.deploymentStatusBreakdown[type].isCollapsed)
+    }, [deploymentDetailedData.deploymentStatusBreakdown[type].isCollapsed])
 
     async function manualSyncData() {
         try {
@@ -41,13 +40,13 @@ export function RenderStatusDetailRow({
         }
     }
 
-    const collapseToggler = () => {
+    const toggleDropdown = () => {
         toggleCollapsed(!collapsed)
     }
 
     const renderDetailedData = () => {
         return !collapsed ? (
-            <div className="bcn-0 en-2 detail-tab_border">
+            <div className="bcn-0 en-2 detail-tab_border bw-1">
                 {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus && (
                     <div
                         className={`flex left pt-8 pl-12 pb-8 lh-20 ${
@@ -57,8 +56,8 @@ export function RenderStatusDetailRow({
                         }`}
                     >
                         {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus}
-                        {(deploymentDetailedData.deploymentStatus === 'timed_out' ||
-                            deploymentDetailedData.deploymentStatus === 'unable_to_fetch') && (
+                        {(deploymentDetailedData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
+                            deploymentDetailedData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) && (
                             <span className="cb-5 fw-6 ml-8 cursor" onClick={manualSyncData}>
                                 Try now
                             </span>
@@ -68,14 +67,14 @@ export function RenderStatusDetailRow({
                 {type === TIMELINE_STATUS.KUBECTL_APPLY && (
                     <div className="pr-8 pl-8 pt-12 pb-12">
                         <div className="">
-                            {deploymentDetailedData.deploymentStatusBreakdown[TIMELINE_STATUS.KUBECTL_APPLY].kubeList?.map(
-                                (items) => (
-                                    <div className="flex left lh-20 mb-8">
-                                        {renderIcon(items.icon)}
-                                        <span className="ml-12">{items.message}</span>
-                                    </div>
-                                ),
-                            )}
+                            {deploymentDetailedData.deploymentStatusBreakdown[
+                                TIMELINE_STATUS.KUBECTL_APPLY
+                            ].kubeList?.map((items) => (
+                                <div className="flex left lh-20 mb-8">
+                                    {renderIcon(items.icon)}
+                                    <span className="ml-12">{items.message}</span>
+                                </div>
+                            ))}
                         </div>
                         {deploymentDetailedData.deploymentStatusBreakdown[type].resourceDetails?.length ? (
                             <div className="pl-32">
@@ -120,7 +119,7 @@ export function RenderStatusDetailRow({
     const renderDetailChart = () => {
         return (
             !collapsed && (
-                <div className="bcn-0 en-2 detail-tab_border">
+                <div className="bcn-0 en-2 detail-tab_border bw-1">
                     {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus && (
                         <div
                             className={`flex left pt-8 pl-12 pb-8 lh-20 ${
@@ -130,8 +129,8 @@ export function RenderStatusDetailRow({
                             }`}
                         >
                             {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus}
-                            {(deploymentDetailedData.deploymentStatus === 'timed_out' ||
-                                deploymentDetailedData.deploymentStatus === 'unable_to_fetch') && (
+                            {(deploymentDetailedData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
+                                deploymentDetailedData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) && (
                                 <span className="cb-5 fw-6 ml-8 cursor" onClick={manualSyncData}>
                                     Try now
                                 </span>
@@ -166,14 +165,17 @@ export function RenderStatusDetailRow({
                 return <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`}></div>
             case 'disconnect':
                 return <Disconnect className="icon-dim-20" />
+            case 'time_out':
+                return <Timer className="icon-dim-20 scr-5 timer-icon" />
             default:
                 return <Timer className="icon-dim-20 timer-icon" />
         }
     }
+
     return (
         <>
             <div
-                className={`deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 ${
+                className={`deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 ${
                     collapsed ? 'br-4' : 'border-collapse'
                 } en-2`}
             >
@@ -201,15 +203,13 @@ export function RenderStatusDetailRow({
                 {((type === TIMELINE_STATUS.KUBECTL_APPLY &&
                     deploymentDetailedData.deploymentStatusBreakdown[type].kubeList?.length) ||
                     (type === TIMELINE_STATUS.APP_HEALTH &&
-                    appHealthDropDownlist.includes(
-                            deploymentDetailedData.deploymentStatus,
-                        )) ||
+                        appHealthDropDownlist.includes(deploymentDetailedData.deploymentStatusBreakdown[type].icon)) ||
                     (type === TIMELINE_STATUS.GIT_COMMIT &&
                         deploymentDetailedData.deploymentStatusBreakdown[type].icon === 'failed')) && (
                     <DropDownIcon
                         style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
                         className="icon-dim-24 rotate pointer"
-                        onClick={collapseToggler}
+                        onClick={toggleDropdown}
                     />
                 )}
             </div>

@@ -14,7 +14,7 @@ import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusTyp
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
 import moment from 'moment';
-import { TIMELINE_STATUS } from '../../../../config';
+import { DEPLOYMENT_STATUS, TIMELINE_STATUS } from '../../../../config';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
@@ -423,7 +423,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
   }
 
   const lastFetchedTime = handleUTCTime(data?.statusLastFetchedAt,true)
-  const phases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
+  const deploymentPhases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
   let tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
       currentPhase: '',
       currentTableData: [{ icon: 'success', message: 'Started by Argo CD' }],
@@ -432,11 +432,11 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
   if (data?.timelines?.length) {
       for (let index = data.timelines.length - 1; index >= 0; index--) {
           const element = data.timelines[index]
-          if (element['status'] === TIMELINE_STATUS.APP_HEALTHY || element['status'] === TIMELINE_STATUS.DEGRADED) {
-              deploymentData.deploymentStatus = 'succeeded'
+          if (element['status'] === TIMELINE_STATUS.HEALTHY || element['status'] === TIMELINE_STATUS.DEGRADED) {
+              deploymentData.deploymentStatus = DEPLOYMENT_STATUS.SUCCEEDED
               deploymentData.deploymentStatusText = 'Succeeded'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText =
-                  element['status'] === TIMELINE_STATUS.APP_HEALTHY ? ': Healthy' : ': Degraded'
+                  element['status'] === TIMELINE_STATUS.HEALTHY ? ': Healthy' : ': Degraded'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
               deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
@@ -444,24 +444,24 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = true
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
           } else if (element['status'] === TIMELINE_STATUS.DEPLOYMENT_FAILED) {
-              deploymentData.deploymentStatus = 'failed'
+              deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
               deploymentData.deploymentStatusText = 'Failed'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
               deploymentData.deploymentError = element['statusDetail']
           }  else if (element['status'] === TIMELINE_STATUS.DEPLOYMENT_SUPERSEDED) {
-            deploymentData.deploymentStatus = 'superseded'
+            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.SUPERSEDED
         } else if ( index === data.timelines.length - 1 && (element['status'] === TIMELINE_STATUS.FETCH_TIMED_OUT || element['status'] === TIMELINE_STATUS.UNABLE_TO_FETCH_STATUS)){
             if(element['status'] === TIMELINE_STATUS.FETCH_TIMED_OUT) {
-                deploymentData.deploymentStatus = 'timed_out'
+                deploymentData.deploymentStatus = DEPLOYMENT_STATUS.TIMED_OUT
                 deploymentData.deploymentStatusText = 'Timed out'
             } else if(element['status'] === TIMELINE_STATUS.UNABLE_TO_FETCH_STATUS) {
-                deploymentData.deploymentStatus = 'unable_to_fetch'
+                deploymentData.deploymentStatus = DEPLOYMENT_STATUS.UNABLE_TO_FETCH
                 deploymentData.deploymentStatusText = 'Unable to fetch status'
             }
             deploymentData.deploymentError = `Below resources did not become healthy within 10 mins. Resource status shown below was last fetched ${lastFetchedTime}. ${data.statusFetchCount} retries failed.`
           } else if (element['status'].includes(TIMELINE_STATUS.KUBECTL_APPLY)) {
               if(element?.resourceDetails){
-                phases.forEach((phase) => {
+                deploymentPhases.forEach((phase) => {
                     for(let item of element.resourceDetails){
                         if(phase === item.resourcePhase){
                             tableData.currentPhase = phase
@@ -477,18 +477,18 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               if (
                   element['status'] === TIMELINE_STATUS.KUBECTL_APPLY_STARTED &&
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
-                  deploymentData.deploymentStatus !== 'Succeeded'
+                  deploymentData.deploymentStatus !== DEPLOYMENT_STATUS.SUCCEEDED
               ) {
                 deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = element.resourceDetails.filter((item) => item.resourcePhase ===  tableData.currentPhase)//// check this condition
-                  if (deploymentData.deploymentStatus === 'failed') {
+                  if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
-                  } else if (deploymentData.deploymentStatus === 'succeeded') {
+                  } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED) {
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
-                } else if (deploymentData.deploymentStatus === 'timed_out') {
+                } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT) {
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
@@ -499,7 +499,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                             message: item.message
                         }
                       })
-                }  else if (deploymentData.deploymentStatus === 'unable_to_fetch') {
+                }  else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) {
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'disconnect'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = deploymentData.deploymentError
@@ -533,18 +533,18 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData
                   
 
-                  if (deploymentData.deploymentStatus === 'inprogress') {
+                  if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = false
-                  } else if(deploymentData.deploymentStatus  === 'failed'){
+                  } else if(deploymentData.deploymentStatus  === DEPLOYMENT_STATUS.FAILED){
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'failed'
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
-                  } else if (deploymentData.deploymentStatus === 'timed_out') {
-                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = ''
+                  } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT) {
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'timed_out'
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.timelineStatus = deploymentData.deploymentError
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = false
-                } else if (deploymentData.deploymentStatus === 'unable_to_fetch') {
+                } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) {
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'disconnect'
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.timelineStatus = deploymentData.deploymentError
@@ -559,12 +559,12 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
                   deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.isCollapsed = false
-                  deploymentData.deploymentStatus = 'failed'
+                  deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
                   deploymentData.deploymentStatusText = 'Failed'
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.timelineStatus = element['statusDetail']
               } else {
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
-                  if (deploymentData.deploymentStatus === 'failed') {
+                  if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
@@ -573,7 +573,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   } else 
                   if (
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
-                      deploymentData.deploymentStatus === 'inprogress'
+                      deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
                   ) {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = ''
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = [
@@ -587,11 +587,11 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['statusTime']
               if (
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === '' &&
-                  deploymentData.deploymentStatus === 'inprogress'
+                  deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
               ) {
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'inprogress'
               }
-              if (deploymentData.deploymentStatus === 'failed') {
+              if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                 if(deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === ''){
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ''
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'unreachable'

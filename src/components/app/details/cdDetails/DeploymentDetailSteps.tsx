@@ -72,7 +72,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         </div>
     ) : deploymentListLoader ? (
         <Progressing pageLoader />
-    ) : deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed === false ? (
+    ) : !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
         <div className="h-100 flex">
             <CDEmptyState
                 title="Deployment in progress"

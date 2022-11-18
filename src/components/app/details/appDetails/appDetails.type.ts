@@ -121,3 +121,10 @@ export interface ModuleConfigResponse extends ResponseType {
   }
 }
 
+export interface DeploymentStatusDetailRowType {
+    type: string
+    hideVerticalConnector?: boolean
+    deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
+    streamData?: AppStreamData
+}
+

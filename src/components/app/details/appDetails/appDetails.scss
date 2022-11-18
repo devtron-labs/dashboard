@@ -1799,7 +1799,7 @@ table.resource-tree {
     &.f-failed,
     &.f-timed_out,
     &.f-unable_to_fetch {
-        color: var(--red);
+        color:  var(--R500);
     }
   }
   .timer-icon{
@@ -1811,7 +1811,7 @@ table.resource-tree {
 
 .deployment-status-breakdown-container {
   .vertical-connector{
-    border-left: 1px solid var(--N200);
+    border-left: 1px solid var(--N300);
     height: 15px;
     position: relative;
     left: 18px;
@@ -1865,4 +1865,8 @@ table.resource-tree {
     border-radius: 0 0 4px 4px;
     border-top: 0;
   }
+}
+
+.deployment-status-breakdown {
+    height: calc(100vh - 70px);
 }

@@ -6,7 +6,7 @@ import '../../../../components/v2/appDetails/sourceInfo/environmentStatus/enviro
 import { useRouteMatch } from 'react-router-dom'
 import ErrorBar from '../../../common/error/ErrorBar'
 import IndexStore from '../../../v2/appDetails/index.store'
-import { RenderStatusDetailRow } from './RenderStatusDetailRow'
+import { DeploymentStatusDetailRow } from './DeploymentStatusDetailRow'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
@@ -14,33 +14,41 @@ export default function DeploymentStatusDetailBreakdown({
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
     const { url } = useRouteMatch()
-    
-    return (<>
-        {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
-        <div className="deployment-status-breakdown-container pl-20 pr-20 pt-20 pb-20">
-            <RenderStatusDetailRow
-                type={TIMELINE_STATUS.DEPLOYMENT_INITIATED}
-                deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-            />
-            <ErrorInfoStatusBar
-                type={TIMELINE_STATUS.GIT_COMMIT}
-                nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
-                errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
-            />
-            <RenderStatusDetailRow type={TIMELINE_STATUS.GIT_COMMIT} deploymentDetailedData={deploymentStatusDetailsBreakdownData} />
-            <ErrorInfoStatusBar
-                type={TIMELINE_STATUS.KUBECTL_APPLY}
-                nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
-                errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
-            />
-            <RenderStatusDetailRow type={TIMELINE_STATUS.KUBECTL_APPLY}deploymentDetailedData={deploymentStatusDetailsBreakdownData} />
-            <RenderStatusDetailRow
-                type={TIMELINE_STATUS.APP_HEALTH}
-                hideVerticalConnector={true}
-                deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                streamData={streamData}
-            />
-        </div></>
+
+    return (
+        <>
+            {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
+            <div className="deployment-status-breakdown-container pl-20 pr-20 pt-20 pb-20">
+                <DeploymentStatusDetailRow
+                    type={TIMELINE_STATUS.DEPLOYMENT_INITIATED}
+                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                />
+                <ErrorInfoStatusBar
+                    type={TIMELINE_STATUS.GIT_COMMIT}
+                    nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
+                    errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
+                />
+                <DeploymentStatusDetailRow
+                    type={TIMELINE_STATUS.GIT_COMMIT}
+                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                />
+                <ErrorInfoStatusBar
+                    type={TIMELINE_STATUS.KUBECTL_APPLY}
+                    nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
+                    errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
+                />
+                <DeploymentStatusDetailRow
+                    type={TIMELINE_STATUS.KUBECTL_APPLY}
+                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                />
+                <DeploymentStatusDetailRow
+                    type={TIMELINE_STATUS.APP_HEALTH}
+                    hideVerticalConnector={true}
+                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                    streamData={streamData}
+                />
+            </div>
+        </>
     )
 }
 

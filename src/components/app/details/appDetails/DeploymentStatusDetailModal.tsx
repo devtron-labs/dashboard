@@ -67,7 +67,6 @@ export default function DeploymentStatusDetailModal({
                                 >
                                     {deploymentStatusDetailsBreakdownData.deploymentStatusText}
                                 </span>
-                                <span className="dc__bullet mr-8 ml-8 mt-10"></span>
                             </div>
                         </div>
                         <span className="cursor" onClick={close}>
@@ -75,7 +74,7 @@ export default function DeploymentStatusDetailModal({
                         </span>
                     </div>
                 </div>
-                <div style={{ height: 'calc(100vh - 70px)' }} className="bcn-1 dc__overflow-scroll pb-20">
+                <div className="bcn-1 dc__overflow-scroll pb-20 deployment-status-breakdown">
                     <DeploymentStatusDetailBreakdown
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         streamData={streamData}
