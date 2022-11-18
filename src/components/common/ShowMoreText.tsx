@@ -7,9 +7,7 @@ export function ShowMoreText({ text }) {
 
     useEffect(() => {
         if (ellipsisText.current?.offsetHeight && ellipsisText.current?.scrollHeight) {
-            if (
-                ellipsisText.current.offsetHeight === ellipsisText.current?.scrollHeight
-            ) {
+            if (ellipsisText.current.offsetHeight === ellipsisText.current?.scrollHeight) {
                 setShowToggle(false)
             } else {
                 setShowToggle(true)
@@ -22,7 +20,7 @@ export function ShowMoreText({ text }) {
     }
 
     return (
-        <div style={{ minWidth: '385px' }}>
+        <div className="min-w-385">
             <span ref={ellipsisText} className={`${showAllText ? '' : 'dc__truncate '}`}>
                 {text}
             </span>
