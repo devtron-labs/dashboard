@@ -346,7 +346,6 @@ export default function DeploymentConfig({
                         }
                         isAppMetricsEnabled={isAppMetricsEnabled}
                         isCiPipeline={isCiPipeline}
-                        currentChart={selectedChart}
                         toggleAppMetrics={toggleAppMetrics}
                         selectedChart={selectedChart}
                     />
