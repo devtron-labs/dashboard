@@ -75,6 +75,7 @@ export const customMultiSelectStyles = {
         backgroundColor: 'var(--N50)',
         justifyContent: 'flex-start',
         cursor: 'pointer',
+        boxShadow: 'none',
     }),
     valueContainer: (base) => ({
         ...base,
@@ -95,8 +96,7 @@ export const customMultiSelectStyles = {
 
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
     return (
-        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] ||
-        WebpageIcon
+        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] || WebpageIcon
     )
 }
 
