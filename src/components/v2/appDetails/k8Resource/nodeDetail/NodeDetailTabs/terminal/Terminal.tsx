@@ -17,6 +17,7 @@ import { ServerErrors } from '../../../../../../../modals/commonTypes';
 let socket = undefined;
 let terminal = undefined;
 let fitAddon = undefined;
+let clustertimeOut = undefined;
 
 function TerminalView(terminalViewProps: TerminalViewProps) {
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>();
@@ -138,6 +139,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const reconnect = () => {
         terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING);
+        
         terminal?.reset();
 
         setTimeout(() => {
@@ -147,12 +149,18 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
-            if (socket) {
+            if(terminalViewProps.stopterminalConnection){
+                terminalViewProps.stopterminalConnection()
+            }
+            else if (socket) {
                 socket.close();
                 socket = undefined;
             }
         }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
+            if(clustertimeOut){
+                clearTimeout(clustertimeOut)
+            }
             getNewSession();
         }
     }, [terminalViewProps.socketConnection,terminalViewProps.terminalId]);
@@ -164,7 +172,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         });
 
-        reconnect();
+        if(!terminalViewProps.clusterTerminal){
+            reconnect();
+        }else{
+            terminal?.reset();
+        }
     }, [terminalViewProps.nodeName]);
 
     useEffect(() => {
@@ -174,7 +186,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         });
 
-        reconnect();
+        if(!terminalViewProps.clusterTerminal){
+            reconnect();
+        }else{
+            terminal?.reset();
+        }
     }, [terminalViewProps.containerName]);
 
     useEffect(() => {
@@ -184,7 +200,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         });
 
-        reconnect();
+        if(!terminalViewProps.clusterTerminal){
+            reconnect();
+        }else{
+            terminal?.reset();
+        }
     }, [terminalViewProps.shell]);
 
     useEffect(() => {
@@ -230,7 +250,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             socket = undefined;
             terminal = undefined;
             fitAddon = undefined;
-
+            clearTimeout(clustertimeOut);
+            
             let duration = moment(ga_session_duration).fromNow();
 
             ReactGA.event({
@@ -254,7 +275,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             .then((response: any) => {
                 let sessionId = response.result.userTerminalSessionId
                 if(!sessionId && count){
-                    setTimeout(() => {
+                    clustertimeOut = setTimeout(() => {
                         getClusterData(url,count-1)},3000)
                 }else{
                     if (!terminal) {

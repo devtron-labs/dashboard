@@ -16,7 +16,7 @@ import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function ClusterList() {
+export default function ClusterList({imageList}:{imageList: string[]}) {
     const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
@@ -218,8 +218,8 @@ export default function ClusterList() {
                     clusterId={terminalclusterData.id}
                     clusterName={terminalclusterData.name}
                     nodeList={terminalclusterData.nodeNames}
-                    closeTerminal={closeTerminal}
-                />
+                    closeTerminal={closeTerminal} 
+                    clusterImageList={imageList}                />
             )}
         </div>
     )

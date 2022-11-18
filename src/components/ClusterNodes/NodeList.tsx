@@ -34,7 +34,7 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function NodeList() {
+export default function NodeList({imageList}:{imageList: string[]}) {
     const match = useRouteMatch()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
@@ -671,6 +671,7 @@ export default function NodeList() {
                     clusterId={Number(clusterId)}
                     nodeList={nodeList}
                     closeTerminal={closeTerminal}
+                    clusterImageList={imageList}
                 /> :
             renderPagination()}
                         </>

@@ -45,7 +45,7 @@ import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function NodeDetails() {
+export default function NodeDetails({imageList}:{imageList: string[]}) {
     const [loader, setLoader] = useState(false)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -882,6 +882,7 @@ export default function NodeDetails() {
         return <ClusterTerminal
         clusterId={Number(clusterId)}
         nodeList={[nodeName]}
+        clusterImageList={imageList}
     />
     }
 

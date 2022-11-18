@@ -4,7 +4,7 @@ import Select from 'react-select'
 import { shellTypes } from '../../config/constants'
 import { SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
-import { clusterterminalDisconnect, clusterTerminalStart, clusterterminalUpdate } from './clusterNodes.service'
+import { clusterDisconnectAndRetry, clusterterminalDisconnect, clusterTerminalStart, clusterTerminalStop, clusterterminalUpdate } from './clusterNodes.service'
 import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { Option } from '../../components/v2/common/ReactSelect.utils'
@@ -13,28 +13,37 @@ import { InputActionMeta } from 'react-select'
 import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import CreatableSelect from 'react-select/creatable'
+import { showError } from '../common'
 
 export default function ClusterTerminal({
     clusterId,
     clusterName,
     nodeList,
     closeTerminal,
+    clusterImageList
 }: {
     clusterId: number
     clusterName?: string
     nodeList: string[]
     closeTerminal?: () => void
+    clusterImageList: string[]
 }) {
-    const [selectedContainerName, setSelectedContainerName] = useState({ label: nodeList[0], value: nodeList[0] })
-    const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
-    const [terminalCleared, setTerminalCleared] = useState(false)
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
-    const [terminalAccessId, setTerminalId] = useState()
-    const [selectedImage, setImage] = useState<string>('trstringer/internal-kubectl:latest')
-    const [update, setUpdate] = useState<boolean>(false)
     const clusterNodeList = nodeList.map((node) => {
         return { label: node, value: node }
     })
+    const imageList = clusterImageList.map((image) => {
+        return { value: image, label: image }
+    })
+
+    
+    const [selectedContainerName, setSelectedContainerName] = useState(clusterNodeList[0])
+    const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
+    const [terminalCleared, setTerminalCleared] = useState(false)
+    const [terminalAccessId, setTerminalId] = useState()
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
+    const [selectedImage, setImage] = useState<string>(clusterImageList[0])
+    const [update, setUpdate] = useState<boolean>(false)
+
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage,
@@ -43,23 +52,35 @@ export default function ClusterTerminal({
     }
 
     useEffect(() => {
-        if (update) {
-            clusterterminalUpdate({ ...payload, id: terminalAccessId }).then((response) => {
-                setTerminalId(response.result.terminalAccessId)
-            })
-        } else {
-            clusterTerminalStart(payload).then((response) => {
-                setTerminalId(response.result.terminalAccessId)
-                setUpdate(true)
-            })
+        if(update) {
+            setSelectedContainerName(clusterNodeList[0])
         }
-        setSocketConnection(SocketConnectionType.CONNECTING)
-    }, [clusterId, selectedtTerminalType.value, selectedContainerName.value, selectedImage])
-
+    },[clusterId, nodeList])
+    
     useEffect(() => {
-        setTerminalCleared(true)
-        setSelectedtTerminalType(shellTypes[0])
-    }, [clusterId])
+        try {
+            if (update) {
+                setTerminalCleared(true)
+                clusterterminalUpdate({ ...payload, id: terminalAccessId }).then((response) => {
+                    setTerminalId(response.result.terminalAccessId)
+                    setSocketConnection(SocketConnectionType.CONNECTING)
+                })
+            } else {
+                clusterTerminalStart(payload).then((response) => {
+                    setTerminalId(response.result.terminalAccessId)
+                    setUpdate(true)
+                    socketConnecting()
+                }).catch((error) => {
+                    showError(error)
+                })
+            }
+        } catch (error) {
+            showError(error)
+            setUpdate(false)
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
+        }
+    }, [selectedtTerminalType.value, selectedContainerName.value, selectedImage])
+    
 
     // useEffect(() => {
     //     return () => {
@@ -67,9 +88,48 @@ export default function ClusterTerminal({
     //     }
     // },[])
 
-    const closeTerminalModal = () => {
-        closeTerminal()
-        clusterterminalDisconnect(terminalAccessId)
+
+     async function closeTerminalModal(): Promise<void> {
+        try {
+            closeTerminal()
+            await clusterterminalDisconnect(terminalAccessId)
+        } catch (error) {
+            showError(error)
+        }
+    }
+
+    async function stopterminalConnection(): Promise<void> {
+        try {
+            await clusterTerminalStop(terminalAccessId)
+        } catch (error) {
+            showError(error)
+        }
+    }
+
+    const socketConnecting = (): void => {
+        setSocketConnection(SocketConnectionType.CONNECTING)
+    }
+
+    const socketDiconnecting = (): void => {
+        setSocketConnection(SocketConnectionType.DISCONNECTING)
+    }
+
+    const onChangeNodes = (selected): void => {
+        setSelectedContainerName(selected)
+        setTerminalCleared(true)
+        socketDiconnecting()
+    }
+
+    const onChangeTerminalType = (selected): void => {
+        setSelectedtTerminalType(selected)
+        setTerminalCleared(true)
+        socketDiconnecting()
+    }
+
+    const onChangeImages = (selected): void => {
+        setImage(selected.value)
+        setTerminalCleared(true)
+        socketDiconnecting()
     }
 
     return (
@@ -99,18 +159,14 @@ export default function ClusterTerminal({
                             <span>
                                 <Disconnect
                                     className="icon-dim-20 mr-5"
-                                    onClick={(e) => {
-                                        setSocketConnection(SocketConnectionType.DISCONNECTING)
-                                    }}
+                                    onClick={socketDiconnecting}
                                 />
                             </span>
                         ) : (
                             <span>
                                 <Connect
                                     className="icon-dim-20 mr-5"
-                                    onClick={(e) => {
-                                        setSocketConnection(SocketConnectionType.CONNECTING)
-                                    }}
+                                    onClick={socketConnecting}
                                 />
                             </span>
                         )}
@@ -130,16 +186,13 @@ export default function ClusterTerminal({
                     <span className="bcn-2 mr-8 ml-8" style={{ width: '1px', height: '16px' }} />
 
                     <div className="cn-6 ml-8 mr-10">Nodes </div>
-
                     <div style={{ minWidth: '145px' }}>
                         <Select
                             placeholder="Select Containers"
                             options={clusterNodeList}
                             defaultValue={selectedContainerName}
-                            onChange={(selected) => {
-                                setSelectedContainerName(selected)
-                                setTerminalCleared(true)
-                            }}
+                            value={selectedContainerName}
+                            onChange={onChangeNodes}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
@@ -170,17 +223,13 @@ export default function ClusterTerminal({
                     </div>
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Shell </div>
+                    <div className="cn-6 ml-8 mr-10">Image </div>
                     <div>
-                        <Select
-                            placeholder="Select Shell"
-                            options={shellTypes}
-                            defaultValue={shellTypes[0]}
-                            onChange={(selected) => {
-                                setSelectedtTerminalType(selected as any)
-                                setTerminalCleared(true)
-                                setSocketConnection(SocketConnectionType.DISCONNECTING)
-                            }}
+                        <CreatableSelect
+                            placeholder="Select Image"
+                            options={imageList}
+                            defaultValue={imageList[0]}
+                            onChange={onChangeImages}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
@@ -207,25 +256,14 @@ export default function ClusterTerminal({
                             }}
                         />
                     </div>
-                    <div className="cn-6 ml-8 mr-10">Image </div>
+                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+                    <div className="cn-6 ml-8 mr-10">Shell </div>
                     <div>
-                        <CreatableSelect
-                            placeholder="Select Image"
-                            options={[
-                                {
-                                    value: 'trstringer/internal-kubectl:latest',
-                                    label: 'trstringer/internal-kubectl:latest',
-                                },
-                            ]}
-                            defaultValue={{
-                                value: 'trstringer/internal-kubectl:latest',
-                                label: 'trstringer/internal-kubectl:latest',
-                            }}
-                            onChange={(selected) => {
-                                setImage(selected.value)
-                                setTerminalCleared(true)
-                                setSocketConnection(SocketConnectionType.DISCONNECTING)
-                            }}
+                        <Select
+                            placeholder="Select Shell"
+                            options={shellTypes}
+                            defaultValue={shellTypes[0]}
+                            onChange={onChangeTerminalType}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
@@ -269,6 +307,7 @@ export default function ClusterTerminal({
                     setSocketConnection={setSocketConnection}
                     clusterTerminal={true}
                     terminalId={terminalAccessId}
+                    stopterminalConnection={stopterminalConnection}
                 />
             </div>
         </div>
