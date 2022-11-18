@@ -149,7 +149,11 @@ export default function ClusterTerminal({
     }
 
     return (
-        <div className={`${fullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'terminal-view-container'} ${isNodeDetailsPage ? '' : 'node-terminal'}`}>
+        <div
+            className={`${fullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'terminal-view-container'} ${
+                isNodeDetailsPage ? '' : 'node-terminal'
+            }`}
+        >
             <div className="flex dc__content-space h-36 bcn-0 pl-20 dc__border-top">
                 <div className="flex left">
                     {clusterName && (
@@ -217,44 +221,48 @@ export default function ClusterTerminal({
                         </div>
                     </Tippy>
 
-                    <span className="bcn-2 mr-8 ml-8" style={{ width: '1px', height: '16px' }} />
+                    {!isNodeDetailsPage && (
+                        <>
+                            <span className="bcn-2 mr-8 ml-8" style={{ width: '1px', height: '16px' }} />
 
-                    <div className="cn-6 ml-8 mr-10">Nodes </div>
-                    <div style={{ minWidth: '145px' }}>
-                        <Select
-                            placeholder="Select Containers"
-                            options={clusterNodeList}
-                            defaultValue={selectedContainerName}
-                            value={selectedContainerName}
-                            onChange={onChangeNodes}
-                            styles={{
-                                ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    borderColor: 'transparent',
-                                    backgroundColor: 'transparent',
-                                    minHeight: '24px !important',
-                                    cursor: 'pointer',
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    fontWeight: 600,
-                                    color: '#06c',
-                                    direction: 'rtl',
-                                    textAlign: 'left',
-                                    marginLeft: '2px',
-                                }),
-                                indicatorsContainer: (provided, state) => ({
-                                    ...provided,
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
-                            }}
-                        />
-                    </div>
+                            <div className="cn-6 ml-8 mr-10">Nodes </div>
+                            <div style={{ minWidth: '145px' }}>
+                                <Select
+                                    placeholder="Select Containers"
+                                    options={clusterNodeList}
+                                    defaultValue={selectedContainerName}
+                                    value={selectedContainerName}
+                                    onChange={onChangeNodes}
+                                    styles={{
+                                        ...multiSelectStyles,
+                                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
+                                        control: (base, state) => ({
+                                            ...base,
+                                            borderColor: 'transparent',
+                                            backgroundColor: 'transparent',
+                                            minHeight: '24px !important',
+                                            cursor: 'pointer',
+                                        }),
+                                        singleValue: (base, state) => ({
+                                            ...base,
+                                            fontWeight: 600,
+                                            color: '#06c',
+                                            direction: 'rtl',
+                                            textAlign: 'left',
+                                            marginLeft: '2px',
+                                        }),
+                                        indicatorsContainer: (provided, state) => ({
+                                            ...provided,
+                                        }),
+                                    }}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
+                                    }}
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
                     <div className="cn-6 ml-8 mr-10">Image </div>
@@ -325,13 +333,19 @@ export default function ClusterTerminal({
                         />
                     </div>
                 </div>
-                {!isNodeDetailsPage && (<span className='flex'>
-                    <Resize className='mr-12 cursor' onClick={toggleScreenView} />
-                    <Close className="icon-dim-20 cursor mr-20" onClick={closeTerminalModal} />
-                </span>)}
+                {!isNodeDetailsPage && (
+                    <span className="flex">
+                        <Resize className="mr-12 cursor" onClick={toggleScreenView} />
+                        <Close className="icon-dim-20 cursor mr-20" onClick={closeTerminalModal} />
+                    </span>
+                )}
             </div>
 
-            <div className={`${fullScreen || isNodeDetailsPage ? 'full-screen' : ''} cluster-terminal__wrapper ${isNodeDetailsPage ? 'node-terminal-wrapper' : ''}`}>
+            <div
+                className={`${fullScreen || isNodeDetailsPage ? 'full-screen' : ''} cluster-terminal__wrapper ${
+                    isNodeDetailsPage ? 'node-terminal-wrapper' : ''
+                }`}
+            >
                 <Terminal
                     nodeName={selectedContainerName.label}
                     containerName={selectedContainerName.label}
