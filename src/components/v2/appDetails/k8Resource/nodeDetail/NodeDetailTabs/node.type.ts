@@ -9,6 +9,8 @@ export interface TerminalViewProps {
     clusterTerminal?: boolean
     terminalId?: string
     stopterminalConnection?: () => void
+    fetchRetry?: boolean
+    disconnectRetry?: () => void
 }
 
 export enum SocketConnectionType {

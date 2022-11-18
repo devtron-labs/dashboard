@@ -9,7 +9,6 @@ import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { Option } from '../../components/v2/common/ReactSelect.utils'
 import { multiSelectStyles } from '../../components/v2/common/ReactSelectCustomization'
-import { InputActionMeta } from 'react-select'
 import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Resize } from '../../assets/icons/ic-fullscreen-2.svg'
@@ -49,6 +48,7 @@ export default function ClusterTerminal({
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
     const [update, setUpdate] = useState<boolean>(false)
     const [fullScreen, setFullScreen] = useState(false)
+    const [fetchRetry, setRetry] = useState(false)
 
     const payload = {
         clusterId: clusterId,
@@ -66,11 +66,11 @@ export default function ClusterTerminal({
     useEffect(() => {
         try {
             if (update) {
-                setTerminalCleared(true)
                 clusterterminalUpdate({ ...payload, id: terminalAccessId }).then((response) => {
                     setTerminalId(response.result.terminalAccessId)
                     setSocketConnection(SocketConnectionType.CONNECTING)
                 }).catch((error) => {
+                    setRetry(true)
                     setSocketConnection(SocketConnectionType.DISCONNECTED)
                 })
             } else {
@@ -80,6 +80,7 @@ export default function ClusterTerminal({
                     socketConnecting()
                 }).catch((error) => {
                     showError(error)
+                    setRetry(true)
                     setSocketConnection(SocketConnectionType.DISCONNECTED)
                 })
             }
@@ -113,6 +114,17 @@ export default function ClusterTerminal({
     async function stopterminalConnection(): Promise<void> {
         try {
             await clusterTerminalStop(terminalAccessId)
+        } catch (error) {
+            showError(error)
+        }
+    }
+
+    async function disconnectRetry(): Promise<void> {
+        try {
+            clusterDisconnectAndRetry(payload).then((response) => {
+                setRetry(false)
+                setUpdate(false)
+            })
         } catch (error) {
             showError(error)
         }
@@ -154,7 +166,7 @@ export default function ClusterTerminal({
                 isNodeDetailsPage ? '' : 'node-terminal'
             }`}
         >
-            <div className="flex dc__content-space h-36 bcn-0 pl-20 dc__border-top">
+            <div className="flex dc__content-space bcn-0 pl-20 dc__border-top">
                 <div className="flex left">
                     {clusterName && (
                         <>
@@ -357,6 +369,8 @@ export default function ClusterTerminal({
                     clusterTerminal={true}
                     terminalId={terminalAccessId}
                     stopterminalConnection={stopterminalConnection}
+                    disconnectRetry={disconnectRetry}
+                    fetchRetry={fetchRetry}
                 />
             </div>
         </div>

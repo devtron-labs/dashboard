@@ -359,6 +359,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
                 You’re offline. Please check your internet connection.
             </div>
+        ) : terminalViewProps.fetchRetry ? (
+            <div className='bcr-7 pl-20 cn-0'>
+                Concurrent connection limit reached.&nbsp;
+                <button
+                    type="button"
+                    onClick={terminalViewProps.disconnectRetry}
+                    className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                >
+                    Terminate all and retry
+                </button>
+            </div>
         ) : (
             <div className="terminal-strip dc__first-letter-capitalize">
                 {errorMessage && errorMessage.length > 0 ? (
