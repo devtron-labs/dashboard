@@ -553,18 +553,18 @@ export default function NodeList({imageList}:{imageList: string[]}) {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox"
+                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__visible-hover--parent"
                 style={{ width: 'max-content', minWidth: '100%' }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
-                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-20 pt-12 pb-12${
+                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-20 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         ><div className='w-100 flex left'>
                             <div className='w-250 pr-4 dc__ellipsis-right'><NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink></div>
-                            <TerminalIcon className="cursor" onClick={() =>  openTerminal(nodeData)} /></div>
+                            <TerminalIcon className="cursor dc__visible-hover--child" onClick={() =>  openTerminal(nodeData)} /></div>
                         </div>
                     ) : (
                         <div
