@@ -149,6 +149,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
+            if(clustertimeOut){
+                clearTimeout(clustertimeOut)
+            }
             if(terminalViewProps.stopterminalConnection){
                 terminalViewProps.stopterminalConnection()
             }
@@ -158,9 +161,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }
         }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
-            if(clustertimeOut){
-                clearTimeout(clustertimeOut)
-            }
             getNewSession();
         }
     }, [terminalViewProps.socketConnection,terminalViewProps.terminalId]);

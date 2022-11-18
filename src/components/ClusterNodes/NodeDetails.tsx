@@ -883,6 +883,7 @@ export default function NodeDetails({imageList}:{imageList: string[]}) {
         clusterId={Number(clusterId)}
         nodeList={[nodeName]}
         clusterImageList={imageList}
+        isNodeDetailsPage={true}
     />
     }
 

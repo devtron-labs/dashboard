@@ -259,5 +259,25 @@
 
 .cluster-terminal__wrapper {
     position: relative;
-    height: 50vh;
+    background: #0b0f22;
+    flex: 1 1;
+    min-height: calc(50vh - 23px);
+
+    &.full-screen {
+        min-height: calc(100vh - 84px);
+    }
+
+    &.node-terminal-wrapper.full-screen {
+        min-height: calc(100vh - 113px);
+    }
+}
+
+.cluster-full_screen {
+    position: absolute;
+    width: calc(100vw - 64px);
+    z-index: 1;
+
+    &.node-terminal {
+        top: 48px;
+    }
 }

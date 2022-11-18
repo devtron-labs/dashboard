@@ -12,21 +12,26 @@ import { multiSelectStyles } from '../../components/v2/common/ReactSelectCustomi
 import { InputActionMeta } from 'react-select'
 import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Resize } from '../../assets/icons/ic-fullscreen-2.svg'
+import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
 import { showError } from '../common'
+
 
 export default function ClusterTerminal({
     clusterId,
     clusterName,
     nodeList,
     closeTerminal,
-    clusterImageList
+    clusterImageList,
+    isNodeDetailsPage
 }: {
     clusterId: number
     clusterName?: string
     nodeList: string[]
     closeTerminal?: () => void
     clusterImageList: string[]
+    isNodeDetailsPage?: boolean
 }) {
     const clusterNodeList = nodeList.map((node) => {
         return { label: node, value: node }
@@ -43,6 +48,7 @@ export default function ClusterTerminal({
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
     const [update, setUpdate] = useState<boolean>(false)
+    const [fullScreen, setFullScreen] = useState(false)
 
     const payload = {
         clusterId: clusterId,
@@ -64,6 +70,8 @@ export default function ClusterTerminal({
                 clusterterminalUpdate({ ...payload, id: terminalAccessId }).then((response) => {
                     setTerminalId(response.result.terminalAccessId)
                     setSocketConnection(SocketConnectionType.CONNECTING)
+                }).catch((error) => {
+                    setSocketConnection(SocketConnectionType.DISCONNECTED)
                 })
             } else {
                 clusterTerminalStart(payload).then((response) => {
@@ -72,6 +80,7 @@ export default function ClusterTerminal({
                     socketConnecting()
                 }).catch((error) => {
                     showError(error)
+                    setSocketConnection(SocketConnectionType.DISCONNECTED)
                 })
             }
         } catch (error) {
@@ -91,8 +100,11 @@ export default function ClusterTerminal({
 
      async function closeTerminalModal(): Promise<void> {
         try {
-            closeTerminal()
+            if(!isNodeDetailsPage){
+                closeTerminal()
+            }
             await clusterterminalDisconnect(terminalAccessId)
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
         } catch (error) {
             showError(error)
         }
@@ -132,9 +144,13 @@ export default function ClusterTerminal({
         socketDiconnecting()
     }
 
+    const toggleScreenView = () => {
+        setFullScreen(!fullScreen)
+    }
+
     return (
-        <div className="terminal-view-container">
-            <div className="flex dc__content-space bcn-0 pl-20 dc__border-top">
+        <div className={`${fullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'terminal-view-container'} ${isNodeDetailsPage ? '' : 'node-terminal'}`}>
+            <div className="flex dc__content-space h-36 bcn-0 pl-20 dc__border-top">
                 <div className="flex left">
                     {clusterName && (
                         <>
@@ -150,32 +166,50 @@ export default function ClusterTerminal({
                         content={
                             socketConnection === SocketConnectionType.CONNECTING ||
                             socketConnection === SocketConnectionType.CONNECTED
-                                ? 'Disconnect'
-                                : 'Connect'
+                                ? 'Stop'
+                                : 'Resume'
                         }
                     >
                         {socketConnection === SocketConnectionType.CONNECTING ||
                         socketConnection === SocketConnectionType.CONNECTED ? (
-                            <span>
-                                <Disconnect
-                                    className="icon-dim-20 mr-5"
-                                    onClick={socketDiconnecting}
-                                />
+                            <span className="mr-8 cursor">
+                                <div className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5" onClick={socketDiconnecting} />
                             </span>
                         ) : (
-                            <span>
-                                <Connect
-                                    className="icon-dim-20 mr-5"
-                                    onClick={socketConnecting}
-                                />
+                            <span className="mr-8 flex">
+                                <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
                             </span>
                         )}
                     </Tippy>
+                    {isNodeDetailsPage && (
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={
+                                socketConnection === SocketConnectionType.CONNECTING ||
+                                socketConnection === SocketConnectionType.CONNECTED
+                                    ? 'Disconnect'
+                                    : 'Connect'
+                            }
+                        >
+                            {socketConnection === SocketConnectionType.CONNECTING ||
+                            socketConnection === SocketConnectionType.CONNECTED ? (
+                                <span className="flex mr-8">
+                                    <Disconnect className="icon-dim-16 mr-4" onClick={closeTerminalModal} />
+                                </span>
+                            ) : (
+                                <span className="flex mr-8">
+                                    <Connect className="icon-dim-16 mr-4" onClick={socketConnecting} />
+                                </span>
+                            )}
+                        </Tippy>
+                    )}
 
                     <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                        <div>
+                        <div className="flex">
                             <Abort
-                                className="icon-dim-20"
+                                className="icon-dim-16 mr-4"
                                 onClick={(e) => {
                                     setTerminalCleared(true)
                                 }}
@@ -291,12 +325,13 @@ export default function ClusterTerminal({
                         />
                     </div>
                 </div>
-                <div>
+                {!isNodeDetailsPage && (<span className='flex'>
+                    <Resize className='mr-12 cursor' onClick={toggleScreenView} />
                     <Close className="icon-dim-20 cursor mr-20" onClick={closeTerminalModal} />
-                </div>
+                </span>)}
             </div>
 
-            <div className="terminal-view-wrapper">
+            <div className={`${fullScreen || isNodeDetailsPage ? 'full-screen' : ''} cluster-terminal__wrapper ${isNodeDetailsPage ? 'node-terminal-wrapper' : ''}`}>
                 <Terminal
                     nodeName={selectedContainerName.label}
                     containerName={selectedContainerName.label}
