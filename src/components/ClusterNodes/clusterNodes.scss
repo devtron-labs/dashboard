@@ -246,6 +246,11 @@
                         stroke: var(--B500);
                     }
                 }
+                .terminal-icon {
+                    path {
+                        fill: var(--B500)
+                    }
+                }
             }
         }
         .node-details__active-tab {

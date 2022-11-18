@@ -165,8 +165,8 @@ export default function NodeDetails({imageList}:{imageList: string[]}) {
                         setSelectedTabIndex(3)
                     }}
                 >
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                    <TerminalIcon className="cursor icon-dim-16 mt-2"/>
+                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'}`}>
+                        <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />Debug
                     </div>
                     {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
                 </li>
