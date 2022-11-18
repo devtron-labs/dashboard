@@ -81,7 +81,8 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
 export interface DeploymentAppSelectorType {
     commonState,
     isUpdate,
-    handleDeploymentAppTypeSelection?: (event) => void
+    handleDeploymentAppTypeSelection?: (event) => void,
+    isDeployChartView
 }
 
 

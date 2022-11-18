@@ -1207,7 +1207,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <>
                         {this.renderEnvAndNamespace()}
                         {this.renderTriggerType()}
-                        {this.renderDeploymentAppType()}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </>
                 ) : null}

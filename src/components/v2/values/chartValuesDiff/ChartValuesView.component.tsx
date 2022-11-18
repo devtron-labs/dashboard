@@ -1,45 +1,48 @@
-import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router'
-import ReactSelect, { components } from 'react-select'
+import React, {useEffect, useState} from 'react'
+import {useParams} from 'react-router'
+import ReactSelect, {components} from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import warn from '../../../../assets/icons/ic-warning.svg'
-import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
+import {DropdownIndicator, getCommonSelectStyle, Option} from '../../common/ReactSelect.utils'
+import warn, {ReactComponent as Error} from '../../../../assets/icons/ic-warning.svg'
+import {ReactComponent as ErrorExclamation} from '../../../../assets/icons/ic-error-exclamation.svg'
+import {ReactComponent as Refetch} from '../../../../assets/icons/ic-restore.svg'
+import {ReactComponent as Info} from '../../../../assets/icons/ic-info-filled-prple.svg'
+import {ReactComponent as Edit} from '../../../../assets/icons/ic-pencil.svg'
+import {ChartValuesSelect} from '../../../charts/util/ChartValueSelect'
+import {ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError} from '../../../common'
 import {
+    AppNameInputType,
     ChartEnvironmentSelectorType,
-    ChartRepoSelectorType,
-    ChartVersionSelectorType,
-    ChartValuesSelectorType,
-    ChartVersionValuesSelectorType,
-    ChartValuesEditorType,
-    ChartRepoDetailsType,
-    ChartProjectSelectorType,
     ChartGroupOptionType,
-    ChartValuesDiffOptionType,
-    ChartRepoOptions,
     ChartKind,
-    ChartValuesViewActionTypes,
+    ChartProjectSelectorType,
+    ChartRepoDetailsType,
+    ChartRepoOptions,
+    ChartRepoSelectorType,
+    ChartValuesDiffOptionType,
+    ChartValuesEditorType,
+    ChartValuesSelectorType,
     ChartValuesViewAction,
+    ChartValuesViewActionTypes,
+    ChartVersionSelectorType,
+    ChartVersionValuesSelectorType,
+    DeploymentAppSelectorType,
+    DeploymentAppType,
     ValueNameInputType,
-    AppNameInputType, DeploymentAppSelectorType, DeploymentAppType,
 } from './ChartValuesView.type'
-import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
+import {getChartsByKeyword, getChartValues} from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
-import { NavLink } from 'react-router-dom'
-import { Moment12HourFormat, URLS } from '../../../../config'
+import {NavLink} from 'react-router-dom'
+import {Moment12HourFormat, URLS} from '../../../../config'
 import Tippy from '@tippyjs/react'
-import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
+import {MarkDown} from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import moment from 'moment'
-import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import {getDeploymentManifestDetails} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
 import {RadioGroup, RadioGroupItem} from "../../../common/formFields/RadioGroup";
+import {ReactComponent as ArgoCD} from "../../../../assets/icons/argo-cd-app.svg";
+import {ReactComponent as Helm} from "../../../../assets/icons/helm-app.svg";
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -92,23 +95,46 @@ export const ChartEnvironmentSelector = ({
 export const DeploymentAppSelector = ({
     commonState,
     isUpdate,
-    handleDeploymentAppTypeSelection
-
+    handleDeploymentAppTypeSelection,
+    isDeployChartView
 }: DeploymentAppSelectorType): JSX.Element =>{
-    return (
+
+        return !isDeployChartView ? (
+            <div>
+                <h2 className="chart-values__environment-label fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+                <span className="chart-values__environment fs-13 fw-6 lh-18 cn-9 md-6">
+                    {commonState.installedConfig.deploymentAppType===DeploymentAppType.helm?"Helm":"GitOps"}
+                </span>
+                <span>
+                    {commonState.installedConfig.deploymentAppType == DeploymentAppType.gitops ? (
+                        <ArgoCD className="icon-dim-18 ml-6 " />
+                    ) : (
+                        <Helm className="icon-dim-18 ml-6 " />
+                    )}
+                </span>
+                {/*<span className="chart-values__environment fs-13 fw-6 lh-20 cn-9" >*/}
+                {/*   */}
+                {/*</span>*/}
+            </div>
+        ):(
         <div className="form__row form__row--w-100 fw-4">
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold">
                     How do you want to deploy?
                 </label>
+                <p className="text-warning"> Cannot be changed after deployment </p>
                 <RadioGroup
                     value={commonState.deploymentAppType}
                     name="DeploymentAppTypeGroup"
                     onChange={handleDeploymentAppTypeSelection}
                     disabled={isUpdate}
                 >
+
+
                     <RadioGroupItem value={DeploymentAppType.helm}> Helm </RadioGroupItem>
+
                     <RadioGroupItem value={DeploymentAppType.gitops}> GitOps </RadioGroupItem>
+
                 </RadioGroup>
             </div>
         </div>
