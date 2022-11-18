@@ -15,6 +15,7 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-help-out
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
+import { ReactComponent as TimeOut } from '../../../../assets/icons/ic-timeout-red.svg'
 
 export function DeploymentStatusDetailRow({
     type,
@@ -166,7 +167,7 @@ export function DeploymentStatusDetailRow({
             case 'disconnect':
                 return <Disconnect className="icon-dim-20" />
             case 'time_out':
-                return <Timer className="icon-dim-20 scr-5 timer-icon" />
+                return <TimeOut className="icon-dim-20" />
             default:
                 return <Timer className="icon-dim-20 timer-icon" />
         }
@@ -181,8 +182,12 @@ export function DeploymentStatusDetailRow({
             >
                 {renderIcon(deploymentDetailedData.deploymentStatusBreakdown[type].icon)}
                 <span className="ml-12 mr-12 fs-13">
-                    {deploymentDetailedData.deploymentStatusBreakdown[type].displayText +
-                        deploymentDetailedData.deploymentStatusBreakdown[type].displaySubText}
+                    <span>{deploymentDetailedData.deploymentStatusBreakdown[type].displayText}</span>
+                    {deploymentDetailedData.deploymentStatusBreakdown[type].displaySubText && (
+                        <span className={`ml-12 f-${deploymentDetailedData.deploymentStatusBreakdown[type].icon || 'waiting'}`}>
+                            {deploymentDetailedData.deploymentStatusBreakdown[type].displaySubText}
+                        </span>
+                    )}
                 </span>
 
                 {deploymentDetailedData.deploymentStatusBreakdown[type].time !== '' &&
