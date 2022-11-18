@@ -10,6 +10,7 @@ import { getChartList } from './customChart.service'
 import { ErrorScreenManager, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
 import { ChartDetailType, ChartListResponse } from './types'
 import EmptyState from '../EmptyState/EmptyState'
+import Tippy from '@tippyjs/react'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -33,7 +34,7 @@ export default function CustomChartList() {
                 setLoader(false)
             })
             .catch((error) => {
-                showError(error,true,true)
+                showError(error, true, true)
                 setErrorStatusCode(error.code)
                 setLoader(false)
             })
@@ -169,7 +170,17 @@ export default function CustomChartList() {
                                     {chartData.count > 0 ? `+${chartData.count} more` : ''}
                                 </span>
                             </div>
-                            <div className="dc__ellipsis-right">{chartData.chartDescription}</div>
+                            <div className="dc__ellipsis-right">
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="left"
+                                    content={chartData.chartDescription}
+                                    trigger="mouseenter"
+                                >
+                                    <span>{chartData.chartDescription}</span>
+                                </Tippy>
+                            </div>
                         </div>
                     ))}
                 </div>
