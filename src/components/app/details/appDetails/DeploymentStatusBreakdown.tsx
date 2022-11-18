@@ -1,12 +1,12 @@
 import React from 'react'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { DeploymentStatusDetailBreakdownType } from './appDetails.type'
+import { DeploymentStatusDetailBreakdownType, ErrorInfoStatusBarType } from './appDetails.type'
 import { TIMELINE_STATUS, URLS } from '../../../../config'
 import '../../../../components/v2/appDetails/sourceInfo/environmentStatus/environmentStatus.scss'
 import { useRouteMatch } from 'react-router-dom'
 import ErrorBar from '../../../common/error/ErrorBar'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { DeploymentStatusDetailRow } from './DeploymentStatusDetailRow'
+import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
@@ -49,19 +49,5 @@ export default function DeploymentStatusDetailBreakdown({
                 />
             </div>
         </>
-    )
-}
-
-function ErrorInfoStatusBar({ nonDeploymentError, type, errorMessage }) {
-    return (
-        nonDeploymentError === type && (
-            <>
-                <div className="bcr-1 flex left er-2 br-4 p-8">
-                    <Error className="icon-dim-20 mr-8" />
-                    {errorMessage}
-                </div>
-                <div className="vertical-connector"></div>
-            </>
-        )
     )
 }

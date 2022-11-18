@@ -128,3 +128,8 @@ export interface DeploymentStatusDetailRowType {
     streamData?: AppStreamData
 }
 
+export interface ErrorInfoStatusBarType {
+    nonDeploymentError: string
+    type: string
+    errorMessage: string
+}

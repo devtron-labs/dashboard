@@ -18,7 +18,7 @@ export default function DeploymentStatusDetailModal({
     const { appId, envId} = useParams<{appId: string , envId: string}>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
 
-    const close = () => {
+    const closeStatusModal = () => {
         const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`
         history.replace(newUrl)
     }
@@ -26,7 +26,7 @@ export default function DeploymentStatusDetailModal({
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape') {
             evt.preventDefault()
-            close()
+            closeStatusModal()
         }
     }
     const outsideClickHandler = (evt): void => {
@@ -34,7 +34,7 @@ export default function DeploymentStatusDetailModal({
             appStatusDetailRef.current &&
             !appStatusDetailRef.current.contains(evt.target)
         ) {
-            close()
+            closeStatusModal()
         }
     }
 
@@ -69,7 +69,7 @@ export default function DeploymentStatusDetailModal({
                                 </span>
                             </div>
                         </div>
-                        <span className="cursor" onClick={close}>
+                        <span className="cursor" onClick={closeStatusModal}>
                             <Close className="icon-dim-24" />
                         </span>
                     </div>
