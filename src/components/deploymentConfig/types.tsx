@@ -103,7 +103,6 @@ export interface DeploymentConfigFormCTAProps {
     isCiPipeline?: boolean
     disableCheckbox?: boolean
     disableButton?: boolean
-    currentChart: DeploymentChartVersionType
     toggleAppMetrics: () => void
     selectedChart: DeploymentChartVersionType,
 }

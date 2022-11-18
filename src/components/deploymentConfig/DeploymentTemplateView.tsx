@@ -145,7 +145,7 @@ export const ChartTypeVersionOptions = ({
     return (
         <div
             className={`chart-type-version-options pr-16 pt-8 pb-8 ${
-                disableVersionSelect || selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT ? '' : 'dc__border-right'
+                disableVersionSelect || (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? '' : 'dc__border-right'
             }`}
         >
             <div className="chart-type-options">
@@ -277,7 +277,7 @@ export const DeploymentTemplateOptionsTab = ({
                         selectedChartRefId={selectedChartRefId}
                         disableVersionSelect={disableVersionSelect}
                     />
-                    {(selectedChart?.name === ROLLOUT_DEPLOYMENT || selectedChart?.name! == DEPLOYMENT) && (
+                    {(selectedChart?.name === ROLLOUT_DEPLOYMENT || selectedChart?.name === DEPLOYMENT) && (
                         <RadioGroup
                             className="gui-yaml-switch pl-16"
                             name="yaml-mode"
@@ -1006,7 +1006,6 @@ export const DeploymentConfigFormCTA = ({
     isCiPipeline,
     disableCheckbox,
     disableButton,
-    currentChart,
     toggleAppMetrics,
     selectedChart,
 }: DeploymentConfigFormCTAProps) => {
