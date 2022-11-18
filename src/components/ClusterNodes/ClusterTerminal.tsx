@@ -49,6 +49,7 @@ export default function ClusterTerminal({
     const [update, setUpdate] = useState<boolean>(false)
     const [fullScreen, setFullScreen] = useState(false)
     const [fetchRetry, setRetry] = useState(false)
+    const [reconnect, setReconnect] = useState(false)
 
     const payload = {
         clusterId: clusterId,
@@ -89,7 +90,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedtTerminalType.value, selectedContainerName.value, selectedImage])
+    }, [selectedtTerminalType.value, selectedContainerName.value, selectedImage, reconnect])
     
 
     // useEffect(() => {
@@ -124,6 +125,7 @@ export default function ClusterTerminal({
             clusterDisconnectAndRetry(payload).then((response) => {
                 setRetry(false)
                 setUpdate(false)
+                setReconnect(!reconnect)
             })
         } catch (error) {
             showError(error)
