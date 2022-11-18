@@ -1,6 +1,6 @@
 import React from 'react'
 import { ResponseType } from '../../services/service.types'
-import { AppDetails, OptionType } from '../app/types'
+import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
@@ -16,7 +16,7 @@ export interface OptionTypeWithIcon {
 export interface IdentifierOptionType {
     label: string
     value: any
-    type: ExternalLinkIdentifierType
+    type?: ExternalLinkIdentifierType
 }
 
 export interface MonitoringTool {
@@ -72,7 +72,7 @@ export interface ConfigureLinkActionType {
     handleLinksDataActions: (
         action: string,
         key?: number,
-        value?: OptionTypeWithIcon | OptionType[] | string | boolean | ExternalLinkScopeType,
+        value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType,
     ) => void
 }
 
@@ -95,12 +95,21 @@ export interface URLModificationType {
 }
 
 export interface AppliedClustersType {
-    appliedClusters: OptionType[]
-    setAppliedClusters: React.Dispatch<React.SetStateAction<OptionType[]>>
+    appliedClusters: IdentifierOptionType[]
+    setAppliedClusters: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
+}
+
+export interface AppliedApplicationsType {
+    appliedApps: IdentifierOptionType[]
+    setAppliedApps: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
 }
 
 export interface ClusterFilterType extends AppliedClustersType, URLModificationType {
-    clusters: OptionType[]
+    clusters: IdentifierOptionType[]
+}
+
+export interface ApplicationFilterType extends AppliedApplicationsType, URLModificationType {
+    allApps: IdentifierOptionType[]
 }
 
 export interface AddExternalLinkType {
@@ -124,7 +133,7 @@ export interface DeleteExternalLinkType {
     setShowDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export interface AppliedFilterChipsType extends AppliedClustersType, URLModificationType {}
+export interface AppliedFilterChipsType extends AppliedClustersType, AppliedApplicationsType, URLModificationType {}
 
 export interface AppLevelExternalLinksType {
     appDetails?: AppDetails

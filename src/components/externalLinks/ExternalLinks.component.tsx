@@ -320,7 +320,8 @@ export const ValueContainer = (props): JSX.Element => {
                 <>
                     {!props.selectProps.menuIsOpen && (
                         <>
-                            Cluster: {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
+                            {props.selectProps.name}:&nbsp;
+                            {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
                         </>
                     )}
                     {React.cloneElement(props.children[1])}

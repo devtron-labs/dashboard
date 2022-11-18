@@ -11,7 +11,6 @@ import {
     OptionTypeWithIcon,
 } from './ExternalLinks.type'
 import { getClusterListMin } from '../../services/service'
-import { OptionType } from '../app/types'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
@@ -19,7 +18,7 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION } from '../../config'
 import TippyWhite from '../common/TippyWhite'
-import { AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
+import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
 import { UserRoleType } from '../userGroups/userGroups.types'
@@ -39,7 +38,8 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
     const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
     const [clusters, setClusters] = useState<IdentifierOptionType[]>([])
     const [allApps, setAllApps] = useState<IdentifierOptionType[]>([])
-    const [appliedClusters, setAppliedClusters] = useState<OptionType[]>([])
+    const [appliedClusters, setAppliedClusters] = useState<IdentifierOptionType[]>([])
+    const [appliedApps, setAppliedApps] = useState<IdentifierOptionType[]>([])
     const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
@@ -56,24 +56,23 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
              * 3. If only search query param is present then filter by searched term & set filtered external links
              * 4. Else set default external links
              */
-            if (queryParams.has('clusters') && queryParams.has('search')) {
-                const _appliedClustersIds = queryParams.get('clusters').split(',')
+            if (queryParams.has('clusters') || queryParams.has('apps')) {
+                const _appliedClusterIds = queryParams.get('clusters')?.split(',')
+                const _appliedAppIds = queryParams.get('apps')?.split(',')
 
                 // #1 - Filter the links by applied clusterIds
-                let _filteredExternalLinks = filterByClusterIds(_appliedClustersIds)
+                const filteredByClusterIds = filterByClusterIds(_appliedClusterIds, !_appliedAppIds?.length)
+                const filteredByAppIds = filterByAppIds(_appliedAppIds, filteredByClusterIds)
+                let _filteredExternalLinks = [...filteredByClusterIds, ...filteredByAppIds]
 
                 // #2 - Check if we have any external links filtered by applied clusterIds
-                if (_filteredExternalLinks.length > 0) {
+                if (queryParams.has('search') && _filteredExternalLinks.length > 0) {
                     // #3 - If yes then filter the filtered external links further by searched term
                     _filteredExternalLinks = filterBySearchTerm(_filteredExternalLinks)
                 }
 
                 // #4 - Set filtered external links
                 setFilteredExternalLinks(_filteredExternalLinks)
-            } else if (queryParams.has('clusters')) {
-                const _appliedClustersIds = queryParams.get('clusters').split(',')
-
-                setFilteredExternalLinks(filterByClusterIds(_appliedClustersIds))
             } else if (queryParams.has('search')) {
                 setFilteredExternalLinks(filterBySearchTerm(externalLinks))
             } else {
@@ -141,20 +140,67 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             })
     }
 
-    const filterByClusterIds = (_appliedClustersIds: string[]): ExternalLink[] => {
+    const filterByClusterIds = (_appliedClusterIds: string[], defaultToAll: boolean): ExternalLink[] => {
         /**
-         * 1. If clusters query param is present but doesn't have any value then return default externalLinks
-         * 2. If clusters query param is present and has value then filter & return filtered external links
-         * 3. Else return empty array
+         * 1. If appliedClusterIds are not present then return empty array
+         * 2. If appliedClusterIds are present but doesn't have any value then
+         * - if defaultToAll is true then return all externalLinks as default
+         * - else return empty array as there'll be further filtering based on appliedAppIds
+         * 3. If appliedClusterIds are present and has value then filter & return filtered external links
          */
-        if (_appliedClustersIds.length === 1 && !_appliedClustersIds[0]) {
-            return externalLinks
-        } else if (_appliedClustersIds.length > 0) {
-            return externalLinks.filter(
-                (link) =>
-                    link.identifiers.length === 0 ||
-                    link.identifiers.some((_identifier) => _appliedClustersIds.includes(`${_identifier.clusterId}`)),
-            )
+        if (_appliedClusterIds) {
+            if (_appliedClusterIds.length === 1 && !_appliedClusterIds[0]) {
+                return defaultToAll ? externalLinks : []
+            } else if (_appliedClusterIds.length > 0) {
+                return externalLinks.filter(
+                    (link) =>
+                        link.identifiers.length === 0 ||
+                        link.identifiers.some((_identifier) => _appliedClusterIds.includes(`${_identifier.clusterId}`)),
+                )
+            }
+        }
+
+        return []
+    }
+
+    const filterByAppIds = (_appliedAppIds: string[], filteredByClusterIds: ExternalLink[]): ExternalLink[] => {
+        /**
+         * 1. If appliedAppIds are not present then return empty array
+         * 2. If appliedAppIds are present but doesn't have any value then
+         * - return empty array if filteredByClusterIds contains any link as it'll be the same
+         * - else return all externalLinks as default
+         * 3. If appliedAppIds are present and have value then
+         * - filter external links & assign to filteredByAppIds
+         * - if filteredByClusterIds contains any link, remove duplicates from filteredByAppIds & return
+         * - else return filteredByAppIds
+         */
+        if (_appliedAppIds) {
+            if (_appliedAppIds.length === 1 && !_appliedAppIds[0]) {
+                // If contains any link then return empty as it'll be the same array
+                // Else return all external links as default
+                return filteredByClusterIds.length > 0 ? [] : externalLinks
+            } else if (_appliedAppIds.length > 0) {
+                const filteredByAppIds = externalLinks.filter(
+                    (link) =>
+                        link.identifiers.length === 0 ||
+                        link.identifiers.some((_identifier) =>
+                            _appliedAppIds.includes(
+                                `${_identifier.identifier}_${
+                                    _identifier.type === ExternalLinkIdentifierType.DevtronApp ? 'd' : 'h'
+                                }`,
+                            ),
+                        ),
+                )
+
+                // Filter out duplicates from filteredByAppIds if filteredByClusterIds contains any link & return
+                // Else return filteredByAppIds
+                if (filteredByClusterIds.length > 0) {
+                    const filteredIds = filteredByClusterIds.map((_link) => _link.id)
+                    return filteredByAppIds.filter((_link) => !filteredIds.includes(_link.id))
+                }
+
+                return filteredByAppIds
+            }
         }
 
         return []
@@ -191,14 +237,24 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             <div className="search-filter-wrapper">
                 <SearchInput queryParams={queryParams} history={history} url={url} />
                 {!isAppConfigView && (
-                    <ClusterFilter
-                        clusters={clusters}
-                        appliedClusters={appliedClusters}
-                        setAppliedClusters={setAppliedClusters}
-                        queryParams={queryParams}
-                        history={history}
-                        url={url}
-                    />
+                    <>
+                        <ApplicationFilter
+                            allApps={allApps}
+                            appliedApps={appliedApps}
+                            setAppliedApps={setAppliedApps}
+                            queryParams={queryParams}
+                            history={history}
+                            url={url}
+                        />
+                        <ClusterFilter
+                            clusters={clusters}
+                            appliedClusters={appliedClusters}
+                            setAppliedClusters={setAppliedClusters}
+                            queryParams={queryParams}
+                            history={history}
+                            url={url}
+                        />
+                    </>
                 )}
             </div>
         )
@@ -327,10 +383,12 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         <AddLinkButton handleOnClick={handleAddLinkClick} />
                     </div>
                 </div>
-                {!isAppConfigView && appliedClusters.length > 0 && (
+                {!isAppConfigView && (appliedClusters.length > 0 || appliedApps.length > 0) && (
                     <AppliedFilterChips
                         appliedClusters={appliedClusters}
                         setAppliedClusters={setAppliedClusters}
+                        appliedApps={appliedApps}
+                        setAppliedApps={setAppliedApps}
                         queryParams={queryParams}
                         history={history}
                         url={url}
@@ -406,11 +464,19 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                     selectedLink={selectedLink}
                     monitoringTools={monitoringTools}
                     allApps={[
-                        { label: 'All applications', value: '*', type: ExternalLinkIdentifierType.AllApps },
+                        {
+                            label: 'All applications',
+                            value: '*',
+                            type: ExternalLinkIdentifierType.AllApps,
+                        } as IdentifierOptionType,
                     ].concat(allApps)}
-                    clusters={[{ label: 'All clusters', value: '*', type: ExternalLinkIdentifierType.Cluster }].concat(
-                        clusters,
-                    )}
+                    clusters={[
+                        {
+                            label: 'All clusters',
+                            value: '*',
+                            type: ExternalLinkIdentifierType.Cluster,
+                        } as IdentifierOptionType,
+                    ].concat(clusters)}
                     setExternalLinks={setExternalLinks}
                 />
             )}

@@ -99,26 +99,18 @@
         }
 
         .saved-filters__wrap {
-            display: flex;
-            flex-wrap: wrap;
             background-color: var(--window-bg);
             z-index: 0;
 
             .saved-filter {
-                display: flex;
-                align-items: center;
-                border: solid 1px var(--N200);
-                background-color: #f7fafc;
                 text-transform: none;
-                padding-left: 6px;
-                padding-right: 6px;
-                margin: 0 12px 6px 0;
+                user-select: none;
+                margin: 0 0 8px;
                 min-height: 24px;
 
                 .saved-filter-divider {
                     height: 24px;
                     width: 1px;
-                    background-color: var(--N200);
                 }
 
                 .saved-filter__clear-btn {
