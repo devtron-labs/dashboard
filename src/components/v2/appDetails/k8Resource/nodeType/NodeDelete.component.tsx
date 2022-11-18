@@ -86,7 +86,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
         }
     }
 
-    const deleteResorceAction = () => {
+    const deleteResourceAction = () => {
         asyncDeletePod(nodeDetails)
     }
 
@@ -111,7 +111,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             {showDeleteConfirmation && (
                 <DeleteDialog
                     title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
-                    delete={deleteResorceAction}
+                    delete={deleteResourceAction}
                     closeDelete={toggleShowDeleteConfirmation}
                     apiCallInProgress={apiCallInProgress}
                 >
