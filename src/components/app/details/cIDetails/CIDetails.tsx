@@ -1195,7 +1195,6 @@ const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMateria
                     />
                 </div>
             )}
-        </>
     )
 }
 
