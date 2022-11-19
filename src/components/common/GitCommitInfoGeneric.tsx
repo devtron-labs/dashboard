@@ -60,13 +60,11 @@ export default function GitCommitInfoGeneric({
             <>
                 {_webhookData.data.author ? (
                     <div className="material-history__text flex left">
-                        {' '}
                         <PersonIcon className="icon-dim-16 mr-8" /> {_webhookData.data.author}
                     </div>
                 ) : null}
                 {_date ? (
                     <div className="material-history__text flex left">
-                        {' '}
                         <CalendarIcon className="icon-dim-16 mr-8" />
                         <time className="cn-7 fs-12">{_date}</time>
                     </div>
