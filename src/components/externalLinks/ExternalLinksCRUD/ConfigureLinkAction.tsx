@@ -24,7 +24,7 @@ export default function ConfigureLinkAction({
     onToolSelection,
     handleLinksDataActions,
 }: ConfigureLinkActionType): JSX.Element {
-    const [linkScope, setLinkScope] = useState<ExternalLinkScopeType>(link.type || ExternalLinkScopeType.AppLevel)
+    const [linkScope, setLinkScope] = useState<ExternalLinkScopeType>(link.type || ExternalLinkScopeType.ClusterLevel)
 
     const getErrorLabel = (field: string, type?: string): JSX.Element => {
         const errorLabel = (label: string): JSX.Element => {
@@ -171,15 +171,6 @@ export default function ConfigureLinkAction({
                             name={`external-link-scope-${index}`}
                             onChange={handleLinkScope}
                         >
-                            <RadioGroupItem value={ExternalLinkScopeType.AppLevel}>
-                                <span
-                                    className={`dc__no-text-transform ${
-                                        linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
-                                    }`}
-                                >
-                                    Specific applications
-                                </span>
-                            </RadioGroupItem>
                             <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel}>
                                 <span
                                     className={`dc__no-text-transform ${
@@ -187,6 +178,15 @@ export default function ConfigureLinkAction({
                                     }`}
                                 >
                                     All apps in specific clusters
+                                </span>
+                            </RadioGroupItem>
+                            <RadioGroupItem value={ExternalLinkScopeType.AppLevel}>
+                                <span
+                                    className={`dc__no-text-transform ${
+                                        linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
+                                    }`}
+                                >
+                                    Specific applications
                                 </span>
                             </RadioGroupItem>
                         </RadioGroup>

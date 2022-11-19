@@ -75,7 +75,7 @@ export default function AddExternalLink({
                     urlTemplate: '',
                     identifiers: [],
                     isEditable: false,
-                    type: ExternalLinkScopeType.AppLevel,
+                    type: ExternalLinkScopeType.ClusterLevel,
                 },
             ])
         }
@@ -147,7 +147,7 @@ export default function AddExternalLink({
                     identifiers: [],
                     urlTemplate: '',
                     isEditable: false,
-                    type: ExternalLinkScopeType.AppLevel,
+                    type: ExternalLinkScopeType.ClusterLevel,
                 })
                 break
             case 'delete':

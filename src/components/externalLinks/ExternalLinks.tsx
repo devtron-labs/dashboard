@@ -23,6 +23,7 @@ import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import './externalLinks.scss'
+import Tippy from '@tippyjs/react'
 
 function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolean; userRole?: UserRoleType }) {
     const { appId } = useParams<{ appId: string }>()
@@ -320,7 +321,18 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                                     {link.name}
                                 </div>
                                 <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
-                                    {link.description || '-'}
+                                    {link.description ? (
+                                        <Tippy
+                                            className="default-tt dc__mxw-300 dc__word-break-all"
+                                            arrow={false}
+                                            placement="top-start"
+                                            content={link.description}
+                                        >
+                                            <span>{link.description}</span>
+                                        </Tippy>
+                                    ) : (
+                                        '-'
+                                    )}
                                 </div>
                                 {!isAppConfigView && (
                                     <div className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right">
@@ -328,7 +340,14 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                                     </div>
                                 )}
                                 <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
-                                    {link.url}
+                                    <Tippy
+                                        className="default-tt dc__mxw-300 dc__word-break-all"
+                                        arrow={false}
+                                        placement="top-start"
+                                        content={link.url}
+                                    >
+                                        <span>{link.url}</span>
+                                    </Tippy>
                                 </div>
                                 <div className="external-link-actions">
                                     <EditIcon
@@ -406,7 +425,6 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                             {(appliedClusters.length > 0 || queryParams.get('search')) && filteredLinksLen === 0 && (
                                 <NoMatchingResults />
                             )}
-
                             {filteredLinksLen > 0 && (
                                 <>
                                     {renderExternalLinksHeader()}

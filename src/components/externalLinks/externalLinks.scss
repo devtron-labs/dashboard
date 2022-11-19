@@ -101,6 +101,7 @@
         .saved-filters__wrap {
             background-color: var(--window-bg);
             z-index: 0;
+            padding: 0;
 
             .saved-filter {
                 text-transform: none;
