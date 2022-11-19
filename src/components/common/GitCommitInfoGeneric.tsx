@@ -225,7 +225,6 @@ export default function GitCommitInfoGeneric({
                                     rel="noopener noreferer"
                                     className="dc__no-decor cb-5"
                                 >
-                                    {' '}
                                     View git url
                                 </a>
                             ) : null}
