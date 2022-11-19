@@ -105,7 +105,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
-                deploymentAppType: ""
+                deploymentAppType: DeploymentAppType.GitOps
             },
             showPreStage: false,
             showDeploymentStage: true,
