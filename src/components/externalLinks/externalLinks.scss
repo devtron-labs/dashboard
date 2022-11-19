@@ -155,27 +155,31 @@
             height: 465px !important;
         }
 
-        .external-link {
-            display: grid;
-            grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) 100px minmax(100px, 59%) 56px;
-            column-gap: 16px;
-            padding: 12px 20px;
+        .external-links__list {
+            height: calc(100% - 40px);
 
-            .external-link-actions {
-                display: none;
-                width: 56px;
-            }
-
-            &:hover {
-                background-color: var(--N50);
+            .external-link {
+                display: grid;
+                grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) 100px minmax(100px, 59%) 56px;
+                column-gap: 16px;
+                padding: 12px 20px;
 
                 .external-link-actions {
-                    display: flex;
+                    display: none;
+                    width: 56px;
                 }
-            }
 
-            &.app-config-view {
-                grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) minmax(100px, 59%) 56px;
+                &:hover {
+                    background-color: var(--N50);
+
+                    .external-link-actions {
+                        display: flex;
+                    }
+                }
+
+                &.app-config-view {
+                    grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) minmax(100px, 59%) 56px;
+                }
             }
         }
     }

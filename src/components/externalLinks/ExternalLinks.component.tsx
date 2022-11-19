@@ -25,9 +25,9 @@ import {
 import { OptionType } from '../app/types'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import './externalLinks.component.scss'
 import TippyWhite from '../common/TippyWhite'
 import { ConditionalWrap } from '../common'
+import './externalLinks.component.scss'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -320,7 +320,7 @@ export const ValueContainer = (props): JSX.Element => {
                 <>
                     {!props.selectProps.menuIsOpen && (
                         <>
-                            {props.selectProps.name}:&nbsp;
+                            {props.selectProps.name.includes('Clusters') ? 'Cluster: ' : 'Application: '}
                             {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
                         </>
                     )}

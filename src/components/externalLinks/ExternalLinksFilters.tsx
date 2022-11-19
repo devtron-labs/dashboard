@@ -91,7 +91,7 @@ export const ClusterFilter = ({
             <ReactSelect
                 menuIsOpen={isMenuOpen}
                 placeholder="Cluster: All"
-                name="Cluster"
+                name="Clusters"
                 value={selectedCluster}
                 options={clusters}
                 onChange={handleSelectedFilters}
@@ -215,7 +215,7 @@ export const ApplicationFilter = ({
             <ReactSelect
                 menuIsOpen={isMenuOpen}
                 placeholder="Application: All"
-                name="Application"
+                name="Applications"
                 value={selectedApps}
                 options={allApps}
                 onChange={handleSelectedFilters}

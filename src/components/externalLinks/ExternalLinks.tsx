@@ -410,7 +410,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                             {filteredLinksLen > 0 && (
                                 <>
                                     {renderExternalLinksHeader()}
-                                    <div className="h-100 dc__overflow-scroll">
+                                    <div className="external-links__list dc__overflow-scroll">
                                         {renderExternalLinks(filteredLinksLen)}
                                     </div>
                                 </>

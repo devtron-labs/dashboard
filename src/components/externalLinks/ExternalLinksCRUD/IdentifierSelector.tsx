@@ -165,7 +165,7 @@ export default function IdentifierSelector({
                     <label>Clusters*</label>
                     <ReactSelect
                         placeholder="Select clusters"
-                        name={`link-clusters-${index}`}
+                        name={`Link-Clusters-${index}`}
                         value={selectedIdentifiers}
                         options={clusters}
                         formatOptionLabel={formatOptionLabelClusters}
@@ -230,7 +230,7 @@ export default function IdentifierSelector({
                         closeMenuOnSelect={false}
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}
-                        name="link-applications"
+                        name="Link-Applications"
                         placeholder="Select or enter app name"
                         options={allApps}
                         className="basic-multi-select mb-4"

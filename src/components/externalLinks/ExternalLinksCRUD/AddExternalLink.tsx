@@ -356,9 +356,10 @@ export default function AddExternalLink({
             const validatedLinksData = getValidatedLinksData()
             const invalidData = validatedLinksData.some(
                 (link) =>
-                    (!isAppConfigView && (link.invalidTool || link.invalidIdentifiers || link.invalidProtocol)) ||
+                    (!isAppConfigView && (link.invalidTool || link.invalidIdentifiers)) ||
                     link.invalidName ||
-                    link.invalidUrlTemplate,
+                    link.invalidUrlTemplate ||
+                    link.invalidProtocol,
             )
 
             if (invalidData) {
