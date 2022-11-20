@@ -183,15 +183,15 @@ export default function CIDetails() {
                         </Route>
                     )}
                     {pipelineId && dependencyState[0] !== pipelineId && <Progressing pageLoader />}
-                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView}/>}
+                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>
             </div>
-            {(scrollToTop || scrollToBottom) && (
+            {/* {(scrollToTop || scrollToBottom) && (
                 <Scroller
                     style={{ position: 'fixed', bottom: '25px', right: '32px' }}
                     {...{ scrollToTop, scrollToBottom }}
                 />
-            )}
+            )} */}
         </>
     )
 }

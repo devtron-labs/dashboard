@@ -88,7 +88,6 @@ export default function CDDetails() {
     const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
-    const [showTemplate, setShowTemplate] = useState(false)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     useEffect(() => {
@@ -179,74 +178,54 @@ export default function CDDetails() {
   })
     return (
         <>
-            <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                {!showTemplate && (
-                    <>
-                        <div className="ci-details__history">
-                            {!fullScreenView && (
-                                <Sidebar
-                                    filterOptions={envOptions}
-                                    parentType={STAGE_TYPE.CD}
-                                    hasMore={hasMore}
-                                    triggerHistory={triggerHistory}
-                                    setPagination={setPagination}
-                                />
-                            )}
-                        </div>
-                        <div ref={ref} className="ci-details__body">
-                            {!envId && (
-                                <>
-                                    <div />
-                                    <SelectEnvironmentView />
-                                </>
-                            )}
-                            {!!envId && triggerHistory?.size > 0 && (
-                                <Route
-                                    path={`${path
-                                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                        .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
-                                >
-                                    <TriggerOutput
-                                        fullScreenView={fullScreenView}
-                                        syncState={syncState}
-                                        triggerHistory={triggerHistory}
-                                        setShowTemplate={setShowTemplate}
-                                        setDeploymentHistoryList={setDeploymentHistoryList}
-                                        deploymentHistoryList={deploymentHistoryList}
-                                        deploymentAppType={deploymentAppType}
-                                        isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
-                                    />
-                                </Route>
-                            )}
-
-                            {!!envId && triggerHistory?.size === 0 && (
-                                <NoCDTriggersView environmentName={environment?.environmentName} />
-                            )}
-                            {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
-                        </div>
-                    </>
-                )}
-                <Switch>
-                    <Route
-                        path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
-                        render={(props) => (
-                            <DeploymentHistoryDetailedView
-                                showTemplate={showTemplate}
-                                setShowTemplate={setShowTemplate}
+            <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+                <div className="ci-details__history">
+                    {!fullScreenView && (
+                        <Sidebar
+                            filterOptions={envOptions}
+                            parentType={STAGE_TYPE.CD}
+                            hasMore={hasMore}
+                            triggerHistory={triggerHistory}
+                            setPagination={setPagination}
+                        />
+                    )}
+                </div>
+                <div ref={ref} className="ci-details__body">
+                    {!envId ? (
+                        <>
+                            <div />
+                            <SelectEnvironmentView />
+                        </>
+                    ) : triggerHistory?.size > 0 ? (
+                        <Route
+                            path={`${path
+                                .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
+                        >
+                            <TriggerOutput
+                                fullScreenView={fullScreenView}
+                                syncState={syncState}
+                                triggerHistory={triggerHistory}
+                                setFullScreenView={setFullScreenView}
                                 setDeploymentHistoryList={setDeploymentHistoryList}
                                 deploymentHistoryList={deploymentHistoryList}
+                                deploymentAppType={deploymentAppType}
+                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                             />
-                        )}
-                    />
-                </Switch>
+                        </Route>
+                    ) : (
+                        <NoCDTriggersView environmentName={environment?.environmentName} />
+                    )}
+                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
+                </div>
             </div>
 
-            {(scrollToTop || scrollToBottom) && (
+            {/* {(scrollToTop || scrollToBottom) && (
                 <Scroller
                     style={{ position: 'fixed', bottom: '25px', right: '32px' }}
                     {...{ scrollToTop, scrollToBottom }}
                 />
-            )}
+            )} */}
         </>
     )
 }
@@ -285,7 +264,7 @@ const TriggerOutput: React.FC<{
     fullScreenView: boolean
     syncState: (triggerId: number, triggerDetails: History) => void
     triggerHistory: Map<number, History>
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
+    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
@@ -294,7 +273,7 @@ const TriggerOutput: React.FC<{
     fullScreenView,
     syncState,
     triggerHistory,
-    setShowTemplate,
+    setFullScreenView,
     setDeploymentHistoryList,
     deploymentHistoryList,
     deploymentAppType,
@@ -423,7 +402,7 @@ const TriggerOutput: React.FC<{
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 loading={triggerDetailsLoading && !triggerDetailsResult}
-                setShowTemplate={setShowTemplate}
+                setFullScreenView={setFullScreenView}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
                 deploymentAppType={deploymentAppType}
@@ -436,12 +415,12 @@ const TriggerOutput: React.FC<{
 const HistoryLogs: React.FC<{
     triggerDetails: History
     loading: boolean
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
+    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
-}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType, isBlobStorageConfigured }) => {
+}> = ({ triggerDetails, loading, setFullScreenView, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType, isBlobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
@@ -459,16 +438,22 @@ const HistoryLogs: React.FC<{
                     <Progressing pageLoader />
                 ) : (
                     <Switch>
-                        {triggerDetails.stage !== 'DEPLOY' && (
+                        {triggerDetails.stage !== 'DEPLOY' ? (
                             <Route path={`${path}/logs`}>
                                 <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} isBlobStorageConfigured={isBlobStorageConfigured} parentType={STAGE_TYPE.CD}/>
+                                    <LogsRenderer
+                                        triggerDetails={triggerDetails}
+                                        isBlobStorageConfigured={isBlobStorageConfigured}
+                                        parentType={STAGE_TYPE.CD}
+                                    />
                                 </div>
                             </Route>
-                        )}
-                        {triggerDetails.stage === 'DEPLOY' && (
+                        ) : (
                             <Route path={`${path}/deployment-steps`}>
-                                <DeploymentDetailSteps deploymentStatus={triggerDetails.status} deploymentAppType={deploymentAppType} />
+                                <DeploymentDetailSteps
+                                    deploymentStatus={triggerDetails.status}
+                                    deploymentAppType={deploymentAppType}
+                                />
                             </Route>
                         )}
                         <Route
@@ -480,9 +465,22 @@ const HistoryLogs: React.FC<{
                                 path={`${path}/configuration`}
                                 render={(props) => (
                                     <DeploymentHistoryConfigList
-                                        setShowTemplate={setShowTemplate}
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
+                                        setFullScreenView={setFullScreenView}
+                                    />
+                                )}
+                                exact
+                            />
+                        )}
+                        {triggerDetails.stage === 'DEPLOY' && (
+                            <Route
+                                path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
+                                render={(props) => (
+                                    <DeploymentHistoryDetailedView
+                                        setDeploymentHistoryList={setDeploymentHistoryList}
+                                        deploymentHistoryList={deploymentHistoryList}
+                                        setFullScreenView={setFullScreenView}
                                     />
                                 )}
                             />
@@ -498,15 +496,7 @@ const HistoryLogs: React.FC<{
                                 )}
                             />
                         )}
-                        <Redirect
-                            to={
-                                triggerDetails.status.toLowerCase() === 'succeeded'
-                                    ? `${path}/artifacts`
-                                    : triggerDetails.stage === 'DEPLOY'
-                                    ? `${path}/deployment-steps`
-                                    : `${path}/logs`
-                            }
-                        />
+                        <Redirect to={`${path}/${triggerDetails.stage === 'DEPLOY' ? `deployment-steps` : `logs`}`} />
                     </Switch>
                 )}
             </div>
@@ -517,41 +507,5 @@ const HistoryLogs: React.FC<{
                 />
             )}
         </>
-    )
-}
-
-const SelectEnvironment: React.FC<{ environments: AppEnvironment[] }> = ({ environments }) => {
-    const params = useParams<{ envId: string; appId: string }>()
-    const { push } = useHistory()
-    const { path } = useRouteMatch()
-    const environmentsMap = mapByKey(environments, 'environmentId')
-
-    function handleEnvironmentChange(envId: number) {
-        if (envId && envId > 0) {
-            const newUrl = generatePath(path, { envId, appId: params.appId })
-            push(newUrl)
-        }
-    }
-
-    const environment = environmentsMap.get(+params.envId)
-    return (
-        <div className="select-pipeline-wrapper w-100 pl-16 pr-16" style={{ overflow: 'hidden' }}>
-            <label className="form__label">Select Environment</label>
-            <Select onChange={(event) => handleEnvironmentChange(+event.target.value)} value={+params.envId}>
-                <Select.Button rootClassName="select-button--default">
-                    <div className="dc__ellipsis-left w-100 flex right">
-                        {environment ? environment.environmentName : 'Select environment'}
-                    </div>
-                </Select.Button>
-                {Array.isArray(environments) &&
-                    environments
-                        .sort((a, b) => a.environmentName.localeCompare(b.environmentName))
-                        .map((p) => (
-                            <Select.Option key={p.environmentId} value={p.environmentId}>
-                                <span className="dc__ellipsis-left">{p.environmentName}</span>
-                            </Select.Option>
-                        ))}
-            </Select>
-        </div>
     )
 }

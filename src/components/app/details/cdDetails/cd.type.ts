@@ -23,7 +23,7 @@ export interface DeploymentTemplateOptions {
 export interface CompareWithBaseConfiguration {
     selectedDeploymentTemplate: DeploymentTemplateOptions
     setSelectedDeploymentTemplate: (selected) => void
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
+    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     setLoader: React.Dispatch<React.SetStateAction<boolean>>
     setPreviousConfigAvailable: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -35,8 +35,7 @@ export interface HistoryDiffSelectorList {
     wfrId?: number
 }
 export interface CompareViewDeploymentType {
-    showTemplate: boolean
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
+    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }

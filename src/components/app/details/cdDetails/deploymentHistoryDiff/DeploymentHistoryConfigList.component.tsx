@@ -9,13 +9,13 @@ import CDEmptyState from '../CDEmptyState'
 import { Progressing } from '../../../../common'
 
 interface TemplateConfiguration {
-    setShowTemplate: (boolean) => void
+  setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 
 export default function DeploymentHistoryConfigList({
-    setShowTemplate,
+  setFullScreenView,
     deploymentHistoryList,
     setDeploymentHistoryList: setDeploymentHistoryList,
 }: TemplateConfiguration) {
@@ -42,7 +42,7 @@ export default function DeploymentHistoryConfigList({
                 to={configURL}
                 activeClassName="active"
                 onClick={() => {
-                    setShowTemplate(true)
+                  setFullScreenView(false)
                 }}
                 className="bcb-1 dc__no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex dc__content-space cursor lh-20"
             >

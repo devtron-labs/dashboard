@@ -13,8 +13,7 @@ import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
 export default function DeploymentHistoryDetailedView({
-    showTemplate,
-    setShowTemplate,
+    setFullScreenView,
     deploymentHistoryList,
     setDeploymentHistoryList,
 }: CompareViewDeploymentType) {
@@ -75,14 +74,14 @@ export default function DeploymentHistoryDetailedView({
         //show template showing historical diff detailed view
         //in case if !shoowTemplate CD detail component being rendered
 
-        if (!showTemplate) {
-            setShowTemplate(true)
-        }
+        //if (!showTemplate) {
+          setFullScreenView(true)
+        //}
 
         return (): void => {
-            if (showTemplate) {
-                setShowTemplate(false)
-            }
+            //if (showTemplate) {
+              setFullScreenView(false)
+            //}
         }
     }, [])
 
@@ -91,7 +90,7 @@ export default function DeploymentHistoryDetailedView({
             <DeploymentHistoryHeader
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}
-                setShowTemplate={setShowTemplate}
+                setFullScreenView={setFullScreenView}
                 setLoader={setLoader}
                 setPreviousConfigAvailable={setPreviousConfigAvailable}
             />

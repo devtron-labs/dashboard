@@ -14,7 +14,7 @@ import Tippy from '@tippyjs/react'
 export default function DeploymentHistoryHeader({
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
-    setShowTemplate,
+    setFullScreenView,
     setLoader,
     setPreviousConfigAvailable,
 }: CompareWithBaseConfiguration) {
@@ -76,7 +76,7 @@ export default function DeploymentHistoryHeader({
                 className="flex"
                 onClick={(e) => {
                     e.preventDefault()
-                    setShowTemplate(false)
+                    setFullScreenView(false)
                     history.push(
                         `${url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
                             URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
