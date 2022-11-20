@@ -52,79 +52,14 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { renderConfigurationError } from '../cdDetails/cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
+import { OptionType } from '../../types'
+import { STAGE_TYPE } from '../triggerView/types'
+import Sidebar from '../cicdHistory/Sidebar'
+import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.components'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-function useCIEventSource(url: string, maxLength?: number) {
-    const [data, setData] = useState([])
-    let retryCount = LOGS_RETRY_COUNT
-    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
-    const [interval, setInterval] = useState(1000)
-    const buffer = useRef([])
-    const eventSourceRef = useRef(null)
-    useInterval(populateData, interval)
-
-    function populateData() {
-        setData((data) => [...data, ...buffer.current])
-        buffer.current = []
-    }
-    function closeEventSource() {
-        if (eventSourceRef.current && eventSourceRef.current.close) eventSourceRef.current.close()
-    }
-
-    function handleMessage(event) {
-        if (event.type === 'message') {
-            retryCount = LOGS_RETRY_COUNT
-            buffer.current.push(event.data)
-        }
-    }
-
-    function handleStreamStart() {
-        retryCount = LOGS_RETRY_COUNT
-        buffer.current = []
-        setData([])
-    }
-
-    function handleStreamEnd() {
-        retryCount = LOGS_RETRY_COUNT
-        setData((data) => [...data, ...buffer.current])
-        buffer.current = []
-        eventSourceRef.current.close()
-        setInterval(null)
-    }
-
-    function handleError(error: any) {
-        retryCount--
-        if (eventSourceRef.current) {
-            eventSourceRef.current.close()
-        }
-        if (retryCount > 0) {
-            getData()
-        } else {
-            setLogsNotAvailableError(true)
-            setInterval(null)
-        }
-    }
-
-    function getData() {
-        buffer.current = []
-        eventSourceRef.current = new EventSource(url, { withCredentials: true })
-        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, handleMessage)
-        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM, handleStreamStart)
-        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM, handleStreamEnd)
-        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, handleError)
-    }
-
-    useEffect(() => {
-        if(url){
-          getData()
-        }
-        return closeEventSource
-    }, [url, maxLength])
-
-    return [data, eventSourceRef.current, logsNotAvailableError]
-}
 
 interface Pipelines {
     pipelines: CIPipeline[]
@@ -175,16 +110,6 @@ export default function CIDetails() {
         setTriggerHistory(new Map())
     }, [pipelineId])
 
-    function reloadNextAfterBottom(e) {
-        ReactGA.event({
-            category: 'pagination',
-            action: 'scroll',
-            label: 'ci-history',
-            value: triggerHistory.size,
-        })
-        setPagination((pagination) => ({ offset: triggerHistory.size, size: 20 }))
-    }
-
     function synchroniseState(triggerId: number, triggerDetails: History) {
         setTriggerHistory((triggerHistory) => {
             triggerHistory.set(triggerId, triggerDetails)
@@ -206,6 +131,9 @@ export default function CIDetails() {
 
     if ((!hasMoreLoading && loading) || pipelinesLoading) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter((pipeline) => pipeline.pipelineType !== 'EXTERNAL') // external pipelines not visible in dropdown
+    const pipelineOptions: OptionType[] = (pipelines || []).map((item) => {
+        return { value: `${item.id}`, label: item.name }
+    })
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
     return (
@@ -213,17 +141,13 @@ export default function CIDetails() {
             <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
                 <div className="ci-details__history">
                     {!fullScreenView && (
-                        <>
-                            <SelectPipeline pipelines={pipelines} />
-                            <div className="flex column top left" style={{ overflowY: 'auto' }}>
-                                {Array.from(triggerHistory)
-                                    .sort(([a], [b]) => b - a)
-                                    .map(([triggerId, trigger]) => (
-                                        <BuildCard key={trigger.id} triggerDetails={trigger} />
-                                    ))}
-                                {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
-                            </div>
-                        </>
+                        <Sidebar
+                            filterOptions={pipelineOptions}
+                            parentType={STAGE_TYPE.CI}
+                            hasMore={hasMore}
+                            triggerHistory={triggerHistory}
+                            setPagination={setPagination}
+                        />
                     )}
                 </div>
                 <div ref={ref} className="ci-details__body">
@@ -251,26 +175,15 @@ export default function CIDetails() {
                                 pipeline={pipeline}
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
-                                isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
+                                isSecurityModuleInstalled={
+                                    securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
+                                }
                                 isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                             />
                         </Route>
                     )}
                     {pipelineId && dependencyState[0] !== pipelineId && <Progressing pageLoader />}
-                    {pathname.includes('/logs') && (
-                        <Tippy
-                            placement="top"
-                            arrow={false}
-                            className="default-tt"
-                            content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
-                        >
-                            {fullScreenView ? (
-                                <ZoomOut className="zoom zoom--out pointer" onClick={(e) => setFullScreenView(false)} />
-                            ) : (
-                                <ZoomIn className="zoom zoom--in pointer" onClick={(e) => setFullScreenView(true)} />
-                            )}
-                        </Tippy>
-                    )}
+                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView}/>}
                 </div>
             </div>
             {(scrollToTop || scrollToBottom) && (
@@ -280,129 +193,6 @@ export default function CIDetails() {
                 />
             )}
         </>
-    )
-}
-
-export function DetectBottom({ callback }) {
-    const target = useRef<HTMLSpanElement>(null)
-    const intersected = useIntersection(target, {
-        rootMargin: '0px',
-        once: false,
-    })
-
-    useEffect(() => {
-        if (intersected) {
-            callback()
-        }
-    }, [intersected])
-
-    return <span className="pb-5" ref={target}></span>
-}
-
-export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ triggerDetails }) => {
-    const { url, path } = useRouteMatch()
-    return (
-        <ConditionalWrap
-            condition={Array.isArray(triggerDetails?.ciMaterials)}
-            wrap={(children) => (
-                <TippyHeadless
-                    placement="right"
-                    interactive
-                    render={() => <BuildCardPopup triggerDetails={triggerDetails} />}
-                >
-                    {children}
-                </TippyHeadless>
-            )}
-        >
-            <NavLink
-                to={`${url}/${triggerDetails.id}`}
-                className="w-100 ci-details__build-card"
-                activeClassName="active"
-            >
-                <div
-                    className="w-100"
-                    style={{
-                        height: '64px',
-                        display: 'grid',
-                        gridTemplateColumns: '20px 1fr',
-                        padding: '12px 0',
-                        gridColumnGap: '12px',
-                    }}
-                >
-                    <div
-                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
-                            ?.toLocaleLowerCase()
-                            .replace(/\s+/g, '')}`}
-                    ></div>
-                    <div className="flex column left dc__ellipsis-right">
-                        <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
-                        <div className="cn-7 fs-12">
-                            {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
-                        </div>
-                    </div>
-                </div>
-            </NavLink>
-        </ConditionalWrap>
-    )
-})
-
-export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerDetails }) => {
-    return (
-        <div className="build-card-popup p-16 br-4 flex column left" style={{ width: '400px', background: 'white' }}>
-            <span className="fw-6 fs-16 mb-4" style={{ color: colorMap[triggerDetails.status.toLowerCase()] }}>
-                {triggerDetails.status.toLowerCase() === 'cancelled' ? 'Aborted' : triggerDetails.status}
-            </span>
-            <div className="flex column left ">
-                <div className="flex left fs-12 cn-7">
-                    <div>{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
-                    <div className="dc__bullet ml-6 mr-6"></div>
-                    <div>{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
-                </div>
-                {triggerDetails?.ciMaterials?.map((ciMaterial) => {
-                    const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
-                    const sourceType = gitDetail?.CiConfigureSourceType
-                        ? gitDetail?.CiConfigureSourceType
-                        : ciMaterial?.type
-                    const sourceValue = gitDetail?.CiConfigureSourceValue
-                        ? gitDetail?.CiConfigureSourceValue
-                        : ciMaterial?.value
-                    const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail?.GitRepoUrl : ciMaterial?.url
-                    return (
-                        <div
-                            className="mt-22"
-                            key={ciMaterial.id}
-                            style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}
-                        >
-                            {sourceType != SourceTypeMap.WEBHOOK && (
-                                <>
-                                    <div className="dc__git-logo"> </div>
-                                    <div className="flex left column">
-                                        <a
-                                            href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)}
-                                            target="_blank"
-                                            rel="noopener noreferer"
-                                            className="fs-12 fw-6 cn-9 pointer"
-                                        >
-                                            /{sourceValue}
-                                        </a>
-                                        <p className="fs-12 cn-7">{gitDetail?.Message}</p>
-                                    </div>
-                                </>
-                            )}
-                            {sourceType == SourceTypeMap.WEBHOOK && (
-                                <div className="flex left column">
-                                    <CiPipelineSourceConfig
-                                        sourceType={sourceType}
-                                        sourceValue={sourceValue}
-                                        showTooltip={false}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
     )
 }
 
@@ -815,10 +605,7 @@ const HistoryLogs: React.FC<{
 }> = ({ pipeline, triggerDetails, setFullScreenView, isBlobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
-    const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
-        triggerDetails.status.toLowerCase() !== 'succeeded',
-    )
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
+    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded' })
 
     return (
         <>
@@ -829,7 +616,7 @@ const HistoryLogs: React.FC<{
                     <Switch>
                         <Route path={`${path}/logs`}>
                             <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} isBlobStorageConfigured={isBlobStorageConfigured} />
+                                <LogsRenderer triggerDetails={triggerDetails} isBlobStorageConfigured={isBlobStorageConfigured} parentType={STAGE_TYPE.CI}/>
                             </div>
                         </Route>
                         <Route
@@ -866,37 +653,6 @@ const HistoryLogs: React.FC<{
                 />
             )}
         </>
-    )
-}
-
-const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
-    const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
-    const { push } = useHistory()
-    const { url, path } = useRouteMatch()
-    function handlePipelineChange(event: React.ChangeEvent<HTMLInputElement>) {
-        let id = +event.target.value
-        if (id && id > 0) {
-            const newUrl = generatePath(path, { appId, pipelineId: id, envId })
-            push(newUrl)
-        }
-    }
-    const pipeline = pipelines?.find((ci) => ci.id === +pipelineId)
-    return (
-        <div className="select-pipeline-wrapper w-100 pl-16 pr-16" style={{ overflow: 'hidden' }}>
-            <label className="form__label">Select Pipeline</label>
-            <Select onChange={handlePipelineChange} value={+pipelineId}>
-                <Select.Button rootClassName="select-button--default">
-                    <div className="dc__ellipsis-left w-100 flex right">{pipeline ? pipeline.name : 'Select Pipeline'}</div>
-                </Select.Button>
-                {pipelines.map((item, idx) => {
-                    return (
-                        <Select.Option key={idx} value={item.id}>
-                            <span className="dc__ellipsis-left">{item.name}</span>
-                        </Select.Option>
-                    )
-                })}
-            </Select>
-        </div>
     )
 }
 
@@ -995,75 +751,6 @@ function NoArtifactsView() {
             </EmptyState.Title>
             <EmptyState.Subtitle>Errr..!! We couldn’t build your code.</EmptyState.Subtitle>
         </EmptyState>
-    )
-}
-
-export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void, isBlobStorageConfigured: boolean }> = ({
-    triggerDetails,
-    setFullScreenView,
-    isBlobStorageConfigured
-}) => {
-    const keys = useKeyDown()
-
-    useEffect(() => {
-        switch (keys.join('')) {
-            case 'f':
-                setFullScreenView(not)
-                break
-            case 'Escape':
-                setFullScreenView(false)
-                break
-        }
-    }, [keys])
-    const { pipelineId } = useParams<{ pipelineId: string }>()
-    const [logs, eventSource, logsNotAvailable] = useCIEventSource(
-        triggerDetails.podStatus &&
-            triggerDetails.podStatus !== POD_STATUS.PENDING &&
-            `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
-    )
-    function createMarkup(log) {
-        try {
-            log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
-            const ansi_up = new AnsiUp()
-            return { __html: ansi_up.ansi_to_html(log) }
-        } catch (err) {
-            return { __html: log }
-        }
-    }
-
-    return triggerDetails.podStatus !== POD_STATUS.PENDING && logsNotAvailable && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled)  ? (
-      renderConfigurationError(isBlobStorageConfigured)
-    ) : (
-        <div className="logs__body">
-            {logs.map((log, index) => {
-                return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
-            })}
-            {(triggerDetails.podStatus === POD_STATUS.PENDING || (eventSource && eventSource.readyState <= 1)) && (
-                <div className="flex left event-source-status">
-                    <Progressing />
-                </div>
-            )}
-        </div>
-    )
-}
-
-export function Scroller({ scrollToTop, scrollToBottom, style }) {
-    return (
-        <div
-            style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-            className="dc__element-scroller"
-        >
-            <Tippy className="default-tt" arrow={false} content="Scroll to Top">
-                <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
-                    <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
-                </button>
-            </Tippy>
-            <Tippy className="default-tt" arrow={false} content="Scroll to Bottom">
-                <button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
-                    <DropDownIcon className="rotate" />
-                </button>
-            </Tippy>
-        </div>
     )
 }
 

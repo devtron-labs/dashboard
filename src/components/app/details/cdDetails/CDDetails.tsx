@@ -27,14 +27,13 @@ import { default as AnsiUp } from 'ansi_up'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service'
-import { Scroller } from '../cIDetails/CIDetails'
 import ReactGA from 'react-ga4'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import TippyHeadless from '@tippyjs/react/headless'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import Tippy from '@tippyjs/react'
-import { DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup } from '../cIDetails/CIDetails'
+import { TriggerDetails, GitChanges, Artifacts } from '../cIDetails/CIDetails'
 import { History } from '../cIDetails/types'
 import { Moment12HourFormat } from '../../../../config'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
@@ -45,6 +44,10 @@ import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { renderConfigurationError } from './cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
+import { STAGE_TYPE } from '../triggerView/types'
+import Sidebar from '../cicdHistory/Sidebar'
+import { OptionType } from '../../types'
+import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.components'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -85,21 +88,8 @@ export default function CDDetails() {
     const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
-    const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
-
-    useEffect(() => {
-        if (!pathname.includes('/logs')) return
-        switch (keys.join('')) {
-            case 'f':
-                setFullScreenView(not)
-                break
-            case 'Escape':
-                setFullScreenView(false)
-                break
-        }
-    }, [keys])
 
     useEffect(() => {
         // check for more
@@ -117,16 +107,6 @@ export default function CDDetails() {
     }, [deploymentHistoryResult, loading])
 
     const environment = result ? result[0].result?.find((envData) => envData.environmentId === +envId) : null
-
-    function reloadNextAfterBottom(e) {
-        ReactGA.event({
-            category: 'pagination',
-            action: 'scroll',
-            label: 'cd-history',
-            value: triggerHistory.size,
-        })
-        setPagination((pagination) => ({ offset: triggerHistory.size, size: 20 }))
-    }
 
     async function pollHistory() {
         // polling
@@ -194,7 +174,9 @@ export default function CDDetails() {
     if (result && !Array.isArray(result[0].result)) return <AppNotConfigured />
     if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured />
     if (!result || (envId && dependencyState[2] !== envId)) return null
-
+    const envOptions: OptionType[] = (result[0].result || []).map((item) => {
+      return { value: `${item.environmentId}`, label: item.environmentName }
+  })
     return (
         <>
             <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -202,17 +184,13 @@ export default function CDDetails() {
                     <>
                         <div className="ci-details__history">
                             {!fullScreenView && (
-                                <>
-                                    <SelectEnvironment environments={result[0].result} />
-                                    <div className="flex column top left" style={{ overflowY: 'auto' }}>
-                                        {Array.from(triggerHistory)
-                                            ?.sort(([a], [b]) => b - a)
-                                            ?.map(([triggerId, trigger], idx) => (
-                                                <DeploymentCard key={idx} triggerDetails={trigger} />
-                                            ))}
-                                        {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
-                                    </div>
-                                </>
+                                <Sidebar
+                                    filterOptions={envOptions}
+                                    parentType={STAGE_TYPE.CD}
+                                    hasMore={hasMore}
+                                    triggerHistory={triggerHistory}
+                                    setPagination={setPagination}
+                                />
                             )}
                         </div>
                         <div ref={ref} className="ci-details__body">
@@ -244,26 +222,7 @@ export default function CDDetails() {
                             {!!envId && triggerHistory?.size === 0 && (
                                 <NoCDTriggersView environmentName={environment?.environmentName} />
                             )}
-                            {pathname.includes('/logs') && (
-                                <Tippy
-                                    placement="top"
-                                    arrow={false}
-                                    className="default-tt"
-                                    content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
-                                >
-                                    {fullScreenView ? (
-                                        <ZoomOut
-                                            className="zoom zoom--out pointer"
-                                            onClick={(e) => setFullScreenView(false)}
-                                        />
-                                    ) : (
-                                        <ZoomIn
-                                            className="zoom zoom--in pointer"
-                                            onClick={(e) => setFullScreenView(true)}
-                                        />
-                                    )}
-                                </Tippy>
-                            )}
+                            {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                         </div>
                     </>
                 )}
@@ -289,73 +248,6 @@ export default function CDDetails() {
                 />
             )}
         </>
-    )
-}
-
-const DeploymentCard: React.FC<{
-    triggerDetails: History
-}> = ({ triggerDetails }) => {
-    const { path } = useRouteMatch()
-    const { pathname } = useLocation()
-    const currentTab = pathname.split('/').pop()
-    const { triggerId, ...rest } = useParams<{ triggerId: string }>()
-    return (
-        <ConditionalWrap
-            condition={Array.isArray(triggerDetails?.ciMaterials)}
-            wrap={(children) => (
-                <TippyHeadless
-                    placement="right"
-                    interactive
-                    render={() => <BuildCardPopup triggerDetails={triggerDetails} />}
-                >
-                    {children}
-                </TippyHeadless>
-            )}
-        >
-            <NavLink
-                to={generatePath(path, { ...rest, triggerId: triggerDetails.id }) + '/' + currentTab}
-                className="w-100 ci-details__build-card"
-                activeClassName="active"
-            >
-                <div
-                    className="w-100"
-                    style={{
-                        height: '64px',
-                        display: 'grid',
-                        gridTemplateColumns: '20px 1fr',
-                        padding: '12px 0',
-                        gridColumnGap: '12px',
-                    }}
-                >
-                    <div
-                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
-                            ?.toLocaleLowerCase()
-                            .replace(/\s+/g, '')}`}
-                    />
-                    <div className="flex column left dc__ellipsis-right">
-                        <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
-                        <div className="flex left cn-7 fs-12">
-                            <div className="dc__capitalize">
-                                {['pre', 'post'].includes(triggerDetails.stage?.toLowerCase())
-                                    ? `${triggerDetails.stage}-deploy`
-                                    : triggerDetails.stage}
-                            </div>
-                            <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
-                            {triggerDetails.artifact && (
-                                <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
-                                    <img src={docker} className="commit-hash__icon grayscale" />
-                                    {triggerDetails.artifact.split(':')[1].slice(-12)}
-                                </div>
-                            )}
-                            <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
-                            <div className="cn-7 fs-12">
-                                {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </NavLink>
-        </ConditionalWrap>
     )
 }
 
@@ -386,95 +278,6 @@ function NoCDTriggersView({ environmentName }) {
                 No deployment history available for the {environmentName} environment.
             </EmptyState.Subtitle>
         </EmptyState>
-    )
-}
-
-function Logs({ triggerDetails, isBlobStorageConfigured }) {
-    const eventSrcRef = useRef(null)
-    const [logs, setLogs] = useState([])
-    let retryCount = LOGS_RETRY_COUNT
-    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
-    const counter = useRef(0)
-    const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
-
-    function createMarkup(log) {
-        try {
-            log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
-            const ansi_up = new AnsiUp()
-            return { __html: ansi_up.ansi_to_html(log) }
-        } catch (err) {
-            return { __html: log }
-        }
-    }
-
-    useEffect(() => {
-        function getLogs() {
-            let url = `${Host}/app/cd-pipeline/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
-            eventSrcRef.current = new EventSource(url, { withCredentials: true })
-            eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, (event: any) => {
-                retryCount = LOGS_RETRY_COUNT
-                if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM) !== -1) {
-                    setLogs([])
-                    counter.current = 0
-                } else if (event.data.toString().indexOf(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM) !== -1) {
-                    eventSrcRef.current.close()
-                } else {
-                    setLogs((logs) => logs.concat({ text: event.data, index: counter.current + 1 }))
-                    counter.current += 1
-                }
-            })
-            eventSrcRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, (event: any) => {
-                retryCount--
-                if (eventSrcRef.current) {
-                    eventSrcRef.current.close()
-                }
-                if (retryCount > 0) {
-                    getLogs()
-                } else {
-                    setLogsNotAvailableError(true)
-                }
-            })
-        }
-        triggerDetails.podStatus !== POD_STATUS.PENDING && getLogs()
-        return () => {
-            if (eventSrcRef.current) {
-                eventSrcRef.current.close()
-            }
-        }
-    }, [triggerDetails.id, pipelineId, triggerDetails.podStatus])
-
-    if (!triggerDetails) return null
-    return triggerDetails.podStatus!== POD_STATUS.PENDING && logsNotAvailableError && (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
-      renderConfigurationError(isBlobStorageConfigured)
-    ) : (
-        <>
-            {triggerDetails.id === 0 ? (
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={EmptyImage} alt="so empty" />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4>No logs</h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>
-                        Logs are only generated for pre-deployment and post-deployment stages
-                    </EmptyState.Subtitle>
-                </EmptyState>
-            ) : (
-                <div className="logs__body">
-                    <div>
-                        {logs.map(({ index, text }) => (
-                            <p className="log mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(text)} />
-                        ))}
-                    </div>
-                    {(triggerDetails.podStatus=== POD_STATUS.PENDING || (eventSrcRef.current && eventSrcRef.current.readyState <= 1)) && (
-                        <div className="flex left event-source-status">
-                            <Progressing />
-                        </div>
-                    )}
-                </div>
-            )}
-        </>
     )
 }
 
@@ -646,10 +449,8 @@ const HistoryLogs: React.FC<{
         triggerId: string
         envId: string
     }>()
-    const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
-        triggerDetails.status.toLowerCase() !== 'succeeded',
-    )
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
+
+    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded' })
 
     return (
         <>
@@ -661,7 +462,7 @@ const HistoryLogs: React.FC<{
                         {triggerDetails.stage !== 'DEPLOY' && (
                             <Route path={`${path}/logs`}>
                                 <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                    <Logs triggerDetails={triggerDetails} isBlobStorageConfigured={isBlobStorageConfigured}/>
+                                <LogsRenderer triggerDetails={triggerDetails} isBlobStorageConfigured={isBlobStorageConfigured} parentType={STAGE_TYPE.CD}/>
                                 </div>
                             </Route>
                         )}
