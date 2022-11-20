@@ -18,7 +18,6 @@ import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
 import { ACCESS_TYPE_MAP, MODES } from '../../../config'
 import { createGeneratedAPIToken } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
-import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
 import {
     CURL_PREFIX,
@@ -41,6 +40,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         webhookId: string
     }>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
+    const responseSectionRef = useRef<HTMLDivElement>(null)
     const [loader, setLoader] = useState(false)
     const [webhookExecutionLoader, setWebhookExecutionLoader] = useState(false)
     const [generateTokenLoader, setGenerateTokenLoader] = useState(false)
@@ -57,6 +57,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [samplePayload, setSamplePayload] = useState<any>(null)
     const [modifiedSamplePayload, setModifiedSamplePayload] = useState<any>(null)
+    const [modifiedSampleString, setModifiedSampleString] = useState<string>('')
     const [sampleJSON, setSampleJSON] = useState(null)
     const [sampleCURL, setSampleCURL] = useState<any>(null)
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
@@ -129,16 +130,23 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setWebhookDetails(_webhookDetails)
             const parsedPayload = JSON.parse(_webhookDetails['payload'])
             const _modifiedPayload = { ...parsedPayload }
+            if (_modifiedPayload.dockerImage) {
+                _modifiedPayload.dockerImage = ''
+            }
             delete _modifiedPayload.ciProjectDetails
             const modifiedJSONString = formatSampleJson(_modifiedPayload)
             setSamplePayload(_modifiedPayload)
             setModifiedSamplePayload(_modifiedPayload)
+            setModifiedSampleString(modifiedJSONString)
             setSampleJSON(modifiedJSONString)
-            setSampleCURL(CURL_PREFIX + modifiedJSONString)
+            //creating sample curl by replacing the actuall wehook url and appending sample data
+            setSampleCURL(
+                CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
+            )
             if (_isSuperAdmin) {
                 const { result } = await getWebhookAPITokenList(
                     _webhookDetails.projectName,
-                    _webhookDetails.environmentName,
+                    _webhookDetails.environmentIdentifier,
                     _webhookDetails.appName,
                 )
                 const sortedResult =
@@ -167,7 +175,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             const payload = {
                 name: tokenName,
                 description: '',
-                expireAtInMs: getDateInMilliseconds(30),
+                expireAtInMs: 0,
             }
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
@@ -178,8 +186,8 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     roleFilters: [
                         {
                             entity: EntityTypes.DIRECT,
-                            entityName: webhookDetails.projectName,
-                            environment: webhookDetails.environmentName,
+                            entityName: webhookDetails.appName,
+                            environment: webhookDetails.environmentIdentifier,
                             team: webhookDetails.projectName,
                             action: ActionTypes.TRIGGER,
                             accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
@@ -373,7 +381,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox" style={{ wordBreak: 'break-word' }}>
+                <div className="fs-13 font-roboto flexbox dc__word-break-word">
                     {token}
                     <Tippy
                         className="default-tt"
@@ -489,7 +497,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break-word">
                 {showCopyOption && (
                     <Tippy
                         className="default-tt font-open-sans"
@@ -523,7 +531,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         schemaRef.current[schemaName]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
         setTimeout(() => {
             setSelectedSchema('')
-        }, 5000)
+        }, 2000)
     }
 
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
@@ -642,8 +650,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         setSamplePayload(_samplePayload)
         const _modifiedJSONString = formatSampleJson(_samplePayload)
         setModifiedSamplePayload(_modifiedSamplePayload)
+
+        setModifiedSampleString(_modifiedJSONString)
         setSampleJSON(_modifiedJSONString)
-        setSampleCURL(CURL_PREFIX.replace('{webhookURL}', webhookDetails.webhookUrl) + _modifiedJSONString)
+        setSampleCURL(CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', _modifiedJSONString))
     }
 
     const renderMetadata = (): JSX.Element => {
@@ -664,15 +674,11 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         >
                             <div className="flex">
                                 {option.mandatory ? (
-                                    <Tag className="icon-dim-12 mr-5" />
+                                    <Tag className="icon-dim-16 mr-5" />
+                                ) : option.isSelected ? (
+                                    <Close className="icon-dim-16 mr-5" />
                                 ) : (
-                                    <>
-                                        {option.isSelected ? (
-                                            <Close className="icon-dim-16 mr-5" />
-                                        ) : (
-                                            <Add className="icon-dim-16 mr-5" />
-                                        )}
-                                    </>
+                                    <Add className="icon-dim-16 mr-5" />
                                 )}
                                 <span className="fs-12 fw-4 cn-9">{option.label}</span>
                             </div>
@@ -693,17 +699,20 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const changePayload = (codeEditorData: string): void => {
-        setModifiedSamplePayload(JSON.parse(codeEditorData))
+        try {
+            setModifiedSampleString(codeEditorData)
+        } catch (error) {}
     }
 
     const renderCodeEditor = (): JSX.Element => {
         return (
             <div className="br-4 fs-13 fw-4 cn-9 en-2 bw-1 p-2 pr-5">
                 <CodeEditor
-                    value={formatSampleJson(modifiedSamplePayload)}
+                    value={modifiedSampleString}
                     onChange={changePayload}
                     height="300px"
                     mode={MODES.JSON}
+                    noParsing
                 />
             </div>
         )
@@ -810,14 +819,25 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setTryoutAPITokenError(true)
             return
         }
+        let _modifiedPayload
+        try {
+            _modifiedPayload = JSON.parse(modifiedSampleString)
+        } catch (error) {
+            toast.error('Invalid JSON')
+            return
+        }
         setWebhookExecutionLoader(true)
         try {
-            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, modifiedSamplePayload)
+            const response = await executeWebhookAPI(webhookDetails.webhookUrl, tryoutAPIToken, _modifiedPayload)
             setWebhookResponse(response)
             setWebhookExecutionLoader(false)
         } catch (error) {
             setWebhookExecutionLoader(false)
             setWebhookResponse(error)
+        } finally {
+            setTimeout(() => {
+                responseSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }, 500)
         }
     }
 
@@ -852,7 +872,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             return null
         } else {
             return (
-                <div className="mt-16">
+                <div className="mt-16" ref={responseSectionRef}>
                     <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
                     <div className="cn-9 fs-13 fw-6 mb-8">
                         <div className="response-row dc__border-bottom pt-8 pb-8">
@@ -862,14 +882,11 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         <div className="response-row pt-8 pb-8">
                             <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
                             <div>
-                                <div className="fs-13 fw-4 cn-9 mb-16">
-                                    {' '}
-                                    {webhookResponse?.['description']?.['description']}
-                                </div>
+                                <div className="fs-13 fw-4 cn-9 mb-16">{webhookResponse?.['result'] || '-'}</div>
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                                {renderCodeSnippet('value')}
+                                {renderCodeSnippet(webhookResponse?.['bodyText'])}
                                 <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
-                                {renderCodeSnippet('value')}
+                                {renderCodeSnippet(webhookResponse?.['headers'])}
                             </div>
                         </div>
                     </div>
@@ -913,7 +930,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             >
                 <div className="flexbox pt-8 pb-8">
                     <Help className="icon-dim-20 fcv-5 mr-8" />
-                    <span>
+                    <span className="fs-13">
                         Only super admin users can generate API tokens. Share the webhook details with a super admin
                         user.
                     </span>

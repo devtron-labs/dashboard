@@ -56,6 +56,7 @@ export interface WebhookDetailsType {
     appName: string
     environmentId: number
     environmentName?: string
+    environmentIdentifier?: string
     id: number
     payload: string
     payloadOption: PayloadOptionType[]

@@ -194,7 +194,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     ) => {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
-            : `${PipelineType.CI_PIPELINE.toLowerCase()}/${ciPipelineId}`
+            : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
         }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
@@ -322,7 +322,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 close={this.closePipeline}
                                 downstreamNodeSize={downstreamNodeSize}
                                 getWorkflows={this.getWorkflows}
-                                deleteWorkflow={this.deleteWorkflow}
                             />
                         )
                     }}

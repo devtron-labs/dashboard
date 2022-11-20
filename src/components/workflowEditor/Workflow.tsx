@@ -217,8 +217,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
               to={this.openWebhookDetails(node)}
               configDiffView={this.props.cdWorkflowList?.length > 0}
               toggleCDMenu={() => {
+                  this.props.hideWebhookTippy()
                   this.props.handleCDSelect(this.props.id, node.id, PipelineType.WEBHOOK, node.id, true)
               }}
+              hideWebhookTippy={this.props.hideWebhookTippy}
           />
       )
     }
@@ -265,10 +267,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isLinkedCI={node.isLinkedCI}
                 linkedCount={node.linkedCount}
                 toggleCDMenu={() => {
+                    this.props.hideWebhookTippy()
                     this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
                 }}
                 to={this.openCIPipeline(node)}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
+                hideWebhookTippy={this.props.hideWebhookTippy}
             />
         )
     }
@@ -293,10 +297,12 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 triggerType={node.triggerType}
                 deploymentStrategy={node.deploymentStrategy}
                 toggleCDMenu={() => {
+                    this.props.hideWebhookTippy()
                     this.props.handleCDSelect(this.props.id, ciPipelineId, 'cd-pipeline', node.id, isWebhookCD)
                 }}
                 to={this.openCDPipeline(node, isWebhookCD)}
                 cdNamesList={cdNamesList}
+                hideWebhookTippy={this.props.hideWebhookTippy}
             />
         )
     }
@@ -351,8 +357,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     <Tippy
                         placement="top-start"
                         arrow={true}
-                        trigger="manual"
-                        visible={this.props.showWebhookTippy}
                         render={this.renderWebhookTippyContent}
                         showOnCreate={true}
                         interactive

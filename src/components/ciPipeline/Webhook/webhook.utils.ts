@@ -18,11 +18,11 @@ export const RESPONSE_TAB_LIST: TabDetailsType[] = [
   { key: 'schema', value: 'Schema' },
 ]
 
-export const CURL_PREFIX = `curl --location --request POST
-'{webhookURL}'
---header 'Content-Type: application/json'
---header 'token: {token}'
---data-raw '`
+export const CURL_PREFIX = `curl --location --request POST \\
+'{webhookURL}' \\
+--header 'Content-Type: application/json' \\
+--header 'api-token: {token}' \\
+--data-raw '{data}'`
 
 export const SELECT_TOKEN_STYLE = {
     control: (base, state) => ({

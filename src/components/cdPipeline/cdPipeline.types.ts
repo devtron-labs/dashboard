@@ -27,7 +27,6 @@ export interface CDPipelineProps
     downstreamNodeSize: number;
     getWorkflows: () => void;
     close: (showSuccessCD?: boolean, environmentId?: number, environmentName?: string, successTitle?: string, showWebhookTippy?: boolean) => void;
-    deleteWorkflow?: (appId?: string, workflowId?: number) => void
 }
 
 export interface CDStageType {

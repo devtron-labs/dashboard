@@ -6,7 +6,7 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
-export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu }: WebhookNodeProps) {
+export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu, hideWebhookTippy }: WebhookNodeProps) {
     const addNewCD = (event): void => {
         event.stopPropagation()
         let { top } = event.target.getBoundingClientRect()
@@ -16,21 +16,23 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
 
     const renderWebhookCard = (): JSX.Element => {
         return (
-            <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
+            <>
                 <ConditionalWrap
                     condition={!!to}
                     wrap={(children) => (
-                        <Link to={to} className="dc__no-decor">
+                        <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
                             {children}
                         </Link>
                     )}
                 >
-                    <div className="workflow-node__title flex">
-                        <div className="workflow-node__full-width-minus-Icon">
-                            <span className="workflow-node__text-light">Webhook</span>
-                            <div className="dc__ellipsis-left">External source</div>
+                    <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
+                        <div className="workflow-node__title flex">
+                            <div className="workflow-node__full-width-minus-Icon">
+                                <span className="workflow-node__text-light">Webhook</span>
+                                <div className="dc__ellipsis-left">External source</div>
+                            </div>
+                            <Webhook className="icon-dim-20" />
                         </div>
-                        <Webhook className="icon-dim-20" />
                     </div>
                 </ConditionalWrap>
 
@@ -48,7 +50,7 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                         </Tippy>
                     </button>
                 )}
-            </div>
+            </>
         )
     }
 
