@@ -17,7 +17,17 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, EVENT_STREAM_EVENTS_MAP, TERMINAL_STATUS_MAP, POD_STATUS, LOGS_RETRY_COUNT } from '../../../../config'
+import {
+    Host,
+    Routes,
+    URLS,
+    SourceTypeMap,
+    ModuleNameMap,
+    EVENT_STREAM_EVENTS_MAP,
+    TERMINAL_STATUS_MAP,
+    POD_STATUS,
+    LOGS_RETRY_COUNT,
+} from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -60,7 +70,6 @@ import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-
 interface Pipelines {
     pipelines: CIPipeline[]
 }
@@ -77,8 +86,8 @@ export default function CIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
-    const [, securityModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
-    const [, blobStorageConfiguration, ] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [, securityModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -223,7 +232,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
     setFullScreenView,
     synchroniseState,
     isSecurityModuleInstalled,
-    isBlobStorageConfigured
+    isBlobStorageConfigured,
 }) => {
     const { buildId, appId, pipelineId, envId } = useParams<{
         appId: string
@@ -261,7 +270,7 @@ const Details: React.FC<BuildDetails> = ({
     synchroniseState,
     triggerHistory,
     isSecurityModuleInstalled,
-    isBlobStorageConfigured
+    isBlobStorageConfigured,
 }) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -339,16 +348,18 @@ const Details: React.FC<BuildDetails> = ({
                                     Artifacts
                                 </NavLink>
                             </li>
-                           {isSecurityModuleInstalled && <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to={`security`}
-                                >
-                                    Security
-                                </NavLink>
-                            </li>}
+                            {isSecurityModuleInstalled && (
+                                <li className="tab-list__tab">
+                                    <NavLink
+                                        replace
+                                        className="tab-list__tab-link"
+                                        activeClassName="active"
+                                        to={`security`}
+                                    >
+                                        Security
+                                    </NavLink>
+                                </li>
+                            )}
                         </ul>
                     </>
                 )}
@@ -443,18 +454,24 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                 </div>
                 {
                     {
-                      [TERMINAL_STATUS_MAP.SUCCEEDED]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.SUCCEEDED]: <Succeeded triggerDetails={triggerDetails} type={type} />,
                         [TERMINAL_STATUS_MAP.HEALTHY]: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        [TERMINAL_STATUS_MAP.RUNNING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        [TERMINAL_STATUS_MAP.PROGRESSING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        [TERMINAL_STATUS_MAP.STARTING]: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
+                        [TERMINAL_STATUS_MAP.RUNNING]: (
+                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
+                        ),
+                        [TERMINAL_STATUS_MAP.PROGRESSING]: (
+                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
+                        ),
+                        [TERMINAL_STATUS_MAP.STARTING]: (
+                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
+                        ),
                         [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
                         [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[triggerDetails.status.toLowerCase()]
                 }
-                {!Object.values(TERMINAL_STATUS_MAP).includes(
-                    triggerDetails.status.toLowerCase(),
-                ) && <Generic triggerDetails={triggerDetails} type={type} />}
+                {!Object.values(TERMINAL_STATUS_MAP).includes(triggerDetails.status.toLowerCase()) && (
+                    <Generic triggerDetails={triggerDetails} type={type} />
+                )}
             </div>
         </div>
     )
@@ -478,7 +495,11 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
 }) => {
     return (
         <div className="flex column left">
-            <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>{triggerDetails.status && triggerDetails.status.toLowerCase()==='cancelled' ? 'ABORTED' : triggerDetails.status}</div>
+            <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>
+                {triggerDetails.status && triggerDetails.status.toLowerCase() === 'cancelled'
+                    ? 'ABORTED'
+                    : triggerDetails.status}
+            </div>
             <div className="flex left">
                 {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
                     <time className="cn-7 fs-12 mr-12">
@@ -756,7 +777,7 @@ function NoArtifactsView() {
 
 export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any>}> = ({
     triggerDetails,
-    getArtifactPromise
+    getArtifactPromise,
 }) => {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [downloading, setDownloading] = useState(false)
@@ -829,24 +850,26 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return (
-        <div
-            key={gitTrigger?.Commit}
-            className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
-            style={{ width: 'min( 100%, 800px )' }}
-        >
-            <GitCommitInfoGeneric
-                materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
-                showMaterialInfo={true}
-                commitInfo={gitTrigger}
-                materialSourceType={
-                    gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
-                }
-                selectedCommitInfo={''}
-                materialSourceValue={
-                    gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
-                }
-            />
-        </div>
+        (gitTrigger?.Commit || (gitTrigger?.WebhookData && gitTrigger?.WebhookData?.Data)) && (
+            <div
+                key={gitTrigger?.Commit}
+                className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                style={{ width: 'min( 100%, 800px )' }}
+            >
+                <GitCommitInfoGeneric
+                    materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
+                    showMaterialInfo={true}
+                    commitInfo={gitTrigger}
+                    materialSourceType={
+                        gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
+                    }
+                    selectedCommitInfo={''}
+                    materialSourceValue={
+                        gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
+                    }
+                />
+            </div>
+        )
     )
 }
 

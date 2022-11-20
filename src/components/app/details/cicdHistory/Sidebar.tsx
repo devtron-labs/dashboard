@@ -206,7 +206,7 @@ const SummaryTooltipCard = ({ triggerDetails }: { triggerDetails: History }): JS
                             key={ciMaterial.id}
                             style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}
                         >
-                            {sourceType != SourceTypeMap.WEBHOOK && (
+                            {sourceType != SourceTypeMap.WEBHOOK && gitDetail?.Commit && (
                                 <>
                                     <div className="dc__git-logo"> </div>
                                     <div className="flex left column">
