@@ -81,7 +81,7 @@ export default function GitCommitInfoGeneric({
 
     function renderMoreDataForWebhook(_moreData) {
         return (
-                {!showSeeMore ? (
+                !showSeeMore ? (
                     <div className="material-history__all-changes">
                         <div className="material-history__body mt-4">
                             {Object.keys(_moreData).map((_key, index) => {
@@ -101,7 +101,7 @@ export default function GitCommitInfoGeneric({
                             })}
                         </div>
                     </div>
-                ) : null}
+                ) : null
         )
     }
 

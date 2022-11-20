@@ -1174,7 +1174,7 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return (
-            {gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
+            gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
                 <div
                     key={gitTrigger?.Commit}
                     className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
@@ -1193,7 +1193,7 @@ const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMateria
                         }
                     />
                 </div>
-            )}
+            )
     )
 }
 
