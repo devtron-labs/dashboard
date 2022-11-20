@@ -30,22 +30,6 @@ function AppHeaderComponent() {
     const [envDetails] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable())
     const [appName, setAppName] = useState('')
 
-    const getAppMetaInfoRes = () => {
-        setIsLoading(true)
-        const res = getAppMetaInfo(appId).then((_result) => {
-            setAppName(_result?.result?.appName)
-            let labelOptionRes = _result?.result?.labels?.map((_label) => {
-                return {
-                    label: `${_label.key?.toString()}:${_label.value?.toString()}`,
-                    value: `${_label.key?.toString()}:${_label.value?.toString()}`,
-                }
-            })
-            setResult(_result)
-            setIsLoading(false)
-            setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
-        })
-    }
-
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
