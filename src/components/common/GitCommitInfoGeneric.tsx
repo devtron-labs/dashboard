@@ -80,27 +80,29 @@ export default function GitCommitInfoGeneric({
     }
 
     function renderMoreDataForWebhook(_moreData) {
-        return !showSeeMore ? (
-            <div className="material-history__all-changes">
-                <div className="material-history__body mt-4">
-                    {Object.keys(_moreData).map((_key, index) => {
-                        let classes
-                        if (index % 2 == 0) {
-                            classes = 'bcn-1'
-                        }
-                        return (
-                            <div
-                                key={_key}
-                                className={`material-history__text material-history__grid left pt-4 pb-4 ${classes}`}
-                            >
-                                <div>{_key}</div>
-                                <div>{_moreData[_key]}</div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-        ) : null
+        return (
+                !showSeeMore ? (
+                    <div className="material-history__all-changes">
+                        <div className="material-history__body mt-4">
+                            {Object.keys(_moreData).map((_key, index) => {
+                                let classes
+                                if (index % 2 == 0) {
+                                    classes = 'bcn-1'
+                                }
+                                return (
+                                    <div
+                                        key={_key}
+                                        className={`material-history__text material-history__grid left pt-4 pb-4 ${classes}`}
+                                    >
+                                        <div>{_key}</div>
+                                        <div>{_moreData[_key]}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                ) : null
+        )
     }
 
     function renderSeeMoreButtonForWebhook() {
