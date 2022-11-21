@@ -335,18 +335,27 @@ export default function AddExternalLink({
     }
 
     const processIdentifiers = (identifiers: IdentifierOptionType[]) => {
-        return identifiers.findIndex((_identifier) => _identifier.value === '*') === -1
-            ? identifiers.map((identifier) => ({
-                  type: identifier.type,
-                  identifier:
-                      identifier.type === ExternalLinkIdentifierType.Cluster
-                          ? ''
-                          : identifier.type === ExternalLinkIdentifierType.ExternalHelmApp
-                          ? identifier.value
-                          : identifier.value.split('|')[0],
-                  clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? +identifier.value : 0,
-              }))
-            : []
+        if (isAppConfigView) {
+            return [
+                {
+                    type: ExternalLinkIdentifierType.DevtronApp,
+                    identifier: appId,
+                    clusterId: 0,
+                },
+            ]
+        } else if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+            return identifiers.map((identifier) => ({
+                type: identifier.type,
+                identifier:
+                    identifier.type === ExternalLinkIdentifierType.Cluster
+                        ? ''
+                        : identifier.type === ExternalLinkIdentifierType.ExternalHelmApp
+                        ? identifier.value
+                        : identifier.value.split('|')[0],
+                clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? +identifier.value : 0,
+            }))
+        }
+        return []
     }
 
     const saveLinks = async (): Promise<void> => {
@@ -392,15 +401,7 @@ export default function AddExternalLink({
                     name: link.name,
                     description: link.description || '',
                     type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
-                    identifiers: isAppConfigView
-                        ? [
-                              {
-                                  type: ExternalLinkIdentifierType.DevtronApp,
-                                  identifier: appId,
-                                  clusterId: 0,
-                              },
-                          ]
-                        : processIdentifiers(link.identifiers),
+                    identifiers: processIdentifiers(link.identifiers),
                     url: link.urlTemplate,
                     isEditable: isAppConfigView ? true : link.isEditable,
                 }))
