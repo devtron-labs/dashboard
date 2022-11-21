@@ -221,9 +221,7 @@ export default function AddExternalLink({
     const getSelectedIdentifiers = (link: LinkAction) => {
         if (!Array.isArray(link.identifiers)) {
             return []
-        }
-
-        if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+        } else if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
             return link.identifiers
         }
 

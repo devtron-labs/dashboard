@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { tempMultiSelectStyles } from '../../ciConfig/CIConfig.utils'
-import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop, Option } from '../../common'
+import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop } from '../../common'
 import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 
@@ -21,26 +21,10 @@ export default function IdentifierSelector({
         clearIdentifierSearchInput()
     }, [link.type])
 
-    const clearIdentifierSearchInput = () => {
-        if (identifierSearchInput) {
-            setIdentifierSearchInput('')
-        }
-    }
-
-    const handleClusterSelection = (selected) => {
-        handleLinksDataActions('onClusterSelection', index, selected)
-    }
-
-    const handleOnInputChange = (value: string, actionMeta: InputActionMeta) => {
-        if (actionMeta.action === 'input-change') {
-            setIdentifierSearchInput(value)
-        }
-    }
-
     const identifierMenuList = (props): JSX.Element => {
         return (
             <components.MenuList {...props}>
-                {props.selectProps.name.includes('Applications') && (
+                {link.type === ExternalLinkScopeType.AppLevel && (
                     <>
                         {identifierSearchInput ? (
                             <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
@@ -124,16 +108,35 @@ export default function IdentifierSelector({
                     {data.value === '*' && (
                         <small className="cn-6 ml-21">
                             All existing and future
-                            {props.selectProps.name.includes('Clusters') ? ' clusters' : ' Devtron + Helm applications'}
+                            {link.type === ExternalLinkScopeType.ClusterLevel
+                                ? ' clusters'
+                                : ' Devtron + Helm applications'}
                         </small>
                     )}
                 </div>
             </components.Option>
         )
     }
-    const handleAppChange = (selectedValue): void => {
-        handleLinksDataActions('onAppSelection', index, selectedValue)
+
+    const clearIdentifierSearchInput = () => {
+        if (identifierSearchInput) {
+            setIdentifierSearchInput('')
+        }
+    }
+
+    const handleOnChange = (selected) => {
+        handleLinksDataActions(
+            link.type === ExternalLinkScopeType.ClusterLevel ? 'onClusterSelection' : 'onAppSelection',
+            index,
+            selected,
+        )
         clearIdentifierSearchInput()
+    }
+
+    const handleOnInputChange = (value: string, actionMeta: InputActionMeta) => {
+        if (actionMeta.action === 'input-change') {
+            setIdentifierSearchInput(value)
+        }
     }
 
     const handleCreatableBlur = (event): void => {
@@ -165,7 +168,7 @@ export default function IdentifierSelector({
                         name={`Link-Clusters-${index}`}
                         className="basic-multi-select mb-4"
                         classNamePrefix="link-clusters__select"
-                        onChange={handleClusterSelection}
+                        onChange={handleOnChange}
                         hideSelectedOptions={false}
                         noOptionsMessage={noMatchingIdentifierOptions}
                         onBlur={handleCreatableBlur}
@@ -210,7 +213,7 @@ export default function IdentifierSelector({
                         placeholder="Select or enter app name"
                         className="basic-multi-select mb-4"
                         classNamePrefix="link-applications__select"
-                        onChange={handleAppChange}
+                        onChange={handleOnChange}
                         hideSelectedOptions={false}
                         noOptionsMessage={noMatchingIdentifierOptions}
                         onBlur={handleCreatableBlur}
