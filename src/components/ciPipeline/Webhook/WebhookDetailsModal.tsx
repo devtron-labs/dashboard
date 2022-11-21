@@ -486,22 +486,18 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                 </a>
             )
         } else {
-            return (
-                <>
-                    {!showTokenSection ? (
-                        <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
-                            Select or auto-generate token with required permissions
-                        </div>
-                    ) : (
-                        showTokenSection && (
-                            <div className="mt-16">
-                                {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
-                                {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
-                                {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
-                            </div>
-                        )
-                    )}
-                </>
+            return !showTokenSection ? (
+                <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
+                    Select or auto-generate token with required permissions
+                </div>
+            ) : (
+                showTokenSection && (
+                    <div className="mt-16">
+                        {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                        {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                        {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
+                    </div>
+                )
             )
         }
     }
