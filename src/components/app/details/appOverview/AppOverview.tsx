@@ -109,22 +109,22 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">App name</div>
-                    <div className="fs-14 fw-6 lh-20 cn-9">{appMetaInfo?.appName}</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">App name</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.appName}</div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">Created on</div>
-                    <div className="fs-14 fw-6 lh-20 cn-9">
+                    <div className="fs-12 fw-4 lh-20 cn-7">Created on</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">
                         {appMetaInfo?.createdOn ? moment(appMetaInfo.createdOn).format(Moment12HourFormat) : '-'}
                     </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">Created by</div>
-                    <div className="fs-14 fw-6 lh-20 cn-9">{appMetaInfo?.createdBy}</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">Created by</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.createdBy}</div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">Project</div>
-                    <div className="flex left dc__content-space fs-14 fw-6 lh-20 cn-9">
+                    <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
+                    <div className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9">
                         {appMetaInfo?.projectName}
                         <EditIcon className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
                     </div>
@@ -209,7 +209,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     key={`${_env.environmentName}-${_env.environmentId}`}
                                     className="env-deployments-info-row display-grid dc__align-items-center"
                                 >
-                                    <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}>
+                                    <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
                                         {_env.environmentName}
                                     </Link>
                                     <span className="fs-13 fw-4 cn-7">

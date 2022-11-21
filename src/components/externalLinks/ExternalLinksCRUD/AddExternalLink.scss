@@ -89,9 +89,6 @@
 
                     .error-label {
                         .error-label-icon {
-                            width: 20px;
-                            height: 20px;
-
                             svg g path:nth-of-type(2) {
                                 fill: var(--R500);
                             }
@@ -113,6 +110,14 @@
                                 color: var(--N900);
                                 border: 1px solid var(--N200);
                                 border-radius: 4px;
+                            }
+                        }
+                    }
+
+                    .link-monitoring-tool {
+                        .custom-option-with-icon {
+                            &:hover {
+                                background-color: var(--N100);
                             }
                         }
                     }
@@ -234,7 +239,7 @@
         .form__checkbox-container {
             margin-left: -5px;
         }
-    
+
         .form__checkbox-label {
             margin-left: 8px;
         }

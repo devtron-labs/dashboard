@@ -470,7 +470,7 @@ function renderNavItem(item: CustomNavItemsType) {
             to={item.href}
         >
             {item.title}
-            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20 mt-10" />}
+            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
         </NavLink>
     )
 }

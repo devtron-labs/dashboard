@@ -323,7 +323,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                                 <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
                                     {link.description ? (
                                         <Tippy
-                                            className="default-tt dc__mxw-300 dc__word-break-all"
+                                            className="default-tt dc__mxw-300 dc__word-break"
                                             arrow={false}
                                             placement="top-start"
                                             content={link.description}
@@ -341,7 +341,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                                 )}
                                 <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
                                     <Tippy
-                                        className="default-tt dc__mxw-300 dc__word-break-all"
+                                        className="default-tt dc__mxw-300 dc__word-break"
                                         arrow={false}
                                         placement="top-start"
                                         content={link.url}
@@ -377,7 +377,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
         const filteredLinksLen = filteredExternalLinks.length
 
         return (
-            <div className="external-links-wrapper h-100 dc__overflow-hidden">
+            <div className="external-links-wrapper">
                 <div className="flex dc__content-space mb-16">
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
                         External links
@@ -414,7 +414,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                     />
                 )}
                 <div
-                    className={`external-links dc__overflow-hidden ${
+                    className={`external-links ${
                         isAppConfigView ? 'app-config-view__listing' : ''
                     }`}
                 >
@@ -472,7 +472,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
     return isLoading ? (
         <Progressing pageLoader />
     ) : (
-        <div className={`external-links-container h-100 ${errorStatusCode > 0 ? 'error-view' : ''}`}>
+        <div className={`external-links-container ${errorStatusCode > 0 ? 'error-view' : ''}`}>
             {renderExternalLinksContainer()}
             {showAddLinkDialog && (
                 <AddExternalLink

@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import ReactSelect, { components, InputActionMeta } from 'react-select'
+import { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { tempMultiSelectStyles } from '../../ciConfig/CIConfig.utils'
 import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop, Option } from '../../common'
-import { formatOptionLabelClusters, ValueContainer } from '../ExternalLinks.component'
-import {
-    ExternalLinkIdentifierType,
-    ExternalLinkScopeType,
-    IdentifierOptionType,
-    LinkAction,
-    OptionTypeWithIcon,
-} from '../ExternalLinks.type'
-import { customMultiSelectStyles } from '../ExternalLinks.utils'
+import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 
 export default function IdentifierSelector({
@@ -22,19 +14,8 @@ export default function IdentifierSelector({
     allApps,
     handleLinksDataActions,
     getErrorLabel,
-}: {
-    index: number
-    link: LinkAction
-    selectedIdentifiers: IdentifierOptionType[]
-    clusters: IdentifierOptionType[]
-    allApps: IdentifierOptionType[]
-    handleLinksDataActions: (
-        action: string,
-        key?: number,
-        value?: string | boolean | IdentifierOptionType[] | OptionTypeWithIcon,
-    ) => void
-    getErrorLabel: (field: string, type?: string) => JSX.Element
-}) {
+    validateLinksData,
+}: IdentifierSelectorProps) {
     const [identifierSearchInput, setIdentifierSearchInput] = useState('')
 
     useEffect(() => {
@@ -49,10 +30,6 @@ export default function IdentifierSelector({
 
     const handleClusterSelection = (selected) => {
         handleLinksDataActions('onClusterSelection', index, selected)
-    }
-
-    const handleOnBlur = (e) => {
-        clearIdentifierSearchInput()
     }
 
     const handleOnInputChange = (value: string, actionMeta: InputActionMeta) => {
@@ -125,17 +102,25 @@ export default function IdentifierSelector({
         return (
             <components.Option {...props}>
                 <div className="flex left cursor w-100">
-                    {!data.__isNew__ ? (
-                        <Checkbox
-                            isChecked={isSelected}
-                            rootClassName="link-identifier-option mb-0-imp"
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={noop}
-                        >
+                    <div className="flex left">
+                        {!data.__isNew__ ? (
+                            <Checkbox
+                                isChecked={isSelected}
+                                rootClassName="link-identifier-option mb-0-imp"
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={noop}
+                            >
+                                <span className="fs-13 fw-4 lh-20 cn-9">{data.label}</span>
+                            </Checkbox>
+                        ) : (
                             <span className="fs-13 fw-4 lh-20 cn-9">{data.label}</span>
-                        </Checkbox>
-                    ) : (
-                        <span className="fs-13 fw-4 lh-20 cn-9">{data.label}</span>
+                        )}
+                    </div>
+                    {data.value === '*' && (
+                        <small className="cn-6">
+                            All existing and future
+                            {props.selectProps.name.includes('Clusters') ? ' clusters' : ' Devtron + Helm applications'}
+                        </small>
                     )}
                 </div>
             </components.Option>
@@ -147,9 +132,8 @@ export default function IdentifierSelector({
     }
 
     const handleCreatableBlur = (event): void => {
-        if (event.target.value) {
-            clearIdentifierSearchInput()
-        }
+        validateLinksData()
+        clearIdentifierSearchInput()
     }
 
     const handleKeyDown = (event): void => {
@@ -163,48 +147,24 @@ export default function IdentifierSelector({
             {link.type === ExternalLinkScopeType.ClusterLevel ? (
                 <>
                     <label>Clusters*</label>
-                    <ReactSelect
-                        placeholder="Select clusters"
-                        name={`Link-Clusters-${index}`}
-                        value={selectedIdentifiers}
-                        options={clusters}
-                        formatOptionLabel={formatOptionLabelClusters}
-                        onChange={handleClusterSelection}
-                        isMulti={true}
-                        hideSelectedOptions={false}
-                        closeMenuOnSelect={false}
-                        inputValue={identifierSearchInput}
-                        onBlur={handleOnBlur}
-                        onInputChange={handleOnInputChange}
-                        components={{
-                            IndicatorSeparator: null,
-                            ClearIndicator: null,
-                            ValueContainer,
-                            Option,
-                        }}
-                        styles={{
-                            ...customMultiSelectStyles,
-                            menuList: (base, state) => ({
-                                ...customMultiSelectStyles.menuList(base, state),
-                                maxHeight: '210px',
-                            }),
-                            control: (base, state) => ({
-                                ...customMultiSelectStyles.control(base, state),
-                                width: '100%',
-                            }),
-                            placeholder: (base) => ({
-                                ...base,
-                                color: 'var(--N500)',
-                            }),
-                        }}
-                    />
-                </>
-            ) : (
-                <>
-                    <label>Applications*</label>
                     <CreatableSelect
                         value={selectedIdentifiers}
+                        options={clusters}
                         isMulti={true}
+                        closeMenuOnSelect={false}
+                        inputValue={identifierSearchInput}
+                        onInputChange={handleOnInputChange}
+                        placeholder="Select clusters"
+                        name={`Link-Clusters-${index}`}
+                        className="basic-multi-select mb-4"
+                        classNamePrefix="link-clusters__select"
+                        onChange={handleClusterSelection}
+                        hideSelectedOptions={false}
+                        noOptionsMessage={noMatchingIdentifierOptions}
+                        onBlur={handleCreatableBlur}
+                        isValidNewOption={() => false}
+                        onKeyDown={handleKeyDown}
+                        captureMenuScroll={false}
                         components={{
                             IndicatorSeparator: null,
                             ClearIndicator,
@@ -227,12 +187,20 @@ export default function IdentifierSelector({
                                 cursor: 'pointer',
                             }),
                         }}
+                    />
+                </>
+            ) : (
+                <>
+                    <label>Applications*</label>
+                    <CreatableSelect
+                        value={selectedIdentifiers}
+                        options={allApps}
+                        isMulti={true}
                         closeMenuOnSelect={false}
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}
-                        name="Link-Applications"
+                        name={`Link-Applications-${index}`}
                         placeholder="Select or enter app name"
-                        options={allApps}
                         className="basic-multi-select mb-4"
                         classNamePrefix="link-applications__select"
                         onChange={handleAppChange}
@@ -242,6 +210,28 @@ export default function IdentifierSelector({
                         isValidNewOption={() => false}
                         onKeyDown={handleKeyDown}
                         captureMenuScroll={false}
+                        components={{
+                            IndicatorSeparator: null,
+                            ClearIndicator,
+                            MultiValueRemove,
+                            Option: identifierOption,
+                            MenuList: identifierMenuList,
+                            MultiValueContainer: identifierMultiValueContainer,
+                        }}
+                        styles={{
+                            ...tempMultiSelectStyles,
+                            placeholder: (base) => ({
+                                ...base,
+                                color: 'var(--N500)',
+                            }),
+                            control: (base, state) => ({
+                                ...tempMultiSelectStyles.control(base, state),
+                                minHeight: '36px',
+                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
+                                backgroundColor: 'var(--N50)',
+                                cursor: 'pointer',
+                            }),
+                        }}
                     />
                 </>
             )}

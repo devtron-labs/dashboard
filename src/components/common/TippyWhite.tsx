@@ -61,7 +61,7 @@ export default function TippyWhite({
     const getTippyContent = () => {
         return (
             <>
-                <div className="tippy-white-heading dc__word-break-all dc__hyphens-auto flex left p-12 dc__border-bottom-n1">
+                <div className="tippy-white-heading dc__word-break dc__hyphens-auto flex left p-12 dc__border-bottom-n1">
                     {iconPath ? (
                         <img
                             className={`icon-dim-20 mr-6 ${iconClass || ''}`}
@@ -82,7 +82,7 @@ export default function TippyWhite({
                     )}
                 </div>
                 {infoText && (
-                    <div className="tippy-white-info dc__word-break-all dc__hyphens-auto fs-13 fw-4 cn-9 p-12">
+                    <div className="tippy-white-info dc__word-break dc__hyphens-auto fs-13 fw-4 cn-9 p-12">
                         {infoText}
                     </div>
                 )}

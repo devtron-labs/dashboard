@@ -74,6 +74,7 @@ export interface ConfigureLinkActionType {
         key?: number,
         value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType,
     ) => void
+    validateLinksData: () => LinkAction[]
 }
 
 export interface MonitoringToolResponse extends ResponseType {
@@ -184,4 +185,19 @@ export interface GetAllAppResponseType extends ResponseType {
 export interface RoleBasedInfoNoteProps {
     userRole: UserRoleType
     listingView?: boolean
+}
+
+export interface IdentifierSelectorProps {
+    index: number
+    link: LinkAction
+    selectedIdentifiers: IdentifierOptionType[]
+    clusters: IdentifierOptionType[]
+    allApps: IdentifierOptionType[]
+    handleLinksDataActions: (
+        action: string,
+        key?: number,
+        value?: string | boolean | IdentifierOptionType[] | OptionTypeWithIcon,
+    ) => void
+    getErrorLabel: (field: string, type?: string) => JSX.Element
+    validateLinksData: () => LinkAction[]
 }

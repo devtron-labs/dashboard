@@ -17,7 +17,9 @@ export default function DeleteExternalLinkDialog({
     const deleteLink = async (): Promise<void> => {
         try {
             setAPICallInProgress(true)
-            const { result } = await deleteExternalLink(selectedLink.id)
+            const { result } = await (isAppConfigView
+                ? deleteExternalLink(selectedLink.id, appId)
+                : deleteExternalLink(selectedLink.id))
 
             if (result?.success) {
                 toast.success('Deleted successfully!')

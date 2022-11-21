@@ -2,7 +2,6 @@
     min-width: 962px;
     width: 90%;
     margin: auto;
-    padding: 20px 24px;
 
     &.error-view {
         min-width: 100%;
@@ -54,6 +53,7 @@
     .external-links-wrapper {
         max-width: 1200px;
         margin: auto;
+        padding: 20px 24px;
 
         .cta-search-filter-container {
             .add-link.cta {
@@ -142,7 +142,6 @@
 
     .external-links {
         min-height: 465px;
-        height: calc(100% - 48px);
         background: #ffffff;
         border: 1px solid var(--N200);
         box-sizing: border-box;
@@ -157,8 +156,6 @@
         }
 
         .external-links__list {
-            height: calc(100% - 40px);
-
             .external-link {
                 display: grid;
                 grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) 100px minmax(100px, 59%) 56px;

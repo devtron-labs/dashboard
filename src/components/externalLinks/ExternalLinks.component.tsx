@@ -166,6 +166,7 @@ export const AppLevelExternalLinks = ({
                         iconPath={linkOption.icon}
                         heading={linkOption.label}
                         infoText={linkOption.description}
+                        interactive={true}
                     >
                         {children}
                     </TippyWhite>
@@ -348,6 +349,8 @@ export const FilterMenuList = (props): JSX.Element => {
 
 export const ToolsMenuList = (props): JSX.Element => {
     const lastIndex = props.options?.length - 1
+    console.log(props)
+
     return (
         <components.MenuList {...props}>
             <>
@@ -363,13 +366,13 @@ export const ToolsMenuList = (props): JSX.Element => {
                                 <div
                                     style={{
                                         display: 'grid',
-                                        gridTemplateColumns: 'repeat(4, 20px)',
-                                        gap: '12px',
+                                        gridTemplateColumns: 'repeat(4, 36px)',
                                     }}
                                 >
                                     {_opt.options?.map((_option) => {
                                         return customOption(
                                             _option,
+                                            true,
                                             (_option) => props.selectOption(_option),
                                             _option.label === props.selectProps?.value?.label,
                                             true,
@@ -377,7 +380,7 @@ export const ToolsMenuList = (props): JSX.Element => {
                                         )
                                     })}
                                 </div>
-                                {lastIndex !== idx && <div className="dc__border-bottom-n1 mt-10 mb-10" />}
+                                {lastIndex !== idx && <div className="dc__border-bottom-n1" />}
                             </Fragment>
                         ))}
                     </div>
@@ -391,6 +394,7 @@ export const ToolsMenuList = (props): JSX.Element => {
 
 export const customOption = (
     data: OptionTypeWithIcon,
+    isIconDropdown?: boolean,
     onClick?: (selected: OptionTypeWithIcon) => void,
     isSelected?: boolean,
     noMarginRight?: boolean,
@@ -407,14 +411,18 @@ export const customOption = (
 
     return (
         _src && (
-            <div className={`flex left ${isSelected ? 'bcb-1' : ''}`} key={data.label} onClick={onClickHandler}>
+            <div
+                className={`custom-option-with-icon flex icon-dim-36 ${isSelected ? 'bcb-1' : ''}`}
+                key={data.label}
+                onClick={onClickHandler}
+            >
                 <Tippy className="default-tt" arrow={false} placement="top" content={data.label}>
                     <img
                         src={_src}
                         alt={data.label}
                         style={{
-                            width: '20px',
-                            height: '20px',
+                            width: isIconDropdown ? '28px' : '20px',
+                            height: isIconDropdown ? '28px' : '20px',
                             marginRight: noMarginRight ? '0px' : '12px',
                         }}
                         onError={onImageLoadError}
@@ -447,19 +455,5 @@ export const customValueContainerWithIcon = (props) => {
                 <>{props.children}</>
             )}
         </components.ValueContainer>
-    )
-}
-
-export const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
-    return (
-        <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">{option.label}</span>
-            {option.value === '*' && (
-                <>
-                    <small className="cn-6">All existing and future clusters</small>
-                    <div className="modal__dropdown-divider" />
-                </>
-            )}
-        </div>
     )
 }

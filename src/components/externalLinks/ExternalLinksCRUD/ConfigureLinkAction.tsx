@@ -23,6 +23,7 @@ export default function ConfigureLinkAction({
     showDelete,
     onToolSelection,
     handleLinksDataActions,
+    validateLinksData
 }: ConfigureLinkActionType): JSX.Element {
     const [linkScope, setLinkScope] = useState<ExternalLinkScopeType>(link.type || ExternalLinkScopeType.ClusterLevel)
 
@@ -30,8 +31,8 @@ export default function ConfigureLinkAction({
         const errorLabel = (label: string): JSX.Element => {
             return (
                 <div className="error-label flex left dc__align-start fs-11 mt-4">
-                    <div className="error-label-icon">
-                        <Error className="icon-dim-20" />
+                    <div className="error-label-icon icon-dim-16">
+                        <Error className="icon-dim-16" />
                     </div>
                     <div className="ml-4 cr-5">{label}</div>
                 </div>
@@ -109,17 +110,8 @@ export default function ConfigureLinkAction({
                         }),
                         menu: (base, state) => ({
                             ...customMultiSelectStyles.menu(base, state),
-                            width: '144px',
+                            width: 'auto',
                             marginTop: '0',
-                        }),
-                        option: (base, state) => ({
-                            ...customMultiSelectStyles.option(base, state),
-                            backgroundColor: state.isSelected
-                                ? 'var(--B100)'
-                                : state.isFocused
-                                ? 'var(--N100)'
-                                : 'white',
-                            color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
                         }),
                         control: (base, state) => ({
                             ...customMultiSelectStyles.control(base, state),
@@ -151,7 +143,7 @@ export default function ConfigureLinkAction({
             </div>
             <div className="configure-link-action-content">
                 <div className="link-name">
-                    <input placeholder="Link name" value={link.name} onChange={onNameChange} />
+                    <input placeholder="Link name" value={link.name} onChange={onNameChange} onBlur={validateLinksData} />
                     {link.invalidName && getErrorLabel('name')}
                 </div>
                 <div className="link-text-area">
@@ -201,6 +193,7 @@ export default function ConfigureLinkAction({
                         allApps={allApps}
                         handleLinksDataActions={handleLinksDataActions}
                         getErrorLabel={getErrorLabel}
+                        validateLinksData={validateLinksData}
                     />
                 )}
                 <div className="link-text-area">
@@ -210,6 +203,7 @@ export default function ConfigureLinkAction({
                         placeholder="Link or URL template"
                         value={link.urlTemplate}
                         onChange={onUrlTemplateChange}
+                        onBlur={validateLinksData}
                     />
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}

@@ -13,10 +13,15 @@ export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
     return get(`${Routes.EXTERNAL_LINKS_API}/tools`)
 }
 
-const appendQueryParams = (url: string, clusterId?: number, identifier?: string, type?: ExternalLinkIdentifierType) => {
+const getURLWithQueryParams = (
+    url: string,
+    clusterId?: number,
+    identifier?: string,
+    type?: ExternalLinkIdentifierType,
+) => {
     if (clusterId >= 0 || identifier || type) {
         const queryParams = {
-            clusterId: clusterId >= 0 ? `${clusterId}` : '0',
+            clusterId: clusterId >= 0 ? `${clusterId}` : '',
             identifier: identifier,
             type: type?.toString(),
         }
@@ -38,30 +43,19 @@ export const getExternalLinks = (
     identifier?: string,
     type?: ExternalLinkIdentifierType,
 ): Promise<ExternalLinkResponse> => {
-    const _url = appendQueryParams(Routes.EXTERNAL_LINKS_API, clusterId, identifier, type)
-    return get(_url)
+    return get(getURLWithQueryParams(Routes.EXTERNAL_LINKS_API, clusterId, identifier, type))
 }
 
-export const saveExternalLinks = (
-    request: ExternalLink[],
-    type?: ExternalLinkIdentifierType,
-    identifier?: string,
-): Promise<ExternalLinkUpdateResponse> => {
-    const _url = appendQueryParams(Routes.EXTERNAL_LINKS_API, 0, identifier, type)
-    return post(_url, request)
+export const saveExternalLinks = (request: ExternalLink[], appId?: string): Promise<ExternalLinkUpdateResponse> => {
+    return post(`${Routes.EXTERNAL_LINKS_API}${appId ? `?appId=${appId}` : ''}`, request)
 }
 
-export const updateExternalLink = (
-    request: ExternalLink,
-    type?: ExternalLinkIdentifierType,
-    identifier?: string,
-): Promise<ExternalLinkUpdateResponse> => {
-    const _url = appendQueryParams(Routes.EXTERNAL_LINKS_API, 0, identifier, type)
-    return put(_url, request)
+export const updateExternalLink = (request: ExternalLink, appId?: string): Promise<ExternalLinkUpdateResponse> => {
+    return put(`${Routes.EXTERNAL_LINKS_API}${appId ? `?appId=${appId}` : ''}`, request)
 }
 
-export const deleteExternalLink = (externalLinkId: number): Promise<ExternalLinkUpdateResponse> => {
-    return trash(`${Routes.EXTERNAL_LINKS_API}?id=${externalLinkId}`)
+export const deleteExternalLink = (externalLinkId: number, appId?: string): Promise<ExternalLinkUpdateResponse> => {
+    return trash(`${Routes.EXTERNAL_LINKS_API}?id=${externalLinkId}${appId ? `&appId=${appId}` : ''}`)
 }
 
 export const getAllApps = (): Promise<GetAllAppResponseType> => {

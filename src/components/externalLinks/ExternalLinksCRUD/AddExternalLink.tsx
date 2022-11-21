@@ -175,15 +175,6 @@ export default function AddExternalLink({
                     _newSelections = []
                 } else if (areAllOptionsSelected && _selectedOption.length !== identifiersLength) {
                     _newSelections = _selectedOption.filter((option) => option.value !== '*')
-                } else if (
-                    !areAllOptionsSelected &&
-                    (action === 'onClusterSelection' ||
-                        !_selectedOption.some(
-                            (_option) => _option.type === ExternalLinkIdentifierType.ExternalHelmApp,
-                        )) &&
-                    _selectedOption.length === identifiersLength - 1
-                ) {
-                    _newSelections = allOptions
                 } else {
                     _newSelections = _selectedOption
                 }
@@ -264,6 +255,7 @@ export default function AddExternalLink({
                                     }
                                     handleLinksDataActions={handleLinksDataActions}
                                     showDelete={linksLen > 1}
+                                    validateLinksData={getValidatedLinksData}
                                 />
                                 {linksLen > 1 && idx !== linksLen - 1 && (
                                     <hr className="external-links-divider mt-16 mb-16" />
@@ -289,14 +281,18 @@ export default function AddExternalLink({
                     </p>
                     <li>Description (optional)</li>
                     <p className="mb-16">Add a description for the link.</p>
-                    <li>Show link in</li>
-                    <div className="mb-16">
-                        <p>Choose where you want the link to be shown:</p>
-                        <ul>
-                            <li>Specific applications</li>
-                            <li>All applications in specific cluster</li>
-                        </ul>
-                    </div>
+                    {!isAppConfigView && (
+                        <>
+                            <li>Show link in</li>
+                            <div className="mb-16">
+                                <p>Choose where you want the link to be shown:</p>
+                                <ul>
+                                    <li>All applications in specific cluster</li>
+                                    <li>Specific applications</li>
+                                </ul>
+                            </div>
+                        </>
+                    )}
                     <li>Enter link or Create URL template</li>
                     <p className="mb-20">
                         You can choose to enter a direct link or create a URL template using available variables.
@@ -382,7 +378,7 @@ export default function AddExternalLink({
                 }
 
                 const { result } = await (isAppConfigView
-                    ? updateExternalLink(payload, ExternalLinkIdentifierType.DevtronApp, appId)
+                    ? updateExternalLink(payload, appId)
                     : updateExternalLink(payload))
 
                 if (result?.success) {
@@ -409,7 +405,7 @@ export default function AddExternalLink({
 
                 // Reversing because on 'Add another', new link fields are added & displayed at the top of linksData
                 const { result } = await (isAppConfigView
-                    ? saveExternalLinks(payload.reverse(), ExternalLinkIdentifierType.DevtronApp, appId)
+                    ? saveExternalLinks(payload.reverse(), appId)
                     : saveExternalLinks(payload.reverse()))
 
                 if (result?.success) {
@@ -440,6 +436,7 @@ export default function AddExternalLink({
             width="75%"
             minWidth="1024px"
             maxWidth="1200px"
+            onEscape={handleDialogVisibility}
         >
             <div className="modal__body">
                 <div className="modal__header">
