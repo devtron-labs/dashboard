@@ -344,7 +344,7 @@ export default function AddExternalLink({
                           : identifier.type === ExternalLinkIdentifierType.ExternalHelmApp
                           ? identifier.value
                           : identifier.value.split('|')[0],
-                  clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? identifier.value : 0,
+                  clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? +identifier.value : 0,
               }))
             : []
     }
