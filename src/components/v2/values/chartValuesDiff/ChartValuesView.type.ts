@@ -312,8 +312,13 @@ export enum ChartValuesViewActionTypes {
 }
 
 export enum DeploymentAppType {
-    helm = 'helm',
-    gitops = 'argo_cd',
+    Helm = 'helm',
+    GitOps = 'argo_cd',
+}
+
+export enum DeploymentAppTypeNameMapping{
+    HelmKeyValue = "Helm",
+    GitOpsKeyValue = "GitOps"
 }
 
 export interface ChartValuesViewAction {

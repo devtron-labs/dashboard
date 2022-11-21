@@ -6,7 +6,7 @@ import { DeployChartProps } from './deployChart.types';
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
 import { useHistory, useParams } from 'react-router'
-import { URLS, SERVER_MODE, ACCESS_TYPE_MAP } from '../../../config'
+import {URLS, SERVER_MODE, ACCESS_TYPE_MAP, DeploymentAppType} from '../../../config'
 import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
@@ -57,6 +57,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     appStoreId = 0,
     chartIdFromDeploymentDetail = 0,
     installedAppVersionId = 0,
+    deploymentAppType= DeploymentAppType.GitOps,
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: "" },
     ...rest }) => {
     const {serverMode} = useContext(mainContext);
@@ -64,7 +65,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [projects, setProjects] = useState([])
     const [loading, setLoading] = useState(false);
     const [selectedVersion, selectVersion] = useState(appStoreVersion)
-    const [deploymentAppType, setDeploymentAppType] = useState("")
+    // const [deploymentAppType, setDeploymentAppType] = useState("")
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
     const [selectedProject, selectProject] = useState<{ label: string; value: number }>()
     const [chartVersionsData, setChartVersionsData] = useState<{ version: string, id: number }[]>([]);

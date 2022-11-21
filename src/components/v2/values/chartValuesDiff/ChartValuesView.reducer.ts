@@ -63,7 +63,7 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: DeploymentAppType.helm
+        deploymentAppType: DeploymentAppType.Helm
     }
 }
 

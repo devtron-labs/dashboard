@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
-import ReactSelect, { components } from 'react-select'
+import React, {useEffect, useState} from 'react'
+import {useParams} from 'react-router'
+import ReactSelect, {components} from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import warn, { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
+import {DropdownIndicator, getCommonSelectStyle, Option} from '../../common/ReactSelect.utils'
+import warn, {ReactComponent as Error} from '../../../../assets/icons/ic-warning.svg'
+import {ReactComponent as ErrorExclamation} from '../../../../assets/icons/ic-error-exclamation.svg'
+import {ReactComponent as Refetch} from '../../../../assets/icons/ic-restore.svg'
+import {ReactComponent as Info} from '../../../../assets/icons/ic-info-filled-prple.svg'
+import {ReactComponent as Edit} from '../../../../assets/icons/ic-pencil.svg'
+import {ChartValuesSelect} from '../../../charts/util/ChartValueSelect'
+import {ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError} from '../../../common'
 import {
     AppNameInputType,
     ChartEnvironmentSelectorType,
@@ -28,21 +28,22 @@ import {
     ChartVersionValuesSelectorType,
     DeploymentAppSelectorType,
     DeploymentAppType,
-    ValueNameInputType,
-} from './ChartValuesView.type'
-import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
+    DeploymentAppTypeNameMapping,
+    ValueNameInputType
+} from "./ChartValuesView.type";
+import {getChartsByKeyword, getChartValues} from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
-import { NavLink } from 'react-router-dom'
-import { Moment12HourFormat, URLS } from '../../../../config'
+import {NavLink} from 'react-router-dom'
+import {Moment12HourFormat, URLS} from '../../../../config'
 import Tippy from '@tippyjs/react'
-import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
+import {MarkDown} from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import moment from 'moment'
-import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import {getDeploymentManifestDetails} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
-import { RadioGroup, RadioGroupItem } from "../../../common/formFields/RadioGroup";
-import { ReactComponent as ArgoCD } from "../../../../assets/icons/argo-cd-app.svg";
-import { ReactComponent as Helm } from "../../../../assets/icons/helm-app.svg";
+import {RadioGroup, RadioGroupItem} from "../../../common/formFields/RadioGroup";
+import {ReactComponent as ArgoCD} from "../../../../assets/icons/argo-cd-app.svg";
+import {ReactComponent as Helm} from "../../../../assets/icons/helm-app.svg";
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -103,18 +104,15 @@ export const DeploymentAppSelector = ({
         <div>
             <h2 className="chart-values__environment-label fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
             <span className="chart-values__environment fs-13 fw-6 lh-18 cn-9 md-6">
-                {commonState.installedConfig.deploymentAppType === DeploymentAppType.helm ? "Helm" : "GitOps"}
+                {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm ? DeploymentAppTypeNameMapping.HelmKeyValue  : DeploymentAppTypeNameMapping.GitOpsKeyValue}
             </span>
             <span>
-                {commonState.installedConfig.deploymentAppType == DeploymentAppType.gitops ? (
+                {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
                     <ArgoCD className="icon-dim-18 ml-6 " />
                 ) : (
                     <Helm className="icon-dim-18 ml-6 " />
                 )}
             </span>
-            {/*<span className="chart-values__environment fs-13 fw-6 lh-20 cn-9" >*/}
-            {/*   */}
-            {/*</span>*/}
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
@@ -131,9 +129,9 @@ export const DeploymentAppSelector = ({
                 >
 
 
-                    <RadioGroupItem value={DeploymentAppType.helm}> Helm </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
 
-                    <RadioGroupItem value={DeploymentAppType.gitops}> GitOps </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
 
                 </RadioGroup>
             </div>
