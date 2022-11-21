@@ -474,7 +474,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const renderTokenSection = (): JSX.Element | null => {
-        if (isSuperAdmin) {
+        if (!isSuperAdmin) {
             return (
                 <a
                     className="dc__link dc__no-decor"
@@ -488,17 +488,18 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         } else {
             return (
                 <>
-                    {!showTokenSection && (
+                    {!showTokenSection ? (
                         <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
                             Select or auto-generate token with required permissions
                         </div>
-                    )}
-                    {showTokenSection && (
-                        <div className="mt-16">
-                            {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
-                            {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
-                            {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
-                        </div>
+                    ) : (
+                        showTokenSection && (
+                            <div className="mt-16">
+                                {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                                {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                                {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
+                            </div>
+                        )
                     )}
                 </>
             )
