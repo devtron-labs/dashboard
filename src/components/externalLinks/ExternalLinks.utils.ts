@@ -9,7 +9,18 @@ import GrafanaIcon from '../../assets/icons/ic-grafana.png'
 import KibanaIcon from '../../assets/icons/ic-kibana.png'
 import LokiIcon from '../../assets/icons/ic-loki.png'
 import NewrelicIcon from '../../assets/icons/ic-newrelic.png'
-import OtherToolIcon from '../../assets/icons/ic-browser.svg'
+import AlertsIcon from '../../assets/icons/tools/ic-link-alerts.png'
+import BugsIcon from '../../assets/icons/tools/ic-link-bugs.png'
+import ChatIcon from '../../assets/icons/tools/ic-link-chat.png'
+import ConfluenceIcon from '../../assets/icons/tools/ic-link-confluence.png'
+import DocumentIcon from '../../assets/icons/tools/ic-link-document.png'
+import FolderIcon from '../../assets/icons/tools/ic-link-folder.png'
+import JiraIcon from '../../assets/icons/tools/ic-link-jira.png'
+import PerformanceIcon from '../../assets/icons/tools/ic-link-performance.png'
+import ReportIcon from '../../assets/icons/tools/ic-link-report.png'
+import SwaggerIcon from '../../assets/icons/tools/ic-link-swagger.png'
+import WebpageIcon from '../../assets/icons/tools/ic-link-webpage.png'
+import { multiSelectStyles } from '../common'
 
 export const MONITORING_TOOL_ICONS = {
     cloudwatch: CloudwatchlIcon,
@@ -19,10 +30,21 @@ export const MONITORING_TOOL_ICONS = {
     kibana: KibanaIcon,
     loki: LokiIcon,
     newrelic: NewrelicIcon,
-    other: OtherToolIcon,
+    alerts: AlertsIcon,
+    bugs: BugsIcon,
+    chat: ChatIcon,
+    confluence: ConfluenceIcon,
+    document: DocumentIcon,
+    folder: FolderIcon,
+    jira: JiraIcon,
+    performance: PerformanceIcon,
+    report: ReportIcon,
+    swagger: SwaggerIcon,
+    webpage: WebpageIcon,
 }
 
 export const customMultiSelectStyles = {
+    ...multiSelectStyles,
     menu: (base, state) => ({
         ...base,
         top: 'auto',
@@ -48,11 +70,12 @@ export const customMultiSelectStyles = {
     control: (base, state) => ({
         ...base,
         width: '160px',
-        minHeight: '32px',
+        minHeight: '36px',
         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
         backgroundColor: 'var(--N50)',
         justifyContent: 'flex-start',
         cursor: 'pointer',
+        boxShadow: 'none',
     }),
     valueContainer: (base) => ({
         ...base,
@@ -73,14 +96,15 @@ export const customMultiSelectStyles = {
 
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
     return (
-        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] ||
-        OtherToolIcon
+        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] || WebpageIcon
     )
 }
 
 export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
     return new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
 }
+
+export const availableVariables = ['{appName}', '{appId}', '{envId}', '{namespace}', '{podName}', '{containerName}']
 
 export const getParsedURL = (
     isAppLevel: boolean,
@@ -104,6 +128,6 @@ export const getParsedURL = (
 
 export const onImageLoadError = (e) => {
     if (e && e.target) {
-        e.target.src = OtherToolIcon
+        e.target.src = WebpageIcon
     }
 }

@@ -1,4 +1,5 @@
 import { AppEnvironment, AppOtherEnvironment } from '../../../../services/service.types'
+import { UserRoleType } from '../../../userGroups/userGroups.types'
 import { WorkflowResult } from '../triggerView/types'
 
 export enum STAGE_NAME {
@@ -14,6 +15,9 @@ export enum STAGE_NAME {
 
 export type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'SECRETS' | 'ENV_OVERRIDE'
 
+export interface AppConfigProps {
+    appName: string
+}
 export interface AppConfigState {
     view: string
     stattusCode: number
@@ -53,6 +57,7 @@ export interface AppConfigNavigationProps {
     navItems: CustomNavItemsType[]
     deleteApp: () => void
     isCDPipeline: boolean
+    canShowExternalLinks: boolean
 }
 
 export interface AppComposeRouterProps {
@@ -66,6 +71,8 @@ export interface AppComposeRouterProps {
     environments: AppEnvironment[]
     setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
     workflowsRes: WorkflowResult
+    userRole: UserRoleType
+    canShowExternalLinks: boolean
 }
 
 export interface EnvironmentOverridesProps {
