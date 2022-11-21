@@ -52,3 +52,7 @@ export const clusterDisconnectAndRetry = (data):  Promise<ResponseType> => {
 export const clusterTerminalStop = (terminalAccessId):  Promise<ResponseType> => {
     return post(`user/terminal/stop?terminalAccessId=${terminalAccessId}`, null)
 }
+
+export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
+    return post(`user/terminal/update/shell`, data)
+}

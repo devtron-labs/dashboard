@@ -262,27 +262,32 @@
     }
 }
 
+.cluster-terminal-view-container {
+    height: calc(50vh + 13px);
+}
+
 .cluster-terminal__wrapper {
     position: relative;
     background: #0b0f22;
     flex: 1 1;
-    min-height: calc(50vh - 23px);
-
-    &.full-screen {
-        min-height: calc(100vh - 84px);
+    height: calc(100% - 40px);
+    
+    &.full-screen-terminal {
+        height: calc(100vh - 88px);
     }
 
-    &.node-terminal-wrapper.full-screen {
-        min-height: calc(100vh - 113px);
+    &.node-details-full-screen {
+        height: calc(100vh - 117px);
     }
 }
 
 .cluster-full_screen {
     position: absolute;
     width: calc(100vw - 64px);
+    height: calc(100vh - 48px);
     z-index: 1;
 
     &.node-terminal {
-        top: 48px;
+       height: 0;
     }
 }

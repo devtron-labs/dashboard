@@ -8,7 +8,6 @@ export interface TerminalViewProps {
     setSocketConnection: (socketConnection: SocketConnectionType) => void
     clusterTerminal?: boolean
     terminalId?: string
-    stopterminalConnection?: () => void
     fetchRetry?: boolean
     disconnectRetry?: () => void
 }
