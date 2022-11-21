@@ -477,7 +477,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         if (!isSuperAdmin) {
             return (
                 <a
-                    className="dc__link dc__no-decor"
+                    className="dc__link dc__no-decor fs-13 fw-4"
                     href={DOCUMENTATION.WEBHOOK_API_TOKEN}
                     rel="noreferrer noopener"
                     target="_blank"
