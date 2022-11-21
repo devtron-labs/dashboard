@@ -130,7 +130,7 @@ export default function AddExternalLink({
     const handleLinksDataActions = (
         action: string,
         key?: number,
-        value?: OptionTypeWithIcon | OptionType[] | string | boolean | ExternalLinkScopeType,
+        value?: OptionTypeWithIcon | OptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
     ): void => {
         switch (action) {
             case 'add':
@@ -152,6 +152,9 @@ export default function AddExternalLink({
                 break
             case 'delete':
                 linksData.splice(key, 1)
+                break
+            case 'validate':
+                linksData[key] = value as LinkAction
                 break
             case 'onMonitoringToolSelection':
                 linksData[key].tool = value as OptionTypeWithIcon
@@ -255,7 +258,6 @@ export default function AddExternalLink({
                                     }
                                     handleLinksDataActions={handleLinksDataActions}
                                     showDelete={linksLen > 1}
-                                    validateLinksData={getValidatedLinksData}
                                 />
                                 {linksLen > 1 && idx !== linksLen - 1 && (
                                     <hr className="external-links-divider mt-16 mb-16" />

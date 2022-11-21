@@ -72,9 +72,8 @@ export interface ConfigureLinkActionType {
     handleLinksDataActions: (
         action: string,
         key?: number,
-        value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType,
+        value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
     ) => void
-    validateLinksData: () => LinkAction[]
 }
 
 export interface MonitoringToolResponse extends ResponseType {
@@ -196,8 +195,13 @@ export interface IdentifierSelectorProps {
     handleLinksDataActions: (
         action: string,
         key?: number,
-        value?: string | boolean | IdentifierOptionType[] | OptionTypeWithIcon,
+        value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
     ) => void
     getErrorLabel: (field: string, type?: string) => JSX.Element
-    validateLinksData: () => LinkAction[]
+}
+
+export enum LinkValidationKeys {
+    name = 'name',
+    identifiers = 'identifiers',
+    urlTemplate = 'urlTemplate',
 }

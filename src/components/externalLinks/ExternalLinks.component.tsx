@@ -349,7 +349,6 @@ export const FilterMenuList = (props): JSX.Element => {
 
 export const ToolsMenuList = (props): JSX.Element => {
     const lastIndex = props.options?.length - 1
-    console.log(props)
 
     return (
         <components.MenuList {...props}>

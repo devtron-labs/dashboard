@@ -14,7 +14,6 @@ export default function IdentifierSelector({
     allApps,
     handleLinksDataActions,
     getErrorLabel,
-    validateLinksData,
 }: IdentifierSelectorProps) {
     const [identifierSearchInput, setIdentifierSearchInput] = useState('')
 
@@ -41,15 +40,21 @@ export default function IdentifierSelector({
     const identifierMenuList = (props): JSX.Element => {
         return (
             <components.MenuList {...props}>
-                {identifierSearchInput ? (
-                    <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
-                        <AddIcon className="icon-dim-16 fcb-5 mr-8" />
-                        <span className="fs-13 fw-4 lh-20 cb-5">External helm app ‘{identifierSearchInput}’</span>
-                    </div>
-                ) : (
-                    <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
-                        Enter app name for externally deployed helm apps
-                    </div>
+                {props.selectProps.name.includes('Applications') && (
+                    <>
+                        {identifierSearchInput ? (
+                            <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
+                                <AddIcon className="icon-dim-16 fcb-5 mr-8" />
+                                <span className="fs-13 fw-4 lh-20 cb-5">
+                                    External helm app ‘{identifierSearchInput}’
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
+                                Enter app name for externally deployed helm apps
+                            </div>
+                        )}
+                    </>
                 )}
                 {props.children}
             </components.MenuList>
@@ -101,7 +106,7 @@ export default function IdentifierSelector({
         const { isSelected, data } = props
         return (
             <components.Option {...props}>
-                <div className="flex left cursor w-100">
+                <div className="flex column left cursor w-100">
                     <div className="flex left">
                         {!data.__isNew__ ? (
                             <Checkbox
@@ -117,7 +122,7 @@ export default function IdentifierSelector({
                         )}
                     </div>
                     {data.value === '*' && (
-                        <small className="cn-6">
+                        <small className="cn-6 ml-21">
                             All existing and future
                             {props.selectProps.name.includes('Clusters') ? ' clusters' : ' Devtron + Helm applications'}
                         </small>
@@ -132,7 +137,9 @@ export default function IdentifierSelector({
     }
 
     const handleCreatableBlur = (event): void => {
-        validateLinksData()
+        // validating identifiers field data on blur
+        link.invalidIdentifiers = !link.identifiers || link.identifiers.length <= 0
+        handleLinksDataActions('validate', index, link)
         clearIdentifierSearchInput()
     }
 

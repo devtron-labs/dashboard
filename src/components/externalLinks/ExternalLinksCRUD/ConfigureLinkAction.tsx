@@ -5,7 +5,12 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
-import { ConfigureLinkActionType, ExternalLinkScopeType, OptionTypeWithIcon } from '../ExternalLinks.type'
+import {
+    ConfigureLinkActionType,
+    ExternalLinkScopeType,
+    LinkValidationKeys,
+    OptionTypeWithIcon,
+} from '../ExternalLinks.type'
 import { customMultiSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
@@ -23,7 +28,6 @@ export default function ConfigureLinkAction({
     showDelete,
     onToolSelection,
     handleLinksDataActions,
-    validateLinksData
 }: ConfigureLinkActionType): JSX.Element {
     const [linkScope, setLinkScope] = useState<ExternalLinkScopeType>(link.type || ExternalLinkScopeType.ClusterLevel)
 
@@ -83,6 +87,23 @@ export default function ConfigureLinkAction({
         onToolSelection(index, selected)
     }
 
+    // validating name & urlTemplate fields data on blur
+    const validateAndUpdateLinksData = (e): void => {
+        switch (e.target.name) {
+            case LinkValidationKeys.name:
+                link.invalidName = !link.name.trim()
+                break
+            case LinkValidationKeys.urlTemplate:
+                const trimmedURLTemplate = link.urlTemplate.replace(/\s+/g, '')
+                link.invalidUrlTemplate = !trimmedURLTemplate
+                link.invalidProtocol = trimmedURLTemplate && !trimmedURLTemplate.startsWith('http')
+                break
+            default:
+                break
+        }
+        handleLinksDataActions('validate', index, link)
+    }
+
     return (
         <div id={`link-action-${index}`} className="configure-link-action-wrapper">
             <div className="link-monitoring-tool mb-8">
@@ -139,11 +160,16 @@ export default function ConfigureLinkAction({
                         }),
                     }}
                 />
-                {link.invalidTool && getErrorLabel('tool')}
             </div>
             <div className="configure-link-action-content">
                 <div className="link-name">
-                    <input placeholder="Link name" value={link.name} onChange={onNameChange} onBlur={validateLinksData} />
+                    <input
+                        name={LinkValidationKeys.name}
+                        placeholder="Link name"
+                        value={link.name}
+                        onChange={onNameChange}
+                        onBlur={validateAndUpdateLinksData}
+                    />
                     {link.invalidName && getErrorLabel('name')}
                 </div>
                 <div className="link-text-area">
@@ -193,17 +219,17 @@ export default function ConfigureLinkAction({
                         allApps={allApps}
                         handleLinksDataActions={handleLinksDataActions}
                         getErrorLabel={getErrorLabel}
-                        validateLinksData={validateLinksData}
                     />
                 )}
                 <div className="link-text-area">
                     <label>URL Template*</label>
                     <textarea
+                        name={LinkValidationKeys.urlTemplate}
                         rows={1}
                         placeholder="Link or URL template"
                         value={link.urlTemplate}
                         onChange={onUrlTemplateChange}
-                        onBlur={validateLinksData}
+                        onBlur={validateAndUpdateLinksData}
                     />
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
