@@ -151,16 +151,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }
 
                     return (
-                        <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                            <GitCommitInfoGeneric
-                                materialUrl={mat.url}
-                                showMaterialInfo={false}
-                                commitInfo={_gitCommit}
-                                materialSourceType={''}
-                                selectedCommitInfo={''}
-                                materialSourceValue={''}
-                            />
-                        </div>
+                            _gitCommit && (_gitCommit.Commit || _gitCommit.WebhookData?.Data) && (
+                                <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
+                                    <GitCommitInfoGeneric
+                                        materialUrl={mat.url}
+                                        showMaterialInfo={false}
+                                        commitInfo={_gitCommit}
+                                        materialSourceType={''}
+                                        selectedCommitInfo={''}
+                                        materialSourceValue={''}
+                                    />
+                                </div>
+                            )
                     )
                 })}
             </>
