@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {DeploymentAppType, TriggerType, ViewType} from '../../config'
+import { DeploymentAppType, TriggerType, ViewType } from '../../config'
 import { ServerErrors } from '../../modals/commonTypes'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
@@ -48,7 +48,7 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import {pipe} from "rxjs";
+import { pipe } from "rxjs";
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -135,7 +135,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     escFunction(event) {
         if ((event.keyCode === 27 || event.key === 'Escape') && typeof this.props.close === 'function') {
-          this.props.close()
+            this.props.close()
         }
     }
 
@@ -168,7 +168,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                         },
                                     })
                                 })
-                                .catch((error) => {})
+                                .catch((error) => { })
                             getEnvironmentListMinPublic()
                                 .then((response) => {
                                     let list = response.result || []
@@ -472,10 +472,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    handleDeploymentAppTypeChange = (event) =>{
-        let { pipelineConfig } = {...this.state }
+    handleDeploymentAppTypeChange = (event) => {
+        let { pipelineConfig } = { ...this.state }
         pipelineConfig.deploymentAppType = event.target.value
-        this.setState( {pipelineConfig})
+        this.setState({ pipelineConfig })
     }
 
     handlePipelineName = (event) => {
@@ -497,13 +497,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
-            } catch (error) {}
+            } catch (error) { }
         } else {
             yamlStr = event.target.value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
-            } catch (error) {}
+            } catch (error) { }
         }
         let state = { ...this.state }
         let strategies = this.state.pipelineConfig.strategies.map((strategy) => {
@@ -540,7 +540,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             deploymentTemplate:
                 this.state.pipelineConfig.strategies.length > 0
                     ? this.state.pipelineConfig.strategies.find((savedStrategy) => savedStrategy.default)
-                          .deploymentTemplate
+                        .deploymentTemplate
                     : null,
             strategies: this.state.pipelineConfig.strategies.map((savedStrategy) => {
                 return {
@@ -880,8 +880,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         onChange={
                             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                                 ? (resp) => {
-                                      this.handleStageConfigChange(resp, key, 'config')
-                                  }
+                                    this.handleStageConfigChange(resp, key, 'config')
+                                }
                                 : null
                         }
                     >
@@ -1248,9 +1248,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         })
         let strategy = this.state.pipelineConfig.strategies[0]
             ? {
-                  label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-                  value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-              }
+                label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+                value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+            }
             : undefined
         return (
             <>
