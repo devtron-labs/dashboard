@@ -210,7 +210,7 @@ export default function ClusterTerminal({
         <div
             className={`${
                 fullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-            } ${isNodeDetailsPage ? 'node-terminal' : ''}`}
+            } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
         >
             <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-40">
                 <div className="flex left">

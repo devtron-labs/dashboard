@@ -284,10 +284,11 @@
 .cluster-full_screen {
     position: absolute;
     width: calc(100vw - 64px);
-    height: calc(100vh - 48px);
+    height: 0;
     z-index: 1;
 
     &.node-terminal {
-       height: 0;
+       top: 48px;
+       height: calc(100vh - 48px);
     }
 }
