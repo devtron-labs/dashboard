@@ -165,6 +165,8 @@ export default function CDDetails() {
     function syncState(triggerId: number, triggerDetail: History) {
         setTriggerHistory((triggerHistory) => {
             triggerHistory.set(triggerId, triggerDetail)
+
+            console.log(triggerHistory)
             return new Map(triggerHistory)
         })
     }
@@ -299,17 +301,16 @@ const TriggerOutput: React.FC<{
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
-        if (!triggerDetails) return null // no interval
+        if (!triggerDetails || terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())) return null // no interval
         if (
-            statusSet.has(triggerDetails.status?.toLowerCase()) ||
-            (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))
+            statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())
         ) {
             // 10s because progressing
             return 10000
-        } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
-            return null
-        } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
-            return null
+        // } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
+        //     return null
+        // } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
+        //     return null
         }
         return 30000 // 30s for normal
     }, [triggerDetails])

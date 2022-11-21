@@ -23,6 +23,7 @@ export const LogResizeButton = ({
     const keys = useKeyDown()
 
     useEffect(() => {
+        if (!pathname.includes('/logs')) return
         switch (keys.join('')) {
             case 'f':
                 setFullScreenView(not)

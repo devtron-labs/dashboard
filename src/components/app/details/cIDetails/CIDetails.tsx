@@ -122,6 +122,7 @@ export default function CIDetails() {
     function synchroniseState(triggerId: number, triggerDetails: History) {
         setTriggerHistory((triggerHistory) => {
             triggerHistory.set(triggerId, triggerDetails)
+            console.log(triggerHistory)
             return new Map(triggerHistory)
         })
     }
