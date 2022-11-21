@@ -15,7 +15,7 @@ import ReactSelect from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { components } from 'react-select'
 import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
-import { ACCESS_TYPE_MAP, MODES } from '../../../config'
+import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES } from '../../../config'
 import { createGeneratedAPIToken } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
@@ -474,25 +474,35 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const renderTokenSection = (): JSX.Element | null => {
-        if (!isSuperAdmin) {
-            return null
+        if (isSuperAdmin) {
+            return (
+                <a
+                    className="dc__link dc__no-decor"
+                    href={DOCUMENTATION.WEBHOOK_API_TOKEN}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    How to generate API tokens?
+                </a>
+            )
+        } else {
+            return (
+                <>
+                    {!showTokenSection && (
+                        <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
+                            Select or auto-generate token with required permissions
+                        </div>
+                    )}
+                    {showTokenSection && (
+                        <div className="mt-16">
+                            {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                            {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                            {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
+                        </div>
+                    )}
+                </>
+            )
         }
-        return (
-            <>
-                {!showTokenSection && (
-                    <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
-                        Select or auto-generate token with required permissions
-                    </div>
-                )}
-                {showTokenSection && (
-                    <div className="mt-16">
-                        {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
-                        {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
-                        {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
-                    </div>
-                )}
-            </>
-        )
     }
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
@@ -653,7 +663,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
         setModifiedSampleString(_modifiedJSONString)
         setSampleJSON(_modifiedJSONString)
-        setSampleCURL(CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', _modifiedJSONString))
+        setSampleCURL(
+            CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', _modifiedJSONString),
+        )
     }
 
     const renderMetadata = (): JSX.Element => {
