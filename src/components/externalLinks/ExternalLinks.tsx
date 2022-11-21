@@ -378,7 +378,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
 
         return (
             <div className="external-links-wrapper">
-                <div className="flex dc__content-space mb-16">
+                <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
                         External links
                         <TippyWhite
@@ -402,6 +402,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         <AddLinkButton handleOnClick={handleAddLinkClick} />
                     </div>
                 </div>
+                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView={true} />}
                 {!isAppConfigView && (appliedClusters.length > 0 || appliedApps.length > 0) && (
                     <AppliedFilterChips
                         appliedClusters={appliedClusters}
@@ -413,11 +414,7 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         url={url}
                     />
                 )}
-                <div
-                    className={`external-links ${
-                        isAppConfigView ? 'app-config-view__listing' : ''
-                    }`}
-                >
+                <div className={`external-links ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
                     {isAPICallInProgress ? (
                         <Progressing pageLoader />
                     ) : (
@@ -436,7 +433,6 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
                         </>
                     )}
                 </div>
-                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView={true} />}
             </div>
         )
     }
