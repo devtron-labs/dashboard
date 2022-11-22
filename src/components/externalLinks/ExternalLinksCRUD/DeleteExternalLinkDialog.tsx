@@ -2,7 +2,7 @@ import React from 'react'
 import { toast } from 'react-toastify'
 import { DeleteDialog, showError } from '../../common'
 import { deleteExternalLink, getExternalLinks } from '../ExternalLinks.service'
-import { DeleteExternalLinkType, ExternalLinkIdentifierType } from '../ExternalLinks.type'
+import { DeleteExternalLinkType, ExternalLinkIdentifierType, ExternalLinkScopeType } from '../ExternalLinks.type'
 import { sortByUpdatedOn } from '../ExternalLinks.utils'
 
 export default function DeleteExternalLinkDialog({
@@ -26,7 +26,11 @@ export default function DeleteExternalLinkDialog({
 
                 if (isAppConfigView) {
                     const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
-                    setExternalLinks(result?.filter((_link) => _link.isEditable).sort(sortByUpdatedOn) || [])
+                    setExternalLinks(
+                        result
+                            ?.filter((_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel)
+                            .sort(sortByUpdatedOn) || [],
+                    )
                 } else {
                     const { result } = await getExternalLinks()
                     setExternalLinks(result?.sort(sortByUpdatedOn) || [])

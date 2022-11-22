@@ -7,6 +7,7 @@ import {
     ExternalLink,
     ExternalLinkIdentifierType,
     ExternalLinkScopeType,
+    ExternalLinksProps,
     IdentifierOptionType,
     OptionTypeWithIcon,
 } from './ExternalLinks.type'
@@ -25,7 +26,7 @@ import { UserRoleType } from '../userGroups/userGroups.types'
 import './externalLinks.scss'
 import Tippy from '@tippyjs/react'
 
-function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolean; userRole?: UserRoleType }) {
+function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
     const { appId } = useParams<{ appId: string }>()
     const history = useHistory()
     const location = useLocation()
@@ -97,7 +98,9 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             .then(([monitoringToolsRes, clustersResp, externalLinksRes, allAppsResp]) => {
                 setExternalLinks(
                     (isAppConfigView
-                        ? externalLinksRes.result?.filter((_link) => _link.isEditable)
+                        ? externalLinksRes.result?.filter(
+                              (_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel,
+                          )
                         : externalLinksRes.result
                     )?.sort(sortByUpdatedOn) || [],
                 )
