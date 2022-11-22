@@ -167,7 +167,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
                     <LinkedIcon className="icon-dim-20 mr-8" />
-                    External links
+                    External Links
                 </div>
                 {externalLinksAndTools.fetchingExternalLinks ? (
                     <div className="dc__loading-dots" />
