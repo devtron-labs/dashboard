@@ -332,15 +332,17 @@ export default function AddExternalLink({
         return validatedLinksData
     }
 
-    const processIdentifiers = (identifiers: IdentifierOptionType[]) => {
+    const processIdentifiers = (identifiers: IdentifierOptionType[], selectedLink?: ExternalLink) => {
         if (isAppConfigView) {
-            return [
-                {
-                    type: ExternalLinkIdentifierType.DevtronApp,
-                    identifier: appId,
-                    clusterId: 0,
-                },
-            ]
+            return selectedLink
+                ? selectedLink.identifiers
+                : [
+                      {
+                          type: ExternalLinkIdentifierType.DevtronApp,
+                          identifier: appId,
+                          clusterId: 0,
+                      },
+                  ]
         } else if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
             return identifiers.map((identifier) => ({
                 type: identifier.type,
@@ -380,10 +382,10 @@ export default function AddExternalLink({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
                     description: link.description || '',
-                    type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
-                    identifiers: processIdentifiers(link.identifiers),
+                    type: link.type,
+                    identifiers: processIdentifiers(link.identifiers, selectedLink),
                     url: link.urlTemplate,
-                    isEditable: isAppConfigView ? true : link.isEditable,
+                    isEditable: link.isEditable,
                 }
 
                 const { result } = await (isAppConfigView

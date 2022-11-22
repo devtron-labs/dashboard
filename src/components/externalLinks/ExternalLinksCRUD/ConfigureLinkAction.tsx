@@ -85,11 +85,16 @@ export default function ConfigureLinkAction({
 
     const handleToolSelection = (selected: OptionTypeWithIcon) => {
         onToolSelection(index, selected)
+
+        if (link.invalidName) {
+            validateAndUpdateLinksData(null, LinkValidationKeys.name)
+        }
     }
 
     // validating name & urlTemplate fields data on blur
-    const validateAndUpdateLinksData = (e): void => {
-        switch (e.target.name) {
+    const validateAndUpdateLinksData = (e, key?: LinkValidationKeys): void => {
+        const validationKey = e?.target?.name || key
+        switch (validationKey) {
             case LinkValidationKeys.name:
                 link.invalidName = !link.name.trim()
                 break
