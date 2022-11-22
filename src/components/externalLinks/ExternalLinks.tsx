@@ -380,12 +380,12 @@ function ExternalLinks({ isAppConfigView, userRole }: { isAppConfigView?: boolea
             <div className="external-links-wrapper">
                 <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
-                        External links
+                        External Links
                         <TippyWhite
                             placement="bottom"
                             Icon={HelpIcon}
                             iconClass="fcv-5"
-                            heading="External links"
+                            heading="External Links"
                             infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
                             documentationLink={DOCUMENTATION.EXTERNAL_LINKS}

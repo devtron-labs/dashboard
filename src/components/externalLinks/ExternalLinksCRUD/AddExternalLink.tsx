@@ -441,7 +441,7 @@ export default function AddExternalLink({
         >
             <div className="modal__body">
                 <div className="modal__header">
-                    <h3 className="modal__title fs-16">{selectedLink ? 'Update link' : 'Add link'}</h3>
+                    <h3 className="modal__title fs-16">{selectedLink ? 'Update Link' : 'Add Link'}</h3>
                     <button
                         type="button"
                         className={`dc__transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
