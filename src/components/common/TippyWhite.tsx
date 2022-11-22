@@ -3,13 +3,13 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 
 interface TippyWhiteProps {
-    className?: string
+    heading: string
     placement: 'top' | 'bottom' | 'right' | 'left'
+    className?: string
     Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     iconPath?: string
     iconClass?: string
     onImageLoadError?: (e) => void
-    heading: string
     infoText?: string
     showCloseButton?: boolean
     interactive?: boolean
@@ -70,9 +70,11 @@ export default function TippyWhite({
                             onError={onImageLoadError}
                         />
                     ) : (
-                        <div className="icon-dim-20 mr-6">
-                            <Icon className={`icon-dim-20 ${iconClass || ''}`} />
-                        </div>
+                        Icon && (
+                            <div className="icon-dim-20 mr-6">
+                                <Icon className={`icon-dim-20 ${iconClass || ''}`} />
+                            </div>
+                        )
                     )}
                     <span className={`fs-14 fw-6 cn-9 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>
                     {showCloseButton && (
