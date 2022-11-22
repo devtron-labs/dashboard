@@ -26,6 +26,11 @@ export interface MonitoringTool {
     category: number
 }
 
+export interface ExternalLinksProps {
+    isAppConfigView?: boolean
+    userRole?: UserRoleType
+}
+
 export interface ExternalLinkIdentifierProps {
     type: string
     identifier: string

@@ -239,7 +239,7 @@ export default function ConfigureLinkAction({
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
                 </div>
-                {!isAppConfigView && (
+                {!isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
                     <div className="flex left">
                         <Checkbox
                             isChecked={link.isEditable}
