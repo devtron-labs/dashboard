@@ -115,9 +115,19 @@
                     }
 
                     .link-monitoring-tool {
-                        .custom-option-with-icon {
-                            &:hover {
-                                background-color: var(--N100);
+                        .link-tool-options-wrapper {
+                            display: grid;
+                            row-gap: 10px;
+
+                            .link-tool-option {
+                                display: grid;
+                                grid-template-columns: repeat(4, 36px);
+
+                                .custom-option-with-icon {
+                                    &:hover {
+                                        background-color: var(--N100);
+                                    }
+                                }
                             }
                         }
                     }

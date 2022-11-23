@@ -322,20 +322,10 @@ export const ToolsMenuList = (props): JSX.Element => {
         <components.MenuList {...props}>
             <>
                 {props.options ? (
-                    <div
-                        style={{
-                            display: 'grid',
-                            rowGap: '10px',
-                        }}
-                    >
+                    <div className="link-tool-options-wrapper">
                         {props.options.map((_opt, idx) => (
                             <Fragment key={_opt.label}>
-                                <div
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(4, 36px)',
-                                    }}
-                                >
+                                <div className="link-tool-option">
                                     {_opt.options?.map((_option) => {
                                         return customOption(
                                             _option,
