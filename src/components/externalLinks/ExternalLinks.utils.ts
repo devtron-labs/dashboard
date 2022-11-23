@@ -99,6 +99,7 @@ export const ToolSelectStyles = {
     ...customMultiSelectStyles,
     menuList: (base, state) => ({
         ...customMultiSelectStyles.menuList(base, state),
+        maxHeight: '208px',
         padding: '14px',
     }),
     menu: (base, state) => ({
