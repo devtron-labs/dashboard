@@ -164,7 +164,8 @@ export default function AddExternalLink({
                 const _selectedOption = value as IdentifierOptionType[]
                 const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '*') !== -1
                 const areAllOptionsAlredySeleted =
-                    Array.isArray(linksData[key].identifiers) && linksData[key].identifiers[0]?.value === '*'
+                    Array.isArray(linksData[key].identifiers) &&
+                    linksData[key].identifiers.findIndex((_identifier) => _identifier.value === '*') !== -1
                 const allOptions =
                     action === 'onClusterSelection'
                         ? [{ label: 'All clusters', value: '*', type: ExternalLinkIdentifierType.Cluster }]
@@ -388,9 +389,7 @@ export default function AddExternalLink({
                     isEditable: link.isEditable,
                 }
 
-                const { result } = await (isAppConfigView
-                    ? updateExternalLink(payload, appId)
-                    : updateExternalLink(payload))
+                const { result } = await updateExternalLink(payload, isAppConfigView ? appId : '')
 
                 if (result?.success) {
                     toast.success('Updated successfully!')
@@ -407,9 +406,7 @@ export default function AddExternalLink({
                 }))
 
                 // Reversing because on 'Add another', new link fields are added & displayed at the top of linksData
-                const { result } = await (isAppConfigView
-                    ? saveExternalLinks(payload.reverse(), appId)
-                    : saveExternalLinks(payload.reverse()))
+                const { result } = await saveExternalLinks(payload.reverse(), isAppConfigView ? appId : '')
 
                 if (result?.success) {
                     toast.success('Saved successfully!')

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { tempMultiSelectStyles } from '../../ciConfig/CIConfig.utils'
 import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop } from '../../common'
 import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
+import { IdentifierSelectStyles } from '../ExternalLinks.utils'
 
 export default function IdentifierSelector({
     index,
@@ -128,7 +128,10 @@ export default function IdentifierSelector({
         handleLinksDataActions(
             link.type === ExternalLinkScopeType.ClusterLevel ? 'onClusterSelection' : 'onAppSelection',
             index,
-            selected,
+            selectedIdentifiers.findIndex((_identifier) => _identifier.value === '*') !== -1 &&
+                selected.findIndex((_identifier) => _identifier.value === '*') === -1
+                ? []
+                : selected,
         )
         clearIdentifierSearchInput()
     }
@@ -152,6 +155,8 @@ export default function IdentifierSelector({
         }
     }
 
+    const isValidNewOption = () => false
+
     return (
         <div className="link-identifiers">
             {link.type === ExternalLinkScopeType.ClusterLevel ? (
@@ -172,7 +177,7 @@ export default function IdentifierSelector({
                         hideSelectedOptions={false}
                         noOptionsMessage={noMatchingIdentifierOptions}
                         onBlur={handleCreatableBlur}
-                        isValidNewOption={() => false}
+                        isValidNewOption={isValidNewOption}
                         onKeyDown={handleKeyDown}
                         captureMenuScroll={false}
                         components={{
@@ -183,20 +188,7 @@ export default function IdentifierSelector({
                             MenuList: identifierMenuList,
                             MultiValueContainer: identifierMultiValueContainer,
                         }}
-                        styles={{
-                            ...tempMultiSelectStyles,
-                            placeholder: (base) => ({
-                                ...base,
-                                color: 'var(--N500)',
-                            }),
-                            control: (base, state) => ({
-                                ...tempMultiSelectStyles.control(base, state),
-                                minHeight: '36px',
-                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-                                backgroundColor: 'var(--N50)',
-                                cursor: 'pointer',
-                            }),
-                        }}
+                        styles={IdentifierSelectStyles}
                     />
                 </>
             ) : (
@@ -217,7 +209,7 @@ export default function IdentifierSelector({
                         hideSelectedOptions={false}
                         noOptionsMessage={noMatchingIdentifierOptions}
                         onBlur={handleCreatableBlur}
-                        isValidNewOption={() => false}
+                        isValidNewOption={isValidNewOption}
                         onKeyDown={handleKeyDown}
                         captureMenuScroll={false}
                         components={{
@@ -228,20 +220,7 @@ export default function IdentifierSelector({
                             MenuList: identifierMenuList,
                             MultiValueContainer: identifierMultiValueContainer,
                         }}
-                        styles={{
-                            ...tempMultiSelectStyles,
-                            placeholder: (base) => ({
-                                ...base,
-                                color: 'var(--N500)',
-                            }),
-                            control: (base, state) => ({
-                                ...tempMultiSelectStyles.control(base, state),
-                                minHeight: '36px',
-                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-                                backgroundColor: 'var(--N50)',
-                                cursor: 'pointer',
-                            }),
-                        }}
+                        styles={IdentifierSelectStyles}
                     />
                 </>
             )}

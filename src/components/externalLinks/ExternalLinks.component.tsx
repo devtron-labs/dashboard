@@ -16,13 +16,12 @@ import {
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import Tippy from '@tippyjs/react'
 import {
-    customMultiSelectStyles,
     getMonitoringToolIcon,
     getParsedURL,
     MONITORING_TOOL_ICONS,
+    NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import { OptionType } from '../app/types'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import TippyWhite from '../common/TippyWhite'
@@ -166,7 +165,6 @@ export const AppLevelExternalLinks = ({
                         iconPath={linkOption.icon}
                         heading={linkOption.label}
                         infoText={linkOption.description}
-                        interactive={true}
                     >
                         {children}
                     </TippyWhite>
@@ -176,9 +174,14 @@ export const AppLevelExternalLinks = ({
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
-                    className="external-link-chip flex left br-4"
+                    className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                 >
-                    <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
+                    <img
+                        className="icon-dim-16 mr-4"
+                        src={linkOption.icon}
+                        alt={linkOption.label}
+                        onError={onImageLoadError}
+                    />
                     <span className="dc__ellipsis-right">{linkOption.label}</span>
                 </a>
             </ConditionalWrap>
@@ -196,9 +199,9 @@ export const AppLevelExternalLinks = ({
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div className="app-level__external-links flex left mb-14">
+            <div className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
-                    <div className="app-level__external-links-icon">
+                    <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
                     </div>
                 )}
@@ -246,9 +249,9 @@ export const NodeLevelExternalLinks = ({
                     key={data.label}
                     href={getParsedURL(false, data.value, details, podName, containerName)}
                     target="_blank"
-                    className="external-link-option flex left br-4"
+                    className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
                 >
-                    <img src={data.icon} alt={data.label} onError={onImageLoadError} />
+                    <img className="icon-dim-20 mr-12" src={data.icon} alt={data.label} onError={onImageLoadError} />
                     <span className="dc__ellipsis-right">{data.label}</span>
                 </a>
             </ConditionalWrap>
@@ -270,42 +273,7 @@ export const NodeLevelExternalLinks = ({
                         ClearIndicator: null,
                         Option,
                     }}
-                    styles={{
-                        ...customMultiSelectStyles,
-                        menu: (base) => ({
-                            ...base,
-                            width: '150px',
-                        }),
-                        control: (base) => ({
-                            ...base,
-                            minWidth: '67px',
-                            maxWidth: '112px',
-                            minHeight: '24px',
-                            backgroundColor: 'var(--N50)',
-                            border: '1px solid var(--N200)',
-                            cursor: 'pointer',
-                        }),
-                        option: (base) => ({
-                            ...base,
-                            cursor: 'pointer',
-                        }),
-                        valueContainer: (base) => ({
-                            ...base,
-                            padding: 0,
-                            paddingLeft: '8px',
-                        }),
-                        dropdownIndicator: (base, state) => ({
-                            ...customMultiSelectStyles.dropdownIndicator(base, state),
-                            padding: '0 8px 0 4px',
-                        }),
-                        placeholder: (base) => ({
-                            ...base,
-                            color: 'var(--N700)',
-                            margin: 0,
-                            minWidth: '45px',
-                            maxWidth: '60px',
-                        }),
-                    }}
+                    styles={NodeLevelSelectStyles}
                 />
             </div>
         )
