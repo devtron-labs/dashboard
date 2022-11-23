@@ -626,3 +626,9 @@ export enum AppDetailsErrorType {
     ERRIMAGEPULL = 'errimagepull',
     IMAGEPULLBACKOFF = 'imagepullbackoff',
 }
+
+export enum ConfigType {
+    GUI = 'gui',
+    YAML = 'yaml',
+    MANIFEST = 'manifest'
+}

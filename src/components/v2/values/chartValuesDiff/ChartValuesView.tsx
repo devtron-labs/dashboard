@@ -25,7 +25,7 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { SERVER_MODE, URLS } from '../../../../config'
+import { ConfigType, SERVER_MODE, URLS } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -115,21 +115,21 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
 
-    const checkGitOpsConfiguration= async ():Promise<void>=> {
-      try {
-          const { result } = await isGitOpsModuleInstalledAndConfigured()
-          if (result.isInstalled && !result.isConfigured) {
-              dispatch({
-                  type: ChartValuesViewActionTypes.showNoGitOpsWarning,
-                  payload: true,
-              })
-          }
-      } catch (error) {}
+    const checkGitOpsConfiguration = async (): Promise<void> => {
+        try {
+            const { result } = await isGitOpsModuleInstalledAndConfigured()
+            if (result.isInstalled && !result.isConfigured) {
+                dispatch({
+                    type: ChartValuesViewActionTypes.showNoGitOpsWarning,
+                    payload: true,
+                })
+            }
+        } catch (error) {}
     }
 
     useEffect(() => {
         if (isDeployChartView || isCreateValueView) {
-          checkGitOpsConfiguration()
+            checkGitOpsConfiguration()
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
@@ -921,12 +921,10 @@ function ChartValuesView({
 
     const renderValuesTabs = () => {
         const initialSelectedTab =
-            presetValueId || isCreateValueView
-                ? 'yaml'
-                : (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-                  !!commonState.installedConfig?.valuesSchemaJson
-                ? 'gui'
-                : 'yaml'
+            (!(presetValueId || isCreateValueView) && isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+            !!commonState.installedConfig?.valuesSchemaJson
+                ? ConfigType.GUI
+                : ConfigType.YAML
 
         return (
             <RadioGroup
@@ -936,13 +934,13 @@ function ChartValuesView({
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                {initialSelectedTab === 'gui' && <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>}
-                <RadioGroup.Radio value="yaml">
+                {initialSelectedTab === ConfigType.GUI && <RadioGroup.Radio value={ConfigType.GUI}>GUI (Beta)</RadioGroup.Radio>}
+                <RadioGroup.Radio value={ConfigType.YAML}>
                     <Edit className="icon-dim-12 mr-6" />
                     YAML
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
-                    value="manifest"
+                    value={ConfigType.MANIFEST}
                     showTippy={isExternalApp && !commonState.installedAppInfo}
                     canSelect={isValidData()}
                     tippyContent={
