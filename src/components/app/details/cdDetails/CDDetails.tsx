@@ -1,53 +1,37 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
-import { AppEnvironment } from '../../../../services/service.types'
 import {
     Progressing,
-    Select,
     showError,
     useAsync,
     useInterval,
     useScrollable,
-    useKeyDown,
-    not,
     mapByKey,
     asyncWrap,
-    ConditionalWrap,
-    useAppContext,
 } from '../../../common'
-import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
+import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import moment from 'moment'
-import EmptyImage from '../../../../assets/img/app-not-deployed.png'
-import docker from '../../../../assets/icons/misc/docker.svg'
 import Reload from '../../../Reload/Reload'
-import { default as AnsiUp } from 'ansi_up'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service'
-import ReactGA from 'react-ga4'
-import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
-import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
-import TippyHeadless from '@tippyjs/react/headless'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import Tippy from '@tippyjs/react'
-import { TriggerDetails, GitChanges, Artifacts } from '../cIDetails/CIDetails'
+import { GitChanges, Artifacts } from '../cIDetails/CIDetails'
 import { History } from '../cIDetails/types'
-import { Moment12HourFormat } from '../../../../config'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
 import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
-import { renderConfigurationError } from './cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { OptionType } from '../../types'
 import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.components'
+import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
