@@ -283,7 +283,11 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
 
     const renderExternalLinksHeader = (): JSX.Element => {
         return (
-            <div className={`external-links__header ${isAppConfigView ? 'app-config-view' : ''}`}>
+            <div
+                className={`external-links__header h-40 fs-12 fw-6 pl-20 bcn-0 dc__uppercase ${
+                    isAppConfigView ? 'app-config-view' : ''
+                }`}
+            >
                 <div className="external-links__cell--icon"></div>
                 <div className="external-links__cell--tool__name">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
@@ -368,7 +372,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                                     />
                                 </div>
                             </div>
-                            {idx !== filteredLinksLen - 1 && <div className="external-link__divider" />}
+                            {idx !== filteredLinksLen - 1 && <div className="external-link__divider w-100 bcn-1" />}
                         </Fragment>
                     )
                 })}
@@ -417,7 +421,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                         url={url}
                     />
                 )}
-                <div className={`external-links ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
+                <div className={`external-links dc__border bcn-0 ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
                     {isAPICallInProgress ? (
                         <Progressing pageLoader />
                     ) : (
@@ -471,7 +475,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
     return isLoading ? (
         <Progressing pageLoader />
     ) : (
-        <div className={`external-links-container ${errorStatusCode > 0 ? 'error-view' : ''}`}>
+        <div className={`external-links-container dc__m-auto ${errorStatusCode > 0 ? 'error-view' : ''}`}>
             {renderExternalLinksContainer()}
             {showAddLinkDialog && (
                 <AddExternalLink

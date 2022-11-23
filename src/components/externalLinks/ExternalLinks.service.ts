@@ -13,12 +13,8 @@ export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
     return get(`${Routes.EXTERNAL_LINKS_API}/tools`)
 }
 
-const getURLWithQueryParams = (
-    url: string,
-    clusterId?: number,
-    identifier?: string,
-    type?: ExternalLinkIdentifierType,
-) => {
+const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: ExternalLinkIdentifierType) => {
+    let _url = Routes.EXTERNAL_LINKS_API
     if (clusterId >= 0 || identifier || type) {
         const queryParams = {
             clusterId: clusterId >= 0 ? `${clusterId}` : '',
@@ -32,10 +28,10 @@ const getURLWithQueryParams = (
             }
         }
 
-        url += `?${new URLSearchParams(queryParams).toString()}`
+        _url += `?${new URLSearchParams(queryParams).toString()}`
     }
 
-    return url
+    return _url
 }
 
 export const getExternalLinks = (
@@ -43,7 +39,7 @@ export const getExternalLinks = (
     identifier?: string,
     type?: ExternalLinkIdentifierType,
 ): Promise<ExternalLinkResponse> => {
-    return get(getURLWithQueryParams(Routes.EXTERNAL_LINKS_API, clusterId, identifier, type))
+    return get(getURLWithQueryParams(clusterId, identifier, type))
 }
 
 export const saveExternalLinks = (request: ExternalLink[], appId?: string): Promise<ExternalLinkUpdateResponse> => {

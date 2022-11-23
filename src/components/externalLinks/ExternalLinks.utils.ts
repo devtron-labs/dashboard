@@ -21,6 +21,7 @@ import ReportIcon from '../../assets/icons/tools/ic-link-report.png'
 import SwaggerIcon from '../../assets/icons/tools/ic-link-swagger.png'
 import WebpageIcon from '../../assets/icons/tools/ic-link-webpage.png'
 import { multiSelectStyles } from '../common'
+import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
 
 export const MONITORING_TOOL_ICONS = {
     cloudwatch: CloudwatchlIcon,
@@ -91,6 +92,98 @@ export const customMultiSelectStyles = {
     placeholder: (base) => ({
         ...base,
         color: 'var(--N900)',
+    }),
+}
+
+export const ToolSelectStyles = {
+    ...customMultiSelectStyles,
+    menuList: (base, state) => ({
+        ...customMultiSelectStyles.menuList(base, state),
+        padding: '14px',
+    }),
+    menu: (base, state) => ({
+        ...customMultiSelectStyles.menu(base, state),
+        width: 'auto',
+        marginTop: '0',
+    }),
+    control: (base, state) => ({
+        ...customMultiSelectStyles.control(base, state),
+        minHeight: '36px',
+        width: '40px',
+        border: 'none',
+        backgroundColor: 'white',
+        boxShadow: 'none',
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: '0',
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: 'var(--N500)',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...customMultiSelectStyles.dropdownIndicator(base, state),
+        padding: '0',
+        svg: {
+            width: '16px',
+            height: '16px',
+        },
+    }),
+}
+
+export const NodeLevelSelectStyles = {
+    ...customMultiSelectStyles,
+    menu: (base) => ({
+        ...base,
+        width: '150px',
+    }),
+    control: (base) => ({
+        ...base,
+        minWidth: '67px',
+        maxWidth: '112px',
+        minHeight: '24px',
+        backgroundColor: 'var(--N50)',
+        border: '1px solid var(--N200)',
+        cursor: 'pointer',
+    }),
+    option: (base) => ({
+        ...base,
+        cursor: 'pointer',
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: 0,
+        paddingLeft: '8px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...customMultiSelectStyles.dropdownIndicator(base, state),
+        padding: '0 8px 0 4px',
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: 'var(--N700)',
+        margin: 0,
+        minWidth: '45px',
+        maxWidth: '60px',
+    }),
+}
+
+export const IdentifierSelectStyles = {
+    ...tempMultiSelectStyles,
+    placeholder: (base) => ({
+        ...base,
+        color: 'var(--N500)',
+    }),
+    control: (base, state) => ({
+        ...tempMultiSelectStyles.control(base, state),
+        minHeight: '36px',
+        border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
+        backgroundColor: 'var(--N50)',
+        cursor: 'pointer',
     }),
 }
 

@@ -11,7 +11,7 @@ import {
     LinkValidationKeys,
     OptionTypeWithIcon,
 } from '../ExternalLinks.type'
-import { customMultiSelectStyles } from '../ExternalLinks.utils'
+import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
 import TippyWhite from '../../common/TippyWhite'
@@ -128,42 +128,7 @@ export default function ConfigureLinkAction({
                         ValueContainer: customValueContainerWithIcon,
                         MenuList: ToolsMenuList,
                     }}
-                    styles={{
-                        ...customMultiSelectStyles,
-                        menuList: (base, state) => ({
-                            ...customMultiSelectStyles.menuList(base, state),
-                            padding: '14px',
-                        }),
-                        menu: (base, state) => ({
-                            ...customMultiSelectStyles.menu(base, state),
-                            width: 'auto',
-                            marginTop: '0',
-                        }),
-                        control: (base, state) => ({
-                            ...customMultiSelectStyles.control(base, state),
-                            minHeight: '36px',
-                            width: '40px',
-                            border: 'none',
-                            backgroundColor: 'white',
-                            boxShadow: 'none',
-                        }),
-                        valueContainer: (base) => ({
-                            ...base,
-                            padding: '0',
-                        }),
-                        placeholder: (base) => ({
-                            ...base,
-                            color: 'var(--N500)',
-                        }),
-                        dropdownIndicator: (base, state) => ({
-                            ...customMultiSelectStyles.dropdownIndicator(base, state),
-                            padding: '0',
-                            svg: {
-                                width: '16px',
-                                height: '16px',
-                            },
-                        }),
-                    }}
+                    styles={ToolSelectStyles}
                 />
             </div>
             <div className="configure-link-action-content">
@@ -266,7 +231,7 @@ export default function ConfigureLinkAction({
                 )}
             </div>
             {showDelete && (
-                <div className="link-delete cursor">
+                <div className="link-delete icon-dim-20 cursor">
                     <CloseIcon className="icon-dim-20 fcn-6" onClick={() => deleteLinkData(index)} />
                 </div>
             )}

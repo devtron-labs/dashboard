@@ -1,7 +1,6 @@
 .external-links-container {
     min-width: 962px;
     width: 90%;
-    margin: auto;
 
     &.error-view {
         min-width: 100%;
@@ -142,8 +141,6 @@
 
     .external-links {
         min-height: 465px;
-        background: #ffffff;
-        border: 1px solid var(--N200);
         box-sizing: border-box;
         border-radius: 8px;
 
@@ -184,27 +181,19 @@
 
     .external-link__divider {
         height: 1px;
-        width: 100%;
-        background-color: #EDF1F5;
     }
 
     .external-links__header {
-        height: 40px;
         display: grid;
         grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 100px minmax(100px, 59%) 56px;
         column-gap: 16px;
         align-items: center;
         justify-content: stretch;
-        font-size: 12px;
-        font-weight: 600;
         font-style: normal;
         font-stretch: normal;
         line-height: 1.5;
         letter-spacing: normal;
-        padding-left: 20px;
         box-shadow: 0 1px 0 0 var(--N200);
-        background: white;
-        text-transform: uppercase;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         margin-bottom: 1px;
