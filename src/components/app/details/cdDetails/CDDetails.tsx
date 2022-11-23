@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
+import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import Reload from '../../../Reload/Reload'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
-import { cancelPrePostCdTrigger } from '../../service'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { GitChanges, Artifacts } from '../cIDetails/CIDetails'
 import { History } from '../cIDetails/types'
@@ -58,12 +57,10 @@ export default function CDDetails() {
     )
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
-    const { pathname } = useLocation()
     const { replace } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     useEffect(() => {
@@ -168,7 +165,7 @@ export default function CDDetails() {
                         />
                     )}
                 </div>
-                <div ref={ref} className="ci-details__body">
+                <div className="ci-details__body">
                     {!envId ? (
                         <>
                             <div />
@@ -197,13 +194,6 @@ export default function CDDetails() {
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>
             </div>
-
-            {/* {(scrollToTop || scrollToBottom) && (
-                <Scroller
-                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
-                    {...{ scrollToTop, scrollToBottom }}
-                />
-            )} */}
         </>
     )
 }
@@ -269,14 +259,6 @@ const TriggerOutput: React.FC<{
         [triggerId, appId, envId],
         !!triggerId && !!pipelineId,
     )
-
-    const onAbort = useCallback(() => {
-        if (triggerDetails.stage === 'DEPLOY') {
-            return null
-        } else {
-            cancelPrePostCdTrigger(pipelineId, triggerId)
-        }
-    }, [pipelineId, triggerId, triggerDetails.stage])
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
 
@@ -292,10 +274,6 @@ const TriggerOutput: React.FC<{
         if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
             // 10s because progressing
             return 10000
-            // } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
-            //     return null
-            // } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
-            //     return null
         }
         return 30000 // 30s for normal
     }, [triggerDetails])
@@ -313,7 +291,7 @@ const TriggerOutput: React.FC<{
             <div className="trigger-details-container">
                 {!fullScreenView && (
                     <>
-                        <TriggerDetails type="CD" triggerDetails={triggerDetails} abort={onAbort} />
+                        <TriggerDetails type="CD" triggerDetails={triggerDetails} />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
                                 <li className="tab-list__tab">

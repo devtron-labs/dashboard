@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog } from '../../../common'
 import { toast } from 'react-toastify'
-import { useRouteMatch, useLocation } from 'react-router'
+import { useRouteMatch, useLocation, useParams } from 'react-router'
 import { History, GitTriggers, CiMaterial } from '../cIDetails/types'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat } from '../../../../config'
@@ -11,45 +11,49 @@ import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
 import { PROGRESSING_STATUS, TERMINAL_STATUS_COLOR_CLASS_MAP } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
+import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
 
-export const TriggerDetails = React.memo(
-    ({ triggerDetails, abort, type }: { triggerDetails: History; abort?: () => Promise<any>; type: 'CI' | 'CD' }) => {
-        return (
-            <div
-                className="trigger-details"
-                style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}
-            >
-                <div className="trigger-details__status flex">
-                    <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
-                        <circle
-                            cx="12.5"
-                            cy="74.5"
-                            r="6"
-                            fill={colorMap[triggerDetails?.status?.toLowerCase()]}
-                            stroke={colorMap[triggerDetails?.status?.toLowerCase()]}
-                            strokeWidth="12"
-                            strokeOpacity="0.3"
-                        />
-                        <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
-                    </svg>
-                </div>
-                <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
-                    <StartDetails
-                        startedOn={triggerDetails.startedOn}
-                        triggeredBy={triggerDetails.triggeredBy}
-                        triggeredByEmail={triggerDetails.triggeredByEmail}
-                        ciMaterials={triggerDetails.ciMaterials}
-                        gitTriggers={triggerDetails.gitTriggers}
-                        artifact={triggerDetails.artifact}
-                        type={type}
+export const TriggerDetails = React.memo(({ triggerDetails, type }: { triggerDetails: History; type: 'CI' | 'CD' }) => {
+    return (
+        <div className="trigger-details" style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}>
+            <div className="trigger-details__status flex">
+                <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
+                    <circle
+                        cx="12.5"
+                        cy="74.5"
+                        r="6"
+                        fill={colorMap[triggerDetails?.status?.toLowerCase()]}
+                        stroke={colorMap[triggerDetails?.status?.toLowerCase()]}
+                        strokeWidth="12"
+                        strokeOpacity="0.3"
                     />
-                    <CurrentStatus triggerDetails={triggerDetails} type={type} abort={abort} />
-                </div>
+                    <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
+                </svg>
             </div>
-        )
-    },
-)
+            <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
+                <StartDetails
+                    startedOn={triggerDetails.startedOn}
+                    triggeredBy={triggerDetails.triggeredBy}
+                    triggeredByEmail={triggerDetails.triggeredByEmail}
+                    ciMaterials={triggerDetails.ciMaterials}
+                    gitTriggers={triggerDetails.gitTriggers}
+                    artifact={triggerDetails.artifact}
+                    type={type}
+                />
+                <CurrentStatus
+                    status={triggerDetails.status}
+                    finishedOn={triggerDetails.finishedOn}
+                    artifact={type === 'CI' ? triggerDetails.artifact : null}
+                    message={triggerDetails.message}
+                    podStatus={triggerDetails.podStatus}
+                    stage={triggerDetails.stage}
+                    type={type}
+                />
+            </div>
+        </div>
+    )
+})
 
 const Finished = React.memo(
     ({ status, finishedOn, artifact }: { status: string; finishedOn: string; artifact: string }) => {
@@ -102,20 +106,35 @@ const WorkerStatus = React.memo(
     },
 )
 
-const ProgressingStatus: React.FC<{
+const ProgressingStatus = ({
+    status,
+    message,
+    podStatus,
+    stage,
+    type,
+}: {
     status: string
     message: string
     podStatus: string
     stage: 'POST' | 'DEPLOY' | 'PRE'
-    abort?: () => Promise<any>
     type: 'CI' | 'CD'
-}> = ({ status, message, podStatus, stage, abort, type }) => {
+}) => {
     const [aborting, setAborting] = useState(false)
     const [abortConfirmation, setAbortConfiguration] = useState(false)
-
+    const { buildId, triggerId, pipelineId } = useParams<{
+        buildId: string
+        triggerId: string
+        pipelineId: string
+    }>()
+    let abort = null
+    if (type === 'CI') {
+        abort = () => cancelCiTrigger({ pipelineId, workflowId: buildId })
+    } else if (stage !== 'DEPLOY') {
+        abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
+    }
     async function abortRunning(e) {
         setAborting(true)
-        const [error, result] = await asyncWrap(abort())
+        const [error] = await asyncWrap(abort())
         setAborting(false)
         if (error) {
             showError(error)
@@ -124,6 +143,12 @@ const ProgressingStatus: React.FC<{
             setAbortConfiguration(false)
         }
     }
+    const showAbortConfiguration = (): void => {
+        setAbortConfiguration(true)
+    }
+    const hideAbortConfiguration = (): void => {
+        setAbortConfiguration(false)
+    }
     return (
         <>
             <div className="trigger-details__current flex left">
@@ -131,11 +156,7 @@ const ProgressingStatus: React.FC<{
                     In progress
                 </div>
                 {abort && (
-                    <button
-                        className="cta cancel ml-16"
-                        style={{ minWidth: '72px' }}
-                        onClick={(e) => setAbortConfiguration(true)}
-                    >
+                    <button className="cta cancel ml-16" style={{ minWidth: '72px' }} onClick={showAbortConfiguration}>
                         Abort
                     </button>
                 )}
@@ -153,7 +174,7 @@ const ProgressingStatus: React.FC<{
                             : 'Are you sure you want to abort this build?'}
                     </p>
                     <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel" onClick={(e) => setAbortConfiguration(false)}>
+                        <button type="button" className="cta cancel" onClick={hideAbortConfiguration}>
                             Cancel
                         </button>
                         <button type="button" className="cta delete" onClick={abortRunning}>
@@ -167,31 +188,32 @@ const ProgressingStatus: React.FC<{
 }
 
 const CurrentStatus = React.memo(
-    ({ triggerDetails, type, abort }: { triggerDetails: History; type: 'CI' | 'CD'; abort?: () => Promise<any> }) => {
-        if (PROGRESSING_STATUS[triggerDetails.status.toLowerCase()]) {
+    ({
+        status,
+        finishedOn,
+        artifact,
+        message,
+        podStatus,
+        stage,
+        type,
+    }: {
+        status: string
+        finishedOn: string
+        artifact: string
+        message: string
+        podStatus: string
+        stage: 'POST' | 'DEPLOY' | 'PRE'
+        type: 'CI' | 'CD'
+    }) => {
+        if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
-                <ProgressingStatus
-                    status={triggerDetails.status}
-                    message={triggerDetails.message}
-                    podStatus={triggerDetails.podStatus}
-                    stage={triggerDetails.stage}
-                    abort={abort}
-                    type={type}
-                />
+                <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
                 <div className="trigger-details__current flex left">
-                    <Finished
-                        status={triggerDetails.status}
-                        finishedOn={triggerDetails.finishedOn}
-                        artifact={type === 'CI' ? triggerDetails.artifact : null}
-                    />
-                    <WorkerStatus
-                        message={triggerDetails.message}
-                        podStatus={triggerDetails.podStatus}
-                        stage={triggerDetails.stage}
-                    />
+                    <Finished status={status} finishedOn={finishedOn} artifact={artifact} />
+                    <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
             )
         }

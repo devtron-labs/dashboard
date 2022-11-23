@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
+import React, { useState, useEffect, useMemo } from 'react'
+import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import {
     Progressing,
     useScrollable,
@@ -244,7 +244,6 @@ const Details: React.FC<BuildDetails> = ({
         [pipelineId, buildId, appId],
         !pipeline?.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
-    const onAbort = useCallback(() => cancelCiTrigger({ pipelineId, workflowId: buildId }), [pipelineId, buildId])
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
         if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerDetailsResult?.result)
@@ -275,7 +274,7 @@ const Details: React.FC<BuildDetails> = ({
             <div className="trigger-details-container">
                 {!fullScreenView && (
                     <>
-                        <TriggerDetails triggerDetails={triggerDetails} type="CI" abort={onAbort} />
+                        <TriggerDetails triggerDetails={triggerDetails} type="CI" />
                         <ul className="ml-20 tab-list dc__border-bottom mr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
