@@ -101,26 +101,26 @@ export const DeploymentAppSelector = ({
 }: DeploymentAppSelectorType): JSX.Element => {
 
     return !isDeployChartView ? (
-        <div>
-            <h2 className="chart-values__environment-label fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
-            <span className="chart-values__environment fs-13 fw-6 lh-18 cn-9 md-6">
+        <div className={"chart-values__deployment_container"}>
+            <h2 className=".chart-values__deployment_label fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+            <span className=".chart-values__deployment_label fs-13 fw-6 lh-18 cn-9 md-6">
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm ? DeploymentAppTypeNameMapping.HelmKeyValue  : DeploymentAppTypeNameMapping.GitOpsKeyValue}
             </span>
-            <span>
+            <span className={"chart-values__deployment_label"}>
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
-                    <ArgoCD className="icon-dim-18 ml-6 " />
+                    <ArgoCD className="icon-dim-24 ml-6 " />
                 ) : (
-                    <Helm className="icon-dim-18 ml-6 " />
+                    <Helm className="icon-dim-24 ml-6  " />
                 )}
             </span>
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
             <div className="form__row">
-                <label className="form__label form__label--sentence dc__bold">
+                <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
                 </label>
-                <p className="text-warning"> Cannot be changed after deployment </p>
+                <p className="chart-values-deployment_error__wrapper" > Cannot be changed after deployment </p>
                 <RadioGroup
                     value={commonState.deploymentAppType}
                     name="DeploymentAppTypeGroup"

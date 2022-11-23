@@ -105,7 +105,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
-                deploymentAppType: DeploymentAppType.GitOps
+                deploymentAppType: DeploymentAppType.Helm
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -1256,6 +1256,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9 mb-16">Select Environment</p>
                 {this.renderEnvAndNamespace()}
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>
                         <div className="divider mt-0 mb-0"></div>
