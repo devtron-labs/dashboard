@@ -920,22 +920,23 @@ function ChartValuesView({
     }
 
     const renderValuesTabs = () => {
+        const initialSelectedTab =
+            presetValueId || isCreateValueView
+                ? 'yaml'
+                : (isCreateValueView && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                  !!commonState.installedConfig?.valuesSchemaJson
+                ? 'gui'
+                : 'yaml'
+
         return (
             <RadioGroup
                 className="gui-yaml-switch"
                 name="yaml-mode"
-                initialTab={
-                    presetValueId || isCreateValueView
-                        ? 'yaml'
-                        : (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-                          !!commonState.installedConfig?.valuesSchemaJson
-                        ? 'gui'
-                        : 'yaml'
-                }
+                initialTab={initialSelectedTab}
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>
+                {initialSelectedTab === 'gui' && <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>}
                 <RadioGroup.Radio value="yaml">
                     <Edit className="icon-dim-12 mr-6" />
                     YAML
