@@ -923,7 +923,7 @@ function ChartValuesView({
         const initialSelectedTab =
             presetValueId || isCreateValueView
                 ? 'yaml'
-                : (isCreateValueView && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                : (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
                   !!commonState.installedConfig?.valuesSchemaJson
                 ? 'gui'
                 : 'yaml'
