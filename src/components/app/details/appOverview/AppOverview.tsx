@@ -10,7 +10,11 @@ import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
+import {
+    ExternalLinkIdentifierType,
+    ExternalLinksAndToolsType,
+    ExternalLinkScopeType,
+} from '../../../externalLinks/ExternalLinks.type'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
@@ -56,7 +60,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             .then(([monitoringToolsRes, externalLinksRes]) => {
                 setExternalLinksAndTools({
                     fetchingExternalLinks: false,
-                    externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                    externalLinks:
+                        externalLinksRes.result
+                            ?.filter((_link) => _link.type === ExternalLinkScopeType.AppLevel)
+                            ?.sort(sortByUpdatedOn) || [],
                     monitoringTools:
                         monitoringToolsRes.result
                             ?.map((tool) => ({
