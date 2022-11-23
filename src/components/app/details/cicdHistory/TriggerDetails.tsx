@@ -1,14 +1,8 @@
 import React, { useState } from 'react'
-import {
-    Progressing,
-    showError,
-    createGitCommitUrl,
-    asyncWrap,
-    ConfirmationDialog,
-} from '../../../common'
+import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog } from '../../../common'
 import { toast } from 'react-toastify'
 import { useRouteMatch, useLocation } from 'react-router'
-import { History, GitTriggers } from '../cIDetails/types'
+import { History, GitTriggers, CiMaterial } from '../cIDetails/types'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat } from '../../../../config'
 import moment from 'moment'
@@ -20,8 +14,6 @@ import { Link } from 'react-router-dom'
 
 export const TriggerDetails = React.memo(
     ({ triggerDetails, abort, type }: { triggerDetails: History; abort?: () => Promise<any>; type: 'CI' | 'CD' }) => {
-        const { url, path } = useRouteMatch()
-        const { pathname } = useLocation()
         return (
             <div
                 className="trigger-details"
@@ -43,61 +35,15 @@ export const TriggerDetails = React.memo(
                     </svg>
                 </div>
                 <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
-                    <div className="trigger-details__start flex column left">
-                        <div className="cn-9 fs-14 fw-6">Start</div>
-                        <div className="flex left">
-                            <time className="cn-7 fs-12">
-                                {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                            </time>
-                            <div className="dc__bullet mr-6 ml-6"></div>
-                            <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
-                                {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
-                            </div>
-                            {type === 'CI' &&
-                                Array.isArray(triggerDetails.ciMaterials) &&
-                                triggerDetails.ciMaterials.map((ciMaterial) => {
-                                    const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
-                                    return (
-                                        <>
-                                            {ciMaterial.type != 'WEBHOOK' && (
-                                                <a
-                                                    target="_blank"
-                                                    rel="noopener noreferer"
-                                                    key={ciMaterial.id}
-                                                    href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
-                                                    className="dc__app-commit__hash mr-12 bcn-1 cn-7"
-                                                >
-                                                    {gitDetail?.Commit?.substr(0, 8)}
-                                                </a>
-                                            )}
-                                            {ciMaterial.type == 'WEBHOOK' &&
-                                                gitDetail.WebhookData &&
-                                                gitDetail.WebhookData.Data && (
-                                                    <span className="dc__app-commit__hash">
-                                                        {gitDetail.WebhookData.EventActionType == 'merged'
-                                                            ? gitDetail.WebhookData.Data['target checkout']?.substr(
-                                                                  0,
-                                                                  8,
-                                                              )
-                                                            : gitDetail.WebhookData.Data['target checkout']}
-                                                    </span>
-                                                )}
-                                        </>
-                                    )
-                                })}
-                            {type === 'CD' && (
-                                <div className="dc__app-commit__hash ">
-                                    <img src={docker} className="commit-hash__icon grayscale" />
-                                    {triggerDetails.artifact.split(':')[1]}
-                                </div>
-                            )}
-                            {!pathname.includes('source-code') && (
-                                <Link to={`${url}/source-code`} className="anchor ml-8">
-                                    Commit details
-                                </Link>
-                            )}
-                        </div>
-                    </div>
+                    <StartDetails
+                        startedOn={triggerDetails.startedOn}
+                        triggeredBy={triggerDetails.triggeredBy}
+                        triggeredByEmail={triggerDetails.triggeredByEmail}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        gitTriggers={triggerDetails.gitTriggers}
+                        artifact={triggerDetails.artifact}
+                        type={type}
+                    />
                     <CurrentStatus triggerDetails={triggerDetails} type={type} abort={abort} />
                 </div>
             </div>
@@ -249,5 +195,81 @@ const CurrentStatus = React.memo(
                 </div>
             )
         }
+    },
+)
+
+const StartDetails = React.memo(
+    ({
+        startedOn,
+        triggeredBy,
+        triggeredByEmail,
+        ciMaterials,
+        gitTriggers,
+        artifact,
+        type,
+    }: {
+        startedOn: string
+        triggeredBy: number
+        triggeredByEmail: string
+        ciMaterials: CiMaterial[]
+        gitTriggers: Map<number, GitTriggers>
+        artifact: string
+        type: 'CI' | 'CD'
+    }) => {
+        const { url } = useRouteMatch()
+        const { pathname } = useLocation()
+        return (
+            <div className="trigger-details__start flex column left">
+                <div className="cn-9 fs-14 fw-6">Start</div>
+                <div className="flex left">
+                    <time className="cn-7 fs-12">
+                        {moment(startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                    </time>
+                    <div className="dc__bullet mr-6 ml-6"></div>
+                    <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
+                        {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
+                    </div>
+                    {type === 'CD' ? (
+                        <div className="dc__app-commit__hash ">
+                            <img src={docker} className="commit-hash__icon grayscale" />
+                            {artifact.split(':')[1]}
+                        </div>
+                    ) : (
+                        ciMaterials?.map((ciMaterial) => {
+                            const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
+                            return (
+                                <>
+                                    {ciMaterial.type != 'WEBHOOK' && (
+                                        <a
+                                            target="_blank"
+                                            rel="noopener noreferer"
+                                            key={ciMaterial.id}
+                                            href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
+                                            className="dc__app-commit__hash mr-12 bcn-1 cn-7"
+                                        >
+                                            {gitDetail?.Commit?.substr(0, 8)}
+                                        </a>
+                                    )}
+                                    {ciMaterial.type == 'WEBHOOK' &&
+                                        gitDetail.WebhookData &&
+                                        gitDetail.WebhookData.Data && (
+                                            <span className="dc__app-commit__hash">
+                                                {gitDetail.WebhookData.EventActionType == 'merged'
+                                                    ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
+                                                    : gitDetail.WebhookData.Data['target checkout']}
+                                            </span>
+                                        )}
+                                </>
+                            )
+                        })
+                    )}
+                    {!pathname.includes('source-code') && (
+                        <Link to={`${url}/source-code`} className="anchor ml-8">
+                            Commit details
+                        </Link>
+                    )}
+                </div>
+            </div>
+        )
     },
 )

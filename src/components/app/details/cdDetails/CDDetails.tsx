@@ -1,14 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
-import {
-    Progressing,
-    showError,
-    useAsync,
-    useInterval,
-    useScrollable,
-    mapByKey,
-    asyncWrap,
-} from '../../../common'
+import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
@@ -64,12 +56,12 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
-    const [, blobStorageConfiguration, ] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     const { replace } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
-    const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
+    const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
@@ -160,8 +152,8 @@ export default function CDDetails() {
     if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured />
     if (!result || (envId && dependencyState[2] !== envId)) return null
     const envOptions: OptionType[] = (result[0].result || []).map((item) => {
-      return { value: `${item.environmentId}`, label: item.environmentName }
-  })
+        return { value: `${item.environmentId}`, label: item.environmentName }
+    })
     return (
         <>
             <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -263,7 +255,7 @@ const TriggerOutput: React.FC<{
     setDeploymentHistoryList,
     deploymentHistoryList,
     deploymentAppType,
-    isBlobStorageConfigured
+    isBlobStorageConfigured,
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -278,6 +270,13 @@ const TriggerOutput: React.FC<{
         !!triggerId && !!pipelineId,
     )
 
+    const onAbort = useCallback(() => {
+        if (triggerDetails.stage === 'DEPLOY') {
+            return null
+        } else {
+            cancelPrePostCdTrigger(pipelineId, triggerId)
+        }
+    }, [pipelineId, triggerId, triggerDetails.stage])
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
 
@@ -285,16 +284,18 @@ const TriggerOutput: React.FC<{
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
-        if (!triggerDetails || terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())) return null // no interval
         if (
-            statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())
-        ) {
+            !triggerDetails ||
+            terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+        )
+            return null // no interval
+        if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
             // 10s because progressing
             return 10000
-        // } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
-        //     return null
-        // } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
-        //     return null
+            // } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
+            //     return null
+            // } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
+            //     return null
         }
         return 30000 // 30s for normal
     }, [triggerDetails])
@@ -306,22 +307,15 @@ const TriggerOutput: React.FC<{
     if (triggerDetails?.id !== +triggerId) {
         return null
     }
+
     return (
         <>
             <div className="trigger-details-container">
                 {!fullScreenView && (
                     <>
-                        <TriggerDetails
-                            type="CD"
-                            triggerDetails={triggerDetails}
-                            abort={
-                                triggerDetails.stage === 'DEPLOY'
-                                    ? null
-                                    : () => cancelPrePostCdTrigger(pipelineId, triggerId)
-                            }
-                        />
+                        <TriggerDetails type="CD" triggerDetails={triggerDetails} abort={onAbort} />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
-                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType!== DeploymentAppType.helm && (
+                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
@@ -405,7 +399,15 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
-}> = ({ triggerDetails, loading, setFullScreenView, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType, isBlobStorageConfigured }) => {
+}> = ({
+    triggerDetails,
+    loading,
+    setFullScreenView,
+    deploymentHistoryList,
+    setDeploymentHistoryList,
+    deploymentAppType,
+    isBlobStorageConfigured,
+}) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
@@ -414,7 +416,9 @@ const HistoryLogs: React.FC<{
         envId: string
     }>()
 
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded' })
+    const [ref, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
 
     return (
         <>
