@@ -1,45 +1,26 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import {
     Progressing,
     useScrollable,
     showError,
-    Select,
     useAsync,
     useInterval,
     createGitCommitUrl,
     mapByKey,
-    useIntersection,
     copyToClipboard,
     asyncWrap,
     ConfirmationDialog,
-    useKeyDown,
-    not,
-    ConditionalWrap,
 } from '../../../common'
-import {
-    Host,
-    Routes,
-    URLS,
-    SourceTypeMap,
-    ModuleNameMap,
-    EVENT_STREAM_EVENTS_MAP,
-    TERMINAL_STATUS_MAP,
-    POD_STATUS,
-    LOGS_RETRY_COUNT,
-} from '../../../../config'
+import { URLS, ModuleNameMap, TERMINAL_STATUS_MAP } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
-import { default as AnsiUp } from 'ansi_up'
 import { CIPipeline, History, GitTriggers, CiMaterial } from './types'
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
-import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
-import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { statusColor as colorMap } from '../../config'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
@@ -52,31 +33,20 @@ import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
-import TippyHeadless from '@tippyjs/react/headless'
 import Tippy from '@tippyjs/react'
-import ReactGA from 'react-ga4'
 import './ciDetails.scss'
-import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
-import { renderConfigurationError } from '../cdDetails/cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { OptionType } from '../../types'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.components'
+import { PROGRESSING_STATUS, TERMINAL_STATUS_COLOR_CLASS_MAP } from '../cicdHistory/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
-
-interface Pipelines {
-    pipelines: CIPipeline[]
-}
-
-interface TriggerDetails {
-    triggerDetails: any
-}
 
 export default function CIDetails() {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
@@ -96,7 +66,6 @@ export default function CIDetails() {
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     useInterval(pollHistory, 30000)
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
 
     useEffect(() => {
         if (loading || !triggerHistoryResult) {
@@ -160,7 +129,7 @@ export default function CIDetails() {
                         />
                     )}
                 </div>
-                <div ref={ref} className="ci-details__body">
+                <div className="ci-details__body">
                     {!pipelineId && (
                         <>
                             <div />
@@ -196,12 +165,6 @@ export default function CIDetails() {
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>
             </div>
-            {/* {(scrollToTop || scrollToBottom) && (
-                <Scroller
-                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
-                    {...{ scrollToTop, scrollToBottom }}
-                />
-            )} */}
         </>
     )
 }
@@ -294,17 +257,17 @@ const Details: React.FC<BuildDetails> = ({
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
-        if (!triggerDetails) return null // no interval
+        if (
+            !triggerDetails ||
+            terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+        )
+            return null // no interval
         if (
             statusSet.has(triggerDetails.status?.toLowerCase()) ||
             (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))
         ) {
             // 10s because progressing
             return 10000
-        } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
-            return null
-        } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
-            return null
         }
         return 30000 // 30s for normal
     }, [triggerDetails])
@@ -369,180 +332,158 @@ const Details: React.FC<BuildDetails> = ({
                 key={triggerDetails.id}
                 pipeline={pipeline}
                 triggerDetails={triggerDetails}
-                setFullScreenView={setFullScreenView}
                 isBlobStorageConfigured={isBlobStorageConfigured}
             />
         </>
     )
 }
 
-export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => Promise<any>; type: 'CI' | 'CD' }> = ({
-    triggerDetails,
-    abort,
-    type,
-}) => {
-    const { url, path } = useRouteMatch()
-    const { pathname } = useLocation()
-    return (
-        <div className="trigger-details" style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}>
-            <div className="trigger-details__status flex">
-                <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
-                    <circle
-                        cx="12.5"
-                        cy="74.5"
-                        r="6"
-                        fill={colorMap[triggerDetails?.status?.toLowerCase()]}
-                        stroke={colorMap[triggerDetails?.status?.toLowerCase()]}
-                        strokeWidth="12"
-                        strokeOpacity="0.3"
-                    />
-                    <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
-                </svg>
-            </div>
-            <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
-                <div className="trigger-details__start flex column left">
-                    <div className="cn-9 fs-14 fw-6">Start</div>
-                    <div className="flex left">
-                        <time className="cn-7 fs-12">
-                            {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                        </time>
-                        <div className="dc__bullet mr-6 ml-6"></div>
-                        <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
-                            {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
-                        </div>
-                        {type === 'CI' &&
-                            Array.isArray(triggerDetails.ciMaterials) &&
-                            triggerDetails.ciMaterials.map((ciMaterial) => {
-                                const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
-                                return (
-                                    <>
-                                        {ciMaterial.type != 'WEBHOOK' && (
-                                            <a
-                                                target="_blank"
-                                                rel="noopener noreferer"
-                                                key={ciMaterial.id}
-                                                href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
-                                                className="dc__app-commit__hash mr-12 bcn-1 cn-7"
-                                            >
-                                                {gitDetail?.Commit?.substr(0, 8)}
-                                            </a>
-                                        )}
-                                        {ciMaterial.type == 'WEBHOOK' &&
-                                            gitDetail.WebhookData &&
-                                            gitDetail.WebhookData.Data && (
-                                                <span className="dc__app-commit__hash">
-                                                    {gitDetail.WebhookData.EventActionType == 'merged'
-                                                        ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
-                                                        : gitDetail.WebhookData.Data['target checkout']}
-                                                </span>
-                                            )}
-                                    </>
-                                )
-                            })}
-                        {type === 'CD' && (
-                            <div className="dc__app-commit__hash ">
-                                <img src={docker} className="commit-hash__icon grayscale" />
-                                {triggerDetails.artifact.split(':')[1]}
-                            </div>
-                        )}
-                        {!pathname.includes('source-code') && (
-                            <Link to={`${url}/source-code`} className="anchor ml-8">
-                                Commit details
-                            </Link>
-                        )}
-                    </div>
+export const TriggerDetails = React.memo(
+    ({ triggerDetails, abort, type }: { triggerDetails: History; abort?: () => Promise<any>; type: 'CI' | 'CD' }) => {
+        const { url, path } = useRouteMatch()
+        const { pathname } = useLocation()
+        return (
+            <div
+                className="trigger-details"
+                style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}
+            >
+                <div className="trigger-details__status flex">
+                    <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
+                        <circle
+                            cx="12.5"
+                            cy="74.5"
+                            r="6"
+                            fill={colorMap[triggerDetails?.status?.toLowerCase()]}
+                            stroke={colorMap[triggerDetails?.status?.toLowerCase()]}
+                            strokeWidth="12"
+                            strokeOpacity="0.3"
+                        />
+                        <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
+                    </svg>
                 </div>
-                {
-                    {
-                        [TERMINAL_STATUS_MAP.SUCCEEDED]: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        [TERMINAL_STATUS_MAP.HEALTHY]: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        [TERMINAL_STATUS_MAP.RUNNING]: (
-                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
-                        ),
-                        [TERMINAL_STATUS_MAP.PROGRESSING]: (
-                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
-                        ),
-                        [TERMINAL_STATUS_MAP.STARTING]: (
-                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
-                        ),
-                        [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
-                        [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
-                    }[triggerDetails.status.toLowerCase()]
-                }
-                {!Object.values(TERMINAL_STATUS_MAP).includes(triggerDetails.status.toLowerCase()) && (
-                    <Generic triggerDetails={triggerDetails} type={type} />
-                )}
-            </div>
-        </div>
-    )
-}
-
-const Succeeded: React.FC<{ triggerDetails: History; type: 'CI' | 'CD' }> = ({ triggerDetails, type }) => {
-    return (
-        <div className="flex left">
-            <div className="trigger-details__current flex column left">
-                <Finished triggerDetails={triggerDetails} colorClass="cg-5" type={type} />
-            </div>
-            <WorkerStatus triggerDetails={triggerDetails} />
-        </div>
-    )
-}
-
-const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'CI' | 'CD' }> = ({
-    triggerDetails,
-    colorClass,
-    type,
-}) => {
-    return (
-        <div className="flex column left">
-            <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>
-                {triggerDetails.status && triggerDetails.status.toLowerCase() === 'cancelled'
-                    ? 'ABORTED'
-                    : triggerDetails.status}
-            </div>
-            <div className="flex left">
-                {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
-                    <time className="cn-7 fs-12 mr-12">
-                        {moment(triggerDetails.finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                    </time>
-                )}
-                {type === 'CI' && triggerDetails.artifact && (
-                    <div className="dc__app-commit__hash ">
-                        <img src={docker} className="commit-hash__icon grayscale" />
-                        {triggerDetails.artifact.split(':')[1]}
+                <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
+                    <div className="trigger-details__start flex column left">
+                        <div className="cn-9 fs-14 fw-6">Start</div>
+                        <div className="flex left">
+                            <time className="cn-7 fs-12">
+                                {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                            </time>
+                            <div className="dc__bullet mr-6 ml-6"></div>
+                            <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
+                                {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
+                            </div>
+                            {type === 'CI' &&
+                                Array.isArray(triggerDetails.ciMaterials) &&
+                                triggerDetails.ciMaterials.map((ciMaterial) => {
+                                    const gitDetail: GitTriggers = triggerDetails.gitTriggers[ciMaterial.id]
+                                    return (
+                                        <>
+                                            {ciMaterial.type != 'WEBHOOK' && (
+                                                <a
+                                                    target="_blank"
+                                                    rel="noopener noreferer"
+                                                    key={ciMaterial.id}
+                                                    href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
+                                                    className="dc__app-commit__hash mr-12 bcn-1 cn-7"
+                                                >
+                                                    {gitDetail?.Commit?.substr(0, 8)}
+                                                </a>
+                                            )}
+                                            {ciMaterial.type == 'WEBHOOK' &&
+                                                gitDetail.WebhookData &&
+                                                gitDetail.WebhookData.Data && (
+                                                    <span className="dc__app-commit__hash">
+                                                        {gitDetail.WebhookData.EventActionType == 'merged'
+                                                            ? gitDetail.WebhookData.Data['target checkout']?.substr(
+                                                                  0,
+                                                                  8,
+                                                              )
+                                                            : gitDetail.WebhookData.Data['target checkout']}
+                                                    </span>
+                                                )}
+                                        </>
+                                    )
+                                })}
+                            {type === 'CD' && (
+                                <div className="dc__app-commit__hash ">
+                                    <img src={docker} className="commit-hash__icon grayscale" />
+                                    {triggerDetails.artifact.split(':')[1]}
+                                </div>
+                            )}
+                            {!pathname.includes('source-code') && (
+                                <Link to={`${url}/source-code`} className="anchor ml-8">
+                                    Commit details
+                                </Link>
+                            )}
+                        </div>
                     </div>
-                )}
+                    <CurrentStatus triggerDetails={triggerDetails} type={type} abort={abort} />
+                </div>
             </div>
-        </div>
-    )
-}
+        )
+    },
+)
 
-const WorkerStatus: React.FC<{ triggerDetails: History }> = ({ triggerDetails }) => {
-    if (!triggerDetails.message && !triggerDetails.podStatus) return null
-    return (
-        <>
-            <span style={{ height: '80%', borderRight: '1px solid var(--N100)', margin: '0 16px' }} />
-            <div className="flex left column">
-                <div className="flex left fs-14">
-                    <div className="mr-10">{triggerDetails.stage === 'DEPLOY' ? 'Message' : 'Worker'}</div>
-                    {triggerDetails.podStatus && (
-                        <div className="fw-6" style={{ color: colorMap[triggerDetails.podStatus.toLowerCase()] }}>
-                            {triggerDetails.podStatus}
+const Finished = React.memo(
+    ({ status, finishedOn, artifact }: { status: string; finishedOn: string; artifact: string }) => {
+        return (
+            <div className="flex column left">
+                <div
+                    className={`${status} fs-14 fw-6 ${
+                        TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'
+                    }`}
+                >
+                    {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
+                </div>
+                <div className="flex left">
+                    {finishedOn && finishedOn !== '0001-01-01T00:00:00Z' && (
+                        <time className="cn-7 fs-12 mr-12">
+                            {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                        </time>
+                    )}
+                    {artifact && (
+                        <div className="dc__app-commit__hash ">
+                            <img src={docker} className="commit-hash__icon grayscale" />
+                            {artifact.split(':')[1]}
                         </div>
                     )}
                 </div>
-                {triggerDetails.message && <div className="fs-12 cn-7">{triggerDetails?.message || ''}</div>}
             </div>
-        </>
-    )
-}
+        )
+    },
+)
 
-const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promise<any>; type: 'CI' | 'CD' }> = ({
-    triggerDetails,
-    abort,
-    type,
-}) => {
+const WorkerStatus = React.memo(
+    ({ message, podStatus, stage }: { message: string; podStatus: string; stage: 'POST' | 'DEPLOY' | 'PRE' }) => {
+        if (!message && !podStatus) return null
+        return (
+            <>
+                <span style={{ height: '80%', borderRight: '1px solid var(--N100)', margin: '0 16px' }} />
+                <div className="flex left column">
+                    <div className="flex left fs-14">
+                        <div className="mr-10">{stage === 'DEPLOY' ? 'Message' : 'Worker'}</div>
+                        {podStatus && (
+                            <div className="fw-6" style={{ color: colorMap[podStatus.toLowerCase()] }}>
+                                {podStatus}
+                            </div>
+                        )}
+                    </div>
+                    {message && <div className="fs-12 cn-7">{message || ''}</div>}
+                </div>
+            </>
+        )
+    },
+)
+
+const ProgressingStatus: React.FC<{
+    status: string
+    message: string
+    podStatus: string
+    stage: 'POST' | 'DEPLOY' | 'PRE'
+    abort?: () => Promise<any>
+    type: 'CI' | 'CD'
+}> = ({ status, message, podStatus, stage, abort, type }) => {
     const [aborting, setAborting] = useState(false)
     const [abortConfirmation, setAbortConfiguration] = useState(false)
 
@@ -560,7 +501,7 @@ const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promi
     return (
         <>
             <div className="trigger-details__current flex left">
-                <div style={{ color: '#ff7e5b' }} className={`${triggerDetails.status} fs-14 fw-6 flex left`}>
+                <div style={{ color: '#ff7e5b' }} className={`${status} fs-14 fw-6 flex left`}>
                     In progress
                 </div>
                 {abort && (
@@ -572,15 +513,13 @@ const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promi
                         Abort
                     </button>
                 )}
-                <WorkerStatus triggerDetails={triggerDetails} />
+                <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
             </div>
             {abortConfirmation && (
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
                     <ConfirmationDialog.Body
-                        title={
-                            type === 'CD' ? `Abort ${triggerDetails.stage.toLowerCase()}-deployment?` : 'Abort build?'
-                        }
+                        title={type === 'CD' ? `Abort ${stage.toLowerCase()}-deployment?` : 'Abort build?'}
                     />
                     <p className="fs-13 cn-7 lh-1-54">
                         {type === 'CD'
@@ -601,36 +540,55 @@ const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promi
     )
 }
 
-const Failed: React.FC<{ triggerDetails: History; type: 'CI' | 'CD' }> = ({ triggerDetails, type }) => {
-    return (
-        <div className="trigger-details__current flex left">
-            <Finished triggerDetails={triggerDetails} colorClass="cr-5" type={type} />
-            <WorkerStatus triggerDetails={triggerDetails} />
-        </div>
-    )
-}
+const CurrentStatus = React.memo(
+    ({ triggerDetails, type, abort }: { triggerDetails: History; type: 'CI' | 'CD'; abort?: () => Promise<any> }) => {
+        if (PROGRESSING_STATUS[triggerDetails.status.toLowerCase()]) {
+            return (
+                <ProgressingStatus
+                    status={triggerDetails.status}
+                    message={triggerDetails.message}
+                    podStatus={triggerDetails.podStatus}
+                    stage={triggerDetails.stage}
+                    abort={abort}
+                    type={type}
+                />
+            )
+        } else {
+            return (
+                <div className="trigger-details__current flex left">
+                    <Finished
+                        status={triggerDetails.status}
+                        finishedOn={triggerDetails.finishedOn}
+                        artifact={type === 'CI' ? triggerDetails.artifact : null}
+                    />
+                    <WorkerStatus
+                        message={triggerDetails.message}
+                        podStatus={triggerDetails.podStatus}
+                        stage={triggerDetails.stage}
+                    />
+                </div>
+            )
+        }
+    },
+)
 
-const Generic: React.FC<{ triggerDetails: History; type: 'CI' | 'CD' }> = ({ triggerDetails, type }) => {
-    return (
-        <div className="trigger-details__current flex left">
-            <Finished triggerDetails={triggerDetails} colorClass="cn-5" type={type} />
-            <WorkerStatus triggerDetails={triggerDetails} />
-        </div>
-    )
-}
+const HistoryLogs = React.memo(
+    ({
+        pipeline,
+        triggerDetails,
+        isBlobStorageConfigured,
+    }: {
+        pipeline: CIPipeline
+        triggerDetails: History
+        isBlobStorageConfigured?: boolean
+    }) => {
+        let { path } = useRouteMatch()
+        const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
+        const [ref, scrollToTop, scrollToBottom] = useScrollable({
+            autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+        })
 
-const HistoryLogs: React.FC<{
-    pipeline: CIPipeline
-    triggerDetails: History
-    setFullScreenView: (...args) => void
-    isBlobStorageConfigured?: boolean
-}> = ({ pipeline, triggerDetails, setFullScreenView, isBlobStorageConfigured }) => {
-    let { path } = useRouteMatch()
-    const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded' })
-
-    return (
-        <>
+        return (
             <div className="trigger-outputs-container">
                 {pipeline?.pipelineType === 'LINKED' ? (
                     <LinkedCIPipelineView pipeline={pipeline} />
@@ -638,8 +596,18 @@ const HistoryLogs: React.FC<{
                     <Switch>
                         <Route path={`${path}/logs`}>
                             <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} isBlobStorageConfigured={isBlobStorageConfigured} parentType={STAGE_TYPE.CI}/>
+                                <LogsRenderer
+                                    triggerDetails={triggerDetails}
+                                    isBlobStorageConfigured={isBlobStorageConfigured}
+                                    parentType={STAGE_TYPE.CI}
+                                />
                             </div>
+                            {(scrollToTop || scrollToBottom) && (
+                                <Scroller
+                                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                                    {...{ scrollToTop, scrollToBottom }}
+                                />
+                            )}
                         </Route>
                         <Route
                             path={`${path}/source-code`}
@@ -668,17 +636,11 @@ const HistoryLogs: React.FC<{
                     </Switch>
                 )}
             </div>
-            {(scrollToTop || scrollToBottom) && (
-                <Scroller
-                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
-                    {...{ scrollToTop, scrollToBottom }}
-                />
-            )}
-        </>
-    )
-}
+        )
+    },
+)
 
-export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetails }) => {
+export const GitChanges = React.memo(({ triggerDetails }: { triggerDetails: History }) => {
     return (
         <div className="flex column left w-100 p-16">
             {Array.isArray(triggerDetails.ciMaterials) &&
@@ -691,9 +653,9 @@ export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetai
                 ))}
         </div>
     )
-}
+})
 
-const LinkedCIPipelineView: React.FC<{ pipeline: CIPipeline }> = ({ pipeline }) => {
+const LinkedCIPipelineView = React.memo(({ pipeline }: { pipeline: CIPipeline }) => {
     const { pipelineId } = useParams<{ pipelineId: string }>()
     let link = `${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`
     return (
@@ -713,9 +675,9 @@ const LinkedCIPipelineView: React.FC<{ pipeline: CIPipeline }> = ({ pipeline }) 
             </EmptyState.Button>
         </EmptyState>
     )
-}
+})
 
-function SelectPipelineView() {
+const SelectPipelineView = React.memo((): JSX.Element => {
     const { pipelineId } = useParams<{ pipelineId: string }>()
     return (
         <EmptyState>
@@ -728,9 +690,9 @@ function SelectPipelineView() {
             <EmptyState.Subtitle>Please select a pipeline to start seeing CI builds.</EmptyState.Subtitle>
         </EmptyState>
     )
-}
+})
 
-function NoTriggersView() {
+const NoTriggersView = React.memo((): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -744,9 +706,9 @@ function NoTriggersView() {
             </EmptyState.Subtitle>
         </EmptyState>
     )
-}
+})
 
-function CIProgressView() {
+const CIProgressView = React.memo((): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -760,9 +722,9 @@ function CIProgressView() {
             </EmptyState.Subtitle>
         </EmptyState>
     )
-}
+})
 
-function NoArtifactsView() {
+const NoArtifactsView = React.memo((): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -774,84 +736,83 @@ function NoArtifactsView() {
             <EmptyState.Subtitle>Errr..!! We couldn’t build your code.</EmptyState.Subtitle>
         </EmptyState>
     )
-}
+})
 
-export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any>}> = ({
-    triggerDetails,
-    getArtifactPromise,
-}) => {
-    const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
-    const [downloading, setDownloading] = useState(false)
-    async function handleArtifact(e) {
-        try {
-            setDownloading(true)
-            const response = await getArtifactPromise()
-            const b = await (response as any).blob()
-            let a = document.createElement('a')
-            let url = URL.createObjectURL(b)
-            a.href = url
-            a.download = `${buildId || triggerId}.zip`
-            a.click()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setDownloading(false)
+export const Artifacts = React.memo(
+    ({ triggerDetails, getArtifactPromise }: { triggerDetails: History; getArtifactPromise?: () => Promise<any> }) => {
+        const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
+        async function handleArtifact(e) {
+            try {
+                const response = await getArtifactPromise()
+                const b = await (response as any).blob()
+                let a = document.createElement('a')
+                let url = URL.createObjectURL(b)
+                a.href = url
+                a.download = `${buildId || triggerId}.zip`
+                a.click()
+            } catch (err) {
+                showError(err)
+            }
         }
-    }
-    if (triggerDetails.status.toLowerCase() === 'running') return <CIProgressView />
-    if (['failed', 'cancelled'].includes(triggerDetails.status.toLowerCase())) return <NoArtifactsView />
-    return (
-        <div style={{ padding: '16px' }} className="flex left column">
-            <CIListItem type="artifact">
-                <div className="flex column left">
-                    <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
-                        {triggerDetails.artifact.split(':')[1]}
-                        <Tippy content={'Copy to clipboard'}>
-                            <CopyIcon
-                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
-                                onClick={(e) =>
-                                    copyToClipboard(triggerDetails.artifact.split(':')[1], () =>
-                                        toast.info('copied to clipboard'),
-                                    )
-                                }
-                            />
-                        </Tippy>
-                    </div>
-                    <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
-                        {triggerDetails.artifact}
-                        <Tippy content={'Copy to clipboard'}>
-                            <CopyIcon
-                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
-                                onClick={(e) =>
-                                    copyToClipboard(triggerDetails.artifact, () => toast.info('copied to clipboard'))
-                                }
-                            />
-                        </Tippy>
-                    </div>
-                </div>
-            </CIListItem>
-            {triggerDetails.blobStorageEnabled && getArtifactPromise && (
-                <CIListItem type="report">
+        if (triggerDetails.status.toLowerCase() === 'running') return <CIProgressView />
+        if (['failed', 'cancelled'].includes(triggerDetails.status.toLowerCase())) return <NoArtifactsView />
+        return (
+            <div style={{ padding: '16px' }} className="flex left column">
+                <CIListItem type="artifact">
                     <div className="flex column left">
-                        <div className="cn-9 fs-14">Reports.zip</div>
-                        <button
-                            type="button"
-                            onClick={handleArtifact}
-                            className="anchor p-0 cb-5 fs-12 flex left pointer"
-                        >
-                            Download
-                            <Download className="ml-5 icon-dim-16" />
-                        </button>
+                        <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
+                            {triggerDetails.artifact.split(':')[1]}
+                            <Tippy content={'Copy to clipboard'}>
+                                <CopyIcon
+                                    className="pointer dc__visible-hover--child ml-6 icon-dim-16"
+                                    onClick={() =>
+                                        copyToClipboard(triggerDetails.artifact.split(':')[1], () =>
+                                            toast.info('copied to clipboard'),
+                                        )
+                                    }
+                                />
+                            </Tippy>
+                        </div>
+                        <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
+                            {triggerDetails.artifact}
+                            <Tippy content={'Copy to clipboard'}>
+                                <CopyIcon
+                                    className="pointer dc__visible-hover--child ml-6 icon-dim-16"
+                                    onClick={() =>
+                                        copyToClipboard(triggerDetails.artifact, () =>
+                                            toast.info('copied to clipboard'),
+                                        )
+                                    }
+                                />
+                            </Tippy>
+                        </div>
                     </div>
                 </CIListItem>
-            )}
-        </div>
-    )
-}
+                {triggerDetails.blobStorageEnabled && getArtifactPromise && (
+                    <CIListItem type="report">
+                        <div className="flex column left">
+                            <div className="cn-9 fs-14">Reports.zip</div>
+                            <button
+                                type="button"
+                                onClick={handleArtifact}
+                                className="anchor p-0 cb-5 fs-12 flex left pointer"
+                            >
+                                Download
+                                <Download className="ml-5 icon-dim-16" />
+                            </button>
+                        </div>
+                    </CIListItem>
+                )}
+            </div>
+        )
+    },
+)
 
-const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
-    return (
-            gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
+const MaterialHistory = React.memo(
+    ({ gitTrigger, ciMaterial }: { gitTrigger: GitTriggers; ciMaterial: CiMaterial }) => {
+        return (
+            gitTrigger &&
+            (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
                 <div
                     key={gitTrigger?.Commit}
                     className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
@@ -871,8 +832,9 @@ const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMateria
                     />
                 </div>
             )
-    )
-}
+        )
+    },
+)
 
 const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     const [isCollapsed, setIsCollapsed] = useState(false)

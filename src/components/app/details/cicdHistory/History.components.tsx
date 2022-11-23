@@ -170,22 +170,32 @@ export const LogsRenderer = ({
     )
 }
 
-export const Scroller = ({ scrollToTop, scrollToBottom, style }): JSX.Element => {
-    return (
-        <div
-            style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-            className="dc__element-scroller"
-        >
-            <Tippy className="default-tt" arrow={false} content="Scroll to Top">
-                <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
-                    <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
-                </button>
-            </Tippy>
-            <Tippy className="default-tt" arrow={false} content="Scroll to Bottom">
-                <button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
-                    <DropDownIcon className="rotate" />
-                </button>
-            </Tippy>
-        </div>
-    )
-}
+export const Scroller = React.memo(
+    ({
+        scrollToTop,
+        scrollToBottom,
+        style,
+    }: {
+        scrollToTop: (e: any) => void
+        scrollToBottom: (e: any) => void
+        style: any
+    }): JSX.Element => {
+        return (
+            <div
+                style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
+                className="dc__element-scroller"
+            >
+                <Tippy className="default-tt" arrow={false} content="Scroll to Top">
+                    <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
+                        <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
+                    </button>
+                </Tippy>
+                <Tippy className="default-tt" arrow={false} content="Scroll to Bottom">
+                    <button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
+                        <DropDownIcon className="rotate" />
+                    </button>
+                </Tippy>
+            </div>
+        )
+    },
+)
