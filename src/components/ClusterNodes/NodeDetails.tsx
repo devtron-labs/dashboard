@@ -27,6 +27,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
+    ClusterListType,
     NodeDetail,
     NodeDetailResponse,
     PodType,
@@ -45,7 +46,7 @@ import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function NodeDetails({imageList}:{imageList: string[]}) {
+export default function NodeDetails({imageList, isSuperAdmin}: ClusterListType) {
     const [loader, setLoader] = useState(false)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -159,7 +160,7 @@ export default function NodeDetails({imageList}:{imageList: string[]}) {
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
-                <li
+                {isSuperAdmin && <li
                     className="tab-list__tab pointer"
                     onClick={() => {
                         setSelectedTabIndex(3)
@@ -169,7 +170,7 @@ export default function NodeDetails({imageList}:{imageList: string[]}) {
                         <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />Debug
                     </div>
                     {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
-                </li>
+                </li>}
             </ul>
         )
     }

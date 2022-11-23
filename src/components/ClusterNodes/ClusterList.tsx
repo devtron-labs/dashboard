@@ -5,7 +5,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
 import { handleUTCTime, Progressing, showError } from '../common'
-import { ClusterDetail, ClusterListResponse } from './types'
+import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -16,7 +16,7 @@ import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function ClusterList({imageList}:{imageList: string[]}) {
+export default function ClusterList({imageList, isSuperAdmin}: ClusterListType) {
     const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
@@ -128,7 +128,7 @@ export default function ClusterList({imageList}:{imageList: string[]}) {
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
-            <div className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${clusterData.nodeCount ? 'dc__visible-hover--parent' : ''}`}>
+            <div className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''}`}>
                 <div className="cb-5 dc__ellipsis-right">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}

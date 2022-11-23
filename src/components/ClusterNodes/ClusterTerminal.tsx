@@ -23,6 +23,7 @@ import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscr
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
 import { showError } from '../common'
+import { ServerErrors } from '../../modals/commonTypes'
 
 export default function ClusterTerminal({
     clusterId,
@@ -57,6 +58,7 @@ export default function ClusterTerminal({
     const [fetchRetry, setRetry] = useState(false)
     const [reconnect, setReconnect] = useState(false)
     const [connectTerminal, setConnectTerminal] = useState(false)
+    const [toggleOption, settoggleOption] = useState(false)
 
     const payload = {
         clusterId: clusterId,
@@ -94,10 +96,17 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         showError(error)
                         setConnectTerminal(false)
-                        setRetry(true)
+                        if (error instanceof ServerErrors && Array.isArray(error.errors)) {
+                            error.errors.map(({ userMessage }) => {
+                                if(userMessage === 'session-limit-reached'){
+                                    setRetry(true)
+                                }
+                            })
+                        }
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             }
+            toggleOptionChange()
         } catch (error) {
             showError(error)
             setUpdate(false)
@@ -119,6 +128,7 @@ export default function ClusterTerminal({
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             }
+            toggleOptionChange()
         } catch (error) {
             showError(error)
             setUpdate(false)
@@ -137,9 +147,10 @@ export default function ClusterTerminal({
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
                 closeTerminal()
             }
+            setConnectTerminal(false)
             await clusterterminalDisconnect(terminalAccessId)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
-            setConnectTerminal(false)
+            toggleOptionChange()
             setUpdate(false)
         } catch (error) {
             setConnectTerminal(true)
@@ -166,6 +177,7 @@ export default function ClusterTerminal({
                 setRetry(false)
                 setConnectTerminal(true)
             })
+            toggleOptionChange()
         } catch (error) {
             showError(error)
         }
@@ -204,6 +216,10 @@ export default function ClusterTerminal({
 
     const toggleScreenView = () => {
         setFullScreen(!fullScreen)
+    }
+
+    const toggleOptionChange = () => {
+        settoggleOption(!toggleOption)
     }
 
     return (
@@ -292,7 +308,7 @@ export default function ClusterTerminal({
                                     onChange={onChangeNodes}
                                     styles={{
                                         ...multiSelectStyles,
-                                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
+                                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', minWidth: '150px', maxWidth: '380px' }),
                                         control: (base, state) => ({
                                             ...base,
                                             borderColor: 'transparent',
@@ -331,7 +347,7 @@ export default function ClusterTerminal({
                             onChange={onChangeImages}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', minWidth: '150px', maxWidth: '380px' }),
                                 control: (base, state) => ({
                                     ...base,
                                     borderColor: 'transparent',
@@ -347,7 +363,7 @@ export default function ClusterTerminal({
                                 }),
                                 indicatorsContainer: (provided, state) => ({
                                     ...provided,
-                                }),
+                                })
                             }}
                             components={{
                                 IndicatorSeparator: null,
@@ -356,7 +372,7 @@ export default function ClusterTerminal({
                         />
                     </div>
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Shell </div>
+                    <div className="cn-6 ml-8 mr-10">Command </div>
                     <div>
                         <Select
                             placeholder="Select Shell"
@@ -365,7 +381,7 @@ export default function ClusterTerminal({
                             onChange={onChangeTerminalType}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', minWidth: '100px', maxWidth: '380px' }),
                                 control: (base, state) => ({
                                     ...base,
                                     borderColor: 'transparent',
@@ -415,6 +431,7 @@ export default function ClusterTerminal({
                     terminalId={terminalAccessId}
                     disconnectRetry={disconnectRetry}
                     fetchRetry={fetchRetry}
+                    toggleOption={toggleOption}
                 />
             </div>
         </div>

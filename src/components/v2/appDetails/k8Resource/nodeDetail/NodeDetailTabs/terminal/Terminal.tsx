@@ -209,6 +209,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }, [terminalViewProps.shell])
 
     useEffect(() => {
+        terminal?.reset()
+    },[terminalViewProps.toggleOption])
+
+    useEffect(() => {
         if (terminalViewProps.terminalCleared) {
             terminal?.clear()
             terminal?.focus()

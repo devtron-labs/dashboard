@@ -125,6 +125,11 @@ export interface ColumnMetadataType {
     isDisabled?: boolean
 }
 
+export interface ClusterListType {
+    imageList: string[]
+    isSuperAdmin: boolean
+}
+
 export const TEXT_COLOR_CLASS = {
     Ready: 'cg-5',
     'Not ready': 'cr-5',

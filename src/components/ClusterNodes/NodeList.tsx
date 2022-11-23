@@ -18,6 +18,7 @@ import {
     ColumnMetadataType,
     TEXT_COLOR_CLASS,
     ERROR_TYPE,
+    ClusterListType,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -34,7 +35,7 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function NodeList({imageList}:{imageList: string[]}) {
+export default function NodeList({imageList, isSuperAdmin}: ClusterListType) {
     const match = useRouteMatch()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
@@ -553,7 +554,7 @@ export default function NodeList({imageList}:{imageList: string[]}) {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__visible-hover--parent"
+                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover ${isSuperAdmin ? 'dc__visible-hover--parent' : ''}`}
                 style={{ width: 'max-content', minWidth: '100%' }}
             >
                 {appliedColumns.map((column) => {

@@ -10,6 +10,7 @@ export interface TerminalViewProps {
     terminalId?: string
     fetchRetry?: boolean
     disconnectRetry?: () => void
+    toggleOption?: boolean
 }
 
 export enum SocketConnectionType {
