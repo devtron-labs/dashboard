@@ -276,8 +276,8 @@ export function getChartRepoList(): Promise<ResponseType> {
     return get(URL);
 }
 
-export function getHostURLConfiguration(): Promise<ResponseType> {
-    const URL = `${Routes.HOST_URL}?key=url`;
+export function getHostURLConfiguration(key: string = 'url'): Promise<ResponseType> {
+    const URL = `${Routes.HOST_URL}?key=${key}`;
     return get(URL);
 }
 

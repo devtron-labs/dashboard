@@ -1,37 +1,39 @@
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import CopyToast, { handleSelectionChange } from '../CopyToast';
-import * as XtermWebfont from 'xterm-webfont';
-import SockJS from 'sockjs-client';
-import { ERROR_MESSAGE, SocketConnectionType, TerminalViewProps } from '../node.type';
-import { get } from '../../../../../../../services/api';
-import ReactGA from 'react-ga4';
-import './terminal.css';
-import IndexStore from '../../../../index.store';
-import { AppType } from '../../../../appDetails.type';
-import { elementDidMount, useOnline, showError } from '../../../../../../common';
-import { ServerErrors } from '../../../../../../../modals/commonTypes';
+import moment from 'moment'
+import React, { useEffect, useRef, useState } from 'react'
+import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
+import CopyToast, { handleSelectionChange } from '../CopyToast'
+import * as XtermWebfont from 'xterm-webfont'
+import SockJS from 'sockjs-client'
+import { ERROR_MESSAGE, SocketConnectionType, TerminalViewProps } from '../node.type'
+import { get } from '../../../../../../../services/api'
+import ReactGA from 'react-ga4'
+import './terminal.css'
+import IndexStore from '../../../../index.store'
+import { AppType } from '../../../../appDetails.type'
+import { elementDidMount, useOnline, showError } from '../../../../../../common'
+import { ServerErrors } from '../../../../../../../modals/commonTypes'
 
-let socket = undefined;
-let terminal = undefined;
-let fitAddon = undefined;
+let socket = undefined
+let terminal = undefined
+let fitAddon = undefined
+let clustertimeOut = undefined
 
 function TerminalView(terminalViewProps: TerminalViewProps) {
-    const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>();
-    const [isReconnection, setIsReconnection] = useState(false);
-    const [firstMessageReceived, setFirstMessageReceived] = useState(false);
-    const [popupText, setPopupText] = useState<boolean>(false);
-    const isOnline = useOnline();
+    const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>()
+    const [isReconnection, setIsReconnection] = useState(false)
+    const [firstMessageReceived, setFirstMessageReceived] = useState(false)
+    const [popupText, setPopupText] = useState<boolean>(false)
+    const isOnline = useOnline()
     const [errorMessage, setErrorMessage] = useState<string>('')
+    const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
 
     useEffect(() => {
-        if (!popupText) return;
-        setTimeout(() => setPopupText(false), 2000);
-    }, [popupText]);
+        if (!popupText) return
+        setTimeout(() => setPopupText(false), 2000)
+    }, [popupText])
 
-    const appDetails = IndexStore.getAppDetails();
+    const appDetails = IndexStore.getAppDetails()
 
     const createNewTerminal = () => {
         terminal = new Terminal({
@@ -61,147 +63,170 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
             return true
         })
-    };
+    }
 
     const postInitialize = (sessionId: string) => {
-        let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+        let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
         if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            socketURL += '/k8s/pod/exec/sockjs/ws/';
+            socketURL += '/k8s/pod/exec/sockjs/ws/'
         } else {
-            socketURL += '/api/vi/pod/exec/ws/';
+            socketURL += '/api/vi/pod/exec/ws/'
         }
 
-        socket?.close();
+        socket?.close()
 
-        setFirstMessageReceived(false);
+        setFirstMessageReceived(false)
 
-        socket = new SockJS(socketURL);
-        const _socket = socket;
-        const _terminal = terminal;
-        const _fitAddon = fitAddon;
+        socket = new SockJS(socketURL)
+        const _socket = socket
+        const _terminal = terminal
+        const _fitAddon = fitAddon
 
         const disableInput = (): void => {
-            _terminal.setOption('cursorBlink', false);
-            _terminal.setOption('disableStdin', true);
-            setFirstMessageReceived(false);
-        };
+            _terminal.setOption('cursorBlink', false)
+            _terminal.setOption('disableStdin', true)
+            setFirstMessageReceived(false)
+        }
 
         const enableInput = (): void => {
-            _terminal.setOption('cursorBlink', true);
-            _terminal.setOption('disableStdin', false);
-        };
+            _terminal.setOption('cursorBlink', true)
+            _terminal.setOption('disableStdin', false)
+        }
 
         _terminal.onData(function (data) {
-            const inData = { Op: 'stdin', SessionID: '', Data: data };
+            const inData = { Op: 'stdin', SessionID: '', Data: data }
             if (_socket.readyState === WebSocket.OPEN) {
-                _socket?.send(JSON.stringify(inData));
+                _socket?.send(JSON.stringify(inData))
             }
-        });
+        })
 
         _socket.onopen = function () {
-            const startData = { Op: 'bind', SessionID: sessionId };
-            _socket.send(JSON.stringify(startData));
+            const startData = { Op: 'bind', SessionID: sessionId }
+            _socket.send(JSON.stringify(startData))
 
-            let dim = _fitAddon.proposeDimensions();
-            if(dim){
-              _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }));
+            let dim = _fitAddon.proposeDimensions()
+            if (dim) {
+                _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             if (isReconnection) {
-                _terminal.writeln('');
-                _terminal.writeln('---------------------------------------------');
-                _terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
-                _terminal.writeln('---------------------------------------------');
-                setIsReconnection(false);
+                _terminal.writeln('')
+                _terminal.writeln('---------------------------------------------')
+                _terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
+                _terminal.writeln('---------------------------------------------')
+                setIsReconnection(false)
             }
-        };
+        }
 
         _socket.onmessage = function (evt) {
-            _terminal.write(JSON.parse(evt.data).Data);
-            _terminal.focus();
-            enableInput();
+            _terminal.write(JSON.parse(evt.data).Data)
+            _terminal.focus()
+            enableInput()
 
             if (!firstMessageReceived) {
-                setFirstMessageReceived(true);
+                setFirstMessageReceived(true)
             }
-        };
+        }
 
         _socket.onclose = function (evt) {
-            disableInput();
-            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
-        };
+            disableInput()
+            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED)
+        }
 
         _socket.onerror = function (evt) {
-            disableInput();
-            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
-        };
-    };
+            disableInput()
+            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED)
+        }
+    }
 
     const reconnect = () => {
-        terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING);
-        terminal?.reset();
+        terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING)
+
+        terminal?.reset()
 
         setTimeout(() => {
-            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING);
-        }, 100);
-    };
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
+        }, 100)
+    }
 
     useEffect(() => {
+        // Maintaining value in ref for setTimeout context
+        socketConnectionRef.current = terminalViewProps.socketConnection
+
         if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
+            if (clustertimeOut) {
+                clearTimeout(clustertimeOut)
+            }
             if (socket) {
-                socket.close();
-                socket = undefined;
+                socket.close()
+                socket = undefined
             }
         }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
-            getNewSession();
+            getNewSession()
         }
-    }, [terminalViewProps.socketConnection]);
+    }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
 
     useEffect(() => {
         ReactGA.event({
             category: 'Terminal',
             action: `Selected Pod`,
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        });
+        })
 
-        reconnect();
-    }, [terminalViewProps.nodeName]);
+        if (!terminalViewProps.clusterTerminal) {
+            reconnect()
+        } else {
+            terminal?.reset()
+        }
+    }, [terminalViewProps.nodeName])
 
     useEffect(() => {
         ReactGA.event({
             category: 'Terminal',
             action: `Selected Container`,
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        });
+        })
 
-        reconnect();
-    }, [terminalViewProps.containerName]);
+        if (!terminalViewProps.clusterTerminal) {
+            reconnect()
+        } else {
+            terminal?.reset()
+        }
+    }, [terminalViewProps.containerName])
 
     useEffect(() => {
         ReactGA.event({
             category: 'Terminal',
             action: `Selected Shell`,
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        });
+        })
 
-        reconnect();
-    }, [terminalViewProps.shell]);
+        if (!terminalViewProps.clusterTerminal) {
+            reconnect()
+        } else {
+            terminal?.reset()
+        }
+    }, [terminalViewProps.shell])
+
+    useEffect(() => {
+        terminal?.reset()
+    },[terminalViewProps.toggleOption])
 
     useEffect(() => {
         if (terminalViewProps.terminalCleared) {
-            terminal?.clear();
-            terminal?.focus();
-            terminalViewProps.setTerminalCleared(false);
+            terminal?.clear()
+            terminal?.focus()
+            terminalViewProps.setTerminalCleared(false)
         }
-    }, [terminalViewProps.terminalCleared]);
+    }, [terminalViewProps.terminalCleared])
 
     useEffect(() => {
         if (firstMessageReceived) {
-            fitAddon.fit();
-            terminal.setOption('cursorBlink', true);
-            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED);
+            fitAddon.fit()
+            terminal.setOption('cursorBlink', true)
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED)
         }
-    }, [firstMessageReceived]);
+    }, [firstMessageReceived])
 
     useEffect(() => {
         if (!window.location.origin) {
@@ -211,85 +236,130 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 window.location.protocol +
                 '//' +
                 window.location.hostname +
-                (window.location.port ? ':' + window.location.port : '');
+                (window.location.port ? ':' + window.location.port : '')
         }
 
-        terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING);
+        terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
 
         ReactGA.event({
             category: 'Terminal',
             action: 'Open',
-        });
+        })
 
-        setGA_session_duration(moment());
+        setGA_session_duration(moment())
 
         return () => {
-            socket?.close();
-            terminal?.dispose();
+            socket?.close()
+            terminal?.dispose()
 
-            socket = undefined;
-            terminal = undefined;
-            fitAddon = undefined;
+            socket = undefined
+            terminal = undefined
+            fitAddon = undefined
+            clearTimeout(clustertimeOut)
 
-            let duration = moment(ga_session_duration).fromNow();
+            let duration = moment(ga_session_duration).fromNow()
 
             ReactGA.event({
                 category: 'Terminal',
                 action: `Closed`,
                 label: `${duration}`,
-            });
-        };
-    }, []);
+            })
+        }
+    }, [])
 
     useEffect(() => {
         if (terminalViewProps.terminalCleared) {
-            terminal?.clear();
-            terminal?.focus();
-            terminalViewProps.setTerminalCleared(false);
+            terminal?.clear()
+            terminal?.focus()
+            terminalViewProps.setTerminalCleared(false)
         }
-    }, [terminalViewProps.terminalCleared]);
+    }, [terminalViewProps.terminalCleared])
+
+    const getClusterData = (url, count) => {
+        if (
+            clustertimeOut && (socketConnectionRef.current === SocketConnectionType.DISCONNECTED ||
+            socketConnectionRef.current === SocketConnectionType.DISCONNECTING)
+        ) {
+            clearTimeout(clustertimeOut)
+            return
+        }
+            get(url)
+                .then((response: any) => {
+                    let sessionId = response.result.userTerminalSessionId
+                    if (!sessionId && count) {
+                        clustertimeOut = setTimeout(() => {
+                            getClusterData(url, count - 1)
+                        }, 3000)
+                    } else {
+                        if (!terminal) {
+                            elementDidMount('#terminal-id').then(() => {
+                                createNewTerminal()
+                                postInitialize(sessionId)
+                            })
+                        } else {
+                            postInitialize(sessionId)
+                        }
+                    }
+                })
+                .catch((err) => {
+                    showError(err)
+                    if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                        const _invalidNameErr = err.errors[0].userMessage
+                        if (_invalidNameErr.includes('Unauthorized')) {
+                            setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                        }
+                    }
+                })
+    }
 
     const getNewSession = () => {
-        if (
+        if (terminalViewProps.clusterTerminal) {
+            if (!terminalViewProps.terminalId) return
+        } else if (
             !terminalViewProps.nodeName ||
             !terminalViewProps.containerName ||
             !terminalViewProps.shell.value ||
             !appDetails
         ) {
-            return;
+            return
         }
 
-        let url = '';
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            url = `k8s/pod/exec/session/${appDetails.appId}`;
+        let url = ''
+        if (terminalViewProps.clusterTerminal) {
+            url = `user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`
         } else {
-            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`;
+            if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+                url = `k8s/pod/exec/session/${appDetails.appId}`
+            } else {
+                url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
+            }
+            url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
         }
-        url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`;
+        terminalViewProps.clusterTerminal
+            ? getClusterData(url, 8)
+            : get(url)
+                  .then((response: any) => {
+                      let sessionId = response?.result.SessionID
 
-        get(url)
-            .then((response: any) => {
-                let sessionId = response?.result.SessionID
-
-                if (!terminal) {
-                    elementDidMount('#terminal-id').then(() => {
-                        createNewTerminal()
-                        postInitialize(sessionId)
-                    })
-                } else {
-                    postInitialize(sessionId)
-                }
-            })
-            .catch((err) => {
-                showError(err)
-                if (err instanceof ServerErrors && Array.isArray(err.errors)) {
-                    const _invalidNameErr = err.errors[0].userMessage
-                    if (_invalidNameErr.includes('Unauthorized')) {
-                        setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
-                    }
-                }
-            })
-    };
+                      if (!terminal) {
+                          elementDidMount('#terminal-id').then(() => {
+                              createNewTerminal()
+                              postInitialize(sessionId)
+                          })
+                      } else {
+                          postInitialize(sessionId)
+                      }
+                  })
+                  .catch((err) => {
+                      showError(err)
+                      if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                          const _invalidNameErr = err.errors[0].userMessage
+                          if (_invalidNameErr.includes('Unauthorized')) {
+                              setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                          }
+                      }
+                  })
+    }
 
     const onClickResume = (e) => {
         e.stopPropagation()
@@ -301,6 +371,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         return !isOnline ? (
             <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
                 You’re offline. Please check your internet connection.
+            </div>
+        ) : terminalViewProps.fetchRetry ? (
+            <div className="bcr-7 pl-20 cn-0">
+                Concurrent connection limit reached.&nbsp;
+                <button
+                    type="button"
+                    onClick={terminalViewProps.disconnectRetry}
+                    className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                >
+                    Terminate all and retry
+                </button>
             </div>
         ) : (
             <div className="terminal-strip dc__first-letter-capitalize">
@@ -358,7 +439,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}>
+                <p
+                    className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}
+                >
                     {terminalViewProps.socketConnection}
                 </p>
             )}
@@ -366,4 +449,4 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     )
 }
 
-export default TerminalView;
+export default TerminalView

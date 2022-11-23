@@ -47,6 +47,7 @@ export interface ClusterDetail {
     cpu: ResourceDetail
     memory: ResourceDetail
     serverVersion: string
+    nodeNames: string[]
 }
 
 export interface NodeRowDetail {
@@ -122,6 +123,11 @@ export interface ColumnMetadataType {
     isSortingAllowed?: boolean
     sortingFieldName?: string
     isDisabled?: boolean
+}
+
+export interface ClusterListType {
+    imageList: string[]
+    isSuperAdmin: boolean
 }
 
 export const TEXT_COLOR_CLASS = {
