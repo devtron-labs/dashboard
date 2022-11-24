@@ -43,10 +43,8 @@ export default function AboutAppInfoModal({
     const renderAboutModalInfoHeader = (): JSX.Element => {
         return (
             <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
-                <h2 className="fs-20 cn-9 fw-6 m-0">{isChangeProjectView ? 'Change project' : 'Manage tags'}</h2>
-                <button className="dc__transparent" onClick={onClose}>
-                    <Close className="icon-dim-20 cursor" />
-                </button>
+                <h2 className="fs-16 cn-9 fw-6 m-0">{isChangeProjectView ? 'Change project' : 'Manage tags'}</h2>
+                <Close className="icon-dim-20 cursor" onClick={onClose} />
             </div>
         )
     }
@@ -191,7 +189,7 @@ export default function AboutAppInfoModal({
         return (
             <>
                 <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
-                <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4">
+                <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4 m-0">
                     <li>Current users losing access to this application.</li>
                     <li>
                         Users getting an access to the application automatically, if they have an access to the selected

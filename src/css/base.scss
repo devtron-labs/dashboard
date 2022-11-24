@@ -231,6 +231,16 @@ a:focus {
     word-break: break-all;
 }
 
+.dc__word-break {
+    word-break: break-word;
+}
+
+.dc__hyphens-auto {
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -2048,6 +2058,10 @@ textarea,
 
 .h-22 {
     height: 22px !important;
+}
+
+.h-24 {
+    height: 24px !important;
 }
 
 .h-28 {

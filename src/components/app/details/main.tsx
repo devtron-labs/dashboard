@@ -82,7 +82,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         >
                             <CDDetails key={appId} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`} component={AppConfig} />
+                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                            <AppConfig appName={appName} />
+                        </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             render={() => <TestRunList />}

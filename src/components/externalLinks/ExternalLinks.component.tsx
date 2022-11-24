@@ -1,27 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { multiSelectStyles } from '../common'
+import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
-import { DOCUMENTATION } from '../../config'
+import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { DOCUMENTATION, URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
     ExternalLink,
     NodeLevelExternalLinksType,
     OptionTypeWithIcon,
+    RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import Tippy from '@tippyjs/react'
 import {
-    customMultiSelectStyles,
     getMonitoringToolIcon,
     getParsedURL,
     MONITORING_TOOL_ICONS,
+    NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import { OptionType } from '../app/types'
+import { UserRoleType } from '../userGroups/userGroups.types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import TippyWhite from '../common/TippyWhite'
+import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
@@ -33,23 +37,64 @@ export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }):
     )
 }
 
-export const NoExternalLinksView = ({ handleAddLinkClick }: { handleAddLinkClick: () => void }): JSX.Element => {
+export const ExternalLinksLearnMore = (): JSX.Element => {
+    return (
+        <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
+            Learn more
+        </a>
+    )
+}
+
+export const NoExternalLinksView = ({
+    handleAddLinkClick,
+    isAppConfigView,
+    userRole,
+    history,
+}: {
+    handleAddLinkClick: () => void
+    isAppConfigView: boolean
+    userRole: UserRoleType
+    history: any
+}): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyExternalLinks} alt="Empty external links" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="title">Connect any monitoring tool for a seamless debugging experience</h4>
+                <h4 className="title">Add external links</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>
-                Quickly access any monitoring tool in your stack without losing context of the microserve, pod or
-                container you're interested in.
+                <>
+                    Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    {isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
+                    page.&nbsp;
+                    <ExternalLinksLearnMore />
+                </>
             </EmptyState.Subtitle>
             <EmptyState.Button>
                 <AddLinkButton handleOnClick={handleAddLinkClick} />
             </EmptyState.Button>
+            {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
         </EmptyState>
+    )
+}
+
+export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
+    return (
+        <InfoColourBar
+            message={
+                userRole === UserRoleType.SuperAdmin
+                    ? 'Only links editable by application admins are shown here. To check all configured links,'
+                    : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
+            }
+            classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-12 mb-12' : 'dc__mxw-300 m-20'}`}
+            Icon={InfoIcon}
+            iconClass="h-20"
+            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
+            internalLink={true}
+            redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+        />
     )
 }
 
@@ -100,6 +145,7 @@ export const AppLevelExternalLinks = ({
                     label: link.name,
                     value: link.url,
                     icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                    description: link.description,
                 })),
             )
         } else {
@@ -109,23 +155,36 @@ export const AppLevelExternalLinks = ({
 
     const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
         return (
-            <Tippy
+            <ConditionalWrap
                 key={`${linkOption.label}-${idx}`}
-                className="default-tt"
-                arrow={false}
-                placement="top"
-                content={`${linkOption.label} (opens in new tab)`}
+                condition={!!linkOption.description}
+                wrap={(children) => (
+                    <TippyWhite
+                        className="w-300"
+                        placement={isOverviewPage ? 'bottom' : 'top'}
+                        iconPath={linkOption.icon}
+                        heading={linkOption.label}
+                        infoText={linkOption.description}
+                    >
+                        {children}
+                    </TippyWhite>
+                )}
             >
                 <a
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
-                    className="external-link-chip flex left br-4"
+                    className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                 >
-                    <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
+                    <img
+                        className="icon-dim-16 mr-4"
+                        src={linkOption.icon}
+                        alt={linkOption.label}
+                        onError={onImageLoadError}
+                    />
                     <span className="dc__ellipsis-right">{linkOption.label}</span>
                 </a>
-            </Tippy>
+            </ConditionalWrap>
         )
     }
 
@@ -133,19 +192,17 @@ export const AppLevelExternalLinks = ({
         return (
             <div className="flex left flex-wrap">
                 Configure frequently visited links to quickly access from here.&nbsp;
-                <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
-                    Learn more
-                </a>
+                <ExternalLinksLearnMore />
             </div>
         )
     }
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div className="app-level__external-links flex left mb-14">
+            <div className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
-                    <div className="app-level__external-links-icon">
-                        <Link className="external-links-icon icon-dim-20 fc-9" />
+                    <div className="app-level__external-links-icon icon-dim-20">
+                        <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
                     </div>
                 )}
                 <div className="flex left flex-wrap">
@@ -167,20 +224,37 @@ export const NodeLevelExternalLinks = ({
     const details = appDetails || helmAppDetails
 
     const Option = (props: any): JSX.Element => {
+        if (!details) {
+            return null
+        }
+
         const { data } = props
 
         return (
-            <Tippy className="default-tt" arrow={false} placement="left" content={`${data.label} (opens in new tab)`}>
+            <ConditionalWrap
+                condition={!!data.description}
+                wrap={(children) => (
+                    <TippyWhite
+                        className="w-300"
+                        placement="left"
+                        iconPath={data.icon}
+                        heading={data.label}
+                        infoText={data.description}
+                    >
+                        {children}
+                    </TippyWhite>
+                )}
+            >
                 <a
                     key={data.label}
                     href={getParsedURL(false, data.value, details, podName, containerName)}
                     target="_blank"
-                    className="external-link-option flex left br-4"
+                    className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
                 >
-                    <img src={data.icon} alt={data.label} onError={onImageLoadError} />
+                    <img className="icon-dim-20 mr-12" src={data.icon} alt={data.label} onError={onImageLoadError} />
                     <span className="dc__ellipsis-right">{data.label}</span>
                 </a>
-            </Tippy>
+            </ConditionalWrap>
         )
     }
 
@@ -199,43 +273,7 @@ export const NodeLevelExternalLinks = ({
                         ClearIndicator: null,
                         Option,
                     }}
-                    styles={{
-                        ...multiSelectStyles,
-                        ...customMultiSelectStyles,
-                        menu: (base) => ({
-                            ...base,
-                            width: '150px',
-                        }),
-                        control: (base) => ({
-                            ...base,
-                            minWidth: '67px',
-                            maxWidth: '112px',
-                            minHeight: '24px',
-                            backgroundColor: 'var(--N50)',
-                            border: '1px solid var(--N200)',
-                            cursor: 'pointer',
-                        }),
-                        option: (base) => ({
-                            ...base,
-                            cursor: 'pointer',
-                        }),
-                        valueContainer: (base) => ({
-                            ...base,
-                            padding: 0,
-                            paddingLeft: '8px',
-                        }),
-                        dropdownIndicator: (base, state) => ({
-                            ...customMultiSelectStyles.dropdownIndicator(base, state),
-                            padding: '0 8px 0 4px',
-                        }),
-                        placeholder: (base) => ({
-                            ...base,
-                            color: 'var(--N700)',
-                            margin: 0,
-                            minWidth: '45px',
-                            maxWidth: '60px',
-                        }),
-                    }}
+                    styles={NodeLevelSelectStyles}
                 />
             </div>
         )
@@ -251,7 +289,8 @@ export const ValueContainer = (props): JSX.Element => {
                 <>
                     {!props.selectProps.menuIsOpen && (
                         <>
-                            Cluster: {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
+                            {props.selectProps.name.includes('Clusters') ? 'Cluster: ' : 'Application: '}
+                            {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
                         </>
                     )}
                     {React.cloneElement(props.children[1])}
@@ -263,7 +302,7 @@ export const ValueContainer = (props): JSX.Element => {
     )
 }
 
-export const MenuList = (props): JSX.Element => {
+export const FilterMenuList = (props): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
@@ -276,21 +315,78 @@ export const MenuList = (props): JSX.Element => {
     )
 }
 
-export const customOption = (data: OptionTypeWithIcon, className = '') => {
+export const ToolsMenuList = (props): JSX.Element => {
+    const lastIndex = props.options?.length - 1
+
     return (
-        <div className={`flex left ${className}`}>
-            <img
-                src={MONITORING_TOOL_ICONS[data.label.toLowerCase()] || MONITORING_TOOL_ICONS.other}
-                alt={data.label}
-                style={{
-                    width: '20px',
-                    height: '20px',
-                    marginRight: '12px',
-                }}
-                onError={onImageLoadError}
-            />
-            <span className="dc__ellipsis-right">{data.label}</span>
-        </div>
+        <components.MenuList {...props}>
+            <>
+                {props.options ? (
+                    <div className="link-tool-options-wrapper">
+                        {props.options.map((_opt, idx) => (
+                            <Fragment key={_opt.label}>
+                                <div className="link-tool-option">
+                                    {_opt.options?.map((_option) => {
+                                        return customOption(
+                                            _option,
+                                            true,
+                                            (_option) => props.selectOption(_option),
+                                            _option.label === props.selectProps?.value?.label,
+                                            true,
+                                            true,
+                                        )
+                                    })}
+                                </div>
+                                {lastIndex !== idx && <div className="dc__border-bottom-n1" />}
+                            </Fragment>
+                        ))}
+                    </div>
+                ) : (
+                    <span className="flex p-8 cn-5">No options</span>
+                )}
+            </>
+        </components.MenuList>
+    )
+}
+
+export const customOption = (
+    data: OptionTypeWithIcon,
+    isIconDropdown?: boolean,
+    onClick?: (selected: OptionTypeWithIcon) => void,
+    isSelected?: boolean,
+    noMarginRight?: boolean,
+    noDefaultIcon?: boolean,
+) => {
+    const _src = MONITORING_TOOL_ICONS[data.label.toLowerCase()] || (noDefaultIcon ? '' : MONITORING_TOOL_ICONS.webpage)
+
+    const onClickHandler = (e) => {
+        e.stopPropagation()
+        if (onClick) {
+            onClick(data)
+        }
+    }
+
+    return (
+        _src && (
+            <div
+                className={`custom-option-with-icon flex icon-dim-36 ${isSelected ? 'bcb-1' : ''}`}
+                key={data.label}
+                onClick={onClickHandler}
+            >
+                <Tippy className="default-tt" arrow={false} placement="top" content={data.label}>
+                    <img
+                        src={_src}
+                        alt={data.label}
+                        style={{
+                            width: isIconDropdown ? '28px' : '20px',
+                            height: isIconDropdown ? '28px' : '20px',
+                            marginRight: noMarginRight ? '0px' : '12px',
+                        }}
+                        onError={onImageLoadError}
+                    />
+                </Tippy>
+            </div>
+        )
     )
 }
 
@@ -305,26 +401,16 @@ export const customValueContainerWithIcon = (props) => {
         <components.ValueContainer {...props}>
             {selectProps.value ? (
                 <>
-                    {!props.selectProps.menuIsOpen && customOption(selectProps.value, 'absolute-option')}
-                    {React.cloneElement(props.children[1])}
+                    {customOption(selectProps.value)}
+                    {React.cloneElement(props.children[1], {
+                        style: {
+                            position: 'absolute',
+                        },
+                    })}
                 </>
             ) : (
                 <>{props.children}</>
             )}
         </components.ValueContainer>
-    )
-}
-
-export const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
-    return (
-        <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">{option.label}</span>
-            {option.value === '*' && (
-                <>
-                    <small className="cn-6">All existing and future clusters</small>
-                    <div className="modal__dropdown-divider" />
-                </>
-            )}
-        </div>
     )
 }

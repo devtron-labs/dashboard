@@ -1,20 +1,40 @@
 import React from 'react'
-import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
-import { AppDetails, OptionType } from '../app/types'
+import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
+import { UserRoleType } from '../userGroups/userGroups.types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
 
 export interface OptionTypeWithIcon {
     label: string
     value: any
     icon: string
+    category?: number
+    description?: string
+}
+
+export interface IdentifierOptionType {
+    label: string
+    value: any
+    type?: ExternalLinkIdentifierType
 }
 
 export interface MonitoringTool {
     id: number
     name: string
     icon: string
+    category: number
+}
+
+export interface ExternalLinksProps {
+    isAppConfigView?: boolean
+    userRole?: UserRoleType
+}
+
+export interface ExternalLinkIdentifierProps {
+    type: string
+    identifier: string
+    clusterId: number
 }
 
 export interface ExternalLink {
@@ -23,8 +43,10 @@ export interface ExternalLink {
     name: string
     description: string
     url: string
-    clusterIds: any[]
     updatedOn?: string
+    type: ExternalLinkScopeType
+    identifiers: ExternalLinkIdentifierProps[]
+    isEditable: boolean
 }
 
 export interface LinkAction {
@@ -33,25 +55,30 @@ export interface LinkAction {
     name: string
     invalidName?: boolean
     description: string
-    clusters: MultiValue<OptionType>
-    invalidClusters?: boolean
+    identifiers: IdentifierOptionType[]
+    invalidIdentifiers?: boolean
     urlTemplate: string
     invalidUrlTemplate?: boolean
     invalidProtocol?: boolean
+    type: ExternalLinkScopeType
+    isEditable: boolean
 }
 
 export interface ConfigureLinkActionType {
+    isAppConfigView: boolean
     index: number
     link: LinkAction
     showDelete: boolean
-    clusters: MultiValue<OptionType>
-    selectedClusters: MultiValue<OptionType>
-    monitoringTools: MultiValue<OptionTypeWithIcon>
-    onMonitoringToolSelection: (key: number, selected: OptionType) => void
-    onClusterSelection: (key: number, selected: MultiValue<OptionType>) => void
-    onNameChange: (key: number, name: string) => void
-    onUrlTemplateChange: (key: number, urlTemplate: string) => void
-    deleteLinkData: (key: number) => void
+    clusters: IdentifierOptionType[]
+    allApps: IdentifierOptionType[]
+    selectedIdentifiers: IdentifierOptionType[]
+    toolGroupedOptions: { label: string; options: OptionTypeWithIcon[] }[]
+    onToolSelection: (key: number, selected: OptionTypeWithIcon) => void
+    handleLinksDataActions: (
+        action: string,
+        key?: number,
+        value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
+    ) => void
 }
 
 export interface MonitoringToolResponse extends ResponseType {
@@ -69,26 +96,41 @@ export interface ExternalLinkUpdateResponse extends ResponseType {
 export interface URLModificationType {
     queryParams: URLSearchParams
     history: any
+    url: string
 }
 
 export interface AppliedClustersType {
-    appliedClusters: MultiValue<OptionType>
-    setAppliedClusters: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    appliedClusters: IdentifierOptionType[]
+    setAppliedClusters: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
+}
+
+export interface AppliedApplicationsType {
+    appliedApps: IdentifierOptionType[]
+    setAppliedApps: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
 }
 
 export interface ClusterFilterType extends AppliedClustersType, URLModificationType {
-    clusters: MultiValue<OptionType>
+    clusters: IdentifierOptionType[]
+}
+
+export interface ApplicationFilterType extends AppliedApplicationsType, URLModificationType {
+    allApps: IdentifierOptionType[]
 }
 
 export interface AddExternalLinkType {
-    monitoringTools: MultiValue<OptionTypeWithIcon>
-    clusters: MultiValue<OptionType>
+    appId: string
+    isAppConfigView: boolean
+    monitoringTools: OptionTypeWithIcon[]
+    clusters: IdentifierOptionType[]
+    allApps: IdentifierOptionType[]
     handleDialogVisibility: () => void
     selectedLink: ExternalLink
     setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
 }
 
 export interface DeleteExternalLinkType {
+    appId: string
+    isAppConfigView: boolean
     selectedLink: ExternalLink
     isAPICallInProgress: boolean
     setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>
@@ -96,7 +138,7 @@ export interface DeleteExternalLinkType {
     setShowDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export interface AppliedFilterChipsType extends AppliedClustersType, URLModificationType {}
+export interface AppliedFilterChipsType extends AppliedClustersType, AppliedApplicationsType, URLModificationType {}
 
 export interface AppLevelExternalLinksType {
     appDetails?: AppDetails
@@ -125,4 +167,46 @@ export enum ExternalLinkIdentifierType {
     DevtronApp = 'devtron-app',
     DevtronInstalledApp = 'devtron-installed-app',
     ExternalHelmApp = 'external-helm-app',
+    AllApps = 'all-apps',
+    Cluster = 'cluster',
+}
+
+export enum ExternalLinkScopeType {
+    AppLevel = 'appLevel',
+    ClusterLevel = 'clusterLevel',
+}
+
+export interface GetAllAppType {
+    type: string
+    appName: string
+    appId: number
+}
+
+export interface GetAllAppResponseType extends ResponseType {
+    result?: GetAllAppType[]
+}
+
+export interface RoleBasedInfoNoteProps {
+    userRole: UserRoleType
+    listingView?: boolean
+}
+
+export interface IdentifierSelectorProps {
+    index: number
+    link: LinkAction
+    selectedIdentifiers: IdentifierOptionType[]
+    clusters: IdentifierOptionType[]
+    allApps: IdentifierOptionType[]
+    handleLinksDataActions: (
+        action: string,
+        key?: number,
+        value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
+    ) => void
+    getErrorLabel: (field: string, type?: string) => JSX.Element
+}
+
+export enum LinkValidationKeys {
+    name = 'name',
+    identifiers = 'identifiers',
+    urlTemplate = 'urlTemplate',
 }

@@ -1,9 +1,10 @@
 .add-external-link-dialog {
+    overflow: hidden;
+
     .modal__body {
-        width: calc(100% - 80px);
-        max-width: 1000px;
-        height: calc(100% - 40px);
-        border-radius: 0 0 8px 8px;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
         margin-top: 0;
         padding: 16px 0;
 
@@ -32,7 +33,8 @@
         }
 
         .modal__content {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 279px;
             height: calc(100% - 112px);
 
             .configure-link-action-container,
@@ -42,7 +44,6 @@
             }
 
             .configure-link-action-container {
-                width: 720px;
                 padding: 20px;
                 border-right: 1px solid var(--N200);
 
@@ -50,9 +51,27 @@
                     display: flex;
                     align-items: center;
                     color: var(--B500);
+                    width: fit-content;
 
                     svg path {
                         fill: var(--B500);
+                    }
+                }
+
+                .link-identifiers {
+                    .link-applications__select__multi-value__label {
+                        padding: 0 4px;
+                    }
+
+                    .link-applications__select__multi-value__remove {
+                        padding-top: 2px;
+                    }
+                }
+
+                .link-identifiers,
+                .link-text-area {
+                    label {
+                        margin-bottom: 6px;
                     }
                 }
 
@@ -61,33 +80,31 @@
                     color: var(--N700);
                     font-size: 13px;
                     font-weight: 400;
-                    margin-bottom: 6px;
                 }
 
                 .configure-link-action-wrapper {
+                    display: grid;
+                    grid-template-columns: 40px auto 16px;
+                    column-gap: 12px;
+
                     .error-label {
                         .error-label-icon {
-                            width: 20px;
-                            height: 20px;
-
                             svg g path:nth-of-type(2) {
                                 fill: var(--R500);
                             }
                         }
                     }
 
-                    .link-monitoring-tool {
-                        display: flex;
-                        align-items: flex-start;
+                    .configure-link-action-content {
+                        display: grid;
+                        row-gap: 8px;
 
                         .link-name {
                             display: flex;
                             flex-direction: column;
-                            width: 200px;
 
                             input {
-                                width: 200px;
-                                height: 32px;
+                                height: 36px;
                                 padding: 10px 6px;
                                 background-color: var(--N50);
                                 color: var(--N900);
@@ -95,23 +112,23 @@
                                 border-radius: 4px;
                             }
                         }
+                    }
 
-                        .monitoring-tool {
-                            width: 150px;
+                    .link-monitoring-tool {
+                        .link-tool-options-wrapper {
+                            display: grid;
+                            row-gap: 10px;
 
-                            .absolute-option {
-                                position: absolute;
-                                padding: 0 10px;
+                            .link-tool-option {
+                                display: grid;
+                                grid-template-columns: repeat(4, 36px);
+
+                                .custom-option-with-icon {
+                                    &:hover {
+                                        background-color: var(--N100);
+                                    }
+                                }
                             }
-                        }
-
-                        .link-clusters {
-                            width: 278px;
-                        }
-
-                        .link-delete {
-                            width: 20px;
-                            height: 20px;
                         }
                     }
                 }
@@ -121,10 +138,9 @@
                     flex-direction: column;
 
                     textarea {
-                        width: 648px;
-                        min-height: 72px;
+                        min-height: 36px;
                         resize: vertical;
-                        padding: 10px 8px;
+                        padding: 6px 8px;
                         background-color: var(--N50);
                         color: var(--N900);
                         border: 1px solid var(--N200);
@@ -142,7 +158,6 @@
             }
 
             .configure-link-info-container {
-                width: 279px;
                 padding: 20px;
 
                 .configure-link-info-heading {
@@ -186,25 +201,25 @@
 
 
                     ul {
-                        list-style: none;
-                        padding: 0;
+                        padding: 0 0 0 21px;
                         margin: 0 0 12px;
+
+                        &.available-link-variables {
+                            padding: 0;
+
+                            li {
+                                list-style: none;
+                                background-color: var(--N100);
+                                padding: 2px 4px;
+                            }
+                        }
 
                         li {
                             font-size: 12px;
                             font-weight: 400;
-                            background-color: var(--N100);
                             width: fit-content;
-                            padding: 2px 4px;
                             margin-bottom: 8px;
-                        }
-                    }
-
-                    p {
-                        font-weight: 400;
-
-                        &:last-of-type {
-                            font-style: italic;
+                            list-style: disc;
                         }
                     }
 
@@ -221,6 +236,17 @@
             display: flex;
             justify-content: flex-end;
             padding: 16px 20px;
+        }
+    }
+
+    .link-admin-scope,
+    .link-identifier-option {
+        .form__checkbox-container {
+            margin-left: -5px;
+        }
+
+        .form__checkbox-label {
+            margin-left: 8px;
         }
     }
 }

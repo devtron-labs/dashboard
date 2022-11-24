@@ -10,11 +10,15 @@ import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
-import './AppOverview.scss'
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
+import {
+    ExternalLinkIdentifierType,
+    ExternalLinksAndToolsType,
+    ExternalLinkScopeType,
+} from '../../../externalLinks/ExternalLinks.type'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
+import './AppOverview.scss'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -32,7 +36,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         externalLinks: [],
         monitoringTools: [],
     })
-    const [appDetails, setAppDetails] = useState<AppDetails>()
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(appId), [appId])
 
     useEffect(() => {
@@ -57,7 +60,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             .then(([monitoringToolsRes, externalLinksRes]) => {
                 setExternalLinksAndTools({
                     fetchingExternalLinks: false,
-                    externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                    externalLinks:
+                        externalLinksRes.result
+                            ?.filter((_link) => _link.type === ExternalLinkScopeType.AppLevel)
+                            ?.sort(sortByUpdatedOn) || [],
                     monitoringTools:
                         monitoringToolsRes.result
                             ?.map((tool) => ({
@@ -110,22 +116,22 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">App name</div>
-                    <div className="fs-14 fw-6 lh-20 cn-9">{appMetaInfo?.appName}</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">App name</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.appName}</div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">Created on</div>
-                    <div className="fs-14 fw-6 lh-20 cn-9">
+                    <div className="fs-12 fw-4 lh-20 cn-7">Created on</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">
                         {appMetaInfo?.createdOn ? moment(appMetaInfo.createdOn).format(Moment12HourFormat) : '-'}
                     </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">Created by</div>
-                    <div className="fs-14 fw-6 lh-20 cn-9">{appMetaInfo?.createdBy}</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">Created by</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.createdBy}</div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-13 fw-4 lh-20 cn-7">Project</div>
-                    <div className="flex left dc__content-space fs-14 fw-6 lh-20 cn-9">
+                    <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
+                    <div className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9">
                         {appMetaInfo?.projectName}
                         <EditIcon className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
                     </div>
@@ -137,9 +143,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     const renderLabelTags = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                    <TagIcon className="icon-dim-20 mr-8" />
-                    Tags
+                <div className="flex left dc__content-space mb-12 w-100">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                        <TagIcon className="icon-dim-20 mr-8" />
+                        Tags
+                    </div>
+                    <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
+                        <EditIcon className="icon-dim-16 scn-7 mr-4" />
+                        Edit tags
+                    </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
                     {currentLabelTags.tags.length > 0 ? (
@@ -151,13 +163,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     ) : (
                         <span className="fs-13 fw-4 cn-7">No tags added.</span>
                     )}
-                    <span
-                        className="flex fs-12 fw-4 lh-16 cn-9 pt-4 pb-4 pl-6 pr-6 cursor bc-n50 dc__border br-4"
-                        onClick={toggleTagsUpdateModal}
-                    >
-                        <EditIcon className="icon-dim-16 mr-4" />
-                        Add/Edit tags
-                    </span>
                 </div>
             </div>
         )
@@ -169,14 +174,19 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
                     <LinkedIcon className="icon-dim-20 mr-8" />
-                    External links
+                    External Links
                 </div>
                 {externalLinksAndTools.fetchingExternalLinks ? (
                     <div className="dc__loading-dots" />
                 ) : (
                     <AppLevelExternalLinks
                         isOverviewPage={true}
-                        appDetails={appDetails}
+                        appDetails={
+                            {
+                                appId: +appId,
+                                appName: appMetaInfo?.appName,
+                            } as AppDetails
+                        }
                         externalLinks={externalLinksAndTools.externalLinks}
                         monitoringTools={externalLinksAndTools.monitoringTools}
                     />
@@ -202,8 +212,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         </div>
                         <div className="env-deployments-info-body">
                             {otherEnvsResult.result.map((_env) => (
-                                <div className="env-deployments-info-row display-grid dc__align-items-center">
-                                    <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}>
+                                <div
+                                    key={`${_env.environmentName}-${_env.environmentId}`}
+                                    className="env-deployments-info-row display-grid dc__align-items-center"
+                                >
+                                    <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
                                         {_env.environmentName}
                                     </Link>
                                     <span className="fs-13 fw-4 cn-7">

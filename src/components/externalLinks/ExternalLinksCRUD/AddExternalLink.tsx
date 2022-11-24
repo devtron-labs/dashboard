@@ -1,36 +1,50 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION } from '../../../config'
+import { useParams } from 'react-router-dom'
 import { OptionType } from '../../app/types'
-import { Progressing, showError, VisibleModal } from '../../common'
+import { createGroupedItemsByKey, Drawer, Progressing, showError } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
-import { AddExternalLinkType, ExternalLink, LinkAction, OptionTypeWithIcon } from '../ExternalLinks.type'
+import {
+    AddExternalLinkType,
+    ExternalLink,
+    ExternalLinkIdentifierType,
+    ExternalLinkScopeType,
+    IdentifierOptionType,
+    LinkAction,
+    OptionTypeWithIcon,
+} from '../ExternalLinks.type'
 import { availableVariables, sortByUpdatedOn } from '../ExternalLinks.utils'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
+import { ExternalLinksLearnMore } from '../ExternalLinks.component'
 import './AddExternalLink.scss'
 
 export default function AddExternalLink({
+    appId,
+    isAppConfigView,
     monitoringTools,
     clusters,
+    allApps,
     selectedLink,
     setExternalLinks,
     handleDialogVisibility,
 }: AddExternalLinkType): JSX.Element {
     const [linksData, setLinksData] = useState<LinkAction[]>([])
     const [savingLinks, setSavingLinks] = useState(false)
+    const linksLen = linksData.length
+
+    // Init tool options grouped by category & default monitoring tool
+    const _toolGroupedOptions = Object.values(createGroupedItemsByKey(monitoringTools, 'category')).map((_tools) => ({
+        label: _tools[0].label,
+        options: _tools as OptionTypeWithIcon[],
+    }))
+    const defaultTool = monitoringTools.find((tool) => tool.label.toLowerCase() === 'webpage')
 
     useEffect(() => {
         if (selectedLink) {
             const monitoringTool = monitoringTools.find((tool) => tool.value === selectedLink.monitoringToolId)
-            const selectedClusters =
-                selectedLink.clusterIds.length === 0
-                    ? clusters
-                    : clusters.filter((cluster) => selectedLink.clusterIds.includes(+cluster.value))
-
             setLinksData([
                 {
                     tool: {
@@ -40,67 +54,152 @@ export default function AddExternalLink({
                     },
                     name: selectedLink.name,
                     description: selectedLink.description,
-                    clusters: selectedClusters,
                     urlTemplate: selectedLink.url,
+                    identifiers: initSelectedIdentifiers(),
+                    isEditable: selectedLink.isEditable,
+                    type: selectedLink.type,
                 },
             ])
         } else {
             setLinksData([
                 {
-                    tool: null,
+                    tool: defaultTool
+                        ? {
+                              label: defaultTool.label,
+                              value: defaultTool.value,
+                              icon: defaultTool.icon,
+                          }
+                        : null,
                     name: '',
                     description: '',
-                    clusters: [],
                     urlTemplate: '',
+                    identifiers: [],
+                    isEditable: false,
+                    type: ExternalLinkScopeType.ClusterLevel,
                 },
             ])
         }
     }, [])
 
+    const initSelectedIdentifiers = () => {
+        const selectedIdentifiers =
+            selectedLink.identifiers.length === 0
+                ? selectedLink.type === ExternalLinkScopeType.ClusterLevel
+                    ? clusters
+                    : allApps
+                : []
+
+        if (selectedIdentifiers.length === 0) {
+            if (selectedLink.type === ExternalLinkScopeType.ClusterLevel) {
+                for (const _selectedIdentifier of selectedLink.identifiers) {
+                    const _seletedCluster = clusters.find(
+                        (_cluster) => _selectedIdentifier.clusterId === +_cluster.value,
+                    )
+
+                    if (_seletedCluster) {
+                        selectedIdentifiers.push(_seletedCluster)
+                    }
+                }
+            } else {
+                for (const _selectedIdentifier of selectedLink.identifiers) {
+                    if (_selectedIdentifier.type === ExternalLinkIdentifierType.ExternalHelmApp) {
+                        selectedIdentifiers.push({
+                            label: _selectedIdentifier.identifier,
+                            value: _selectedIdentifier.identifier,
+                            type: _selectedIdentifier.type,
+                        })
+                    } else {
+                        const _seletedApp = allApps.find((_app) => {
+                            const _appValue = _app.value.split('|')
+                            return (
+                                _selectedIdentifier.identifier === _appValue[0] &&
+                                _selectedIdentifier.type === _appValue[2]
+                            )
+                        })
+                        if (_seletedApp) {
+                            selectedIdentifiers.push(_seletedApp)
+                        }
+                    }
+                }
+            }
+        }
+
+        return selectedIdentifiers
+    }
+
     const handleLinksDataActions = (
         action: string,
         key?: number,
-        value?: OptionType | MultiValue<OptionType> | string,
+        value?: OptionTypeWithIcon | OptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
     ): void => {
         switch (action) {
             case 'add':
                 linksData.splice(0, 0, {
-                    tool: null,
+                    tool: defaultTool
+                        ? {
+                              label: defaultTool.label,
+                              value: defaultTool.value,
+                              icon: defaultTool.icon,
+                          }
+                        : null,
                     name: '',
                     description: '',
-                    clusters: [],
+                    identifiers: [],
                     urlTemplate: '',
+                    isEditable: false,
+                    type: ExternalLinkScopeType.ClusterLevel,
                 })
                 break
             case 'delete':
                 linksData.splice(key, 1)
                 break
+            case 'validate':
+                linksData[key] = value as LinkAction
+                break
             case 'onMonitoringToolSelection':
                 linksData[key].tool = value as OptionTypeWithIcon
                 break
             case 'onClusterSelection':
-                const _selectedOption = value as MultiValue<OptionType>
+            case 'onAppSelection':
+                const _selectedOption = value as IdentifierOptionType[]
                 const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '*') !== -1
                 const areAllOptionsAlredySeleted =
-                    Array.isArray(linksData[key].clusters) && linksData[key].clusters[0]?.value === '*'
+                    Array.isArray(linksData[key].identifiers) &&
+                    linksData[key].identifiers.findIndex((_identifier) => _identifier.value === '*') !== -1
+                const allOptions =
+                    action === 'onClusterSelection'
+                        ? [{ label: 'All clusters', value: '*', type: ExternalLinkIdentifierType.Cluster }]
+                        : [{ label: 'All applications', value: '*', type: ExternalLinkIdentifierType.AllApps }]
+                const identifiersLength = action === 'onClusterSelection' ? clusters.length : allApps.length
+                let _newSelections = []
 
                 if (areAllOptionsSelected && !areAllOptionsAlredySeleted) {
-                    linksData[key].clusters = [{ label: 'All clusters', value: '*' }]
+                    _newSelections = allOptions
                 } else if (!areAllOptionsSelected && areAllOptionsAlredySeleted) {
-                    linksData[key].clusters = []
-                } else if (areAllOptionsSelected && _selectedOption.length !== clusters.length) {
-                    linksData[key].clusters = _selectedOption.filter((option) => option.value !== '*')
-                } else if (!areAllOptionsSelected && _selectedOption.length === clusters.length - 1) {
-                    linksData[key].clusters = [{ label: 'All clusters', value: '*' }]
+                    _newSelections = []
+                } else if (areAllOptionsSelected && _selectedOption.length !== identifiersLength) {
+                    _newSelections = _selectedOption.filter((option) => option.value !== '*')
                 } else {
-                    linksData[key].clusters = _selectedOption
+                    _newSelections = _selectedOption
                 }
+
+                linksData[key].identifiers = _newSelections
                 break
             case 'onNameChange':
                 linksData[key].name = value as string
                 break
             case 'onUrlTemplateChange':
                 linksData[key].urlTemplate = value as string
+                break
+            case 'onDescriptionChange':
+                linksData[key].description = value as string
+                break
+            case 'onScopeChange':
+                linksData[key].type = value as ExternalLinkScopeType
+                linksData[key].identifiers = []
+                break
+            case 'onEditableFlagToggle':
+                linksData[key].isEditable = value as boolean
                 break
             default:
                 break
@@ -109,7 +208,7 @@ export default function AddExternalLink({
         setLinksData([...linksData])
     }
 
-    const onMonitoringToolSelectionHandler = (key: number, selected: OptionType, link: LinkAction) => {
+    const onMonitoringToolSelectionHandler = (key: number, selected: OptionTypeWithIcon, link: LinkAction) => {
         handleLinksDataActions('onMonitoringToolSelection', key, selected)
 
         if (
@@ -120,7 +219,15 @@ export default function AddExternalLink({
         }
     }
 
-    const linksLen = linksData.length
+    const getSelectedIdentifiers = (link: LinkAction) => {
+        if (!Array.isArray(link.identifiers)) {
+            return []
+        } else if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+            return link.identifiers
+        }
+
+        return link.type === ExternalLinkScopeType.ClusterLevel ? clusters : allApps
+    }
 
     const renderConfigureLinkActionColumn = (): JSX.Element => {
         return (
@@ -138,27 +245,18 @@ export default function AddExternalLink({
                         return (
                             <Fragment key={`ConfigureLinkAction-${idx}`}>
                                 <ConfigureLinkAction
+                                    isAppConfigView={isAppConfigView}
                                     index={idx}
                                     link={link}
                                     clusters={clusters}
-                                    selectedClusters={
-                                        Array.isArray(link.clusters) && link.clusters[0]?.value === '*'
-                                            ? clusters
-                                            : link.clusters
-                                    }
-                                    monitoringTools={monitoringTools}
-                                    onMonitoringToolSelection={(key, selected) =>
+                                    allApps={allApps}
+                                    selectedIdentifiers={getSelectedIdentifiers(link)}
+                                    toolGroupedOptions={_toolGroupedOptions}
+                                    onToolSelection={(key, selected) =>
                                         onMonitoringToolSelectionHandler(key, selected, link)
                                     }
-                                    onClusterSelection={(key, selected) =>
-                                        handleLinksDataActions('onClusterSelection', key, selected)
-                                    }
-                                    onNameChange={(key, name) => handleLinksDataActions('onNameChange', key, name)}
-                                    onUrlTemplateChange={(key, urlTemplate) =>
-                                        handleLinksDataActions('onUrlTemplateChange', key, urlTemplate)
-                                    }
+                                    handleLinksDataActions={handleLinksDataActions}
                                     showDelete={linksLen > 1}
-                                    deleteLinkData={(key) => handleLinksDataActions('delete', key)}
                                 />
                                 {linksLen > 1 && idx !== linksLen - 1 && (
                                     <hr className="external-links-divider mt-16 mb-16" />
@@ -178,30 +276,38 @@ export default function AddExternalLink({
                     <span className="cn-9">Configuring an external link</span>
                 </div>
                 <ol className="configure-link-info-list">
-                    <li>Monitoring Tool</li>
+                    <li>Link name</li>
                     <p className="mb-16">
-                        Select a monitoring tool from the drop-down list. To add a different tool, select 'Other'.
+                        Enter a name for the link (eg. API Doc, Logs, etc.) and select a suitable icon.
                     </p>
-                    <li>Clusters</li>
-                    <p className="mb-16">Choose the clusters for which you want to configure the selected tool.</p>
-                    <li>URL Template</li>
+                    <li>Description (optional)</li>
+                    <p className="mb-16">Add a description for the link.</p>
+                    {!isAppConfigView && (
+                        <>
+                            <li>Show link in</li>
+                            <div className="mb-16">
+                                <p>Choose where you want the link to be shown:</p>
+                                <ul>
+                                    <li>All applications in specific cluster</li>
+                                    <li>Specific applications</li>
+                                </ul>
+                            </div>
+                        </>
+                    )}
+                    <li>Enter link or Create URL template</li>
                     <p className="mb-20">
-                        The configured URL template is used by apps deployed on the selected clusters.
-                        <br />
-                        By combining one or more of the available env variables, a URL with the structure shown below
-                        can be created:
+                        You can choose to enter a direct link or create a URL template using available variables.
                     </p>
-                    <p className="mb-12">
+                    <p className="mb-20">A dynamic link can be created using variables as shown below.</p>
+                    <p className="mb-12 fw-4 dc__italic-font-style">
                         {`http://www.domain.com/{namespace}/{appName}/details/{appId}/env/{envId}/details/{podName}`}
                     </p>
-                    <ul className="fs-12 fw-4">
+                    <ul className="available-link-variables fs-12 fw-4">
                         {availableVariables.map((_var) => (
-                            <li>`{_var}`</li>
+                            <li key={_var}>{_var}</li>
                         ))}
                     </ul>
-                    <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
-                        Learn more
-                    </a>
+                    <ExternalLinksLearnMore />
                 </ol>
             </div>
         )
@@ -214,15 +320,43 @@ export default function AddExternalLink({
             name: link.name.trim(),
             invalidName: !link.name.trim(),
             description: link.description?.trim(),
-            clusters: link.clusters,
-            invalidClusters: !link.clusters || link.clusters.length <= 0,
+            identifiers: link.identifiers,
+            invalidIdentifiers: !link.identifiers || link.identifiers.length <= 0,
             urlTemplate: link.urlTemplate.replace(/\s+/g, ''),
             invalidUrlTemplate: !link.urlTemplate.trim(),
             invalidProtocol: link.urlTemplate.trim() && !link.urlTemplate.trim().startsWith('http'),
+            type: link.type,
+            isEditable: link.isEditable,
         }))
         setLinksData(validatedLinksData)
 
         return validatedLinksData
+    }
+
+    const processIdentifiers = (identifiers: IdentifierOptionType[], selectedLink?: ExternalLink) => {
+        if (isAppConfigView) {
+            return selectedLink
+                ? selectedLink.identifiers
+                : [
+                      {
+                          type: ExternalLinkIdentifierType.DevtronApp,
+                          identifier: appId,
+                          clusterId: 0,
+                      },
+                  ]
+        } else if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+            return identifiers.map((identifier) => ({
+                type: identifier.type,
+                identifier:
+                    identifier.type === ExternalLinkIdentifierType.Cluster
+                        ? ''
+                        : identifier.type === ExternalLinkIdentifierType.ExternalHelmApp
+                        ? identifier.value
+                        : identifier.value.split('|')[0],
+                clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? +identifier.value : 0,
+            }))
+        }
+        return []
     }
 
     const saveLinks = async (): Promise<void> => {
@@ -230,9 +364,8 @@ export default function AddExternalLink({
             const validatedLinksData = getValidatedLinksData()
             const invalidData = validatedLinksData.some(
                 (link) =>
-                    link.invalidTool ||
+                    (!isAppConfigView && (link.invalidTool || link.invalidIdentifiers)) ||
                     link.invalidName ||
-                    link.invalidClusters ||
                     link.invalidUrlTemplate ||
                     link.invalidProtocol,
             )
@@ -250,14 +383,13 @@ export default function AddExternalLink({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
                     description: link.description || '',
-                    clusterIds:
-                        link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
-                            ? link.clusters.map((_cluster) => +_cluster.value)
-                            : [],
+                    type: link.type,
+                    identifiers: processIdentifiers(link.identifiers, selectedLink),
                     url: link.urlTemplate,
+                    isEditable: link.isEditable,
                 }
 
-                const { result } = await updateExternalLink(payload)
+                const { result } = await updateExternalLink(payload, isAppConfigView ? appId : '')
 
                 if (result?.success) {
                     toast.success('Updated successfully!')
@@ -267,23 +399,31 @@ export default function AddExternalLink({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
                     description: link.description || '',
-                    clusterIds:
-                        link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
-                            ? link.clusters.map((_cluster) => +_cluster.value)
-                            : [],
+                    type: isAppConfigView ? ExternalLinkScopeType.AppLevel : link.type,
+                    identifiers: processIdentifiers(link.identifiers),
                     url: link.urlTemplate,
+                    isEditable: isAppConfigView ? true : link.isEditable,
                 }))
 
                 // Reversing because on 'Add another', new link fields are added & displayed at the top of linksData
-                const { result } = await saveExternalLinks(payload.reverse())
+                const { result } = await saveExternalLinks(payload.reverse(), isAppConfigView ? appId : '')
 
                 if (result?.success) {
                     toast.success('Saved successfully!')
                 }
             }
 
-            const { result } = await getExternalLinks()
-            setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+            if (isAppConfigView) {
+                const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+                setExternalLinks(
+                    result
+                        ?.filter((_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel)
+                        .sort(sortByUpdatedOn) || [],
+                )
+            } else {
+                const { result } = await getExternalLinks()
+                setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+            }
             setSavingLinks(false)
             handleDialogVisibility()
         } catch (e) {
@@ -294,10 +434,17 @@ export default function AddExternalLink({
     }
 
     return (
-        <VisibleModal className="add-external-link-dialog" {...(!savingLinks && { onEscape: handleDialogVisibility })}>
+        <Drawer
+            position="right"
+            parentClassName="add-external-link-dialog"
+            width="75%"
+            minWidth="1024px"
+            maxWidth="1200px"
+            onEscape={handleDialogVisibility}
+        >
             <div className="modal__body">
                 <div className="modal__header">
-                    <h3 className="modal__title fs-16">{selectedLink ? 'Update link' : 'Add link'}</h3>
+                    <h3 className="modal__title fs-16">{selectedLink ? 'Update Link' : 'Add Link'}</h3>
                     <button
                         type="button"
                         className={`dc__transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
@@ -319,6 +466,6 @@ export default function AddExternalLink({
                     </button>
                 </div>
             </div>
-        </VisibleModal>
+        </Drawer>
     )
 }

@@ -1,12 +1,9 @@
 .external-links-container {
     min-width: 962px;
     width: 90%;
-    margin: auto;
-    padding: 20px 24px;
 
     &.error-view {
         min-width: 100%;
-        height: 100%;
     }
 
     .empty-state {
@@ -55,6 +52,8 @@
     .external-links-wrapper {
         max-width: 1200px;
         margin: auto;
+        padding: 20px 24px;
+
         .cta-search-filter-container {
             .add-link.cta {
                 height: 32px;
@@ -68,10 +67,10 @@
             .search-wrapper {
                 display: flex;
                 align-items: center;
-                width: 250px;
+                width: 200px;
                 height: 32px;
                 position: relative;
-                margin-right: 12px;
+                margin-right: 0;
 
                 .search__input {
                     height: 32px;
@@ -99,26 +98,19 @@
         }
 
         .saved-filters__wrap {
-            display: flex;
-            flex-wrap: wrap;
             background-color: var(--window-bg);
             z-index: 0;
+            padding: 0;
 
             .saved-filter {
-                display: flex;
-                align-items: center;
-                border: solid 1px var(--N200);
-                background-color: #f7fafc;
                 text-transform: none;
-                padding-left: 6px;
-                padding-right: 6px;
-                margin: 0 12px 6px 0;
+                user-select: none;
+                margin: 0 0 8px;
                 min-height: 24px;
 
                 .saved-filter-divider {
                     height: 24px;
                     width: 1px;
-                    background-color: var(--N200);
                 }
 
                 .saved-filter__clear-btn {
@@ -149,31 +141,39 @@
 
     .external-links {
         min-height: 465px;
-        background: #ffffff;
-        border: 1px solid var(--N200);
         box-sizing: border-box;
         border-radius: 8px;
+
+        &.app-config-view__listing {
+            height: calc(100% - 110px);
+        }
 
         .empty-state {
             height: 465px !important;
         }
 
-        .external-link {
-            display: grid;
-            grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) 84px minmax(100px, 59%) 56px;
-            column-gap: 16px;
-            padding: 12px 20px;
-
-            .external-link-actions {
-                display: none;
-                width: 56px;
-            }
-
-            &:hover {
-                background-color: var(--N50);
+        .external-links__list {
+            .external-link {
+                display: grid;
+                grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) 100px minmax(100px, 59%) 56px;
+                column-gap: 16px;
+                padding: 12px 20px;
 
                 .external-link-actions {
-                    display: flex;
+                    display: none;
+                    width: 56px;
+                }
+
+                &:hover {
+                    background-color: var(--N50);
+
+                    .external-link-actions {
+                        display: flex;
+                    }
+                }
+
+                &.app-config-view {
+                    grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) minmax(100px, 59%) 56px;
                 }
             }
         }
@@ -181,29 +181,25 @@
 
     .external-link__divider {
         height: 1px;
-        width: 100%;
-        background-color: #EDF1F5;
     }
 
     .external-links__header {
-        height: 40px;
         display: grid;
-        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 84px minmax(100px, 59%) 56px;
+        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 100px minmax(100px, 59%) 56px;
         column-gap: 16px;
         align-items: center;
         justify-content: stretch;
-        font-size: 12px;
-        font-weight: 600;
         font-style: normal;
         font-stretch: normal;
         line-height: 1.5;
         letter-spacing: normal;
-        padding-left: 20px;
         box-shadow: 0 1px 0 0 var(--N200);
-        background: white;
-        text-transform: uppercase;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         margin-bottom: 1px;
+
+        &.app-config-view {
+            grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) minmax(100px, 59%) 56px;
+        }
     }
 }

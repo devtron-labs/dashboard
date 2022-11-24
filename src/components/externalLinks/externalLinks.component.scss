@@ -1,12 +1,8 @@
 .app-level__external-links {
-    width: 100%;
     min-height: 56px;
-    background-color: white;
     padding: 16px 20px;
 
     .app-level__external-links-icon {
-        width: 20px;
-        height: 20px;
         margin: 4px 16px 4px 0;
     }
 
@@ -17,20 +13,9 @@
     }
 
     .external-link-chip {
-        border: 1px solid var(--N200);
-        background-color: var(--N50);
         max-width: 250px;
-        height: 24px;
         padding: 4px 6px;
         margin: 4px 8px 4px 0;
-        text-decoration: none;
-        color: var(--N700);
-
-        img {
-            width: 16px;
-            height: 16px;
-            margin-right: 12px;
-        }
     }
 }
 
@@ -38,16 +23,7 @@
     min-height: 40px;
 
     .external-link-option {
-        height: 32px;
         padding: 6px 10px;
-        text-decoration: none;
-        color: var(--N900);
-
-        img {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-        }
 
         &:hover {
             background-color: var(--N50);

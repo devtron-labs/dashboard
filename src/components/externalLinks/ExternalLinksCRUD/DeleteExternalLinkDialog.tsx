@@ -2,10 +2,12 @@ import React from 'react'
 import { toast } from 'react-toastify'
 import { DeleteDialog, showError } from '../../common'
 import { deleteExternalLink, getExternalLinks } from '../ExternalLinks.service'
-import { DeleteExternalLinkType } from '../ExternalLinks.type'
+import { DeleteExternalLinkType, ExternalLinkIdentifierType, ExternalLinkScopeType } from '../ExternalLinks.type'
 import { sortByUpdatedOn } from '../ExternalLinks.utils'
 
 export default function DeleteExternalLinkDialog({
+    appId,
+    isAppConfigView,
     selectedLink,
     isAPICallInProgress,
     setAPICallInProgress,
@@ -15,13 +17,22 @@ export default function DeleteExternalLinkDialog({
     const deleteLink = async (): Promise<void> => {
         try {
             setAPICallInProgress(true)
-            const { result } = await deleteExternalLink(selectedLink.id)
+            const { result } = await deleteExternalLink(selectedLink.id, isAppConfigView ? appId : '')
 
             if (result?.success) {
                 toast.success('Deleted successfully!')
 
-                const { result } = await getExternalLinks()
-                setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+                if (isAppConfigView) {
+                    const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+                    setExternalLinks(
+                        result
+                            ?.filter((_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel)
+                            .sort(sortByUpdatedOn) || [],
+                    )
+                } else {
+                    const { result } = await getExternalLinks()
+                    setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+                }
             }
         } catch (e) {
             showError(e)
