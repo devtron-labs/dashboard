@@ -150,7 +150,7 @@ function ChartHeaderFilter({
                     value={'CHECKED'}
                     onChange={toggleDeprecated}
                 >
-                    <div className=""> Show deprecated charts</div>
+                    <div> Show deprecated charts</div>
                 </Checkbox>
                 <hr className="mt-8 mb-8" />
                 <Accordian
