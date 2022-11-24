@@ -25,7 +25,7 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { ConfigType, SERVER_MODE, URLS } from '../../../../config'
+import { ConfigurationType, SERVER_MODE, URLS } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -921,26 +921,26 @@ function ChartValuesView({
 
     const renderValuesTabs = () => {
         const initialSelectedTab =
-            (!(presetValueId || isCreateValueView) && isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-            !!commonState.installedConfig?.valuesSchemaJson
-                ? ConfigType.GUI
-                : ConfigType.YAML
+            (!(presetValueId || isCreateValueView) && ((isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+            !!commonState.installedConfig?.valuesSchemaJson))
+                ? ConfigurationType.GUI
+                : ConfigurationType.YAML
 
         return (
             <RadioGroup
                 className="gui-yaml-switch"
                 name="yaml-mode"
-                initialTab={initialSelectedTab}
+                initialTab={initialSelectedTab.toLowerCase()}
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                {initialSelectedTab === ConfigType.GUI && <RadioGroup.Radio value={ConfigType.GUI}>GUI (Beta)</RadioGroup.Radio>}
-                <RadioGroup.Radio value={ConfigType.YAML}>
+                {initialSelectedTab === ConfigurationType.GUI && <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>GUI (Beta)</RadioGroup.Radio>}
+                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
                     <Edit className="icon-dim-12 mr-6" />
                     YAML
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
-                    value={ConfigType.MANIFEST}
+                    value='manifest'
                     showTippy={isExternalApp && !commonState.installedAppInfo}
                     canSelect={isValidData()}
                     tippyContent={

@@ -129,14 +129,14 @@ function ChartHeaderFilter({
                 <div className="cursor flex">
                     <div
                         onClick={setList}
-                        className={`flex pt-8 pb-8 fs-13 pr-10 pl-10 br-4 w-100 ${!isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
+                        className={`flex pt-8 pb-8 fs-13 pr-10 pl-10 br-4 w-100 ${!isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'}`}
                     >
                         <List className="icon-dim-20 mr-8" />
                         List
                     </div>
                     <div
                         onClick={setGrid}
-                        className={`flex pt-8 pb-8 pl-10 pr-10 fs-13 br-4 w-100 ${isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
+                        className={`flex pt-8 pb-8 pl-10 pr-10 fs-13 br-4 w-100 ${isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'}`}
                     >
                         <Grid className="icon-dim-20 mr-8" />
                         Grid
@@ -145,12 +145,12 @@ function ChartHeaderFilter({
                 <hr className="mt-8 mb-8" />
                 <div className="fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8">FILTERS</div>
                 <Checkbox
-                    rootClassName="cursor fs-13 bcn-0 ml-7 mr-10 mb-0 date-align-left--deprecate"
+                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
                     isChecked={includeDeprecated === 1}
                     value={'CHECKED'}
                     onChange={toggleDeprecated}
                 >
-                    <div className="ml-5"> Show deprecated charts</div>
+                    <div className=""> Show deprecated charts</div>
                 </Checkbox>
                 <hr className="mt-8 mb-8" />
                 <Accordian
