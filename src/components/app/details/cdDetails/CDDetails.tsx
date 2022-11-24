@@ -136,12 +136,14 @@ export default function CDDetails() {
     }, [deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
 
     function syncState(triggerId: number, triggerDetail: History) {
-        setTriggerHistory((triggerHistory) => {
-            triggerHistory.set(triggerId, triggerDetail)
+        if (triggerId === triggerDetail.id) {
+            setTriggerHistory((triggerHistory) => {
+                triggerHistory.set(triggerId, triggerDetail)
 
-            console.log(triggerHistory)
-            return new Map(triggerHistory)
-        })
+                console.log(triggerHistory)
+                return new Map(triggerHistory)
+            })
+        }
     }
 
     if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
