@@ -934,10 +934,10 @@ function ChartValuesView({
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                {initialSelectedTab === ConfigurationType.GUI && <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>GUI (Beta)</RadioGroup.Radio>}
+                {initialSelectedTab === ConfigurationType.GUI && <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>{ConfigurationType.GUI} (Beta)</RadioGroup.Radio>}
                 <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
                     <Edit className="icon-dim-12 mr-6" />
-                    YAML
+                    {ConfigurationType.YAML}
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
                     value='manifest'
