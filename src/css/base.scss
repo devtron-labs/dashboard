@@ -2317,3 +2317,7 @@ textarea::placeholder {
 .dc__word-break-word {
     word-break: break-word;
 }
+
+.dc__hover-n50:hover {
+    background-color: var(--N50);
+}
