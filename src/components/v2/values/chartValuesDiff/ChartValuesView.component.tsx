@@ -102,15 +102,15 @@ export const DeploymentAppSelector = ({
 
     return !isDeployChartView ? (
         <div className={"chart-values__deployment_container"}>
-            <h2 className=".chart-values__deployment_label fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
-            <span className=".chart-values__deployment_label fs-13 fw-6 lh-18 cn-9 md-6">
+            <h2 className="chart-values__deployment_container fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+            <span className="chart-values__deployment fs-13 fw-6  cn-9 md-6 chart-values__deployment-label ">
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm ? DeploymentAppTypeNameMapping.HelmKeyValue  : DeploymentAppTypeNameMapping.GitOpsKeyValue}
             </span>
-            <span className={"chart-values__deployment_label"}>
+            <span className={"chart-values__deployment_container"}>
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
-                    <ArgoCD className="icon-dim-24 ml-6 " />
+                    <ArgoCD className="icon-dim-24 ml-6 chart-values__deployment_tooltip " />
                 ) : (
-                    <Helm className="icon-dim-24 ml-6  " />
+                    <Helm className="icon-dim-24 ml-6 chart-values__deployment_tooltip  " />
                 )}
             </span>
         </div>

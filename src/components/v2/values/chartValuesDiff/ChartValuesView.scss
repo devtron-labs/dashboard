@@ -102,6 +102,15 @@
         margin-bottom: 0px;
     }
 
+     .chart-values__deployment-label {
+        margin: 0 0 0px;
+        padding: 0 0 0px ;
+     }
+
+    .chart-values__deployment_tooltip {
+        position: absolute;
+    }
+
 
     .chart-values-view__wrapper {
         display: grid;
@@ -136,12 +145,6 @@
                 margin: 0 0 4px;
                 padding: 0;
             }
-
-            .chart-values__deployment_container .chart-values__deployment-label {
-                margin: 0 0 10px;
-                padding: 0px ;
-            }
-
 
 
             .refetch-charts {
