@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { useParams } from 'react-router-dom'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey, Drawer, Progressing, showError } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
@@ -23,6 +22,7 @@ import './AddExternalLink.scss'
 
 export default function AddExternalLink({
     appId,
+    isFullMode,
     isAppConfigView,
     monitoringTools,
     clusters,
@@ -245,6 +245,7 @@ export default function AddExternalLink({
                         return (
                             <Fragment key={`ConfigureLinkAction-${idx}`}>
                                 <ConfigureLinkAction
+                                    isFullMode={isFullMode}
                                     isAppConfigView={isAppConfigView}
                                     index={idx}
                                     link={link}
