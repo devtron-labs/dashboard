@@ -13,10 +13,14 @@ import EmptyState from '../../../EmptyState/EmptyState'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 export default function Artifacts({
-    triggerDetails,
+    status,
+    artifact,
+    blobStorageEnabled,
     getArtifactPromise,
 }: {
-    triggerDetails: History
+    status: string
+    artifact: string
+    blobStorageEnabled: boolean
     getArtifactPromise?: () => Promise<any>
 }) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
@@ -33,22 +37,22 @@ export default function Artifacts({
             showError(err)
         }
     }
-    if (triggerDetails.status.toLowerCase() === 'running') return <CIProgressView />
-    if (['failed', 'cancelled'].includes(triggerDetails.status.toLowerCase()))
+    if (status.toLowerCase() === 'running') return <CIProgressView />
+    if (['failed', 'cancelled'].includes(status.toLowerCase()))
         return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
     return (
         <div style={{ padding: '16px' }} className="flex left column">
             <CIListItem type="artifact">
                 <div className="flex column left">
                     <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
-                        <CopyTippyWithText copyText={triggerDetails.artifact.split(':')[1]} />
+                        <CopyTippyWithText copyText={artifact?.split(':')[1]} />
                     </div>
                     <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
-                        <CopyTippyWithText copyText={triggerDetails.artifact} />
+                        <CopyTippyWithText copyText={artifact} />
                     </div>
                 </div>
             </CIListItem>
-            {triggerDetails.blobStorageEnabled && getArtifactPromise && (
+            {blobStorageEnabled && getArtifactPromise && (
                 <CIListItem type="report">
                     <div className="flex column left">
                         <div className="cn-9 fs-14">Reports.zip</div>

@@ -121,61 +121,49 @@ export default function CIDetails() {
                     )}
                 </div>
                 <div className="ci-details__body">
-                    {!pipelineId && (
-                        <>
-                            <div />
-                            <EmptyView
-                                title="No pipeline selected"
-                                subTitle="Please select a pipeline to start seeing CI builds."
-                            />
-                        </>
-                    )}
-                    {!!pipeline && (
-                        <>
-                            <div />
-                            {pipeline.parentCiPipeline ? (
-                                <EmptyView
-                                    title="This is a Linked CI Pipeline"
-                                    subTitle="This is a Linked CI Pipeline"
-                                    link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                                    linkText="View Source Pipeline"
-                                />
-                            ) : (
-                                !loading &&
-                                triggerHistory?.size === 0 && (
+                    {!pipelineId ? (
+                        <EmptyView
+                            title="No pipeline selected"
+                            subTitle="Please select a pipeline to start seeing CI builds."
+                        />
+                    ) : (
+                        pipeline && (
+                            <>
+                                {pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
                                     <EmptyView
-                                        title="Build pipeline not triggered"
-                                        subTitle="Pipeline trigger history, details and logs will be available here."
+                                        title="This is a Linked CI Pipeline"
+                                        subTitle="This is a Linked CI Pipeline"
+                                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                                        linkText="View Source Pipeline"
                                     />
-                                )
-                            )}
-                        </>
+                                ) : triggerHistory?.size > 0 ? (
+                                    <Route
+                                        path={`${path
+                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
+                                    >
+                                        <Details
+                                            fullScreenView={fullScreenView}
+                                            synchroniseState={synchroniseState}
+                                            triggerHistory={triggerHistory}
+                                            isSecurityModuleInstalled={
+                                                securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
+                                            }
+                                            isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
+                                        />
+                                    </Route>
+                                ) : (
+                                    !loading && (
+                                        <EmptyView
+                                            title="Build pipeline not triggered"
+                                            subTitle="Pipeline trigger history, details and logs will be available here."
+                                        />
+                                    )
+                                )}
+                            </>
+                        )
                     )}
-                    {!!pipelineId && pipelineId === dependencyState[0] && triggerHistory?.size > 0 && (
-                        <Route path={`${path.replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)').replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}>
-                            {/* <BuildDetails
-                                fullScreenView={fullScreenView}
-                                triggerHistory={triggerHistory}
-                                pipeline={pipeline}
-                                synchroniseState={synchroniseState}
-                                isSecurityModuleInstalled={
-                                    securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
-                                }
-                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
-                            /> */}
-                            <Details
-                                pipeline={pipeline}
-                                fullScreenView={fullScreenView}
-                                synchroniseState={synchroniseState}
-                                triggerHistory={triggerHistory}
-                                isSecurityModuleInstalled={
-                                    securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
-                                }
-                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
-                            />
-                        </Route>
-                    )}
-                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
+                    <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
                 </div>
             </div>
         </>
@@ -195,7 +183,6 @@ export const CIListItem: React.FC<{ type: 'report' | 'artifact'; children: any }
 
 interface BuildDetails {
     triggerHistory: Map<number, History>
-    pipeline: CIPipeline
     fullScreenView: boolean
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
@@ -203,7 +190,6 @@ interface BuildDetails {
 }
 
 const Details: React.FC<BuildDetails> = ({
-    pipeline,
     fullScreenView,
     synchroniseState,
     triggerHistory,
@@ -222,7 +208,7 @@ const Details: React.FC<BuildDetails> = ({
     ] = useAsync(
         () => getCIHistoricalStatus({ appId, pipelineId, buildId }),
         [pipelineId, buildId, appId],
-        !!buildId && !pipeline?.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
+        !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
@@ -312,7 +298,6 @@ const Details: React.FC<BuildDetails> = ({
             </div>
             <HistoryLogs
                 key={triggerDetails.id}
-                pipeline={pipeline}
                 triggerDetails={triggerDetails}
                 isBlobStorageConfigured={isBlobStorageConfigured}
             />
@@ -321,15 +306,7 @@ const Details: React.FC<BuildDetails> = ({
 }
 
 const HistoryLogs = React.memo(
-    ({
-        pipeline,
-        triggerDetails,
-        isBlobStorageConfigured,
-    }: {
-        pipeline: CIPipeline
-        triggerDetails: History
-        isBlobStorageConfigured?: boolean
-    }) => {
+    ({ triggerDetails, isBlobStorageConfigured }: { triggerDetails: History; isBlobStorageConfigured?: boolean }) => {
         let { path } = useRouteMatch()
         const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
         const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -338,67 +315,58 @@ const HistoryLogs = React.memo(
 
         return (
             <div className="trigger-outputs-container">
-                {pipeline?.pipelineType === 'LINKED' ? (
-                    <EmptyView
-                        title="This is a Linked CI Pipeline"
-                        subTitle="This is a Linked CI Pipeline"
-                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                        linkText="View Source Pipeline"
+                <Switch>
+                    <Route path={`${path}/logs`}>
+                        <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
+                            <LogsRenderer
+                                triggerDetails={triggerDetails}
+                                isBlobStorageConfigured={isBlobStorageConfigured}
+                                parentType={STAGE_TYPE.CI}
+                            />
+                        </div>
+                        {(scrollToTop || scrollToBottom) && (
+                            <Scroller
+                                style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                                {...{ scrollToTop, scrollToBottom }}
+                            />
+                        )}
+                    </Route>
+                    <Route path={`${path}/source-code`}>
+                        <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
+                    </Route>
+                    <Route path={`${path}/artifacts`}>
+                        <Artifacts
+                            status={triggerDetails.status}
+                            artifact={triggerDetails.artifact}
+                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                            getArtifactPromise={() => getArtifact(pipelineId, buildId)}
+                        />
+                    </Route>
+                    <Route path={`${path}/security`}>
+                        <SecurityTab
+                            ciPipelineId={triggerDetails.ciPipelineId}
+                            artifactId={triggerDetails.artifactId}
+                            status={triggerDetails.status}
+                        />
+                    </Route>
+                    <Redirect
+                        to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : `${path}/logs`}
                     />
-                ) : (
-                    <Switch>
-                        <Route path={`${path}/logs`}>
-                            <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer
-                                    triggerDetails={triggerDetails}
-                                    isBlobStorageConfigured={isBlobStorageConfigured}
-                                    parentType={STAGE_TYPE.CI}
-                                />
-                            </div>
-                            {(scrollToTop || scrollToBottom) && (
-                                <Scroller
-                                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
-                                    {...{ scrollToTop, scrollToBottom }}
-                                />
-                            )}
-                        </Route>
-                        <Route
-                            path={`${path}/source-code`}
-                            render={(props) => (
-                                <GitChanges
-                                    gitTriggers={triggerDetails.gitTriggers}
-                                    ciMaterials={triggerDetails.ciMaterials}
-                                />
-                            )}
-                        />
-                        <Route
-                            path={`${path}/artifacts`}
-                            render={(props) => (
-                                <Artifacts
-                                    triggerDetails={triggerDetails}
-                                    getArtifactPromise={() => getArtifact(pipelineId, buildId)}
-                                />
-                            )}
-                        />
-                        <Route
-                            path={`${path}/security`}
-                            render={(props) => <SecurityTab triggerHistory={triggerDetails} />}
-                        />
-                        <Redirect
-                            to={
-                                triggerDetails.status.toLowerCase() === 'succeeded'
-                                    ? `${path}/artifacts`
-                                    : `${path}/logs`
-                            }
-                        />
-                    </Switch>
-                )}
+                </Switch>
             </div>
         )
     },
 )
 
-const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
+const SecurityTab = ({
+    ciPipelineId,
+    artifactId,
+    status,
+}: {
+    ciPipelineId: number
+    artifactId: number
+    status: string
+}) => {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [securityData, setSecurityData] = useState({
         vulnerabilities: [],
@@ -410,14 +378,14 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
         },
         scanEnabled: false,
         scanned: false,
-        isLoading: !!props.triggerHistory.artifactId,
+        isLoading: !!artifactId,
         isError: false,
     })
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     async function callGetSecurityIssues() {
         try {
-            const { result } = await getLastExecutionByArtifactId(appId, props.triggerHistory.artifactId)
+            const { result } = await getLastExecutionByArtifactId(appId, artifactId)
             setSecurityData({
                 vulnerabilities: result.vulnerabilities,
                 lastExecution: result.lastExecution,
@@ -442,13 +410,12 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     }
 
     useEffect(() => {
-        if (props.triggerHistory.artifactId) {
+        if (artifactId) {
             callGetSecurityIssues()
         }
-    }, [props.triggerHistory.artifactId])
+    }, [artifactId])
 
     const redirectToCreate = () => {
-        const ciPipelineId = props?.triggerHistory?.ciPipelineId
         if (!ciPipelineId) return
         push(
             `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`,
@@ -458,18 +425,16 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     const severityCount = securityData.severityCount
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
-    if (['failed', 'cancelled'].includes(props.triggerHistory.status.toLowerCase()))
+    if (['failed', 'cancelled'].includes(status.toLowerCase()))
         return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
-    if (['starting', 'running'].includes(props.triggerHistory.status.toLowerCase()))
-        return <CIRunningView isSecurityTab={true} />
+    if (['starting', 'running'].includes(status.toLowerCase())) return <CIRunningView isSecurityTab={true} />
     if (securityData.isLoading) return <Progressing pageLoader />
     if (securityData.isError) return <Reload />
-    if (props.triggerHistory.artifactId && !securityData.scanned) {
+    if (artifactId && !securityData.scanned) {
         if (!securityData.scanEnabled) return <ScanDisabledView redirectToCreate={redirectToCreate} />
         return <ImageNotScannedView />
     }
-    if (props.triggerHistory.artifactId && securityData.scanned && !securityData.vulnerabilities.length)
-        return <NoVulnerabilityView />
+    if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) return <NoVulnerabilityView />
 
     return (
         <>

@@ -165,13 +165,10 @@ export default function CDDetails() {
                 </div>
                 <div className="ci-details__body">
                     {!envId ? (
-                        <>
-                            <div />
-                            <EmptyView
-                                title="No environment selected"
-                                subTitle="Please select an environment to start seeing CD deployments."
-                            />
-                        </>
+                        <EmptyView
+                            title="No environment selected"
+                            subTitle="Please select an environment to start seeing CD deployments."
+                        />
                     ) : triggerHistory?.size > 0 ? (
                         <Route
                             path={`${path
@@ -409,50 +406,41 @@ const HistoryLogs: React.FC<{
                                 />
                             </Route>
                         )}
-                        <Route
-                            path={`${path}/source-code`}
-                            render={(props) => (
-                                <GitChanges
-                                    gitTriggers={triggerDetails.gitTriggers}
-                                    ciMaterials={triggerDetails.ciMaterials}
-                                />
-                            )}
-                        />
-                        {triggerDetails.stage === 'DEPLOY' && (
-                            <Route
-                                path={`${path}/configuration`}
-                                render={(props) => (
-                                    <DeploymentHistoryConfigList
-                                        setDeploymentHistoryList={setDeploymentHistoryList}
-                                        deploymentHistoryList={deploymentHistoryList}
-                                        setFullScreenView={setFullScreenView}
-                                    />
-                                )}
-                                exact
+                        <Route path={`${path}/source-code`}>
+                            <GitChanges
+                                gitTriggers={triggerDetails.gitTriggers}
+                                ciMaterials={triggerDetails.ciMaterials}
                             />
+                        </Route>
+                        {triggerDetails.stage === 'DEPLOY' && (
+                            <Route path={`${path}/configuration`} exact>
+                                <DeploymentHistoryConfigList
+                                    setDeploymentHistoryList={setDeploymentHistoryList}
+                                    deploymentHistoryList={deploymentHistoryList}
+                                    setFullScreenView={setFullScreenView}
+                                />
+                            </Route>
                         )}
                         {triggerDetails.stage === 'DEPLOY' && (
                             <Route
                                 path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
-                                render={(props) => (
-                                    <DeploymentHistoryDetailedView
-                                        setDeploymentHistoryList={setDeploymentHistoryList}
-                                        deploymentHistoryList={deploymentHistoryList}
-                                        setFullScreenView={setFullScreenView}
-                                    />
-                                )}
-                            />
+                            >
+                                <DeploymentHistoryDetailedView
+                                    setDeploymentHistoryList={setDeploymentHistoryList}
+                                    deploymentHistoryList={deploymentHistoryList}
+                                    setFullScreenView={setFullScreenView}
+                                />
+                            </Route>
                         )}
                         {triggerDetails.stage !== 'DEPLOY' && (
-                            <Route
-                                path={`${path}/artifacts`}
-                                render={(props) => (
-                                    <Artifacts
-                                        getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
-                                        triggerDetails={triggerDetails}
-                                    />
-                                )}
-                            />
+                            <Route path={`${path}/artifacts`}>
+                                <Artifacts
+                                    status={triggerDetails.status}
+                                    artifact={triggerDetails.artifact}
+                                    blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                    getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                />
+                            </Route>
                         )}
                         <Redirect
                             to={`${path}/${
