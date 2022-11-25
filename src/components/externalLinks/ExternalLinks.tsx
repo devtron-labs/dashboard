@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
 import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
@@ -17,14 +17,14 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
-import { DOCUMENTATION } from '../../config'
+import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import TippyWhite from '../common/TippyWhite'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import { UserRoleType } from '../userGroups/userGroups.types'
-import './externalLinks.scss'
 import Tippy from '@tippyjs/react'
+import { mainContext } from '../common/navigation/NavigationRoutes'
+import './externalLinks.scss'
 
 function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -45,6 +45,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
     const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
+    const { serverMode } = useContext(mainContext)
+    const isFullMode = serverMode === SERVER_MODE.FULL
 
     useEffect(() => {
         initExternalLinksData()
@@ -91,7 +93,10 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
             allPromises.push(getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp))
         } else {
             allPromises.push(getExternalLinks())
-            allPromises.push(getAllApps())
+
+            if (isFullMode) {
+                allPromises.push(getAllApps())
+            }
         }
 
         Promise.all(allPromises)
@@ -124,7 +129,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                         .sort(sortOptionsByLabel) || [],
                 )
 
-                if (!isAppConfigView) {
+                if (!isAppConfigView && isFullMode) {
                     setAllApps(
                         allAppsResp.result
                             ?.map((_app) => ({
@@ -242,14 +247,16 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 <SearchInput queryParams={queryParams} history={history} url={url} />
                 {!isAppConfigView && (
                     <>
-                        <ApplicationFilter
-                            allApps={allApps}
-                            appliedApps={appliedApps}
-                            setAppliedApps={setAppliedApps}
-                            queryParams={queryParams}
-                            history={history}
-                            url={url}
-                        />
+                        {isFullMode && (
+                            <ApplicationFilter
+                                allApps={allApps}
+                                appliedApps={appliedApps}
+                                setAppliedApps={setAppliedApps}
+                                queryParams={queryParams}
+                                history={history}
+                                url={url}
+                            />
+                        )}
                         <ClusterFilter
                             clusters={clusters}
                             appliedClusters={appliedClusters}
@@ -480,17 +487,22 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
             {showAddLinkDialog && (
                 <AddExternalLink
                     appId={appId}
+                    isFullMode={isFullMode}
                     isAppConfigView={isAppConfigView}
                     handleDialogVisibility={handleDialogVisibility}
                     selectedLink={selectedLink}
                     monitoringTools={monitoringTools}
-                    allApps={[
-                        {
-                            label: 'All applications',
-                            value: '*',
-                            type: ExternalLinkIdentifierType.AllApps,
-                        } as IdentifierOptionType,
-                    ].concat(allApps)}
+                    allApps={
+                        isFullMode
+                            ? [
+                                  {
+                                      label: 'All applications',
+                                      value: '*',
+                                      type: ExternalLinkIdentifierType.AllApps,
+                                  } as IdentifierOptionType,
+                              ].concat(allApps)
+                            : []
+                    }
                     clusters={[
                         {
                             label: 'All clusters',

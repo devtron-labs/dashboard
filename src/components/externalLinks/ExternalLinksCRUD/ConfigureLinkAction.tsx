@@ -18,6 +18,7 @@ import TippyWhite from '../../common/TippyWhite'
 import IdentifierSelector from './IdentifierSelector'
 
 export default function ConfigureLinkAction({
+    isFullMode,
     isAppConfigView,
     index,
     link,
@@ -182,6 +183,7 @@ export default function ConfigureLinkAction({
                 )}
                 {!isAppConfigView && (
                     <IdentifierSelector
+                        isFullMode={isFullMode}
                         index={index}
                         link={link}
                         selectedIdentifiers={selectedIdentifiers}
@@ -204,7 +206,7 @@ export default function ConfigureLinkAction({
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
                 </div>
-                {!isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
+                {isFullMode && !isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
                     <div className="flex left">
                         <Checkbox
                             isChecked={link.isEditable}
