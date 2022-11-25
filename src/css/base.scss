@@ -2283,6 +2283,12 @@ textarea::placeholder {
     transform: translate(-50%, -50%);
 }
 
+
 .dc__word-break-word {
     word-break: break-word;
+}
+
+.dc__hover-n50:hover {
+    background-color: var(--N50);
+
 }
