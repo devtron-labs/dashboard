@@ -114,7 +114,12 @@ export default function NavigationRoutes() {
         const loginInfo = getLoginInfo()
 
         if (!loginInfo) return
+        const script = document.createElement('script')
+        script.src =
+            'https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd7zJZd1MXy8ky30QHjnz_2BkSUbnj_2BUqUXf5mO5Z5hebQ2.js'
+        script.async = true
 
+        document.body.appendChild(script)
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
