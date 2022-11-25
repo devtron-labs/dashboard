@@ -7,9 +7,6 @@ import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import Reload from '../../../Reload/Reload'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
-import EmptyState from '../../../EmptyState/EmptyState'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import { GitChanges, Artifacts } from '../cIDetails/CIDetails'
 import { History } from '../cIDetails/types'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
@@ -21,8 +18,9 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { OptionType } from '../../types'
-import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.components'
+import { LogsRenderer, Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
+import Artifacts from '../cicdHistory/Artifacts'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -139,8 +137,6 @@ export default function CDDetails() {
         if (triggerId === triggerDetail.id) {
             setTriggerHistory((triggerHistory) => {
                 triggerHistory.set(triggerId, triggerDetail)
-
-                console.log(triggerHistory)
                 return new Map(triggerHistory)
             })
         }
@@ -160,7 +156,7 @@ export default function CDDetails() {
                     {!fullScreenView && (
                         <Sidebar
                             filterOptions={envOptions}
-                            parentType={STAGE_TYPE.CD}
+                            type="CD"
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
@@ -171,7 +167,10 @@ export default function CDDetails() {
                     {!envId ? (
                         <>
                             <div />
-                            <SelectEnvironmentView />
+                            <EmptyView
+                                title="No environment selected"
+                                subTitle="Please select an environment to start seeing CD deployments."
+                            />
                         </>
                     ) : triggerHistory?.size > 0 ? (
                         <Route
@@ -191,42 +190,15 @@ export default function CDDetails() {
                             />
                         </Route>
                     ) : (
-                        <NoCDTriggersView environmentName={environment?.environmentName} />
+                        <EmptyView
+                            title="No deployments"
+                            subTitle={`No deployment history available for the ${environment?.environmentName} environment.`}
+                        />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>
             </div>
         </>
-    )
-}
-
-function SelectEnvironmentView() {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No environment selected</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Please select an environment to start seeing CD deployments.</EmptyState.Subtitle>
-        </EmptyState>
-    )
-}
-
-function NoCDTriggersView({ environmentName }) {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No deployments</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                No deployment history available for the {environmentName} environment.
-            </EmptyState.Subtitle>
-        </EmptyState>
     )
 }
 
@@ -293,7 +265,19 @@ const TriggerOutput: React.FC<{
             <div className="trigger-details-container">
                 {!fullScreenView && (
                     <>
-                        <TriggerDetails type="CD" triggerDetails={triggerDetails} />
+                        <TriggerDetails
+                            type="CD"
+                            status={triggerDetails.status}
+                            startedOn={triggerDetails.startedOn}
+                            finishedOn={triggerDetails.finishedOn}
+                            triggeredBy={triggerDetails.triggeredBy}
+                            triggeredByEmail={triggerDetails.triggeredByEmail}
+                            ciMaterials={triggerDetails.ciMaterials}
+                            gitTriggers={triggerDetails.gitTriggers}
+                            message={triggerDetails.message}
+                            podStatus={triggerDetails.podStatus}
+                            stage={triggerDetails.stage}
+                        />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
                                 <li className="tab-list__tab">
@@ -427,7 +411,12 @@ const HistoryLogs: React.FC<{
                         )}
                         <Route
                             path={`${path}/source-code`}
-                            render={(props) => <GitChanges triggerDetails={triggerDetails} />}
+                            render={(props) => (
+                                <GitChanges
+                                    gitTriggers={triggerDetails.gitTriggers}
+                                    ciMaterials={triggerDetails.ciMaterials}
+                                />
+                            )}
                         />
                         {triggerDetails.stage === 'DEPLOY' && (
                             <Route
@@ -465,7 +454,15 @@ const HistoryLogs: React.FC<{
                                 )}
                             />
                         )}
-                        <Redirect to={`${path}/${triggerDetails.stage === 'DEPLOY' ? `deployment-steps` : `logs`}`} />
+                        <Redirect
+                            to={`${path}/${
+                                triggerDetails.status.toLowerCase() === 'succeeded'
+                                    ? `${path}/artifacts`
+                                    : triggerDetails.stage === 'DEPLOY'
+                                    ? `deployment-steps`
+                                    : `logs`
+                            }`}
+                        />
                     </Switch>
                 )}
             </div>

@@ -52,7 +52,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
+                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                             <CIDetails key={appId} />
                         </Route>
                         <Route

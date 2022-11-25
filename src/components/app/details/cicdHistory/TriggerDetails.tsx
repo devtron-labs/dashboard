@@ -13,47 +13,78 @@ import { PROGRESSING_STATUS, TERMINAL_STATUS_COLOR_CLASS_MAP } from '../cicdHist
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
 
-export const TriggerDetails = React.memo(({ triggerDetails, type }: { triggerDetails: History; type: 'CI' | 'CD' }) => {
-    return (
-        <div className="trigger-details" style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}>
-            <div className="trigger-details__status flex">
-                <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
-                    <circle
-                        cx="12.5"
-                        cy="74.5"
-                        r="6"
-                        fill={colorMap[triggerDetails?.status?.toLowerCase()]}
-                        stroke={colorMap[triggerDetails?.status?.toLowerCase()]}
-                        strokeWidth="12"
-                        strokeOpacity="0.3"
+export const TriggerDetails = React.memo(
+    ({
+        status,
+        startedOn,
+        finishedOn,
+        triggeredBy,
+        triggeredByEmail,
+        ciMaterials,
+        gitTriggers,
+        message,
+        podStatus,
+        type,
+        stage,
+        artifact,
+    }: {
+        status: string
+        startedOn: string
+        finishedOn: string
+        triggeredBy: number
+        triggeredByEmail: string
+        ciMaterials: CiMaterial[]
+        gitTriggers: Map<number, GitTriggers>
+        message: string
+        podStatus: string
+        type: 'CI' | 'CD'
+        stage: 'POST' | 'DEPLOY' | 'PRE'
+        artifact?: string
+    }) => {
+        return (
+            <div
+                className="trigger-details"
+                style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}
+            >
+                <div className="trigger-details__status flex">
+                    <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
+                        <circle
+                            cx="12.5"
+                            cy="74.5"
+                            r="6"
+                            fill={colorMap[status?.toLowerCase()]}
+                            stroke={colorMap[status?.toLowerCase()]}
+                            strokeWidth="12"
+                            strokeOpacity="0.3"
+                        />
+                        <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
+                    </svg>
+                </div>
+                <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
+                    <StartDetails
+                        startedOn={startedOn}
+                        triggeredBy={triggeredBy}
+                        triggeredByEmail={triggeredByEmail}
+                        ciMaterials={ciMaterials}
+                        gitTriggers={gitTriggers}
+                        artifact={artifact}
+                        type={type}
                     />
-                    <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
-                </svg>
+                    <CurrentStatus
+                        status={status}
+                        finishedOn={finishedOn}
+                        artifact={artifact}
+                        message={message}
+                        podStatus={podStatus}
+                        stage={stage}
+                        type={type}
+                    />
+                </div>
             </div>
-            <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
-                <StartDetails
-                    startedOn={triggerDetails.startedOn}
-                    triggeredBy={triggerDetails.triggeredBy}
-                    triggeredByEmail={triggerDetails.triggeredByEmail}
-                    ciMaterials={triggerDetails.ciMaterials}
-                    gitTriggers={triggerDetails.gitTriggers}
-                    artifact={triggerDetails.artifact}
-                    type={type}
-                />
-                <CurrentStatus
-                    status={triggerDetails.status}
-                    finishedOn={triggerDetails.finishedOn}
-                    artifact={type === 'CI' ? triggerDetails.artifact : null}
-                    message={triggerDetails.message}
-                    podStatus={triggerDetails.podStatus}
-                    stage={triggerDetails.stage}
-                    type={type}
-                />
-            </div>
-        </div>
-    )
-})
+        )
+    },
+)
 
 const Finished = React.memo(
     ({ status, finishedOn, artifact }: { status: string; finishedOn: string; artifact: string }) => {
@@ -106,86 +137,92 @@ const WorkerStatus = React.memo(
     },
 )
 
-const ProgressingStatus = ({
-    status,
-    message,
-    podStatus,
-    stage,
-    type,
-}: {
-    status: string
-    message: string
-    podStatus: string
-    stage: 'POST' | 'DEPLOY' | 'PRE'
-    type: 'CI' | 'CD'
-}) => {
-    const [aborting, setAborting] = useState(false)
-    const [abortConfirmation, setAbortConfiguration] = useState(false)
-    const { buildId, triggerId, pipelineId } = useParams<{
-        buildId: string
-        triggerId: string
-        pipelineId: string
-    }>()
-    let abort = null
-    if (type === 'CI') {
-        abort = () => cancelCiTrigger({ pipelineId, workflowId: buildId })
-    } else if (stage !== 'DEPLOY') {
-        abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
-    }
-    async function abortRunning(e) {
-        setAborting(true)
-        const [error] = await asyncWrap(abort())
-        setAborting(false)
-        if (error) {
-            showError(error)
-        } else {
-            toast.success('Build Aborted')
+const ProgressingStatus = React.memo(
+    ({
+        status,
+        message,
+        podStatus,
+        stage,
+        type,
+    }: {
+        status: string
+        message: string
+        podStatus: string
+        stage: 'POST' | 'DEPLOY' | 'PRE'
+        type: 'CI' | 'CD'
+    }) => {
+        const [aborting, setAborting] = useState(false)
+        const [abortConfirmation, setAbortConfiguration] = useState(false)
+        const { buildId, triggerId, pipelineId } = useParams<{
+            buildId: string
+            triggerId: string
+            pipelineId: string
+        }>()
+        let abort = null
+        if (type === 'CI') {
+            abort = () => cancelCiTrigger({ pipelineId, workflowId: buildId })
+        } else if (stage !== 'DEPLOY') {
+            abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
+        }
+        async function abortRunning(e) {
+            setAborting(true)
+            const [error] = await asyncWrap(abort())
+            setAborting(false)
+            if (error) {
+                showError(error)
+            } else {
+                toast.success('Build Aborted')
+                setAbortConfiguration(false)
+            }
+        }
+        const showAbortConfiguration = (): void => {
+            setAbortConfiguration(true)
+        }
+        const hideAbortConfiguration = (): void => {
             setAbortConfiguration(false)
         }
-    }
-    const showAbortConfiguration = (): void => {
-        setAbortConfiguration(true)
-    }
-    const hideAbortConfiguration = (): void => {
-        setAbortConfiguration(false)
-    }
-    return (
-        <>
-            <div className="trigger-details__current flex left">
-                <div style={{ color: '#ff7e5b' }} className={`${status} fs-14 fw-6 flex left`}>
-                    In progress
+        return (
+            <>
+                <div className="trigger-details__current flex left">
+                    <div style={{ color: '#ff7e5b' }} className={`${status} fs-14 fw-6 flex left`}>
+                        In progress
+                    </div>
+                    {abort && (
+                        <button
+                            className="cta cancel ml-16"
+                            style={{ minWidth: '72px' }}
+                            onClick={showAbortConfiguration}
+                        >
+                            Abort
+                        </button>
+                    )}
+                    <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
-                {abort && (
-                    <button className="cta cancel ml-16" style={{ minWidth: '72px' }} onClick={showAbortConfiguration}>
-                        Abort
-                    </button>
+                {abortConfirmation && (
+                    <ConfirmationDialog>
+                        <ConfirmationDialog.Icon src={warn} />
+                        <ConfirmationDialog.Body
+                            title={type === 'CD' ? `Abort ${stage.toLowerCase()}-deployment?` : 'Abort build?'}
+                        />
+                        <p className="fs-13 cn-7 lh-1-54">
+                            {type === 'CD'
+                                ? 'Are you sure you want to abort this stage?'
+                                : 'Are you sure you want to abort this build?'}
+                        </p>
+                        <ConfirmationDialog.ButtonGroup>
+                            <button type="button" className="cta cancel" onClick={hideAbortConfiguration}>
+                                Cancel
+                            </button>
+                            <button type="button" className="cta delete" onClick={abortRunning}>
+                                {aborting ? <Progressing /> : 'Yes, Abort'}
+                            </button>
+                        </ConfirmationDialog.ButtonGroup>
+                    </ConfirmationDialog>
                 )}
-                <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
-            </div>
-            {abortConfirmation && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <ConfirmationDialog.Body
-                        title={type === 'CD' ? `Abort ${stage.toLowerCase()}-deployment?` : 'Abort build?'}
-                    />
-                    <p className="fs-13 cn-7 lh-1-54">
-                        {type === 'CD'
-                            ? 'Are you sure you want to abort this stage?'
-                            : 'Are you sure you want to abort this build?'}
-                    </p>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel" onClick={hideAbortConfiguration}>
-                            Cancel
-                        </button>
-                        <button type="button" className="cta delete" onClick={abortRunning}>
-                            {aborting ? <Progressing /> : 'Yes, Abort'}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
-        </>
-    )
-}
+            </>
+        )
+    },
+)
 
 const CurrentStatus = React.memo(
     ({
@@ -220,78 +257,75 @@ const CurrentStatus = React.memo(
     },
 )
 
-const StartDetails = React.memo(
-    ({
-        startedOn,
-        triggeredBy,
-        triggeredByEmail,
-        ciMaterials,
-        gitTriggers,
-        artifact,
-        type,
-    }: {
-        startedOn: string
-        triggeredBy: number
-        triggeredByEmail: string
-        ciMaterials: CiMaterial[]
-        gitTriggers: Map<number, GitTriggers>
-        artifact: string
-        type: 'CI' | 'CD'
-    }) => {
-        const { url } = useRouteMatch()
-        const { pathname } = useLocation()
-        return (
-            <div className="trigger-details__start flex column left">
-                <div className="cn-9 fs-14 fw-6">Start</div>
-                <div className="flex left">
-                    <time className="cn-7 fs-12">
-                        {moment(startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                    </time>
-                    <div className="dc__bullet mr-6 ml-6"></div>
-                    <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
-                        {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
-                    </div>
-                    {type === 'CD' ? (
-                        <div className="dc__app-commit__hash ">
-                            <img src={docker} className="commit-hash__icon grayscale" />
-                            {artifact.split(':')[1]}
-                        </div>
-                    ) : (
-                        ciMaterials?.map((ciMaterial) => {
-                            const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
-                            return (
-                                <>
-                                    {ciMaterial.type != 'WEBHOOK' && (
-                                        <a
-                                            target="_blank"
-                                            rel="noopener noreferer"
-                                            key={ciMaterial.id}
-                                            href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
-                                            className="dc__app-commit__hash mr-12 bcn-1 cn-7"
-                                        >
-                                            {gitDetail?.Commit?.substr(0, 8)}
-                                        </a>
-                                    )}
-                                    {ciMaterial.type == 'WEBHOOK' &&
-                                        gitDetail.WebhookData &&
-                                        gitDetail.WebhookData.Data && (
-                                            <span className="dc__app-commit__hash">
-                                                {gitDetail.WebhookData.EventActionType == 'merged'
-                                                    ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
-                                                    : gitDetail.WebhookData.Data['target checkout']}
-                                            </span>
-                                        )}
-                                </>
-                            )
-                        })
-                    )}
-                    {!pathname.includes('source-code') && (
-                        <Link to={`${url}/source-code`} className="anchor ml-8">
-                            Commit details
-                        </Link>
-                    )}
+const StartDetails = ({
+    startedOn,
+    triggeredBy,
+    triggeredByEmail,
+    ciMaterials,
+    gitTriggers,
+    artifact,
+    type,
+}: {
+    startedOn: string
+    triggeredBy: number
+    triggeredByEmail: string
+    ciMaterials: CiMaterial[]
+    gitTriggers: Map<number, GitTriggers>
+    artifact: string
+    type: 'CI' | 'CD'
+}) => {
+    const { url } = useRouteMatch()
+    const { pathname } = useLocation()
+    return (
+        <div className="trigger-details__start flex column left">
+            <div className="cn-9 fs-14 fw-6">Start</div>
+            <div className="flex left">
+                <time className="cn-7 fs-12">
+                    {moment(startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                </time>
+                <div className="dc__bullet mr-6 ml-6"></div>
+                <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
+                    {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
                 </div>
+                {type === 'CD' && artifact ? (
+                    <div className="dc__app-commit__hash ">
+                        <img src={docker} className="commit-hash__icon grayscale" />
+                        {artifact.split(':')[1]}
+                    </div>
+                ) : (
+                    ciMaterials?.map((ciMaterial) => {
+                        const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
+                        return (
+                            <React.Fragment key={ciMaterial.id}>
+                                {ciMaterial.type != 'WEBHOOK' && (
+                                    <a
+                                        target="_blank"
+                                        rel="noopener noreferer"
+                                        href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
+                                        className="dc__app-commit__hash mr-12 bcn-1 cn-7"
+                                    >
+                                        {gitDetail?.Commit?.substr(0, 8)}
+                                    </a>
+                                )}
+                                {ciMaterial.type == 'WEBHOOK' &&
+                                    gitDetail.WebhookData &&
+                                    gitDetail.WebhookData.Data && (
+                                        <span className="dc__app-commit__hash">
+                                            {gitDetail.WebhookData.EventActionType == 'merged'
+                                                ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
+                                                : gitDetail.WebhookData.Data['target checkout']}
+                                        </span>
+                                    )}
+                            </React.Fragment>
+                        )
+                    })
+                )}
+                {!pathname.includes('source-code') && (
+                    <Link to={`${url}/source-code`} className="anchor ml-8">
+                        Commit details
+                    </Link>
+                )}
             </div>
-        )
-    },
-)
+        </div>
+    )
+}

@@ -1,15 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { not, Progressing, useIntersection, useInterval, useKeyDown } from '../../../common'
+import { not, Progressing, useInterval, useKeyDown } from '../../../common'
 import { useLocation, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
-import { History } from '../cIDetails/types'
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import { CiMaterial, GitTriggers, History } from '../cIDetails/types'
 import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, POD_STATUS, Routes } from '../../../../config'
 import { default as AnsiUp } from 'ansi_up'
 import { renderConfigurationError } from '../cdDetails/cd.utils'
 import { STAGE_TYPE } from '../triggerView/types'
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import EmptyState from '../../../EmptyState/EmptyState'
+import { NavLink } from 'react-router-dom'
 
 export const LogResizeButton = ({
     fullScreenView,
@@ -170,32 +175,100 @@ export const LogsRenderer = ({
     )
 }
 
-export const Scroller = React.memo(
-    ({
-        scrollToTop,
-        scrollToBottom,
-        style,
-    }: {
-        scrollToTop: (e: any) => void
-        scrollToBottom: (e: any) => void
-        style: any
-    }): JSX.Element => {
-        return (
-            <div
-                style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-                className="dc__element-scroller"
-            >
-                <Tippy className="default-tt" arrow={false} content="Scroll to Top">
-                    <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
-                        <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
-                    </button>
-                </Tippy>
-                <Tippy className="default-tt" arrow={false} content="Scroll to Bottom">
-                    <button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
-                        <DropDownIcon className="rotate" />
-                    </button>
-                </Tippy>
-            </div>
-        )
-    },
-)
+export const Scroller = ({
+    scrollToTop,
+    scrollToBottom,
+    style,
+}: {
+    scrollToTop: (e: any) => void
+    scrollToBottom: (e: any) => void
+    style: any
+}): JSX.Element => {
+    return (
+        <div
+            style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
+            className="dc__element-scroller"
+        >
+            <Tippy className="default-tt" arrow={false} content="Scroll to Top">
+                <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
+                    <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
+                </button>
+            </Tippy>
+            <Tippy className="default-tt" arrow={false} content="Scroll to Bottom">
+                <button className="flex" disabled={!scrollToBottom} type="button" onClick={scrollToBottom}>
+                    <DropDownIcon className="rotate" />
+                </button>
+            </Tippy>
+        </div>
+    )
+}
+
+export const GitChanges = ({
+    gitTriggers,
+    ciMaterials,
+}: {
+    gitTriggers: Map<number, GitTriggers>
+    ciMaterials: CiMaterial[]
+}) => {
+    return (
+        <div className="flex column left w-100 p-16">
+            {ciMaterials?.map((ciMaterial) => {
+                const gitTrigger = gitTriggers[ciMaterial.id]
+                return gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) ? (
+                    <div
+                        key={gitTrigger?.Commit}
+                        className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                        style={{ width: 'min( 100%, 800px )' }}
+                    >
+                        <GitCommitInfoGeneric
+                            materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
+                            showMaterialInfo={true}
+                            commitInfo={gitTrigger}
+                            materialSourceType={
+                                gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
+                            }
+                            selectedCommitInfo={''}
+                            materialSourceValue={
+                                gitTrigger?.CiConfigureSourceValue
+                                    ? gitTrigger?.CiConfigureSourceValue
+                                    : ciMaterial?.value
+                            }
+                        />
+                    </div>
+                ) : null
+            })}
+        </div>
+    )
+}
+
+export const EmptyView = ({
+    title,
+    subTitle,
+    link,
+    linkText,
+}: {
+    title: string
+    subTitle: string
+    link?: string
+    linkText?: string
+}) => {
+    return (
+        <EmptyState>
+            <EmptyState.Image>
+                <img src={AppNotDeployed} alt="" />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h4>{title}</h4>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
+            {link && (
+                <EmptyState.Button>
+                    <NavLink to={link} className="cta cta--ci-details" target="_blank">
+                        <OpenInNew className="mr-5" />
+                        {linkText}
+                    </NavLink>
+                </EmptyState.Button>
+            )}
+        </EmptyState>
+    )
+}

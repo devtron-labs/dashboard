@@ -1,49 +1,37 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
-import {
-    Progressing,
-    useScrollable,
-    showError,
-    useAsync,
-    useInterval,
-    mapByKey,
-    copyToClipboard,
-    asyncWrap,
-} from '../../../common'
+import { Progressing, useScrollable, showError, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
-import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
-import { CIPipeline, History, GitTriggers, CiMaterial } from './types'
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
-import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import { CIPipeline, History } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
-import EmptyState from '../../../EmptyState/EmptyState'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import Reload from '../../../Reload/Reload'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
-import Tippy from '@tippyjs/react'
 import './ciDetails.scss'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { OptionType } from '../../types'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
-import { LogsRenderer, Scroller, LogResizeButton } from '../cicdHistory/History.components'
+import { LogsRenderer, Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
+import Artifacts from '../cicdHistory/Artifacts'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 export default function CIDetails() {
-    const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
+    const { appId, pipelineId, buildId, envId } = useParams<{
+        appId: string
+        pipelineId: string
+        buildId: string
+        envId: string
+    }>()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
@@ -58,7 +46,7 @@ export default function CIDetails() {
         !!pipelineId,
     )
     const { path } = useRouteMatch()
-    const { pathname } = useLocation()
+    const { replace } = useHistory()
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
@@ -82,11 +70,17 @@ export default function CIDetails() {
         setTriggerHistory(new Map())
     }, [pipelineId])
 
+    useEffect(() => {
+        if (buildId || triggerHistory.size === 0) return
+        const latestBuild = Array.from(triggerHistory)[0][1]
+        console.log(generatePath(path, { buildId: latestBuild.id, appId, pipelineId }))
+        replace(generatePath(path, { buildId: latestBuild.id, appId, pipelineId }))
+    }, [loading, triggerHistoryResult, triggerHistory])
+
     function synchroniseState(triggerId: number, triggerDetails: History) {
         if (triggerId === triggerDetails.id) {
             setTriggerHistory((triggerHistory) => {
                 triggerHistory.set(triggerId, triggerDetails)
-                console.log(triggerHistory)
                 return new Map(triggerHistory)
             })
         }
@@ -119,7 +113,7 @@ export default function CIDetails() {
                     {!fullScreenView && (
                         <Sidebar
                             filterOptions={pipelineOptions}
-                            parentType={STAGE_TYPE.CI}
+                            type="CI"
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
@@ -130,27 +124,50 @@ export default function CIDetails() {
                     {!pipelineId && (
                         <>
                             <div />
-                            <SelectPipelineView />
+                            <EmptyView
+                                title="No pipeline selected"
+                                subTitle="Please select a pipeline to start seeing CI builds."
+                            />
                         </>
                     )}
                     {!!pipeline && (
                         <>
                             <div />
                             {pipeline.parentCiPipeline ? (
-                                <LinkedCIPipelineView pipeline={pipeline} />
+                                <EmptyView
+                                    title="This is a Linked CI Pipeline"
+                                    subTitle="This is a Linked CI Pipeline"
+                                    link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                                    linkText="View Source Pipeline"
+                                />
                             ) : (
-                                !loading && triggerHistory?.size === 0 && <NoTriggersView />
+                                !loading &&
+                                triggerHistory?.size === 0 && (
+                                    <EmptyView
+                                        title="Build pipeline not triggered"
+                                        subTitle="Pipeline trigger history, details and logs will be available here."
+                                    />
+                                )
                             )}
                         </>
                     )}
                     {!!pipelineId && pipelineId === dependencyState[0] && triggerHistory?.size > 0 && (
-                        <Route path={`${path.replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')}/:buildId(\\d+)?`}>
-                            <BuildDetails
+                        <Route path={`${path.replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)').replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}>
+                            {/* <BuildDetails
                                 fullScreenView={fullScreenView}
                                 triggerHistory={triggerHistory}
                                 pipeline={pipeline}
-                                setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
+                                isSecurityModuleInstalled={
+                                    securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
+                                }
+                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
+                            /> */}
+                            <Details
+                                pipeline={pipeline}
+                                fullScreenView={fullScreenView}
+                                synchroniseState={synchroniseState}
+                                triggerHistory={triggerHistory}
                                 isSecurityModuleInstalled={
                                     securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
                                 }
@@ -180,53 +197,14 @@ interface BuildDetails {
     triggerHistory: Map<number, History>
     pipeline: CIPipeline
     fullScreenView: boolean
-    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
-}
-const BuildDetails: React.FC<BuildDetails> = ({
-    triggerHistory,
-    pipeline,
-    fullScreenView,
-    setFullScreenView,
-    synchroniseState,
-    isSecurityModuleInstalled,
-    isBlobStorageConfigured,
-}) => {
-    const { buildId, appId, pipelineId, envId } = useParams<{
-        appId: string
-        envId: string
-        buildId: string
-        pipelineId: string
-    }>()
-
-    const history = useHistory()
-    const { url, path } = useRouteMatch()
-    useEffect(() => {
-        if (buildId) return
-        const lastestBuild = Array.from(triggerHistory)[0][1]
-        history.replace(generatePath(path, { buildId: lastestBuild.id, appId, pipelineId, envId }))
-    }, [buildId])
-
-    if (!buildId) return null
-    return (
-        <Details
-            pipeline={pipeline}
-            fullScreenView={fullScreenView}
-            setFullScreenView={setFullScreenView}
-            synchroniseState={synchroniseState}
-            triggerHistory={triggerHistory}
-            isSecurityModuleInstalled={isSecurityModuleInstalled}
-            isBlobStorageConfigured={isBlobStorageConfigured}
-        />
-    )
 }
 
 const Details: React.FC<BuildDetails> = ({
     pipeline,
     fullScreenView,
-    setFullScreenView,
     synchroniseState,
     triggerHistory,
     isSecurityModuleInstalled,
@@ -244,7 +222,7 @@ const Details: React.FC<BuildDetails> = ({
     ] = useAsync(
         () => getCIHistoricalStatus({ appId, pipelineId, buildId }),
         [pipelineId, buildId, appId],
-        !pipeline?.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
+        !!buildId && !pipeline?.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
@@ -268,7 +246,7 @@ const Details: React.FC<BuildDetails> = ({
     }, [triggerDetails])
     useInterval(reloadTriggerDetails, timeout)
 
-    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
+    if ((triggerDetailsLoading && !triggerDetails) || !buildId) return <Progressing pageLoader />
     if (!triggerDetailsLoading && !triggerDetails) return <Reload />
     if (triggerDetails.id !== +buildId) return null
     return (
@@ -276,7 +254,20 @@ const Details: React.FC<BuildDetails> = ({
             <div className="trigger-details-container">
                 {!fullScreenView && (
                     <>
-                        <TriggerDetails triggerDetails={triggerDetails} type="CI" />
+                        <TriggerDetails
+                            type="CI"
+                            status={triggerDetails.status}
+                            startedOn={triggerDetails.startedOn}
+                            finishedOn={triggerDetails.finishedOn}
+                            triggeredBy={triggerDetails.triggeredBy}
+                            triggeredByEmail={triggerDetails.triggeredByEmail}
+                            ciMaterials={triggerDetails.ciMaterials}
+                            gitTriggers={triggerDetails.gitTriggers}
+                            message={triggerDetails.message}
+                            podStatus={triggerDetails.podStatus}
+                            stage={triggerDetails.stage}
+                            artifact={triggerDetails.artifact}
+                        />
                         <ul className="ml-20 tab-list dc__border-bottom mr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
@@ -348,7 +339,12 @@ const HistoryLogs = React.memo(
         return (
             <div className="trigger-outputs-container">
                 {pipeline?.pipelineType === 'LINKED' ? (
-                    <LinkedCIPipelineView pipeline={pipeline} />
+                    <EmptyView
+                        title="This is a Linked CI Pipeline"
+                        subTitle="This is a Linked CI Pipeline"
+                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                        linkText="View Source Pipeline"
+                    />
                 ) : (
                     <Switch>
                         <Route path={`${path}/logs`}>
@@ -368,7 +364,12 @@ const HistoryLogs = React.memo(
                         </Route>
                         <Route
                             path={`${path}/source-code`}
-                            render={(props) => <GitChanges triggerDetails={triggerDetails} />}
+                            render={(props) => (
+                                <GitChanges
+                                    gitTriggers={triggerDetails.gitTriggers}
+                                    ciMaterials={triggerDetails.ciMaterials}
+                                />
+                            )}
                         />
                         <Route
                             path={`${path}/artifacts`}
@@ -393,202 +394,6 @@ const HistoryLogs = React.memo(
                     </Switch>
                 )}
             </div>
-        )
-    },
-)
-
-export const GitChanges = React.memo(({ triggerDetails }: { triggerDetails: History }) => {
-    return (
-        <div className="flex column left w-100 p-16">
-            {Array.isArray(triggerDetails.ciMaterials) &&
-                triggerDetails.ciMaterials.map((ciMaterial) => (
-                    <MaterialHistory
-                        ciMaterial={ciMaterial}
-                        key={ciMaterial.id}
-                        gitTrigger={triggerDetails.gitTriggers[ciMaterial.id]}
-                    />
-                ))}
-        </div>
-    )
-})
-
-const LinkedCIPipelineView = React.memo(({ pipeline }: { pipeline: CIPipeline }) => {
-    const { pipelineId } = useParams<{ pipelineId: string }>()
-    let link = `${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>This is a Linked CI Pipeline</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>To view logs and build history visit the Source CI Pipeline.</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <NavLink to={link} className="cta cta--ci-details" target="_blank">
-                    <OpenInNew className="mr-5" />
-                    View Source Pipeline
-                </NavLink>
-            </EmptyState.Button>
-        </EmptyState>
-    )
-})
-
-const SelectPipelineView = React.memo((): JSX.Element => {
-    const { pipelineId } = useParams<{ pipelineId: string }>()
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No pipeline selected</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Please select a pipeline to start seeing CI builds.</EmptyState.Subtitle>
-        </EmptyState>
-    )
-})
-
-const NoTriggersView = React.memo((): JSX.Element => {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Build pipeline not triggered</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Pipeline trigger history, details and logs will be available here.
-            </EmptyState.Subtitle>
-        </EmptyState>
-    )
-})
-
-const CIProgressView = React.memo((): JSX.Element => {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <MechanicalOperation />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Building artifacts</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Generated artifact(s) will be available here after the pipeline is executed.
-            </EmptyState.Subtitle>
-        </EmptyState>
-    )
-})
-
-const NoArtifactsView = React.memo((): JSX.Element => {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No artifacts generated</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Errr..!! We couldn’t build your code.</EmptyState.Subtitle>
-        </EmptyState>
-    )
-})
-
-export const Artifacts = React.memo(
-    ({ triggerDetails, getArtifactPromise }: { triggerDetails: History; getArtifactPromise?: () => Promise<any> }) => {
-        const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
-        async function handleArtifact(e) {
-            try {
-                const response = await getArtifactPromise()
-                const b = await (response as any).blob()
-                let a = document.createElement('a')
-                let url = URL.createObjectURL(b)
-                a.href = url
-                a.download = `${buildId || triggerId}.zip`
-                a.click()
-            } catch (err) {
-                showError(err)
-            }
-        }
-        if (triggerDetails.status.toLowerCase() === 'running') return <CIProgressView />
-        if (['failed', 'cancelled'].includes(triggerDetails.status.toLowerCase())) return <NoArtifactsView />
-        return (
-            <div style={{ padding: '16px' }} className="flex left column">
-                <CIListItem type="artifact">
-                    <div className="flex column left">
-                        <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
-                            {triggerDetails.artifact.split(':')[1]}
-                            <Tippy content={'Copy to clipboard'}>
-                                <CopyIcon
-                                    className="pointer dc__visible-hover--child ml-6 icon-dim-16"
-                                    onClick={() =>
-                                        copyToClipboard(triggerDetails.artifact.split(':')[1], () =>
-                                            toast.info('copied to clipboard'),
-                                        )
-                                    }
-                                />
-                            </Tippy>
-                        </div>
-                        <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
-                            {triggerDetails.artifact}
-                            <Tippy content={'Copy to clipboard'}>
-                                <CopyIcon
-                                    className="pointer dc__visible-hover--child ml-6 icon-dim-16"
-                                    onClick={() =>
-                                        copyToClipboard(triggerDetails.artifact, () =>
-                                            toast.info('copied to clipboard'),
-                                        )
-                                    }
-                                />
-                            </Tippy>
-                        </div>
-                    </div>
-                </CIListItem>
-                {triggerDetails.blobStorageEnabled && getArtifactPromise && (
-                    <CIListItem type="report">
-                        <div className="flex column left">
-                            <div className="cn-9 fs-14">Reports.zip</div>
-                            <button
-                                type="button"
-                                onClick={handleArtifact}
-                                className="anchor p-0 cb-5 fs-12 flex left pointer"
-                            >
-                                Download
-                                <Download className="ml-5 icon-dim-16" />
-                            </button>
-                        </div>
-                    </CIListItem>
-                )}
-            </div>
-        )
-    },
-)
-
-const MaterialHistory = React.memo(
-    ({ gitTrigger, ciMaterial }: { gitTrigger: GitTriggers; ciMaterial: CiMaterial }) => {
-        return (
-            gitTrigger &&
-            (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
-                <div
-                    key={gitTrigger?.Commit}
-                    className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
-                    style={{ width: 'min( 100%, 800px )' }}
-                >
-                    <GitCommitInfoGeneric
-                        materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
-                        showMaterialInfo={true}
-                        commitInfo={gitTrigger}
-                        materialSourceType={
-                            gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
-                        }
-                        selectedCommitInfo={''}
-                        materialSourceValue={
-                            gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
-                        }
-                    />
-                </div>
-            )
         )
     },
 )
@@ -653,7 +458,8 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     const severityCount = securityData.severityCount
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
-    if (['failed', 'cancelled'].includes(props.triggerHistory.status.toLowerCase())) return <NoArtifactsView />
+    if (['failed', 'cancelled'].includes(props.triggerHistory.status.toLowerCase()))
+        return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
     if (['starting', 'running'].includes(props.triggerHistory.status.toLowerCase()))
         return <CIRunningView isSecurityTab={true} />
     if (securityData.isLoading) return <Progressing pageLoader />
