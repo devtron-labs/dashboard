@@ -473,7 +473,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleDeploymentAppTypeChange = (event) => {
-        let { pipelineConfig } = { ...this.state }
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig.deploymentAppType = event.target.value
         this.setState({ pipelineConfig })
     }
