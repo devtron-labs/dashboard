@@ -65,6 +65,7 @@ export interface LinkAction {
 }
 
 export interface ConfigureLinkActionType {
+    isFullMode: boolean
     isAppConfigView: boolean
     index: number
     link: LinkAction
@@ -119,6 +120,7 @@ export interface ApplicationFilterType extends AppliedApplicationsType, URLModif
 
 export interface AddExternalLinkType {
     appId: string
+    isFullMode: boolean
     isAppConfigView: boolean
     monitoringTools: OptionTypeWithIcon[]
     clusters: IdentifierOptionType[]
@@ -192,6 +194,7 @@ export interface RoleBasedInfoNoteProps {
 }
 
 export interface IdentifierSelectorProps {
+    isFullMode: boolean
     index: number
     link: LinkAction
     selectedIdentifiers: IdentifierOptionType[]

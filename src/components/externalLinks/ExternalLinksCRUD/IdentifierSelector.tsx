@@ -7,6 +7,7 @@ import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { IdentifierSelectStyles } from '../ExternalLinks.utils'
 
 export default function IdentifierSelector({
+    isFullMode,
     index,
     link,
     selectedIdentifiers,
@@ -30,12 +31,12 @@ export default function IdentifierSelector({
                             <div className="flex left pl-8 pt-6 pb-6" onClick={markOptionAsExternalApp}>
                                 <AddIcon className="icon-dim-16 fcb-5 mr-8" />
                                 <span className="fs-13 fw-4 lh-20 cb-5">
-                                    External helm app ‘{identifierSearchInput}’
+                                    {`${isFullMode ? 'External helm' : 'Helm'} app ‘${identifierSearchInput}’`}
                                 </span>
                             </div>
                         ) : (
                             <div className="cn-5 pl-8 pt-6 pb-6 dc__italic-font-style">
-                                Enter app name for externally deployed helm apps
+                                {`Enter app name for${isFullMode ? ' externally ' : ' '}deployed helm apps`}
                             </div>
                         )}
                     </>
@@ -202,7 +203,7 @@ export default function IdentifierSelector({
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}
                         name={`Link-Applications-${index}`}
-                        placeholder="Select or enter app name"
+                        placeholder={`${isFullMode ? 'Select or enter ' : 'Enter '}app name`}
                         className="basic-multi-select mb-4"
                         classNamePrefix="link-applications__select"
                         onChange={handleOnChange}
@@ -219,6 +220,7 @@ export default function IdentifierSelector({
                             Option: identifierOption,
                             MenuList: identifierMenuList,
                             MultiValueContainer: identifierMultiValueContainer,
+                            ...(!isFullMode && { NoOptionsMessage: () => null }),
                         }}
                         styles={IdentifierSelectStyles}
                     />
