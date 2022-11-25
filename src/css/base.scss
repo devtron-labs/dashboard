@@ -2297,3 +2297,7 @@ textarea::placeholder {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.dc__hover-n50:hover {
+    background-color: var(--N50);
+}
