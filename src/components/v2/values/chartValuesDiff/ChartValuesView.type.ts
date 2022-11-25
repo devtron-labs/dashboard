@@ -3,7 +3,6 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
-import exp from "constants";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -46,8 +45,6 @@ export interface ChartEnvironmentOptionType {
     active?: boolean
 }
 
-
-
 export interface ChartEnvironmentListType {
     label: string
     options: ChartEnvironmentOptionType[]
@@ -79,12 +76,11 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
 }
 
 export interface DeploymentAppSelectorType {
-    commonState,
-    isUpdate,
-    handleDeploymentAppTypeSelection?: (event) => void,
-    isDeployChartView
+    commonState: ChartValuesViewState
+    isUpdate: boolean
+    handleDeploymentAppTypeSelection?: (event) => void
+    isDeployChartView: boolean
 }
-
 
 export interface ChartProjectSelectorType {
     isDeployChartView: boolean
@@ -205,6 +201,7 @@ export interface ChartInstalledConfig {
     referenceValueId: number
     referenceValueKind: string
     valuesSchemaJson?: string
+    deploymentAppType?: string
 }
 
 export interface ChartValuesViewState {
@@ -256,7 +253,7 @@ export interface ChartValuesViewState {
     invalidaEnvironment: boolean
     invalidProject: boolean
     formValidationError: Record<string, boolean>
-    showNoGitOpsWarning: boolean,
+    showNoGitOpsWarning: boolean
     deploymentAppType: string
 }
 
@@ -306,9 +303,8 @@ export enum ChartValuesViewActionTypes {
     deploymentHistoryArr = 'deploymentHistoryArr',
     formValidationError = 'formValidationError',
     multipleOptions = 'multipleOptions',
-    showNoGitOpsWarning= 'showNoGitOpsWarning',
-    selectedDeploymentApp = 'selectedDeploymentApp'
-
+    showNoGitOpsWarning = 'showNoGitOpsWarning',
+    selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
 export enum DeploymentAppType {
@@ -316,9 +312,9 @@ export enum DeploymentAppType {
     GitOps = 'argo_cd',
 }
 
-export enum DeploymentAppTypeNameMapping{
-    HelmKeyValue = "Helm",
-    GitOpsKeyValue = "GitOps"
+export enum DeploymentAppTypeNameMapping {
+    HelmKeyValue = 'Helm',
+    GitOpsKeyValue = 'GitOps',
 }
 
 export interface ChartValuesViewAction {

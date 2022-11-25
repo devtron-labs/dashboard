@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react'
-import {useParams} from 'react-router'
-import ReactSelect, {components} from 'react-select'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router'
+import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
-import {DropdownIndicator, getCommonSelectStyle, Option} from '../../common/ReactSelect.utils'
-import warn, {ReactComponent as Error} from '../../../../assets/icons/ic-warning.svg'
-import {ReactComponent as ErrorExclamation} from '../../../../assets/icons/ic-error-exclamation.svg'
-import {ReactComponent as Refetch} from '../../../../assets/icons/ic-restore.svg'
-import {ReactComponent as Info} from '../../../../assets/icons/ic-info-filled-prple.svg'
-import {ReactComponent as Edit} from '../../../../assets/icons/ic-pencil.svg'
-import {ChartValuesSelect} from '../../../charts/util/ChartValueSelect'
-import {ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError} from '../../../common'
+import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
+import warn, { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
+import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
+import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
+import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
 import {
     AppNameInputType,
     ChartEnvironmentSelectorType,
@@ -29,21 +29,21 @@ import {
     DeploymentAppSelectorType,
     DeploymentAppType,
     DeploymentAppTypeNameMapping,
-    ValueNameInputType
-} from "./ChartValuesView.type";
-import {getChartsByKeyword, getChartValues} from '../../../charts/charts.service'
+    ValueNameInputType,
+} from './ChartValuesView.type'
+import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
-import {NavLink} from 'react-router-dom'
-import {Moment12HourFormat, URLS} from '../../../../config'
+import { NavLink } from 'react-router-dom'
+import { Moment12HourFormat, URLS } from '../../../../config'
 import Tippy from '@tippyjs/react'
-import {MarkDown} from '../../../charts/discoverChartDetail/DiscoverChartDetails'
+import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import moment from 'moment'
-import {getDeploymentManifestDetails} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
-import {RadioGroup, RadioGroupItem} from "../../../common/formFields/RadioGroup";
-import {ReactComponent as ArgoCD} from "../../../../assets/icons/argo-cd-app.svg";
-import {ReactComponent as Helm} from "../../../../assets/icons/helm-app.svg";
+import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
+import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
+import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -64,8 +64,8 @@ export const ChartEnvironmentSelector = ({
                     {installedAppInfo
                         ? installedAppInfo.environmentName
                         : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
-                        '__' +
-                        releaseInfo.deployedAppDetail.environmentDetail.namespace}
+                          '__' +
+                          releaseInfo.deployedAppDetail.environmentDetail.namespace}
                 </span>
             ) : (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">{selectedEnvironment.label}</span>
@@ -89,7 +89,6 @@ export const ChartEnvironmentSelector = ({
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
         </div>
-
     )
 }
 
@@ -97,20 +96,21 @@ export const DeploymentAppSelector = ({
     commonState,
     isUpdate,
     handleDeploymentAppTypeSelection,
-    isDeployChartView
+    isDeployChartView,
 }: DeploymentAppSelectorType): JSX.Element => {
-
     return !isDeployChartView ? (
-        <div className={"chart-values__deployment_container"}>
+        <div className={'chart-values__deployment_container'}>
             <h2 className="chart-values__deployment_container fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
-            <span className="chart-values__deployment fs-13 fw-6  cn-9 md-6 chart-values__deployment-label ">
-                {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm ? DeploymentAppTypeNameMapping.HelmKeyValue  : DeploymentAppTypeNameMapping.GitOpsKeyValue}
+            <span className="chart-values__deployment fs-13 fw-6  cn-9 md-6 ">
+                {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
+                    ? DeploymentAppTypeNameMapping.HelmKeyValue
+                    : DeploymentAppTypeNameMapping.GitOpsKeyValue}
             </span>
-            <span className={"chart-values__deployment_container"}>
+            <span className={'chart-values__deployment_container '}>
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
-                    <ArgoCD className="icon-dim-24 ml-6 chart-values__deployment_tooltip " />
+                    <ArgoCD className="icon-dim-24 ml-6 abs dc__position-abs" />
                 ) : (
-                    <Helm className="icon-dim-24 ml-6 chart-values__deployment_tooltip  " />
+                    <Helm className="icon-dim-24 ml-6  dc__position-abs" />
                 )}
             </span>
         </div>
@@ -120,19 +120,16 @@ export const DeploymentAppSelector = ({
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
                 </label>
-                <p className="chart-values-deployment_error__wrapper" > Cannot be changed after deployment </p>
+                <p className="fs-12px cr-5"> Cannot be changed after deployment </p>
                 <RadioGroup
                     value={commonState.deploymentAppType}
                     name="DeploymentAppTypeGroup"
                     onChange={handleDeploymentAppTypeSelection}
                     disabled={isUpdate}
                 >
-
-
                     <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
 
                     <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
-
                 </RadioGroup>
             </div>
         </div>
@@ -291,8 +288,9 @@ export const ChartRepoSelector = ({
                         content="Fetch latest charts from connected chart repositories"
                     >
                         <span
-                            className={`refetch-charts cb-5 cursor dc__underline-onhover ${refetchingCharts ? 'refetching' : ''
-                                }`}
+                            className={`refetch-charts cb-5 cursor dc__underline-onhover ${
+                                refetchingCharts ? 'refetching' : ''
+                            }`}
                             onClick={refetchCharts}
                         >
                             {refetchingCharts ? <Refetch className="icon-dim-20" /> : 'Refetch Charts'}
@@ -683,10 +681,10 @@ export const ChartValuesEditor = ({
                     (deploymentHistoryOptionsList.length > 0
                         ? deploymentHistoryOptionsList[0]
                         : deployedChartValues.length > 0
-                            ? deployedChartValues[0]
-                            : presetChartValues.length > 0
-                                ? presetChartValues[0]
-                                : defaultChartValues[0]),
+                        ? deployedChartValues[0]
+                        : presetChartValues.length > 0
+                        ? presetChartValues[0]
+                        : defaultChartValues[0]),
             })
         }
     }, [chartValuesList, deploymentHistoryList, selectedChartValues])
@@ -792,8 +790,8 @@ export const ChartValuesEditor = ({
                     (valuesForDiffState.deploymentHistoryOptionsList.length > 0
                         ? valuesForDiffState.deploymentHistoryOptionsList[0]
                         : valuesForDiffState.deployedChartValues.length > 0
-                            ? valuesForDiffState.deployedChartValues[0]
-                            : valuesForDiffState.defaultChartValues[0]),
+                        ? valuesForDiffState.deployedChartValues[0]
+                        : valuesForDiffState.defaultChartValues[0]),
             })
         }
     }, [comparisonView])
@@ -819,8 +817,9 @@ export const ChartValuesEditor = ({
 
     return (
         <div
-            className={`code-editor-container ${showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
-                }`}
+            className={`code-editor-container ${
+                showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
+            }`}
         >
             {comparisonView && (
                 <div className="code-editor__header chart-values-view__diff-view-header">
@@ -1104,8 +1103,9 @@ export const UpdateApplicationButton = ({
             type="button"
             tabIndex={6}
             disabled={isUpdateInProgress || isDeleteInProgress}
-            className={`chart-values-view__update-cta cta ${isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
-                }`}
+            className={`chart-values-view__update-cta cta ${
+                isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
+            }`}
             onClick={() => {
                 deployOrUpdateApplication(false)
             }}
@@ -1116,8 +1116,8 @@ export const UpdateApplicationButton = ({
                         {isCreateValueView
                             ? `Saving ${chartValueId !== '0' ? 'changes' : 'value'}`
                             : isDeployChartView
-                                ? 'Deploying chart'
-                                : 'Updating and deploying'}
+                            ? 'Deploying chart'
+                            : 'Updating and deploying'}
                     </span>
                     <span className="ml-10">
                         <Progressing />

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeploymentAppType, TriggerType, ViewType } from '../../config'
+import { TriggerType, ViewType } from '../../config'
 import { ServerErrors } from '../../modals/commonTypes'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
@@ -48,7 +48,7 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import { pipe } from "rxjs";
+import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -105,7 +105,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
-                deploymentAppType: DeploymentAppType.Helm
+                deploymentAppType: DeploymentAppType.Helm,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -168,7 +168,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                         },
                                     })
                                 })
-                                .catch((error) => { })
+                                .catch((error) => {})
                             getEnvironmentListMinPublic()
                                 .then((response) => {
                                     let list = response.result || []
@@ -289,7 +289,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             runPreStageInEnv: pipelineConfigFromRes.runPreStageInEnv || false,
             runPostStageInEnv: pipelineConfigFromRes.runPostStageInEnv || false,
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
-            deploymentAppType: pipelineConfigFromRes.deploymentAppType || ''
+            deploymentAppType: pipelineConfigFromRes.deploymentAppType || '',
         }
         this.preStage = pipelineConfigFromRes.preStage.config || ''
         this.postStage = pipelineConfigFromRes.postStage.config || ''
@@ -467,7 +467,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleTriggerChange = (event) => {
-        let { pipelineConfig } = { ...this.state }
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig.triggerType = event.target.value
         this.setState({ pipelineConfig })
     }
@@ -497,13 +497,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
-            } catch (error) { }
+            } catch (error) {}
         } else {
             yamlStr = event.target.value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
-            } catch (error) { }
+            } catch (error) {}
         }
         let state = { ...this.state }
         let strategies = this.state.pipelineConfig.strategies.map((strategy) => {
@@ -540,7 +540,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             deploymentTemplate:
                 this.state.pipelineConfig.strategies.length > 0
                     ? this.state.pipelineConfig.strategies.find((savedStrategy) => savedStrategy.default)
-                        .deploymentTemplate
+                          .deploymentTemplate
                     : null,
             strategies: this.state.pipelineConfig.strategies.map((savedStrategy) => {
                 return {
@@ -880,8 +880,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         onChange={
                             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                                 ? (resp) => {
-                                    this.handleStageConfigChange(resp, key, 'config')
-                                }
+                                      this.handleStageConfigChange(resp, key, 'config')
+                                  }
                                 : null
                         }
                     >
@@ -963,9 +963,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderDeploymentAppType() {
         return (
             <div className="form__row">
-                <label className="form__label form__label--sentence dc__bold">
-                    How do you want to deploy?
-                </label>
+                <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <RadioGroup
                     value={this.state.pipelineConfig.deploymentAppType}
                     name="deployment-app-type"
@@ -1248,9 +1246,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         })
         let strategy = this.state.pipelineConfig.strategies[0]
             ? {
-                label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-                value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-            }
+                  label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+                  value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+              }
             : undefined
         return (
             <>

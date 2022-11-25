@@ -40,7 +40,8 @@ import {
     UpdateApplicationButton,
     AppNameInput,
     ErrorScreenWithInfo,
-    ValueNameInput, DeploymentAppSelector,
+    ValueNameInput,
+    DeploymentAppSelector,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -102,13 +103,13 @@ function ChartValuesView({
             selectedVersionFromParent,
             presetValueId
                 ? {
-                    ...chartValuesFromParent,
-                    id: +presetValueId,
-                    kind: ChartKind.TEMPLATE,
-                }
+                      ...chartValuesFromParent,
+                      id: +presetValueId,
+                      kind: ChartKind.TEMPLATE,
+                  }
                 : chartValuesFromParent,
             installedConfigFromParent,
-            chartVersionsDataFromParent
+            chartVersionsDataFromParent,
         ),
     )
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
@@ -124,7 +125,7 @@ function ChartValuesView({
                     payload: true,
                 })
             }
-        } catch (error) { }
+        } catch (error) {}
     }
 
     useEffect(() => {
@@ -266,7 +267,7 @@ function ChartValuesView({
                         payload: _deploymentHistoryArr,
                     })
                 })
-                .catch((e) => { })
+                .catch((e) => {})
         }
     }, [])
 
@@ -382,8 +383,8 @@ function ChartValuesView({
         ) {
             const appStoreApplicationVersionId =
                 commonState.manifestGenerationKey &&
-                    commonState.selectedVersionUpdatePage &&
-                    !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage.id)
+                commonState.selectedVersionUpdatePage &&
+                !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage.id)
                     ? commonState.selectedVersionUpdatePage.id
                     : commonState.chartValues?.appStoreVersionId || commonState.chartValues?.id
 
@@ -554,7 +555,7 @@ function ChartValuesView({
                 ((!commonState.installedAppInfo && !!commonState.repoChartValue.chartRepoName) ||
                     (commonState.installedAppInfo &&
                         commonState.installedAppInfo.appStoreChartRepoName !==
-                        commonState.repoChartValue.chartRepoName))) ||
+                            commonState.repoChartValue.chartRepoName))) ||
                 (!isExternalApp && commonState.installedConfig.appStoreId !== commonState.repoChartValue.chartId))
         )
     }
@@ -710,7 +711,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
-                    deploymentAppType: commonState.deploymentAppType
+                    deploymentAppType: commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -867,8 +868,9 @@ function ChartValuesView({
     const renderReadMeOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${commonState.openReadMe ? 'opened' : ''
-                    } ${disabled ? 'disabled' : ''}`}
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
+                    commonState.openReadMe ? 'opened' : ''
+                } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleReadMeOptionClick(disabled)}
             >
                 {commonState.openReadMe ? (
@@ -900,8 +902,9 @@ function ChartValuesView({
     const renderComparisonOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 mr-8 ${commonState.openComparison ? 'opened' : ''
-                    } ${disabled ? 'disabled' : ''}`}
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 mr-8 ${
+                    commonState.openComparison ? 'opened' : ''
+                } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleComparisonOptionClick(disabled)}
             >
                 {commonState.openComparison ? (
@@ -912,8 +915,8 @@ function ChartValuesView({
                 {commonState.activeTab === 'manifest'
                     ? 'Compare with deployed'
                     : commonState.openComparison
-                        ? 'Hide comparison'
-                        : 'Compare values'}
+                    ? 'Hide comparison'
+                    : 'Compare values'}
             </span>
         )
     }
@@ -927,9 +930,9 @@ function ChartValuesView({
                     presetValueId || isCreateValueView
                         ? 'yaml'
                         : (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-                            !!commonState.installedConfig?.valuesSchemaJson
-                            ? 'gui'
-                            : 'yaml'
+                          !!commonState.installedConfig?.valuesSchemaJson
+                        ? 'gui'
+                        : 'yaml'
                 }
                 disabled={false}
                 onChange={handleTabSwitch}
@@ -959,8 +962,8 @@ function ChartValuesView({
             return isCreateValueView
                 ? 'Compare values with other values of this chart'
                 : isDeployChartView
-                    ? 'Compare values with other deployments of this chart'
-                    : 'Compare values with previous deployments of this app or other deployments of this chart'
+                ? 'Compare values with other deployments of this chart'
+                : 'Compare values with previous deployments of this app or other deployments of this chart'
         }
 
         return (
@@ -1047,9 +1050,8 @@ function ChartValuesView({
     const handleDeploymentAppTypeSelection = (event) => {
         dispatch({
             type: ChartValuesViewActionTypes.selectedDeploymentApp,
-            payload: event.target.value
+            payload: event.target.value,
         })
-
     }
 
     const handleVersionSelection = (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
@@ -1107,8 +1109,9 @@ function ChartValuesView({
     const renderChartValuesEditor = () => {
         return (
             <div
-                className={`chart-values-view__editor ${commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
-                    }`}
+                className={`chart-values-view__editor ${
+                    commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
+                }`}
             >
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <ErrorScreenWithInfo info={commonState.valuesEditorError} />
@@ -1183,9 +1186,11 @@ function ChartValuesView({
     const renderData = () => {
         return (
             <div
-                className={`chart-values-view__container bcn-0 ${isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
-                    } ${commonState.openReadMe ? 'readmeOpened' : ''} ${commonState.openComparison ? 'comparisonOpened' : ''
-                    }`}
+                className={`chart-values-view__container bcn-0 ${
+                    isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
+                } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
+                    commonState.openComparison ? 'comparisonOpened' : ''
+                }`}
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />
@@ -1223,31 +1228,26 @@ function ChartValuesView({
                             )}
                         {(isDeployChartView ||
                             (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
-                                <ChartEnvironmentSelector
-                                    isExternal={isExternalApp}
-                                    isDeployChartView={isDeployChartView}
-                                    installedAppInfo={commonState.installedAppInfo}
-                                    releaseInfo={commonState.releaseInfo}
-                                    isUpdate={!!isUpdate}
-                                    selectedEnvironment={commonState.selectedEnvironment}
-                                    handleEnvironmentSelection={handleEnvironmentSelection}
-                                    environments={commonState.environments}
-                                    invalidaEnvironment={commonState.invalidaEnvironment}
-                                />
-
-                            )
-                        }
-                        {
-                            (!window._env_.HIDE_GITOPS_OR_HELM_OPTION) && (
-                                <DeploymentAppSelector
-                                    commonState={commonState}
-                                    isUpdate={isUpdate}
-                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
-                                    isDeployChartView={isDeployChartView}
-
-                                />
-                            )
-                        }
+                            <ChartEnvironmentSelector
+                                isExternal={isExternalApp}
+                                isDeployChartView={isDeployChartView}
+                                installedAppInfo={commonState.installedAppInfo}
+                                releaseInfo={commonState.releaseInfo}
+                                isUpdate={!!isUpdate}
+                                selectedEnvironment={commonState.selectedEnvironment}
+                                handleEnvironmentSelection={handleEnvironmentSelection}
+                                environments={commonState.environments}
+                                invalidaEnvironment={commonState.invalidaEnvironment}
+                            />
+                        )}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
+                            <DeploymentAppSelector
+                                commonState={commonState}
+                                isUpdate={isUpdate}
+                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                isDeployChartView={isDeployChartView}
+                            />
+                        )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {!isDeployChartView && (
                             <ChartRepoSelector
@@ -1262,27 +1262,27 @@ function ChartValuesView({
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
                             commonState.repoChartValue?.chartRepoName) && (
-                                <ChartVersionValuesSelector
-                                    isUpdate={isUpdate}
-                                    selectedVersion={commonState.selectedVersion}
-                                    selectedVersionUpdatePage={commonState.selectedVersionUpdatePage}
-                                    handleVersionSelection={handleVersionSelection}
-                                    chartVersionsData={commonState.chartVersionsData}
-                                    chartVersionObj={commonState.chartVersionsData.find(
-                                        (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
-                                    )}
-                                    chartValuesList={chartValuesList}
-                                    chartValues={commonState.chartValues}
-                                    redirectToChartValues={redirectToChartValues}
-                                    handleChartValuesSelection={handleChartValuesSelection}
-                                    hideVersionFromLabel={
-                                        isExternalApp &&
-                                        !commonState.installedAppInfo &&
-                                        commonState.chartValues.kind === ChartKind.EXISTING
-                                    }
-                                    hideCreateNewOption={isCreateValueView}
-                                />
-                            )}
+                            <ChartVersionValuesSelector
+                                isUpdate={isUpdate}
+                                selectedVersion={commonState.selectedVersion}
+                                selectedVersionUpdatePage={commonState.selectedVersionUpdatePage}
+                                handleVersionSelection={handleVersionSelection}
+                                chartVersionsData={commonState.chartVersionsData}
+                                chartVersionObj={commonState.chartVersionsData.find(
+                                    (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
+                                )}
+                                chartValuesList={chartValuesList}
+                                chartValues={commonState.chartValues}
+                                redirectToChartValues={redirectToChartValues}
+                                handleChartValuesSelection={handleChartValuesSelection}
+                                hideVersionFromLabel={
+                                    isExternalApp &&
+                                    !commonState.installedAppInfo &&
+                                    commonState.chartValues.kind === ChartKind.EXISTING
+                                }
+                                hideCreateNewOption={isCreateValueView}
+                            />
+                        )}
                         {!isDeployChartView && chartValueId !== '0' && (
                             <DeleteApplicationButton
                                 type={isCreateValueView ? 'preset value' : 'Application'}

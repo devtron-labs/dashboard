@@ -93,24 +93,10 @@
         }
     }
 
-    .chart-values-deployment_error__wrapper{
+    .chart-values-deployment_error__wrapper {
         font-size: 12px;
         color: var(--R500);
     }
-
-    .chart-value-deployment_heading{
-        margin-bottom: 0px;
-    }
-
-     .chart-values__deployment-label {
-        margin: 0 0 0px;
-        padding: 0 0 0px ;
-     }
-
-    .chart-values__deployment_tooltip {
-        position: absolute;
-    }
-
 
     .chart-values-view__wrapper {
         display: grid;
@@ -145,7 +131,6 @@
                 margin: 0 0 4px;
                 padding: 0;
             }
-
 
             .refetch-charts {
                 &.refetching {
