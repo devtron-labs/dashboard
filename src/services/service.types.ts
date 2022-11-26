@@ -89,6 +89,7 @@ export interface AppEnvironment {
     infraMetrics: boolean;
     prod: boolean;
     chartRefId?: number
+    lastDeployed?: string
 }
 
 export interface AppOtherEnvironment extends ResponseType {

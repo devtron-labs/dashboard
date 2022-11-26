@@ -231,6 +231,16 @@ a:focus {
     word-break: break-all;
 }
 
+.dc__word-break {
+    word-break: break-word;
+}
+
+.dc__hyphens-auto {
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -1582,6 +1592,10 @@ button.anchor {
     align-items: flex-start !important;
 }
 
+.dc__align-items-center {
+    align-items: center !important;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -1815,7 +1829,8 @@ button.anchor {
 }
 
 input,
-textarea {
+textarea,
+.bc-n50 {
     background-color: var(--N50);
 }
 
@@ -2053,6 +2068,10 @@ textarea {
     height: 22px !important;
 }
 
+.h-24 {
+    height: 24px !important;
+}
+
 .h-28 {
     height: 28px !important;
 }
@@ -2137,6 +2156,10 @@ textarea {
 
 .lh-22 {
     line-height: 22px;
+}
+
+.lh-24 {
+    line-height: 24px;
 }
 
 .lh-28 {
@@ -2246,6 +2269,10 @@ textarea {
 
 .dc__column-gap-24 {
     column-gap: 24px;
+}
+
+.dc__gap-8 {
+    gap: 8px;
 }
 
 .dc__flip-180 {

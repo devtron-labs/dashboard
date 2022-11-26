@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import { Teams } from '../../services/service.types';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -376,4 +377,27 @@ export interface CreateAppLabelsRequest {
     id: number
     labels: { key: string; value: string }[]
     teamId: number
+}
+
+export interface LabelTagsType {
+    tags: OptionType[]
+    inputTagValue: string
+    tagError: string
+}
+
+export interface AppOverviewProps {
+    appMetaInfo: AppMetaInfo
+    getAppMetaInfoRes: () => Promise<AppMetaInfo>
+}
+
+export interface AboutAppInfoModalProps {
+    isLoading: boolean
+    appId: string
+    isChangeProjectView: boolean
+    onClose: () => void
+    appMetaInfo: AppMetaInfo
+    currentLabelTags: LabelTagsType
+    getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    fetchingProjects: boolean
+    projectsList: Teams[]
 }
