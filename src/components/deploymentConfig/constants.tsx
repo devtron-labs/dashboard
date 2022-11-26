@@ -65,7 +65,7 @@ export const BASIC_FIELDS = {
     CPU: 'cpu',
     MEMORY: 'memory',
     ENV_VARIABLES: 'envVariables',
-    KEY: 'key',
+    NAME: 'name',
     VALUE: 'value',
 }
 
