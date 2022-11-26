@@ -166,9 +166,9 @@ export default function GitCommitInfoGeneric({
                 />
             )}
 
-            {!_isWebhook && _lowerCaseCommitInfo.commit && (
+            {!_isWebhook && (
                 <>
-                    <div className="ml-16 mr-16 flex dc__content-space">
+                    {_lowerCaseCommitInfo.commit && <div className="ml-16 mr-16 flex dc__content-space">
                         {_commitUrl ? (
                             <a
                                 href={_commitUrl}
@@ -189,7 +189,7 @@ export default function GitCommitInfoGeneric({
                                 {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
                             </div>
                         ) : null}
-                    </div>
+                    </div>}
                     {_lowerCaseCommitInfo.author ? (
                         <div className="material-history__text flex left">
                             <PersonIcon className="icon-dim-16 mr-8" /> {_lowerCaseCommitInfo.author}

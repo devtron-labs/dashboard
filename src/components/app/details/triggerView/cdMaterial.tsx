@@ -151,7 +151,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }
 
                     return (
-                            _gitCommit && (_gitCommit.Commit || _gitCommit.WebhookData?.Data) && (
+                            (_gitCommit.WebhookData?.Data ||
+                              _gitCommit.Author ||
+                              _gitCommit.Message ||
+                              _gitCommit.Date ||
+                              _gitCommit.Commit
+                          ) && (
                                 <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                     <GitCommitInfoGeneric
                                         materialUrl={mat.url}
@@ -351,88 +356,102 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderMaterial() {
         const materialList =
             this.state.isRollbackTrigger && this.state.showOlderImages ? [this.props.material[0]] : this.props.material
+
         return materialList.map((mat, index) => {
-            return (
-                <div
-                    key={`material-history-${index}`}
-                    className={`material-history material-history--cd ${
-                        mat.isSelected ? 'material-history-selected' : ''
-                    }`}
-                >
-                    {this.renderSequentialCDCardTitle(mat)}
-                    <div
-                        className={`material-history__top mh-66 ${
-                            !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-                        }`}
-                        style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            if (!mat.vulnerable) {
-                                this.handleImageSelection(index, mat)
-                            }
-                        }}
-                    >
-                        {this.renderMaterialInfo(mat)}
-                    </div>
-                    {mat.showSourceInfo && (
-                        <>
-                            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
-                                <ul className="tab-list tab-list--vulnerability">
-                                    <li className="tab-list__tab">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
-                                            }}
-                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                mat.tab === CDModalTab.Changes ? 'active' : ''
-                                            }`}
-                                        >
-                                            Changes
-                                        </button>
-                                    </li>
-                                    <li className="tab-list__tab">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
-                                            }}
-                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                mat.tab === CDModalTab.Security ? 'active' : ''
-                                            }`}
-                                        >
-                                            Security
-                                            {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
-                                        </button>
-                                    </li>
-                                </ul>
-                            )}
-                            {mat.tab === CDModalTab.Changes
-                                ? this.renderGitMaterialInfo(mat.materialInfo)
-                                : this.renderVulnerabilities(mat)}
-                        </>
-                    )}
-                    {mat.materialInfo.length > 0 && (
-                        <button
-                            type="button"
-                            className="material-history__changes-btn"
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                this.props.toggleSourceInfo(index)
-                            }}
-                        >
-                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                            <img
-                                src={arrow}
-                                alt=""
-                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                            />
-                        </button>
-                    )}
-                </div>
-            )
+          let isMaterialInfoAvailable = true
+          for (const materialInfo of mat.materialInfo) {
+              isMaterialInfoAvailable =
+                  isMaterialInfoAvailable &&
+                  !!(
+                      materialInfo.webhookData ||
+                      materialInfo.author ||
+                      materialInfo.message ||
+                      materialInfo.modifiedTime ||
+                      materialInfo.revision
+                  )
+              if (!isMaterialInfoAvailable) break
+          }
+          return (
+              <div
+                  key={`material-history-${index}`}
+                  className={`material-history material-history--cd ${
+                      mat.isSelected ? 'material-history-selected' : ''
+                  }`}
+              >
+                  {this.renderSequentialCDCardTitle(mat)}
+                  <div
+                      className={`material-history__top mh-66 ${
+                          !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
+                      }`}
+                      style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+                      onClick={(event) => {
+                          event.stopPropagation()
+                          if (!mat.vulnerable) {
+                              this.handleImageSelection(index, mat)
+                          }
+                      }}
+                  >
+                      {this.renderMaterialInfo(mat)}
+                  </div>
+                  {mat.showSourceInfo && (
+                      <>
+                          {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
+                              <ul className="tab-list tab-list--vulnerability">
+                                  <li className="tab-list__tab">
+                                      <button
+                                          type="button"
+                                          onClick={(e) => {
+                                              e.stopPropagation()
+                                              this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
+                                          }}
+                                          className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                              mat.tab === CDModalTab.Changes ? 'active' : ''
+                                          }`}
+                                      >
+                                          Changes
+                                      </button>
+                                  </li>
+                                  <li className="tab-list__tab">
+                                      <button
+                                          type="button"
+                                          onClick={(e) => {
+                                              e.stopPropagation()
+                                              this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
+                                          }}
+                                          className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                              mat.tab === CDModalTab.Security ? 'active' : ''
+                                          }`}
+                                      >
+                                          Security
+                                          {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
+                                      </button>
+                                  </li>
+                              </ul>
+                          )}
+                          {mat.tab === CDModalTab.Changes
+                              ? this.renderGitMaterialInfo(mat.materialInfo)
+                              : this.renderVulnerabilities(mat)}
+                      </>
+                  )}
+                  {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
+                      <button
+                          type="button"
+                          className="material-history__changes-btn"
+                          onClick={(event) => {
+                              event.stopPropagation()
+                              this.props.toggleSourceInfo(index)
+                          }}
+                      >
+                          {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                          <img
+                              src={arrow}
+                              alt=""
+                              style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                          />
+                      </button>
+                  )}
+              </div>
+          )
         })
     }
 
