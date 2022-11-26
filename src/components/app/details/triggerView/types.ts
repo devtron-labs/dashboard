@@ -145,7 +145,7 @@ export interface NodeAttr {
     isGitSource: boolean
     isRoot: boolean
     downstreams: string[]
-    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD'
+    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD' | 'WEBHOOK'
     parentCiPipeline?: number
     parentAppId?: number
     url?: string
@@ -260,6 +260,7 @@ export interface WorkflowType {
     height: number
     nodes: NodeAttr[]
     dag: any
+    showTippy?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -326,6 +327,22 @@ export interface ApplicationConditionResponse {
 export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
+    WEBHOOK = 'WEBHOOK'
+}
+
+export enum CIPipelineNodeType {
+  EXTERNAL_CI ='EXTERNAL-CI',
+  CI='CI',
+  LINKED_CI='LINKED-CI'
+}
+
+export enum WorkflowNodeType {
+    GIT= 'GIT',
+    CI = 'CI',
+    WEBHOOK = 'WEBHOOK',
+    PRE_CD = 'PRECD',
+    CD = 'CD',
+    POST_CD = 'POSTCD',
 }
 
 export interface Task {
