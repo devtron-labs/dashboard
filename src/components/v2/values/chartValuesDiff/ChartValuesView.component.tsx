@@ -99,20 +99,22 @@ export const DeploymentAppSelector = ({
     isDeployChartView,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
-        <div className={'chart-values__deployment_container'}>
-            <h2 className="chart-values__deployment_container fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
-            <span className="chart-values__deployment fs-13 fw-6  cn-9 md-6 ">
+        <div className="chart-values__deployment-type">
+            <h2 className="fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+            <div className="flex left">
+            <span className="fs-13 fw-6  cn-9 md-6 ">
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
                     ? DeploymentAppTypeNameMapping.HelmKeyValue
                     : DeploymentAppTypeNameMapping.GitOpsKeyValue}
             </span>
-            <span className={'chart-values__deployment_container '}>
+            <span>
                 {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
-                    <ArgoCD className="icon-dim-24 ml-6 abs dc__position-abs" />
+                    <ArgoCD className="icon-dim-24 ml-6" />
                 ) : (
-                    <Helm className="icon-dim-24 ml-6  dc__position-abs" />
+                    <Helm className="icon-dim-24 ml-6" />
                 )}
             </span>
+                </div>
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">

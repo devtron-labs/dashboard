@@ -76,7 +76,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     appStoreId = 0,
     chartIdFromDeploymentDetail = 0,
     installedAppVersionId = 0,
-    deploymentAppType = DeploymentAppType.GitOps,
+    deploymentAppType = DeploymentAppType.Helm,
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: '' },
     ...rest
 }) => {
