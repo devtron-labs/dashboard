@@ -22,6 +22,7 @@ export const Routes = {
     CLUSTER: 'cluster',
 
     CD_CONFIG: 'app/cd-pipeline',
+    EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
     RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
@@ -90,6 +91,7 @@ export const Routes = {
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
     API_TOKEN: 'api-token',
+    API_TOKEN_WEBHOOK: 'api-token/webhook',
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',
@@ -276,6 +278,7 @@ export const DOCUMENTATION = {
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
+    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
