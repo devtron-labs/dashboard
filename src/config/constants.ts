@@ -212,7 +212,7 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
-    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
 }
 
@@ -278,7 +278,8 @@ export const DOCUMENTATION = {
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
-    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`
+    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
+    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.5`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -629,3 +630,6 @@ export enum AppDetailsErrorType {
     ERRIMAGEPULL = 'errimagepull',
     IMAGEPULLBACKOFF = 'imagepullbackoff',
 }
+
+export const DEPRECATED_EXTERNAL_CI_MESSAGE =
+    'This pipeline uses a deprecated method to receive docker image from external build services, new images will no longer be available for deployment.'
