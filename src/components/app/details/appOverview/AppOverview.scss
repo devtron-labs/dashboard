@@ -17,6 +17,18 @@
                 grid-auto-rows: 36px;
             }
         }
+
+        .tags-icon {
+            path {
+                &:first-of-type {
+                    stroke: var(--N900);
+                }
+
+                &:last-of-type {
+                    fill: var(--N900);
+                }
+            }
+        }
     }
 }
 

@@ -145,7 +145,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
                     <div className="flex left fs-14 fw-6 lh-20 cn-9">
-                        <TagIcon className="icon-dim-20 mr-8" />
+                        <TagIcon className="tags-icon icon-dim-20 mr-8" />
                         Tags
                     </div>
                     <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
