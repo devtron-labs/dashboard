@@ -639,5 +639,9 @@ export enum AppDetailsErrorType {
     IMAGEPULLBACKOFF = 'imagepullbackoff',
 }
 
-export const DEPRECATED_EXTERNAL_CI_MESSAGE =
-    'This pipeline uses a deprecated method to receive docker image from external build services, new images will no longer be available for deployment.'
+export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
+  LINE_ONE: 'This pipeline uses a deprecated method to receive docker images from external build services, new images will no longer be available for deployment.',
+  LINE_TWO: 'Deprecated pipelines will be deleted by the next Devtron update.',
+  DOC_LINK_TEXT: 'Refer documentation',
+  LINE_THREE:  'to learn how to receive images from authenticated sources.'
+}

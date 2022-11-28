@@ -7,12 +7,12 @@ export default function DeprecatedPipelineWarning() {
     const ExternalSecretHelpNote = () => {
         return (
             <div className="fs-13 fw-4 lh-18">
-                {DEPRECATED_EXTERNAL_CI_MESSAGE}
+                {`${DEPRECATED_EXTERNAL_CI_MESSAGE.LINE_ONE} ${DEPRECATED_EXTERNAL_CI_MESSAGE.LINE_TWO}`}
                 <br />
                 <a className="dc__link" href={DOCUMENTATION.WEBHOOK_CI} rel="noreferrer noopener" target="_blank">
-                    Refer documentation
+                    ${DEPRECATED_EXTERNAL_CI_MESSAGE.DOC_LINK_TEXT}
                 </a>
-                &nbsp;to learn how to recieve images from authenticated sources.
+                &nbsp;{DEPRECATED_EXTERNAL_CI_MESSAGE.LINE_THREE}
             </div>
         )
     }
