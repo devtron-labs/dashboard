@@ -1274,7 +1274,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.showDeploymentStage ? (
                     <>
                         {this.renderEnvNamespaceAndTriggerType()}
-                        {this.renderDeploymentStrategy()}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </>
