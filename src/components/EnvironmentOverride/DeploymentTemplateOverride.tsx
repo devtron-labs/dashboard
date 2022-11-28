@@ -277,21 +277,6 @@ export default function DeploymentTemplateOverride({
         }
 
         const statesToUpdate = {}
-
-        if (!_isBasicViewLocked) {
-            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
-            if (
-                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
-                !_basicFieldValues[BASIC_FIELDS.PORT] ||
-                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
-                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
-            ) {
-                _isBasicViewLocked = true
-            } else {
-                statesToUpdate['basicFieldValues'] = _basicFieldValues
-                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
-            }
-        }
         if (!state.currentViewEditor || !state.duplicate) {
             _currentViewEditor =
                 _isBasicViewLocked ||
@@ -304,6 +289,24 @@ export default function DeploymentTemplateOverride({
             statesToUpdate['currentViewEditor'] = _currentViewEditor
             statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
         }
+
+        if (!_isBasicViewLocked) {
+            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
+            if (
+                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+            ) {
+              statesToUpdate['yamlMode'] =  true
+              statesToUpdate['currentViewEditor'] = EDITOR_VIEW.ADVANCED
+              statesToUpdate['isBasicViewLocked'] = true
+            } else {
+                statesToUpdate['basicFieldValues'] = _basicFieldValues
+                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
+            }
+        }
+
         if (statesToUpdate !== {}) {
             dispatch({
                 type: 'multipleOptions',
