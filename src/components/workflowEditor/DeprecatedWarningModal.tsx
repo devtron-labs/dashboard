@@ -2,8 +2,9 @@ import React from 'react'
 import { ConfirmationDialog } from '../common'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { DEPRECATED_EXTERNAL_CI_MESSAGE, DOCUMENTATION } from '../../config'
+import { DeprecatedWarningModalType } from './types'
 
-export default function DeprecatedWarningModal({ closePopup }: { closePopup: () => void }) {
+export default function DeprecatedWarningModal({ closePopup }: DeprecatedWarningModalType) {
     const close = (): void => {
         closePopup()
     }
