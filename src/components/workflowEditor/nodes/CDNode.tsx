@@ -26,7 +26,7 @@ export class CDNode extends Component<CDNodeProps> {
     renderCardContent() {
         return (
             <>
-                <Link to={this.props.to} className="dc__no-decor">
+                <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                     <div className="workflow-node cursor">
                         <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
                             {this.props.triggerType}

@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react'
+import { Link } from 'react-router-dom'
 import './infoColourBar.scss'
 
 interface InfoColourBarType {
@@ -12,6 +13,7 @@ interface InfoColourBarType {
     redirectLink?: string
     linkOnClick?: () => void
     linkClass?: string
+    internalLink?: boolean
     styles?: CSSProperties
 }
 
@@ -26,8 +28,46 @@ function InfoColourBar({
     redirectLink,
     linkOnClick,
     linkClass,
+    internalLink,
     styles,
 }: InfoColourBarType) {
+    const renderLink = () => {
+        if (!linkText) {
+            return null
+        } else if (redirectLink) {
+            if (internalLink) {
+                return (
+                    <Link
+                        to={redirectLink}
+                        onClick={linkOnClick}
+                        className="cursor dc__link dc__underline-onhover mr-5"
+                    >
+                        {linkText}
+                    </Link>
+                )
+            }
+
+            return (
+                <a
+                    href={redirectLink}
+                    target="_blank"
+                    onClick={linkOnClick}
+                    className="cursor dc__link dc__underline-onhover mr-5"
+                >
+                    {linkText}
+                </a>
+            )
+        }
+
+        return (
+            linkOnClick && (
+                <div onClick={linkOnClick} className="cursor dc__link dc__underline-onhover">
+                    {linkText}
+                </div>
+            )
+        )
+    }
+
     return (
         <div className="info-bar-container">
             <div
@@ -40,21 +80,7 @@ function InfoColourBar({
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
                         <span className={linkText ? 'mr-5' : ''}>{message}</span>
-                        {linkText && redirectLink && (
-                            <a
-                                href={redirectLink}
-                                target="_blank"
-                                onClick={linkOnClick}
-                                className="cursor dc__link dc__underline-onhover mr-5"
-                            >
-                                {linkText}
-                            </a>
-                        )}
-                        {linkText && !redirectLink && linkOnClick && (
-                            <div onClick={linkOnClick} className="cursor dc__link dc__underline-onhover">
-                                {linkText}
-                            </div>
-                        )}
+                        {renderLink()}
                     </div>
                 </div>
                 {typeof renderActionButton === 'function' && renderActionButton()}

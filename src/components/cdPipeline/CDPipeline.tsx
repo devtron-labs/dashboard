@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TriggerType, ViewType } from '../../config'
+import { SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ServerErrors } from '../../modals/commonTypes'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
@@ -15,6 +15,7 @@ import {
     DeleteDialog,
     CHECKBOX_VALUE,
     sortObjectArrayAlphabetically,
+    Drawer,
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
@@ -35,6 +36,9 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PrePostCD } from '../../assets/icons/ic-cd-stage.svg'
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
+import { ReactComponent as BotIcon } from '../../assets/icons/ic-bot.svg'
+import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
+import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import yamlJsParser from 'yaml'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
@@ -48,6 +52,8 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 
 export const SwitchItemValues = {
@@ -57,6 +63,7 @@ export const SwitchItemValues = {
 
 export default class CDPipeline extends Component<CDPipelineProps, CDPipelineState> {
     allStrategies: { [key: string]: any } = {}
+    isWebhookCD = window.location.href.includes('webhook')
     validationRules
     preStage
     postStage
@@ -65,7 +72,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     constructor(props) {
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
-        const parentPipelineType = (urlParams.get('parentPipelineType') ?? '').toLocaleUpperCase().replace('-', '_')
+        const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
+        const parentPipelineType = parentPipelineTypeFromURL
+            ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
+            : this.isWebhookCD
+            ? SourceTypeMap.WEBHOOK
+            : ''
         const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
@@ -77,7 +89,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig: {
                 id: null,
                 environmentId: 0,
-                ciPipelineId: +this.props.match.params.ciPipelineId,
+                ciPipelineId: this.isWebhookCD ? 0 : +this.props.match.params.ciPipelineId,
                 triggerType: TriggerType.Auto,
                 name: '',
                 strategies: [],
@@ -466,9 +478,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    handleTriggerChange = (event) => {
-        const { pipelineConfig } = { ...this.state }
-        pipelineConfig.triggerType = event.target.value
+    handleTriggerTypeChange = (selectedTriggerType: string) => {
+        let { pipelineConfig } = { ...this.state }
+        pipelineConfig.triggerType = selectedTriggerType
         this.setState({ pipelineConfig })
     }
 
@@ -592,12 +604,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         envName = selectedEnv.name
                     }
                     this.props.close(
-                        true,
+                        this.state.pipelineConfig.parentPipelineType !== PipelineType.WEBHOOK,
                         this.state.pipelineConfig.environmentId,
                         envName,
                         this.props.match.params.cdPipelineId
                             ? 'Deployment pipeline updated'
                             : 'Deployment pipeline created',
+                        !this.props.match.params.cdPipelineId,
                     )
                     this.props.getWorkflows()
                 }
@@ -652,8 +665,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 if (response.result) {
                     toast.success('Pipeline Deleted')
                     this.setState({ loadingData: false })
-                    this.props.getWorkflows()
                     this.props.close()
+                    this.props.getWorkflows()
                 }
             })
             .catch((error: ServerErrors) => {
@@ -707,7 +720,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderHeader() {
-        let title = this.props.match.params.cdPipelineId ? 'Edit deployment pipeline' : 'Create deployment pipeline'
+        const title = this.isWebhookCD && this.props.match.params.workflowId === '0'
+            ? 'Deploy image from external source'
+            : this.props.match.params.cdPipelineId
+            ? 'Edit deployment pipeline'
+            : 'Create deployment pipeline'
         return (
             <>
                 <div className="p-20 flex flex-align-center flex-justify">
@@ -942,23 +959,23 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         } else return null
     }
 
-    renderTriggerType() {
-        return (
-            <div className="form__row">
-                <label className="form__label form__label--sentence dc__bold">
-                    When do you want the pipeline to execute?*
-                </label>
-                <RadioGroup
-                    value={this.state.pipelineConfig.triggerType}
-                    name="trigger-type"
-                    onChange={this.handleTriggerChange}
-                >
-                    <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
-                    <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
-                </RadioGroup>
-            </div>
-        )
-    }
+    // renderTriggerType() {
+    //     return (
+    //         <div className="form__row">
+    //             <label className="form__label form__label--sentence dc__bold">
+    //                 When do you want the pipeline to execute?*
+    //             </label>
+    //             <RadioGroup
+    //                 value={this.state.pipelineConfig.triggerType}
+    //                 name="trigger-type"
+    //                 onChange={this.handleTriggerChange}
+    //             >
+    //                 <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
+    //                 <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
+    //             </RadioGroup>
+    //         </div>
+    //     )
+    // }
 
     renderDeploymentAppType() {
         return (
@@ -1046,21 +1063,23 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 )
             } else {
                 return (
-                    <button
-                        type="button"
-                        className="cta cta--workflow cancel mr-16"
-                        onClick={() => {
-                            this.handleAdvanceClick()
-                        }}
-                    >
-                        Advanced Options
-                    </button>
+                    !this.isWebhookCD && (
+                        <button
+                            type="button"
+                            className="cta cta--workflow cancel mr-16"
+                            onClick={() => {
+                                this.handleAdvanceClick()
+                            }}
+                        >
+                            Advanced Options
+                        </button>
+                    )
                 )
             }
         }
     }
 
-    renderEnvAndNamespace() {
+    renderEnvNamespaceAndTriggerType() {
         let envId = this.state.pipelineConfig.environmentId
         let selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
         let namespaceEditable = false
@@ -1068,9 +1087,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         return (
             <>
-                <div className="form__row form__row--flex mt-12">
-                    <div className={`w-50`}>
-                        <div className="form__label">Deploy to environment</div>
+                <div className="form__row form__row--flex">
+                    <div className="w-50 mr-8">
+                        <div className="form__label">Environment</div>
                         <ReactSelect
                             menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
@@ -1096,8 +1115,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             </span>
                         ) : null}
                     </div>
-                    <label className="flex-1 ml-16">
-                        <span className="form__label">Namespace*</span>
+                    <label className="flex-1 ml-8">
+                        <span className="form__label">Namespace</span>
                         <input
                             className="form__input"
                             autoComplete="off"
@@ -1122,7 +1141,58 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </label>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
+                {this.renderTriggerType()}
             </>
+        )
+    }
+
+    renderTriggerType() {
+        return (
+            <>
+                <p className="fs-14 fw-6 cn-9 mb-8">When do you want to deploy</p>
+                <div className="flex mb-20">
+                    <div
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
+                            this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                        }`}
+                        onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
+                    >
+                        <BotIcon className="icon-dim-20 mr-12" />
+                        <div>
+                            <div>Automatic</div>
+                            <div>Deploy everytime a new image is received</div>
+                        </div>
+                    </div>
+                    <div
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
+                            this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                        }`}
+                        onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
+                    >
+                        <PersonIcon className="icon-dim-20 mr-12" />
+                        <div>
+                            <div>Manual</div>
+                            <div>Select and deploy from available images</div>
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
+    }
+
+    renderWebhookWarning() {
+        return (
+            <InfoColourBar
+                message={
+                    <div>
+                        <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample JSON
+                        will be generated after the pipeline is created.
+                    </div>
+                }
+                classname="bw-1 bcv-1 ev-2 bcv-1 fs-12 mt-20"
+                Icon={Help}
+                iconClass="fcv-5 h-20"
+            />
         )
     }
 
@@ -1203,8 +1273,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 </div>
                 {this.state.showDeploymentStage ? (
                     <>
-                        {this.renderEnvAndNamespace()}
-                        {this.renderTriggerType()}
+                        {this.renderEnvNamespaceAndTriggerType()}
+                        {this.renderDeploymentStrategy()}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </>
@@ -1252,14 +1322,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             : undefined
         return (
             <>
-                <p className="fs-14 fw-6 cn-9 mb-16">Select Environment</p>
-                {this.renderEnvAndNamespace()}
+                <p className="fs-14 fw-6 cn-9 mb-12">Deploy to environment</p>
+                {this.renderEnvNamespaceAndTriggerType()}
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>
-                        <div className="divider mt-0 mb-0"></div>
-                        <p className="fs-14 fw-6 cn-9 mb-16 mt-20">Deployment Strategy</p>
-                        <p className="fs-13 fw-5 cn-7">Configure deployment preferences for this pipeline</p>
+                        <p className="fs-14 fw-6 cn-9 mb-12">Deployment Strategy</p>
+                        <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                         <ReactSelect
                             menuPortalTarget={document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
@@ -1281,6 +1350,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         />
                     </>
                 )}
+                {this.isWebhookCD && !this.state.pipelineConfig.parentPipelineId && this.renderWebhookWarning()}
             </>
         )
     }
@@ -1297,30 +1367,64 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    render() {
+    renderCDPipelineModal() {
         return (
-            <VisibleModal className="">
-                <form className="modal__body modal__body--ci br-0 modal__body--p-0" onSubmit={this.savePipeline}>
+            <>
+                <form
+                    className={
+                        this.props.match.params.cdPipelineId || this.state.isAdvanced
+                            ? `bcn-0`
+                            : `modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius`
+                    }
+                    onSubmit={this.savePipeline}
+                >
                     {this.renderHeader()}
-                    <div className="p-20" style={{ maxHeight: 'calc(100vh - 164px)', overflowY: 'scroll' }}>
+                    <div
+                        className="p-20"
+                        style={{
+                            height:
+                                this.props.match.params.cdPipelineId || this.state.isAdvanced
+                                    ? `calc(100vh - 125px)`
+                                    : `auto`,
+
+                            maxHeight:
+                            this.props.match.params.cdPipelineId || this.state.isAdvanced
+                                ? `auto`
+                                : `calc(100vh - 164px)`,
+                            overflowY: 'scroll',
+                        }}
+                    >
                         {this.renderCDPipelineBody()}
                     </div>
-                    {this.state.view !== ViewType.LOADING && (
-                        <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
-                            {this.renderSecondaryButton()}
-                            <ButtonWithLoader
-                                rootClassName="cta cta--workflow flex-1"
-                                onClick={this.savePipeline}
-                                isLoading={this.state.loadingData}
-                                loaderColor="white"
-                            >
-                                {this.props.match.params.cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'}
-                            </ButtonWithLoader>
-                        </div>
-                    )}
+
+                    <div
+                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                            this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
+                        }`}
+                    >
+                        {this.renderSecondaryButton()}
+                        <ButtonWithLoader
+                            rootClassName="cta cta--workflow"
+                            onClick={this.savePipeline}
+                            isLoading={this.state.loadingData}
+                            loaderColor="white"
+                        >
+                            {this.props.match.params.cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'}
+                        </ButtonWithLoader>
+                    </div>
                 </form>
                 {this.renderDeleteCDModal()}
-            </VisibleModal>
+            </>
+        )
+    }
+
+    render() {
+        return this.props.match.params.cdPipelineId || this.state.isAdvanced ? (
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {this.renderCDPipelineModal()}
+            </Drawer>
+        ) : (
+            <VisibleModal className="">{this.renderCDPipelineModal()}</VisibleModal>
         )
     }
 }

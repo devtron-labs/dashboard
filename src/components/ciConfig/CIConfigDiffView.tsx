@@ -200,6 +200,7 @@ export default function CIConfigDiffView({
                                     openEditWorkflow={noop}
                                     showDeleteDialog={noop}
                                     addCIPipeline={noop}
+                                    addWebhookCD={noop}
                                     cdWorkflowList={_configOverridenWorkflows}
                                 />
                                 {renderViewBuildPipelineRow(+_wf.id)}
