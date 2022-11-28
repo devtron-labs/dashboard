@@ -15,7 +15,7 @@ export const initState = (
         isUpdateInProgress: false,
         isDeleteInProgress: false,
         showDeleteAppConfirmationDialog: false,
-        showAppNotLinkedDialog: false,
+        showRepoSelector: false,
         selectedProject: null,
         selectedEnvironment: null,
         selectedVersion: selectedVersionFromParent,
@@ -56,7 +56,7 @@ export const initState = (
         invalidaEnvironment: false,
         invalidProject: false,
         formValidationError: {},
-        showNoGitOpsWarning: false
+        showNoGitOpsWarning: false,
     }
 }
 
@@ -76,8 +76,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, isDeleteInProgress: action.payload }
         case ChartValuesViewActionTypes.showDeleteAppConfirmationDialog:
             return { ...state, showDeleteAppConfirmationDialog: action.payload }
-        case ChartValuesViewActionTypes.showAppNotLinkedDialog:
-            return { ...state, showAppNotLinkedDialog: action.payload }
+        case ChartValuesViewActionTypes.showRepoSelector:
+            return { ...state, showRepoSelector: action.payload }
         case ChartValuesViewActionTypes.selectedProject:
             return { ...state, selectedProject: action.payload }
         case ChartValuesViewActionTypes.selectedEnvironment:
@@ -153,7 +153,7 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
         case ChartValuesViewActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         case ChartValuesViewActionTypes.showNoGitOpsWarning:
-          return { ...state, showNoGitOpsWarning: action.payload }
+            return { ...state, showNoGitOpsWarning: action.payload }
         default:
             return state
     }

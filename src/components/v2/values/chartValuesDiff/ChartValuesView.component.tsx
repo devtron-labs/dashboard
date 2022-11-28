@@ -3,12 +3,12 @@ import { useParams } from 'react-router'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import warn, { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
+
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import warn from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
 import {
@@ -39,6 +39,7 @@ import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
+import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -132,7 +133,6 @@ export const ChartRepoSelector = ({
         isExternal && !installedAppInfo ? [] : [chartDetails],
     )
     const [refetchingCharts, setRefetchingCharts] = useState(false)
-
     async function handleRepoChartFocus(refetch: boolean) {
         if (!repoChartAPIMade || refetch) {
             try {
@@ -232,7 +232,7 @@ export const ChartRepoSelector = ({
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
                 <div className="flex dc__content-space">
-                    <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart</span>
+                    <span className="form__label fs-13 fw-4 lh-20 cn-7">Helm Chart</span>
                     <Tippy
                         className="default-tt "
                         arrow={false}
@@ -254,7 +254,7 @@ export const ChartRepoSelector = ({
                         defaultOptions={repoChartOptions}
                         isSearchable={false}
                         formatOptionLabel={repoChartSelectOptionLabel}
-                        value={repoChartValue}
+                        value={isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue}
                         loadOptions={repoChartLoadOptions}
                         onFocus={() => handleRepoChartFocus(false)}
                         onChange={handleRepoChartValueChange}
@@ -276,17 +276,6 @@ export const ChartRepoSelector = ({
                         </div>
                         <span className="chart-deprecated-text fs-12 fw-4">
                             This chart has been deprecated. Please select another chart to continue receiving updates.
-                        </span>
-                    </div>
-                )}
-                {isExternal && !installedAppInfo && !repoChartValue.chartRepoName && (
-                    <div className="no-helm-chart-linked flex top left br-4 cn-9 bcr-1 mt-12">
-                        <div className="icon-dim-16 mr-10">
-                            <Error className="icon-dim-16" />
-                        </div>
-                        <span className="no-helm-chart-linked-text fs-12 fw-4 cn-9">
-                            This app is not linked to a helm chart. Select a helm chart to keep up with latest chart
-                            versions.
                         </span>
                     </div>
                 )}
@@ -1046,9 +1035,10 @@ export const UpdateApplicationButton = ({
     isDeleteInProgress: boolean
     isDeployChartView: boolean
     isCreateValueView: boolean
-    deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
+    deployOrUpdateApplication: () => Promise<void>
 }) => {
     const { chartValueId } = useParams<{ chartValueId: string }>()
+
     return (
         <button
             type="button"
@@ -1057,9 +1047,7 @@ export const UpdateApplicationButton = ({
             className={`chart-values-view__update-cta cta ${
                 isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
             }`}
-            onClick={() => {
-                deployOrUpdateApplication(false)
-            }}
+            onClick={deployOrUpdateApplication}
         >
             {isUpdateInProgress ? (
                 <div className="flex">

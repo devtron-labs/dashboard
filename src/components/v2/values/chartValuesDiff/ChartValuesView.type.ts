@@ -204,7 +204,7 @@ export interface ChartValuesViewState {
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
     showDeleteAppConfirmationDialog: boolean
-    showAppNotLinkedDialog: boolean
+    showRepoSelector: boolean
     selectedProject: ChartValuesOptionType
     selectedEnvironment: ChartEnvironmentOptionType
     selectedVersion: number
@@ -256,7 +256,7 @@ export enum ChartValuesViewActionTypes {
     isUpdateInProgress = 'isUpdateInProgress',
     isDeleteInProgress = 'isDeleteInProgress',
     showDeleteAppConfirmationDialog = 'showDeleteAppConfirmationDialog',
-    showAppNotLinkedDialog = 'showAppNotLinkedDialog',
+    showRepoSelector = 'showRepoSelector',
     selectedProject = 'selectedProject',
     selectedEnvironment = 'selectedEnvironment',
     selectedVersion = 'selectedVersion',
@@ -294,7 +294,7 @@ export enum ChartValuesViewActionTypes {
     deploymentHistoryArr = 'deploymentHistoryArr',
     formValidationError = 'formValidationError',
     multipleOptions = 'multipleOptions',
-    showNoGitOpsWarning= 'showNoGitOpsWarning'
+    showNoGitOpsWarning = 'showNoGitOpsWarning',
 }
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes

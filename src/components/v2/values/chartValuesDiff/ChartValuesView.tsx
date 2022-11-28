@@ -33,7 +33,6 @@ import {
     ActiveReadmeColumn,
     DeleteChartDialog,
     ChartValuesEditor,
-    AppNotLinkedDialog,
     ChartProjectSelector,
     ChartVersionValuesSelector,
     DeleteApplicationButton,
@@ -54,6 +53,8 @@ import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import {
     ChartDeploymentHistoryResponse,
@@ -76,6 +77,7 @@ import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
+import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 
 function ChartValuesView({
     appId,
@@ -586,12 +588,7 @@ function ChartValuesView({
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
     }
 
-    const deployOrUpdateApplication = async (forceUpdate?: boolean) => {
-        if (commonState.isUpdateInProgress) {
-            return
-        }
-
-        const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
+    const isRequestDataValid = (validatedName: { isValid: boolean; message: string }): boolean => {
         if (isCreateValueView && !validatedName.isValid) {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -601,7 +598,15 @@ function ChartValuesView({
                 },
             })
             toast.error('Some required fields are missing')
-            return
+            return false
+        } else if (
+            isExternalApp &&
+            !commonState.installedAppInfo &&
+            !commonState.repoChartValue?.chartRepoName &&
+            commonState.showRepoSelector
+        ) {
+            toast.error('Please select helm chart')
+            return false
         } else if (!isValidData(validatedName)) {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -613,7 +618,7 @@ function ChartValuesView({
                 },
             })
             toast.error('Some required fields are missing')
-            return
+            return false
         } else if (commonState.activeTab === 'gui' && commonState.schemaJson?.size) {
             const requiredValues = [...commonState.schemaJson.values()].filter((_val) => _val.isRequired && !_val.value)
             if (requiredValues.length > 0) {
@@ -627,7 +632,7 @@ function ChartValuesView({
                     payload: formErrors,
                 })
                 toast.error('Some required fields are missing')
-                return
+                return false
             } else {
                 dispatch({
                     type: ChartValuesViewActionTypes.formValidationError,
@@ -636,26 +641,27 @@ function ChartValuesView({
             }
         }
 
-        if (
-            isExternalApp &&
-            !forceUpdate &&
-            !commonState.installedAppInfo &&
-            !commonState.repoChartValue?.chartRepoName
-        ) {
-            dispatch({
-                type: ChartValuesViewActionTypes.showAppNotLinkedDialog,
-                payload: true,
-            })
-            return
-        }
-
         // validate data
         try {
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
             toast.error(`Encountered data validation error while updating. “${err}”`)
+            return false
+        }
+
+        return true
+    }
+
+    const deployOrUpdateApplication = async () => {
+        if (commonState.isUpdateInProgress) {
             return
         }
+
+        const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
+        if (!isRequestDataValid(validatedName)) {
+            return
+        }
+
         if (isCreateValueView && !validatedName.isValid) {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -682,7 +688,7 @@ function ChartValuesView({
             let res, toastMessage
 
             if (isExternalApp && !commonState.installedAppInfo) {
-                if (!forceUpdate) {
+                if (commonState.repoChartValue?.chartRepoName) {
                     const payload: LinkToChartStoreRequest = {
                         appId: appId,
                         valuesYaml: commonState.modifiedValuesYaml,
@@ -921,8 +927,9 @@ function ChartValuesView({
 
     const renderValuesTabs = () => {
         const initialSelectedTab =
-            (!(presetValueId || isCreateValueView) && ((isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-            !!commonState.installedConfig?.valuesSchemaJson))
+            !(presetValueId || isCreateValueView) &&
+            ((isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                !!commonState.installedConfig?.valuesSchemaJson)
                 ? ConfigurationType.GUI
                 : ConfigurationType.YAML
 
@@ -934,13 +941,17 @@ function ChartValuesView({
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                {initialSelectedTab === ConfigurationType.GUI && <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>{ConfigurationType.GUI} (Beta)</RadioGroup.Radio>}
+                {initialSelectedTab === ConfigurationType.GUI && (
+                    <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
+                        {ConfigurationType.GUI} (Beta)
+                    </RadioGroup.Radio>
+                )}
                 <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
                     <Edit className="icon-dim-12 mr-6" />
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
-                    value='manifest'
+                    value="manifest"
                     showTippy={isExternalApp && !commonState.installedAppInfo}
                     canSelect={isValidData()}
                     tippyContent={
@@ -1173,6 +1184,22 @@ function ChartValuesView({
         setValueName(newValueName)
     }
 
+    const handleConnectToChartClick = (): void => {
+        dispatch({
+            type: ChartValuesViewActionTypes.showRepoSelector,
+            payload: true,
+        })
+    }
+
+    const renderConnectToHelmChart = (): JSX.Element => {
+        return (
+            <div className="flex left mt-8">
+                <LinkIcon className="connect-to-chart-icon icon-dim-16 mr-8" />
+                <span className="fs-13 fw-6 lh-20">Connect to helm chart</span>
+            </div>
+        )
+    }
+
     const renderData = () => {
         return (
             <div
@@ -1231,7 +1258,7 @@ function ChartValuesView({
                             />
                         )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
-                        {!isDeployChartView && (
+                        {!isDeployChartView && commonState.showRepoSelector && (
                             <ChartRepoSelector
                                 isExternal={isExternalApp}
                                 isUpdate={!!isUpdate}
@@ -1241,6 +1268,18 @@ function ChartValuesView({
                                 chartDetails={commonState.repoChartValue}
                             />
                         )}
+                        {!isDeployChartView &&
+                            isExternalApp &&
+                            !commonState.installedAppInfo &&
+                            !commonState.showRepoSelector && (
+                                <InfoColourBar
+                                    message="This app is not connected to a helm chart. Connect to a helm chart to keep up with latest chart versions."
+                                    classname="connect-to-chart-wrapper info_bar"
+                                    Icon={InfoIcon}
+                                    linkOnClick={handleConnectToChartClick}
+                                    linkText={renderConnectToHelmChart()}
+                                />
+                            )}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
                             commonState.repoChartValue?.chartRepoName) && (
@@ -1334,17 +1373,6 @@ function ChartValuesView({
                                 },
                             })
                         }}
-                    />
-                )}
-                {commonState.showAppNotLinkedDialog && (
-                    <AppNotLinkedDialog
-                        close={() =>
-                            dispatch({
-                                type: ChartValuesViewActionTypes.showAppNotLinkedDialog,
-                                payload: false,
-                            })
-                        }
-                        update={deployOrUpdateApplication}
                     />
                 )}
                 {commonState.showNoGitOpsWarning && (

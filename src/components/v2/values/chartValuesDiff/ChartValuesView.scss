@@ -246,6 +246,16 @@
                     fill: var(--R500);
                 }
             }
+
+            .connect-to-chart-wrapper {
+                padding: 8px 12px !important;
+
+                .connect-to-chart-icon {
+                    path:last-of-type {
+                        fill: var(--B500);
+                    }
+                }
+            }
         }
 
         .chart-values-view__readme {
