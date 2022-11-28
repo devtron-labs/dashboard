@@ -37,9 +37,15 @@ export default function CIDetails() {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
-    const [, securityModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
-    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [initDataLoading, initDataResults, pipelinesError] = useAsync(
+        () =>
+            Promise.allSettled([
+                getCIPipelines(+appId),
+                getModuleInfo(ModuleNameMap.SECURITY),
+                getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+            ]),
+        [appId],
+    )
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -67,15 +73,11 @@ export default function CIDetails() {
     }, [triggerHistoryResult, loading])
 
     useEffect(() => {
-        setTriggerHistory(new Map())
-    }, [pipelineId])
-
-    useEffect(() => {
         if (buildId || triggerHistory.size === 0) return
         const latestBuild = Array.from(triggerHistory)[0][1]
         console.log(generatePath(path, { buildId: latestBuild.id, appId, pipelineId }))
         replace(generatePath(path, { buildId: latestBuild.id, appId, pipelineId }))
-    }, [loading, triggerHistoryResult, triggerHistory])
+    }, [triggerHistory])
 
     function synchroniseState(triggerId: number, triggerDetails: History) {
         if (triggerId === triggerDetails.id) {
@@ -98,9 +100,11 @@ export default function CIDetails() {
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
 
-    if ((!hasMoreLoading && loading) || pipelinesLoading || (pipelineId && dependencyState[0] !== pipelineId))
+    if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId))
         return <Progressing pageLoader />
-    const pipelines: CIPipeline[] = (result?.result || [])?.filter((pipeline) => pipeline.pipelineType !== 'EXTERNAL') // external pipelines not visible in dropdown
+    const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
+        (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
+    ) // external pipelines not visible in dropdown
     const pipelineOptions: OptionType[] = (pipelines || []).map((item) => {
         return { value: `${item.id}`, label: item.name }
     })
@@ -147,9 +151,12 @@ export default function CIDetails() {
                                             synchroniseState={synchroniseState}
                                             triggerHistory={triggerHistory}
                                             isSecurityModuleInstalled={
-                                                securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
+                                                initDataResults[1]?.['value']?.['result']?.status ===
+                                                    ModuleStatus.INSTALLED || false
                                             }
-                                            isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
+                                            isBlobStorageConfigured={
+                                                initDataResults[2]?.['value']?.['result']?.enabled || false
+                                            }
                                         />
                                     </Route>
                                 ) : (
