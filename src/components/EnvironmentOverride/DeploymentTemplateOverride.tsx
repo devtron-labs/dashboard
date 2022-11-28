@@ -213,7 +213,7 @@ export default function DeploymentTemplateOverride({
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
                     if (state.isBasicViewLockedInBase !== null && state.isBasicViewLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
-                        let _isBasicViewLocked =false
+                        let _isBasicViewLocked = false
                         if (
                             _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
                             !_basicFieldValues[BASIC_FIELDS.PORT] ||
@@ -277,6 +277,21 @@ export default function DeploymentTemplateOverride({
         }
 
         const statesToUpdate = {}
+
+        if (!_isBasicViewLocked) {
+            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
+            if (
+                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+            ) {
+                _isBasicViewLocked = true
+            } else {
+                statesToUpdate['basicFieldValues'] = _basicFieldValues
+                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
+            }
+        }
         if (!state.currentViewEditor || !state.duplicate) {
             _currentViewEditor =
                 _isBasicViewLocked ||
@@ -288,20 +303,6 @@ export default function DeploymentTemplateOverride({
             statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.BASIC ? false : true
             statesToUpdate['currentViewEditor'] = _currentViewEditor
             statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
-        }
-
-        if (!_isBasicViewLocked) {
-            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
-            if (
-                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
-                !_basicFieldValues[BASIC_FIELDS.PORT] ||
-                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
-                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
-            ) {
-                statesToUpdate['isBasicViewLocked'] = true
-            }
-            statesToUpdate['basicFieldValues'] = _basicFieldValues
-            statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
         }
         if (statesToUpdate !== {}) {
             dispatch({
@@ -390,7 +391,7 @@ function DeploymentTemplateOverrideForm({
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
             isAppMetricsEnabled: state.data.appMetrics,
-            currentViewEditor: state.currentViewEditor,
+            currentViewEditor: state.isBasicViewLocked ? EDITOR_VIEW.ADVANCED : state.currentViewEditor,
             isBasicViewLocked: state.isBasicViewLocked,
             ...(state.data.environmentConfig.id > 0
                 ? {
