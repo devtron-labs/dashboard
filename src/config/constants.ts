@@ -280,7 +280,7 @@ export const DOCUMENTATION = {
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
-    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.5`,
+    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-incoming-webhook`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -633,8 +633,8 @@ export enum AppDetailsErrorType {
 }
 
 export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
-  LINE_ONE: 'This pipeline uses a deprecated method to receive docker images from external build services, new images will no longer be available for deployment.',
-  LINE_TWO: 'Deprecated pipelines will be deleted by the next Devtron update.',
-  DOC_LINK_TEXT: 'Refer documentation',
-  LINE_THREE:  'to learn how to receive images from authenticated sources.'
+  LINE_ONE: 'This workflow uses a deprecated method to receive container images from external build services.',
+  LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
+  LINE_THREE:  'You can continue to deploy images from external build services',
+  DOC_LINK_TEXT: 'Refer documentation to learn more.',
 }
