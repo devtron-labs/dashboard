@@ -38,7 +38,12 @@ export default function CDDetails() {
 
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [loading, result, error] = useAsync(
-        () => Promise.all([getAppOtherEnvironment(appId), getCDPipelines(appId)]),
+        () =>
+            Promise.allSettled([
+                getAppOtherEnvironment(appId),
+                getCDPipelines(appId),
+                getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+            ]),
         [appId],
     )
     const [
@@ -53,10 +58,9 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
-    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const { path } = useRouteMatch()
     const { replace } = useHistory()
-    const pipelines = result?.length ? result[1]?.pipelines : []
+    const pipelines = result?.length ? result[1]?.['value']?.pipelines : []
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
@@ -76,7 +80,7 @@ export default function CDDetails() {
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
-    const environment = result ? result[0].result?.find((envData) => envData.environmentId === +envId) : null
+    const environment = result[0]?.['value']?.result?.find((envData) => envData.environmentId === +envId) || null
 
     async function pollHistory() {
         // polling
@@ -143,10 +147,9 @@ export default function CDDetails() {
     }
 
     if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
-    if (result && !Array.isArray(result[0].result)) return <AppNotConfigured />
-    if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured />
+    if (result && (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines))) return <AppNotConfigured />
     if (!result || (envId && dependencyState[2] !== envId)) return null
-    const envOptions: OptionType[] = (result[0].result || []).map((item) => {
+    const envOptions: OptionType[] = (result[0]['value'].result || []).map((item) => {
         return { value: `${item.environmentId}`, label: item.environmentName }
     })
     return (
@@ -183,7 +186,7 @@ export default function CDDetails() {
                                 setDeploymentHistoryList={setDeploymentHistoryList}
                                 deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
-                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
+                                isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
                             />
                         </Route>
                     ) : (
