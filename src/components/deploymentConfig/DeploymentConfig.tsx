@@ -205,7 +205,7 @@ export default function DeploymentConfig({
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
                 isBasicViewLocked: isBasicViewLocked,
-                currentViewEditor,
+                currentViewEditor: isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor,
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
