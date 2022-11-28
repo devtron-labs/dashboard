@@ -12,6 +12,7 @@ interface drawerInterface {
     maxWidth?: string
     height?: string
     parentClassName?: string
+    onEscape?: (e?: any) => void
 }
 
 const Drawer: React.FC<drawerInterface> = ({
@@ -22,6 +23,7 @@ const Drawer: React.FC<drawerInterface> = ({
     minWidth,
     maxWidth,
     parentClassName,
+    onEscape,
 }) => {
     const drawerRef = useRef(null)
     useEffect(() => {
@@ -38,7 +40,7 @@ const Drawer: React.FC<drawerInterface> = ({
         style['--height'] = height
     }
     return (
-        <VisibleModal className="drawer--container" parentClassName={parentClassName || ''}>
+        <VisibleModal className="drawer--container" parentClassName={parentClassName || ''} onEscape={onEscape}>
             <aside style={style} ref={drawerRef} className={`drawer ${position}`}>
                 {children}
             </aside>

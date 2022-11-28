@@ -92,3 +92,11 @@ export interface CreateGroup {
     description: string;
     roleFilters: APIRoleFilter[];
 }
+
+export enum UserRoleType {
+    SuperAdmin = 'SuperAdmin',
+    Admin = 'Admin',
+    Manager = 'Manager',
+    Trigger = 'Trigger',
+    View = 'View,',
+}
