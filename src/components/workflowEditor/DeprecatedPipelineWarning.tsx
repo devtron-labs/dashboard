@@ -18,7 +18,7 @@ export default function DeprecatedPipelineWarning() {
     return (
         <InfoColourBar
             message={<ExternalSecretHelpNote />}
-            classname="warn dc__no-border-radius "
+            classname="warn dc__no-border-radius dc__no-border"
             Icon={Warn}
             iconClass="warning-icon"
         />
