@@ -121,11 +121,19 @@ export default function DeploymentConfig({
         }
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
-            if (_basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 || !_basicFieldValues[BASIC_FIELDS.PORT] || !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] || !_basicFieldValues[BASIC_FIELDS.RESOURCES]) {
+            if (
+                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+            ) {
                 setIsBasicViewLocked(true)
+                setCurrentViewEditor(EDITOR_VIEW.ADVANCED)
+                toggleYamlMode(true)
+            } else {
+                setBasicFieldValues(_basicFieldValues)
+                setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
             }
-            setBasicFieldValues(_basicFieldValues)
-            setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
         }
     }
 
