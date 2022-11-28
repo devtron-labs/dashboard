@@ -353,7 +353,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
-        const isExternalCiWorkflow = this.props.nodes.some((node)=>node.isExternalCI)
+        const isExternalCiWorkflow = this.props.nodes.some(
+            (node) => node.isExternalCI && node.type === WorkflowNodeType.CI,
+        )
         return (
             <ConditionalWrap
                 condition={this.props.showWebhookTippy}
