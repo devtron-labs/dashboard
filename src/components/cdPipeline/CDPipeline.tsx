@@ -656,7 +656,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     toast.success('Pipeline Deleted')
                     this.setState({ loadingData: false })
                     this.props.close()
-                    if(this.state.pipelineConfig.parentPipelineType !== PipelineType.WEBHOOK){
+                    if(this.isWebhookCD){
                       this.props.refreshParentWorkflows()
                     }
                     this.props.getWorkflows()
