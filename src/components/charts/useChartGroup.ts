@@ -179,7 +179,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function applyFilterOnCharts(queryString: string): Promise<any> {
         try {
-            console.log('filters')
             const { result: availableCharts } = await getAvailableCharts(
                 queryString,
                 state.page_offset,
