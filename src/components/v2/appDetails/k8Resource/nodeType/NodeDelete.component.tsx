@@ -1,40 +1,38 @@
-import React, { useState } from 'react';
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
-import {
-    PopupMenu,
-    Trash,
-    showError,
-    useSearchString,
-    DeleteDialog,
-} from '../../../../common';
-import dots from '../../../assets/icons/ic-menu-dot.svg';
-import { toast } from 'react-toastify';
-import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types';
-import './nodeType.scss';
-import { deleteResource } from '../../appDetails.api';
-import { NodeType } from '../../appDetails.type';
-import AppDetailsStore from '../../appDetails.store';
-import { appendRefetchDataToUrl } from '../../../../util/URLUtil';
-import { URLS } from '../../../../../config';
+import React, { useState } from 'react'
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
+import { PopupMenu, showError, useSearchString, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '../../../../common'
+import dots from '../../../assets/icons/ic-menu-dot.svg'
+import { toast } from 'react-toastify'
+import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
+import './nodeType.scss'
+import { deleteResource } from '../../appDetails.api'
+import { NodeType } from '../../appDetails.type'
+import AppDetailsStore from '../../appDetails.store'
+import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
+import { URLS } from '../../../../../config'
+import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
 
 function NodeDeleteComponent({ nodeDetails, appDetails }) {
-    const { path } = useRouteMatch();
-    const history = useHistory();
-    const location = useLocation();
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>();
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-
-    const { queryParams } = useSearchString();
+    const { path } = useRouteMatch()
+    const history = useHistory()
+    const location = useLocation()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>()
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+    const [apiCallInProgress, setApiCallInProgress] = useState(false)
+    const [forceDelete, setForceDelete] = useState(false)
+    const { queryParams } = useSearchString()
 
     function describeNodeWrapper(tab) {
-        queryParams.set('kind', params.podName);
-        const updatedPath = `${path.substring(0,path.indexOf('/k8s-resources/'))}/${URLS.APP_DETAILS_K8}/${NodeType.Pod.toLowerCase()}/${nodeDetails.name}/${tab.toLowerCase()}`
-        history.push(generatePath(updatedPath, { ...params, tab }));
+        queryParams.set('kind', params.podName)
+        const updatedPath = `${path.substring(0, path.indexOf('/k8s-resources/'))}/${
+            URLS.APP_DETAILS_K8
+        }/${NodeType.Pod.toLowerCase()}/${nodeDetails.name}/${tab.toLowerCase()}`
+        history.push(generatePath(updatedPath, { ...params, tab }))
     }
 
     const PodPopup: React.FC<{
-        kind: NodeType;
-        describeNode: (tab?: NodeDetailTabsType) => void;
+        kind: NodeType
+        describeNode: (tab?: NodeDetailTabsType) => void
     }> = ({ kind, describeNode }) => {
         return (
             <div className="pod-info__popup-container">
@@ -58,31 +56,46 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                 <span
                     className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
                     onClick={(e) => {
-                        setShowDeleteConfirmation(true);
+                        setShowDeleteConfirmation(true)
                     }}
                 >
                     <span>Delete</span>
-                    <Trash className="icon-dim-20" />
+                    <Trash className="icon-dim-20 scr-5" />
                 </span>
             </div>
-        );
-    };
+        )
+    }
 
     async function asyncDeletePod(nodeDetails) {
-        console.log(window.location.pathname);
-
         try {
-            await deleteResource(nodeDetails, appDetails, params.envId);
-            toast.success('Deletion initiated successfully.');
+            setApiCallInProgress(true)
+            await deleteResource(nodeDetails, appDetails, params.envId, forceDelete)
+            setShowDeleteConfirmation(false)
+            setForceDelete(false)
+            toast.success('Deletion initiated successfully.')
             // AppDetailsStore.markResourceDeleted(nodeDetails?.kind, nodeDetails?.name);
-            const _tabs = AppDetailsStore.getAppDetailsTabs();
-            const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name);
+            const _tabs = AppDetailsStore.getAppDetailsTabs()
+            const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name)
 
-            appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title));
-            appendRefetchDataToUrl(history, location);
+            appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title))
+            appendRefetchDataToUrl(history, location)
         } catch (err) {
-            showError(err);
+            showError(err)
+        } finally {
+            setApiCallInProgress(false)
         }
+    }
+
+    const deleteResourceAction = () => {
+        asyncDeletePod(nodeDetails)
+    }
+
+    const toggleShowDeleteConfirmation = () => {
+        setShowDeleteConfirmation(!showDeleteConfirmation)
+    }
+
+    const forceDeleteHandler = (e) => {
+        setForceDelete(!forceDelete)
     }
 
     return (
@@ -98,19 +111,26 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             {showDeleteConfirmation && (
                 <DeleteDialog
                     title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
-                    delete={() => {
-                        asyncDeletePod(nodeDetails);
-                        setShowDeleteConfirmation(false);
-                    }}
-                    closeDelete={() => setShowDeleteConfirmation(false)}
+                    delete={deleteResourceAction}
+                    closeDelete={toggleShowDeleteConfirmation}
+                    apiCallInProgress={apiCallInProgress}
                 >
                     <DeleteDialog.Description>
-                        <p>Are you sure, you want to delete this resource?</p>
+                        <p className="mb-12">Are you sure, you want to delete this resource?</p>
+                        <Checkbox
+                            rootClassName="resource-force-delete"
+                            isChecked={forceDelete}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            disabled={apiCallInProgress}
+                            onChange={forceDeleteHandler}
+                        >
+                            Force delete resource
+                        </Checkbox>
                     </DeleteDialog.Description>
                 </DeleteDialog>
             )}
         </div>
-    );
+    )
 }
 
-export default NodeDeleteComponent;
+export default NodeDeleteComponent

@@ -1,5 +1,5 @@
 .getting-started-card {
-    background-color: #2d3452;
+    background-color: var(--tippy-card-black-bg);
     position: fixed;
     z-index: 6;
     right: 20px;
@@ -12,7 +12,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 12px solid #2d3452;
+  border-bottom: 12px solid var(--tippy-card-black-bg);
   right: 64px;
   position: fixed;
   top: 42px
