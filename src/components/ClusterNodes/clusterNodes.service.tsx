@@ -56,3 +56,15 @@ export const clusterTerminalStop = (terminalAccessId):  Promise<ResponseType> =>
 export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
     return post(`user/terminal/update/shell`, data)
 }
+
+export const clusterNamespaceList = (): Promise<ResponseType> => {
+    return get('/cluster/namespaces')
+}
+
+export const getclusterManifest = (terminalAccessId):  Promise<ResponseType> => {
+    return get(`user/terminal/pod/manifest?terminalAccessId=${terminalAccessId}`)
+}
+
+export const getclusterEvents = (terminalAccessId):  Promise<ResponseType> => {
+    return get(`user/terminal/pod/events?terminalAccessId=${terminalAccessId}`)
+}

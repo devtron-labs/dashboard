@@ -24,6 +24,8 @@ import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
 import { showError } from '../common'
 import { ServerErrors } from '../../modals/commonTypes'
+import ClusterManifest from './ClusterManifest'
+import ClusterEvents from './ClusterEvents'
 
 export default function ClusterTerminal({
     clusterId,
@@ -32,6 +34,7 @@ export default function ClusterTerminal({
     closeTerminal,
     clusterImageList,
     isNodeDetailsPage,
+    namespaceList
 }: {
     clusterId: number
     clusterName?: string
@@ -39,12 +42,17 @@ export default function ClusterTerminal({
     closeTerminal?: () => void
     clusterImageList: string[]
     isNodeDetailsPage?: boolean
+    namespaceList: string[]
 }) {
     const clusterNodeList = nodeList.map((node) => {
         return { label: node, value: node }
     })
     const imageList = clusterImageList.map((image) => {
         return { value: image, label: image }
+    })
+
+    const defaultNamespaceList = namespaceList.map((item) => {
+        return { value: item, label: item }
     })
 
     const [selectedContainerName, setSelectedContainerName] = useState(clusterNodeList[0])
@@ -59,12 +67,15 @@ export default function ClusterTerminal({
     const [reconnect, setReconnect] = useState(false)
     const [connectTerminal, setConnectTerminal] = useState(false)
     const [toggleOption, settoggleOption] = useState(false)
+    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+    const [selectedNamespace, setNamespace] = useState(defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0])
 
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage,
         shellName: selectedtTerminalType.value,
         nodeName: selectedContainerName.value,
+        namespace: selectedNamespace.value
     }
 
     useEffect(() => {
@@ -98,7 +109,7 @@ export default function ClusterTerminal({
                         setConnectTerminal(false)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                             error.errors.map(({ userMessage }) => {
-                                if(userMessage === 'session-limit-reached'){
+                                if (userMessage === 'session-limit-reached') {
                                     setRetry(true)
                                 }
                             })
@@ -112,7 +123,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedContainerName.value, selectedImage, reconnect])
+    }, [selectedContainerName.value, selectedImage, reconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -214,6 +225,13 @@ export default function ClusterTerminal({
         socketDiconnecting()
     }
 
+    const onChangeNamespace = (selected): void => {
+        setNamespace(selected.value)
+        setTerminalCleared(true)
+        toggleOptionChange()
+        socketDiconnecting()
+    }
+
     const toggleScreenView = () => {
         setFullScreen(!fullScreen)
     }
@@ -222,47 +240,50 @@ export default function ClusterTerminal({
         settoggleOption(!toggleOption)
     }
 
+    const selectTerminalTab = () => {
+        setSelectedTabIndex(0)
+    }
+
+    const selectEventsTab = () => {
+        setSelectedTabIndex(1)
+    }
+
+    const selectManifestTab = () => {
+        setSelectedTabIndex(2)
+    }
+
+    const terminalContainer = () => {
+        return (
+            <Terminal
+                nodeName={selectedContainerName.label}
+                containerName={selectedContainerName.label}
+                socketConnection={socketConnection}
+                terminalCleared={terminalCleared}
+                shell={selectedtTerminalType}
+                setTerminalCleared={setTerminalCleared}
+                setSocketConnection={setSocketConnection}
+                clusterTerminal={true}
+                terminalId={terminalAccessId}
+                disconnectRetry={disconnectRetry}
+                fetchRetry={fetchRetry}
+                toggleOption={toggleOption}
+            />
+        )
+    }
+
     return (
         <div
             className={`${
                 fullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
             } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
         >
-            <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-40">
+            <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
                 <div className="flex left">
                     {clusterName && (
                         <>
                             <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
-                            <span className="bcn-2 mr-8" style={{ width: '1px', height: '36px' }} />
+                            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
                         </>
-                    )}
-
-                    {connectTerminal && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={
-                                socketConnection === SocketConnectionType.CONNECTING ||
-                                socketConnection === SocketConnectionType.CONNECTED
-                                    ? 'Stop'
-                                    : 'Resume'
-                            }
-                        >
-                            {socketConnection === SocketConnectionType.CONNECTING ||
-                            socketConnection === SocketConnectionType.CONNECTED ? (
-                                <span className="mr-8 cursor">
-                                    <div
-                                        className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                                        onClick={stopterminalConnection}
-                                    />
-                                </span>
-                            ) : (
-                                <span className="mr-8 flex">
-                                    <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
-                                </span>
-                            )}
-                        </Tippy>
                     )}
                     {isNodeDetailsPage && (
                         <Tippy
@@ -283,21 +304,8 @@ export default function ClusterTerminal({
                         </Tippy>
                     )}
 
-                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                        <div className="flex">
-                            <Abort
-                                className="icon-dim-16 mr-4 fcn-6"
-                                onClick={(e) => {
-                                    setTerminalCleared(true)
-                                }}
-                            />
-                        </div>
-                    </Tippy>
-
                     {!isNodeDetailsPage && (
                         <>
-                            <span className="bcn-2 mr-8 ml-8" style={{ width: '1px', height: '16px' }} />
-
                             <div className="cn-6 ml-8 mr-10">Nodes </div>
                             <div style={{ minWidth: '145px' }}>
                                 <Select
@@ -308,12 +316,17 @@ export default function ClusterTerminal({
                                     onChange={onChangeNodes}
                                     styles={{
                                         ...multiSelectStyles,
-                                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', minWidth: '150px', maxWidth: '380px' }),
+                                        menu: (base) => ({
+                                            ...base,
+                                            zIndex: 9999,
+                                            textAlign: 'left',
+                                            minWidth: '150px',
+                                            maxWidth: '380px',
+                                        }),
                                         control: (base, state) => ({
                                             ...base,
                                             borderColor: 'transparent',
                                             backgroundColor: 'transparent',
-                                            minHeight: '24px !important',
                                             cursor: 'pointer',
                                         }),
                                         singleValue: (base, state) => ({
@@ -338,21 +351,26 @@ export default function ClusterTerminal({
                     )}
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Image </div>
+                    <div className="cn-6 ml-8 mr-10">Namespace </div>
                     <div>
                         <CreatableSelect
-                            placeholder="Select Image"
-                            options={imageList}
-                            defaultValue={imageList[0]}
-                            onChange={onChangeImages}
+                            placeholder="Select Namespace"
+                            options={defaultNamespaceList}
+                            defaultValue={selectedNamespace}
+                            onChange={onChangeNamespace}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', minWidth: '150px', maxWidth: '380px' }),
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                    textAlign: 'left',
+                                    minWidth: '150px',
+                                    maxWidth: '380px',
+                                }),
                                 control: (base, state) => ({
                                     ...base,
                                     borderColor: 'transparent',
                                     backgroundColor: 'transparent',
-                                    minHeight: '24px !important',
                                     cursor: 'pointer',
                                 }),
                                 singleValue: (base, state) => ({
@@ -363,7 +381,7 @@ export default function ClusterTerminal({
                                 }),
                                 indicatorsContainer: (provided, state) => ({
                                     ...provided,
-                                })
+                                }),
                             }}
                             components={{
                                 IndicatorSeparator: null,
@@ -371,22 +389,28 @@ export default function ClusterTerminal({
                             }}
                         />
                     </div>
+
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Command </div>
+                    <div className="cn-6 ml-8 mr-10">Image </div>
                     <div>
-                        <Select
-                            placeholder="Select Shell"
-                            options={shellTypes}
-                            defaultValue={shellTypes[0]}
-                            onChange={onChangeTerminalType}
+                        <CreatableSelect
+                            placeholder="Select Image"
+                            options={imageList}
+                            defaultValue={imageList[0]}
+                            onChange={onChangeImages}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', minWidth: '100px', maxWidth: '380px' }),
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                    textAlign: 'left',
+                                    minWidth: '150px',
+                                    maxWidth: '380px',
+                                }),
                                 control: (base, state) => ({
                                     ...base,
                                     borderColor: 'transparent',
                                     backgroundColor: 'transparent',
-                                    minHeight: '24px !important',
                                     cursor: 'pointer',
                                 }),
                                 singleValue: (base, state) => ({
@@ -418,21 +442,119 @@ export default function ClusterTerminal({
                 )}
             </div>
 
-            <div className={`cluster-terminal__wrapper ${fullScreen ? 'full-screen-terminal' : ''} ${isNodeDetailsPage ? 'node-details-full-screen': ''}`}>
-                <Terminal
-                    nodeName={selectedContainerName.label}
-                    containerName={selectedContainerName.label}
-                    socketConnection={socketConnection}
-                    terminalCleared={terminalCleared}
-                    shell={selectedtTerminalType}
-                    setTerminalCleared={setTerminalCleared}
-                    setSocketConnection={setSocketConnection}
-                    clusterTerminal={true}
-                    terminalId={terminalAccessId}
-                    disconnectRetry={disconnectRetry}
-                    fetchRetry={fetchRetry}
-                    toggleOption={toggleOption}
-                />
+            <div className="flex left bcn-0 pl-20 dc__border-top h-28">
+                <ul role="tablist" className="tab-list">
+                    <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
+                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
+                            Terminal
+                        </div>
+                        {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                    </li>
+                    <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                            Pod Events
+                        </div>
+                        {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                    </li>
+                    <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                            Pod Manifest
+                        </div>
+                        {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                    </li>
+                </ul>
+                {selectedTabIndex == 0 && (
+                    <>
+                        <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+                        {connectTerminal && (
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="bottom"
+                                content={
+                                    socketConnection === SocketConnectionType.CONNECTING ||
+                                    socketConnection === SocketConnectionType.CONNECTED
+                                        ? 'Stop'
+                                        : 'Resume'
+                                }
+                            >
+                                {socketConnection === SocketConnectionType.CONNECTING ||
+                                socketConnection === SocketConnectionType.CONNECTED ? (
+                                    <span className="mr-8 cursor">
+                                        <div
+                                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
+                                            onClick={stopterminalConnection}
+                                        />
+                                    </span>
+                                ) : (
+                                    <span className="mr-8 flex">
+                                        <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
+                                    </span>
+                                )}
+                            </Tippy>
+                        )}
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+                            <div className="flex">
+                                <Abort
+                                    className="icon-dim-16 mr-4 fcn-6"
+                                    onClick={(e) => {
+                                        setTerminalCleared(true)
+                                    }}
+                                />
+                            </div>
+                        </Tippy>
+                        <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+                        <div className="cn-6 ml-8 mr-10">Command </div>
+                        <div>
+                            <Select
+                                placeholder="Select Shell"
+                                options={shellTypes}
+                                defaultValue={shellTypes[0]}
+                                onChange={onChangeTerminalType}
+                                styles={{
+                                    ...multiSelectStyles,
+                                    menu: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                        textAlign: 'left',
+                                        minWidth: '100px',
+                                        maxWidth: '380px',
+                                    }),
+                                    control: (base, state) => ({
+                                        ...base,
+                                        borderColor: 'transparent',
+                                        backgroundColor: 'transparent',
+                                        cursor: 'pointer',
+                                    }),
+                                    singleValue: (base, state) => ({
+                                        ...base,
+                                        fontWeight: 600,
+                                        textAlign: 'left',
+                                        color: '#06c',
+                                    }),
+                                    indicatorsContainer: (provided, state) => ({
+                                        ...provided,
+                                    }),
+                                }}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option,
+                                }}
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+            <div
+                className={`cluster-terminal__wrapper ${fullScreen ? 'full-screen-terminal' : ''} ${
+                    isNodeDetailsPage ? 'node-details-full-screen' : ''
+                }`}
+            >
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                    {terminalContainer()}
+                </div>
+                {selectedTabIndex === 1 && <div className='h-100'><ClusterEvents clusterId={terminalAccessId} /></div>}
+                {selectedTabIndex === 2 && <div className='h-100'><ClusterManifest clusterId={terminalAccessId} /></div>}
             </div>
         </div>
     )

@@ -128,6 +128,7 @@ export interface ColumnMetadataType {
 export interface ClusterListType {
     imageList: string[]
     isSuperAdmin: boolean
+    namespaceList: string[]
 }
 
 export const TEXT_COLOR_CLASS = {
