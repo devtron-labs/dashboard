@@ -147,7 +147,8 @@ export default function CDDetails() {
     }
 
     if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
-    if (result && (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines))) return <AppNotConfigured />
+    if (result && (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines)))
+        return <AppNotConfigured />
     if (!result || (envId && dependencyState[2] !== envId)) return null
     const envOptions: OptionType[] = (result[0]['value'].result || []).map((item) => {
         return { value: `${item.environmentId}`, label: item.environmentName }
@@ -167,12 +168,7 @@ export default function CDDetails() {
                     )}
                 </div>
                 <div className="ci-details__body">
-                    {!envId ? (
-                        <EmptyView
-                            title="No environment selected"
-                            subTitle="Please select an environment to start seeing CD deployments."
-                        />
-                    ) : triggerHistory?.size > 0 ? (
+                    {triggerHistory.size > 0 ? (
                         <Route
                             path={`${path
                                 .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
@@ -189,6 +185,11 @@ export default function CDDetails() {
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
                             />
                         </Route>
+                    ) : !envId ? (
+                        <EmptyView
+                            title="No environment selected"
+                            subTitle="Please select an environment to start seeing CD deployments."
+                        />
                     ) : (
                         <EmptyView
                             title="No deployments"

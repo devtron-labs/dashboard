@@ -133,14 +133,7 @@ export default function CIDetails() {
                     ) : (
                         pipeline && (
                             <>
-                                {pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                    <EmptyView
-                                        title="This is a Linked CI Pipeline"
-                                        subTitle="This is a Linked CI Pipeline"
-                                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                                        linkText="View Source Pipeline"
-                                    />
-                                ) : triggerHistory?.size > 0 ? (
+                                {triggerHistory.size > 0 ? (
                                     <Route
                                         path={`${path
                                             .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
@@ -159,6 +152,13 @@ export default function CIDetails() {
                                             }
                                         />
                                     </Route>
+                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
+                                    <EmptyView
+                                        title="This is a Linked CI Pipeline"
+                                        subTitle="This is a Linked CI Pipeline"
+                                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                                        linkText="View Source Pipeline"
+                                    />
                                 ) : (
                                     !loading && (
                                         <EmptyView
