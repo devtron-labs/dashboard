@@ -1804,6 +1804,10 @@ button.anchor {
     border-bottom-right-radius: 4px;
 }
 
+.dc__no-border-radius {
+    border-radius: 0 !important;
+}
+
 .dc__border-radius-24 {
     border-radius: 24px;
 }
@@ -2312,11 +2316,6 @@ textarea::placeholder {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
-
-
-.dc__word-break-word {
-    word-break: break-word;
 }
 
 .dc__hover-n50:hover {
