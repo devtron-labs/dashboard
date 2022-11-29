@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useContext, useRef} from 'react'
-import {ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart} from './charts.types'
+import React, { useState, useEffect, useContext, useRef } from 'react'
+import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart } from './charts.types'
 import {
     getChartVersionsMin,
     validateAppNames,
@@ -8,8 +8,14 @@ import {
     getChartGroupDetail,
     createChartValues as createChartValuesService,
 } from './charts.service'
-import { getChartRepoList, getAvailableCharts, getTeamList, getEnvironmentListMin, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
-import {mapByKey, showError, sortOptionsByLabel, useAsync, useIntersection} from '../common'
+import {
+    getChartRepoList,
+    getAvailableCharts,
+    getTeamList,
+    getEnvironmentListMin,
+    isGitOpsModuleInstalledAndConfigured,
+} from '../../services/service'
+import { mapByKey, showError, sortOptionsByLabel, useAsync, useIntersection } from '../common'
 import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
@@ -42,17 +48,18 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         chartGroupDetailsLoading: false,
         noGitOpsConfigAvailable: false,
         page_offset: 0,
-        page_size: 20
+        page_size: 20,
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
-
 
     useEffect(() => {
         async function populateCharts() {
             try {
                 await Promise.allSettled([
                     getChartRepoList(),
-                    serverMode == SERVER_MODE.FULL ? getChartGroups() : { value:{ status: "fulfilled",result: undefined} },
+                    serverMode == SERVER_MODE.FULL
+                        ? getChartGroups()
+                        : { value: { status: 'fulfilled', result: undefined } },
                     getAvailableCharts(`?includeDeprecated=1`, 0, 20),
                     getTeamList(),
                     getEnvironmentListMin(),
@@ -66,7 +73,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         environments,
                         gitOpsModuleInstalledAndConfigured,
                     ] = responses.map((response) => response?.value?.result || [])
-                  
+
                     let chartRepos = chartRepoList
                         .map((chartRepo) => {
                             return {
@@ -111,7 +118,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                 ...initialState,
                 availableCharts: state.availableCharts,
                 projects: state.projects,
-                environments: state.environments
+                environments: state.environments,
             })
             const {
                 result: { name, description, chartGroupEntries },
@@ -170,13 +177,16 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, selectedInstances: getSelectedInstances(state.charts) }))
     }, [state.charts])
 
-
     async function applyFilterOnCharts(queryString: string): Promise<any> {
         try {
-            console.log("filters")
-            const { result: availableCharts } = await getAvailableCharts(queryString,state.page_offset, state.page_size)
-            setState((state) => ({ ...state, page_offset: state.page_offset + state.page_size}))
-            setState((state) => ({ ...state, availableCharts: mapByKey(availableCharts,'id') }))
+            console.log('filters')
+            const { result: availableCharts } = await getAvailableCharts(
+                queryString,
+                state.page_offset,
+                state.page_size,
+            )
+            setState((state) => ({ ...state, page_offset: state.page_offset + state.page_size }))
+            setState((state) => ({ ...state, availableCharts: mapByKey(availableCharts, 'id') }))
         } catch (err) {
             showError(err)
         } finally {
@@ -184,26 +194,29 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    async function applyPaginationOnCharts( queryString: string): Promise<any> {
-
-        try{
-            const { result: availableCharts } = await getAvailableCharts(queryString,state.page_offset, state.page_size)
-            setState((state) => ({ ...state, page_offset: state.page_offset + state.page_size}))
-            setState((state) => ({ ...state, availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]) }))
+    async function applyPaginationOnCharts(queryString: string): Promise<any> {
+        try {
+            const { result: availableCharts } = await getAvailableCharts(
+                queryString,
+                state.page_offset,
+                state.page_size,
+            )
+            setState((state) => ({ ...state, page_offset: state.page_offset + state.page_size }))
+            setState((state) => ({
+                ...state,
+                availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts, 'id')]),
+            }))
         } catch (err) {
             showError(err)
         } finally {
             setState((state) => ({ ...state, loading: false }))
         }
-
     }
 
     function resetPaginationOffset(): void {
         state.page_offset = 0
         state.availableCharts = new Map<number, Chart>()
     }
-
-
 
     async function getChartVersionsAndValues(chartId: number, index: number): Promise<void> {
         try {
@@ -219,7 +232,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             showError(err)
         }
     }
-    
+
     async function validateData() {
         try {
             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
@@ -559,6 +572,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         updateChartGroupEntriesFromResponse: clearUnsaved,
         updateChartGroupNameAndDescription,
         reloadState,
-        setCharts
+        setCharts,
     }
 }

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, { useContext, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
@@ -73,8 +73,6 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
         onClick(chart.id)
     }
 
-
-
     return (
         <div
             key={chart.id}
@@ -83,7 +81,11 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
             } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''}`}
             onClick={onClick ? onClickChartSelect : noop}
         >
-            <div className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}>
+            <div
+                className={`${
+                    showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'
+                }`}
+            >
                 <LazyImage
                     className={`${showDescription ? 'dc__list-icon' : ''} dc__chart-grid-item__icon`}
                     src={chart.icon}
