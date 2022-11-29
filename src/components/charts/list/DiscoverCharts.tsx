@@ -45,6 +45,7 @@ import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWa
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import {DetectBottom} from "../../app/details/cIDetails/CIDetails";
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -88,6 +89,8 @@ function DiscoverChartList() {
         discardValuesYamlChanges,
         chartListing,
         applyFilterOnCharts,
+        applyPaginationOnCharts,
+        resetPaginationOffset,
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -105,10 +108,16 @@ function DiscoverChartList() {
     const [isGrid, setIsGrid] = useState<boolean>(false)
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
+
+
     const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
+
+    useEffect(()=>{
+        resetPaginationOffset()
+    }, [location.search])
 
     useEffect(() => {
         if (!state.loading) {
@@ -116,6 +125,8 @@ function DiscoverChartList() {
             callApplyFilterOnCharts()
         }
     }, [location.search, state.loading])
+
+
 
     const handleDeployButtonClick= (): void => {
       handleActionButtonClick(false)
@@ -220,6 +231,10 @@ function DiscoverChartList() {
         setChartListloading(false)
     }
 
+    async function callPaginationOnCharts(){
+        await applyPaginationOnCharts(location.search)
+    }
+
     function handleViewAllCharts(): void {
         history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
     }
@@ -269,6 +284,10 @@ function DiscoverChartList() {
                 </span>
             </div>
         )
+    }
+
+    async function reloadNextAfterBottom(e) {
+        callPaginationOnCharts()
     }
 
     const clearSearch = (): void => {
@@ -391,7 +410,12 @@ function DiscoverChartList() {
                                                                                     : selectChart(chartId)
                                                                             }
                                                                         />
+
                                                                     ))}
+
+                                                                <DetectBottom callback={reloadNextAfterBottom} />
+
+
                                                             </div>
                                                         </>
                                                     ) : (
