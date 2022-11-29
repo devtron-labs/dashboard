@@ -1239,7 +1239,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp &&(
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}
