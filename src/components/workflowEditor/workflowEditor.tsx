@@ -25,6 +25,7 @@ import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import DeprecatedWarningModal from './DeprecatedWarningModal'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     constructor(props) {
@@ -303,7 +304,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 />
                 <Route
                     path={[
-                        URLS.APP_EXTERNAL_CI_CONFIG,
                         URLS.APP_LINKED_CI_CONFIG,
                         URLS.APP_CI_CONFIG,
                         PipelineType.WEBHOOK,
@@ -371,6 +371,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
+                <Route path={`${this.props.match.path}/deprecated-warning`}>
+                    <DeprecatedWarningModal closePopup={this.closePipeline}/>
+                </Route>
             </Switch>
         )
     }
