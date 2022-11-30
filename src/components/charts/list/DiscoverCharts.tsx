@@ -45,7 +45,7 @@ import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWa
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
-import { DetectBottom } from '../../app/details/cIDetails/CIDetails'
+import {DetectBottom} from "../../app/details/cIDetails/CIDetails";
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -109,12 +109,13 @@ function DiscoverChartList() {
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
+
     const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
 
-    useEffect(() => {
+    useEffect(()=>{
         resetPaginationOffset()
     }, [location.search])
 
@@ -125,12 +126,14 @@ function DiscoverChartList() {
         }
     }, [location.search, state.loading])
 
-    const handleDeployButtonClick = (): void => {
-        handleActionButtonClick(false)
+
+
+    const handleDeployButtonClick= (): void => {
+      handleActionButtonClick(false)
     }
 
-    const handleAdvancedButtonClick = (): void => {
-        handleActionButtonClick(true)
+    const handleAdvancedButtonClick= (): void => {
+      handleActionButtonClick(true)
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -228,7 +231,7 @@ function DiscoverChartList() {
         setChartListloading(false)
     }
 
-    async function callPaginationOnCharts() {
+    async function callPaginationOnCharts(){
         await applyPaginationOnCharts(location.search)
     }
 
@@ -407,9 +410,12 @@ function DiscoverChartList() {
                                                                                     : selectChart(chartId)
                                                                             }
                                                                         />
+
                                                                     ))}
 
                                                                 <DetectBottom callback={reloadNextAfterBottom} />
+
+
                                                             </div>
                                                         </>
                                                     ) : (
@@ -599,7 +605,12 @@ function ChartListHeader({ charts }) {
             </h3>
             <p className="mb-0 mt-4 pl-20">
                 Select chart to deploy. &nbsp;
-                <a className="dc__link" href={DOCUMENTATION.CHART_LIST} rel="noreferrer noopener" target="_blank">
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.CHART_LIST}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
                     Learn more about deploying charts
                 </a>
             </p>
@@ -628,7 +639,12 @@ export function EmptyChartGroup({
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
-                    <a href={DOCUMENTATION.CHART_GROUP} rel="noreferrer noopener" target="_blank" className="dc__link">
+                    <a
+                        href={DOCUMENTATION.CHART_GROUP}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                    >
                         Learn more about chart groups
                     </a>
                 )}
