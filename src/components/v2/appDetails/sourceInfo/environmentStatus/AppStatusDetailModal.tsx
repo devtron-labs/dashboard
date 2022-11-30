@@ -235,7 +235,7 @@ function AppStatusDetailModal({
                                 <div className="flex dc__height-inherit">
                                     <div className="dc__align-center">
                                         <InfoIcon className="icon-dim-20" />
-                                        <div>No Data</div>
+                                        <div>No resources available</div>
                                     </div>
                                 </div>
                             )}
