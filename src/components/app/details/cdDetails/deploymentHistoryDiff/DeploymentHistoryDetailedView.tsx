@@ -4,11 +4,13 @@ import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'
 import {
+    DeploymentHistoryDetail,
+} from '../cd.type'
+import {
     DeploymentTemplateOptions,
     CompareViewDeploymentType,
-    DeploymentHistoryDetail,
     DeploymentHistoryParamsType,
-} from '../cd.type'
+} from './types'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
