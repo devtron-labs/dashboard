@@ -666,7 +666,7 @@ export const DeploymentTemplateEditorView = ({
             _basicFieldValues[BASIC_FIELDS.RESOURCES] = resource
         } else if (e.target.name.indexOf(BASIC_FIELDS.ENV_VARIABLES + '_') >= 0) {
             const envVariable = _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][e.target.dataset.index]
-            envVariable[e.target.name.indexOf(BASIC_FIELDS.KEY) >= 0 ? BASIC_FIELDS.KEY : BASIC_FIELDS.VALUE] =
+            envVariable[e.target.name.indexOf(BASIC_FIELDS.NAME) >= 0 ? BASIC_FIELDS.NAME : BASIC_FIELDS.VALUE] =
                 e.target.value
             _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][e.target.dataset.index] = envVariable
         }
@@ -680,7 +680,7 @@ export const DeploymentTemplateEditorView = ({
         if (e.target.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
         } else {
-            _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].unshift({ key: '', value: '' })
+            _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].unshift({ name: '', value: '' })
         }
         setBasicFieldValues(_basicFieldValues)
         if (e.target.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
@@ -932,8 +932,8 @@ export const DeploymentTemplateEditorView = ({
                         <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>
                         <div className="row-container mb-4">
                             {renderLabel(
-                                'Key/Value',
-                                'Set environment variables as key:value for containers that run in the Pod.',
+                                'Name/Value',
+                                'Set environment variables as name:value for containers that run in the Pod.',
                             )}
                             <div
                                 className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120"
@@ -950,12 +950,12 @@ export const DeploymentTemplateEditorView = ({
                                 <div>
                                     <input
                                         type="text"
-                                        name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.KEY}-${index}`}
+                                        name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.NAME}-${index}`}
                                         data-index={index}
-                                        value={envVariable[BASIC_FIELDS.KEY]}
+                                        value={envVariable[BASIC_FIELDS.NAME]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
                                         onChange={handleInputChange}
-                                        placeholder={BASIC_FIELDS.KEY}
+                                        placeholder={BASIC_FIELDS.NAME}
                                         readOnly={readOnly}
                                         autoComplete="off"
                                     />
