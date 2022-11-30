@@ -4,7 +4,7 @@ import { Progressing, useScrollable, showError, useAsync, useInterval, mapByKey,
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
-import { CIPipeline, History } from './types'
+import { BuildDetails, CIPipeline } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
@@ -21,6 +21,7 @@ import Sidebar from '../cicdHistory/Sidebar'
 import { LogsRenderer, Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
+import { History } from '../cicdHistory/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -188,14 +189,6 @@ export const CIListItem: React.FC<{ type: 'report' | 'artifact'; children: any }
     )
 }
 
-interface BuildDetails {
-    triggerHistory: Map<number, History>
-    fullScreenView: boolean
-    synchroniseState: (triggerId: number, triggerDetails: History) => void
-    isSecurityModuleInstalled: boolean
-    isBlobStorageConfigured: boolean
-}
-
 const Details: React.FC<BuildDetails> = ({
     fullScreenView,
     synchroniseState,
@@ -312,58 +305,62 @@ const Details: React.FC<BuildDetails> = ({
     )
 }
 
-const HistoryLogs = React.memo(
-    ({ triggerDetails, isBlobStorageConfigured }: { triggerDetails: History; isBlobStorageConfigured?: boolean }) => {
-        let { path } = useRouteMatch()
-        const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
-        const [ref, scrollToTop, scrollToBottom] = useScrollable({
-            autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-        })
+const HistoryLogs = ({
+    triggerDetails,
+    isBlobStorageConfigured,
+}: {
+    triggerDetails: History
+    isBlobStorageConfigured?: boolean
+}) => {
+    let { path } = useRouteMatch()
+    const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
+    const [ref, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
 
-        return (
-            <div className="trigger-outputs-container">
-                <Switch>
-                    <Route path={`${path}/logs`}>
-                        <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                            <LogsRenderer
-                                triggerDetails={triggerDetails}
-                                isBlobStorageConfigured={isBlobStorageConfigured}
-                                parentType={STAGE_TYPE.CI}
-                            />
-                        </div>
-                        {(scrollToTop || scrollToBottom) && (
-                            <Scroller
-                                style={{ position: 'fixed', bottom: '25px', right: '32px' }}
-                                {...{ scrollToTop, scrollToBottom }}
-                            />
-                        )}
-                    </Route>
-                    <Route path={`${path}/source-code`}>
-                        <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
-                    </Route>
-                    <Route path={`${path}/artifacts`}>
-                        <Artifacts
-                            status={triggerDetails.status}
-                            artifact={triggerDetails.artifact}
-                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                            getArtifactPromise={() => getArtifact(pipelineId, buildId)}
+    return (
+        <div className="trigger-outputs-container">
+            <Switch>
+                <Route path={`${path}/logs`}>
+                    <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
+                        <LogsRenderer
+                            triggerDetails={triggerDetails}
+                            isBlobStorageConfigured={isBlobStorageConfigured}
+                            parentType={STAGE_TYPE.CI}
                         />
-                    </Route>
-                    <Route path={`${path}/security`}>
-                        <SecurityTab
-                            ciPipelineId={triggerDetails.ciPipelineId}
-                            artifactId={triggerDetails.artifactId}
-                            status={triggerDetails.status}
+                    </div>
+                    {(scrollToTop || scrollToBottom) && (
+                        <Scroller
+                            style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                            {...{ scrollToTop, scrollToBottom }}
                         />
-                    </Route>
-                    <Redirect
-                        to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : `${path}/logs`}
+                    )}
+                </Route>
+                <Route path={`${path}/source-code`}>
+                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
+                </Route>
+                <Route path={`${path}/artifacts`}>
+                    <Artifacts
+                        status={triggerDetails.status}
+                        artifact={triggerDetails.artifact}
+                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                        getArtifactPromise={() => getArtifact(pipelineId, buildId)}
                     />
-                </Switch>
-            </div>
-        )
-    },
-)
+                </Route>
+                <Route path={`${path}/security`}>
+                    <SecurityTab
+                        ciPipelineId={triggerDetails.ciPipelineId}
+                        artifactId={triggerDetails.artifactId}
+                        status={triggerDetails.status}
+                    />
+                </Route>
+                <Redirect
+                    to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : `${path}/logs`}
+                />
+            </Switch>
+        </div>
+    )
+}
 
 const SecurityTab = ({
     ciPipelineId,

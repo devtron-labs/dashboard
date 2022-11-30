@@ -1,14 +1,61 @@
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { CIPipeline } from '../cIDetails/types'
 
-export interface BuildDetails {
-    triggerHistory: Map<number, History>
-    pipeline: CIPipeline
-    fullScreenView: boolean
-    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
-    synchroniseState: (triggerId: number, triggerDetails: History) => void
-    isSecurityModuleInstalled: boolean
-    isBlobStorageConfigured: boolean
+
+export interface WebHookData {
+  Id: number
+  EventActionType: string
+  Data: any
+}
+
+export interface History {
+    id: number
+    name: string
+    status: string
+    podStatus: string
+    message: string
+    startedOn: string
+    finishedOn: string
+    ciPipelineId: number
+    namespace: string
+    logLocation: string
+    gitTriggers: Map<number, GitTriggers>
+    ciMaterials: CiMaterial[]
+    triggeredBy: number
+    artifact: string
+    artifactId: number
+    triggeredByEmail: string
+    stage?: 'POST' | 'DEPLOY' | 'PRE'
+    blobStorageEnabled?: boolean
+}
+
+export interface CiMaterial {
+    id: number
+    gitMaterialId: number
+    gitMaterialUrl: string
+    gitMaterialName: string
+    type: string
+    value: string
+    active: boolean
+    lastFetchTime: string
+    isRepoError: boolean
+    repoErrorMsg: string
+    isBranchError: boolean
+    branchErrorMsg: string
+    url: string
+}
+
+export interface GitTriggers {
+    Commit: string
+    Author: string
+    Date: Date
+    Message: string
+    Changes: string[]
+    WebhookData: WebHookData
+    GitRepoUrl: string
+    GitRepoName: string
+    CiConfigureSourceType: string
+    CiConfigureSourceValue: string
 }
 
 export const TERMINAL_STATUS_COLOR_CLASS_MAP = {

@@ -7,7 +7,6 @@ import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import Reload from '../../../Reload/Reload'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
-import { History } from '../cIDetails/types'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
@@ -21,6 +20,7 @@ import { OptionType } from '../../types'
 import { LogsRenderer, Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
+import { History } from '../cicdHistory/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])

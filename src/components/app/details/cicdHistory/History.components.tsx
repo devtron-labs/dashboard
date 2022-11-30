@@ -7,7 +7,7 @@ import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-full
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import { CiMaterial, GitTriggers, History } from '../cIDetails/types'
+import { CiMaterial, GitTriggers, History } from './types'
 import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, POD_STATUS, Routes } from '../../../../config'
 import { default as AnsiUp } from 'ansi_up'
 import { renderConfigurationError } from '../cdDetails/cd.utils'
