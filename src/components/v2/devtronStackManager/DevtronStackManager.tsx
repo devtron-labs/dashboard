@@ -598,6 +598,7 @@ export default function DevtronStackManager({
                                                 ? 'progressing'
                                                 : 'degraded'
                                         }
+                                        showFooter={true}
                                     />
                                 )}
                             </ErrorBoundary>

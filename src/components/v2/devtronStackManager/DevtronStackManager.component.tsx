@@ -368,11 +368,9 @@ const InstallationStatus = ({
             {!isCICDModule &&
                 moduleDetails &&
                 (installationStatus == ModuleStatus.INSTALLING || installationStatus === ModuleStatus.TIMEOUT) && (
-                    <>
-                        <a className="mt-8 dc__no-decor fs-13 fw-6 cursor" onClick={openCheckResourceStatusModal}>
-                            Check resource status
-                        </a>
-                    </>
+                    <a className="mt-8 dc__no-decor fs-13 fw-6 cursor" onClick={openCheckResourceStatusModal}>
+                        Check resource status
+                    </a>
                 )}
             {appName &&
                 installationStatus !== ModuleStatus.NOT_INSTALLED &&
