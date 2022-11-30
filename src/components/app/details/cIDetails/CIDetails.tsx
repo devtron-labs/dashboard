@@ -58,21 +58,21 @@ export default function CIDetails() {
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
-        if (loading || !triggerHistoryResult) {
-            setTriggerHistory(new Map())
+        if (!triggerHistoryResult) {
+            return
         }
-        if (triggerHistoryResult?.result?.length !== pagination.size) {
+        if (triggerHistoryResult.result?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (triggerHistoryResult?.result || []).reduce((agg, curr) => {
+        const newTriggerHistory = (triggerHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
         setTriggerHistory(new Map(newTriggerHistory))
-    }, [triggerHistoryResult, loading])
+    }, [triggerHistoryResult])
 
     useEffect(() => {
         if (buildId || triggerHistory.size === 0) return

@@ -81,8 +81,6 @@ export default function CDDetails() {
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
-    const environment = result[0]?.['value']?.result?.find((envData) => envData.environmentId === +envId) || null
-
     async function pollHistory() {
         // polling
         if (!envId) return
@@ -118,11 +116,7 @@ export default function CDDetails() {
     }, [pipelineId, envId, pipelines])
 
     useEffect(() => {
-        if (triggerId) return // no need to manually redirect
-        if (!envId) return
-        if (!pipelineId) return
-
-        if (loadingDeploymentHistory) return
+        if (triggerId || !envId || !pipelineId || loadingDeploymentHistory) return // no need to manually redirect
         if (deploymentHistoryError) {
             showError(deploymentHistoryError)
             return
@@ -151,6 +145,7 @@ export default function CDDetails() {
     if (result && (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines)))
         return <AppNotConfigured />
     if (!result || (envId && dependencyState[2] !== envId)) return null
+    const environment = result[0]?.['value']?.result?.find((envData) => envData.environmentId === +envId) || null
     const envOptions: OptionType[] = (result[0]['value'].result || []).map((item) => {
         return { value: `${item.environmentId}`, label: item.environmentName }
     })
