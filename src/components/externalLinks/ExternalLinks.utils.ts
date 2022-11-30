@@ -9,19 +9,7 @@ import GrafanaIcon from '../../assets/icons/ic-grafana.png'
 import KibanaIcon from '../../assets/icons/ic-kibana.png'
 import LokiIcon from '../../assets/icons/ic-loki.png'
 import NewrelicIcon from '../../assets/icons/ic-newrelic.png'
-import AlertsIcon from '../../assets/icons/tools/ic-link-alerts.png'
-import BugsIcon from '../../assets/icons/tools/ic-link-bugs.png'
-import ChatIcon from '../../assets/icons/tools/ic-link-chat.png'
-import ConfluenceIcon from '../../assets/icons/tools/ic-link-confluence.png'
-import DocumentIcon from '../../assets/icons/tools/ic-link-document.png'
-import FolderIcon from '../../assets/icons/tools/ic-link-folder.png'
-import JiraIcon from '../../assets/icons/tools/ic-link-jira.png'
-import PerformanceIcon from '../../assets/icons/tools/ic-link-performance.png'
-import ReportIcon from '../../assets/icons/tools/ic-link-report.png'
-import SwaggerIcon from '../../assets/icons/tools/ic-link-swagger.png'
-import WebpageIcon from '../../assets/icons/tools/ic-link-webpage.png'
-import { multiSelectStyles } from '../common'
-import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
+import OtherToolIcon from '../../assets/icons/ic-browser.svg'
 
 export const MONITORING_TOOL_ICONS = {
     cloudwatch: CloudwatchlIcon,
@@ -31,21 +19,10 @@ export const MONITORING_TOOL_ICONS = {
     kibana: KibanaIcon,
     loki: LokiIcon,
     newrelic: NewrelicIcon,
-    alerts: AlertsIcon,
-    bugs: BugsIcon,
-    chat: ChatIcon,
-    confluence: ConfluenceIcon,
-    document: DocumentIcon,
-    folder: FolderIcon,
-    jira: JiraIcon,
-    performance: PerformanceIcon,
-    report: ReportIcon,
-    swagger: SwaggerIcon,
-    webpage: WebpageIcon,
+    other: OtherToolIcon,
 }
 
 export const customMultiSelectStyles = {
-    ...multiSelectStyles,
     menu: (base, state) => ({
         ...base,
         top: 'auto',
@@ -71,12 +48,11 @@ export const customMultiSelectStyles = {
     control: (base, state) => ({
         ...base,
         width: '160px',
-        minHeight: '36px',
+        minHeight: '32px',
         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
         backgroundColor: 'var(--N50)',
         justifyContent: 'flex-start',
         cursor: 'pointer',
-        boxShadow: 'none',
     }),
     valueContainer: (base) => ({
         ...base,
@@ -95,110 +71,16 @@ export const customMultiSelectStyles = {
     }),
 }
 
-export const ToolSelectStyles = {
-    ...customMultiSelectStyles,
-    menuList: (base, state) => ({
-        ...customMultiSelectStyles.menuList(base, state),
-        maxHeight: '208px',
-        padding: '14px',
-    }),
-    menu: (base, state) => ({
-        ...customMultiSelectStyles.menu(base, state),
-        width: 'auto',
-        marginTop: '0',
-    }),
-    control: (base, state) => ({
-        ...customMultiSelectStyles.control(base, state),
-        minHeight: '36px',
-        width: '40px',
-        border: 'none',
-        backgroundColor: 'white',
-        boxShadow: 'none',
-    }),
-    valueContainer: (base) => ({
-        ...base,
-        padding: '0',
-    }),
-    placeholder: (base) => ({
-        ...base,
-        color: 'var(--N500)',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...customMultiSelectStyles.dropdownIndicator(base, state),
-        padding: '0',
-        svg: {
-            width: '16px',
-            height: '16px',
-        },
-    }),
-}
-
-export const NodeLevelSelectStyles = {
-    ...customMultiSelectStyles,
-    menu: (base) => ({
-        ...base,
-        width: '150px',
-    }),
-    control: (base) => ({
-        ...base,
-        minWidth: '67px',
-        maxWidth: '112px',
-        minHeight: '24px',
-        backgroundColor: 'var(--N50)',
-        border: '1px solid var(--N200)',
-        cursor: 'pointer',
-    }),
-    option: (base) => ({
-        ...base,
-        cursor: 'pointer',
-    }),
-    valueContainer: (base) => ({
-        ...base,
-        padding: 0,
-        paddingLeft: '8px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...customMultiSelectStyles.dropdownIndicator(base, state),
-        padding: '0 8px 0 4px',
-    }),
-    placeholder: (base) => ({
-        ...base,
-        color: 'var(--N700)',
-        margin: 0,
-        minWidth: '45px',
-        maxWidth: '60px',
-    }),
-}
-
-export const IdentifierSelectStyles = {
-    ...tempMultiSelectStyles,
-    placeholder: (base) => ({
-        ...base,
-        color: 'var(--N500)',
-    }),
-    control: (base, state) => ({
-        ...tempMultiSelectStyles.control(base, state),
-        minHeight: '36px',
-        border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-        backgroundColor: 'var(--N50)',
-        cursor: 'pointer',
-    }),
-}
-
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
     return (
-        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] || WebpageIcon
+        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] ||
+        OtherToolIcon
     )
 }
 
 export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
     return new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
 }
-
-export const availableVariables = ['{appName}', '{appId}', '{envId}', '{namespace}', '{podName}', '{containerName}']
 
 export const getParsedURL = (
     isAppLevel: boolean,
@@ -222,6 +104,6 @@ export const getParsedURL = (
 
 export const onImageLoadError = (e) => {
     if (e && e.target) {
-        e.target.src = WebpageIcon
+        e.target.src = OtherToolIcon
     }
 }

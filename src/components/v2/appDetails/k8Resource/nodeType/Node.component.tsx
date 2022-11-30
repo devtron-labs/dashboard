@@ -63,14 +63,12 @@ function NodeComponent({
                             label: link.name,
                             value: link.url,
                             icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                            description: link.description,
                         })
                     } else if (link.url.includes('{containerName}')) {
                         _containerLevelExternalLinks.push({
                             label: link.name,
                             value: link.url,
                             icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                            description: link.description,
                         })
                     }
                 }

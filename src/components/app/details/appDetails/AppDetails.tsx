@@ -67,7 +67,7 @@ import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type';
+import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
@@ -232,15 +232,7 @@ export const Details: React.FC<{
             IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
             setAppDetailsResult(response)
             if (response.result?.clusterId) {
-                Promise.all([
-                    getMonitoringTools(),
-                    getExternalLinks(
-                        response.result.clusterId,
-                        params.appId,
-                        ExternalLinkIdentifierType.DevtronApp,
-                    ),
-                    getDeploymentStatusDetail(params.appId, params.envId),
-                ])
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId), getDeploymentStatusDetail(params.appId, params.envId)])
                     .then(([monitoringToolsRes, externalLinksRes, deploymentStatusDetailRes]) => {
                         setExternalLinksAndTools({
                             externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],

@@ -79,7 +79,7 @@ export const BASIC_FIELD_MAPPING = {
 
 export const BASIC_FIELD_PARENT_PATH = {
     [BASIC_FIELDS.CONTAINER_PORT]: '/ContainerPort',
-    [BASIC_FIELDS.INGRESS]: '/ingress',
+    [BASIC_FIELDS.INGRESS]: '/ingress/enabled',
 }
 
 export const EDITOR_VIEW = {

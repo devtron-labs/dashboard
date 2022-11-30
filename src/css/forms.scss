@@ -215,8 +215,7 @@ p.sentence-case:first-letter {
     background-color: var(--white);
 
     &.ecr-authType__radio-group,
-    &.permission-type__radio-group,
-    &.external-link-scope__radio-group {
+    &.permission-type__radio-group {
         border: none;
 
         .form__radio-item {

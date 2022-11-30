@@ -23,7 +23,6 @@ export const URLS = {
     APP_DETAILS_LOG: 'log-analyzer', // for V2
     APP_DETAILS_DEFAULT: 'default-view',
     APP_TRIGGER: 'trigger',
-    APP_OVERVIEW: 'overview',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_DEPLOYMENT_METRICS: 'deployment-metrics',
@@ -36,7 +35,6 @@ export const URLS = {
     APP_CM_CONFIG: 'configmap',
     APP_CS_CONFIG: 'secrets',
     APP_ENV_OVERRIDE_CONFIG: 'env-override',
-    APP_EXTERNAL_LINKS: 'external-links',
     APP_CI_CONFIG: 'ci-pipeline',
     APP_CD_CONFIG: 'cd-pipeline',
     APP_EXTERNAL_CI_CONFIG: 'external-ci',

@@ -96,7 +96,3 @@ export interface WebhookTippyType {
     link: string
     hideTippy: ()=> void
 }
-
-export interface DeprecatedWarningModalType {
-  closePopup: () => void
-}

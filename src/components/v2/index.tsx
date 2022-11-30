@@ -13,7 +13,7 @@ import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type';
+import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
 import ChartValuesView from './values/chartValuesDiff/ChartValuesView';
@@ -88,14 +88,7 @@ function RouterComponent({ envType }) {
             }
 
             if (response.result?.clusterId) {
-                Promise.all([
-                    getMonitoringTools(),
-                    getExternalLinks(
-                        response.result.clusterId,
-                        params.appId,
-                        ExternalLinkIdentifierType.DevtronInstalledApp,
-                    ),
-                ])
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
                         setExternalLinksAndTools({
                             externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],

@@ -158,7 +158,7 @@ export default function GitCommitInfoGeneric({
 
     return (
         <>
-            {showMaterialInfo && (_isWebhook || _lowerCaseCommitInfo.commit) && (
+            {showMaterialInfo && (_isWebhook || _lowerCaseCommitInfo.commit || _isWebhook) && (
                 <GitMaterialInfo
                     repoUrl={materialUrl}
                     materialType={materialSourceType}

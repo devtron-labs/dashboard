@@ -34,18 +34,13 @@ import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import {
     AppComposeRouterProps,
     AppConfigNavigationProps,
-    AppConfigProps,
     AppConfigState,
     AppStageUnlockedType,
-    CustomNavItemsType,
     EnvironmentOverrideRouteProps,
     EnvironmentOverridesProps,
     NextButtonProps,
     STAGE_NAME,
 } from './appConfig.type'
-import { getUserRole } from '../../../userGroups/userGroup.service'
-import ExternalLinks from '../../../externalLinks/ExternalLinks'
-import { UserRoleType } from '../../../userGroups/userGroups.types'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -173,15 +168,6 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string): { navItem
             currentStep: completedSteps,
         },
         {
-            title: 'External Links',
-            href: `/app/${appId}/edit/external-links`,
-            stage: 'EXTERNAL_LINKS',
-            isLocked: false,
-            supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
             title: 'Environment Override',
             href: `/app/${appId}/edit/env-override`,
             stage: 'ENV_OVERRIDE',
@@ -192,13 +178,12 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string): { navItem
     return { navItems }
 }
 
-export default function AppConfig({ appName }: AppConfigProps) {
+export default function AppConfig() {
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
     const [environments, setEnvironments] = useState([])
-    const [userRole, setUserRole] = useState<UserRoleType>()
 
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
@@ -214,18 +199,6 @@ export default function AppConfig({ appName }: AppConfigProps) {
         canDeleteApp: false,
         workflowsRes: null,
     })
-
-    useEffect(() => {
-        if (appName) {
-            getUserRole(appName)
-                .then(({ result }) => {
-                    setUserRole(result?.['role'] as UserRoleType)
-                })
-                .catch((err) => {
-                    showError(err)
-                })
-        }
-    }, [appName])
 
     useEffect(() => {
         Promise.all([getAppConfigStatus(+appId), getWorkflowList(appId)])
@@ -390,26 +363,21 @@ export default function AppConfig({ appName }: AppConfigProps) {
             : ''
     }
 
-    if (state.view === ViewType.LOADING) {
-        return <Progressing pageLoader />
-    } else if (state.view === ViewType.ERROR) {
-        return <ErrorScreenManager code={state.stattusCode} />
-    } else {
-        const _canShowExternalLinks =
-            userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
+    if (state.view === ViewType.LOADING) return <Progressing pageLoader />
+    else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />
+    else
         return (
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
                         className={`app-compose__nav flex column left top dc__position-rel dc__overflow-scroll ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
-                        } ${_canShowExternalLinks ? '' : 'hide-external-links'}`}
+                        }`}
                     >
                         <Navigation
                             deleteApp={showDeleteConfirmation}
                             navItems={state.navItems}
                             isCDPipeline={state.isCDPipeline}
-                            canShowExternalLinks={_canShowExternalLinks}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -424,15 +392,12 @@ export default function AppConfig({ appName }: AppConfigProps) {
                             environments={environments}
                             setEnvironments={setEnvironments}
                             workflowsRes={state.workflowsRes}
-                            userRole={userRole}
-                            canShowExternalLinks={_canShowExternalLinks}
                         />
                     </div>
                 </div>
                 {renderDeleteDialog()}
             </>
         )
-    }
 }
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
@@ -459,40 +424,27 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
     return null
 }
 
-function renderNavItem(item: CustomNavItemsType) {
-    return (
-        <NavLink
-            key={item.title}
-            onClick={(event) => {
-                if (item.isLocked) event.preventDefault()
-            }}
-            className={'app-compose__nav-item cursor'}
-            to={item.href}
-        >
-            {item.title}
-            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
-        </NavLink>
-    )
-}
-
-function Navigation({ navItems, deleteApp, isCDPipeline, canShowExternalLinks }: AppConfigNavigationProps) {
+function Navigation({ navItems, deleteApp, isCDPipeline }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     return (
         <>
             {!isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
             {navItems.map((item) => {
-                if (item.stage === 'EXTERNAL_LINKS') {
+                if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
                     return (
-                        canShowExternalLinks && (
-                            <div key={item.stage}>
-                                {item.stage === 'EXTERNAL_LINKS' && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
-                                {renderNavItem(item)}
-                            </div>
-                        )
+                        <NavLink
+                            key={item.title}
+                            onClick={(event) => {
+                                if (item.isLocked) event.preventDefault()
+                            }}
+                            className={'app-compose__nav-item cursor'}
+                            to={item.href}
+                        >
+                            {item.title}
+                            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20 mt-10" />}
+                        </NavLink>
                     )
-                } else if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
-                    return renderNavItem(item)
                 } else {
                     return <EnvironmentOverrideRouter key={item.title} />
                 }
@@ -517,8 +469,6 @@ function AppComposeRouter({
     environments,
     setEnvironments,
     workflowsRes,
-    userRole,
-    canShowExternalLinks,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -560,11 +510,6 @@ function AppComposeRouter({
                                 environments={environments}
                                 setEnvironments={setEnvironments}
                             />
-                        </Route>
-                    )}
-                    {canShowExternalLinks && (
-                        <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
-                            <ExternalLinks isAppConfigView={true} userRole={userRole} />
                         </Route>
                     )}
                     {isUnlocked.workflowEditor && (

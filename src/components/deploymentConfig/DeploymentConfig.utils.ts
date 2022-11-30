@@ -13,22 +13,20 @@ export const updateTemplateFromBasicValue = (template): void => {
 }
 
 export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean => {
-    if (templateFromBasicValue || defaultTemplate) {
-        const _patchData = jsonpatch.compare(defaultTemplate || templateFromBasicValue, modifiedTemplate)
-        for (let index = 0; index < _patchData.length; index++) {
-            const path = _patchData[index].path
-            for (let index = 0; index < basicFieldArray.length; index++) {
-                if (
-                    (path.indexOf(BASIC_FIELD_MAPPING[basicFieldArray[index]]) === 0 && !path.includes('pathType')) ||
-                    path === BASIC_FIELD_PARENT_PATH[BASIC_FIELDS.INGRESS] ||
-                    path === BASIC_FIELD_PARENT_PATH[BASIC_FIELDS.CONTAINER_PORT]
-                ) {
-                    return true
-                }
+    if (!templateFromBasicValue && !defaultTemplate) return false
+    const _patchData = jsonpatch.compare(defaultTemplate || templateFromBasicValue, modifiedTemplate)
+    for (let index = 0; index < _patchData.length; index++) {
+        const path = _patchData[index].path
+        for (let index = 0; index < basicFieldArray.length; index++) {
+            if (
+                (path.indexOf(BASIC_FIELD_MAPPING[basicFieldArray[index]]) === 0 && !path.includes('pathType')) ||
+                path === BASIC_FIELD_PARENT_PATH[BASIC_FIELDS.INGRESS] ||
+                path === BASIC_FIELD_PARENT_PATH[BASIC_FIELDS.CONTAINER_PORT]
+            ) {
+                return true
             }
         }
     }
-    return false
 }
 
 export const getBasicFieldValue = (template) => {

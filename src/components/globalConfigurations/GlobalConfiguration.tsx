@@ -335,7 +335,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                 key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                 activeClassName="active-route"
             >
-                <div className="flexbox flex-justify">External Links</div>
+                <div className="flexbox flex-justify">External links</div>
             </NavLink>
         </div>
     )

@@ -1000,15 +1000,5 @@ export const setActionWithExpiry = (key: string, days: number): void => {
 }
 
 export const stopPropagation = (event): void => {
-    event.stopPropagation()
-}
-
-// Creates object of arrays containing items grouped by item value of provided key 
-export const createGroupedItemsByKey = (arr: any[], key: string) => {
-    return arr.reduce((prevObj, currentObj) => {
-        return {
-            ...prevObj,
-            [currentObj[key]]: (prevObj[currentObj[key]] || []).concat(currentObj),
-        }
-    }, {})
+  event.stopPropagation()
 }

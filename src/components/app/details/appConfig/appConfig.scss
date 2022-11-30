@@ -12,21 +12,11 @@
         height: 100%;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 110px repeat(6, 36px) 54px 1fr auto;
+        grid-template-rows: 110px repeat(6, 36px) 1fr auto;
         overflow: hidden;
 
         &.hide-app-config-help {
-            grid-template-rows: repeat(6, 36px) 54px 1fr auto;
-
-            &.hide-external-links {
-                grid-template-rows: repeat(6, 36px) 1fr auto;
-            }
-        }
-
-        &:not(.hide-app-config-help) {
-            &.hide-external-links {
-                grid-template-rows: 110px repeat(6, 36px) 1fr auto;
-            }
+            grid-template-rows: repeat(6, 36px) 1fr auto;
         }
 
         .help-container {
@@ -75,7 +65,6 @@
         padding: 0 8px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
         text-decoration: none;
 
         &.routes-container-header {

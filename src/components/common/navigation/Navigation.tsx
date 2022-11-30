@@ -247,7 +247,7 @@ export default class Navigation extends Component<
         return (
             <>
                 <nav>
-                    <aside className="short-nav nav-grid nav-grid--collapsed">
+                    <aside className="short-nav nav-grid nav-grid--collapsed" style={{ marginBottom: 30 }}>
                         <NavLink
                             to={URLS.APP}
                             onClick={(event) => {

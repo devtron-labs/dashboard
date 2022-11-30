@@ -3,20 +3,16 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 
 interface TippyWhiteProps {
-    heading: string
-    placement: 'top' | 'bottom' | 'right' | 'left'
     className?: string
-    Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
-    iconPath?: string
+    placement: 'top' | 'bottom' | 'right' | 'left'
+    Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     iconClass?: string
-    onImageLoadError?: (e) => void
+    heading: string
     infoText?: string
     showCloseButton?: boolean
     interactive?: boolean
     trigger?: string
     additionalContent?: ReactNode
-    documentationLink?: string
-    documentationLinkText?: string
     children: React.ReactElement<any>
 }
 
@@ -26,17 +22,13 @@ export default function TippyWhite({
     className,
     placement,
     Icon,
-    iconPath,
     iconClass,
-    onImageLoadError,
     heading,
     infoText,
     showCloseButton,
     interactive,
     trigger,
     additionalContent,
-    documentationLink,
-    documentationLinkText,
     children,
 }: TippyWhiteProps) {
     const tippyRef = useRef(null)
@@ -61,59 +53,25 @@ export default function TippyWhite({
     const getTippyContent = () => {
         return (
             <>
-                <div className="tippy-white-heading dc__word-break dc__hyphens-auto flex left p-12 dc__border-bottom-n1">
-                    {iconPath ? (
-                        <img
-                            className={`icon-dim-20 mr-6 ${iconClass || ''}`}
-                            src={iconPath}
-                            alt={heading}
-                            onError={onImageLoadError}
-                        />
-                    ) : (
-                        Icon && (
-                            <div className="icon-dim-20 mr-6">
-                                <Icon className={`icon-dim-20 ${iconClass || ''}`} />
-                            </div>
-                        )
-                    )}
-                    <span className={`fs-14 fw-6 cn-9 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>
-                    {showCloseButton && (
-                        <div className="icon-dim-16 ml-auto">
-                            <CloseIcon className="icon-dim-16 fcn-9 cursor" onClick={closeTippy} />
-                        </div>
-                    )}
+                <div className="flex p-12 dc__border-bottom-n1">
+                    <Icon className={`icon-dim-20 mr-6 ${iconClass}`} />
+                    <span className="fs-14 fw-6 cn-9">{heading}</span>
+                    {showCloseButton && <CloseIcon className="icon-dim-16 fcn-9 ml-auto cursor" onClick={closeTippy} />}
                 </div>
-                {infoText && (
-                    <div className="tippy-white-info dc__word-break dc__hyphens-auto fs-13 fw-4 cn-9 p-12">
-                        {infoText}
-                    </div>
-                )}
+                {infoText && <div className="fs-13 fw-4 cn-9 p-12">{infoText}</div>}
                 {additionalContent}
-                {documentationLink && (
-                    <div className="pl-12 pb-12">
-                        <a
-                            href={documentationLink}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            className="cb-5"
-                            onClick={closeTippy}
-                        >
-                            {documentationLinkText || 'Learn more'}
-                        </a>
-                    </div>
-                )}
             </>
         )
     }
 
     return (
         <Tippy
-            className={`tippy-white-container default-white no-content-padding tippy-shadow ${className}`}
+            className={`default-white no-content-padding tippy-shadow ${className}`}
             arrow={false}
             interactive={interactive || false}
             placement={placement}
             content={getTippyContent()}
-            trigger={trigger || 'mouseenter'}
+            trigger={trigger || 'mouseover'}
             onMount={onTippyMount}
         >
             {children}

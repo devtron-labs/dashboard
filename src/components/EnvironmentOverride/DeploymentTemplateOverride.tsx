@@ -213,7 +213,7 @@ export default function DeploymentTemplateOverride({
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
                     if (state.isBasicViewLockedInBase !== null && state.isBasicViewLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
-                        let _isBasicViewLocked = false
+                        let _isBasicViewLocked =false
                         if (
                             _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
                             !_basicFieldValues[BASIC_FIELDS.PORT] ||
@@ -298,15 +298,11 @@ export default function DeploymentTemplateOverride({
                 !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
                 !_basicFieldValues[BASIC_FIELDS.RESOURCES]
             ) {
-              statesToUpdate['yamlMode'] =  true
-              statesToUpdate['currentViewEditor'] = EDITOR_VIEW.ADVANCED
-              statesToUpdate['isBasicViewLocked'] = true
-            } else {
-                statesToUpdate['basicFieldValues'] = _basicFieldValues
-                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
+                statesToUpdate['isBasicViewLocked'] = true
             }
+            statesToUpdate['basicFieldValues'] = _basicFieldValues
+            statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
         }
-
         if (statesToUpdate !== {}) {
             dispatch({
                 type: 'multipleOptions',
@@ -394,7 +390,7 @@ function DeploymentTemplateOverrideForm({
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
             isAppMetricsEnabled: state.data.appMetrics,
-            currentViewEditor: state.isBasicViewLocked ? EDITOR_VIEW.ADVANCED : state.currentViewEditor,
+            currentViewEditor: state.currentViewEditor,
             isBasicViewLocked: state.isBasicViewLocked,
             ...(state.data.environmentConfig.id > 0
                 ? {
