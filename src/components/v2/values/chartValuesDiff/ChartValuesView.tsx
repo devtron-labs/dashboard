@@ -77,7 +77,6 @@ import './ChartValuesView.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
 
@@ -459,14 +458,17 @@ function ChartValuesView({
     const handleRepoChartValueChange = (event) => {
         if (isExternalApp) {
             dispatch({
-                type: ChartValuesViewActionTypes.repoChartValue,
-                payload: event ?? {
-                    appStoreApplicationVersionId: 0,
-                    chartRepoName: '',
-                    chartId: 0,
-                    chartName: commonState.releaseInfo.deployedAppDetail.chartName,
-                    version: commonState.releaseInfo.deployedAppDetail.chartVersion,
-                    deprecated: false,
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    repoChartValue: event ?? {
+                        appStoreApplicationVersionId: 0,
+                        chartRepoName: '',
+                        chartId: 0,
+                        chartName: commonState.releaseInfo.deployedAppDetail.chartName,
+                        version: commonState.releaseInfo.deployedAppDetail.chartVersion,
+                        deprecated: false,
+                    },
+                    showConnectToChartTippy: false,
                 },
             })
 
@@ -613,14 +615,6 @@ function ChartValuesView({
                 },
             })
             toast.error('Some required fields are missing')
-            return false
-        } else if (
-            isExternalApp &&
-            !commonState.installedAppInfo &&
-            !commonState.repoChartValue?.chartRepoName &&
-            commonState.showRepoSelector
-        ) {
-            toast.error('Please select helm chart')
             return false
         } else if (!isValidData(validatedName)) {
             dispatch({
@@ -824,7 +818,7 @@ function ChartValuesView({
                     })
                     toast.error('Please provide the required inputs to view generated manifest')
                     return
-                }  else if (isExternalApp && !commonState.installedAppInfo) {
+                } else if (isExternalApp && !commonState.installedAppInfo) {
                     dispatch({
                         type: ChartValuesViewActionTypes.showConnectToChartTippy,
                         payload: true,

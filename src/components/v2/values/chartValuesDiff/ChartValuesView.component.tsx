@@ -6,12 +6,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import {
-    ConditionalWrap,
-    DeleteDialog,
-    Progressing,
-    Select,
-} from '../../../common'
+import { DeleteDialog, Progressing, Select } from '../../../common'
 import {
     ChartEnvironmentSelectorType,
     ChartVersionSelectorType,
@@ -397,31 +392,24 @@ export const ConnetToHelmChartTippy = ({
     children,
 }: ConnetToHelmChartTippyProps) => {
     return (
-        <ConditionalWrap
-            condition={condition}
-            wrap={(children) => (
-                <TippyCustomized
-                    theme={TippyTheme.black}
-                    className="w-300 ml-4"
-                    placement="right"
-                    Icon={LinkIcon}
-                    iconClass="link-chart-icon"
-                    iconSize={32}
-                    infoTextHeading="Connect app to helm chart and deploy"
-                    infoText="Manifest output is available only for applications deployed using a connected helm chart."
-                    showCloseButton={true}
-                    trigger="manual"
-                    interactive={true}
-                    showOnCreate={true}
-                    arrow={true}
-                    animation="shift-toward-subtle"
-                    onClose={hideConnectToChartTippy}
-                >
-                    <div>{children}</div>
-                </TippyCustomized>
-            )}
+        <TippyCustomized
+            theme={TippyTheme.black}
+            visible={condition}
+            className="w-300 ml-4"
+            placement="right"
+            Icon={LinkIcon}
+            iconClass="link-chart-icon"
+            iconSize={32}
+            infoTextHeading="Connect app to helm chart and deploy"
+            infoText="Manifest output is available only for applications deployed using a connected helm chart."
+            showCloseButton={true}
+            trigger="manual"
+            interactive={true}
+            arrow={true}
+            animation="shift-toward-subtle"
+            onClose={hideConnectToChartTippy}
         >
-            {children}
-        </ConditionalWrap>
+            <div>{children}</div>
+        </TippyCustomized>
     )
 }

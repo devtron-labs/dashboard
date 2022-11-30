@@ -11,6 +11,7 @@ export enum TippyTheme {
 
 interface TippyCustomizedProps {
     theme: TippyTheme
+    visible?: boolean
     heading?: string
     infoTextHeading?: string
     placement: Placement
@@ -46,16 +47,14 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
         document.addEventListener('keydown', closeOnEsc)
     }
 
-    const onTippyHide = () => {
-        if (props.onClose) {
-            props.onClose()
-        }
-    }
-
     const closeTippy = () => {
         if (tippyRef.current?.hide) {
             tippyRef.current.hide()
             tippyRef.current = null
+
+            if (props.onClose) {
+                props.onClose()
+            }
         }
     }
 
@@ -162,10 +161,11 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
             content={getTippyContent()}
             trigger={trigger || 'mouseenter'}
             onMount={onTippyMount}
+            onClickOutside={closeTippy}
             showOnCreate={showOnCreate || false}
             animation={animation || 'fade'}
             duration={duration || 300}
-            onHide={onTippyHide}
+            visible={props.visible}
         >
             {children}
         </Tippy>
