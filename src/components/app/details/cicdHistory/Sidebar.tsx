@@ -4,108 +4,101 @@ import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 
 import { OptionType } from '../../types'
 import ReactSelect from 'react-select'
 import { Option, DropdownIndicator } from '../../../v2/common/ReactSelect.utils'
-import { STAGE_TYPE } from '../triggerView/types'
 import moment from 'moment'
 import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
-import { CiMaterial, GitTriggers, History } from './types'
+import {
+    GitTriggers,
+    HistoryComponentType,
+    HistorySummaryCardType,
+    SidebarType,
+    SummaryTooltipCardType,
+} from './types'
 import TippyHeadless from '@tippyjs/react/headless'
 import { NavLink } from 'react-router-dom'
 import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 import ReactGA from 'react-ga4'
-const Sidebar = React.memo(
-    ({
-        type,
-        filterOptions,
-        triggerHistory,
-        hasMore,
-        setPagination,
-    }: {
-        type: 'CI' | 'CD'
-        filterOptions: OptionType[]
-        triggerHistory: Map<number, History>
-        hasMore: boolean
-        setPagination: React.Dispatch<React.SetStateAction<{ offset: number; size: number }>>
-    }) => {
-        const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
-        const { push } = useHistory()
-        const { path } = useRouteMatch()
-        const handleFilterChange = (selectedFilter: OptionType): void => {
-            if (type === 'CI') {
-                push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
-            } else {
-                push(generatePath(path, { envId: selectedFilter.value, appId }))
-            }
+const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
+    const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
+    const { push } = useHistory()
+    const { path } = useRouteMatch()
+    const handleFilterChange = (selectedFilter: OptionType): void => {
+        if (type === 'CI') {
+            push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
+        } else {
+            push(generatePath(path, { envId: selectedFilter.value, appId }))
         }
-        function reloadNextAfterBottom() {
-            ReactGA.event({
-                category: 'pagination',
-                action: 'scroll',
-                label: type === STAGE_TYPE.CI ? 'ci-history' : 'cd-history',
-                value: triggerHistory.size,
-            })
-            setPagination((pagination) => ({ offset: triggerHistory.size, size: 20 }))
-        }
-        const selectedFilter = filterOptions?.find(
-            (filterOption) => filterOption.value === (type === STAGE_TYPE.CI ? pipelineId : envId),
-        )
-        return (
-            <>
-                <div className="select-pipeline-wrapper w-100 pl-16 pr-16" style={{ overflow: 'hidden' }}>
-                    <label className="form__label">Select {type === STAGE_TYPE.CI ? 'Pipeline' : 'Environment'}</label>
-                    <ReactSelect
-                        value={selectedFilter}
-                        options={filterOptions}
-                        isSearchable={false}
-                        onChange={handleFilterChange}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            control: (base) => ({
-                                ...base,
-                                minHeight: '36px',
-                                fontWeight: '400',
-                                backgroundColor: 'var(--N50)',
-                                cursor: 'pointer',
-                            }),
-                            dropdownIndicator: (base) => ({
-                                ...base,
-                                padding: '0 8px',
-                            }),
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        }}
-                        menuPortalTarget={document.body}
-                    />
-                </div>
-                <div className="flex column top left" style={{ overflowY: 'auto' }}>
-                    {Array.from(triggerHistory)
-                        .sort(([a], [b]) => b - a)
-                        .map(([triggerId, triggerDetails]) => (
-                            <HistorySummaryCard
-                                key={triggerId}
-                                id={triggerId}
-                                status={triggerDetails.status}
-                                startedOn={triggerDetails.startedOn}
-                                triggeredBy={triggerDetails.triggeredBy}
-                                triggeredByEmail={triggerDetails.triggeredByEmail}
-                                ciMaterials={triggerDetails.ciMaterials}
-                                gitTriggers={triggerDetails.gitTriggers}
-                                artifact={triggerDetails.artifact}
-                                stage={triggerDetails.stage}
-                                type={type}
-                            />
-                        ))}
-                    {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
-                </div>
-            </>
-        )
-    },
-)
+    }
+    function reloadNextAfterBottom() {
+        ReactGA.event({
+            category: 'pagination',
+            action: 'scroll',
+            label: type === HistoryComponentType.CI ? 'ci-history' : 'cd-history',
+            value: triggerHistory.size,
+        })
+        setPagination((pagination) => ({ offset: triggerHistory.size, size: 20 }))
+    }
+    const selectedFilter = filterOptions?.find(
+        (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
+    )
+    return (
+        <>
+            <div className="select-pipeline-wrapper w-100 pl-16 pr-16" style={{ overflow: 'hidden' }}>
+                <label className="form__label">
+                    Select {type === HistoryComponentType.CI ? 'Pipeline' : 'Environment'}
+                </label>
+                <ReactSelect
+                    value={selectedFilter}
+                    options={filterOptions}
+                    isSearchable={false}
+                    onChange={handleFilterChange}
+                    components={{
+                        IndicatorSeparator: null,
+                        DropdownIndicator,
+                        Option,
+                    }}
+                    styles={{
+                        ...multiSelectStyles,
+                        control: (base) => ({
+                            ...base,
+                            minHeight: '36px',
+                            fontWeight: '400',
+                            backgroundColor: 'var(--N50)',
+                            cursor: 'pointer',
+                        }),
+                        dropdownIndicator: (base) => ({
+                            ...base,
+                            padding: '0 8px',
+                        }),
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                    }}
+                    menuPortalTarget={document.body}
+                />
+            </div>
+            <div className="flex column top left" style={{ overflowY: 'auto' }}>
+                {Array.from(triggerHistory)
+                    .sort(([a], [b]) => b - a)
+                    .map(([triggerId, triggerDetails]) => (
+                        <HistorySummaryCard
+                            key={triggerId}
+                            id={triggerId}
+                            status={triggerDetails.status}
+                            startedOn={triggerDetails.startedOn}
+                            triggeredBy={triggerDetails.triggeredBy}
+                            triggeredByEmail={triggerDetails.triggeredByEmail}
+                            ciMaterials={triggerDetails.ciMaterials}
+                            gitTriggers={triggerDetails.gitTriggers}
+                            artifact={triggerDetails.artifact}
+                            stage={triggerDetails.stage}
+                            type={type}
+                        />
+                    ))}
+                {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
+            </div>
+        </>
+    )
+})
 
 export default Sidebar
 
@@ -121,25 +114,14 @@ const HistorySummaryCard = React.memo(
         artifact,
         type,
         stage,
-    }: {
-        id: number
-        status: string
-        startedOn: string
-        triggeredBy: number
-        triggeredByEmail: string
-        ciMaterials: CiMaterial[]
-        gitTriggers: Map<number, GitTriggers>
-        artifact: string
-        type: 'CI' | 'CD'
-        stage: 'POST' | 'DEPLOY' | 'PRE'
-    }): JSX.Element => {
+    }: HistorySummaryCardType): JSX.Element => {
         const { path, url } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, ...rest } = useParams<{ triggerId: string }>()
 
         const getPath = (): string => {
-            if (type === STAGE_TYPE.CD) {
+            if (type === HistoryComponentType.CD) {
                 return generatePath(path, { ...rest, triggerId: id }) + '/' + currentTab
             } else {
                 return generatePath(path, { ...rest, buildId: id }) + '/' + currentTab
@@ -187,7 +169,7 @@ const HistorySummaryCard = React.memo(
                         <div className="flex column left dc__ellipsis-right">
                             <div className="cn-9 fs-14">{moment(startedOn).format(Moment12HourFormat)}</div>
                             <div className="flex left cn-7 fs-12">
-                                {type === STAGE_TYPE.CD && (
+                                {type === HistoryComponentType.CD && (
                                     <>
                                         <div className="dc__capitalize">
                                             {['pre', 'post'].includes(stage?.toLowerCase()) ? `${stage}-deploy` : stage}
@@ -223,14 +205,7 @@ const SummaryTooltipCard = React.memo(
         triggeredByEmail,
         ciMaterials,
         gitTriggers,
-    }: {
-        status: string
-        startedOn: string
-        triggeredBy: number
-        triggeredByEmail: string
-        ciMaterials: CiMaterial[]
-        gitTriggers: Map<number, GitTriggers>
-    }): JSX.Element => {
+    }: SummaryTooltipCardType): JSX.Element => {
         return (
             <div
                 className="build-card-popup p-16 br-4 flex column left"

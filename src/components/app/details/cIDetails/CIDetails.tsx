@@ -18,10 +18,11 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { OptionType } from '../../types'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
-import { LogsRenderer, Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { History } from '../cicdHistory/types'
+import { History, HistoryComponentType } from '../cicdHistory/types'
+import LogsRenderer from '../cicdHistory/LogsRenderer'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -118,7 +119,7 @@ export default function CIDetails() {
                     {!fullScreenView && (
                         <Sidebar
                             filterOptions={pipelineOptions}
-                            type="CI"
+                            type={HistoryComponentType.CI}
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
@@ -241,7 +242,7 @@ const Details: React.FC<BuildDetails> = ({
                 {!fullScreenView && (
                     <>
                         <TriggerDetails
-                            type="CI"
+                            type={HistoryComponentType.CI}
                             status={triggerDetails.status}
                             startedOn={triggerDetails.startedOn}
                             finishedOn={triggerDetails.finishedOn}

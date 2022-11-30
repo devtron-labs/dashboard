@@ -1,11 +1,10 @@
 import { TERMINAL_STATUS_MAP } from '../../../../config'
-import { CIPipeline } from '../cIDetails/types'
-
+import { OptionType } from '../../types'
 
 export interface WebHookData {
-  Id: number
-  EventActionType: string
-  Data: any
+    Id: number
+    EventActionType: string
+    Data: any
 }
 
 export interface History {
@@ -25,7 +24,7 @@ export interface History {
     artifact: string
     artifactId: number
     triggeredByEmail: string
-    stage?: 'POST' | 'DEPLOY' | 'PRE'
+    stage?: DeploymentStageType
     blobStorageEnabled?: boolean
 }
 
@@ -58,15 +57,148 @@ export interface GitTriggers {
     CiConfigureSourceValue: string
 }
 
+export interface ArtifactType {
+    status: string
+    artifact: string
+    blobStorageEnabled: boolean
+    getArtifactPromise?: () => Promise<any>
+}
+
+export interface CopyTippyWithTextType {
+    copyText: string
+}
+
+export interface LogsRendererType {
+    triggerDetails: History
+    isBlobStorageConfigured: boolean
+    parentType: string
+}
+
+export interface LogResizeButtonType {
+    fullScreenView: boolean
+    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface ScrollerType {
+    scrollToTop: (e: any) => void
+    scrollToBottom: (e: any) => void
+    style: any
+}
+
+export interface GitChangesType {
+    gitTriggers: Map<number, GitTriggers>
+    ciMaterials: CiMaterial[]
+}
+export interface EmptyViewType {
+    title: string
+    subTitle: string
+    link?: string
+    linkText?: string
+}
+
+export interface SidebarType {
+    type: HistoryComponentType
+    filterOptions: OptionType[]
+    triggerHistory: Map<number, History>
+    hasMore: boolean
+    setPagination: React.Dispatch<React.SetStateAction<{ offset: number; size: number }>>
+}
+
+export interface HistorySummaryCardType {
+    id: number
+    status: string
+    startedOn: string
+    triggeredBy: number
+    triggeredByEmail: string
+    ciMaterials: CiMaterial[]
+    gitTriggers: Map<number, GitTriggers>
+    artifact: string
+    type: HistoryComponentType
+    stage: DeploymentStageType
+}
+
+export interface SummaryTooltipCardType {
+    status: string
+    startedOn: string
+    triggeredBy: number
+    triggeredByEmail: string
+    ciMaterials: CiMaterial[]
+    gitTriggers: Map<number, GitTriggers>
+}
+
+export interface TriggerDetailsType {
+    status: string
+    startedOn: string
+    finishedOn: string
+    triggeredBy: number
+    triggeredByEmail: string
+    ciMaterials: CiMaterial[]
+    gitTriggers: Map<number, GitTriggers>
+    message: string
+    podStatus: string
+    type: HistoryComponentType
+    stage: DeploymentStageType
+    artifact?: string
+}
+
+export interface FinishedType {
+    status: string
+    finishedOn: string
+    artifact: string
+}
+export interface WorkerStatusType {
+    message: string
+    podStatus: string
+    stage: DeploymentStageType
+}
+export interface ProgressingStatusType {
+    status: string
+    message: string
+    podStatus: string
+    stage: DeploymentStageType
+    type: HistoryComponentType
+}
+
+export interface CurrentStatusType {
+    status: string
+    finishedOn: string
+    artifact: string
+    message: string
+    podStatus: string
+    stage: DeploymentStageType
+    type: HistoryComponentType
+}
+
+export interface StartDetailsType {
+    startedOn: string
+    triggeredBy: number
+    triggeredByEmail: string
+    ciMaterials: CiMaterial[]
+    gitTriggers: Map<number, GitTriggers>
+    artifact: string
+    type: HistoryComponentType
+}
+
+export enum HistoryComponentType {
+    CI = 'CI',
+    CD = 'CD',
+}
+
+export enum DeploymentStageType {
+    PRE = 'PRE',
+    DEPLOY = 'DEPLOY',
+    POST = 'POST',
+}
+
 export const TERMINAL_STATUS_COLOR_CLASS_MAP = {
-  [TERMINAL_STATUS_MAP.SUCCEEDED]: 'cg-5',
-  [TERMINAL_STATUS_MAP.HEALTHY]: 'cg-5',
-  [TERMINAL_STATUS_MAP.FAILED]: 'cr-5',
-  [TERMINAL_STATUS_MAP.ERROR]: 'cr-5',
+    [TERMINAL_STATUS_MAP.SUCCEEDED]: 'cg-5',
+    [TERMINAL_STATUS_MAP.HEALTHY]: 'cg-5',
+    [TERMINAL_STATUS_MAP.FAILED]: 'cr-5',
+    [TERMINAL_STATUS_MAP.ERROR]: 'cr-5',
 }
 
 export const PROGRESSING_STATUS = {
-  [TERMINAL_STATUS_MAP.RUNNING]: 'running',
-  [TERMINAL_STATUS_MAP.PROGRESSING]: 'progressing',
-  [TERMINAL_STATUS_MAP.STARTING]: 'starting',
+    [TERMINAL_STATUS_MAP.RUNNING]: 'running',
+    [TERMINAL_STATUS_MAP.PROGRESSING]: 'progressing',
+    [TERMINAL_STATUS_MAP.STARTING]: 'starting',
 }

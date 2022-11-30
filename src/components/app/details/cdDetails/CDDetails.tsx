@@ -17,10 +17,11 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { OptionType } from '../../types'
-import { LogsRenderer, Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { History } from '../cicdHistory/types'
+import { History, HistoryComponentType } from '../cicdHistory/types'
+import LogsRenderer from '../cicdHistory/LogsRenderer'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -160,7 +161,7 @@ export default function CDDetails() {
                     {!fullScreenView && (
                         <Sidebar
                             filterOptions={envOptions}
-                            type="CD"
+                            type={HistoryComponentType.CD}
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
@@ -267,7 +268,7 @@ const TriggerOutput: React.FC<{
                 {!fullScreenView && (
                     <>
                         <TriggerDetails
-                            type="CD"
+                            type={HistoryComponentType.CD}
                             status={triggerDetails.status}
                             startedOn={triggerDetails.startedOn}
                             finishedOn={triggerDetails.finishedOn}

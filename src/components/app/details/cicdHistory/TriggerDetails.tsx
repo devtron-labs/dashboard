@@ -8,7 +8,7 @@ import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
-import { CiMaterial, GitTriggers, PROGRESSING_STATUS, TERMINAL_STATUS_COLOR_CLASS_MAP } from '../cicdHistory/types'
+import { CurrentStatusType, FinishedType, GitTriggers, ProgressingStatusType, PROGRESSING_STATUS, StartDetailsType, TERMINAL_STATUS_COLOR_CLASS_MAP, TriggerDetailsType, WorkerStatusType } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
 
@@ -26,20 +26,7 @@ export const TriggerDetails = React.memo(
         type,
         stage,
         artifact,
-    }: {
-        status: string
-        startedOn: string
-        finishedOn: string
-        triggeredBy: number
-        triggeredByEmail: string
-        ciMaterials: CiMaterial[]
-        gitTriggers: Map<number, GitTriggers>
-        message: string
-        podStatus: string
-        type: 'CI' | 'CD'
-        stage: 'POST' | 'DEPLOY' | 'PRE'
-        artifact?: string
-    }) => {
+    }: TriggerDetailsType) => {
         return (
             <div
                 className="trigger-details"
@@ -86,7 +73,7 @@ export const TriggerDetails = React.memo(
 )
 
 const Finished = React.memo(
-    ({ status, finishedOn, artifact }: { status: string; finishedOn: string; artifact: string }) => {
+    ({ status, finishedOn, artifact }: FinishedType) => {
         return (
             <div className="flex column left">
                 <div
@@ -115,7 +102,7 @@ const Finished = React.memo(
 )
 
 const WorkerStatus = React.memo(
-    ({ message, podStatus, stage }: { message: string; podStatus: string; stage: 'POST' | 'DEPLOY' | 'PRE' }) => {
+    ({ message, podStatus, stage }: WorkerStatusType) => {
         if (!message && !podStatus) return null
         return (
             <>
@@ -143,13 +130,7 @@ const ProgressingStatus = React.memo(
         podStatus,
         stage,
         type,
-    }: {
-        status: string
-        message: string
-        podStatus: string
-        stage: 'POST' | 'DEPLOY' | 'PRE'
-        type: 'CI' | 'CD'
-    }) => {
+    }: ProgressingStatusType) => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
         const { buildId, triggerId, pipelineId } = useParams<{
@@ -232,15 +213,7 @@ const CurrentStatus = React.memo(
         podStatus,
         stage,
         type,
-    }: {
-        status: string
-        finishedOn: string
-        artifact: string
-        message: string
-        podStatus: string
-        stage: 'POST' | 'DEPLOY' | 'PRE'
-        type: 'CI' | 'CD'
-    }) => {
+    }: CurrentStatusType) => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
                 <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
@@ -264,15 +237,7 @@ const StartDetails = ({
     gitTriggers,
     artifact,
     type,
-}: {
-    startedOn: string
-    triggeredBy: number
-    triggeredByEmail: string
-    ciMaterials: CiMaterial[]
-    gitTriggers: Map<number, GitTriggers>
-    artifact: string
-    type: 'CI' | 'CD'
-}) => {
+}: StartDetailsType) => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
     return (

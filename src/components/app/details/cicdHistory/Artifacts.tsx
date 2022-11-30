@@ -11,17 +11,8 @@ import Tippy from '@tippyjs/react'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
-export default function Artifacts({
-    status,
-    artifact,
-    blobStorageEnabled,
-    getArtifactPromise,
-}: {
-    status: string
-    artifact: string
-    blobStorageEnabled: boolean
-    getArtifactPromise?: () => Promise<any>
-}) {
+import { ArtifactType, CopyTippyWithTextType } from './types'
+export default function Artifacts({ status, artifact, blobStorageEnabled, getArtifactPromise }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     async function handleArtifact(e) {
         try {
@@ -70,7 +61,7 @@ export default function Artifacts({
     )
 }
 
-const CopyTippyWithText = ({ copyText }: { copyText: string }): JSX.Element => {
+const CopyTippyWithText = ({ copyText }: CopyTippyWithTextType): JSX.Element => {
     return (
         <>
             {copyText}
