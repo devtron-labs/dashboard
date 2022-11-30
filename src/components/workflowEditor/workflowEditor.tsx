@@ -322,6 +322,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 close={this.closePipeline}
                                 downstreamNodeSize={downstreamNodeSize}
                                 getWorkflows={this.getWorkflows}
+                                refreshParentWorkflows={this.props.getWorkflows}
                             />
                         )
                     }}
