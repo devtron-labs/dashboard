@@ -29,10 +29,8 @@ import { ConfigurationType, SERVER_MODE, URLS } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
-    ChartRepoSelector,
     ActiveReadmeColumn,
     DeleteChartDialog,
-    ChartValuesEditor,
     ChartProjectSelector,
     ChartVersionValuesSelector,
     DeleteApplicationButton,
@@ -40,6 +38,7 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
     ValueNameInput,
+    ConnetToHelmChartTippy,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -78,6 +77,9 @@ import './ChartValuesView.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
+import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
+import ChartValuesEditor from './ChartValuesEditor'
+import { ChartRepoSelector } from './ChartRepoSelector'
 
 function ChartValuesView({
     appId,
@@ -455,24 +457,37 @@ function ChartValuesView({
     }
 
     const handleRepoChartValueChange = (event) => {
-        dispatch({ type: ChartValuesViewActionTypes.repoChartValue, payload: event })
-
         if (isExternalApp) {
-            getChartValuesList(event.chartId, (_chartValuesList: ChartValuesType[]) => {
-                if (!commonState.installedAppInfo) {
-                    const _defaultChartValues: ChartValuesType = {
-                        id: 0,
-                        kind: ChartKind.EXISTING,
-                        name: commonState.releaseInfo.deployedAppDetail.appName,
-                    }
-
-                    _chartValuesList?.push(_defaultChartValues)
-                    handleChartValuesSelection(_defaultChartValues)
-                }
-                setChartValuesList(_chartValuesList)
+            dispatch({
+                type: ChartValuesViewActionTypes.repoChartValue,
+                payload: event ?? {
+                    appStoreApplicationVersionId: 0,
+                    chartRepoName: '',
+                    chartId: 0,
+                    chartName: commonState.releaseInfo.deployedAppDetail.chartName,
+                    version: commonState.releaseInfo.deployedAppDetail.chartVersion,
+                    deprecated: false,
+                },
             })
-            fetchChartVersionsData(event.chartId, dispatch, commonState.releaseInfo.deployedAppDetail.chartVersion)
+
+            if (event) {
+                getChartValuesList(event.chartId, (_chartValuesList: ChartValuesType[]) => {
+                    if (!commonState.installedAppInfo) {
+                        const _defaultChartValues: ChartValuesType = {
+                            id: 0,
+                            kind: ChartKind.EXISTING,
+                            name: commonState.releaseInfo.deployedAppDetail.appName,
+                        }
+
+                        _chartValuesList?.push(_defaultChartValues)
+                        handleChartValuesSelection(_defaultChartValues)
+                    }
+                    setChartValuesList(_chartValuesList)
+                })
+                fetchChartVersionsData(event.chartId, dispatch, commonState.releaseInfo.deployedAppDetail.chartVersion)
+            }
         } else {
+            dispatch({ type: ChartValuesViewActionTypes.repoChartValue, payload: event })
             getChartValuesList(
                 event.chartId,
                 setChartValuesList,
@@ -809,6 +824,12 @@ function ChartValuesView({
                     })
                     toast.error('Please provide the required inputs to view generated manifest')
                     return
+                }  else if (isExternalApp && !commonState.installedAppInfo) {
+                    dispatch({
+                        type: ChartValuesViewActionTypes.showConnectToChartTippy,
+                        payload: true,
+                    })
+                    return
                 } else if (!isValidData(validatedName)) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
@@ -952,12 +973,7 @@ function ChartValuesView({
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
                     value="manifest"
-                    showTippy={isExternalApp && !commonState.installedAppInfo}
-                    canSelect={isValidData()}
-                    tippyContent={
-                        'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
-                    }
-                    isDisabled={isExternalApp && !commonState.installedAppInfo}
+                    canSelect={isExternalApp && !commonState.installedAppInfo ? false : isValidData()}
                 >
                     Manifest output
                 </RadioGroup.Radio>
@@ -1191,6 +1207,13 @@ function ChartValuesView({
         })
     }
 
+    const hideConnectToChartTippy = () => {
+        dispatch({
+            type: ChartValuesViewActionTypes.showConnectToChartTippy,
+            payload: false,
+        })
+    }
+
     const renderConnectToHelmChart = (): JSX.Element => {
         return (
             <div className="flex left mt-8">
@@ -1266,19 +1289,26 @@ function ChartValuesView({
                                 handleRepoChartValueChange={handleRepoChartValueChange}
                                 repoChartValue={commonState.repoChartValue}
                                 chartDetails={commonState.repoChartValue}
+                                showConnectToChartTippy={commonState.showConnectToChartTippy}
+                                hideConnectToChartTippy={hideConnectToChartTippy}
                             />
                         )}
                         {!isDeployChartView &&
                             isExternalApp &&
                             !commonState.installedAppInfo &&
                             !commonState.showRepoSelector && (
-                                <InfoColourBar
-                                    message="This app is not connected to a helm chart. Connect to a helm chart to keep up with latest chart versions."
-                                    classname="connect-to-chart-wrapper info_bar"
-                                    Icon={InfoIcon}
-                                    linkOnClick={handleConnectToChartClick}
-                                    linkText={renderConnectToHelmChart()}
-                                />
+                                <ConnetToHelmChartTippy
+                                    condition={commonState.showConnectToChartTippy}
+                                    hideConnectToChartTippy={hideConnectToChartTippy}
+                                >
+                                    <InfoColourBar
+                                        message="This app is not connected to a helm chart. Connect to a helm chart to keep up with latest chart versions."
+                                        classname="connect-to-chart-wrapper info_bar"
+                                        Icon={InfoIcon}
+                                        linkOnClick={handleConnectToChartClick}
+                                        linkText={renderConnectToHelmChart()}
+                                    />
+                                </ConnetToHelmChartTippy>
                             )}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||

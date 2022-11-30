@@ -103,6 +103,8 @@ export interface ChartRepoSelectorType extends ChartSelectorType {
     handleRepoChartValueChange?: (event: any) => void
     repoChartOptionLabel?: (props: any) => JSX.Element
     chartDetails?: ChartRepoOptions
+    showConnectToChartTippy: boolean
+    hideConnectToChartTippy: () => void
 }
 
 export interface ChartDeprecatedType {
@@ -205,6 +207,7 @@ export interface ChartValuesViewState {
     isDeleteInProgress: boolean
     showDeleteAppConfirmationDialog: boolean
     showRepoSelector: boolean
+    showConnectToChartTippy: boolean
     selectedProject: ChartValuesOptionType
     selectedEnvironment: ChartEnvironmentOptionType
     selectedVersion: number
@@ -257,6 +260,7 @@ export enum ChartValuesViewActionTypes {
     isDeleteInProgress = 'isDeleteInProgress',
     showDeleteAppConfirmationDialog = 'showDeleteAppConfirmationDialog',
     showRepoSelector = 'showRepoSelector',
+    showConnectToChartTippy = 'showConnectToChartTippy',
     selectedProject = 'selectedProject',
     selectedEnvironment = 'selectedEnvironment',
     selectedVersion = 'selectedVersion',
@@ -330,4 +334,63 @@ export interface ChaartValuesGUIFormType {
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
+}
+
+export interface ConnetToHelmChartTippyProps {
+    condition: boolean
+    hideConnectToChartTippy: () => void
+    children: React.ReactElement<any>
+}
+
+export interface ActiveReadmeColumnProps {
+    fetchingReadMe: boolean
+    activeReadMe: string
+}
+
+export interface CompareWithDropdownProps {
+    deployedChartValues: ChartValuesDiffOptionType[]
+    defaultChartValues: ChartValuesDiffOptionType[]
+    presetChartValues: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
+    selectedVersionForDiff: ChartValuesDiffOptionType
+    handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
+}
+
+export interface ValuesForDiffStateType {
+    loadingValuesForDiff: boolean
+    deployedChartValues: ChartValuesDiffOptionType[]
+    defaultChartValues: ChartValuesDiffOptionType[]
+    presetChartValues: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
+    selectedVersionForDiff: ChartValuesDiffOptionType
+    deployedManifest: string
+    valuesForDiff: Map<number, string>
+    selectedValuesForDiff: string
+}
+
+export interface DeleteChartDialogProps {
+    appName: string
+    handleDelete: (force?: boolean) => void
+    toggleConfirmation: () => void
+    isCreateValueView?: boolean
+}
+
+export interface DeleteApplicationButtonProps {
+    type: string
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    dispatch: (action: ChartValuesViewAction) => void
+    clickHandler?: () => void
+}
+
+export interface UpdateApplicationButtonProps {
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    isDeployChartView: boolean
+    isCreateValueView: boolean
+    deployOrUpdateApplication: () => Promise<void>
+}
+
+export interface ErrorScreenWithInfoProps {
+    info: string
 }

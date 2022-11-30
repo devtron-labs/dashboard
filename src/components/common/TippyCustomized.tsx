@@ -1,7 +1,8 @@
-import React, { ReactNode, useRef } from 'react'
+import React, { ReactNode, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import { Placement } from 'tippy.js'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
+import 'tippy.js/animations/shift-toward-subtle.css'
 
 export enum TippyTheme {
     black = 'black',
@@ -19,11 +20,15 @@ interface TippyCustomizedProps {
     iconClass?: string
     iconSize?: number // E.g. 16, 20, etc.. Currently, there are around 12 sizes supported. Check `icons.css` or `base.scss` for supported sizes or add new size (class names starts with `icon-dim-`).
     onImageLoadError?: (e) => void
+    onClose?: () => void
     infoText?: string
     showCloseButton?: boolean
     arrow?: boolean
     interactive?: boolean
+    showOnCreate?: boolean
     trigger?: string
+    animation?: string
+    duration?: number
     additionalContent?: ReactNode
     documentationLink?: string
     documentationLinkText?: string
@@ -32,37 +37,25 @@ interface TippyCustomizedProps {
 
 // This component will handle some of the new tippy designs and interactions
 // So this can be updated to support further for new features or interactions
-export default function TippyCustomized({
-    theme,
-    className,
-    placement,
-    Icon,
-    iconPath,
-    iconClass,
-    iconSize,
-    onImageLoadError,
-    heading,
-    infoTextHeading,
-    infoText,
-    showCloseButton,
-    arrow,
-    interactive,
-    trigger,
-    additionalContent,
-    documentationLink,
-    documentationLinkText,
-    children,
-}: TippyCustomizedProps) {
+export default function TippyCustomized(props: TippyCustomizedProps) {
     const tippyRef = useRef(null)
+    const isWhiteTheme = props.theme === TippyTheme.white
 
     const onTippyMount = (tippyInstance) => {
         tippyRef.current = tippyInstance
         document.addEventListener('keydown', closeOnEsc)
     }
 
+    const onTippyHide = () => {
+        if (props.onClose) {
+            props.onClose()
+        }
+    }
+
     const closeTippy = () => {
         if (tippyRef.current?.hide) {
             tippyRef.current.hide()
+            tippyRef.current = null
         }
     }
 
@@ -73,11 +66,25 @@ export default function TippyCustomized({
     }
 
     const getTippyContent = () => {
+        const {
+            Icon,
+            iconPath,
+            iconClass,
+            iconSize,
+            onImageLoadError,
+            heading,
+            infoTextHeading,
+            infoText,
+            showCloseButton,
+            additionalContent,
+            documentationLink,
+            documentationLinkText,
+        } = props
         return (
             <>
                 <div
-                    className={`dc__word-break dc__hyphens-auto flex left p-12 dc__border-bottom-n1 ${
-                        theme === TippyTheme.white ? 'cn-9' : 'cn-0'
+                    className={`dc__word-break dc__hyphens-auto flex left ${
+                        isWhiteTheme ? 'p-12 dc__border-bottom-n1 cn-9' : 'pt-20 pb-12 pr-20 pl-20 cn-0'
                     }`}
                 >
                     {iconPath ? (
@@ -94,20 +101,36 @@ export default function TippyCustomized({
                             </div>
                         )
                     )}
-                    {heading && <span className={`fs-14 fw-6 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>}
+                    {heading && <span className={`fs-14 fw-6 lh-20 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>}
                     {showCloseButton && (
                         <div className="icon-dim-16 ml-auto">
                             <CloseIcon
-                                className={`icon-dim-16 cursor ${theme === TippyTheme.white ? 'fcn-9' : 'fcn-0'}`}
+                                className={`icon-dim-16 cursor ${isWhiteTheme ? 'fcn-9' : 'fcn-0'}`}
                                 onClick={closeTippy}
                             />
                         </div>
                     )}
                 </div>
                 {infoTextHeading && (
-                    <div className="dc__word-break dc__hyphens-auto fs-14 fw-6 p-12">{infoTextHeading}</div>
+                    <div
+                        className={`dc__word-break dc__hyphens-auto fs-14 fw-6 lh-20 ${
+                            isWhiteTheme ? 'pl-12 pr-12' : 'pl-20 pr-20'
+                        }`}
+                    >
+                        {infoTextHeading}
+                    </div>
                 )}
-                {infoText && <div className="dc__word-break dc__hyphens-auto fs-13 fw-4 p-12">{infoText}</div>}
+                {infoText && (
+                    <div
+                        className={`dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 ${
+                            isWhiteTheme
+                                ? 'p-12'
+                                : `pl-20 pr-20 pt-4 ${additionalContent && documentationLink ? 'pb-12' : 'pb-20'}`
+                        }`}
+                    >
+                        {infoText}
+                    </div>
+                )}
                 {additionalContent}
                 {documentationLink && (
                     <div className="pl-12 pb-12">
@@ -126,19 +149,23 @@ export default function TippyCustomized({
         )
     }
 
+    const { className, placement, arrow, interactive, showOnCreate, trigger, animation, duration, children } = props
+
     return (
         <Tippy
             className={`${
-                theme === TippyTheme.white
-                    ? 'tippy-white-container default-white'
-                    : 'tippy-black-container default-black'
+                isWhiteTheme ? 'tippy-white-container default-white' : 'tippy-black-container default-black'
             } no-content-padding tippy-shadow ${className}`}
             arrow={arrow || false}
             interactive={interactive || false}
-            placement={placement}
+            placement={placement || 'top'}
             content={getTippyContent()}
             trigger={trigger || 'mouseenter'}
             onMount={onTippyMount}
+            showOnCreate={showOnCreate || false}
+            animation={animation || 'fade'}
+            duration={duration || 300}
+            onHide={onTippyHide}
         >
             {children}
         </Tippy>

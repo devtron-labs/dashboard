@@ -248,7 +248,7 @@
             }
 
             .connect-to-chart-wrapper {
-                padding: 8px 12px !important;
+                padding: 8px 10px !important;
 
                 .connect-to-chart-icon {
                     path:last-of-type {
@@ -423,4 +423,12 @@
 
 .no-readme-icon path:nth-child(2) {
     fill: var(--N500);
+}
+
+.tippy-black-container.default-black {
+    .link-chart-icon {
+        path:last-of-type {
+            fill: var(--Y500);
+        }
+    }
 }

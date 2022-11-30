@@ -1,45 +1,36 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useParams } from 'react-router'
-import ReactSelect, { components } from 'react-select'
-import AsyncSelect from 'react-select/async'
+import ReactSelect from 'react-select'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import warn, { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
-
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
+import {
+    ConditionalWrap,
+    DeleteDialog,
+    Progressing,
+    Select,
+} from '../../../common'
 import {
     ChartEnvironmentSelectorType,
-    ChartRepoSelectorType,
     ChartVersionSelectorType,
     ChartValuesSelectorType,
     ChartVersionValuesSelectorType,
-    ChartValuesEditorType,
-    ChartRepoDetailsType,
     ChartProjectSelectorType,
-    ChartGroupOptionType,
-    ChartValuesDiffOptionType,
-    ChartRepoOptions,
-    ChartKind,
     ChartValuesViewActionTypes,
-    ChartValuesViewAction,
     ValueNameInputType,
     AppNameInputType,
+    ConnetToHelmChartTippyProps,
+    ActiveReadmeColumnProps,
+    DeleteChartDialogProps,
+    DeleteApplicationButtonProps,
+    UpdateApplicationButtonProps,
+    ErrorScreenWithInfoProps,
 } from './ChartValuesView.type'
-import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
-import CodeEditor from '../../../CodeEditor/CodeEditor'
-import { NavLink } from 'react-router-dom'
-import { Moment12HourFormat, URLS } from '../../../../config'
-import Tippy from '@tippyjs/react'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
-import moment from 'moment'
-import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
+import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -117,170 +108,6 @@ export const ChartProjectSelector = ({
             />
             {invalidProject && renderValidationErrorLabel()}
         </label>
-    )
-}
-
-export const ChartRepoSelector = ({
-    isExternal,
-    installedAppInfo,
-    isUpdate,
-    repoChartValue,
-    handleRepoChartValueChange,
-    chartDetails,
-}: ChartRepoSelectorType) => {
-    const [repoChartAPIMade, setRepoChartAPIMade] = useState(false)
-    const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOptions[] | null>(
-        isExternal && !installedAppInfo ? [] : [chartDetails],
-    )
-    const [refetchingCharts, setRefetchingCharts] = useState(false)
-    async function handleRepoChartFocus(refetch: boolean) {
-        if (!repoChartAPIMade || refetch) {
-            try {
-                const { result } = await getChartsByKeyword(chartDetails.chartName)
-                filterMatchedCharts(result)
-            } catch (e) {
-                filterMatchedCharts([])
-            } finally {
-                setRepoChartAPIMade(true)
-                setRefetchingCharts(false)
-            }
-        }
-    }
-
-    function refetchCharts() {
-        setRefetchingCharts(true)
-        handleRepoChartFocus(true)
-    }
-
-    function filterMatchedCharts(matchedCharts) {
-        if (repoChartOptions !== null) {
-            const deprecatedCharts = []
-            const nonDeprecatedCharts = []
-            for (let i = 0; i < matchedCharts.length; i++) {
-                if (matchedCharts[i].deprecated) {
-                    deprecatedCharts.push(matchedCharts[i])
-                } else {
-                    nonDeprecatedCharts.push(matchedCharts[i])
-                }
-            }
-            setRepoChartOptions(nonDeprecatedCharts.concat(deprecatedCharts))
-            return nonDeprecatedCharts.concat(deprecatedCharts)
-        }
-        return []
-    }
-
-    async function repoChartLoadOptions(inputValue: string, callback) {
-        try {
-            const { result } = await getChartsByKeyword(inputValue)
-            callback(filterMatchedCharts(result))
-        } catch (err) {
-            callback(filterMatchedCharts([]))
-        }
-    }
-
-    function repoChartSelectOptionLabel({ chartRepoName, chartName, version }: ChartRepoDetailsType) {
-        return <div>{!chartRepoName ? `${chartName} (${version})` : `${chartRepoName}/${chartName}`}</div>
-    }
-
-    function repoChartOptionLabel(props: any) {
-        const { innerProps, innerRef } = props
-        const isCurrentlySelected = props.data.chartId === repoChartValue.chartId
-        return (
-            <div
-                ref={innerRef}
-                {...innerProps}
-                className="repochart-dropdown-wrap"
-                style={{
-                    padding: '12px 16px',
-                    cursor: 'pointer',
-                    backgroundColor: isCurrentlySelected ? 'var(--B100)' : props.isFocused ? 'var(--N100)' : 'white',
-                    color: isCurrentlySelected ? 'var(--B500)' : 'var(--N900)',
-                }}
-            >
-                <div className="flex left">
-                    <span>
-                        {props.data.chartRepoName}/{props.data.chartName}
-                    </span>
-                </div>
-                {props.data.deprecated && <div className="dropdown__deprecated-text">Chart deprecated</div>}
-            </div>
-        )
-    }
-
-    function customMenuListItem(props: any): JSX.Element {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="flex dc__react-select__bottom bcn-0">
-                    <div className="sticky-information__bottom">
-                        <div className="sticky-information__icon mt-2">
-                            <Info className="icon-dim-16" />
-                        </div>
-                        <div className="sticky-information__note fs-13">
-                            Unable to find the desired chart? To connect or re-sync a repo.&nbsp;
-                            <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank" className="fw-6">
-                                Go to chart repository
-                            </NavLink>
-                        </div>
-                    </div>
-                </div>
-            </components.MenuList>
-        )
-    }
-
-    return (
-        (isExternal || isUpdate) && (
-            <div className="form__row form__row--w-100">
-                <div className="flex dc__content-space">
-                    <span className="form__label fs-13 fw-4 lh-20 cn-7">Helm Chart</span>
-                    <Tippy
-                        className="default-tt "
-                        arrow={false}
-                        content="Fetch latest charts from connected chart repositories"
-                    >
-                        <span
-                            className={`refetch-charts cb-5 cursor dc__underline-onhover ${
-                                refetchingCharts ? 'refetching' : ''
-                            }`}
-                            onClick={refetchCharts}
-                        >
-                            {refetchingCharts ? <Refetch className="icon-dim-20" /> : 'Refetch Charts'}
-                        </span>
-                    </Tippy>
-                </div>
-                <div className="repo-chart-selector flex">
-                    <AsyncSelect
-                        cacheOptions
-                        defaultOptions={repoChartOptions}
-                        isSearchable={false}
-                        formatOptionLabel={repoChartSelectOptionLabel}
-                        value={isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue}
-                        loadOptions={repoChartLoadOptions}
-                        onFocus={() => handleRepoChartFocus(false)}
-                        onChange={handleRepoChartValueChange}
-                        noOptionsMessage={() => 'No matching results'}
-                        isLoading={!repoChartAPIMade || refetchingCharts}
-                        components={{
-                            IndicatorSeparator: null,
-                            LoadingIndicator: null,
-                            Option: repoChartOptionLabel,
-                            MenuList: customMenuListItem,
-                        }}
-                        styles={getCommonSelectStyle()}
-                    />
-                </div>
-                {repoChartValue.deprecated && (
-                    <div className="chart-deprecated-wrapper flex top left br-4 cn-9 bcy-1 mt-12">
-                        <div className="icon-dim-16 mr-10">
-                            <Error className="icon-dim-16 chart-deprecated-icon" />
-                        </div>
-                        <span className="chart-deprecated-text fs-12 fw-4">
-                            This chart has been deprecated. Please select another chart to continue receiving updates.
-                        </span>
-                    </div>
-                )}
-            </div>
-        )
     )
 }
 
@@ -376,13 +203,7 @@ export const ChartVersionValuesSelector = ({
     )
 }
 
-export const ActiveReadmeColumn = ({
-    fetchingReadMe,
-    activeReadMe,
-}: {
-    fetchingReadMe: boolean
-    activeReadMe: string
-}) => {
+export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
         <div className="chart-values-view__readme">
             <div className="code-editor__header flex left fs-12 fw-6 cn-7">Readme</div>
@@ -395,478 +216,12 @@ export const ActiveReadmeColumn = ({
     )
 }
 
-const formatOptionLabel = (option: { label: string; value: number; info: string; version?: string }): JSX.Element => {
-    return (
-        <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">
-                {option.label}&nbsp;{option.version && `(${option.version})`}
-            </span>
-            {option.info && <small className="cn-6">{option.info}</small>}
-        </div>
-    )
-}
-
-const customValueContainer = (props: any): JSX.Element => {
-    return (
-        <components.ValueContainer {...props}>
-            {props.selectProps.value?.label}&nbsp;
-            {props.selectProps.value?.version && `(${props.selectProps.value.version})`}
-            {React.cloneElement(props.children[1], {
-                style: { position: 'absolute' },
-            })}
-        </components.ValueContainer>
-    )
-}
-
-const CompareWithDropdown = ({
-    deployedChartValues,
-    defaultChartValues,
-    presetChartValues,
-    deploymentHistoryOptionsList,
-    selectedVersionForDiff,
-    handleSelectedVersionForDiff,
-}: {
-    deployedChartValues: ChartValuesDiffOptionType[]
-    defaultChartValues: ChartValuesDiffOptionType[]
-    presetChartValues: ChartValuesDiffOptionType[]
-    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
-    selectedVersionForDiff: ChartValuesDiffOptionType
-    handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
-}) => {
-    const [groupedOptions, setGroupedOptions] = useState<ChartGroupOptionType[]>([
-        {
-            label: '',
-            options: [],
-        },
-    ])
-
-    useEffect(() => {
-        const _groupedOptions = []
-        if (deploymentHistoryOptionsList.length > 0) {
-            _groupedOptions.push({
-                label: 'Previous deployments',
-                options: deploymentHistoryOptionsList,
-            })
-        }
-        _groupedOptions.push(
-            {
-                label: 'Other apps using this chart',
-                options:
-                    deployedChartValues.length > 0
-                        ? deployedChartValues
-                        : [{ label: 'No options', value: 0, info: '' }],
-            },
-            {
-                label: 'Preset values',
-                options:
-                    presetChartValues.length > 0 ? presetChartValues : [{ label: 'No options', value: 0, info: '' }],
-            },
-            {
-                label: 'Default values',
-                options:
-                    defaultChartValues.length > 0 ? defaultChartValues : [{ label: 'No options', value: 0, info: '' }],
-            },
-        )
-        setGroupedOptions(_groupedOptions)
-    }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
-
-    return (
-        <ReactSelect
-            options={groupedOptions}
-            isMulti={false}
-            isSearchable={false}
-            value={selectedVersionForDiff}
-            classNamePrefix="compare-values-select"
-            isOptionDisabled={(option) => option.value === 0}
-            formatOptionLabel={formatOptionLabel}
-            components={{
-                IndicatorSeparator: null,
-                ValueContainer: customValueContainer,
-                Option,
-            }}
-            styles={{
-                control: (base) => ({
-                    ...base,
-                    backgroundColor: 'var(--N100)',
-                    border: 'none',
-                    boxShadow: 'none',
-                    minHeight: '32px',
-                }),
-                option: (base, state) => ({
-                    ...base,
-                    color: 'var(--N900)',
-                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                }),
-                menu: (base) => ({
-                    ...base,
-                    marginTop: '2px',
-                    minWidth: '240px',
-                }),
-                menuList: (base) => ({
-                    ...base,
-                    position: 'relative',
-                    paddingBottom: 0,
-                    paddingTop: 0,
-                    maxHeight: '250px',
-                }),
-                dropdownIndicator: (base, state) => ({
-                    ...base,
-                    padding: 0,
-                    color: 'var(--N400)',
-                    transition: 'all .2s ease',
-                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                }),
-                noOptionsMessage: (base) => ({
-                    ...base,
-                    color: 'var(--N600)',
-                }),
-            }}
-            onChange={handleSelectedVersionForDiff}
-        />
-    )
-}
-
-export const ChartValuesEditor = ({
-    loading,
-    isExternalApp,
-    isDeployChartView,
-    isCreateValueView,
-    appId,
-    appName,
-    valuesText,
-    onChange,
-    repoChartValue,
-    chartValuesList,
-    deploymentHistoryList,
-    defaultValuesText,
-    showEditorHeader,
-    hasChartChanged,
-    showInfoText,
-    manifestView,
-    generatedManifest,
-    comparisonView,
-    selectedChartValues,
-}: ChartValuesEditorType) => {
-    const [valuesForDiffState, setValuesForDiffState] = useState<{
-        loadingValuesForDiff: boolean
-        deployedChartValues: ChartValuesDiffOptionType[]
-        defaultChartValues: ChartValuesDiffOptionType[]
-        presetChartValues: ChartValuesDiffOptionType[]
-        deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
-        selectedVersionForDiff: ChartValuesDiffOptionType
-        deployedManifest: string
-        valuesForDiff: Map<number, string>
-        selectedValuesForDiff: string
-    }>({
-        loadingValuesForDiff: false,
-        deployedChartValues: [],
-        defaultChartValues: [],
-        presetChartValues: [],
-        deploymentHistoryOptionsList: [],
-        selectedValuesForDiff: defaultValuesText,
-        deployedManifest: '',
-        valuesForDiff: new Map<number, string>(),
-        selectedVersionForDiff: null,
-    })
-
-    useEffect(() => {
-        if (
-            !manifestView &&
-            chartValuesList.length > 0 &&
-            (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
-        ) {
-            const deployedChartValues = [],
-                defaultChartValues = [],
-                presetChartValues = []
-            let _selectedVersionForDiff
-
-            for (let index = 0; index < chartValuesList.length; index++) {
-                const _chartValue = chartValuesList[index]
-                const processedChartValue = {
-                    label: _chartValue.name,
-                    value: _chartValue.id,
-                    appStoreVersionId: _chartValue.appStoreVersionId || 0,
-                    info: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
-                    kind: _chartValue.kind,
-                    version: _chartValue.chartVersion,
-                }
-                if (_chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName) {
-                    deployedChartValues.push(processedChartValue)
-                } else if (_chartValue.kind === ChartKind.DEFAULT) {
-                    defaultChartValues.push(processedChartValue)
-                } else if (_chartValue.kind === ChartKind.TEMPLATE) {
-                    presetChartValues.push(processedChartValue)
-                }
-                if (isCreateValueView && _chartValue.id === selectedChartValues?.id) {
-                    _selectedVersionForDiff = processedChartValue
-                }
-            }
-            const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
-                return {
-                    label: moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
-                    value: _deploymentHistory.version,
-                    info: '',
-                    version: _deploymentHistory.chartMetadata.chartVersion,
-                }
-            })
-
-            setValuesForDiffState({
-                ...valuesForDiffState,
-                deployedChartValues,
-                defaultChartValues,
-                presetChartValues,
-                deploymentHistoryOptionsList,
-                selectedVersionForDiff:
-                    _selectedVersionForDiff ||
-                    (deploymentHistoryOptionsList.length > 0
-                        ? deploymentHistoryOptionsList[0]
-                        : deployedChartValues.length > 0
-                        ? deployedChartValues[0]
-                        : presetChartValues.length > 0
-                        ? presetChartValues[0]
-                        : defaultChartValues[0]),
-            })
-        }
-    }, [chartValuesList, deploymentHistoryList, selectedChartValues])
-
-    useEffect(() => {
-        if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
-            setValuesForDiffState({
-                ...valuesForDiffState,
-                loadingValuesForDiff: true,
-            })
-            const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-            const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
-            const _currentValues = manifestView
-                ? valuesForDiffState.deployedManifest
-                : valuesForDiffState.valuesForDiff.get(_version)
-            if (!_currentValues) {
-                if (
-                    selectedVersionForDiff.kind === ChartKind.DEPLOYED ||
-                    selectedVersionForDiff.kind === ChartKind.DEFAULT ||
-                    selectedVersionForDiff.kind === ChartKind.TEMPLATE
-                ) {
-                    getChartValues(_version, selectedVersionForDiff.kind)
-                        .then((res) => {
-                            const _valuesForDiff = valuesForDiffState.valuesForDiff
-                            _valuesForDiff.set(_version, res.result.values)
-                            setValuesForDiffState({
-                                ...valuesForDiffState,
-                                loadingValuesForDiff: false,
-                                valuesForDiff: _valuesForDiff,
-                                selectedValuesForDiff: res.result.values,
-                            })
-                        })
-                        .catch((e) => {
-                            showError(e)
-                            setValuesForDiffState({
-                                ...valuesForDiffState,
-                                selectedValuesForDiff: '',
-                                loadingValuesForDiff: false,
-                            })
-                        })
-                } else {
-                    getDeploymentManifestDetails(appId, _version, isExternalApp)
-                        .then((res) => {
-                            const _valuesForDiff = valuesForDiffState.valuesForDiff
-                            const _selectedValues = isExternalApp
-                                ? YAML.stringify(JSON.parse(res.result.valuesYaml))
-                                : res.result.valuesYaml
-                            _valuesForDiff.set(_version, _selectedValues)
-
-                            const _valuesForDiffState = {
-                                ...valuesForDiffState,
-                                loadingValuesForDiff: false,
-                                valuesForDiff: _valuesForDiff,
-                                selectedValuesForDiff: _selectedValues,
-                            }
-
-                            if (_version === deploymentHistoryList[0].version) {
-                                _valuesForDiffState.deployedManifest = res.result.manifest
-                            }
-
-                            setValuesForDiffState(_valuesForDiffState)
-                        })
-                        .catch((e) => {
-                            showError(e)
-                            setValuesForDiffState({
-                                ...valuesForDiffState,
-                                selectedValuesForDiff: '',
-                                loadingValuesForDiff: false,
-                            })
-                        })
-                }
-            } else {
-                setValuesForDiffState({
-                    ...valuesForDiffState,
-                    loadingValuesForDiff: false,
-                    selectedValuesForDiff: _currentValues,
-                })
-            }
-        }
-    }, [comparisonView, valuesForDiffState.selectedVersionForDiff])
-
-    useEffect(() => {
-        if (
-            (!comparisonView && valuesForDiffState.selectedVersionForDiff) ||
-            (comparisonView && !valuesForDiffState.selectedVersionForDiff)
-        ) {
-            let _selectedVersionForDiff
-            if (isCreateValueView && selectedChartValues && valuesForDiffState.selectedVersionForDiff) {
-                if (valuesForDiffState.selectedVersionForDiff.value !== selectedChartValues?.id) {
-                    let listToTraverse =
-                        selectedChartValues.kind === ChartKind.DEPLOYED ? 'deployedChartValues' : 'defaultChartValues'
-                    _selectedVersionForDiff = valuesForDiffState[listToTraverse].find(
-                        (chartData) => chartData.value === selectedChartValues.id,
-                    )
-                } else {
-                    _selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-                }
-            }
-            setValuesForDiffState({
-                ...valuesForDiffState,
-                selectedVersionForDiff:
-                    _selectedVersionForDiff ||
-                    (valuesForDiffState.deploymentHistoryOptionsList.length > 0
-                        ? valuesForDiffState.deploymentHistoryOptionsList[0]
-                        : valuesForDiffState.deployedChartValues.length > 0
-                        ? valuesForDiffState.deployedChartValues[0]
-                        : valuesForDiffState.defaultChartValues[0]),
-            })
-        }
-    }, [comparisonView])
-
-    const handleSelectedVersionForDiff = (selected: ChartValuesDiffOptionType) => {
-        if (selected.value !== valuesForDiffState.selectedVersionForDiff.value) {
-            setValuesForDiffState({
-                ...valuesForDiffState,
-                selectedVersionForDiff: selected,
-            })
-        }
-    }
-
-    const getDynamicHeight = () => {
-        if (isDeployChartView && (!showInfoText || showEditorHeader)) {
-            return 'height: calc(100vh - 130px)'
-        } else if (isDeployChartView || (!isDeployChartView && (!showInfoText || showEditorHeader))) {
-            return 'height: calc(100vh - 162px)'
-        } else {
-            return 'height: calc(100vh - 196px)'
-        }
-    }
-
-    return (
-        <div
-            className={`code-editor-container ${
-                showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
-            }`}
-        >
-            {comparisonView && (
-                <div className="code-editor__header chart-values-view__diff-view-header">
-                    <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
-                        {manifestView ? (
-                            <span>Deployed manifest</span>
-                        ) : (
-                            <>
-                                <span style={{ width: '90px' }}>Compare with: </span>
-                                <CompareWithDropdown
-                                    deployedChartValues={valuesForDiffState.deployedChartValues}
-                                    defaultChartValues={valuesForDiffState.defaultChartValues}
-                                    presetChartValues={valuesForDiffState.presetChartValues}
-                                    deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                                    selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                                    handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                                />
-                            </>
-                        )}
-                    </div>
-                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
-                        {manifestView ? (
-                            <span>Manifest output for YAML</span>
-                        ) : (
-                            <>
-                                <Edit className="icon-dim-16 mr-10" />
-                                values.yaml&nbsp;
-                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
-                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-            <CodeEditor
-                defaultValue={
-                    comparisonView
-                        ? manifestView
-                            ? valuesForDiffState.deployedManifest
-                            : valuesForDiffState.selectedValuesForDiff
-                        : ''
-                }
-                value={manifestView ? generatedManifest : valuesText}
-                diffView={comparisonView}
-                noParsing
-                mode="yaml"
-                onChange={onChange}
-                loading={loading || valuesForDiffState.loadingValuesForDiff}
-                customLoader={
-                    <DetailsProgressing size={32}>
-                        {manifestView && !comparisonView && (
-                            <span className="fs-13 fw-4 cn-7 mt-8 dc__align-center">
-                                Generating the manifest. <br /> Please wait...
-                            </span>
-                        )}
-                    </DetailsProgressing>
-                }
-                height={getDynamicHeight()}
-                readOnly={manifestView}
-            >
-                {showEditorHeader && (
-                    <CodeEditor.Header>
-                        <div className="flex fs-12 fw-6 cn-7">
-                            <Edit className="icon-dim-16 mr-10" />
-                            values.yaml
-                        </div>
-                    </CodeEditor.Header>
-                )}
-                {!manifestView && showInfoText && hasChartChanged && (
-                    <CodeEditor.Warning
-                        className="dc__ellipsis-right"
-                        text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
-                    />
-                )}
-                {manifestView && showInfoText && (
-                    <CodeEditor.Information
-                        className="dc__ellipsis-right"
-                        text="Manifest is generated locally from the YAML."
-                    >
-                        <Tippy
-                            className="default-tt w-250"
-                            arrow={false}
-                            placement="bottom"
-                            content={
-                                'This manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. whether an API is supported) is NOT done. K8s version based templating may be different depending on cluster version.'
-                            }
-                        >
-                            <span className="cursor cb-5 fw-6">&nbsp;Know more</span>
-                        </Tippy>
-                    </CodeEditor.Information>
-                )}
-            </CodeEditor>
-        </div>
-    )
-}
-
 export const DeleteChartDialog = ({
     appName,
     handleDelete,
     toggleConfirmation,
     isCreateValueView,
-}: {
-    appName: string
-    handleDelete: (force?: boolean) => void
-    toggleConfirmation: () => void
-    isCreateValueView?: boolean
-}) => {
+}: DeleteChartDialogProps) => {
     return (
         <DeleteDialog
             title={`Delete '${appName}' ?`}
@@ -887,42 +242,6 @@ export const DeleteChartDialog = ({
                 </DeleteDialog.Description>
             )}
         </DeleteDialog>
-    )
-}
-
-export const AppNotLinkedDialog = ({
-    close,
-    update,
-}: {
-    close: () => void
-    update: (forceUpdate: boolean) => void
-}) => {
-    return (
-        <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={warn} />
-            <ConfirmationDialog.Body title="This app is not linked to a helm chart">
-                <p className="fs-13 cn-7 lh-1-54">
-                    We strongly recommend linking the app to a helm chart for better application management.
-                </p>
-            </ConfirmationDialog.Body>
-            <ConfirmationDialog.ButtonGroup>
-                <div className="flex right">
-                    <button type="button" className="cta cancel" onClick={close}>
-                        Go back
-                    </button>
-                    <button
-                        type="button"
-                        className="cta ml-12 dc__no-decor"
-                        onClick={() => {
-                            close()
-                            update(true)
-                        }}
-                    >
-                        Deploy without linking helm chart
-                    </button>
-                </div>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
     )
 }
 
@@ -992,13 +311,7 @@ export const DeleteApplicationButton = ({
     isUpdateInProgress,
     isDeleteInProgress,
     dispatch,
-}: {
-    type: string
-    isUpdateInProgress: boolean
-    isDeleteInProgress: boolean
-    dispatch: (action: ChartValuesViewAction) => void
-    clickHandler?: () => void
-}) => {
+}: DeleteApplicationButtonProps) => {
     return (
         <button
             className="chart-values-view__delete-cta cta delete"
@@ -1030,13 +343,7 @@ export const UpdateApplicationButton = ({
     isDeployChartView,
     isCreateValueView,
     deployOrUpdateApplication,
-}: {
-    isUpdateInProgress: boolean
-    isDeleteInProgress: boolean
-    isDeployChartView: boolean
-    isCreateValueView: boolean
-    deployOrUpdateApplication: () => Promise<void>
-}) => {
+}: UpdateApplicationButtonProps) => {
     const { chartValueId } = useParams<{ chartValueId: string }>()
 
     return (
@@ -1073,7 +380,7 @@ export const UpdateApplicationButton = ({
     )
 }
 
-export const ErrorScreenWithInfo = ({ info }: { info: string }) => {
+export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -1081,5 +388,40 @@ export const ErrorScreenWithInfo = ({ info }: { info: string }) => {
             </EmptyState.Image>
             <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
         </EmptyState>
+    )
+}
+
+export const ConnetToHelmChartTippy = ({
+    condition,
+    hideConnectToChartTippy,
+    children,
+}: ConnetToHelmChartTippyProps) => {
+    return (
+        <ConditionalWrap
+            condition={condition}
+            wrap={(children) => (
+                <TippyCustomized
+                    theme={TippyTheme.black}
+                    className="w-300 ml-4"
+                    placement="right"
+                    Icon={LinkIcon}
+                    iconClass="link-chart-icon"
+                    iconSize={32}
+                    infoTextHeading="Connect app to helm chart and deploy"
+                    infoText="Manifest output is available only for applications deployed using a connected helm chart."
+                    showCloseButton={true}
+                    trigger="manual"
+                    interactive={true}
+                    showOnCreate={true}
+                    arrow={true}
+                    animation="shift-toward-subtle"
+                    onClose={hideConnectToChartTippy}
+                >
+                    <div>{children}</div>
+                </TippyCustomized>
+            )}
+        >
+            {children}
+        </ConditionalWrap>
     )
 }
