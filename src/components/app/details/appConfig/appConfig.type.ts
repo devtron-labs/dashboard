@@ -58,6 +58,8 @@ export interface AppConfigNavigationProps {
     deleteApp: () => void
     isCDPipeline: boolean
     canShowExternalLinks: boolean
+    showCannotDeleteTooltip: boolean
+    toggleRepoSelectionTippy: () => void
 }
 
 export interface AppComposeRouterProps {
@@ -73,6 +75,7 @@ export interface AppComposeRouterProps {
     workflowsRes: WorkflowResult
     userRole: UserRoleType
     canShowExternalLinks: boolean
+    toggleRepoSelectionTippy: () => void
 }
 
 export interface EnvironmentOverridesProps {

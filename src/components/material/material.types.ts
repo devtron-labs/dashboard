@@ -3,6 +3,7 @@ import { RouteComponentProps } from 'react-router';
 export interface MaterialListProps extends RouteComponentProps<{ appId: string; }> {
     respondOnSuccess: () => void;
     isWorkflowEditorUnlocked: boolean;
+    toggleRepoSelectionTippy: () => void
 }
 
 export interface GitMaterialType {
@@ -72,7 +73,8 @@ export interface MaterialViewProps {
     handleSubmoduleCheckbox:(event) => void;
     appId?: number;
     reload: ()=> void;
-    preventRepoDelete?: boolean
+    preventRepoDelete?: boolean;
+    toggleRepoSelectionTippy?: () => void
 }
 
 export interface MaterialViewState {

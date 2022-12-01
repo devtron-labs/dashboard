@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { ConfirmationDialog, DeleteDialog, showError } from '../components/common';
+import { ConfirmationDialog, DeleteDialog, noop, showError } from '../components/common';
 import { ServerErrors } from '../modals/commonTypes';
 import info from '../assets/icons/ic-info-filled.svg';
 import { useHistory } from 'react-router';
@@ -18,6 +18,7 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
+    toggleRepoSelectionTippy = noop
     // triggerTarget,
 }) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false);
@@ -39,6 +40,7 @@ function DeleteComponent({
             setDeleting(false);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true);
+                toggleRepoSelectionTippy()
             }
         } finally {
             setDeleting(false);
@@ -52,8 +54,8 @@ function DeleteComponent({
 
     const renderCannotDeleteDialogModal = () => {
         // const triggerTargetBuildConfig = document.getElementsByClassName('div')[1]
-        const triggerTargetBuildConfig = document.querySelectorAll('button.delete')
-        // const triggerButtonGitMaterial = document.querySelectorAll('button.cta-cd-delete-modal')[1]
+        // const triggerTargetBuildConfig = document.querySelectorAll('div.app-compose__nav')[0]
+        const triggerButtonGitMaterial = document.querySelectorAll('button.delete')[1]
         return (
             <div></div>
             // <TippyCustomized
@@ -72,11 +74,11 @@ function DeleteComponent({
             //         arrow={true}
             //         animation="shift-toward-subtle"
             //         // triggerTarget= {triggerTargetBuildConfig}
-            //         triggerTarget= {triggerTargetBuildConfig}
+            //         triggerTarget= {triggerButtonGitMaterial}
             //         // onClose={hideConnectToChartTippy}
             //     >
             //         <div>
-            //         triggerTargetBuildConfig
+                    
             //         </div>
             //     </TippyCustomized>
             // <ConfirmationDialog className="confirmation-dialog__body--w-400">
@@ -107,7 +109,7 @@ function DeleteComponent({
     };
     return (
         <div>
-            {/* {!showCannotDeleteDialogModal && renderDeleteDialog()} */}
+            {!showCannotDeleteDialogModal && renderDeleteDialog()}
             {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
         </div>
     );

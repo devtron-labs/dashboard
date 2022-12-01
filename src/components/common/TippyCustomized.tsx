@@ -1,5 +1,5 @@
-import React, { ReactNode, useRef } from 'react'
-import Tippy, { tippy } from '@tippyjs/react'
+import React, { ReactNode, useEffect, useRef } from 'react'
+import Tippy from '@tippyjs/react'
 import { Placement } from 'tippy.js'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import 'tippy.js/animations/shift-toward-subtle.css'
@@ -11,6 +11,7 @@ export enum TippyTheme {
 
 interface TippyCustomizedProps {
     theme: TippyTheme
+    visible?: boolean
     heading?: string
     infoTextHeading?: string
     placement: Placement
@@ -33,8 +34,6 @@ interface TippyCustomizedProps {
     documentationLink?: string
     documentationLinkText?: string
     children: React.ReactElement<any>
-    triggerTarget?: Element
-    // triggerMaterial?: Element
 }
 
 // This component will handle some of the new tippy designs and interactions
@@ -48,27 +47,10 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
         document.addEventListener('keydown', closeOnEsc)
     }
 
-    const onHidden = (tippyInstance) => {
-        tippyRef.current = null
-        document.removeEventListener('keydown', closeOnEsc)
-
-
-        // if (props.onClose) {
-        //     props.onClose()
-        // }
-    }
-    // const triggerOtherTarget = () => {
-    //     // const triggerTarget = document.getElementsByClassName(triggerTargetElementName)//'div'
-    //     // const triggerElement = document.querySelector(triggerElementName)//'button'
-
-    //     tippy(triggerTarget, {
-    //         triggerTarget:  props.triggerMaterial,
-    //     })
-
-    // }
     const closeTippy = () => {
         if (tippyRef.current?.hide) {
             tippyRef.current.hide()
+            tippyRef.current = null
 
             if (props.onClose) {
                 props.onClose()
@@ -166,7 +148,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
         )
     }
 
-    const { className, placement, arrow, interactive, showOnCreate, trigger, animation, duration, children, triggerTarget } = props
+    const { className, placement, arrow, interactive, showOnCreate, trigger, animation, duration, children } = props
 
     return (
         <Tippy
@@ -180,12 +162,10 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
             trigger={trigger || 'mouseenter'}
             onMount={onTippyMount}
             onClickOutside={closeTippy}
-            onHidden={onHidden}
             showOnCreate={showOnCreate || false}
             animation={animation || 'fade'}
             duration={duration || 300}
-            triggerTarget= {triggerTarget}
-            // onTrigger= {triggerOtherTarget}
+            visible={props.visible}
         >
             {children}
         </Tippy>
