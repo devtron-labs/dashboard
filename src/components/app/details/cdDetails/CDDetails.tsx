@@ -69,6 +69,9 @@ export default function CDDetails() {
             return agg
         }, triggerHistory)
         setTriggerHistory(new Map(newTriggerHistory))
+        return () => {
+            setTriggerHistory(new Map())
+        }
     }, [deploymentHistoryResult])
 
     async function pollHistory() {
@@ -90,13 +93,6 @@ export default function CDDetails() {
         }, triggerHistoryMap)
         setTriggerHistory(newTriggerHistory)
     }
-
-    useEffect(() => {
-        return () => {
-            setPagination({ offset: 0, size: 20 })
-            setTriggerHistory(new Map())
-        }
-    }, [envId])
 
     function syncState(triggerId: number, triggerDetail: History) {
         if (triggerId === triggerDetail.id) {

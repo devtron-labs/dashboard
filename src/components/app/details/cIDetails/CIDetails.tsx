@@ -47,7 +47,7 @@ export default function CIDetails() {
             ]),
         [appId],
     )
-    const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
+    const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
         !!pipelineId,
@@ -71,14 +71,10 @@ export default function CIDetails() {
             return agg
         }, triggerHistory)
         setTriggerHistory(new Map(newTriggerHistory))
+        return () => {
+            setTriggerHistory(new Map())
+        }
     }, [triggerHistoryResult])
-
-    useEffect(() => {
-        if (buildId || triggerHistory.size === 0) return
-        const latestBuild = Array.from(triggerHistory)[0][1]
-        console.log(generatePath(path, { buildId: latestBuild.id, appId, pipelineId }))
-        replace(generatePath(path, { buildId: latestBuild.id, appId, pipelineId }))
-    }, [triggerHistory])
 
     function synchroniseState(triggerId: number, triggerDetails: History) {
         if (triggerId === triggerDetails.id) {
@@ -103,6 +99,9 @@ export default function CIDetails() {
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId))
         return <Progressing pageLoader />
+    if (!buildId && triggerHistory.size > 0) {
+        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, pipelineId }))
+    }
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown

@@ -15,10 +15,11 @@ export default function LogsRenderer({
     parentType,
 }: LogsRendererType): JSX.Element {
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
+    const logsURL = parentType === STAGE_TYPE.CI
+    ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
+    : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(
-        triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && parentType === STAGE_TYPE.CI
-            ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
-            : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`,
+        triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && logsURL
     )
     function createMarkup(log) {
         try {

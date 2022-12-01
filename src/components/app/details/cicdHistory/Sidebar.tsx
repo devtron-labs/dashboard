@@ -25,8 +25,10 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     const { path } = useRouteMatch()
     const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
         if (type === 'CI') {
+          setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
         } else {
+          setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, envId: selectedFilter.value,  pipelineId: selectedFilter.pipelineId }))
         }
     }
@@ -37,7 +39,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
             label: type === HistoryComponentType.CI ? 'ci-history' : 'cd-history',
             value: triggerHistory.size,
         })
-        setPagination((pagination) => ({ offset: triggerHistory.size, size: 20 }))
+        setPagination({ offset: triggerHistory.size, size: 20 })
     }
     const selectedFilter = filterOptions?.find(
         (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
