@@ -1029,7 +1029,7 @@ export const DeploymentConfigFormCTA = ({
                             />
                         ) : (
                             <Checkbox
-                                rootClassName={`mt-2 mr-8 ${!selectedChart.isAppMetricsSupported ? 'dc__o-5' : ''}`}
+                                rootClassName={`mt-2 mr-8 ${!selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''}`}
                                 isChecked={isAppMetricsEnabled}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={toggleAppMetrics}
