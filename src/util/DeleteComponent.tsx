@@ -46,52 +46,25 @@ function DeleteComponent({
         }
     }
 
-    const handleConfirmation = () => {
-        setCannotDeleteDialogModal(false);
-        toggleConfirmation(false);
-    };
+    // const handleConfirmation = () => {
+    //     setCannotDeleteDialogModal(false);
+    //     toggleConfirmation(false);
+    // };
 
-    const renderCannotDeleteDialogModal = () => {
-        // const triggerTargetBuildConfig = document.getElementsByClassName('div')[1]
-        // const triggerTargetBuildConfig = document.querySelectorAll('div.app-compose__nav')[0]
-        const triggerButtonGitMaterial = document.querySelectorAll('button.delete')[1]
-        return (
-            <div></div>
-            // <TippyCustomized
-            //         theme={TippyTheme.black}
-            //         className="w-280 ml-2"
-            //         placement="right"
-            //         // Icon={null}
-            //         iconClass="link-chart-icon"
-            //         iconSize={10}
-            //         infoTextHeading={`${component} '${title}' is configured as source for Dockerfile`}
-            //         infoText= {confirmationDialogDescription}
-            //         showCloseButton={true}
-            //         trigger="manual"
-            //         interactive={true}
-            //         showOnCreate={true}
-            //         arrow={true}
-            //         animation="shift-toward-subtle"
-            //         // triggerTarget= {triggerTargetBuildConfig}
-            //         triggerTarget= {triggerButtonGitMaterial}
-            //         // onClose={hideConnectToChartTippy}
-            //     >
-            //         <div>
-                    
-            //         </div>
-            //     </TippyCustomized>
-            // <ConfirmationDialog className="confirmation-dialog__body--w-400">
-            //     <ConfirmationDialog.Icon src={info} />
-            //     <ConfirmationDialog.Body title={`${component} '${title}' is configured as source for Dockerfile`} />
-            //     <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
-            //     <ConfirmationDialog.ButtonGroup>
-            //         <button type="button" className="cta" onClick={handleConfirmation}>
-            //             Okay
-            //         </button>
-            //     </ConfirmationDialog.ButtonGroup>
-            // </ConfirmationDialog>
-        );
-    };
+    // const renderCannotDeleteDialogModal = () => {
+    //     return (
+    //         <ConfirmationDialog className="confirmation-dialog__body--w-400">
+    //             <ConfirmationDialog.Icon src={info} />
+    //             <ConfirmationDialog.Body title={`${component} '${title}' is configured as source for Dockerfile`} />
+    //             <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
+    //             <ConfirmationDialog.ButtonGroup>
+    //                 <button type="button" className="cta" onClick={handleConfirmation}>
+    //                     Okay
+    //                 </button>
+    //             </ConfirmationDialog.ButtonGroup>
+    //         </ConfirmationDialog>
+    //     );
+    // };
 
     const renderDeleteDialog = () => {
         return (
@@ -109,7 +82,7 @@ function DeleteComponent({
     return (
         <div>
             {!showCannotDeleteDialogModal && renderDeleteDialog()}
-            {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
+            {/* {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()} */}
         </div>
     );
 }

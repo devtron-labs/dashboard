@@ -49,11 +49,8 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
-import { MaterialView } from '../../../material/MaterialView'
-import { MaterialViewProps, MaterialViewState } from '../../../material/material.types'
 import { DeleteComponentsName } from '../../../../config/constantMessaging'
-import { title } from 'process'
-import GitInfoMaterial from '../../../common/GitInfoMaterial'
+import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -526,14 +523,14 @@ function Navigation({
                             wrap={(children) => (
                                 <TippyCustomized
                                     theme={TippyTheme.black}
-                                    className="w-250 ml-2"
+                                    className="w-280 ml-2"
                                     placement="right"
                                     iconPath={DockerFileInUse}
                                     visible={showCannotDeleteTooltip}
                                     iconClass="repo-configured-icon"
                                     iconSize={32}
-                                    infoTextHeading={`${DeleteComponentsName.GitRepo} is configured as source for Dockerfile`}
-                                    infoText={'confirmationDialogDescription'}
+                                    infoTextHeading={`This ${DeleteComponentsName.GitRepo} is configured as source for Dockerfile`}
+                                    infoText={DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE}
                                     showCloseButton={true}
                                     trigger="manual"
                                     interactive={true}
