@@ -5,12 +5,12 @@ import { BreadCrumb, useBreadcrumb } from '../../common'
 import ReactGA from 'react-ga4'
 import { AppSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
-import { getAppMetaInfo } from '../../app/service'
 import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import PageHeader from '../../common/header/PageHeader'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 
 function AppHeaderComponent() {
     const { appId } = useParams<{ appId }>()
@@ -29,22 +29,6 @@ function AppHeaderComponent() {
     const params = useParams<{ appId: string }>()
     const [envDetails] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable())
     const [appName, setAppName] = useState('')
-
-    const getAppMetaInfoRes = () => {
-        setIsLoading(true)
-        const res = getAppMetaInfo(appId).then((_result) => {
-            setAppName(_result?.result?.appName)
-            let labelOptionRes = _result?.result?.labels?.map((_label) => {
-                return {
-                    label: `${_label.key?.toString()}:${_label.value?.toString()}`,
-                    value: `${_label.key?.toString()}:${_label.value?.toString()}`,
-                }
-            })
-            setResult(_result)
-            setIsLoading(false)
-            setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
-        })
-    }
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -106,7 +90,7 @@ function AppHeaderComponent() {
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
@@ -114,7 +98,8 @@ function AppHeaderComponent() {
                             })
                         }}
                     >
-                        Values
+                       <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                        Configure
                     </NavLink>
                 </li>
             </ul>

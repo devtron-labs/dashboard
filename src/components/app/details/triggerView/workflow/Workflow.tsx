@@ -6,18 +6,22 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr } from '../types'
+import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
+import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
+import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 
 export class Workflow extends Component<WorkflowProps> {
     renderNodes() {
         return this.props.nodes.map((node: any) => {
-            if (node.type === 'GIT') {
+            if (node.type === WorkflowNodeType.GIT) {
                 return this.renderSourceNode(node)
-            } else if (node.type === 'CI') {
+            } else if (node.type === WorkflowNodeType.CI) {
                 return this.renderCINodes(node)
-            } else if (node.type === 'PRECD' || node.type === 'POSTCD') {
+            } else if (node.type === PipelineType.WEBHOOK) {
+              return this.renderWebhookNode(node)
+          } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
                 return this.renderPrePostCDNodes(node)
-            } else if (node.type === 'CD') {
+            } else if (node.type === WorkflowNodeType.CD) {
                 return this.renderCDNodes(node)
             }
         })
@@ -44,6 +48,18 @@ export class Workflow extends Component<WorkflowProps> {
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
             />
         )
+    }
+    renderWebhookNode(node) {
+      return (
+          <WebhookNode
+              x={node.x}
+              y={node.y}
+              height={node.height}
+              width={node.width}
+              key={`webhook-${node.id}`}
+              id={node.id}
+          />
+      )
     }
 
     renderCINodes(node: NodeAttr) {
@@ -210,11 +226,15 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     render() {
+        const isExternalCiWorkflow = this.props.nodes.some(
+            (node) => node.isExternalCI && node.type === WorkflowNodeType.CI,
+        )
         return (
             <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
                 <div className="workflow__header">
                     <span className="workflow__name">{this.props.name}</span>
                 </div>
+                {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}

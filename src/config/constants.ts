@@ -3,6 +3,9 @@ export const DEFAULT_STATUS = 'Checking Status...'
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
+export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
+export const DEVTRON_DEFAULT_NAMESPACE = 'devtroncd'
+export const DEVTRON_DEFAULT_CLUSTER_ID = '1'
 
 export const Routes = {
     GET: 'get',
@@ -22,6 +25,7 @@ export const Routes = {
     CLUSTER: 'cluster',
 
     CD_CONFIG: 'app/cd-pipeline',
+    EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
     RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
@@ -90,6 +94,7 @@ export const Routes = {
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
     API_TOKEN: 'api-token',
+    API_TOKEN_WEBHOOK: 'api-token/webhook',
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',
@@ -155,6 +160,7 @@ export const Routes = {
     HELM_APP_HIBERNATE_API: 'application/hibernate',
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
     EXTERNAL_LINKS_API: 'external-links',
+    GET_ALL_APPS: 'app/allApps',
     MODULE_INFO_API: 'module',
     SERVER_INFO_API: 'server',
     LOG_PODNAME_API: 'k8s/resource/inception/info',
@@ -276,7 +282,9 @@ export const DOCUMENTATION = {
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
-    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/deployment`
+    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/deployment`,
+    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
+    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -627,4 +635,11 @@ export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 export enum AppDetailsErrorType {
     ERRIMAGEPULL = 'errimagepull',
     IMAGEPULLBACKOFF = 'imagepullbackoff',
+}
+
+export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
+  LINE_ONE: 'This workflow uses a deprecated method to receive container images from external build services.',
+  LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
+  LINE_THREE:  'You can continue to deploy images from external build services',
+  DOC_LINK_TEXT: 'Refer documentation to learn more.',
 }

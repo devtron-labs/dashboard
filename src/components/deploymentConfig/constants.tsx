@@ -60,7 +60,7 @@ export const BASIC_FIELDS = {
     CPU: 'cpu',
     MEMORY: 'memory',
     ENV_VARIABLES: 'envVariables',
-    KEY: 'key',
+    NAME: 'name',
     VALUE: 'value',
 }
 
@@ -74,7 +74,7 @@ export const BASIC_FIELD_MAPPING = {
 
 export const BASIC_FIELD_PARENT_PATH = {
     [BASIC_FIELDS.CONTAINER_PORT]: '/ContainerPort',
-    [BASIC_FIELDS.INGRESS]: '/ingress/enabled',
+    [BASIC_FIELDS.INGRESS]: '/ingress',
 }
 
 export const EDITOR_VIEW = {

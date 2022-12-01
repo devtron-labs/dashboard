@@ -107,3 +107,13 @@
     z-index: 2;
     background-color: var(--N000);
 }
+
+.resource-force-delete {
+    .form__checkbox-container {
+        margin-left: -5px;
+    }
+
+    .form__checkbox-label {
+        margin-left: 8px;
+    }
+}

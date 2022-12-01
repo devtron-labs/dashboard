@@ -25,7 +25,7 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { SERVER_MODE, URLS } from '../../../../config'
+import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -115,21 +115,21 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
 
-    const checkGitOpsConfiguration= async ():Promise<void>=> {
-      try {
-          const { result } = await isGitOpsModuleInstalledAndConfigured()
-          if (result.isInstalled && !result.isConfigured) {
-              dispatch({
-                  type: ChartValuesViewActionTypes.showNoGitOpsWarning,
-                  payload: true,
-              })
-          }
-      } catch (error) {}
+    const checkGitOpsConfiguration = async (): Promise<void> => {
+        try {
+            const { result } = await isGitOpsModuleInstalledAndConfigured()
+            if (result.isInstalled && !result.isConfigured) {
+                dispatch({
+                    type: ChartValuesViewActionTypes.showNoGitOpsWarning,
+                    payload: true,
+                })
+            }
+        } catch (error) {}
     }
 
     useEffect(() => {
         if (isDeployChartView || isCreateValueView) {
-          checkGitOpsConfiguration()
+            checkGitOpsConfiguration()
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
@@ -920,28 +920,27 @@ function ChartValuesView({
     }
 
     const renderValuesTabs = () => {
+        const initialSelectedTab =
+            (!(presetValueId || isCreateValueView) && ((isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+            !!commonState.installedConfig?.valuesSchemaJson))
+                ? ConfigurationType.GUI
+                : ConfigurationType.YAML
+
         return (
             <RadioGroup
                 className="gui-yaml-switch"
                 name="yaml-mode"
-                initialTab={
-                    presetValueId || isCreateValueView
-                        ? 'yaml'
-                        : (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-                          !!commonState.installedConfig?.valuesSchemaJson
-                        ? 'gui'
-                        : 'yaml'
-                }
+                initialTab={initialSelectedTab.toLowerCase()}
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>
-                <RadioGroup.Radio value="yaml">
+                {initialSelectedTab === ConfigurationType.GUI && <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>{ConfigurationType.GUI} (Beta)</RadioGroup.Radio>}
+                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
                     <Edit className="icon-dim-12 mr-6" />
-                    YAML
+                    {ConfigurationType.YAML}
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
-                    value="manifest"
+                    value='manifest'
                     showTippy={isExternalApp && !commonState.installedAppInfo}
                     canSelect={isValidData()}
                     tippyContent={
@@ -1175,6 +1174,7 @@ function ChartValuesView({
     }
 
     const renderData = () => {
+        const deployedAppDetail = isExternalApp && appId && appId.split('|')
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1266,14 +1266,20 @@ function ChartValuesView({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {!isDeployChartView && chartValueId !== '0' && (
-                            <DeleteApplicationButton
-                                type={isCreateValueView ? 'preset value' : 'Application'}
-                                isUpdateInProgress={commonState.isUpdateInProgress}
-                                isDeleteInProgress={commonState.isDeleteInProgress}
-                                dispatch={dispatch}
-                            />
-                        )}
+
+                        {!isDeployChartView &&
+                            chartValueId !== '0' &&
+                            !(
+                                deployedAppDetail &&
+                                checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
+                            ) && (
+                                <DeleteApplicationButton
+                                    type={isCreateValueView ? 'preset value' : 'Application'}
+                                    isUpdateInProgress={commonState.isUpdateInProgress}
+                                    isDeleteInProgress={commonState.isDeleteInProgress}
+                                    dispatch={dispatch}
+                                />
+                            )}
                     </div>
                     {commonState.openReadMe && (
                         <ActiveReadmeColumn

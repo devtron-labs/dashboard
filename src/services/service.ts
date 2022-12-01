@@ -8,6 +8,7 @@ import { fetchWithFullRoute } from './fetchWithFullRoute';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
+import { CdPipeline } from '../components/app/details/triggerView/types';
 
 
 export function getAppConfigStatus(appId: number): Promise<any> {

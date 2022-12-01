@@ -696,10 +696,14 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
 
     const renderActionButtons = () => {
         return (
-            serverMode === SERVER_MODE.FULL && (
-                <button type="button" className="flex cta h-32 lh-n" onClick={() => handleCreateButton()}>
+            serverMode === SERVER_MODE.FULL ? (
+                <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton}>
                     Create
                     <DropDown className="icon-dim-20" />
+                </button>
+            ) : (
+                <button type="button" className="flex cta h-32 lh-n" onClick={redirectToHelmAppDiscover}>
+                    Deploy helm charts
                 </button>
             )
         )
@@ -986,17 +990,15 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 rootClassName="app-create-model-wrapper"
                 onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
             >
-                {serverMode == SERVER_MODE.FULL && (
-                    <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
-                        <AddIcon className="icon-dim-20 fcn-9" />
-                        <div className="ml-8">
-                            <strong>Custom app</strong>
-                            <div>
-                                Connect a git repository to deploy <br /> a custom application
-                            </div>
+                <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
+                    <AddIcon className="icon-dim-20 fcn-9" />
+                    <div className="ml-8">
+                        <strong>Custom app</strong>
+                        <div>
+                            Connect a git repository to deploy <br /> a custom application
                         </div>
                     </div>
-                )}
+                </div>
                 <div className="app-create-child cursor" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
