@@ -25,7 +25,7 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { ConfigurationType, SERVER_MODE, URLS, DEVTRON_DEFAULT_CHART_NAME, DEVTRON_DEFAULT_NAMESPACE } from '../../../../config'
+import { ConfigurationType, SERVER_MODE, URLS, CheckIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -1271,9 +1271,7 @@ function ChartValuesView({
                             chartValueId !== '0' &&
                             !(
                                 deployedAppDetail &&
-                                deployedAppDetail[2] === DEVTRON_DEFAULT_CHART_NAME &&
-                                deployedAppDetail[1] === DEVTRON_DEFAULT_NAMESPACE &&
-                                deployedAppDetail[0] === '1'
+                                CheckIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
                             ) && (
                                 <DeleteApplicationButton
                                     type={isCreateValueView ? 'preset value' : 'Application'}

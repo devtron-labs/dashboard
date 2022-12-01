@@ -3,8 +3,9 @@ export const DEFAULT_STATUS = 'Checking Status...'
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
-export const DEVTRON_DEFAULT_CHART_NAME = 'devtron'
+export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
 export const DEVTRON_DEFAULT_NAMESPACE = 'devtroncd'
+export const DEVTRON_DEFAULT_CLUSTER_ID = 1
 
 export const Routes = {
     GET: 'get',
