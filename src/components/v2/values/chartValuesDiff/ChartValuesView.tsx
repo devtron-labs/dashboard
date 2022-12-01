@@ -1271,7 +1271,7 @@ function ChartValuesView({
                             chartValueId !== '0' &&
                             !(
                                 deployedAppDetail &&
-                                CheckIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
+                                checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
                             ) && (
                                 <DeleteApplicationButton
                                     type={isCreateValueView ? 'preset value' : 'Application'}
