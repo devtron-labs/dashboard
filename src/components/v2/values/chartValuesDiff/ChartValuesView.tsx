@@ -1174,7 +1174,7 @@ function ChartValuesView({
     }
 
     const renderData = () => {
-        const deployedAppDetail = isExternalApp && appId.split('|')
+        const deployedAppDetail = isExternalApp && appId && appId.split('|')
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
