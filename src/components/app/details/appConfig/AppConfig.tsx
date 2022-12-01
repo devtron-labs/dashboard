@@ -46,7 +46,7 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import TippyCustomized from '../../../common/TippyCustomized'
+import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import Tippy from '@tippyjs/react'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
@@ -497,7 +497,31 @@ function Navigation({ navItems, deleteApp, isCDPipeline, canShowExternalLinks }:
                         ) 
                     )
                 } else if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
-                    return renderNavItem(item)
+                    const triggerTargetBuildConfig = document.querySelectorAll('button.delete')[1]
+                    return <TippyCustomized
+                    theme={TippyTheme.black}
+                    className="w-280 ml-2"
+                    placement="right"
+                    // Icon={null}
+                    iconClass="link-chart-icon"
+                    iconSize={10}
+                    infoTextHeading={` is configured as source for Dockerfile`}
+                    infoText= {"confirmationDialogDescription"}
+                    showCloseButton={true}
+                    trigger="manual"
+                    interactive={true}
+                    showOnCreate={false}
+                    arrow={true}
+                    animation="shift-toward-subtle"
+                    // triggerTarget= {triggerTargetBuildConfig}
+                    triggerTarget= {triggerTargetBuildConfig}
+                    // onClose={hideConnectToChartTippy}
+                >
+                    <div>{
+                    renderNavItem(item)
+                }
+                    </div>
+                </TippyCustomized>
                 } else {
                     return <EnvironmentOverrideRouter key={item.title} />
                 }

@@ -52,30 +52,33 @@ function DeleteComponent({
 
     const renderCannotDeleteDialogModal = () => {
         // const triggerTargetBuildConfig = document.getElementsByClassName('div')[1]
-        const triggerTargetBuildConfig = document.querySelectorAll('a.app-compose__nav-item')[1]
+        const triggerTargetBuildConfig = document.querySelectorAll('button.delete')
         // const triggerButtonGitMaterial = document.querySelectorAll('button.cta-cd-delete-modal')[1]
         return (
-            <TippyCustomized
-                    theme={TippyTheme.black}
-                    className="w-280 ml-2"
-                    placement="right"
-                    Icon={null}
-                    iconClass="link-chart-icon"
-                    iconSize={10}
-                    infoTextHeading={`${component} '${title}' is configured as source for Dockerfile`}
-                    infoText= {confirmationDialogDescription}
-                    showCloseButton={true}
-                    trigger="auto"
-                    interactive={true}
-                    showOnCreate={true}
-                    arrow={true}
-                    animation="shift-toward-subtle"
-                    // triggerTarget= {triggerTargetBuildConfig}
-                    triggerTarget= {triggerTargetBuildConfig}
-                    // onClose={hideConnectToChartTippy}
-                >
-                    <div>{}</div>
-                </TippyCustomized>
+            <div></div>
+            // <TippyCustomized
+            //         theme={TippyTheme.black}
+            //         className="w-280 ml-2"
+            //         placement="right"
+            //         // Icon={null}
+            //         iconClass="link-chart-icon"
+            //         iconSize={10}
+            //         infoTextHeading={`${component} '${title}' is configured as source for Dockerfile`}
+            //         infoText= {confirmationDialogDescription}
+            //         showCloseButton={true}
+            //         trigger="manual"
+            //         interactive={true}
+            //         showOnCreate={true}
+            //         arrow={true}
+            //         animation="shift-toward-subtle"
+            //         // triggerTarget= {triggerTargetBuildConfig}
+            //         triggerTarget= {triggerTargetBuildConfig}
+            //         // onClose={hideConnectToChartTippy}
+            //     >
+            //         <div>
+            //         triggerTargetBuildConfig
+            //         </div>
+            //     </TippyCustomized>
             // <ConfirmationDialog className="confirmation-dialog__body--w-400">
             //     <ConfirmationDialog.Icon src={info} />
             //     <ConfirmationDialog.Body title={`${component} '${title}' is configured as source for Dockerfile`} />
@@ -104,7 +107,7 @@ function DeleteComponent({
     };
     return (
         <div>
-            {!showCannotDeleteDialogModal && renderDeleteDialog()}
+            {/* {!showCannotDeleteDialogModal && renderDeleteDialog()} */}
             {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
         </div>
     );
