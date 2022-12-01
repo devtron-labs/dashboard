@@ -98,7 +98,7 @@ export interface EmptyViewType {
 
 export interface SidebarType {
     type: HistoryComponentType
-    filterOptions: OptionType[]
+    filterOptions: CICDSidebarFilterOptionType[]
     triggerHistory: Map<number, History>
     hasMore: boolean
     setPagination: React.Dispatch<React.SetStateAction<{ offset: number; size: number }>>
@@ -177,6 +177,10 @@ export interface StartDetailsType {
     gitTriggers: Map<number, GitTriggers>
     artifact: string
     type: HistoryComponentType
+}
+
+export interface CICDSidebarFilterOptionType extends OptionType{
+  pipelineId: number
 }
 
 export enum HistoryComponentType {

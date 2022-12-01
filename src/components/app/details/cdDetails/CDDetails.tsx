@@ -16,11 +16,10 @@ import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
-import { OptionType } from '../../types'
 import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { History, HistoryComponentType } from '../cicdHistory/types'
+import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
@@ -47,22 +46,13 @@ export default function CDDetails() {
             ]),
         [appId],
     )
-    const [
-        loadingDeploymentHistory,
-        deploymentHistoryResult,
-        deploymentHistoryError,
-        reloadDeploymentHistory,
-        ,
-        dependencyState,
-    ] = useAsync(
+    const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
     const { path } = useRouteMatch()
     const { replace } = useHistory()
-    const pipelines = result?.length ? result[1]?.['value']?.pipelines : []
-    const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
@@ -79,12 +69,11 @@ export default function CDDetails() {
             return agg
         }, triggerHistory)
         setTriggerHistory(new Map(newTriggerHistory))
-    }, [deploymentHistoryResult, loading])
+    }, [deploymentHistoryResult])
 
     async function pollHistory() {
         // polling
-        if (!envId) return
-        if (!pipelineId) return
+        if (!pipelineId || !envId) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -109,29 +98,6 @@ export default function CDDetails() {
         }
     }, [envId])
 
-    useEffect(() => {
-        if (pipelineId || !envId || pipelines?.length === 0) return
-        const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
-        replace(generatePath(path, { appId, envId, pipelineId: cdPipelinesMap.get(+envId).id }))
-    }, [pipelineId, envId, pipelines])
-
-    useEffect(() => {
-        if (triggerId || !envId || !pipelineId || loadingDeploymentHistory) return // no need to manually redirect
-        if (deploymentHistoryError) {
-            showError(deploymentHistoryError)
-            return
-        }
-        if (deploymentHistoryResult?.result?.length) {
-            const newUrl = generatePath(path, {
-                appId,
-                envId,
-                pipelineId,
-                triggerId: deploymentHistoryResult.result[0].id,
-            })
-            replace(newUrl)
-        }
-    }, [deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
-
     function syncState(triggerId: number, triggerDetail: History) {
         if (triggerId === triggerDetail.id) {
             setTriggerHistory((triggerHistory) => {
@@ -145,9 +111,27 @@ export default function CDDetails() {
     if (result && (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines)))
         return <AppNotConfigured />
     if (!result || (envId && dependencyState[2] !== envId)) return null
-    const environment = result[0]?.['value']?.result?.find((envData) => envData.environmentId === +envId) || null
-    const envOptions: OptionType[] = (result[0]['value'].result || []).map((item) => {
-        return { value: `${item.environmentId}`, label: item.environmentName }
+
+    const pipelines = result[1]['value'].pipelines
+    const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
+    const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
+    if (!triggerId && envId && pipelineId && deploymentHistoryResult?.result?.length) {
+        replace(
+            generatePath(path, {
+                appId,
+                envId,
+                pipelineId,
+                triggerId: deploymentHistoryResult.result[0].id,
+            }),
+        )
+    }
+    const environment = result[0]['value'].result.find((envData) => envData.environmentId === +envId) || null
+    const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value'].result || []).map((item) => {
+        return {
+            value: `${item.environmentId}`,
+            label: item.environmentName,
+            pipelineId: cdPipelinesMap.get(item.environmentId).id,
+        }
     })
     return (
         <>

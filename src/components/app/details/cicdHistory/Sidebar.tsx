@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react'
 import { ConditionalWrap, createGitCommitUrl, multiSelectStyles, useIntersection } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
-import { OptionType } from '../../types'
 import ReactSelect from 'react-select'
 import { Option, DropdownIndicator } from '../../../v2/common/ReactSelect.utils'
 import moment from 'moment'
 import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import {
+  CICDSidebarFilterOptionType,
     GitTriggers,
     HistoryComponentType,
     HistorySummaryCardType,
@@ -23,11 +23,11 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
-    const handleFilterChange = (selectedFilter: OptionType): void => {
+    const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
         if (type === 'CI') {
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
         } else {
-            push(generatePath(path, { envId: selectedFilter.value, appId }))
+            push(generatePath(path, { appId, envId: selectedFilter.value,  pipelineId: selectedFilter.pipelineId }))
         }
     }
     function reloadNextAfterBottom() {

@@ -15,13 +15,12 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { OptionType } from '../../types'
 import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { History, HistoryComponentType } from '../cicdHistory/types'
+import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -107,8 +106,8 @@ export default function CIDetails() {
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
-    const pipelineOptions: OptionType[] = (pipelines || []).map((item) => {
-        return { value: `${item.id}`, label: item.name }
+    const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
+        return { value: `${item.id}`, label: item.name, pipelineId: item.id }
     })
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
