@@ -5,6 +5,7 @@ import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch, useHistory } from 'react-router'
 import './header.scss'
 import PageHeader from '../../common/header/PageHeader'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 
 function EAHeaderComponent() {
     const match = useRouteMatch()
@@ -48,7 +49,7 @@ function EAHeaderComponent() {
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_VALUES}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'External App',
@@ -56,7 +57,8 @@ function EAHeaderComponent() {
                             })
                         }}
                     >
-                        Values
+                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                        Configure
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">

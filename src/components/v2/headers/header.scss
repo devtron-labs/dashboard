@@ -22,8 +22,15 @@
                 fill: var(--B500);
             }
         }
-    }
+        &:hover path,
+        &.focus {
+            color: var(--B500);
+            text-decoration: none;
+            fill: var(--B500);
+        }
 
+
+    }
     .helm-app-page-header {
         z-index: var(--page-header-index);
         position: sticky;
