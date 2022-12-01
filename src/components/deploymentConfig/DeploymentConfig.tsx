@@ -179,7 +179,11 @@ export default function DeploymentConfig({
             toast.error(error)
             return
         }
-        if ((selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) && !yamlMode && !basicFieldValuesErrorObj.isValid) {
+        if (
+            (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
+            !yamlMode &&
+            !basicFieldValuesErrorObj.isValid
+        ) {
             toast.error('Some required fields are missing')
             return
         }
@@ -198,14 +202,16 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride:
-                    !yamlMode && (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT)
-                        ? patchBasicData(obj, basicFieldValues)
-                        : obj,
+                valuesOverride: obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
-                isBasicViewLocked: isBasicViewLocked,
-                currentViewEditor: isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor,
+            }
+            if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
+                requestBody.isBasicViewLocked = isBasicViewLocked
+                requestBody.currentViewEditor = isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor
+                if(!yamlMode){
+                  requestBody.valuesOverride = patchBasicData(obj, basicFieldValues)
+                }
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
