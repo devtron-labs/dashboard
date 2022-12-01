@@ -46,6 +46,8 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
+import TippyCustomized from '../../../common/TippyCustomized'
+import Tippy from '@tippyjs/react'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -483,13 +485,16 @@ function Navigation({ navItems, deleteApp, isCDPipeline, canShowExternalLinks }:
             {!isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
             {navItems.map((item) => {
                 if (item.stage === 'EXTERNAL_LINKS') {
+                    const triggerTargetBuildConfig = document.querySelectorAll('a.app-compose__nav-item')[1]
                     return (
                         canShowExternalLinks && (
+                            <Tippy className= 'tippy-black-container default-black' triggerTarget={triggerTargetBuildConfig}>
                             <div key={item.stage}>
                                 {item.stage === 'EXTERNAL_LINKS' && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
                                 {renderNavItem(item)}
                             </div>
-                        )
+                            </Tippy>
+                        ) 
                     )
                 } else if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
                     return renderNavItem(item)

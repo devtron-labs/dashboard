@@ -4,6 +4,7 @@ import { ConfirmationDialog, DeleteDialog, showError } from '../components/commo
 import { ServerErrors } from '../modals/commonTypes';
 import info from '../assets/icons/ic-info-filled.svg';
 import { useHistory } from 'react-router';
+import TippyCustomized, { TippyTheme } from '../components/common/TippyCustomized';
 
 function DeleteComponent({
     setDeleting,
@@ -17,6 +18,7 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
+    // triggerTarget,
 }) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false);
     const { push } = useHistory();
@@ -49,17 +51,41 @@ function DeleteComponent({
     };
 
     const renderCannotDeleteDialogModal = () => {
+        // const triggerTargetBuildConfig = document.getElementsByClassName('div')[1]
+        const triggerTargetBuildConfig = document.querySelectorAll('a.app-compose__nav-item')[1]
+        // const triggerButtonGitMaterial = document.querySelectorAll('button.cta-cd-delete-modal')[1]
         return (
-            <ConfirmationDialog className="confirmation-dialog__body--w-400">
-                <ConfirmationDialog.Icon src={info} />
-                <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
-                <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
-                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" className="cta" onClick={handleConfirmation}>
-                        Okay
-                    </button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
+            <TippyCustomized
+                    theme={TippyTheme.black}
+                    className="w-280 ml-2"
+                    placement="right"
+                    Icon={null}
+                    iconClass="link-chart-icon"
+                    iconSize={10}
+                    infoTextHeading={`${component} '${title}' is configured as source for Dockerfile`}
+                    infoText= {confirmationDialogDescription}
+                    showCloseButton={true}
+                    trigger="auto"
+                    interactive={true}
+                    showOnCreate={true}
+                    arrow={true}
+                    animation="shift-toward-subtle"
+                    // triggerTarget= {triggerTargetBuildConfig}
+                    triggerTarget= {triggerTargetBuildConfig}
+                    // onClose={hideConnectToChartTippy}
+                >
+                    <div>{}</div>
+                </TippyCustomized>
+            // <ConfirmationDialog className="confirmation-dialog__body--w-400">
+            //     <ConfirmationDialog.Icon src={info} />
+            //     <ConfirmationDialog.Body title={`${component} '${title}' is configured as source for Dockerfile`} />
+            //     <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
+            //     <ConfirmationDialog.ButtonGroup>
+            //         <button type="button" className="cta" onClick={handleConfirmation}>
+            //             Okay
+            //         </button>
+            //     </ConfirmationDialog.ButtonGroup>
+            // </ConfirmationDialog>
         );
     };
 
