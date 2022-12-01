@@ -416,9 +416,11 @@ export default function AppConfig({ appName }: AppConfigProps) {
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
-                        className={`app-compose__nav flex column left top dc__position-rel dc__overflow-scroll ${
-                            state.isCDPipeline ? 'hide-app-config-help' : ''
-                        } ${_canShowExternalLinks ? '' : 'hide-external-links'}`}
+                        className={`app-compose__nav flex column left top ${
+                            showCannotDeleteTooltip ? '' : 'dc__position-rel'
+                        } dc__overflow-scroll ${state.isCDPipeline ? 'hide-app-config-help' : ''} ${
+                            _canShowExternalLinks ? '' : 'hide-external-links'
+                        }`}
                     >
                         <Navigation
                             deleteApp={showDeleteConfirmation}
@@ -528,7 +530,7 @@ function Navigation({
                                     placement="right"
                                     iconPath={DockerFileInUse}
                                     visible={showCannotDeleteTooltip}
-                                    iconClass="link-chart-icon"
+                                    iconClass="repo-configured-icon"
                                     iconSize={32}
                                     infoTextHeading={`${DeleteComponentsName.GitRepo} is configured as source for Dockerfile`}
                                     infoText={'confirmationDialogDescription'}
