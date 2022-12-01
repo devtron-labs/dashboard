@@ -108,7 +108,7 @@ export default function ChartSelectorDropdown({
                             ).map((chart: DeploymentChartVersionType, index: number) => (
                                 <div
                                     key={`${selectedChartTypeTab}-${index}`}
-                                    className={`p-12 pointer ${
+                                    className={`p-12 pointer chart-row ${
                                         chart.name === selectedChart?.name ? ' bcb-1' : ''
                                     }`}
                                     onClick={() => onSelectChartType(chart.name)}

@@ -378,4 +378,9 @@
     .top-0 {
         top: 0;
     }
+    .chart-row {
+        &:hover:not(.bcb-1) {
+            background-color: var(--N50);
+        }
+    }
 }
