@@ -112,7 +112,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
                 </div>
                 {infoTextHeading && (
                     <div
-                        className={`dc__word-break dc__hyphens-auto fs-14 fw-6 lh-20 ${
+                        className={`dc__word-break fs-14 fw-6 lh-20 ${
                             isWhiteTheme ? 'pl-12 pr-12' : 'pl-20 pr-20'
                         }`}
                     >
@@ -121,7 +121,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
                 )}
                 {infoText && (
                     <div
-                        className={`dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 ${
+                        className={`dc__word-break fs-13 fw-4 lh-20 ${
                             isWhiteTheme
                                 ? 'p-12'
                                 : `pl-20 pr-20 pt-4 ${additionalContent && documentationLink ? 'pb-12' : 'pb-20'}`

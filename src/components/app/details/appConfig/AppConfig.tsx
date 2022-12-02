@@ -527,7 +527,7 @@ function Navigation({
                             wrap={(children) => (
                                 <TippyCustomized
                                     theme={TippyTheme.black}
-                                    className="w-280 ml-2"
+                                    className="w-300 ml-2"
                                     placement="right"
                                     iconPath={DockerFileInUse}
                                     visible={showCannotDeleteTooltip}
