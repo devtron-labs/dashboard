@@ -102,9 +102,9 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
                     )}
                     {heading && <span className={`fs-14 fw-6 lh-20 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>}
                     {showCloseButton && (
-                        <div className="icon-dim-16 ml-auto">
+                        <div className="icon-dim-20 ml-auto">
                             <CloseIcon
-                                className={`icon-dim-24 cursor ${isWhiteTheme ? 'fcn-9' : 'fcn-0'}`}
+                                className={`icon-dim-20 cursor ${isWhiteTheme ? 'fcn-9' : 'fcn-0'}`}
                                 onClick={closeTippy}
                             />
                         </div>
