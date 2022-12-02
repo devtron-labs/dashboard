@@ -14,6 +14,7 @@ import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
+import internal from "stream";
 
 function getSelectedInstances(charts) {
     return charts.reduce((agg, curr, idx) => {
@@ -41,8 +42,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         loading: true,
         chartGroupDetailsLoading: false,
         noGitOpsConfigAvailable: false,
-        page_offset: 0,
-        page_size: 20
+        PageOffset: 0,
+        PageSize: 20
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -171,12 +172,20 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }, [state.charts])
 
 
-    async function applyFilterOnCharts(queryString: string): Promise<any> {
+    async function applyFilterOnCharts(queryString: string, resetPage?: boolean): Promise<any> {
         try {
-            console.log("filters")
-            const { result: availableCharts } = await getAvailableCharts(queryString,state.page_offset, state.page_size)
-            setState((state) => ({ ...state, page_offset: state.page_offset + state.page_size}))
-            setState((state) => ({ ...state, availableCharts: mapByKey(availableCharts,'id') }))
+
+            if (resetPage){
+                const { result: availableCharts } = await getAvailableCharts(queryString,0, state.PageSize)
+                setState((state) => ({ ...state, availableCharts: mapByKey(availableCharts,'id') }))
+            }
+            else{
+                const { result: availableCharts } = await getAvailableCharts(queryString,state.PageOffset, state.PageSize)
+                setState((state) => ({ ...state, availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]) }))
+            }
+
+            setState((state) => ({ ...state, PageOffset: state.PageOffset + state.PageSize}))
+
         } catch (err) {
             showError(err)
         } finally {
@@ -184,23 +193,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    async function applyPaginationOnCharts( queryString: string): Promise<any> {
 
-        try{
-            const { result: availableCharts } = await getAvailableCharts(queryString,state.page_offset, state.page_size)
-            setState((state) => ({ ...state, page_offset: state.page_offset + state.page_size}))
-            setState((state) => ({ ...state, availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]) }))
-        } catch (err) {
-            showError(err)
-        } finally {
-            setState((state) => ({ ...state, loading: false }))
-        }
-
-    }
-
-    function resetPaginationOffset(): void {
-        state.page_offset = 0
-        state.availableCharts = new Map<number, Chart>()
+    function resetPaginationOffset(): void{
+        setState((state)=>( {...state, PageOffset: 0, availableCharts: new Map<number, Chart>()} ))
     }
 
 
@@ -537,7 +532,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         // getChartVersions,
         applyFilterOnCharts,
         resetPaginationOffset,
-        applyPaginationOnCharts,
         fetchChartValues,
         getChartVersionsAndValues,
         selectChart,

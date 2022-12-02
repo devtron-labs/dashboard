@@ -89,7 +89,6 @@ function DiscoverChartList() {
         discardValuesYamlChanges,
         chartListing,
         applyFilterOnCharts,
-        applyPaginationOnCharts,
         resetPaginationOffset,
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
@@ -115,14 +114,17 @@ function DiscoverChartList() {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
 
-    useEffect(()=>{
-        resetPaginationOffset()
-    }, [location.search])
+    // useEffect(()=>{
+    //  resetPaginationOffset();
+    // }, [location.search])
 
     useEffect(() => {
         if (!state.loading) {
-            initialiseFromQueryParams(state.chartRepos)
-            callApplyFilterOnCharts()
+
+            resetPaginationOffset()
+            initialiseFromQueryParams(state.chartRepos);
+            callApplyFilterOnCharts(true);
+
         }
     }, [location.search, state.loading])
 
@@ -225,14 +227,14 @@ function DiscoverChartList() {
         if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
-    async function callApplyFilterOnCharts() {
+    async function callApplyFilterOnCharts(resetPage?: boolean) {
         setChartListloading(true)
-        await applyFilterOnCharts(location.search)
+        await applyFilterOnCharts(location.search, resetPage)
         setChartListloading(false)
     }
 
     async function callPaginationOnCharts(){
-        await applyPaginationOnCharts(location.search)
+        await applyFilterOnCharts(location.search, false)
     }
 
     function handleViewAllCharts(): void {

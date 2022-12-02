@@ -99,17 +99,12 @@ export function getProjectFilteredApps(
     return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`);
 }
 
-export function getAvailableCharts(queryString?: string, page_offset?: number, page_size?: number, options?: APIOptions ): Promise<{ code: number, result: Chart[] }> {
+export function getAvailableCharts(queryString?: string, PageOffset?: number, PageSize?: number, options?: APIOptions ): Promise<{ code: number, result: Chart[] }> {
     let url = `${Routes.CHART_AVAILABLE}/discover/`;
 
 
-    if (page_offset>=0 && page_size){
-        if(queryString){
-            queryString = queryString + "&offset=" + page_offset + "&size=" + page_size
-        }
-        else{
-            queryString = "?offset=" + page_offset + "&size=" + page_size
-        }
+    if (PageOffset>=0 && PageSize){
+        queryString = `${queryString? queryString:'?'}&offset=${PageOffset}&size=${PageSize}`
     }
 
     if (queryString) {

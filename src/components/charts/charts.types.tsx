@@ -245,8 +245,8 @@ export interface ChartGroupState {
     loading: boolean;
     chartGroupDetailsLoading: boolean;
     noGitOpsConfigAvailable?: boolean
-    page_offset?: number,
-    page_size?: number,
+    PageOffset?: number,
+    PageSize?: number,
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {
@@ -285,10 +285,9 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     discardValuesYamlChanges: (index: number) => void;
     updateChartGroupEntriesFromResponse: () => void;
     reloadState: () => void;
-    applyFilterOnCharts: (qs: string) => Promise<void>;
-    applyPaginationOnCharts: (qs: string) => Promise<void>;
+    applyFilterOnCharts: (qs: string, resetPage?: boolean) => Promise<void>;
     setCharts: (charts: ChartGroupEntry[]) => void;
-    resetPaginationOffset: ()=>void;
+    resetPaginationOffset: ()=> void;
 }
 
 export interface HelmTemplateChartRequest {
