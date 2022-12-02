@@ -41,6 +41,7 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
     ValueNameInput,
+    DeploymentAppSelector,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -710,6 +711,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
+                    deploymentAppType: commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -1044,6 +1046,13 @@ function ChartValuesView({
         }
     }
 
+    const handleDeploymentAppTypeSelection = (event) => {
+        dispatch({
+            type: ChartValuesViewActionTypes.selectedDeploymentApp,
+            payload: event.target.value,
+        })
+    }
+
     const handleVersionSelection = (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
         dispatch({
             type: ChartValuesViewActionTypes.multipleOptions,
@@ -1229,6 +1238,14 @@ function ChartValuesView({
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
+                            />
+                        )}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp &&(
+                            <DeploymentAppSelector
+                                commonState={commonState}
+                                isUpdate={isUpdate}
+                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                isDeployChartView={isDeployChartView}
                             />
                         )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
