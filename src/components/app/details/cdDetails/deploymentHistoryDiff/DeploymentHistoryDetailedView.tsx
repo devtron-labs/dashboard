@@ -3,14 +3,8 @@ import { Progressing, showError } from '../../../../common'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'
-import {
-    DeploymentHistoryDetail,
-} from '../cd.type'
-import {
-    DeploymentTemplateOptions,
-    CompareViewDeploymentType,
-    DeploymentHistoryParamsType,
-} from './types'
+import { DeploymentHistoryDetail } from '../cd.type'
+import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryParamsType } from './types'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
@@ -74,16 +68,11 @@ export default function DeploymentHistoryDetailedView({
 
     useEffect(() => {
         //show template showing historical diff detailed view
-        //in case if !shoowTemplate CD detail component being rendered
-
-        //if (!showTemplate) {
-          setFullScreenView(true)
-        //}
+        //in case if !showTemplate CD detail component being rendered
+        setFullScreenView(true)
 
         return (): void => {
-            //if (showTemplate) {
-              setFullScreenView(false)
-            //}
+            setFullScreenView(false)
         }
     }, [])
 

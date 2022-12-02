@@ -24,7 +24,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
-        if (type === 'CI') {
+        if (type === HistoryComponentType.CI) {
           setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
         } else {
@@ -36,7 +36,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         ReactGA.event({
             category: 'pagination',
             action: 'scroll',
-            label: type === HistoryComponentType.CI ? 'ci-history' : 'cd-history',
+            label: `${type.toLowerCase()}-history`,
             value: triggerHistory.size,
         })
         setPagination({ offset: triggerHistory.size, size: 20 })

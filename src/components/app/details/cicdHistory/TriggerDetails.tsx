@@ -8,7 +8,7 @@ import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
-import { CurrentStatusType, FinishedType, GitTriggers, ProgressingStatusType, PROGRESSING_STATUS, StartDetailsType, TERMINAL_STATUS_COLOR_CLASS_MAP, TriggerDetailsType, WorkerStatusType } from '../cicdHistory/types'
+import { CurrentStatusType, FinishedType, GitTriggers, HistoryComponentType, ProgressingStatusType, PROGRESSING_STATUS, StartDetailsType, TERMINAL_STATUS_COLOR_CLASS_MAP, TriggerDetailsType, WorkerStatusType } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
 
@@ -116,7 +116,7 @@ const WorkerStatus = React.memo(
                             </div>
                         )}
                     </div>
-                    {message && <div className="fs-12 cn-7">{message || ''}</div>}
+                    {message && <div className="fs-12 cn-7">{message}</div>}
                 </div>
             </>
         )
@@ -139,12 +139,12 @@ const ProgressingStatus = React.memo(
             pipelineId: string
         }>()
         let abort = null
-        if (type === 'CI') {
+        if (type === HistoryComponentType.CI) {
             abort = () => cancelCiTrigger({ pipelineId, workflowId: buildId })
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
-        async function abortRunning(e) {
+        async function abortRunning() {
             setAborting(true)
             const [error] = await asyncWrap(abort())
             setAborting(false)
@@ -182,10 +182,10 @@ const ProgressingStatus = React.memo(
                     <ConfirmationDialog>
                         <ConfirmationDialog.Icon src={warn} />
                         <ConfirmationDialog.Body
-                            title={type === 'CD' ? `Abort ${stage.toLowerCase()}-deployment?` : 'Abort build?'}
+                            title={type === HistoryComponentType.CD ? `Abort ${stage.toLowerCase()}-deployment?` : 'Abort build?'}
                         />
                         <p className="fs-13 cn-7 lh-1-54">
-                            {type === 'CD'
+                            {type === HistoryComponentType.CD
                                 ? 'Are you sure you want to abort this stage?'
                                 : 'Are you sure you want to abort this build?'}
                         </p>
@@ -251,7 +251,7 @@ const StartDetails = ({
                 <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                     {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
                 </div>
-                {type === 'CD' && artifact ? (
+                {type === HistoryComponentType.CD && artifact ? (
                     <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
                         {artifact.split(':')[1]}
