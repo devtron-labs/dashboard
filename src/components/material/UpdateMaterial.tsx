@@ -17,6 +17,7 @@ interface UpdateMaterialProps {
     isWorkflowEditorUnlocked: boolean;
     reload: () => void
     toggleRepoSelectionTippy: () => void
+    setRepo?: React.Dispatch<React.SetStateAction<string>>
 }
 export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
 
@@ -216,6 +217,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             reload = {this.props.reload}
             preventRepoDelete={this.props.preventRepoDelete}
             toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
+            setRepo={this.props.setRepo}
         />
     }
 }

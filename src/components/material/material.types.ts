@@ -4,6 +4,7 @@ export interface MaterialListProps extends RouteComponentProps<{ appId: string; 
     respondOnSuccess: () => void;
     isWorkflowEditorUnlocked: boolean;
     toggleRepoSelectionTippy: () => void
+    setRepo: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface GitMaterialType {
@@ -75,6 +76,7 @@ export interface MaterialViewProps {
     reload: ()=> void;
     preventRepoDelete?: boolean;
     toggleRepoSelectionTippy?: () => void
+    setRepo?: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface MaterialViewState {

@@ -309,6 +309,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     reload={this.props.reload}
                     // triggerTarget= {this.props.triggerTarget}
                     toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
+                    setRepo={this.props.setRepo}
           />
              }
         </form>

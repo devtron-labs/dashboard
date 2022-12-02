@@ -205,6 +205,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
     const [environments, setEnvironments] = useState([])
     const [userRole, setUserRole] = useState<UserRoleType>()
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
+    const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
 
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
@@ -426,6 +427,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
                             canShowExternalLinks={_canShowExternalLinks}
                             showCannotDeleteTooltip={showCannotDeleteTooltip}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            getRepo={showRepoOnDelete}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -443,6 +445,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
                             userRole={userRole}
                             canShowExternalLinks={_canShowExternalLinks}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepoState={setShowRepoOnDelete}
                         />
                     </div>
                 </div>
@@ -499,6 +502,7 @@ function Navigation({
     canShowExternalLinks,
     showCannotDeleteTooltip,
     toggleRepoSelectionTippy,
+    getRepo,
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
@@ -529,7 +533,7 @@ function Navigation({
                                     visible={showCannotDeleteTooltip}
                                     iconClass="repo-configured-icon"
                                     iconSize={32}
-                                    infoTextHeading={`This ${DeleteComponentsName.GitRepo} is configured as source for Dockerfile`}
+                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is configured as source for Dockerfile`}
                                     infoText={DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE}
                                     showCloseButton={true}
                                     trigger="manual"
@@ -573,6 +577,7 @@ function AppComposeRouter({
     userRole,
     canShowExternalLinks,
     toggleRepoSelectionTippy,
+    setRepoState
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -586,6 +591,7 @@ function AppComposeRouter({
                                 respondOnSuccess={respondOnSuccess}
                                 isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
                                 toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                                setRepo={setRepoState}
                             />
                             <NextButton
                                 currentStageName={STAGE_NAME.GIT_MATERIAL}

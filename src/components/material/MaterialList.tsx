@@ -188,6 +188,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                                 reload={this.getGitProviderConfig}
                                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
+                                setRepo={this.props.setRepo}
                             />
                         );
                     })}
