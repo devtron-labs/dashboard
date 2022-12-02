@@ -6,8 +6,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
 import { DOCUMENTATION, EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, POD_STATUS, Routes } from '../../../../config'
 import { default as AnsiUp } from 'ansi_up'
-import { STAGE_TYPE } from '../triggerView/types'
-import { LogsRendererType } from './types'
+import { HistoryComponentType, LogsRendererType } from './types'
 
 export default function LogsRenderer({
     triggerDetails,
@@ -15,7 +14,7 @@ export default function LogsRenderer({
     parentType,
 }: LogsRendererType): JSX.Element {
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
-    const logsURL = parentType === STAGE_TYPE.CI
+    const logsURL = parentType === HistoryComponentType.CI
     ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
     : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(

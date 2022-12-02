@@ -14,7 +14,6 @@ import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
@@ -374,7 +373,7 @@ const HistoryLogs: React.FC<{
                                     <LogsRenderer
                                         triggerDetails={triggerDetails}
                                         isBlobStorageConfigured={isBlobStorageConfigured}
-                                        parentType={STAGE_TYPE.CD}
+                                        parentType={HistoryComponentType.CD}
                                     />
                                 </div>
                             </Route>

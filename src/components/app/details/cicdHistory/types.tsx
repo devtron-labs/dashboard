@@ -71,7 +71,7 @@ export interface CopyTippyWithTextType {
 export interface LogsRendererType {
     triggerDetails: History
     isBlobStorageConfigured: boolean
-    parentType: string
+    parentType: HistoryComponentType
 }
 
 export interface LogResizeButtonType {

@@ -15,7 +15,6 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { STAGE_TYPE } from '../triggerView/types'
 import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
@@ -27,18 +26,17 @@ const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'no
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 export default function CIDetails() {
-    const { appId, pipelineId, buildId, envId } = useParams<{
+    const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
         buildId: string
-        envId: string
     }>()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [initDataLoading, initDataResults, pipelinesError] = useAsync(
+    const [initDataLoading, initDataResults, ] = useAsync(
         () =>
             Promise.allSettled([
                 getCIPipelines(+appId),
@@ -325,7 +323,7 @@ const HistoryLogs = ({
                         <LogsRenderer
                             triggerDetails={triggerDetails}
                             isBlobStorageConfigured={isBlobStorageConfigured}
-                            parentType={STAGE_TYPE.CI}
+                            parentType={HistoryComponentType.CI}
                         />
                     </div>
                     {(scrollToTop || scrollToBottom) && (
