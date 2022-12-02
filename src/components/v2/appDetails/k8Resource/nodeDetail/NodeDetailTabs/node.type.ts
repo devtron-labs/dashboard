@@ -11,6 +11,9 @@ export interface TerminalViewProps {
     fetchRetry?: boolean
     disconnectRetry?: () => void
     toggleOption?: boolean
+    isFullScreen?: boolean
+    isterminalTab?: boolean
+    setTerminalTab?: (selectedTabIndex: number) => void
 }
 
 export enum SocketConnectionType {

@@ -61,6 +61,7 @@ export default function ClusterTerminal({
     const [terminalAccessId, setTerminalId] = useState()
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
+    const [selectedNamespace, setNamespace] = useState(defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0])
     const [update, setUpdate] = useState<boolean>(false)
     const [fullScreen, setFullScreen] = useState(false)
     const [fetchRetry, setRetry] = useState(false)
@@ -68,7 +69,7 @@ export default function ClusterTerminal({
     const [connectTerminal, setConnectTerminal] = useState(false)
     const [toggleOption, settoggleOption] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-    const [selectedNamespace, setNamespace] = useState(defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0])
+
 
     const payload = {
         clusterId: clusterId,
@@ -226,7 +227,7 @@ export default function ClusterTerminal({
     }
 
     const onChangeNamespace = (selected): void => {
-        setNamespace(selected.value)
+        setNamespace(selected)
         setTerminalCleared(true)
         toggleOptionChange()
         socketDiconnecting()
@@ -267,6 +268,9 @@ export default function ClusterTerminal({
                 disconnectRetry={disconnectRetry}
                 fetchRetry={fetchRetry}
                 toggleOption={toggleOption}
+                isFullScreen={fullScreen}
+                isterminalTab={selectedTabIndex === 0}
+                setTerminalTab={setSelectedTabIndex}
             />
         )
     }
