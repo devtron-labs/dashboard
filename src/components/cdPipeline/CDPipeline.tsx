@@ -985,7 +985,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <RadioGroup
-                    value={this.state.pipelineConfig.deploymentAppType}
+                    value={this.state.pipelineConfig.deploymentAppType ? this.state.pipelineConfig.deploymentAppType: DeploymentAppType.Helm}
                     name="deployment-app-type"
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
