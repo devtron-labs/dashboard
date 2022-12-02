@@ -2,7 +2,6 @@ import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
-// import { WebLinksAddon } from 'xterm-addon-web-links'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
@@ -19,7 +18,6 @@ let socket = undefined
 let terminal = undefined
 let fitAddon = undefined
 let clustertimeOut = undefined
-// let webLinksAddon = undefined
 
 function TerminalView(terminalViewProps: TerminalViewProps) {
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>()
@@ -58,11 +56,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         })
         handleSelectionChange(terminal, setPopupText)
         fitAddon = new FitAddon()
-        // webLinksAddon = new WebLinksAddon()
         const webFontAddon = new XtermWebfont()
         terminal.loadAddon(fitAddon)
         terminal.loadAddon(webFontAddon)
-        // terminal.loadAddon(webLinksAddon)
+        terminal.registerLinkMatcher(new RegExp(/Check Pod Manifest|Check Pod Events/),
+          (_event, text) => {
+            if(text === 'Check Pod Events'){
+                terminalViewProps.setTerminalTab(1)
+            }else if(text === 'Check Pod Manifest'){
+                terminalViewProps.setTerminalTab(2)
+            }
+          })
         terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
         fitAddon.fit()
         terminal.reset()
@@ -142,10 +146,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onclose = function (evt) {
             disableInput()
-            _terminal.writeln('')
-            _terminal.writeln('---------------------------------------------')
-            _terminal.writeln(`Disconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
-            _terminal.writeln('---------------------------------------------')
+            if(terminalViewProps.clusterTerminal){
+                _terminal.writeln('')
+                _terminal.writeln('---------------------------------------------')
+                _terminal.writeln(`Disconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
+                _terminal.writeln('---------------------------------------------')
+            }
             terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
 
@@ -172,7 +178,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         
         _terminal.write('Creating pod.')
         if(status === 'Running'){
-            _terminal.write(' \u001b[32mSucceeded\u001b[0m')
+            _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
             _terminal.writeln('')
             _terminal.write('Connecting to pod terminal.')
         }else if(status === 'Failed'){
@@ -182,7 +188,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
         
         if(firstMessageReceived){
-            _terminal.write('\u001b[32mSucceeded\u001b[0m')
+            _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+            _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
+            _terminal.write(' | ')
+            _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
             _terminal.writeln('')
         }
     }
@@ -442,7 +451,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                             terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
                         } m-0 pl-20 w-100`}
                     >
-                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !terminalViewProps.clusterTerminal && (
+                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !(terminalViewProps.clusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) && (
                             <span
                                 className={
                                     terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
