@@ -16,6 +16,7 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
     const history = useHistory();
+    const [appDeleteError, setAppDeleteError]= useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
@@ -58,6 +59,7 @@ function ExternalAppDetail({appId, appName}) {
         let helmAppDetail = helmAppDetailAndInstalledAppInfo.appDetail;
         let installedAppInfo = helmAppDetailAndInstalledAppInfo.installedAppInfo;
         let genericAppDetail : AppDetails = {
+            appDeleteError : helmAppDetail.appDeleteError,
             appType : AppType.EXTERNAL_HELM_CHART,
             appId : appId,
             appName : appName,
@@ -107,6 +109,7 @@ function ExternalAppDetail({appId, appName}) {
                                         }))
                                         .sort(sortOptionsByValue) || [],
                             })
+                            setAppDeleteError(appDetailResponse.result?.appDetail.appDeleteError)
                             setIsLoading(false)
                             isAPICallInProgress = false
                         })
@@ -148,6 +151,7 @@ function ExternalAppDetail({appId, appName}) {
                  <AppDetailsComponent
                     externalLinks={externalLinksAndTools.externalLinks}
                     monitoringTools={externalLinksAndTools.monitoringTools}
+                    appDeleteError={appDeleteError}
                 />
             }
 

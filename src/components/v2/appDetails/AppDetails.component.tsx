@@ -6,17 +6,23 @@ import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
-import { useEventSource } from '../../common';
-import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component';
+import {ErrorScreenManager, useEventSource} from '../../common';
+import {AddLinkButton, AppLevelExternalLinks} from '../../externalLinks/ExternalLinks.component';
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
+import EmptyState from "../../EmptyState/EmptyState";
+import AppNotDeployed from "../../../assets/img/app-not-deployed.png";
+import {ReactComponent as Upload} from "../../../assets/icons/ic-arrow-line-up.svg";
+import {URLS} from "../../../config";
 
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
+    appDeleteError,
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    appDeleteError:string
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -32,7 +38,25 @@ const AppDetailsComponent = ({
             appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString(),
         (event) => setStreamData(JSON.parse(event.data)),
     );
+    if(appDeleteError.length > 0){
+        const handleConfigure = ()=>{
 
+        }
+        return (
+            <EmptyState>
+                <EmptyState.Image>
+                    <img src={AppNotDeployed} alt="" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h4>app details not found {appDeleteError}</h4>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>you can go ahead and delete this app from Devtron from Configure tab</EmptyState.Subtitle>
+                <EmptyState.Button>
+                    <button className="cta flex">Go To Configure</button>
+                </EmptyState.Button>
+            </EmptyState>
+        )
+    }
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>

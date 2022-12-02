@@ -27,6 +27,7 @@ function RouterComponent({ envType }) {
     const location = useLocation();
     const history = useHistory();
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
+    const [appDeleteError , setAppDeleteError] = useState("")
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
@@ -86,7 +87,9 @@ function RouterComponent({ envType }) {
                 response = await getInstalledAppDetail(+params.appId, +params.envId);
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
             }
-
+            if (response.result?.appDeleteError){
+                setAppDeleteError(response.result?.appDeleteError)
+            }
             if (response.result?.clusterId) {
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
@@ -137,7 +140,6 @@ function RouterComponent({ envType }) {
             </section>
         );
     };
-
     return (
         <React.Fragment>
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
@@ -157,6 +159,7 @@ function RouterComponent({ envType }) {
                                 <AppDetailsComponent
                                     externalLinks={externalLinksAndTools.externalLinks}
                                     monitoringTools={externalLinksAndTools.monitoringTools}
+                                    appDeleteError={appDeleteError}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>

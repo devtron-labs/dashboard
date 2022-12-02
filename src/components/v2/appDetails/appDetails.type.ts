@@ -122,6 +122,7 @@ export enum DeploymentAppType {
 }
 
 export interface AppDetails {
+    appDeleteError: string
     appId: number
     appName: string
     appStoreAppName?: string
