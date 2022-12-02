@@ -114,9 +114,6 @@ function DiscoverChartList() {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
 
-    // useEffect(()=>{
-    //  resetPaginationOffset();
-    // }, [location.search])
 
     useEffect(() => {
         if (!state.loading) {
