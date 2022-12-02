@@ -143,7 +143,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
      getHostURLConfig = async () => {
          try {
-             let { result } = await getHostURLConfiguration()
+             const { result } = await getHostURLConfiguration()
              if (!result?.value) {
                  const payload = {
                      id: result?.id,
