@@ -75,6 +75,7 @@ export interface CDPipelineState {
         isClusterCdActive: boolean;
         parentPipelineId: number;
         parentPipelineType: string;
+        deploymentAppType: string;
     };
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
