@@ -46,7 +46,7 @@ export default function ChartSelectorDropdown({
             const sortedFilteredCharts = filteredCharts.sort((a, b) =>
                 versionComparator(a, b, 'version', SortingOrder.DESC),
             )
-            selectChart(sortedFilteredCharts[sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0])
+            selectChart(sortedFilteredCharts[0])
         }
     }
 
