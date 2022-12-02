@@ -209,8 +209,8 @@ export default function DeploymentConfig({
             if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
                 requestBody.isBasicViewLocked = isBasicViewLocked
                 requestBody.currentViewEditor = isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor
-                if(!yamlMode){
-                  requestBody.valuesOverride = patchBasicData(obj, basicFieldValues)
+                if (!yamlMode) {
+                    requestBody.valuesOverride = patchBasicData(obj, basicFieldValues)
                 }
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
@@ -248,7 +248,14 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempFormData(str)
-        if (str && currentViewEditor && !isBasicViewLocked && !fromBasic) {
+        if (
+            selectedChart &&
+            (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
+            str &&
+            currentViewEditor &&
+            !isBasicViewLocked &&
+            !fromBasic
+        ) {
             try {
                 setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
             } catch (error) {}
