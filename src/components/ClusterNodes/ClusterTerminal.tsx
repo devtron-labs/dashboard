@@ -87,6 +87,7 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         try {
+            setSelectedTabIndex(0)
             if (update) {
                 clusterterminalUpdate({ ...payload, id: terminalAccessId })
                     .then((response) => {
