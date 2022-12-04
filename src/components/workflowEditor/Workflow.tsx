@@ -236,7 +236,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     openCIPipeline(node: NodeAttr) {
-        if(node.isExternalCI){
+        if(node.isExternalCI && !node.isLinkedCI){
           return `${this.props.match.url}/deprecated-warning`
         }
         let { appId } = this.props.match.params
@@ -354,7 +354,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
         const isExternalCiWorkflow = this.props.nodes.some(
-            (node) => node.isExternalCI && node.type === WorkflowNodeType.CI,
+            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
         return (
             <ConditionalWrap
