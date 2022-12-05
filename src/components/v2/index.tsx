@@ -147,6 +147,7 @@ function RouterComponent({ envType }) {
             </section>
         );
     };
+
     return (
         <React.Fragment>
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}

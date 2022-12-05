@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './appDetails.scss';
-import { useParams } from 'react-router';
+import {useHistory, useParams} from 'react-router';
 import { AppStreamData, AppType } from './appDetails.type';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
@@ -13,8 +13,6 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { getSaveTelemetry } from './appDetails.api';
 import EmptyState from "../../EmptyState/EmptyState";
 import AppNotDeployed from "../../../assets/img/app-not-deployed.png";
-import {ReactComponent as Upload} from "../../../assets/icons/ic-arrow-line-up.svg";
-import {URLS} from "../../../config";
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -29,7 +27,7 @@ const AppDetailsComponent = ({
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-
+    const {push} = useHistory()
     useEffect(() => {
      if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){
       getSaveTelemetry(params.appId)
@@ -47,7 +45,9 @@ const AppDetailsComponent = ({
     );
     if(appDeleteError.length > 0){
         const handleConfigure = ()=>{
-
+            console.log(push)
+            const url = `/app/dc/deployments/${params.appId}/env/${params.envId}/values`
+            push(url)
         }
         return (
             <EmptyState>
@@ -59,7 +59,7 @@ const AppDetailsComponent = ({
                 </EmptyState.Title>
                 <EmptyState.Subtitle>you can go ahead and delete this app from Devtron from Configure tab</EmptyState.Subtitle>
                 <EmptyState.Button>
-                    <button className="cta flex">Go To Configure</button>
+                    <button onClick={handleConfigure} className="cta flex">Go To Configure</button>
                 </EmptyState.Button>
             </EmptyState>
         )
