@@ -55,7 +55,7 @@ const AppDetailsComponent = ({
                     <img src={AppNotDeployed} alt="" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h4>app details not found {appDeleteError}</h4>
+                    <h4>app details not found, {appDeleteError}</h4>
                 </EmptyState.Title>
                 <EmptyState.Subtitle>you can go ahead and delete this app from Devtron from Configure tab</EmptyState.Subtitle>
                 <EmptyState.Button>
