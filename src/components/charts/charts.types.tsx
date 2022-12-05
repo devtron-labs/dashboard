@@ -245,8 +245,8 @@ export interface ChartGroupState {
     loading: boolean;
     chartGroupDetailsLoading: boolean;
     noGitOpsConfigAvailable?: boolean
-    PageOffset?: number,
-    PageSize?: number,
+    pageOffset?: number,
+    pageSize?: number,
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {

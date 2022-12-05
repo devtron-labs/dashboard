@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
-import internal from "stream";
+
 
 function getSelectedInstances(charts) {
     return charts.reduce((agg, curr, idx) => {
@@ -42,8 +42,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         loading: true,
         chartGroupDetailsLoading: false,
         noGitOpsConfigAvailable: false,
-        PageOffset: 0,
-        PageSize: 20
+        pageOffset: 0,
+        pageSize: 20
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -176,15 +176,17 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         try {
 
             if (resetPage){
-                const { result: availableCharts } = await getAvailableCharts(queryString,0, state.PageSize)
-                setState((state) => ({ ...state, availableCharts: mapByKey(availableCharts,'id') }))
+                const { result: availableCharts } = await getAvailableCharts(queryString,0, state.pageSize)
+                setState((state) => ({ ...state,
+                    availableCharts: mapByKey(availableCharts,'id'),
+                    pageOffset: state.pageOffset + state.pageSize}))
             }
             else{
-                const { result: availableCharts } = await getAvailableCharts(queryString,state.PageOffset, state.PageSize)
-                setState((state) => ({ ...state, availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]) }))
+                const { result: availableCharts } = await getAvailableCharts(queryString,state.pageOffset, state.pageSize)
+                setState((state) => ({ ...state,
+                    availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]),
+                    pageOffset: state.pageOffset + state.pageSize }))
             }
-
-            setState((state) => ({ ...state, PageOffset: state.PageOffset + state.PageSize}))
 
         } catch (err) {
             showError(err)
@@ -195,7 +197,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
 
     function resetPaginationOffset(): void{
-        setState((state)=>( {...state, PageOffset: 0, availableCharts: new Map<number, Chart>()} ))
+        setState((state)=>( {...state, pageOffset: 0, availableCharts: new Map<number, Chart>()} ))
     }
 
 
