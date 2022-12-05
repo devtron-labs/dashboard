@@ -8,6 +8,7 @@ export interface ChartValuesType {
     id: number;
     appStoreVersionId?: number;
     environmentName?: string;
+    deploymentAppType?: string
 };
 
 export interface ChartValuesNativeType {
