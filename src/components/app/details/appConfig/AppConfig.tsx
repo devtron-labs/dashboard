@@ -408,8 +408,6 @@ export default function AppConfig({ appName }: AppConfigProps) {
     } else {
         const _canShowExternalLinks =
             userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
-        const triggerTargetBuildConfig = document.querySelectorAll('button.delete')[1]
-
         return (
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
@@ -511,7 +509,6 @@ function Navigation({
             {!isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
             {navItems.map((item) => {
                 if (item.stage === 'EXTERNAL_LINKS') {
-                    const triggerTargetBuildConfig = document.querySelectorAll('a.app-compose__nav-item')[1]
                     return (
                         canShowExternalLinks && (
                             <div key={item.stage}>
@@ -577,7 +574,7 @@ function AppComposeRouter({
     userRole,
     canShowExternalLinks,
     toggleRepoSelectionTippy,
-    setRepoState
+    setRepoState,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 

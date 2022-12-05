@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import { toast } from 'react-toastify';
 import { ConfirmationDialog, DeleteDialog, noop, showError } from '../components/common';
 import { ServerErrors } from '../modals/commonTypes';
-import info from '../assets/icons/ic-info-filled.svg';
 import { useHistory } from 'react-router';
-import TippyCustomized, { TippyTheme } from '../components/common/TippyCustomized';
+import { DeleteComponentProps } from '../components/app/types';
 
 function DeleteComponent({
     setDeleting,
@@ -13,16 +12,15 @@ function DeleteComponent({
     title,
     component,
     payload,
-    confirmationDialogDescription =  '',
+    confirmationDialogDescription = '',
     redirectTo = false,
     url = '',
     reload,
     configuration = '',
     toggleRepoSelectionTippy = noop,
     setRepo = noop,
-    // triggerTarget,
-}) {
-    const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false);
+}: DeleteComponentProps) {
+    const [showDeleteDialogModal, setDeleteDialogModal] = useState(false);
     const { push } = useHistory();
 
     async function handleDelete() {
@@ -39,7 +37,7 @@ function DeleteComponent({
             }
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
-                setCannotDeleteDialogModal(true)
+                setDeleteDialogModal(true)
                 toggleRepoSelectionTippy()
                 setRepo(title)
             }
@@ -47,26 +45,6 @@ function DeleteComponent({
             setDeleting(false);
         }
     }
-
-    // const handleConfirmation = () => {
-    //     setCannotDeleteDialogModal(false);
-    //     toggleConfirmation(false);
-    // };
-
-    // const renderCannotDeleteDialogModal = () => {
-    //     return (
-    //         <ConfirmationDialog className="confirmation-dialog__body--w-400">
-    //             <ConfirmationDialog.Icon src={info} />
-    //             <ConfirmationDialog.Body title={`${component} '${title}' is configured as source for Dockerfile`} />
-    //             <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
-    //             <ConfirmationDialog.ButtonGroup>
-    //                 <button type="button" className="cta" onClick={handleConfirmation}>
-    //                     Okay
-    //                 </button>
-    //             </ConfirmationDialog.ButtonGroup>
-    //         </ConfirmationDialog>
-    //     );
-    // };
 
     const renderDeleteDialog = () => {
         return (
@@ -83,8 +61,7 @@ function DeleteComponent({
     };
     return (
         <div>
-            {!showCannotDeleteDialogModal && renderDeleteDialog()}
-            {/* {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()} */}
+            {!showDeleteDialogModal && renderDeleteDialog()}
         </div>
     );
 }

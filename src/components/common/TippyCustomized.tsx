@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import { Placement } from 'tippy.js'
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import 'tippy.js/animations/shift-toward-subtle.css'
 
 export enum TippyTheme {
@@ -82,7 +82,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
         return (
             <>
                 <div
-                    className={`dc__word-break dc__hyphens-auto flex left ${
+                    className={`dc__word-break dc__hyphens-auto flex top left ${
                         isWhiteTheme ? 'p-12 dc__border-bottom-n1 cn-9' : 'pt-20 pb-12 pr-27 pl-20 cn-0'
                     }`}
                 >
@@ -111,11 +111,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
                     )}
                 </div>
                 {infoTextHeading && (
-                    <div
-                        className={`dc__word-break fs-14 fw-6 lh-20 ${
-                            isWhiteTheme ? 'pl-12 pr-12' : 'pl-20 pr-20'
-                        }`}
-                    >
+                    <div className={`dc__word-break fs-14 fw-6 lh-20 ${isWhiteTheme ? 'pl-12 pr-12' : 'pl-20 pr-20'}`}>
                         {infoTextHeading}
                     </div>
                 )}

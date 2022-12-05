@@ -131,7 +131,7 @@ export default function ChartGroupDetails() {
                 component={DeleteComponentsName.ChartGroup}
                 redirectTo={true}
                 url={`${URLS.CHARTS}/discover`}
-                reload={false}
+                // reload={false} reload is a function but here boolean value is passed 
             />
         )
     }

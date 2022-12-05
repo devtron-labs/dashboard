@@ -45,12 +45,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         })
     }
 
-    setToggleCollapse= () => {
-        this.props.toggleCollapse(()=>{});
-        this.setState(()=>{
-            return{ confirmation: false}
-            })
-        
+    setToggleCollapse= (e) => {
+        this.props.toggleCollapse(e);
+        this.setState({confirmation: false})   
     }
 
     renderCollapsedView() {
@@ -297,8 +294,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             {this.props.isLoading ? <Progressing /> : 'Save'}
                         </button>
                 </div>
-             {this.state.confirmation &&
-              <DeleteComponent
+            {this.state.confirmation &&
+                <DeleteComponent
                     setDeleting={this.setDeleting}
                     deleteComponent={deleteMaterial}
                     payload={this.getMaterialPayload()}
@@ -307,10 +304,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     component={DeleteComponentsName.GitRepo}
                     confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
                     reload={this.props.reload}
-                    // triggerTarget= {this.props.triggerTarget}
                     toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                     setRepo={this.props.setRepo}
-          />
+                />
              }
         </form>
     }
