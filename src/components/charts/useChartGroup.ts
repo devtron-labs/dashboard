@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useRef} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart} from './charts.types'
 import {
     getChartVersionsMin,
@@ -9,11 +9,12 @@ import {
     createChartValues as createChartValuesService,
 } from './charts.service'
 import { getChartRepoList, getAvailableCharts, getTeamList, getEnvironmentListMin, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
-import {mapByKey, showError, sortOptionsByLabel, useAsync, useIntersection} from '../common'
+import {mapByKey, showError, sortOptionsByLabel} from '../common'
 import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
+import {PaginationParams} from "./charts.util";
 
 
 function getSelectedInstances(charts) {
@@ -42,8 +43,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         loading: true,
         chartGroupDetailsLoading: false,
         noGitOpsConfigAvailable: false,
-        pageOffset: 0,
-        pageSize: 20
+        pageOffset: PaginationParams.pageOffset,
+        pageSize: PaginationParams.pageSize
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -54,7 +55,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                 await Promise.allSettled([
                     getChartRepoList(),
                     serverMode == SERVER_MODE.FULL ? getChartGroups() : { value:{ status: "fulfilled",result: undefined} },
-                    getAvailableCharts(`?includeDeprecated=1`, 0, 20),
+                    getAvailableCharts(`?includeDeprecated=1`, PaginationParams.pageOffset, PaginationParams.pageSize),
                     getTeamList(),
                     getEnvironmentListMin(),
                     isGitOpsModuleInstalledAndConfigured(),
@@ -176,7 +177,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         try {
 
             if (resetPage){
-                const { result: availableCharts } = await getAvailableCharts(queryString,0, state.pageSize)
+                const { result: availableCharts } = await getAvailableCharts(queryString, PaginationParams.pageOffset, state.pageSize)
                 setState((state) => ({ ...state,
                     availableCharts: mapByKey(availableCharts,'id'),
                     pageOffset: state.pageOffset + state.pageSize}))
