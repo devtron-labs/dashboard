@@ -647,9 +647,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             <div className="node-list">
                 {renderClusterSummary()}
                 <div
-                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
+                    className={`bcn-0 pt-16 dc__overflow-scroll ${noResults ? 'no-result-container' : ''} ${
                         clusterErrorList?.length ? 'with-error-bar' : ''
-                    }`}
+                    }`}  style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 232px)` }}
                 >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
@@ -682,7 +682,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     .slice(nodeListOffset, nodeListOffset + pageSize)
                                     ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {showTerminal && terminalclusterData ? (
+                            {!showTerminal && renderPagination()}
+                        </>
+                    )}
+                </div>
+            </div>
+            {showTerminal && terminalclusterData &&
                                 <ClusterTerminal
                                     clusterId={Number(clusterId)}
                                     nodeList={nodeList}
@@ -690,13 +695,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     clusterImageList={imageList}
                                     namespaceList={namespaceList}
                                 />
-                            ) : (
-                                renderPagination()
-                            )}
-                        </>
-                    )}
-                </div>
-            </div>
+                            }
         </div>
     )
 }

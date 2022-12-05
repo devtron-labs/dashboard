@@ -65,8 +65,8 @@ export default function ClusterTerminal({
     const [update, setUpdate] = useState<boolean>(false)
     const [fullScreen, setFullScreen] = useState(false)
     const [fetchRetry, setRetry] = useState(false)
-    const [reconnect, setReconnect] = useState(false)
     const [connectTerminal, setConnectTerminal] = useState(false)
+    const [reconnect, setReconnect] = useState(false)
     const [toggleOption, settoggleOption] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
 
@@ -149,12 +149,6 @@ export default function ClusterTerminal({
         }
     }, [selectedtTerminalType.value])
 
-    // useEffect(() => {
-    //     return () => {
-    //         clusterterminalDisconnect(terminalAccessId)
-    //     }
-    // },[])
-
     async function closeTerminalModal(): Promise<void> {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
@@ -198,6 +192,7 @@ export default function ClusterTerminal({
 
     const reconnectTerminal = () => {
         setConnectTerminal(true)
+        setTerminalId(null)
         setReconnect(!reconnect)
     }
 
@@ -333,6 +328,8 @@ export default function ClusterTerminal({
                                             borderColor: 'transparent',
                                             backgroundColor: 'transparent',
                                             cursor: 'pointer',
+                                            height: '28px',
+                                            minHeight: '28px'
                                         }),
                                         singleValue: (base, state) => ({
                                             ...base,
@@ -342,9 +339,15 @@ export default function ClusterTerminal({
                                             textAlign: 'left',
                                             marginLeft: '2px',
                                         }),
-                                        indicatorsContainer: (provided, state) => ({
-                                            ...provided,
+                                        indicatorsContainer: (base, state) => ({
+                                            ...base,
+                                            height: '28px'
                                         }),
+                                        valueContainer: (base, state) => ({
+                                            ...base,
+                                            height: '28px',
+                                            padding: '0 6px'
+                                          }),
                                     }}
                                     components={{
                                         IndicatorSeparator: null,
@@ -377,16 +380,26 @@ export default function ClusterTerminal({
                                     borderColor: 'transparent',
                                     backgroundColor: 'transparent',
                                     cursor: 'pointer',
+                                    height: '28px',
+                                    minHeight: '28px'
                                 }),
                                 singleValue: (base, state) => ({
                                     ...base,
                                     fontWeight: 600,
-                                    textAlign: 'left',
                                     color: '#06c',
+                                    direction: 'rtl',
+                                    textAlign: 'left',
+                                    marginLeft: '2px',
                                 }),
-                                indicatorsContainer: (provided, state) => ({
-                                    ...provided,
+                                indicatorsContainer: (base, state) => ({
+                                    ...base,
+                                    height: '28px'
                                 }),
+                                valueContainer: (base, state) => ({
+                                    ...base,
+                                    height: '28px',
+                                    padding: '0 6px'
+                                  }),
                             }}
                             components={{
                                 IndicatorSeparator: null,
@@ -417,16 +430,26 @@ export default function ClusterTerminal({
                                     borderColor: 'transparent',
                                     backgroundColor: 'transparent',
                                     cursor: 'pointer',
+                                    height: '28px',
+                                    minHeight: '28px'
                                 }),
                                 singleValue: (base, state) => ({
                                     ...base,
                                     fontWeight: 600,
-                                    textAlign: 'left',
                                     color: '#06c',
+                                    direction: 'rtl',
+                                    textAlign: 'left',
+                                    marginLeft: '2px',
                                 }),
-                                indicatorsContainer: (provided, state) => ({
-                                    ...provided,
+                                indicatorsContainer: (base, state) => ({
+                                    ...base,
+                                    height: '28px'
                                 }),
+                                valueContainer: (base, state) => ({
+                                    ...base,
+                                    height: '28px',
+                                    padding: '0 6px'
+                                  }),
                             }}
                             components={{
                                 IndicatorSeparator: null,
@@ -501,7 +524,7 @@ export default function ClusterTerminal({
                         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
                             <div className="flex">
                                 <Abort
-                                    className="icon-dim-16 mr-4 fcn-6"
+                                    className="icon-dim-16 mr-4 fcn-6 cursor"
                                     onClick={(e) => {
                                         setTerminalCleared(true)
                                     }}
@@ -509,7 +532,7 @@ export default function ClusterTerminal({
                             </div>
                         </Tippy>
                         <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                        <div className="cn-6 ml-8 mr-10">Command </div>
+                        <div className="cn-6 ml-8 mr-10">Shell </div>
                         <div>
                             <Select
                                 placeholder="Select Shell"
@@ -522,7 +545,7 @@ export default function ClusterTerminal({
                                         ...base,
                                         zIndex: 9999,
                                         textAlign: 'left',
-                                        minWidth: '100px',
+                                        minWidth: '150px',
                                         maxWidth: '380px',
                                     }),
                                     control: (base, state) => ({
@@ -530,16 +553,26 @@ export default function ClusterTerminal({
                                         borderColor: 'transparent',
                                         backgroundColor: 'transparent',
                                         cursor: 'pointer',
+                                        height: '28px',
+                                        minHeight: '28px'
                                     }),
                                     singleValue: (base, state) => ({
                                         ...base,
                                         fontWeight: 600,
-                                        textAlign: 'left',
                                         color: '#06c',
+                                        direction: 'rtl',
+                                        textAlign: 'left',
+                                        marginLeft: '2px',
                                     }),
-                                    indicatorsContainer: (provided, state) => ({
-                                        ...provided,
+                                    indicatorsContainer: (base, state) => ({
+                                        ...base,
+                                        height: '28px'
                                     }),
+                                    valueContainer: (base, state) => ({
+                                        ...base,
+                                        height: '28px',
+                                        padding: '0 6px'
+                                      }),
                                 }}
                                 components={{
                                     IndicatorSeparator: null,
@@ -555,9 +588,9 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                {connectTerminal && <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
                     {terminalContainer()}
-                </div>
+                </div>}
                 {selectedTabIndex === 1 && <div className='h-100'><ClusterEvents clusterId={terminalAccessId} /></div>}
                 {selectedTabIndex === 2 && <div className='h-100'><ClusterManifest clusterId={terminalAccessId} /></div>}
             </div>
