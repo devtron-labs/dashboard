@@ -1217,7 +1217,7 @@ function ChartValuesView({
                         )}
                         {!isExternalApp &&
                             ((!isDeployChartView && commonState.selectedProject) ||
-                                (isDeployChartView && serverMode === SERVER_MODE.FULL)) && (
+                                (isDeployChartView)) && (
                                 <ChartProjectSelector
                                     isDeployChartView={isDeployChartView}
                                     selectedProject={commonState.selectedProject}

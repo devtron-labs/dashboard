@@ -518,7 +518,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     onChange={(e) => setAppName(e.target.value)}
                                 />
                             </label>
-                            {serverMode == SERVER_MODE.FULL && (
+                            {
                                 <label className="form__row form__row--w-100">
                                     <span className="form__label">Project</span>
                                     <ReactSelect
@@ -538,7 +538,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                         options={projects}
                                     />
                                 </label>
-                            )}
+                            }
                             <div className="form__row form__row--w-100">
                                 <span className="form__label">Environment</span>
                                 {serverMode == SERVER_MODE.FULL && (
