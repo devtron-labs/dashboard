@@ -183,6 +183,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             _terminal.write('Connecting to pod terminal.')
         }else if(status === 'Failed'){
             _terminal.write('Failed')
+            _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
+            _terminal.write(' | ')
+            _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
         }else{
             _terminal.write('..')
         }
@@ -272,11 +275,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (firstMessageReceived) {
-            fitAddon.fit()
+            if(terminalViewProps.clusterTerminal){
+                if(terminalViewProps.isterminalTab){
+                    fitAddon.fit()
+                }
+            }else{
+                fitAddon.fit()
+            }
             terminal.setOption('cursorBlink', true)
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED)
         }
-    }, [firstMessageReceived])
+    }, [firstMessageReceived,terminalViewProps.isterminalTab])
 
     useEffect(() => {
         if (!window.location.origin) {
@@ -349,8 +358,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     clustertimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
                     }, 3000)
-                } else {
+                } else if(sessionId) {
                         postInitialize(sessionId)
+                } else {
+                    preFetchData('Failed',false)
                 }
             })
             .catch((err) => {

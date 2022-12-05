@@ -156,7 +156,7 @@ export default function ClusterTerminal({
             }
             setConnectTerminal(false)
             await clusterterminalDisconnect(terminalAccessId)
-            setSocketConnection(SocketConnectionType.DISCONNECTED)
+            socketDiconnecting()
             toggleOptionChange()
             setUpdate(false)
         } catch (error) {
@@ -294,11 +294,11 @@ export default function ClusterTerminal({
                         >
                             {connectTerminal ? (
                                 <span className="flex mr-8">
-                                    <Disconnect className="icon-dim-16 mr-4" onClick={closeTerminalModal} />
+                                    <Disconnect className="icon-dim-16 mr-4 cursor" onClick={closeTerminalModal} />
                                 </span>
                             ) : (
                                 <span className="flex mr-8">
-                                    <Connect className="icon-dim-16 mr-4" onClick={reconnectTerminal} />
+                                    <Connect className="icon-dim-16 mr-4 cursor" onClick={reconnectTerminal} />
                                 </span>
                             )}
                         </Tippy>
@@ -478,25 +478,25 @@ export default function ClusterTerminal({
                         </div>
                         {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
-                    <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+                     {terminalAccessId && <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
                             Pod Events
                         </div>
                         {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                    </li>}
+                    {terminalAccessId && <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
                             Pod Manifest
                         </div>
                         {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
+                    </li>}
                 </ul>
                 {selectedTabIndex == 0 && (
                     <>
                         <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
                         {connectTerminal && (
                             <Tippy
-                                className="default-tt"
+                                className="default-tt cursor"
                                 arrow={false}
                                 placement="bottom"
                                 content={
@@ -588,9 +588,9 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                {connectTerminal && <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
                     {terminalContainer()}
-                </div>}
+                </div>
                 {selectedTabIndex === 1 && <div className='h-100'><ClusterEvents clusterId={terminalAccessId} /></div>}
                 {selectedTabIndex === 2 && <div className='h-100'><ClusterManifest clusterId={terminalAccessId} /></div>}
             </div>

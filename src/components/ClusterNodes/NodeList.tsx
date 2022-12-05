@@ -644,12 +644,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     return (
         <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div className="node-list">
+            <div className="node-list dc__overflow-scroll" style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 61px)` }}>
                 {renderClusterSummary()}
                 <div
-                    className={`bcn-0 pt-16 dc__overflow-scroll ${noResults ? 'no-result-container' : ''} ${
+                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
                         clusterErrorList?.length ? 'with-error-bar' : ''
-                    }`}  style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 232px)` }}
+                    }`}
                 >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
@@ -679,6 +679,24 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     {appliedColumns.map((column) => renderNodeListHeader(column))}
                                 </div>
                                 {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
+                                    {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
+                                    {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
+                                    {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
+                                    {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
+                                    {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
+                                    {filteredFlattenNodeList
                                     .slice(nodeListOffset, nodeListOffset + pageSize)
                                     ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
