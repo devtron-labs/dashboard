@@ -95,7 +95,7 @@ function NodeTreeComponent({
                                     to={`${k8URL}/${
                                         parents.includes('pod') ? 'pod/group/' : ''
                                     }${treeNode.name.toLowerCase()}`}
-                                    className={`no-decor fs-14 pointer w-100 fw-4 flex left mr-8 pl-8 pr-8 pt-6 pb-6 lh-1-43 ${
+                                    className={`dc__no-decor fs-14 pointer w-100 fw-4 flex left mr-8 pl-8 pr-8 pt-6 pb-6 lh-1-43 ${
                                         treeNode.isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '
                                     }`}
                                 >
@@ -208,7 +208,7 @@ export function generateSelectedNodes(
                         _node.toLowerCase() === NodeType.Pod.toLowerCase()
                     ),
             );
-        
+
             if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase())
             ) {
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node));

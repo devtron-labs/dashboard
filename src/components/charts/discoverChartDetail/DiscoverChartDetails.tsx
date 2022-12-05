@@ -112,11 +112,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         setLoading(true)
         try {
             let { result } = await getChartVersionsMin(chartId)
-            if(result?.length){
-              setChartVersions(result)
-              selectVersion(result[0].id)
-            } else{
-              toast.error('Some error occurred. Please try reloading the page');
+            if (result?.length) {
+                setChartVersions(result)
+                selectVersion(result[0].id)
+            } else {
+                toast.error('Some error occurred. Please try reloading the page')
             }
         } catch (err) {
             showError(err)
@@ -329,8 +329,8 @@ const Deployment: React.FC<DeploymentProps> = ({
 
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
-            <div className="chart-grid-item__icon-wrapper">
-                <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
+            <div className="dc__chart-grid-item__icon-wrapper">
+                <img src={icon} onError={handleImageError} className="dc__chart-grid-item__icon" alt="chart icon" />
             </div>
             <div className="mb-16">
                 <div className="repository">
@@ -344,7 +344,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                 )}
             </div>
             <button type="button" className="flex cta h-36" onClick={handleDeploy}>
-                Deploy...
+                Configure & Deploy
             </button>
             <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
                 Preset values

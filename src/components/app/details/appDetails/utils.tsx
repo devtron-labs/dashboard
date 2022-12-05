@@ -126,7 +126,7 @@ export class SecurityVulnerabilitites extends Component<SecurityVulnerabilitites
         if (total !== 0) {
             return <div className="security-vulnerabilities cursor" onClick={this.props.onClick}>
                 <div>
-                    <Bug className="icon-dim-20 vertical-align-middle mr-8 fcy-7" />
+                    <Bug className="icon-dim-20 dc__vertical-align-middle mr-8 fcy-7" />
                     {total} Security Vulnerabilities
                     <span className="security-vulnerabilities__count">
                         {critical ? `${critical} critical, ` : ``}
@@ -438,7 +438,10 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
-                  } else {
+                  } else if (deploymentData.deploymentStatus === 'succeeded') {
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                } else {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
                   }

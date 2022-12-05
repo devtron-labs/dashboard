@@ -1,7 +1,6 @@
 import React from 'react';
 import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps } from 'react-router';
-import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
 
 export interface AppListState {
     code: number;
@@ -18,11 +17,6 @@ export interface AppListState {
     pageSize: number;
     expandedRow: boolean;
     appData: App | null;
-    isAppCreated: boolean;
-    appStageCompleted: number;
-    chartStageCompleted: number;
-    appChecklist: AppCheckList;
-    chartChecklist: ChartCheckList;
 }
 
 export interface App {
@@ -54,15 +48,29 @@ export interface Environment {
 
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
     payloadParsedFromUrl?: any;
-    appCheckListRes? : any;
     serverMode? : string;
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;
-    updateLastDataSync : () => void;
     appListCount: number
     isSuperAdmin: boolean
     openDevtronAppCreateModel: (event) => void
     setAppCount: React.Dispatch<React.SetStateAction<number>>
+    updateDataSyncing: (loading: boolean) => void
+}
+
+export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
+  expandRow: (app: App | null) => void;
+  closeExpandedRow: () => void;
+  sort: (key: string) => void;
+  handleEditApp: (appId: number) => void;
+  redirectToAppDetails: (app, envId: number) => string;
+  clearAll: () => void;
+  changePage: (pageNo: number) => void;
+  changePageSize: (size: number) => void;
+  appListCount: number
+  isSuperAdmin: boolean
+  openDevtronAppCreateModel: (event) => void
+  updateDataSyncing: (loading: boolean) => void
 }
 
 export interface AppListResponse {
@@ -120,4 +128,19 @@ export const SortBy = {
 export interface AppListPropType {
   isSuperAdmin: boolean
   appListCount: number
+}
+
+export interface TriggerURL {
+    appId?: string
+    envId: string
+    installedAppId?: string
+    close: () => void
+    isEAMode?: boolean
+}
+
+export interface ManifestUrlList {
+    kind: string
+    name: string
+    pointsTo: string
+    urls: string[]
 }

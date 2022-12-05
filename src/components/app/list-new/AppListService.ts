@@ -1,4 +1,4 @@
-import { getAppCheckList, getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
+import { getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
 import {Routes, SERVER_MODE} from '../../../config';
 import {get, post} from '../../../services/api';
 import {ResponseType, ClusterEnvironmentDetail, EnvironmentListHelmResult, EnvironmentHelmResult, ClusterListResponse, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
@@ -42,7 +42,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
     let _clusterVsNamespaceMap = buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(','));
     let _clusterIds = [..._clusterVsNamespaceMap.keys()].join(',');
 
-    return Promise.all([(serverMode == SERVER_MODE.FULL ? getAppCheckList() : { result: undefined}) , getProjectList(), (serverMode == SERVER_MODE.FULL ? getEnvironmentList() : { result: undefined}), getClusterList(), (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([appCheckListRes, projectsRes, environmentListRes, clusterListRes, namespaceListRes]) => {
+    return Promise.all([getProjectList(), (serverMode == SERVER_MODE.FULL ? getEnvironmentList() : { result: undefined}), getClusterList(), (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([projectsRes, environmentListRes, clusterListRes, namespaceListRes]) => {
 
         // push apps with no projects in project res
         if(projectsRes.result && Array.isArray(projectsRes.result)){
@@ -113,7 +113,6 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         ////// set master filters data ends (check/uncheck)
 
         return {
-            appCheckListRes: appCheckListRes,
             projectsRes: projectsRes,
             environmentListRes: environmentListRes,
             filters : filters

@@ -313,3 +313,8 @@
     height: 36px;
     line-height: unset;
 }
+
+.workflow-node__add-cd-btn-tippy .add-cd-btn-tippy {
+    display: block;
+    width: 145px;
+}

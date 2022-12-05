@@ -10,7 +10,7 @@ import moment from 'moment'
 import * as queryString from 'query-string';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
 function ExternalAppDetail({appId, appName}) {
@@ -95,7 +95,11 @@ function ExternalAppDetail({appId, appName}) {
                 if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
                     Promise.all([
                         getMonitoringTools(),
-                        getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId),
+                        getExternalLinks(
+                            appDetailResponse.result.appDetail.environmentDetails.clusterId,
+                            appName,
+                            ExternalLinkIdentifierType.ExternalHelmApp,
+                        ),
                     ])
                         .then(([monitoringToolsRes, externalLinksRes]) => {
                             setExternalLinksAndTools({
@@ -136,13 +140,13 @@ function ExternalAppDetail({appId, appName}) {
     return (
         <>
             { isLoading &&
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             }
 
             { !isLoading && errorResponseCode &&
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             }

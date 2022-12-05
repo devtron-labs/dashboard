@@ -23,10 +23,6 @@
     padding-right: 20px !important;
 }
 
-.text-capitalize {
-    text-transform: capitalize;
-}
-
 .f-healthy,
 .f-deployed,
 .f-synced,
@@ -72,7 +68,7 @@
     grid-template-columns: auto 1fr;
     grid-template-rows: 1fr;
 
-    .ellipsis-left {
+    .dc__ellipsis-left {
         text-align: left;
     }
 }
@@ -119,4 +115,23 @@ svg.app-notes__icon {
     height: 12px;
     background-color: var(--N200);
     margin: 0 8px;
+}
+
+.app-status-detail-modal {
+    .app-status-row {
+        display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+    }
+    .resource-list {
+        height: calc(100vh - 180px);
+        min-height: 220px;
+        overflow-y: auto;
+
+        .app-status-row {
+            &:hover {
+                background-color: var(--N50);
+            }
+        }
+    }
 }

@@ -170,7 +170,7 @@ export default function ChartGroupDetails() {
 
     const renderChartGroupActionButton = () => {
         return (
-            <div className="page-header__cta-container flex">
+            <div className="dc__page-header__cta-container flex">
                 <button type="button" className="cta flex cancel mr-16 h-32" onClick={redirectToConfigure}>
                     <Pencil className="mr-5" />
                     Edit
@@ -253,7 +253,7 @@ export default function ChartGroupDetails() {
 
                                         }*/
                                         onClick={handleAdvancedButtonClick}
-                                        className="cta cancel ellipsis-right w100"
+                                        className="cta cancel dc__ellipsis-right w-100"
                                     >
                                         Advanced Options
                                     </button>
@@ -275,7 +275,7 @@ export default function ChartGroupDetails() {
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         onClick={handleDeployButtonClick}
-                                        className="cta ellipsis-right w100"
+                                        className="cta dc__ellipsis-right w-100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>

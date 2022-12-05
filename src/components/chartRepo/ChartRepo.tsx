@@ -7,7 +7,7 @@ import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoCo
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
-import { DOCUMENTATION } from '../../config';
+import { DOCUMENTATION, PATTERNS } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
@@ -40,12 +40,12 @@ export default function ChartRepo() {
         <section className="global-configuration__component">
             <h2 className="form__title">Chart Repository</h2>
             <p className="form__subtitle">Manage your organization’s chart repositories.
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
+            <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
             <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
-            <div className="chartRepo_form__subtitle float-left bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
+            <div className="chartRepo_form__subtitle dc__float-left dc__bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
             <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
-                <div className="chartRepo_form__subtitle float-right">
-                    <a rel="noreferrer noopener" target="_blank" className={`learn-more__href ${fetching? '': 'cursor'}`} onClick={refetchCharts}><span>
+                <div className="chartRepo_form__subtitle dc__float-right">
+                    <a rel="noreferrer noopener" target="_blank" className={`dc__link ${fetching? '': 'cursor'}`} onClick={refetchCharts}><span>
                         <svg width="16" height="16" viewBox="2 -2 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11.0105 6.23225H14.0105V3.23225" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                             <path d="M4.11096 4.11091C4.62168 3.60019 5.228 3.19506 5.89529 2.91866C6.56258 2.64226 7.27778 2.5 8.00005 2.5C8.72232 2.5 9.43752 2.64226 10.1048 2.91866C10.7721 3.19506 11.3784 3.60019 11.8891 4.11091L14.0105 6.23223" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -93,9 +93,9 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }
 
     return (
-        <article className={`collapsed-list clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
+        <article className={`collapsed-list dc__clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
-                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
+                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}</List.Logo>
                 <div className="flex left">
                     <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
@@ -132,11 +132,16 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         {
             name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.{5,}$/ }
+                validators: [
+                  { error: 'Name is required', regex: /^.*$/ },
+              ]
             },
             url: {
                 required: true,
-                validator: { error: 'URL is required', regex: /^.{10,}$/ }
+                validators: [
+                  { error: 'URL is required', regex: /^.*$/ },
+                  { error: 'Invalid URL', regex: PATTERNS.URL },
+              ]
             },
             auth: {
                 required: true,
@@ -201,6 +206,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             }
         }).catch((error) => {
             showError(error);
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
             setLoading(false);
         })
     }
@@ -236,6 +242,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
         catch (err) {
             showError(err)
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
         }
         finally {
             setLoading(false);
@@ -275,7 +282,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             <div className="form__row form__buttons">
                    {
                        id &&
-                       <button className="cta delete m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
+                       <button className="cta delete dc__m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                    }

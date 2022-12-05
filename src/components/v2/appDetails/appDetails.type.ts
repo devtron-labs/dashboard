@@ -39,6 +39,9 @@ export enum AggregationKeys {
 
 export enum NodeStatus {
     Degraded = 'degraded',
+    Healthy = 'healthy',
+    Progressing = 'progressing',
+    Missing = 'missing'
 }
 
 export enum NodeType {
@@ -152,6 +155,11 @@ export interface AppDetails {
     clusterId?: number;
     notes?: string;
     deploymentAppType?: DeploymentAppType
+    ipsAccessProvided?: boolean
+    externalCi?: boolean
+    clusterName?: string
+    dockerRegistryId?: string
+
 }
 
 interface MaterialInfo {
@@ -193,6 +201,7 @@ export interface Info {
     name: string;
 }
 export interface Node {
+    createdAt: Date;
     health: Health;
     kind: NodeType;
     name: string;
@@ -343,4 +352,20 @@ interface Sync {
 export interface LogSearchTermType {
     logSearchTerms: Record<string, string>;
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+}
+
+export interface AppStatusDetailType {
+    close: () => void
+    appStreamData: any
+    showAppStatusMessage?: boolean
+}
+
+export interface StatusFilterButtonType {
+  nodes: Array<Node>
+  handleFilterClick?: (selectedFilter: string) => void
+}
+
+export interface SyncErrorType {
+  appStreamData: AppStreamData
+  showApplicationDetailedModal? : () => void
 }

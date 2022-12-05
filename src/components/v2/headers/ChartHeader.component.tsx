@@ -7,15 +7,16 @@ import { ChartSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
 import { get } from '../../../services/api'
 import { handleUTCTime } from '../../common'
-import './header.css'
+import './header.scss'
 import IndexStore from '../appDetails/index.store'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import PageHeader from '../../common/header/PageHeader'
 
 function ChartHeaderComponent() {
     const match = useRouteMatch()
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string; appName: string }>()
-    const { path } = useRouteMatch()
+    const { path, url } = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
     function handleBreadcrumbChartChange(selected) {
@@ -72,7 +73,7 @@ function ChartHeaderComponent() {
             <div className="m-0 flex left ">
                 <Link
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="devtron-breadcrumb__item"
+                    className="dc__devtron-breadcrumb__item"
                 >
                     <span className="cb-5 fs-16">Helm Apps </span>
                 </Link>
@@ -85,7 +86,7 @@ function ChartHeaderComponent() {
     const renderHelmDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right fs-13">
+                <li className="tab-list__tab dc__ellipsis-right fs-13">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
@@ -104,7 +105,7 @@ function ChartHeaderComponent() {
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_VALUES}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
@@ -112,7 +113,8 @@ function ChartHeaderComponent() {
                             })
                         }}
                     >
-                        Values
+                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                        Configure
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
@@ -135,7 +137,7 @@ function ChartHeaderComponent() {
     }
 
     return (
-        <div className="helm-app-page-header">
+        <div className="app-header-wrapper helm-app-page-header">
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}

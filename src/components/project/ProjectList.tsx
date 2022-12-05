@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import { Project } from './Project';
 import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import './project.css';
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
@@ -119,7 +118,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         return <>
             <h1 className="form__title">Projects</h1>
             <p className="form__subtitle">Manage your organization's projects.&nbsp;
-                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
+                <a className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
             </p>
         </>
     }
@@ -127,7 +126,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     renderAddProject() {
         let unSavedItem = this.state.projects.find(item => !item.id);
         if (!unSavedItem) {
-            return <div className="white-card white-card--add-new-item mb-16"
+            return <div className="white-card white-card--add-new-item mb-16 dashed"
                 onClick={this.addProject}>
                 <Add className="icon-dim-24 fcb-5 mr-16" />
                 <span className="list__add-item">Add Project</span>
@@ -138,7 +137,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} />
+            return <ErrorScreenManager code={this.state.code} reloadClass="dc__align-reload-center" />
         }
         else {
             return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">

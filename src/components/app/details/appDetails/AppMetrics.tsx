@@ -4,11 +4,12 @@ import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, La
 import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, Progressing, not } from '../../../common';
+import { DatePickerType2 as DateRangePicker, Progressing, not, useAsync } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION } from '../../../../config';
-import { Link } from 'react-router-dom';
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap } from '../../../../config';
+import { Link, NavLink } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
 import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
@@ -18,6 +19,8 @@ import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
 import moment, { Moment } from 'moment';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service';
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type';
 
 export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion, addExtraSpace: boolean}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
     const { appMetrics, environmentName, infraMetrics } = environment;
@@ -42,13 +45,14 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput);
     const [selectedLatency, setLatency] = useState<number>(99.9);
     const [hostURLConfig, setHostURLConfig] = useState(undefined);
+    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [graphs, setGraphs] = useState({
         cpu: "",
         ram: "",
         throughput: "",
         latency: "",
     })
-    const addSpace: string = addExtraSpace ? 'mb-16':''; 
+    const addSpace: string = addExtraSpace ? 'mb-16':'';
     let pod = podMap?.values().next().value;
     let newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash'];
 
@@ -189,28 +193,32 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     }
 
     useEffect(() => {
-        let str: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
-        setCalendarValue(str);
-        checkDatasource();
-    }, [appName])
+        const inputCalendarValue: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
+        if(inputCalendarValue !== calendarValue){
+          setCalendarValue(inputCalendarValue);
+        }
+        if(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED){
+          checkDatasource();
+        }
+    }, [appName, grafanaModuleStatus])
 
     useEffect(() => {
         getNewGraphs(tab);
-    }, [datasource])
-
-    useEffect(() => {
-        getNewGraphs(tab);
-    }, [calendarValue])
+    }, [datasource, calendarValue])
 
     //@ts-ignore
-    if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin ) {
-        return <>
-            <AppMetricsEmptyState isLoading={datasource.isLoading}
+    if(grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED){
+        return <MonitoringModuleNotInstalled addSpace={addSpace} />
+    } else if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
+        return (
+            <AppMetricsEmptyState
+                isLoading={datasource.isLoading}
                 addSpace={addSpace}
                 isConfigured={datasource.isConfigured}
                 isHealthy={datasource.isHealthy}
-                hostURLConfig={hostURLConfig} />
-        </>
+                hostURLConfig={hostURLConfig}
+            />
+        )
     }
     else {
         return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
@@ -222,13 +230,13 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 </span>
                     <div className="flex">
                         <div className="mr-16">
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={tab === AppMetricsTab.Aggregate} value={AppMetricsTab.Aggregate} onChange={handleTabChange} />
-                                <span className="tertiary-tab">Aggregate</span>
+                                <span className="dc__tertiary-tab">Aggregate</span>
                             </label>
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={tab === AppMetricsTab.Pod} value={AppMetricsTab.Pod} onChange={handleTabChange} />
-                                <span className="tertiary-tab">Per Pod</span>
+                                <span className="dc__tertiary-tab">Per Pod</span>
                             </label>
                             {chartName ? <GraphModal appId={appId}
                                 envId={envId}
@@ -353,8 +361,37 @@ function EnableAppMetrics() {
     );
 }
 
+function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
+    return (
+        <div className={`app-metrics-graph__empty-state-wrapper bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
+            <div className="flex left w-100 lh-20">
+                <span className="fs-14 fw-6 cv-5 flex left mr-16">
+                    <GraphIcon className="mr-8 fcv-5 icon-dim-20" />
+                    MONITORING
+                </span>
+                <div className="fw-4 fs-13 cn-7 flexbox">
+                    View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
+                    app.&nbsp;
+                    <NavLink
+                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                        className="cb-5 fs-13 fw-6 anchor w-auto dc__no-decor flex"
+                        target="_blank"
+                    >
+                        Learn more &nbsp;
+                        <OpenInNew />
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig, addSpace }) {
     const [collapsed, toggleCollapsed] = useState<boolean>(true);
+
+    const toggleHeader = () => {
+      toggleCollapsed(not)
+    }
 
     let subtitle = '';
     if (!isConfigured) {
@@ -364,8 +401,8 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
         subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
     }
     return (
-        <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
-            <div className="flex left w-100 lh-20">
+        <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor ${addSpace}`}>
+            <div  onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
                     APPLICATION METRICS
@@ -378,7 +415,6 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
                 <DropDownIcon
                     style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
                     className="icon-dim-20 rotate pointer"
-                    onClick={(e) => toggleCollapsed(not)}
                 />
             </div>
             {!collapsed &&
@@ -412,7 +448,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
                                 <>
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
                                     <a
-                                        className="learn-more__href cta small text pl-0"
+                                        className="dc__link cta small text pl-0"
                                         href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
                                         target="_blank"
                                         style={{ paddingLeft: '0' }}

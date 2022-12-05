@@ -3,8 +3,9 @@ import { NavLink, Link } from 'react-router-dom'
 import { URLS, AppListConstants } from '../../../config'
 import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch, useHistory } from 'react-router'
-import './header.css'
+import './header.scss'
 import PageHeader from '../../common/header/PageHeader'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 
 function EAHeaderComponent() {
     const match = useRouteMatch()
@@ -17,7 +18,7 @@ function EAHeaderComponent() {
             <div className="m-0 flex left fs-12 cn-9fw-4 fs-16">
                 <Link
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="devtron-breadcrumb__item"
+                    className="dc__devtron-breadcrumb__item"
                 >
                     <div className="cb-5">Helm apps</div>
                 </Link>
@@ -48,7 +49,7 @@ function EAHeaderComponent() {
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_VALUES}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'External App',
@@ -56,7 +57,8 @@ function EAHeaderComponent() {
                             })
                         }}
                     >
-                        Values
+                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                        Configure
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
@@ -78,7 +80,7 @@ function EAHeaderComponent() {
         )
     }
     return (
-        <div className="helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
+        <div className="app-header-wrapper helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}

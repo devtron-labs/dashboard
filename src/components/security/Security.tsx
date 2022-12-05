@@ -29,7 +29,7 @@ export class Security extends Component<SecurityProps> {
         return (
             <>
                 <ul role="tablist" className="tab-list">
-                    <li className="tab-list__tab ellipsis-right">
+                    <li className="tab-list__tab dc__ellipsis-right">
                         <NavLink activeClassName="active" to={`${path}/scans`} className="tab-list__tab-link">
                             Security Scans
                         </NavLink>

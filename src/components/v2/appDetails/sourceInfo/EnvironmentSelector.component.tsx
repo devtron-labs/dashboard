@@ -14,6 +14,8 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component';
 import Tippy from '@tippyjs/react';
+import { TriggerUrlModal } from '../../../app/list/TriggerUrl';
+import { ReactComponent as LinkIcon }  from '../../../../assets/icons/ic-link.svg'
 
 function EnvironmentSelectorComponent() {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -23,6 +25,7 @@ function EnvironmentSelectorComponent() {
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
+    const [urlInfo, showUrlInfo] = useState<boolean>(false)
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -56,6 +59,14 @@ function EnvironmentSelectorComponent() {
     const handleEnvironmentChange = (envId: number) => {
         history.push(`${url}/${envId}`);
     };
+
+    const closeUrlInfo = (): void => {
+        showUrlInfo(false)
+    }
+
+    const showInfoUrl = (): void => {
+        showUrlInfo(true)
+    }
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -137,44 +148,63 @@ function EnvironmentSelectorComponent() {
                             )}
                         </div>
                     </div>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content={`Deployed using ${
-                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
-                        }`}
-                    >
-                        {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD className="icon-dim-32 ml-16" />
-                        ) : (
-                            <Helm className="icon-dim-32 ml-16" />
-                        )}
-                    </Tippy>
-                </div>
-            </div>
-            {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
-                <>
-                    {canScaleWorkloads ? (
-                        <button
-                            className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
-                            onClick={() => setWorkloadsModal(true)}
-                        >
-                            <ScaleObjects className="mr-4" /> Scale workloads
-                        </button>
-                    ) : (
+                    {appDetails?.deploymentAppType && (
                         <Tippy
-                            placement="top"
-                            arrow={false}
                             className="default-tt"
-                            content={'No scalable workloads available'}
+                            arrow={false}
+                            placement="top"
+                            content={`Deployed using ${
+                                appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
+                            }`}
                         >
-                            <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
-                                <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
-                            </button>
+                            {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
+                                <ArgoCD className="icon-dim-32 ml-16" />
+                            ) : (
+                                <Helm className="icon-dim-32 ml-16" />
+                            )}
                         </Tippy>
                     )}
-                </>
+                </div>
+            </div>
+            <div className="flex">
+                <button
+                    className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                    onClick={showInfoUrl}
+                >
+                    <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />Urls
+                </button>
+                {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
+                    <>
+                        {canScaleWorkloads ? (
+                            <button
+                                className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
+                                onClick={() => setWorkloadsModal(true)}
+                            >
+                                <ScaleObjects className="mr-4" /> Scale workloads
+                            </button>
+                        ) : (
+                            <Tippy
+                                placement="top"
+                                arrow={false}
+                                className="default-tt"
+                                content={'No scalable workloads available'}
+                            >
+                                <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
+                                    <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
+                                </button>
+                            </Tippy>
+                        )}
+                    </>
+                )}
+            </div>
+            {urlInfo && (
+                <TriggerUrlModal
+                    installedAppId={params.appId}
+                    isEAMode={appDetails.appType === AppType.EXTERNAL_HELM_CHART}
+                    appId={appDetails.appType === AppType.EXTERNAL_HELM_CHART ? params.appId : ''}
+                    envId={params.envId}
+                    close={closeUrlInfo}
+                />
             )}
             {showWorkloadsModal && (
                 <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />

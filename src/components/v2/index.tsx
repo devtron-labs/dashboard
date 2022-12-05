@@ -13,7 +13,7 @@ import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
-import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
 import ChartValuesView from './values/chartValuesDiff/ChartValuesView';
@@ -91,7 +91,14 @@ function RouterComponent({ envType }) {
                 setAppDeleteError(response.result?.appDeleteError)
             }
             if (response.result?.clusterId) {
-                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
+                Promise.all([
+                    getMonitoringTools(),
+                    getExternalLinks(
+                        response.result.clusterId,
+                        params.appId,
+                        ExternalLinkIdentifierType.DevtronInstalledApp,
+                    ),
+                ])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
                         setExternalLinksAndTools({
                             externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
@@ -132,7 +139,7 @@ function RouterComponent({ envType }) {
                 <img src={ErrorImage} />
                 <div className="w-250 flex column">
                     <h4 className="fw-6">This app does not exist</h4>
-                    <div className="mb-20 flex align-center">We could not find and connect to this application.</div>
+                    <div className="mb-20 flex dc__align-center">We could not find and connect to this application.</div>
                     <div className="cta" onClick={redirectToHomePage}>
                         Go back to home page
                     </div>
@@ -145,7 +152,7 @@ function RouterComponent({ envType }) {
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
 
             {!isLoading && errorResponseCode && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import { Teams } from '../../services/service.types';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -8,6 +9,11 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
 export interface OptionType {
     label: string;
     value: string;
+}
+
+export interface NumberOptionType {
+    label: string;
+    value: number;
 }
 
 export interface LabelTags {
@@ -362,7 +368,36 @@ export enum NodeDetailTabs {
 }
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
 
-export enum OrderBy {
+export enum SortingOrder {
     ASC = 'ASC',
     DESC = 'DESC'
+}
+
+export interface CreateAppLabelsRequest {
+    id: number
+    labels: { key: string; value: string }[]
+    teamId: number
+}
+
+export interface LabelTagsType {
+    tags: OptionType[]
+    inputTagValue: string
+    tagError: string
+}
+
+export interface AppOverviewProps {
+    appMetaInfo: AppMetaInfo
+    getAppMetaInfoRes: () => Promise<AppMetaInfo>
+}
+
+export interface AboutAppInfoModalProps {
+    isLoading: boolean
+    appId: string
+    isChangeProjectView: boolean
+    onClose: () => void
+    appMetaInfo: AppMetaInfo
+    currentLabelTags: LabelTagsType
+    getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    fetchingProjects: boolean
+    projectsList: Teams[]
 }

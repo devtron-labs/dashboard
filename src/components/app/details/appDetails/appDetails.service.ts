@@ -1,7 +1,7 @@
-import { URLS } from '../../../../config';
+import { Routes } from '../../../../config';
 import { get } from '../../../../services/api';
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute';
-import { DeploymentStatusDetailsResponse } from './appDetails.type';
+import { DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type';
 
 export function isDatasourceConfigured(envName: string) {
     const root = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '');
@@ -17,5 +17,9 @@ export function isDatasourceHealthy(datasourceId: number | string) {
 }
 
 export function getDeploymentStatusDetail(appId: string, envId: string, triggerId?: string): Promise<DeploymentStatusDetailsResponse> {
-  return get(`${URLS.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}`)
+  return get(`${Routes.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}`)
+}
+
+export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {
+  return get(`${Routes.MODULE_CONFIGURED}?name=${moduleName}`)
 }

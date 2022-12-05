@@ -23,13 +23,13 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
     render() {
         const path = this.props.match.path;
         return <div className="security-policy">
-            <div className="secondary-nav" >
-                <NavLink to={`${path}/global`} className="secondary-nav__item">Global</NavLink>
-                <NavLink to={`${path}/clusters`} className="secondary-nav__item">Cluster</NavLink>
-                <NavLink to={`${path}/environments`} className="secondary-nav__item" >Environments</NavLink>
-                <NavLink to={`${path}/apps`} className="secondary-nav__item">Applications</NavLink>
+            <div className="dc__secondary-nav" >
+                <NavLink to={`${path}/global`} className="dc__secondary-nav__item">Global</NavLink>
+                <NavLink to={`${path}/clusters`} className="dc__secondary-nav__item">Cluster</NavLink>
+                <NavLink to={`${path}/environments`} className="dc__secondary-nav__item" >Environments</NavLink>
+                <NavLink to={`${path}/apps`} className="dc__secondary-nav__item">Applications</NavLink>
                 <hr className="mt-8 mb-8"/>
-                <NavLink to={`${path}/vulnerability`} className="secondary-nav__item">Check CVE Policy</NavLink>
+                <NavLink to={`${path}/vulnerability`} className="dc__secondary-nav__item">Check CVE Policy</NavLink>
             </div>
             <div className="security-policy__content">
                 {this.renderRouter()}

@@ -36,7 +36,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         <div className="ml-8">
                             If you need webhook based CI for apps with multiple code sources,
                             <a
-                                className="learn-more__href ml-4"
+                                className="dc__link ml-4"
                                 href="https://github.com/devtron-labs/devtron/issues"
                                 target="_blank"
                                 rel="noreferrer noopener"
@@ -52,7 +52,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             <Info className="icon-dim-20 mr-8 fcv-5" />
                             Select git host for this git account to view all supported options.
                         </span>
-                        <Link className="learn-more__href" to={URLS.GLOBAL_CONFIG_GIT} target="_blank">
+                        <Link className="dc__link" to={URLS.GLOBAL_CONFIG_GIT} target="_blank">
                             Select git host
                         </Link>
                     </div>
@@ -64,7 +64,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             If you want to trigger CI using any other mechanism,
                         </span>
                         <a
-                            className="learn-more__href ml-4"
+                            className="dc__link ml-4"
                             href="https://github.com/devtron-labs/devtron/issues"
                             target="_blank"
                             rel="noreferrer noopener"
@@ -133,7 +133,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             <div className="mt-16 flex left">
                                 <div className="w-50 mr-8">
                                     <label className="form__label mb-6">
-                                        Source type <span className="cr-5"> *</span>
+                                        Source Type <span className="cr-5"> *</span>
                                     </label>
                                     <ReactSelect
                                         className="workflow-ci__source"

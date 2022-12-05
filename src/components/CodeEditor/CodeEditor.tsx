@@ -45,7 +45,7 @@ interface CodeEditorInterface {
     onChange?: (string) => void;
     children?: any;
     defaultValue?: string;
-    mode?: 'json' | 'yaml' | 'shell';
+    mode?: 'json' | 'yaml' | 'shell' | 'dockerfile';
     tabSize?: number;
     readOnly?: boolean;
     noParsing?: boolean;
@@ -105,7 +105,7 @@ interface Action {
 }
 
 interface CodeEditorState {
-    mode: 'json' | 'yaml' | 'shell';
+    mode: 'json' | 'yaml' | 'shell' | 'dockerfile';
     diffMode: boolean;
     theme: 'vs' | 'vs-dark';
     code: string;
@@ -328,9 +328,9 @@ function ThemeChanger({ }) {
     ]
     return (
         <Select onChange={handleChangeTheme} rootClassName="select-theme" value={state.theme} disabled={readOnly}>
-            <Select.Button><span className="ellipsis-right">{state.theme}</span></Select.Button>
+            <Select.Button><span className="dc__ellipsis-right">{state.theme}</span></Select.Button>
             <Select.Search placeholder="select theme" />
-            {themes.map(theme => <Select.Option name={theme} key={theme} value={theme}><span className="ellipsis-right">{theme}</span></Select.Option>)}
+            {themes.map(theme => <Select.Option name={theme} key={theme} value={theme}><span className="dc__ellipsis-right">{theme}</span></Select.Option>)}
         </Select>
     )
 }

@@ -21,6 +21,7 @@ import {
     mapByKey,
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
+    ErrorScreenNotAuthorized,
 } from '../common'
 import {
     getUserList,
@@ -173,7 +174,7 @@ function HeaderSection(type: string) {
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     rel="noreferrer noopener"
                     href={
                         isUserPremissions
@@ -290,7 +291,7 @@ export default function UserGroupRoute() {
     if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
-        <div className="auth-page">
+        <div>
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
@@ -348,7 +349,7 @@ const UserGroupList: React.FC<{
 
     useEffect(() => {
         if (!error) return
-        showError(error)
+        showError(error,true,true)
     }, [error])
 
     useEffectAfterMount(() => {
@@ -534,6 +535,8 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
+        
+    if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
     if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result.filter(
         (userOrGroup) =>
@@ -545,8 +548,8 @@ const UserGroupList: React.FC<{
         <div id="auth-page__body" className="auth-page__body-users__list-container">
             {renderHeaders(type)}
             {result.length > 0 && (
-                <div className="flex content-space">
-                    <div className="search position-rel en-2 bw-1 br-4 mb-16 bcn-0">
+                <div className="flex dc__content-space">
+                    <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
                         <Search className="search__icon icon-dim-18" />
                         <input
                             value={searchString}
@@ -1450,7 +1453,7 @@ export function GroupRow({ name, description, removeRow }) {
     return (
         <>
             <div className="anchor">{name}</div>
-            <div className="ellipsis-right">{description}</div>
+            <div className="dc__ellipsis-right">{description}</div>
             <CloseIcon onClick={removeRow} className="pointer" />
         </>
     )

@@ -4,26 +4,12 @@ import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../.
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
-import { App, AppListState, OrderBy, SortBy } from './types';
-import { AppCheckListModal } from '../../checkList/AppCheckModal';
+import { App, AppListState, AppListViewProps, OrderBy, SortBy } from './types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
 import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
-interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
-    expandRow: (app: App | null) => void;
-    closeExpandedRow: () => void;
-    sort: (key: string) => void;
-    handleEditApp: (appId: number) => void;
-    redirectToAppDetails: (app, envId: number) => string;
-    clearAll: () => void;
-    changePage: (pageNo: number) => void;
-    changePageSize: (size: number) => void;
-    appListCount: number
-    isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
-}
 
 export class AppListView extends Component<AppListViewProps>{
 
@@ -77,19 +63,19 @@ export class AppListView extends Component<AppListViewProps>{
                                     <DevtronAppIcon className="icon-dim-24"/>
                                 </div>
                                 <div className="app-list__cell app-list__cell--name">
-                                    <p className="truncate-text m-0 value">{app.name}</p>
+                                    <p className="dc__truncate-text  m-0 value">{app.name}</p>
                                 </div>
                                 {this.renderEnvironmentList(app)}
                                 <div className="app-list__cell app-list__cell--cluster">
-                                    <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.clusterName : ""}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.defaultEnv ? app.defaultEnv.clusterName : ""}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--namespace">
-                                    <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.namespace : ""}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.defaultEnv ? app.defaultEnv.namespace : ""}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--time">
                                     {app.defaultEnv && app.defaultEnv.lastDeployedTime &&
                                         <Tippy className="default-tt" arrow={true} placement="top" content={app.defaultEnv.lastDeployedTime}>
-                                            <p className="truncate-text m-0">{handleUTCTime(app.defaultEnv.lastDeployedTime, true)}</p>
+                                            <p className="dc__truncate-text  m-0">{handleUTCTime(app.defaultEnv.lastDeployedTime, true)}</p>
                                         </Tippy>
                                     }
                                 </div>
@@ -126,7 +112,7 @@ export class AppListView extends Component<AppListViewProps>{
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             </React.Fragment>
@@ -149,7 +135,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else if (this.props.view === AppListViewType.ERROR) {
             return <React.Fragment>
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.props.code} />
                 </div>
             </React.Fragment>

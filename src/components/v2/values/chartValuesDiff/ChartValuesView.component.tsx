@@ -1,33 +1,35 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import warn, { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import warn from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
 import {
-    ChartEnvironmentSelectorType,
-    ChartRepoSelectorType,
-    ChartVersionSelectorType,
-    ChartValuesSelectorType,
-    ChartVersionValuesSelectorType,
-    ChartValuesEditorType,
-    ChartRepoDetailsType,
-    ChartProjectSelectorType,
-    ChartGroupOptionType,
-    ChartValuesDiffOptionType,
-    ChartRepoOptions,
-    ChartKind,
-    ChartValuesViewActionTypes,
-    ChartValuesViewAction,
-    ValueNameInputType,
     AppNameInputType,
+    ChartEnvironmentSelectorType,
+    ChartGroupOptionType,
+    ChartKind,
+    ChartProjectSelectorType,
+    ChartRepoDetailsType,
+    ChartRepoOptions,
+    ChartRepoSelectorType,
+    ChartValuesDiffOptionType,
+    ChartValuesEditorType,
+    ChartValuesSelectorType,
+    ChartValuesViewAction,
+    ChartValuesViewActionTypes,
+    ChartVersionSelectorType,
+    ChartVersionValuesSelectorType,
+    DeploymentAppSelectorType,
+    DeploymentAppType,
+    DeploymentAppTypeNameMapping,
+    ValueNameInputType,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -39,6 +41,9 @@ import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
+import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
+import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
+import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -83,6 +88,52 @@ export const ChartEnvironmentSelector = ({
                 options={environments}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
+        </div>
+    )
+}
+
+export const DeploymentAppSelector = ({
+    commonState,
+    isUpdate,
+    handleDeploymentAppTypeSelection,
+    isDeployChartView,
+}: DeploymentAppSelectorType): JSX.Element => {
+    return !isDeployChartView ? (
+        <div className="chart-values__deployment-type">
+            <h2 className="fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+            <div className="flex left">
+            <span className="fs-13 fw-6  cn-9 md-6 ">
+                {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
+                    ? DeploymentAppTypeNameMapping.HelmKeyValue
+                    : DeploymentAppTypeNameMapping.GitOpsKeyValue}
+            </span>
+            <span>
+                {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
+                    <ArgoCD className="icon-dim-24 ml-6" />
+                ) : (
+                    <Helm className="icon-dim-24 ml-6" />
+                )}
+            </span>
+                </div>
+        </div>
+    ) : (
+        <div className="form__row form__row--w-100 fw-4">
+            <div className="form__row">
+                <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
+                    How do you want to deploy?
+                </label>
+                <p className="fs-12px cr-5"> Cannot be changed after deployment </p>
+                <RadioGroup
+                    value={commonState.deploymentAppType}
+                    name="DeploymentAppTypeGroup"
+                    onChange={handleDeploymentAppTypeSelection}
+                    disabled={isUpdate}
+                >
+                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
+
+                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                </RadioGroup>
+            </div>
         </div>
     )
 }
@@ -211,7 +262,7 @@ export const ChartRepoSelector = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex react-select__bottom bcn-0">
+                <div className="flex dc__react-select__bottom bcn-0">
                     <div className="sticky-information__bottom">
                         <div className="sticky-information__icon mt-2">
                             <Info className="icon-dim-16" />
@@ -231,7 +282,7 @@ export const ChartRepoSelector = ({
     return (
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
-                <div className="flex content-space">
+                <div className="flex dc__content-space">
                     <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart</span>
                     <Tippy
                         className="default-tt "
@@ -239,7 +290,7 @@ export const ChartRepoSelector = ({
                         content="Fetch latest charts from connected chart repositories"
                     >
                         <span
-                            className={`refetch-charts cb-5 cursor text-underline ${
+                            className={`refetch-charts cb-5 cursor dc__underline-onhover ${
                                 refetchingCharts ? 'refetching' : ''
                             }`}
                             onClick={refetchCharts}
@@ -409,7 +460,7 @@ export const ActiveReadmeColumn = ({
 const formatOptionLabel = (option: { label: string; value: number; info: string; version?: string }): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">
+            <span className="w-100 dc__ellipsis-right">
                 {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
             {option.info && <small className="cn-6">{option.info}</small>}
@@ -822,7 +873,7 @@ export const ChartValuesEditor = ({
                 customLoader={
                     <DetailsProgressing size={32}>
                         {manifestView && !comparisonView && (
-                            <span className="fs-13 fw-4 cn-7 mt-8 align-center">
+                            <span className="fs-13 fw-4 cn-7 mt-8 dc__align-center">
                                 Generating the manifest. <br /> Please wait...
                             </span>
                         )}
@@ -841,13 +892,13 @@ export const ChartValuesEditor = ({
                 )}
                 {!manifestView && showInfoText && hasChartChanged && (
                     <CodeEditor.Warning
-                        className="ellipsis-right"
+                        className="dc__ellipsis-right"
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
                     />
                 )}
                 {manifestView && showInfoText && (
                     <CodeEditor.Information
-                        className="ellipsis-right"
+                        className="dc__ellipsis-right"
                         text="Manifest is generated locally from the YAML."
                     >
                         <Tippy
@@ -923,7 +974,7 @@ export const AppNotLinkedDialog = ({
                     </button>
                     <button
                         type="button"
-                        className="cta ml-12 no-decor"
+                        className="cta ml-12 dc__no-decor"
                         onClick={() => {
                             close()
                             update(true)
@@ -939,7 +990,7 @@ export const AppNotLinkedDialog = ({
 
 const renderValidationErrorLabel = (message?: string): JSX.Element => {
     return (
-        <div className="error-label flex left align-start fs-11 fw-4 mt-6">
+        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
             <div className="error-label-icon">
                 <Error className="icon-dim-16" />
             </div>

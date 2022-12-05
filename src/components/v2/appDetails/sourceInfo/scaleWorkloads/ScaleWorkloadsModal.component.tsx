@@ -108,7 +108,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     <h1 className="cn-9 fw-6 fs-16 m-0">Scale workloads</h1>
                     <button
                         type="button"
-                        className="transparent p-0"
+                        className="dc__transparent p-0"
                         style={{
                             lineHeight: '0',
                             margin: 'auto',
@@ -156,7 +156,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list deployment-tab-list tab-list--borderd mr-20">
+            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 {scaleWorkloadTabs.map((tab, index) => {
                     return (
                         <li
@@ -208,7 +208,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const handleWorkloadSelection = (workloadKey: string, isActiveWorkloadsTab: boolean): void => {
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
-        
+
         const selectedWorkload = _workloadsList.get(workloadKey)
         selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
         selectedWorkload.isChecked = !selectedWorkload.isChecked
@@ -309,7 +309,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     <>
                         {isWorkloadPresent ? (
                             <>
-                                <div className="check-all-workloads cn-7 fw-6 border-bottom">
+                                <div className="check-all-workloads cn-7 fw-6 dc__border-bottom">
                                     <Checkbox
                                         rootClassName="mb-0 fs-13 cursor bcn-0 p"
                                         isChecked={_nameSelection.isChecked}
@@ -330,7 +330,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                             <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                                 <Checkbox
                                                     rootClassName={`mb-0 fs-13 cursor bcn-0 p${
-                                                        item.errorMessage ? ' align-baseline' : ''
+                                                        item.errorMessage ? ' dc__align-baseline' : ''
                                                     }`}
                                                     isChecked={item.isChecked}
                                                     value={item.value}

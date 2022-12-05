@@ -11,7 +11,6 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg';
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
 import '../login/login.css';
 import './gitops.css';
 import { withRouter } from 'react-router-dom'
@@ -64,9 +63,9 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
 }
 
 const GitProviderTab: React.FC<{ providerTab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string, saveLoading: boolean }> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading }) => {
-    return <label className="tertiary-tab__radio">
+    return <label className="dc__tertiary-tab__radio">
         <input type="radio" name="status" value={provider} checked={providerTab === provider} onChange={!saveLoading && handleGitopsTab} />
-        <span className="tertiary-tab sso-icons">
+        <span className="dc__tertiary-tab sso-icons">
             <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
             <aside className="login__text-alignment"  style={{lineHeight: 1.2}}> {gitops}</aside>
             <div>
@@ -82,7 +81,7 @@ const GitInfoTab: React.FC<{ tab: string, gitLink: string, gitProvider: string, 
         <div className="flex left ">
             <Info className="icon-dim-20" style={{ marginTop: 1 }} />
             <div className="ml-8 fs-13">
-                <span className="fw-6 text-capitalize">Recommended: </span>Create a new {gitProvider} {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing your source code.
+                <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider} {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing your source code.
        </div>
         </div>
         <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">How to create {gitProviderGroupAlias} in {gitProvider} ?</a>
@@ -349,13 +348,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         else if (this.state.view === ViewType.ERROR) {
             return <div className="global-configuration__component flex">
-                <ErrorScreenManager code={this.state.statusCode} />
+                <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
             </div>
         }
         return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
             <h2 className="form__title">GitOps</h2>
             <p className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
+            <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
             <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20" autoComplete="off">
                 <div className="login__sso-flex">
                     <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" saveLoading={this.state.saveLoading} />
@@ -435,15 +434,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
                     </div>
                     <div>
-                        <span className={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "azure_access_token" : "access_token"}>
-                            <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
-                        </span>
                         <ProtectedInput value={this.state.form.token}
                             onChange={(event) => this.handleChange(event, 'token')}
                             name="Enter token"
                             tabIndex={4}
                             error={this.state.isError.token}
-                            label={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Access Token*" : "Personal Access Token*"}
+                            label={<>{this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Access Token* " : "Personal Access Token* "}<a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK} className="cursor fs-13 onlink">(Check permissions required for PAT)</a></>}
                             labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
                     </div>
                 </div>

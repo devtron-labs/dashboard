@@ -46,7 +46,7 @@ function ApiTokens() {
                 setLoader(false)
             })
             .catch((error) => {
-                showError(error)
+                showError(error,true,true)
                 setErrorStatusCode(error.code)
                 setLoader(false)
             })
@@ -102,8 +102,8 @@ function ApiTokens() {
 
     const renderSearchToken = () => {
         return (
-            <div className="flexbox content-space">
-                <div className="search position-rel en-2 bw-1 br-4 h-32">
+            <div className="flexbox dc__content-space">
+                <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
@@ -117,7 +117,7 @@ function ApiTokens() {
                     />
                     {searchApplied && (
                         <button className="flex search__clear-button" type="button" onClick={clearSearch}>
-                            <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                         </button>
                     )}
                 </div>

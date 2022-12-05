@@ -216,8 +216,8 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className="app-summary__icon icon-dim-22 succeeded"></div>
-                                    <div className="flex column left ellipsis-right">
+                                    <div className="dc__app-summary__icon icon-dim-22 succeeded"></div>
+                                    <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
                                                 Moment12HourFormat,
@@ -225,7 +225,7 @@ function ChartDeploymentHistory({
                                         </div>
                                         <div className="flex left cn-7 fs-12">
                                             {deployment.dockerImages && (
-                                                <div className="app-commit__hash app-commit__hash--no-bg">
+                                                <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
                                                     <img src={docker} className="commit-hash__icon grayscale" />
                                                     <span className="ml-3">
                                                         {deployment.dockerImages[0].split(':')[1] ||
@@ -263,7 +263,7 @@ function ChartDeploymentHistory({
 
     function renderSelectedDeploymentTabs() {
         return (
-            <ul className="tab-list deployment-tab-list tab-list--borderd mr-20">
+            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 {deploymentTabs.map((tab, index) => {
                     return (
                         <li onClick={() => changeDeploymentTab(index)} key={index} className="tab-list__tab">
@@ -429,7 +429,7 @@ function ChartDeploymentHistory({
 
         return (
             <div className="trigger-details ml-20 mr-20 pb-20">
-                <div className="flex content-space trigger-details__summary">
+                <div className="flex dc__content-space trigger-details__summary">
                     <div className="flex column left pt-10">
                         <div className="cn-9 fs-14 fw-6">Deployed at</div>
                         <div className="flex left">
@@ -440,7 +440,7 @@ function ChartDeploymentHistory({
                             </time>
                             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                                 return (
-                                    <div key={index} className="app-commit__hash ml-10">
+                                    <div key={index} className="dc__app-commit__hash ml-10">
                                         <Tippy arrow={true} className="default-tt" content={dockerImage}>
                                             <span>
                                                 <img src={docker} className="commit-hash__icon grayscale" />
@@ -471,7 +471,7 @@ function ChartDeploymentHistory({
                             </button>
                         </Tippy>
                     )}
-                    {showDockerInfo && 
+                    {showDockerInfo &&
                             <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
                     }
                 </div>
@@ -546,7 +546,7 @@ function ChartDeploymentHistory({
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -559,7 +559,7 @@ function ChartDeploymentHistory({
         return (
             <div className="ci-details">
                 <div className="ci-details__history deployment-cards">
-                    <span className="pl-16 pr-16 text-uppercase">Deployments</span>
+                    <span className="pl-16 pr-16 dc__uppercase">Deployments</span>
                     <div className="flex column top left" style={{ overflowY: 'auto' }}>
                         {renderDeploymentCards()}
                     </div>
@@ -573,7 +573,7 @@ function ChartDeploymentHistory({
     return (
         <>
             {isLoading ? (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             ) : (

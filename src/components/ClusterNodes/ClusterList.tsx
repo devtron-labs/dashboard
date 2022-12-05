@@ -91,7 +91,7 @@ export default function ClusterList() {
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel margin-right-0 en-2 bw-1 br-4 h-32">
+            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -105,7 +105,7 @@ export default function ClusterList() {
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
             </div>
@@ -115,8 +115,8 @@ export default function ClusterList() {
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
-            <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
-                <div className="cb-5 ellipsis-right">
+            <div className="cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
+                <div className="cb-5 dc__ellipsis-right">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
@@ -145,12 +145,12 @@ export default function ClusterList() {
                 <div>
                     {errorCount > 0 && (
                         <>
-                            <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                            <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
                             <span className="cr-5">{errorCount}</span>
                         </>
                     )}
                 </div>
-                <div className="ellipsis-right">
+                <div className="dc__ellipsis-right">
                     <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
                         <span>{clusterData.serverVersion}</span>
                     </Tippy>
@@ -166,10 +166,10 @@ export default function ClusterList() {
     }
 
     return (
-        <>
+        <div>
             <PageHeader headerName="Clusters" />
             <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
+                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">
                         {lastDataSyncTimeString && (
@@ -186,7 +186,7 @@ export default function ClusterList() {
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
                     <div style={{ minHeight: 'calc(100vh - 125px)' }}>
-                        <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
+                        <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
                             <div>Connection status</div>
                             <div>Nodes</div>
@@ -199,6 +199,6 @@ export default function ClusterList() {
                     </div>
                 )}
             </div>
-        </>
+        </div>
     )
 }

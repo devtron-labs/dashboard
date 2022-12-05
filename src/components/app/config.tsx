@@ -18,6 +18,7 @@ export const statusColor = {
     succeeded: '#1dad70',
     running: '#FF7E5B',
     failed: '#f33e3e',
+    error: '#f33e3e',
     cancelled: '#767d84',
     aborted: '#767d84',
 }

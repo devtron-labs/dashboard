@@ -192,7 +192,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 <Info className="mr-4 icon-dim-16" />
                                 <span className="cb-5 mb-2 lh-1-33">
                                     <a
-                                        className="no-decor"
+                                        className="dc__no-decor"
                                         href="https://github.com/Knetic/govaluate/blob/0580e9b47a69125afa0e4ebd1cf93c49eb5a43ec/parsing.go#L258"
                                         target="_blank"
                                     >
@@ -231,10 +231,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <input
-                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 no-bottom-border ${
+                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
                                                         type === PluginVariableType.INPUT
-                                                            ? 'top-radius-4'
-                                                            : 'top-left-radius'
+                                                            ? 'dc__top-radius-4'
+                                                            : 'dc__top-left-radius'
                                                     }`}
                                                     type="text"
                                                     placeholder="Variable name"
@@ -252,7 +252,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         width: '20%',
                                                         borderTopRightRadius: '4px',
                                                     }}
-                                                    className="border-right"
+                                                    className="dc__border-right"
                                                 >
                                                     <ReactSelect
                                                         value={
@@ -279,7 +279,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">
-                                            <div className="border-left" style={{ width: '80%' }}>
+                                            <div className="dc__border-left" style={{ width: '80%' }}>
                                                 <CustomInputVariableSelect selectedVariableIndex={index} />
                                             </div>
                                             <div
@@ -318,8 +318,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     )}
                                     <input
                                         style={{ width: '80% !important' }}
-                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32 ${
-                                            type === PluginVariableType.INPUT ? 'no-top-border' : ''
+                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
+                                            type === PluginVariableType.INPUT ? 'dc__no-top-border' : ''
                                         }`}
                                         autoComplete="off"
                                         placeholder="Description"

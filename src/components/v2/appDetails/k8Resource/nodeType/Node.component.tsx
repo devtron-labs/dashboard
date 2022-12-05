@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouteMatch, useParams, useHistory } from 'react-router';
 import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
@@ -19,12 +19,12 @@ import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/Exte
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 import { NoPod } from '../../../../app/ResourceTreeNodes';
 
-function NodeComponent({ 
+function NodeComponent({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp
-}: { 
+}: {
     handleFocusTabs: () => void,
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
@@ -32,6 +32,7 @@ function NodeComponent({
 }) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
+    const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
     const [copied, setCopied] = useState(false);
@@ -49,7 +50,7 @@ function NodeComponent({
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp;
-    
+
     useEffect(() => {
         if (externalLinks.length > 0) {
             const _podLevelExternalLinks = []
@@ -62,12 +63,14 @@ function NodeComponent({
                             label: link.name,
                             value: link.url,
                             icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                            description: link.description,
                         })
                     } else if (link.url.includes('{containerName}')) {
                         _containerLevelExternalLinks.push({
                             label: link.name,
                             value: link.url,
                             icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                            description: link.description,
                         })
                     }
                 }
@@ -91,20 +94,19 @@ function NodeComponent({
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
-                        tableHeader = ['Name', ''];
-                    }else{
-                        tableHeader = ['Name', 'Ready', ''];
+                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', ''];
+                    if ( podLevelExternalLinks.length > 0 ) {
+                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
                     }
-                    _fcw = 'col-10';
+                    _fcw = 'col-7';
                     break;
                 case NodeType.Service.toLowerCase():
                     tableHeader = ['Name', 'URL', ''];
                     _fcw = 'col-6';
                     break;
                 default:
-                    tableHeader = ['Name', ''];
-                    _fcw = 'col-11';
+                    tableHeader = ['Name','',''];
+                    _fcw = 'col-10';
                     break;
             }
 
@@ -135,20 +137,62 @@ function NodeComponent({
 
             setSelectedHealthyNodeCount(_healthyNodeCount);
         }
-    }, [params.nodeType, podType, url, filteredNodes]);
+    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks]);
+
+    const getPodRestartCount = (node: iNode) => {
+        let restartCount = '0'
+        if (node.info) {
+            for (const ele of node.info) {
+                if (ele.name === 'Restart Count') {
+                    restartCount = ele.value
+                    break
+                }
+            }
+        }
+        return restartCount
+    }
+
+    const getElapsedTime = (createdAt: Date) => {
+        const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
+        if (elapsedTime >= 0) {
+            const days = Math.floor(elapsedTime / (24 * 60 * 60)),
+                hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
+                mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
+                secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
+
+            const dh = `${days}d ${hrs}h`
+                .split(' ')
+                .filter((a) => !a.startsWith('0'))
+                .join(' ')
+            // f age is more than hours just show age in days and hours
+            if (dh.length > 0) {
+                return dh
+            }
+            //return age in minutes and seconds
+            return `${mins}m ${secs}s`
+                .split(' ')
+                .filter((a) => !a.startsWith('0'))
+                .join(' ')
+        }
+        return ''
+    }
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
             if (node.name === nodeName) {
-                node.isSelected = !node.isSelected;
+                node.isSelected = !node.isSelected
+                markedNodes.current.set(
+                    node.name,
+                    markedNodes.current.has(node.name) ? !markedNodes.current.get(node.name) : node.isSelected,
+                )
             } else if (node.childNodes?.length > 0) {
-                markNodeSelected(node.childNodes, nodeName);
+                markNodeSelected(node.childNodes, nodeName)
             }
 
-            return node;
-        });
+            return node
+        })
 
-        return updatedNodes;
+        setSelectedNodes(updatedNodes)
     };
 
     const describeNode = (name: string, containerName: string) => {
@@ -183,6 +227,7 @@ function NodeComponent({
         let _currentNodeHeader = ''
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
+            const _isSelected = markedNodes.current.get(node.name)
 
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
@@ -190,23 +235,25 @@ function NodeComponent({
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && !!_currentNodeHeader && (
-                        <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
-                            <span>{node.kind}</span>
+                        <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
+                            <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
+                            { node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
+                            { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }  
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
-                            <div className="flex align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
+                            <div className="flex dc__align-start">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
-                                        setSelectedNodes(markNodeSelected(selectedNodes, node.name));
+                                        markNodeSelected(selectedNodes, node.name);
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
                                         <DropDown
-                                            className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
                                         />
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
@@ -262,22 +309,6 @@ function NodeComponent({
                                     })}
                                 </div>
                             </div>
-                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={podLevelExternalLinks}
-                                    podName={node.name}
-                                />
-                            )}
-                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
-                                <NodeLevelExternalLinks
-                                    helmAppDetails={appDetails}
-                                    nodeLevelExternalLinks={containerLevelExternalLinks}
-                                    podName={node['pNode']?.name}
-                                    containerName={node.name}
-                                    addExtraSpace={true}
-                                />
-                            )}
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -303,17 +334,52 @@ function NodeComponent({
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {' '}
-                                {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}{' '}
+                                {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
+                    
+                        {params.nodeType === NodeType.Pod.toLowerCase() && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                {node.kind !== 'Containers' && getPodRestartCount(node)}
+                            </div>
+                        )}
+
+                        {params.nodeType === NodeType.Pod.toLowerCase() && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                {getElapsedTime(new Date(node.createdAt))}
+                            </div>
+                        )}
+
+                    
+                        {params.nodeType!== NodeType.Service.toLocaleLowerCase() && (
+                            <div className={'flex left col-1 pt-9 pb-9'}>
+                                {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
+                                    <NodeLevelExternalLinks
+                                        helmAppDetails={appDetails}
+                                        nodeLevelExternalLinks={podLevelExternalLinks}
+                                        podName={node.name}
+                                    />   
+                                )}
+                            
+                                {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
+                                    <NodeLevelExternalLinks
+                                        helmAppDetails={appDetails}
+                                        nodeLevelExternalLinks={containerLevelExternalLinks}
+                                        podName={node['pNode']?.name}
+                                        containerName={node.name}
+                                        addExtraSpace={true}
+                                    />    
+                                )}
+                            </div>
+                        )}
+                      
 
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
                             <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                         </div>
                     </div>
 
-                    {node.childNodes?.length > 0 && node.isSelected && (
+                    {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
@@ -330,8 +396,8 @@ function NodeComponent({
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
-                            <div className="pl-16 fw-6 fs-14 text-capitalize">
+                        <div className="node-detail__sticky-header dc__border-bottom-n1 pt-10 pb-10">
+                            <div className="pl-16 fw-6 fs-14 dc__capitalize">
                                 <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                                 <span>({selectedNodes?.length})</span>
                             </div>
@@ -341,7 +407,7 @@ function NodeComponent({
                         </div>
                     )}
 
-                    <div className="node-row border-bottom fw-6 m-0">
+                    <div className="node-row dc__border-bottom-n1 fw-6 m-0">
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div

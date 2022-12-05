@@ -7,7 +7,9 @@
         width: 0;
         transition: width 200ms;
         &.show{
+            min-width: var(--minWidth);
             width: var(--width);
+            max-width: var(--maxWidth);
         }
     }
 

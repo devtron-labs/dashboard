@@ -5,11 +5,11 @@ import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}>{
 
     render() {
-        let classes = `cluster-create-status mt-16 mb-16`;
+        let classes = `cluster-create-status`;
         if (this.props.agentInstallationStage === 0) {
             return <div className={`${classes} cluster-create-status--not-triggered`}>
                 <NotDeployed className="icon-dim-20" />
-                <p className="cluster-create-status__title mb-0">Devtron agent is not installed{this.props.envName && ` on env: ${this.props.envName}`}. Install </p>
+                <p className="cluster-create-status__title mb-0">Devtron agent is not installed{this.props.envName && ` on env: ${this.props.envName}`}.</p>
                 <button type="button" className="cluster-create-status__button" onClick={this.props.onClick}>Install</button>
             </div>
         }

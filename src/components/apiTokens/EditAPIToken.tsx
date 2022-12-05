@@ -264,8 +264,8 @@ function EditAPIToken({
                         </label>
                         <label className="form__row">
                             <span className="form__label">Token</span>
-                            <div className="flex content-space top cn-9">
-                                <span className="mono fs-14" style={{ wordBreak: 'break-word' }}>
+                            <div className="flex dc__content-space top cn-9">
+                                <span className="mono fs-14 dc__break-word">
                                     {editData.token}
                                 </span>
                                 <Tippy
@@ -290,7 +290,7 @@ function EditAPIToken({
                         </label>
                         <label className="form__row">
                             <span className="form__label">Expiration</span>
-                            <div className="align-left">
+                            <div className="dc__align-left">
                                 {getExpirationText()}
                                 &nbsp;
                                 <span className="fw-4">To set a new expiration date you must</span>&nbsp;
@@ -310,7 +310,7 @@ function EditAPIToken({
                                 {PermissionType.map(({ label, value }) => (
                                     <RadioGroupItem value={value}>
                                         <span
-                                            className={`no-text-transform ${
+                                            className={`dc__no-text-transform ${
                                                 adminPermission === value ? 'fw-6' : 'fw-4'
                                             }`}
                                         >

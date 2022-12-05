@@ -14,10 +14,10 @@ import { ServerErrors } from '../../../../modals/commonTypes'
 import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
-import { URLS, ViewType, SourceTypeMap } from '../../../../config'
+import { URLS, ViewType, SourceTypeMap, BUILD_STATUS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -37,7 +37,7 @@ export const TriggerViewContext = createContext({
     onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {},
     onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
-    onClickRollbackMaterial: (cdNodeId) => {},
+    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
     closeCIModal: () => {},
     selectCommit: (materialId: string, hash: string) => {},
     selectMaterial: (materialId) => {},
@@ -53,6 +53,7 @@ const TIME_STAMP_ORDER = {
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
+    inprogressStatusTimer
 
     constructor(props: TriggerViewProps) {
         super(props)
@@ -90,6 +91,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     componentWillUnmount() {
         clearInterval(this.timerRef)
+        this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
     }
 
     componentDidMount() {
@@ -273,17 +275,35 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let postCDMap = {}
                 let allCIs = response?.result?.ciWorkflowStatus || []
                 let allCDs = response?.result?.cdWorkflowStatus || []
+                let cicdInProgress = false
                 //Create maps from Array
                 if (allCIs.length) {
                     allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = pipeline.ciStatus
+                        ciMap[pipeline.ciPipelineId] = {
+                            status: pipeline.ciStatus,
+                            storageConfigured: pipeline.storageConfigured || false,
+                        }
+                        if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
+                            cicdInProgress = true
+                        }
                     })
+
                 }
                 if (allCDs.length) {
                     allCDs.forEach((pipeline) => {
                         if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
                         if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status
                         if (pipeline.deploy_status) cdMap[pipeline.pipeline_id] = pipeline.deploy_status
+                        if (
+                            !cicdInProgress &&
+                            (pipeline.pre_status === 'Starting' ||
+                                pipeline.pre_status === 'Running' ||
+                                pipeline.deploy_status === 'Progressing' ||
+                                pipeline.post_status === 'Starting' ||
+                                pipeline.post_status === 'Running')
+                        ) {
+                            cicdInProgress = true
+                        }
                     })
                 }
                 //Update Workflow using maps
@@ -292,7 +312,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     wf.nodes = wf.nodes.map((node) => {
                         switch (node.type) {
                             case 'CI':
-                                node['status'] = ciMap[node.id]
+                                node['status'] = ciMap[node.id]?.status
+                                node['storageConfigured'] = ciMap[node.id]?.storageConfigured
                                 break
                             case 'PRECD':
                                 node['status'] = preCDMap[node.id]
@@ -308,6 +329,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     })
                     return wf
                 })
+                this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
+                if (cicdInProgress) {
+                    this.inprogressStatusTimer = setTimeout(() => {
+                        this.getWorkflowStatus()
+                    }, 10000)
+                }
                 this.setState({ workflows })
             })
             .catch((errors: ServerErrors) => {
@@ -437,17 +464,32 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickRollbackMaterial = (cdNodeId) => {
-        ReactGA.event({
-            category: 'Trigger View',
-            action: 'Select Rollback Material Clicked',
-        })
-        getRollbackMaterialList(cdNodeId)
+    onClickRollbackMaterial = (
+        cdNodeId: number,
+        offset?: number,
+        size?: number,
+        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+    ) => {
+        if (!offset && !size) {
+            ReactGA.event({
+                category: 'Trigger View',
+                action: 'Select Rollback Material Clicked',
+            })
+        }
+
+        const _offset = offset || 1
+        const _size = size || 20
+
+        getRollbackMaterialList(cdNodeId, _offset, _size)
             .then((response) => {
                 let workflows = this.state.workflows.map((workflow) => {
                     let nodes = workflow.nodes.map((node) => {
-                        if (node.type === 'CD' && +node.id == cdNodeId) {
-                            node.rollbackMaterialList = response.result
+                        if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            if (!offset && !size) {
+                                node.rollbackMaterialList = response.result
+                            } else {
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                            }
                         }
                         return node
                     })
@@ -468,15 +510,23 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         this.getWorkflowStatus()
                     },
                 )
+
+                if (callback && response.result) {
+                    callback(false, response.result.length < 20)
+                }
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 this.setState({ code: errors.code })
+
+                if (callback) {
+                    callback(false)
+                }
             })
     }
 
     // stageType'PRECD' | 'CD' | 'POSTCD'
-    onClickTriggerCDNode = (nodeType: string): void => {
+    onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
         ReactGA.event({
             category: 'Trigger View',
             action: `${nodeType} Triggered`,
@@ -494,10 +544,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let key = this.state.materialType
         ciArtifact = node[key].find((artifact) => artifact.isSelected == true)
         if (appId && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType)
+            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        let msg = key == 'rollbackMaterialList' ? 'Rollback Initiated' : 'Deployment Initiated'
+                        let msg =
+                            key == MATERIAL_TYPE.rollbackMaterialList ? 'Rollback Initiated' : 'Deployment Initiated'
                         toast.success(msg)
                         this.setState(
                             {
@@ -853,6 +904,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         getWorkflows={this.getWorkflows}
                         loader={this.state.loader}
                         setLoader={this.setLoader}
+                        isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
+                        isCacheAvailable={nd?.storageConfigured}
                     />
                 </>
             )
@@ -880,6 +933,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
             return (
                 <CDMaterial
+                    appId={Number(this.props.match.params.appId)}
+                    pipelineId={this.state.cdNodeId}
                     stageType={this.state.nodeType}
                     material={material}
                     materialType={this.state.materialType}
@@ -887,6 +942,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isLoading={this.state.isLoading}
                     changeTab={this.changeTab}
                     triggerDeploy={this.onClickTriggerCDNode}
+                    onClickRollbackMaterial={this.onClickRollbackMaterial}
                     closeCDModal={this.closeCDModal}
                     selectImage={this.selectImage}
                     toggleSourceInfo={this.toggleSourceInfo}
@@ -930,7 +986,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     <div className="cn-9 fs-13">
                         Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
                         &nbsp;
-                        <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
                             Review and update
                         </NavLink>
                     </div>

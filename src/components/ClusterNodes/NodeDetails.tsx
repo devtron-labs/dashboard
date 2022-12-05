@@ -187,7 +187,7 @@ export default function NodeDetails() {
 
     const noDataInSubTab = (tabName: string): JSX.Element => {
         return (
-            <div className="text-center no-data-tab">
+            <div className="dc__text-center no-data-tab">
                 <Info className="no-data-icon" />
                 <div className="cn-7 fs-13 fw-4">No {tabName}</div>
             </div>
@@ -196,16 +196,16 @@ export default function NodeDetails() {
 
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger position-rel">
+            <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
-                        !value ? ' br-4' : ' left-radius-4 no-right-border'
+                        !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
                     }`}
                 >
                     {key}
                 </div>
                 {value && (
-                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 right-radius-4 no-left-border">
+                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
                         {value}
                     </div>
                 )}
@@ -266,7 +266,7 @@ export default function NodeDetails() {
 
     const renderWithCopy = (key: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger position-rel">
+            <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div>{key}</div>
                 <Tippy
                     className="default-tt"
@@ -337,7 +337,7 @@ export default function NodeDetails() {
     const renderLabelAnnotationTaint = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
-                <ul role="tablist" className="tab-list border-bottom pr-20 pl-20 pt-12">
+                <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
                     <li
                         className="tab-list__tab pointer"
                         onClick={() => {
@@ -385,7 +385,7 @@ export default function NodeDetails() {
         if (!nodeErrorKeys.length) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
+                <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-0">
                         {`${nodeErrorKeys.length} Error${nodeErrorKeys.length > 1 ? 's' : ''}`}
@@ -409,7 +409,7 @@ export default function NodeDetails() {
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
+                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
@@ -444,8 +444,8 @@ export default function NodeDetails() {
     }
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 position-sticky top-88">
-                <div className="flexbox pt-12 pb-12 pr-10 pl-20 top-radius-4">
+            <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-88">
+                <div className="flexbox pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
                 <div className="pr-20 pl-20">
@@ -485,7 +485,7 @@ export default function NodeDetails() {
     const renderResourceList = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0">
-                <div className="resource-row border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
+                <div className="resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
                     <div></div>
                     <div>Resource</div>
                     <div>Requests</div>
@@ -495,7 +495,7 @@ export default function NodeDetails() {
                     <div>Capacity</div>
                 </div>
                 {cpuData && (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Cpu className="mt-2 mb-2 icon-dim-18" />
                         <div>{cpuData.name || '-'}</div>
                         <div>{cpuData.requestPercentage || '-'}</div>
@@ -506,7 +506,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {memoryData && (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Memory className="mt-2 mb-2 icon-dim-18" />
                         <div>{memoryData.name || '-'}</div>
                         <div>{memoryData.requestPercentage || '-'}</div>
@@ -517,7 +517,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -570,7 +570,7 @@ export default function NodeDetails() {
     ): JSX.Element => {
         return (
             <div
-                className={`border-bottom fw-6 fs-13 cn-7 list-title h-36 pointer ${className} ${
+                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 pointer ${className} ${
                     sortByColumnName === sortingFieldName ? 'sort-by' : ''
                 } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
                 onClick={() => {
@@ -578,11 +578,14 @@ export default function NodeDetails() {
                 }}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
-                    <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                    <span
+                        className="dc__inline-block dc__ellipsis-right lh-20"
+                        style={{ maxWidth: 'calc(100% - 20px)' }}
+                    >
                         {columnName}
                     </span>
                 </Tippy>
-                <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />
             </div>
         )
     }
@@ -591,12 +594,12 @@ export default function NodeDetails() {
         if (!sortedPodList) return null
         return (
             <div className="pod-container">
-                <div className="position-sticky pod-container-header">
-                    <div className="en-2 bw-1 top-radius-4 bcn-0 no-bottom-border">
+                <div className="dc__position-sticky  pod-container-header">
+                    <div className="en-2 bw-1 dc__top-radius-4 bcn-0 dc__no-bottom-border">
                         <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
                     </div>
                 </div>
-                <div className="en-2 bw-1 br-4 no-top-radius no-top-border bcn-0 mb-20">
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bcn-0 mb-20">
                     <div className="pods-grid">
                         <header className="bcn-0">
                             {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
@@ -610,10 +613,10 @@ export default function NodeDetails() {
                         <main>
                             {sortedPodList.map((pod) => (
                                 <div className="row-wrapper">
-                                    <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
                                         {pod.namespace}
                                     </div>
-                                    <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         <>
                                             <Tippy
                                                 className="default-tt"
@@ -623,7 +626,7 @@ export default function NodeDetails() {
                                                 interactive={true}
                                             >
                                                 <span
-                                                    className="inline-block ellipsis-right lh-20"
+                                                    className="dc__inline-block dc__ellipsis-right lh-20"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
                                                 >
                                                     {pod.name}
@@ -651,19 +654,19 @@ export default function NodeDetails() {
                                             </Tippy>
                                         </>
                                     </div>
-                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         {pod.cpu.requestPercentage || '-'}
                                     </div>
-                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         {pod.cpu.limitPercentage || '-'}
                                     </div>
-                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         {pod.memory.requestPercentage || '-'}
                                     </div>
-                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         {pod.memory.limitPercentage || '-'}
                                     </div>
-                                    <div className="border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">
                                         {pod.age}
                                     </div>
                                 </div>
@@ -679,7 +682,7 @@ export default function NodeDetails() {
         if (!nodeDetail) return null
         return (
             <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox content-space">
+                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
                     <div className="fw-6">
                         <div className="fs-16 cn-9">{nodeDetail.name}</div>
                         <div className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
@@ -799,14 +802,14 @@ export default function NodeDetails() {
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning
-                            className="ellipsis-right"
+                            className="dc__ellipsis-right"
                             text="Actual YAML has changed since you made the changes. Please check the diff carefully."
                         />
                     )}
                     {isReviewState && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
-                            <div className="h-32 lh-32 fs-12 fw-6 bcn-1 border-bottom flexbox w-100 cn-7">
-                                <div className="border-right pl-10 w-49">Current node YAML </div>
+                            <div className="h-32 lh-32 fs-12 fw-6 bcn-1 dc__border-bottom flexbox w-100 cn-7">
+                                <div className="dc__border-right pl-10 w-49">Current node YAML </div>
                                 <div className="pl-25 w-51 flexbox">
                                     <Edit className="icon-dim-16 mt-7 mr-5" />
                                     YAML (Editing)
@@ -815,7 +818,7 @@ export default function NodeDetails() {
                         </CodeEditor.Header>
                     )}
                 </CodeEditor>
-                <div className="bcn-0 border-top p-12 text-right" style={{ height: '60px' }}>
+                <div className="bcn-0 dc__border-top p-12 text-right" style={{ height: '60px' }}>
                     {isReviewState && (
                         <button type="button" className="cta cta--workflow cancel mr-12" onClick={cancelYAMLEdit}>
                             Cancel
@@ -838,13 +841,13 @@ export default function NodeDetails() {
         return (
             <div className="node-details-container">
                 <div className="ml-20 mr-20 mb-12 mt-16 bcn-0 br-8 en-2 bw-1">
-                    <div className="condition-grid cn-7 fw-6 fs-13 border-bottom pt-8 pl-20 pb-8 pr-20">
+                    <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
                         <div>Type</div>
                         <div>Status</div>
                         <div>Message</div>
                     </div>
                     {nodeDetail.conditions.map((condition) => (
-                        <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                        <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
                             <div>{condition.type}</div>
                             <div className="flexbox">
                                 {condition.haveIssue ? (
@@ -877,7 +880,7 @@ export default function NodeDetails() {
     }
 
     return (
-        <>
+        <div>
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}
@@ -885,6 +888,6 @@ export default function NodeDetails() {
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
-        </>
+        </div>
     )
 }

@@ -76,7 +76,7 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
                 {moment(props.installedChartGroup.installationTime).format('ddd, DD MMM YYYY, HH:mm a')}
             </div>
             <div className="chart-group-deployment__cell chart-group-deployment__cell--child-2">
-                <span className="ellipsis-right">{allChartNames}</span>
+                <span className="dc__ellipsis-right">{allChartNames}</span>
                 <span></span>
             </div>
             <div className="chart-group-deployment__cell chart-group-deployment__cell--last-child">
@@ -90,10 +90,10 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
                 return <Link to={`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`} key={`${index} - ${chart.chartName}}`} className="chart-group-deployment__row">
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
                         <img className="icon-dim-40 mr-16" onError={handleImageError} alt="chart" src={chart.icon || ""} />
-                        <p className="chart-group-deployment-cell__chart-name ellipsis-right m-0">{chart.chartName}</p>
+                        <p className="chart-group-deployment-cell__chart-name dc__ellipsis-right m-0">{chart.chartName}</p>
                     </div>
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--child-2">
-                        <span className="ellipsis-right">{chart.environmentName}</span>
+                        <span className="dc__ellipsis-right">{chart.environmentName}</span>
                     </div>
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--last-child">
                         <Delete className="icon-dim-20 cursor chart-group-deployment__delete-app"

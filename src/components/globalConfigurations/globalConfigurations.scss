@@ -4,7 +4,7 @@
     grid-template-columns: 240px 1fr;
     height: 100vh;
 
-    .page-header {
+    .dc__page-header {
         grid-column: 1 / -1;
     }
 
@@ -104,10 +104,6 @@
     padding: 24px;
 }
 
-.auth-page {
-    height: 100%;
-}
-
 .list {
     height: 64px;
     padding: 0 20px;
@@ -164,7 +160,6 @@
 
 .cluster-list {
     border: 1px solid #d6dbdf;
-    overflow: hidden;
     margin-bottom: 16px;
     background: white;
     border-radius: 8px;
@@ -174,6 +169,7 @@
         margin-bottom: unset;
         grid-template-columns: 1fr 24px;
         align-items: center;
+        border-radius: 8px;
     }
 
     &.cluster-list--create {
@@ -197,7 +193,7 @@
     }
 
     .environments-container {
-        padding: 0 24px 24px 24px;
+        padding: 24px;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         grid-row-gap: 16px;

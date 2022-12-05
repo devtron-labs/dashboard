@@ -52,11 +52,11 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
     }
 
     return (
-        <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
+        <div className="dc__transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
-                    className="help-card__option no-decor help-card__link flex left cn-9"
+                    className="help-card__option dc__no-decor help-card__link flex left cn-9"
                     activeClassName="active"
                     onClick={onClickGettingStarted}
                 >
@@ -69,7 +69,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                         <Fragment key={option.name}>
                             <a
                                 key={option.name}
-                                className="no-decor help-card__option help-card__link flex left cn-9"
+                                className="dc__no-decor help-card__option help-card__link flex left cn-9"
                                 href={option.link}
                                 target="_blank"
                                 rel="noreferrer noopener"
@@ -90,7 +90,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
                         {fetchingServerInfo ? (
-                            <span className="loading-dots">Checking current version</span>
+                            <span className="dc__loading-dots">Checking current version</span>
                         ) : (
                             <span>Devtron {serverInfo?.currentVersion || ''}</span>
                         )}

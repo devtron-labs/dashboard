@@ -12,7 +12,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
 
     return (
         <div>
-            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 content-space cursor" onClick={toggleDropdown}>
+            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor" onClick={toggleDropdown}>
                 {header}
                 <Dropdown
                     className="icon-dim-24 rotate"
@@ -33,9 +33,9 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         </span>
                     </div>
                     {options.map((option) => (
-                        <div className="position-rel flex left cursor">
+                        <div className="dc__position-rel flex left cursor dc__hover-n50">
                             <Checkbox
-                                rootClassName="cursor bcn-0 ml-7 h-32 fs-13 mb-0 mr-10"
+                                rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
                                 isChecked={value.filter((event) => event === option).length}
                                 value={'CHECKED'}
                                 onChange={() => onChange(option)}

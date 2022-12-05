@@ -2,6 +2,10 @@ export const RequestTimeout = 60000
 export const DEFAULT_STATUS = 'Checking Status...'
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
+export const TOKEN_COOKIE_NAME = 'argocd.token'
+export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
+export const DEVTRON_DEFAULT_NAMESPACE = 'devtroncd'
+export const DEVTRON_DEFAULT_CLUSTER_ID = '1'
 
 export const Routes = {
     GET: 'get',
@@ -9,18 +13,24 @@ export const Routes = {
     API_VERSION_V2: 'v2',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
-    USER_CHECK_ROLE:'user/check/roles',
+    USER_CHECK_ROLE: 'user/check/roles',
 
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
+    CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
 
     CD_CONFIG: 'app/cd-pipeline',
+    EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
+    SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
@@ -42,7 +52,7 @@ export const Routes = {
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
-    APP_LABELS: 'app/labels',
+    APP_LABELS: 'app/edit',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -84,6 +94,7 @@ export const Routes = {
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
     API_TOKEN: 'api-token',
+    API_TOKEN_WEBHOOK: 'api-token/webhook',
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',
@@ -149,6 +160,7 @@ export const Routes = {
     HELM_APP_HIBERNATE_API: 'application/hibernate',
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
     EXTERNAL_LINKS_API: 'external-links',
+    GET_ALL_APPS: 'app/allApps',
     MODULE_INFO_API: 'module',
     SERVER_INFO_API: 'server',
     LOG_PODNAME_API: 'k8s/resource/inception/info',
@@ -162,7 +174,15 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
-    TELEMETRY_EVENT: 'telemetry/event'
+    TELEMETRY_EVENT: 'telemetry/event',
+    DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    MODULE_CONFIGURED: 'module/config',
+    SSO: 'sso',
+    SSO_LIST: 'sso/list',
+    SSO_CREATE: 'sso/create',
+    SSO_UPDATE: 'sso/update',
+    INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
+    EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls',
 }
 
 export const ViewType = {
@@ -185,11 +205,6 @@ export const AppConfigStatus = {
     END: 10,
 }
 
-export const FullRoutes = {
-    LOGIN: `${Routes.LOGIN}`,
-    CENTRAL: 'https://api.devtron.ai',
-}
-
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
     APP_NAME: '^[a-z][a-z0-9-.]*[a-z0-9]$/*',
@@ -201,6 +216,8 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
+    URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
 }
 
 export const TriggerType = {
@@ -229,13 +246,15 @@ export const DOCUMENTATION = {
     APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/create-application`,
     APP_CREATE_MATERIAL: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/git-material`,
     APP_CREATE_CI_CONFIG: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/docker-build-configuration`,
-    APP_CREATE_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template`,
     APP_CREATE_CONFIG_MAP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/config-maps`,
     APP_CREATE_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets`,
     APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/workflow`,
     APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/environment-overrides`,
     BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/bulk-update`,
     CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart`,
+    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/chart-group`,
     CHART_LIST: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts`,
     CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts#custom-values`,
     SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/security-features`,
@@ -251,14 +270,20 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/permission-groups`,
     HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
     BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline#build-stage`,
-    PRE_POST_BUILD_STAGE:
-        `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
+    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
     CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts`,
     CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts#prerequisites`,
     ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/install-devtron#devtron-admin-credentials`,
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/external-links`,
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
+    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
+    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
+    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
+    WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -302,6 +327,7 @@ export enum MODES {
     YAML = 'yaml',
     JSON = 'json',
     SHELL = 'shell',
+    DOCKERFILE = 'dockerfile',
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
@@ -364,7 +390,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Password/Token (recommended)*',
+            label: 'Password/Token (Recommended: Token)*',
             defaultValue: '',
             placeholder: '',
         },
@@ -378,12 +404,12 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
         defaultRegistryURL: '',
         registryURL: {
-            label: 'Registry url/Login server*',
+            label: 'Registry URL/Login Server*',
             defaultValue: '',
             placeholder: 'Eg. xxx.azurecr.io',
         },
         id: {
-            label: 'Username/Registry name*',
+            label: 'Username/Registry Name*',
             defaultValue: '',
             placeholder: '',
         },
@@ -411,7 +437,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file*',
+            label: 'Service Account JSON File*',
             defaultValue: '',
             placeholder: 'Paste json file content here',
         },
@@ -434,7 +460,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file*',
+            label: 'Service Account JSON File*',
             defaultValue: '',
             placeholder: 'Paste json file content here',
         },
@@ -542,3 +568,76 @@ export const EXTERNAL_TYPES = {
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
+
+export const ModuleNameMap = {
+    ARGO_CD: 'argo-cd',
+    CICD: 'cicd',
+    SECURITY: 'security.clair',
+    BLOB_STORAGE: 'blob-storage',
+    GRAFANA: 'monitoring.grafana',
+    NOTIFICATION: 'notifier',
+}
+
+export const BUILD_STATUS = {
+    NOT_TRIGGERED: 'not triggered',
+}
+
+export const EVENT_STREAM_EVENTS_MAP = {
+    MESSAGE: 'message',
+    START_OF_STREAM: 'START_OF_STREAM',
+    END_OF_STREAM: 'END_OF_STREAM',
+    ERROR: 'error',
+}
+
+export const TERMINAL_STATUS_MAP = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    RUNNING: 'running',
+    PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    FAILED: 'failed',
+    ERROR: 'error',
+}
+
+export const POD_STATUS = {
+    PENDING: 'Pending',
+}
+
+export const CLUSTER_COMMAND = {
+    k8Cluster: {
+        heading: 'K8s cluster providers',
+        clusterName: 'K8s',
+        title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
+        command:
+            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml',
+    },
+    microK8s: {
+        heading: 'MicroK8s',
+        clusterName: 'microK8s',
+        title: 'MicroK8s is a light weight Kubernetes cluster',
+        command:
+            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml",
+    },
+}
+
+export enum KIND {
+    INGRESS = 'Ingress',
+    SERVICE = 'Service',
+}
+
+export const MODULE_STATUS_RETRY_COUNT = 3
+export const MODULE_STATUS_POLLING_INTERVAL = 15000
+export const LOGS_RETRY_COUNT = 3
+export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
+
+export enum AppDetailsErrorType {
+    ERRIMAGEPULL = 'errimagepull',
+    IMAGEPULLBACKOFF = 'imagepullbackoff',
+}
+
+export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
+  LINE_ONE: 'This workflow uses a deprecated method to receive container images from external build services.',
+  LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
+  LINE_THREE:  'You can continue to deploy images from external build services',
+  DOC_LINK_TEXT: 'Refer documentation to learn more.',
+}

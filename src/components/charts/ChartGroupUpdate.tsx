@@ -52,7 +52,7 @@ export default function ChartGroupUpdate({}) {
     const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
-    const [isGrid, setIsGrid] = useState<boolean>(true)
+    const [isGrid, setIsGrid] = useState<boolean>(false)
 
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -180,7 +180,7 @@ export default function ChartGroupUpdate({}) {
 
     const renderChartGroupEditActionButton = () => {
         return (
-            <div className="page-header__cta-container flex right">
+            <div className="dc__page-header__cta-container flex right">
                 <button className="cta h-32 flex cancel mr-16" onClick={handleSave}>
                     {loading ? (
                         <Progressing />

@@ -5,6 +5,7 @@ import { uploadChart, validateChart } from './customChart.service'
 import errorImage from '../../assets/img/ic_upload_chart_error.png'
 import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from './types'
@@ -15,6 +16,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [errorData, setErrorData] = useState<{ title: string; message: string[] }>({ title: '', message: [] })
     const [loadingData, setLoadingData] = useState(false)
+    const [isDescriptionLengthError, setDescriptionLengthError] = useState(false)
 
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
@@ -23,6 +25,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
         validateChart(formData)
             .then((response: ChartUploadResponse) => {
                 setChartDetail(response.result)
+                setDescriptionLengthError(response.result.description?.length > 250)
                 setUploadState(UPLOAD_STATE.SUCCESS)
             })
             .catch((error) => {
@@ -61,11 +64,20 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const handleDescriptionChange = (e): void => {
         const chartData = { ...chartDetail }
         chartData.description = e.target.value
+        if (chartDetail.description.length > 250) {
+            setDescriptionLengthError(true)
+        } else {
+            setDescriptionLengthError(false)
+        }
         setChartDetail(chartData)
     }
 
     const onCancelUpload = (actionType: string): void => {
         if (actionType === 'Save') {
+            if (isDescriptionLengthError || chartDetail.description.length > 250) {
+                setDescriptionLengthError(true)
+                return
+            }
             setLoadingData(true)
         }
         const chartData = { ...chartDetail }
@@ -96,8 +108,8 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                     <div className="bcb-1 eb-2 p-10 br-4 flexbox cn-9 fs-13 mb-20">
                         <Info className="mr-8 ml-4 icon-dim-20" />
                         <span className="lh-20">
-                            <span className="inline-block fs-13 fw-6">{chartDetail.message}</span>
-                            <span className="inline-block fs-13 fw-4">
+                            <span className="dc__inline-block fs-13 fw-6">{chartDetail.message}</span>
+                            <span className="dc__inline-block fs-13 fw-4">
                                 The version ({chartDetail.chartVersion}) you’re uploading will be added to the existing
                                 chart.
                             </span>
@@ -125,6 +137,12 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                             onChange={handleDescriptionChange}
                             disabled={loadingData}
                         ></textarea>
+                        {isDescriptionLengthError && (
+                            <span className="form__error">
+                                <Error className="form__icon form__icon--error" />
+                                Maximum 250 characters allowed
+                            </span>
+                        )}
                     </div>
                 </div>
             </>
@@ -158,7 +176,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                     <div className="fw-6 fs-13 cn-9 mb-8">
                         📙 Need help?&nbsp;
                         <a
-                            className="learn-more__href fw-6"
+                            className="dc__link fw-6"
                             href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
                             target="_blank"
                             rel="noreferrer noopener"
@@ -188,15 +206,15 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const renderFooter = (): JSX.Element => {
         return (
             <div
-                className={`footer pt-16 pb-16 border-top flexbox ${
+                className={`footer pt-16 pb-16 dc__border-top flexbox ${
                     uploadState === UPLOAD_STATE.UPLOAD || uploadState === UPLOAD_STATE.UPLOADING
-                        ? 'content-end'
-                        : 'content-space'
+                        ? 'dc__content-end'
+                        : 'dc__content-space'
                 }`}
             >
                 {uploadState !== UPLOAD_STATE.UPLOAD && (
                     <button
-                        className={`cta delete no-text-transform ${
+                        className={`cta delete dc__no-text-transform ${
                             uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
                         }`}
                         onClick={(e) => onCancelUpload('Cancel')}
@@ -206,7 +224,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 {uploadState !== UPLOAD_STATE.UPLOADING && (
                     <ButtonWithLoader
-                        rootClassName="cta mr-20 no-text-transform"
+                        rootClassName="cta mr-20 dc__no-text-transform"
                         loaderColor="white"
                         onClick={handleSuccessButton}
                         isLoading={loadingData}
@@ -224,8 +242,8 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
 
     return (
         <VisibleModal className="transition-effect">
-            <div className="modal__body upload-modal no-top-radius mt-0">
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
+            <div className="modal__body upload-modal dc__no-top-radius mt-0">
+                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__border-bottom">
                     <div className="fw-6 fs-16 cn-9">
                         {uploadState === UPLOAD_STATE.UPLOAD ? 'Using custom chart' : 'Upload chart'}
                     </div>

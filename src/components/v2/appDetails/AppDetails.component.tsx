@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './appDetails.scss';
 import { useParams } from 'react-router';
 import { AppStreamData, AppType } from './appDetails.type';
@@ -10,6 +10,7 @@ import {ErrorScreenManager, useEventSource} from '../../common';
 import {AddLinkButton, AppLevelExternalLinks} from '../../externalLinks/ExternalLinks.component';
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
+import { getSaveTelemetry } from './appDetails.api';
 import EmptyState from "../../EmptyState/EmptyState";
 import AppNotDeployed from "../../../assets/img/app-not-deployed.png";
 import {ReactComponent as Upload} from "../../../assets/icons/ic-arrow-line-up.svg";
@@ -28,6 +29,12 @@ const AppDetailsComponent = ({
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+
+    useEffect(() => {
+     if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){
+      getSaveTelemetry(params.appId)
+     }
+    },[])
 
     // if app type not of EA, then call stream API
     const syncSSE = useEventSource(
@@ -64,10 +71,9 @@ const AppDetailsComponent = ({
                 <EnvironmentStatusComponent appStreamData={streamData}/>
             </div>
 
-            <SyncErrorComponent appStreamData={streamData} />
+            <SyncErrorComponent appStreamData={streamData}/>
             <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
             <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
-            
         </div>
     );
 };

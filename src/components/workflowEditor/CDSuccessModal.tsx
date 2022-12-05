@@ -27,7 +27,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                         <div className="fs-13">What do you want to do next?</div>
                     </div>
                 </div>
-                <NavLink to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`} className="cb-5 no-decor">
+                <NavLink to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`} className="cb-5 dc__no-decor">
                     <div className="flex left br-4 p-15 mb-12 en-2 bw-1 action-card">
                         <div className="cd-success-icon-container ">
                             <GotToBuildDeploy />
@@ -40,7 +40,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                 </NavLink>
                 <NavLink
                     to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`}
-                    className="cb-5 no-decor"
+                    className="cb-5 dc__no-decor"
                 >
                     <div className="flex left br-4 p-15 mb-12 en-2 bw-1 action-card">
                         <div className="cd-success-icon-container ">

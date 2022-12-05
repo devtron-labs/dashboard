@@ -4,6 +4,17 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { multiSelectStyles } from '../common'
 
+export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
+
+export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
+
+export const DATA_HEADER_MAP = { DEFAULT: 'default' }
+
+export const VIEW_MODE = {
+    YAML: 'yaml',
+    GUI: 'gui',
+}
+
 export const sampleJSONs = {
     ESO_GoogleSecretsManager: {
         secretStore: {
@@ -296,5 +307,5 @@ export const hasESO = (externalType): boolean => {
 }
 
 export const hasProperty = (externalType): boolean => {
-    return externalType === 'ESO_AWSSecretsManager' || externalType === 'ESO_HashiCorpVault'
-} 
+    return externalType === 'ESO_AWSSecretsManager'
+}

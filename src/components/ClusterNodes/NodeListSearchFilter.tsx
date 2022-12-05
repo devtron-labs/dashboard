@@ -112,7 +112,7 @@ export default function NodeListSearchFliter({
     }
     const renderTextFilter = (): JSX.Element => {
         return (
-            <div className="position-rel" style={{ background: 'var(--N50)' }}>
+            <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
                     className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox"
                     onClick={() => setOpenFilterPopup(true)}
@@ -120,11 +120,11 @@ export default function NodeListSearchFliter({
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span className="position-rel bottom-2px">{selectedSearchTextType}:</span>
+                            <span className="dc__position-rel bottom-2px">{selectedSearchTextType}:</span>
                             <input
                                 autoComplete="off"
                                 type="text"
-                                className="transparent flex-1 outline-none"
+                                className="dc__transparent flex-1 outline-none"
                                 autoFocus
                                 placeholder={
                                     selectedSearchTextType === 'name'
@@ -142,9 +142,9 @@ export default function NodeListSearchFliter({
                 </div>
                 {openFilterPopup && (
                     <>
-                        <div className="transparent-div" onClick={toggleSelectPopup}></div>
+                        <div className="dc__transparent-div" onClick={toggleSelectPopup}></div>
                         {!selectedSearchTextType && (
-                            <div className="search-popup w-100 bcn-0 position-abs br-4 en-2 bw-1">
+                            <div className="search-popup w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>
                                 {[
                                     { value: 1, label: 'name', type: 'main' },
@@ -168,7 +168,7 @@ export default function NodeListSearchFliter({
                 )}
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearTextFilter}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
             </div>
@@ -200,7 +200,7 @@ export default function NodeListSearchFliter({
                     }),
                 }}
             />
-            <div className="border-left h-20 mt-6"></div>
+            <div className="dc__border-left h-20 mt-6"></div>
             <ColumnFilterContext.Provider
                 value={{
                     appliedColumns,

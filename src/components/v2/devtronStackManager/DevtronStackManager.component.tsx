@@ -38,7 +38,7 @@ import {
 } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
@@ -46,10 +46,10 @@ import {
     DEVTRON_UPGRADE_MESSAGE,
     handleAction,
     isLatestVersionAvailable,
-    ModuleNameMap,
     ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
+    OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
@@ -90,17 +90,27 @@ const ModuleDetailsCard = ({
     handleModuleCardClick,
     fromDiscoverModules,
 }: ModuleDetailsCardType): JSX.Element => {
+    const handleOnClick = (): void => {
+        if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
+            toast.error(
+                <ToastBody
+                    title="Unknown integration status"
+                    subtitle="There was an error fetching the integration status. Please try again later."
+                />,
+            )
+        } else if (handleModuleCardClick) {
+            handleModuleCardClick(moduleDetails, fromDiscoverModules)
+        }
+    }
     return (
         <div
             className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
-            {...(handleModuleCardClick && {
-                onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
-            })}
+            onClick={handleOnClick}
         >
             {getInstallationStatusLabel(moduleDetails.installationStatus)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-            <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
-            <div className="module-details__card-info fs-13 fw-4 cn-7 lh-20">
+            <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4">{moduleDetails.title}</div>
+            <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;
@@ -164,7 +174,7 @@ const getUpdateStatusLabel = (
     let updateStatusLabel = null
 
     if (installationStatus === ModuleStatus.UPGRADING) {
-        updateStatusLabel = <span className="loading-dots">{showInitializing ? 'Initializing' : 'Updating'}</span>
+        updateStatusLabel = <span className="dc__loading-dots">{showInitializing ? 'Initializing' : 'Updating'}</span>
     } else if (installationStatus === ModuleStatus.UPGRADE_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         updateStatusLabel = 'Update failed'
     } else if (installationStatus !== ModuleStatus.UNKNOWN && isLatestVersionAvailable(currentVersion, newVersion)) {
@@ -173,7 +183,7 @@ const getUpdateStatusLabel = (
 
     return updateStatusLabel ? (
         <>
-            <span className="bullet ml-4 mr-4" />
+            <span className="dc__bullet ml-4 mr-4" />
             {updateStatusLabel}
         </>
     ) : null
@@ -203,7 +213,7 @@ export const NavItem = ({
                         <span className="fs-13 ml-12">{route.name}</span>
                     )}
                     {route.name === 'Installed' && (
-                        <div className="installed-modules-link flex content-space ml-12" style={{ width: '175px' }}>
+                        <div className="installed-modules-link flex dc__content-space ml-12" style={{ width: '175px' }}>
                             <span className="fs-13">{route.name}</span>
                             <span className="badge">{installedModulesCount || 0}</span>
                         </div>
@@ -232,7 +242,7 @@ export const NavItem = ({
 
     return (
         <div className="flex column left">
-            <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 text-uppercase">Integrations</div>
+            <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 dc__uppercase">Integrations</div>
             {ModulesSection.map((route) => getNavLink(route))}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {getNavLink(AboutSection)}
@@ -256,7 +266,7 @@ export const StackPageHeader = ({
     const renderBreadcrumbs = (headerTitleName, detailsMode) => {
         return (
             <div className="m-0 flex left ">
-                <div onClick={() => handleRedirectToModule(detailsMode)} className="devtron-breadcrumb__item">
+                <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
                     <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
                 </div>
                 <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
@@ -311,7 +321,7 @@ const InstallationStatus = ({
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
-                    <div className="mt-12 loading-dots">
+                    <div className="mt-12 dc__loading-dots">
                         {getProgressingLabel(isUpgradeView, canViewLogs, logPodName)}
                     </div>
                 </>
@@ -452,6 +462,9 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+    const otherInstallationInProgress = modulesList?.some(
+        (module) => module.installationStatus === ModuleStatus.INSTALLING && module.name !== moduleName,
+    )
     const dependentModuleList =
         modulesList?.filter((module) => moduleDetails.dependentModules.indexOf(Number(module.id)) >= 0) || []
     const isPendingDependency =
@@ -491,7 +504,10 @@ export const InstallationWrapper = ({
             return
         } else {
             if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
-                if (!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)) {
+                if (
+                    !isUpgradeView &&
+                    (belowMinSupportedVersion || isPendingDependency || otherInstallationInProgress)
+                ) {
                     return
                 }
                 setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
@@ -516,8 +532,8 @@ export const InstallationWrapper = ({
         if (!showPreRequisiteConfirmationModal) return null
         return (
             <VisibleModal className="transition-effect">
-                <div className="modal__body upload-modal no-top-radius mt-0 p-0 w-600">
-                    <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
+                <div className="modal__body upload-modal dc__no-top-radius mt-0 p-0 w-600">
+                    <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__border-bottom">
                         <div className="fw-6 fs-16 cn-9">
                             {`Pre-requisites for update to ${upgradeVersion.toLowerCase()}`}
                         </div>
@@ -540,7 +556,7 @@ export const InstallationWrapper = ({
                                 </a>
                             </div>
                         ))}
-                        <div className="en-2 bw-1 flexbox content-space pt-8 pr-12 pb-8 pl-12 br-4">
+                        <div className="en-2 bw-1 flexbox dc__content-space pt-8 pr-12 pb-8 pl-12 br-4">
                             <span className="cn-9 fs-13 fw-6">Facing issues?</span>
                             <a
                                 className="pre-requisite-modal__help-chat fs-13 cb-5 flex left"
@@ -552,7 +568,7 @@ export const InstallationWrapper = ({
                             </a>
                         </div>
                     </div>
-                    <div className="p-16 border-top flexbox content-space">
+                    <div className="p-16 dc__border-top flexbox dc__content-space">
                         <Checkbox
                             isChecked={preRequisiteChecked}
                             value={CHECKBOX_VALUE.CHECKED}
@@ -565,7 +581,7 @@ export const InstallationWrapper = ({
                         <button
                             onClick={handleActionButtonClick}
                             disabled={!preRequisiteChecked}
-                            className="cta ml-12 no-decor"
+                            className="cta ml-12 dc__no-decor"
                         >
                             Update
                         </button>
@@ -573,6 +589,16 @@ export const InstallationWrapper = ({
                 </div>
             </VisibleModal>
         )
+    }
+
+    const getDisabledButtonTooltip = (): string => {
+        if (belowMinSupportedVersion) {
+            return DEVTRON_UPGRADE_MESSAGE
+        } else if (otherInstallationInProgress) {
+            return OTHER_INSTALLATION_IN_PROGRESS_MESSAGE
+        } else {
+            return PENDING_DEPENDENCY_MESSAGE
+        }
     }
 
     return (
@@ -594,17 +620,18 @@ export const InstallationWrapper = ({
                                 (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                                 <>
                                     <ConditionalWrap
-                                        condition={!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)}
+                                        condition={
+                                            !isUpgradeView &&
+                                            (belowMinSupportedVersion ||
+                                                isPendingDependency ||
+                                                otherInstallationInProgress)
+                                        }
                                         wrap={(children) => (
                                             <Tippy
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="top"
-                                                content={
-                                                    belowMinSupportedVersion
-                                                        ? DEVTRON_UPGRADE_MESSAGE
-                                                        : PENDING_DEPENDENCY_MESSAGE
-                                                }
+                                                content={getDisabledButtonTooltip()}
                                             >
                                                 <div>{children}</div>
                                             </Tippy>
@@ -612,7 +639,10 @@ export const InstallationWrapper = ({
                                     >
                                         <button
                                             className={`module-details__install-button cta flex mb-16 ${
-                                                !isUpgradeView && (belowMinSupportedVersion || isPendingDependency)
+                                                !isUpgradeView &&
+                                                (belowMinSupportedVersion ||
+                                                    isPendingDependency ||
+                                                    otherInstallationInProgress)
                                                     ? 'disabled-state'
                                                     : ''
                                             }`}
@@ -724,7 +754,11 @@ export const ModuleDetailsView = ({
             <Carousel className="module-details__carousel" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper mt-24">
                 <div className="module-details__feature-wrapper">
-                    <img className="module-details__feature-icon mb-8" src={moduleDetails.icon} alt={moduleDetails.title} />
+                    <img
+                        className="module-details__feature-icon mb-8"
+                        src={moduleDetails.icon}
+                        alt={moduleDetails.title}
+                    />
                     <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
@@ -805,7 +839,7 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
         <div className="mb-16">
             <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">
                 <div className="icon-dim-20 mr-12">
-                  <Warning className="icon-dim-20 warning-icon-y7" />
+                    <Warning className="icon-dim-20 warning-icon-y7" />
                 </div>
                 <div>
                     <h2 className="fs-13 fw-6 lh-20 mb-4 mt-0">{configNoteDetail.title}</h2>
@@ -813,7 +847,7 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
                         exact
                         to={configNoteDetail.link}
                         activeClassName="active"
-                        className="mt-8 no-decor fs-13 fw-6"
+                        className="mt-8 dc__no-decor fs-13 fw-6"
                     >
                         {configNoteDetail.linkText}
                     </NavLink>
@@ -836,7 +870,7 @@ const UpgradeNote = (): JSX.Element => {
                         exact
                         to={URLS.STACK_MANAGER_ABOUT}
                         activeClassName="active"
-                        className="mt-8 no-decor fs-13 fw-6"
+                        className="mt-8 dc__no-decor fs-13 fw-6"
                     >
                         Check for Devtron updates
                     </NavLink>

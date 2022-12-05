@@ -11,7 +11,7 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
             <>
                 Tip:
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DEVTRON_NODE_DEPLOY_VIDEO}
                     rel="noreferrer noopener"
                     target="_blank"
@@ -24,17 +24,17 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
 
     return (
         <div className="guide-container">
-            <div className="flex h-300 guide-header column">
+            <div className="flex mh-300 guide-header column">
                 <h1 className="fw-6 mb-8">Create your first application</h1>
                 <p className="fs-14 cn-7">{renderSubTitle()}</p>
             </div>
 
-            <div className="guide-body flex position-rel">
+            <div className="guide-body flex dc__position-rel">
                 <div className="guide-cards__wrap">
                     <div className="guide-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
-                        <div className="no-decor fw-6 cursor" onClick={openDevtronAppCreateModel}>
+                        <div className="dc__no-decor fw-6 cursor" onClick={openDevtronAppCreateModel}>
                             <img className="guide-card__img" src={CreateApp} alt="Please connect cluster" />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
                                 Create an application from scratch
                             </div>
                         </div>
@@ -42,13 +42,13 @@ function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
 
                     <div className="guide-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <a
-                            className="cn-9 no-decor fw-6 cursor href__link"
+                            className="cn-9 dc__no-decor fw-6 cursor dc__link-n9"
                             href={PREVIEW_DEVTRON}
                             rel="noreferrer noopener"
                             target="_blank"
                         >
                             <img className="guide-card__img" src={PreviewImage} alt="Please connect cluster" />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
                                 Explore a preconfigured Demo app at &nbsp;
                                 <span className="cb-5">preview.devtron.ai</span>
                             </div>

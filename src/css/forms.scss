@@ -70,7 +70,7 @@
     color: var(--N700);
     font-weight: 500;
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .form__label::first-letter {
@@ -215,7 +215,8 @@ p.sentence-case:first-letter {
     background-color: var(--white);
 
     &.ecr-authType__radio-group,
-    &.permission-type__radio-group {
+    &.permission-type__radio-group,
+    &.external-link-scope__radio-group {
         border: none;
 
         .form__radio-item {

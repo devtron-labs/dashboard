@@ -5,7 +5,7 @@ import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
-import './k8resources.css';
+import './k8resources.scss';
 import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 
 export default function K8ResourceComponent({
@@ -31,12 +31,12 @@ export default function K8ResourceComponent({
 
     return (
         <div className="bcn-0" style={{ justifyContent: 'space-between' }}>
-            <div className="pt-16 pl-20 pb-16">
+            <div className="pt-16 pl-20 pb-8">
                 <FilterResource nodes={nodes} />
             </div>
             {nodes.length > 0 ? (
                 <div className="resource-node-wrapper flexbox">
-                    <div className="k8-resources-node-tree pt-8 pl-16 border-right">
+                    <div className="k8-resources-node-tree pt-8 pl-16 dc__border-right">
                         <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} isDevtronApp={isDevtronApp} />
                     </div>
                     <div className="flex-grow-1 p-0">

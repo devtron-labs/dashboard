@@ -88,6 +88,8 @@ export interface AppEnvironment {
     appMetrics: boolean;
     infraMetrics: boolean;
     prod: boolean;
+    chartRefId?: number
+    lastDeployed?: string
 }
 
 export interface AppOtherEnvironment extends ResponseType {
@@ -197,4 +199,19 @@ export interface AppRouterType {
   isSuperAdmin?: boolean
   appListCount: number
   loginCount: number
+}
+
+export interface ConfigOverrideWorkflowDetails {
+    cdPipelines: string[]
+    ciPipelineId: number
+    ciPipelineName: string
+    id: number
+    name: string
+}
+
+
+export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
+    result?: {
+        workflows: ConfigOverrideWorkflowDetails[]
+    }
 }

@@ -26,11 +26,11 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT, DOCUMENTATION } from '../../config'
+import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, MODES } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { getAppChartRef } from '../../services/service'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from '../secrets/secret.utils'
+import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
-import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty } from '../secrets/secret.utils'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -41,7 +41,7 @@ function useSecretContext() {
     return context
 }
 
-export default function SecretOverrides({ parentState, setParentState, ...props }) {
+export default function SecretOverrides({ parentState, setParentState }: SecretOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -56,17 +56,18 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     useEffect(() => {
         if (!loading && result) {
-            setParentState('loaded')
+            setParentState(ComponentStates.loaded)
         }
     }, [loading])
 
-    if (loading && !result) return null
+    if (loading && !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     if (error) {
-        setParentState('failed')
+        setParentState(ComponentStates.failed)
         showError(error)
         if (!result) return null
     }
-    if (parentState === 'loading' || !result) return null
+    if (parentState === ComponentStates.loading || !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+
     let {
         result: { configData, id },
     } = result
@@ -75,21 +76,18 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     return (
         <section className="secret-overrides">
-            <label htmlFor="" className="form__label bold">
-                Secrets
-            </label>
             <SecretContext.Provider value={{ secrets, id, reload }}>
                 {secrets &&
                     Array.from(secrets)
                         .sort((a, b) => a[0].localeCompare(b[0]))
-                        .map(([name, { data, defaultData, global, ...rest }]) => {
+                        .map(([name, { data, defaultData, global, esoSecretData, secretData, ...rest }]) => {
                             return (
                                 <ListComponent
                                     key={name || Math.random().toString(36).substr(2, 5)}
                                     appChartRef={appChartRef}
                                     name={name}
                                     type="secret"
-                                    label={global ? (data ? 'modified' : '') : 'env'}
+                                    label={global ? (data || esoSecretData.secretStore || secretData ? 'modified' : '') : 'env'}
                                 />
                             )
                         })}
@@ -103,6 +101,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const {
         data = null,
         defaultData = null,
+        secretData = null,
+        defaultSecretData = null,
         type = 'environment',
         external = false,
         mountPath = '',
@@ -112,6 +112,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         defaultPermissionNumber = '',
         filePermission = '',
         esoSecretData = null,
+        defaultESOSecretData = null,
         subPath = false,
     } = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: '' }
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -154,7 +155,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ...state,
                     locked: false,
                     duplicate:
-                        name && isGlobal
+                        name && isGlobal && !isESO
                             ? Object.keys(action.value).map((k) => ({
                                   k,
                                   v: action.value[k],
@@ -190,18 +191,15 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         }
     }
 
-    let tempSecretData = secrets.has(name) && secrets.get(name).secretData ? secrets.get(name).secretData : []
-    if (tempSecretData.length === 0 && secrets.has(name) && secrets.get(name).defaultSecretData) {
-        tempSecretData = secrets.get(name).defaultSecretData
-    }
+    let tempSecretData = (secretData || []).length === 0 && defaultSecretData ? defaultSecretData : secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
 
     let jsonForSecretDataYaml: any[] =
-        secrets.has(name) && secrets.get(name).secretData ? secrets.get(name).secretData : []
-    if (jsonForSecretDataYaml.length === 0 && secrets.has(name) && secrets.get(name).defaultSecretData) {
-        jsonForSecretDataYaml = secrets.get(name).defaultSecretData
+       secretData ? secretData : []
+    if (jsonForSecretDataYaml.length === 0 && defaultSecretData) {
+        jsonForSecretDataYaml = defaultSecretData
     }
     jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
         let temp = {}
@@ -217,10 +215,25 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         }
         return temp
     })
+
+    const initialDuplicate = () => {
+        if (data) {
+            return name && isGlobal
+                ? Object.keys(data).map((k) => ({ k, v: data[k], keyError: '', valueError: '' }))
+                : data
+        } else if (name && isGlobal) {
+            return secretData || (esoSecretData?.esoData && esoSecretData)
+        } else {
+            return null
+        }
+    }
+
+    let tempEsoSecretData = (esoSecretData?.esoData || []).length === 0 && defaultESOSecretData ? defaultESOSecretData : esoSecretData
+
     const [roleARN, setRoleARN] = useState(secrets.has(name) ? secrets.get(name)?.roleARN : '')
-    const [secretData, setSecretData] = useState(tempSecretData)
+    const [secretDataValue, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [codeEditorRadio, setCodeEditorRadio] = useState('data')
+    const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isHashiOrAWS = hasHashiOrAWS(externalType)
     const isESO = hasESO(externalType)
     const memoisedReducer = React.useCallback(reducer, [appId, envId])
@@ -231,11 +244,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         dialog: false,
         subPath: subPath,
         filePermission: { value: filePermission, error: '' },
-        duplicate: data
-            ? name && isGlobal
-                ? Object.keys(data).map((k) => ({ k, v: data[k], keyError: '', valueError: '' }))
-                : data
-            : null,
+        duplicate: initialDuplicate(),
         permissionNumber: defaultPermissionNumber,
     }
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
@@ -246,20 +255,19 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
-    const isEsoSecretData: boolean = esoSecretData?.secretStore && esoSecretData.esoData
+    const isEsoSecretData: boolean = tempEsoSecretData?.secretStore && tempEsoSecretData.esoData
     const [yamlMode, toggleYamlMode] = useState(true)
-    const [esoDataSecret, setEsoData] = useState(esoSecretData?.esoData)
-    const [secretStore, setSecretStore] = useState(esoSecretData?.secretStore)
+    const [esoDataSecret, setEsoData] = useState(tempEsoSecretData?.esoData)
+    const [secretStore, setSecretStore] = useState(tempEsoSecretData?.secretStore)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(esoSecretData) : '')
-    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs['default'])
+    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '')
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
     const isChartVersion309OrBelow =
         appChartRef &&
         appChartRef.name === ROLLOUT_DEPLOYMENT &&
         isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
         isChartRef3090OrBelow(appChartRef.id)
 
-        
     useEffect(() => {
         if(isESO){
             toggleYamlMode(true)
@@ -289,7 +297,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     async function handleOverride(e) {
         e.preventDefault()
         if (state.duplicate) {
-            if (data) {
+            if (data || secretData || esoSecretData?.esoData) {
                 //delete
                 dispatch({ type: 'toggleDialog' })
             } else {
@@ -325,6 +333,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 })
                 setSecretData(json)
             }
+            if(configData[0].esoSecretData?.esoData) {
+                setEsoData(configData[0].esoSecretData.esoData)
+                setSecretStore(configData[0].esoSecretData.secretStore)
+                setEsoYaml(YAML.stringify(configData[0].esoSecretData))
+            }
         } catch (err) {
             showError(err)
         }
@@ -332,7 +345,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
 
     async function handleSubmit(e) {
         e.preventDefault()
-        const isInvalid = state.duplicate.some((dup) => !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(dup.k))
+        const isInvalid = !isESO ? state.duplicate.some((dup) => !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(dup.k)) : false
         if (isInvalid) {
             dispatch({ type: 'createErrors' })
             return
@@ -383,24 +396,28 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         try {
             let dataArray = yamlMode ? tempArr.current : state.duplicate
             if (externalType === '' && dataArray.length == 0) {
-                toast.warn('Secret configuration without any data is not allowed.')
+                toast.error('Secret configuration without any data is not allowed.')
                 return
             }
             if (isHashiOrAWS || isESO) {
-                let secretDataArray = isESO ? esoDataSecret : secretData 
-                let isValid = !isESO ? secretDataArray.reduce((isValid, s) => {
-                    isValid = isValid && !!s.fileName && !!s.name
-                    return isValid
-                }, true) :
-                secretDataArray.reduce((isValid, s) => {
-                    isValid = isValid && !!s.secretKey && !!s.key && 
-                    (hasProperty(externalType) ? !!s.property : true)
-                    return isValid
-                }, true)
+                let isValid = true
+                if (isESO) {
+                    isValid = esoDataSecret?.reduce((isValid, s) => {
+                        isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
+                        return isValid
+                    }, !!secretStore && !!esoDataSecret?.length)
+                } else {
+                    isValid = secretDataValue.reduce((isValid, s) => {
+                        isValid = isValid && !!s.fileName && !!s.name
+                        return isValid
+                    }, !!secretDataValue.length)
+                }
                 if (!isValid) {
                     !isESO
-                        ? toast.warn('Please check key and name')
-                        : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                        ? toast.error('Please check key and name')
+                        : !secretStore
+                        ? toast.error('Please check secretStore')
+                        : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                     return
                 }
             }
@@ -412,7 +429,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 externalType,
             }
             if (isHashiOrAWS) {
-                payload['secretData'] = secretData.map((s) => {
+                payload['secretData'] = secretDataValue.map((s) => {
                     return {
                         key: s.fileName,
                         name: s.name,
@@ -422,20 +439,14 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 })
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
-                payload['data'] = dataArray.reduce((agg, { k, v }) => {
+                payload[CODE_EDITOR_RADIO_STATE.DATA] = dataArray.reduce((agg, { k, v }) => {
                     agg[k] = externalType === '' ? btoa(v || '') : v || ''
                     return agg
                 }, {})
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
-                    esoData: esoDataSecret.map((s) => {
-                        return {
-                            secretKey: s.secretKey,
-                            key: s.key,
-                            property: s?.property
-                        }
-                    })
+                    esoData: esoDataSecret
                 }
             }
             if (type === 'volume') {
@@ -484,7 +495,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     }
 
     function handleSecretDataChange(index: number, key: string, value: string | boolean): void {
-        let json = secretData
+        let json = secretDataValue
         setSecretData((state) => {
             state[index] = { ...state[index], [key]: value }
             json = state
@@ -509,7 +520,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     }
 
     function handleSecretDataDelete(index: number): void {
-        let json = secretData
+        let json = secretDataValue
         setSecretData((state) => {
             state.splice(index, 1)
             json = state
@@ -528,20 +539,23 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== 'data') return
+        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
         if(isESO){
             setEsoYaml(yaml)
         }else {
             setSecretDataYaml(yaml)
         }
         try {
-            if (!yaml || !yaml.length) {
-                setEsoData([])
+            let json = YAML.parse(yaml)
+            if (!json || !Object.keys(json).length) {
                 setSecretData([])
+                setSecretStore(null)
                 return
             }
-            let json = YAML.parse(yaml)
-            setSecretStore(json.secretStore)
+            if(isESO){
+                setEsoData(json.esoData)
+                setSecretStore(json.secretStore)
+            }
             if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
                     let temp = {}
@@ -560,20 +574,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 setSecretData(json)
             }
             if(isESO && Array.isArray(json?.esoData)){
-                const jsonList = json?.esoData.map((j) => {
-                    let temp = {}
-                    if (j.secretKey) {
-                        temp['secretKey'] = j.secretKey
-                    }
-                    if (j.key) {
-                        temp['key'] = j.key
-                    }
-                    if (j.property) {
-                        temp['property'] = j.property
-                    }
-                    return temp
-                })
-                setEsoData(jsonList)
+                setEsoData(json.esoData)
             }
         } catch (error) {
         }
@@ -593,16 +594,20 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
-                                <Select.Button>{externalType ? getTypeGroups(externalType).label : getTypeGroups()[0].options[0].label}</Select.Button>
+                                <Select.Button>
+                                    {externalType
+                                        ? getTypeGroups(externalType).label
+                                        : getTypeGroups()[0].options[0].label}
+                                </Select.Button>
                             </Select>
                         </div>
                     </div>
                     {externalType === 'KubernetesSecret' ? (
-                        <div className="info__container mb-24">
+                        <div className="dc__info-container mb-24">
                             <Info />
                             <div className="flex column left">
-                                <div className="info__title">Using External Secrets</div>
-                                <div className="info__subtitle">
+                                <div className="dc__info-title">Using External Secrets</div>
+                                <div className="dc__info-subtitle">
                                     Secrets will not be created by system. However, they will be used inside the pod.
                                     Please make sure that secret with the same name is present in the environment.
                                 </div>
@@ -665,7 +670,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                         <span className="cn-7 ml-5">Learn more about </span>
                                         <a
-                                            href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
+                                            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
                                             rel="noreferrer noopener"
                                             target="_blank"
                                         >
@@ -707,7 +712,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                             <span className="cn-7 ml-5">Learn more about </span>
                                             <a
-                                                href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
+                                                href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
                                                 rel="noreferrer noopener"
                                                 target="_blank"
                                             >
@@ -752,17 +757,23 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ) : null}
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 bold">Data*</b>
-                            {!isESO && <RadioGroup
-                                className="gui-yaml-switch"
-                                name="yaml-mode"
-                                initialTab={yamlMode ? 'yaml' : 'gui'}
-                                disabled={false}
-                                onChange={changeEditorMode}
-                            >
-                                <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                            </RadioGroup>}
+                            <b className="mr-5 dc__bold">Data*</b>
+                            {!isESO && (
+                                <RadioGroup
+                                    className="gui-yaml-switch"
+                                    name="yaml-mode"
+                                    initialTab={yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                                    disabled={false}
+                                    onChange={changeEditorMode}
+                                >
+                                    <RadioGroup.Radio value={VIEW_MODE.GUI}>
+                                        {VIEW_MODE.GUI.toUpperCase()}
+                                    </RadioGroup.Radio>
+                                    <RadioGroup.Radio value={VIEW_MODE.YAML}>
+                                        {VIEW_MODE.YAML.toUpperCase()}
+                                    </RadioGroup.Radio>
+                                </RadioGroup>
+                            )}
                             {state.locked && (
                                 <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={unlockSecrets}>
                                     <Pencil />
@@ -798,7 +809,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                                       { indent: 2 },
                                                   )
                                         }
-                                        mode="yaml"
+                                        mode={MODES.YAML}
                                         inline
                                         height={350}
                                         onChange={handleYamlChange}
@@ -851,13 +862,23 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     {(isHashiOrAWS || isESO) && yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
-                                value={codeEditorRadio === 'sample' ? sample : isESO ? esoSecretYaml : secretDataYaml}
-                                mode="yaml"
+                                value={
+                                    codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
+                                        ? sample
+                                        : isESO
+                                        ? esoSecretYaml
+                                        : secretDataYaml
+                                }
+                                mode={MODES.YAML}
                                 inline
                                 height={350}
                                 onChange={handleSecretDataYamlChange}
-                                readOnly={state.locked || codeEditorRadio === 'sample'}
-                                shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeaders[externalType] || dataHeaders['default']}
+                                readOnly={state.locked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                                shebang={
+                                    codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
+                                        ? '#Check sample for usage.'
+                                        : dataHeaders[externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT]
+                                }
                             >
                                 <CodeEditor.Header>
                                     <RadioGroup
@@ -869,8 +890,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                             setCodeEditorRadio(event.target.value)
                                         }}
                                     >
-                                        <RadioGroup.Radio value="data">Data</RadioGroup.Radio>
-                                        <RadioGroup.Radio value="sample">Sample</RadioGroup.Radio>
+                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                                        </RadioGroup.Radio>
+                                        <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                                        </RadioGroup.Radio>
                                     </RadioGroup>
                                     <CodeEditor.Clipboard />
                                 </CodeEditor.Header>
@@ -879,7 +904,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ) : (
                         <React.Fragment>
                             {isHashiOrAWS &&
-                                secretData.map((data, index) => (
+                                secretDataValue.map((data, index) => (
                                     <div>
                                         <KeyValueFileInput
                                             key={index}
@@ -898,11 +923,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     )}
                     {!state.locked && !yamlMode && (
                         <span
-                            className="bold anchor pointer"
+                            className="dc__bold anchor pointer"
                             onClick={(event) => {
                                 if (isHashiOrAWS)
-                                    setSecretData((secretData) => [
-                                        ...secretData,
+                                    setSecretData((secretDataValue) => [
+                                        ...secretDataValue,
                                         { fileName: '', property: '', name: '', isBinary: true },
                                     ])
                                 else dispatch({ type: 'add-param' })
@@ -927,7 +952,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     name={name}
                     external={external}
                     roleARN={roleARN}
-                    secretData={secretData.map((s) => {
+                    secretData={secretDataValue.map((s) => {
                         return { key: s.fileName, name: s.name, property: s.property, isBinary: s.isBinary }
                     })}
                     esoSecretData={esoSecretData}

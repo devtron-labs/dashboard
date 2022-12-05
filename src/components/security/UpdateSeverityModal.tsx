@@ -39,7 +39,7 @@ export class UpdateSeverityModal extends Component<UpdateSeverityModalProps, Upd
             <h1 className="modal__title">
                 Security Policy / {this.props.name}
             </h1>
-            <button type="button" className="transparent " onClick={this.props.close}>
+            <button type="button" className="dc__transparent " onClick={this.props.close}>
                 <Close className="icon-dim-20" />
             </button>
         </div>

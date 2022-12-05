@@ -160,7 +160,7 @@ export class Filter extends Component<FilterProps, FilterState>{
             {
                 !this.props.isDisabled &&
                 <>
-                    {this.state.show ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
+                    {this.state.show ? <div className="dc__transparent-div" onClick={this.handleClick}></div> : null}
                     <div className={classNames} ref={node => this.node = node}>
                         {
                             this.props.loading ? <Progressing /> :

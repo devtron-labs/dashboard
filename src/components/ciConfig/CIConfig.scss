@@ -1,59 +1,89 @@
 .white-card__docker-config {
-    padding: 20px 24px 12px 24px;
+    padding: 16px;
+
     .form-row {
         margin-bottom: 24px;
     }
+
     .form-row__key-value {
         display: grid;
         grid-template-columns: 50% 1fr;
         grid-column-gap: 16px;
     }
+
     .form-row__add-parameters {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
         .add-parameter {
             .fa.fa-plus {
                 margin-right: 4px;
             }
+
             color: var(--B500);
             text-align: right;
         }
     }
+
     .form-row__docker {
         display: grid;
         grid-template-columns: 240px 1fr;
-        grid-column-gap: 16px;
+        grid-column-gap: 8px;
+
+        &.buildpack-option-wrapper {
+            display: flex;
+            flex-direction: column;
+            column-gap: 8px;
+
+            .project-material-options,
+            .buildpack-options,
+            .buildpack-language-options {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 8px;
+            }
+        }
+
         .popup-button {
             height: 40px;
         }
+
         .select-popup {
             width: 240px;
         }
+
         .form__field {
             margin-bottom: 16px;
+
             .bottom-0 {
                 bottom: 0;
             }
-            .docker-flie-container {
-                display: flex;
+
+            .docker-file-container,
+            .project-path-container {
+                display: grid;
+                grid-template-columns: fit-content(200px) auto;
                 .checkout-path-container {
-                    padding: 10px;
-                    background: #d0d4d9;
+                    padding: 8px 10px;
                     border-radius: 4px 0 0 4px;
                 }
+
                 .file-name {
                     border-radius: 0 4px 4px 0;
                 }
             }
         }
+
         .form__error {
             position: unset;
             display: flex;
             align-items: center;
             margin-top: 4px;
+
             &.form__error--info {
                 color: #6b778c;
+
                 &:before {
                     content: '';
                     background: url('../../assets/icons/ic-info-warn.svg');
@@ -66,20 +96,117 @@
             }
         }
     }
+
     .popup-button {
         .select-button {
             height: 40px;
             padding-left: 10px;
         }
     }
+
     .target-platform__select__multi-value__label {
         font-size: 12px;
         padding: 2px;
         padding-left: 6px;
     }
+
+    .build-type-selection {
+        top: 0;
+        right: 0;
+        border-bottom-left-radius: 4px;
+        border-top-right-radius: 3px;
+
+        svg {
+            path {
+                stroke-width: 4px;
+            }
+        }
+    }
+
+    .create-dockerfile-option {
+        .code-editor__header {
+            background-color: white;
+        }
+    }
 }
+
 .docker__dropdown {
     margin: auto;
     margin-right: 0;
     margin-top: 0;
+}
+
+.form__app-compose {
+    &.config-override-view {
+        width: 100%;
+        margin: 0;
+        padding: 24px 0 16px;
+        margin-bottom: 0;
+
+        .form-row__docker {
+            &.buildpack-option-wrapper {
+                .project-material-options {
+                    margin-bottom: 16px;
+                }
+
+                .form__field {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+.app-compose__main {
+    .save-build-configuration {
+        bottom: 0;
+        right: 0;
+        padding: 12px 20px;
+        width: calc(100% - 240px);
+    }
+}
+
+.modal__body {
+    &.modal__config-override-diff {
+        width: 100%;
+        height: 100%;
+        margin-top: 0;
+
+        .config-override-diff__view {
+            height: calc(100% - 56px);
+        }
+
+        .workflow {
+            &.workflow--create {
+                margin-bottom: 0;
+                border-bottom: none;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+
+                .workflow__header {
+                    padding: 16px 20px 0;
+                    border-bottom: none;
+                }
+
+                .workflow-node {
+                    .workflow-node__title:not(.workflow-node__title--static) {
+                        align-items: flex-start;
+                        margin-left: 0px;
+                    }
+                }
+            }
+        }
+
+        .config-override-diff__values {
+            background: white;
+
+            .code-editor-green-diff {
+                background: #eaf1dd;
+            }
+
+            .code-editor-red-diff {
+                background: #ffd4d1;
+            }
+        }
+    }
 }

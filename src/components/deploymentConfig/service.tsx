@@ -3,9 +3,12 @@ import { get, put, post } from '../../services/api';
 import { ConfigMapRequest } from './types';
 import yamlJsParser from 'yamljs';
 
-export function getDeploymentTemplate(id: number, chartRefId: number) {
-    const URL = `${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`;
-    return get(URL)
+export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultTemplate?: boolean) {
+    if(isDefaultTemplate){
+      return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`)
+    } else{
+      return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`)
+    }
 }
 
 export const updateDeploymentTemplate = (request) => {

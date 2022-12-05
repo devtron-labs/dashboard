@@ -8,6 +8,7 @@
 
 .project__row:hover{
     box-shadow: 0 2px 4px -1px rgb(0 56 112 / 30%);
+    height: 66px
 }
 
 .project__row__trash{

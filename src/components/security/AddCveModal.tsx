@@ -92,7 +92,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState>{
     renderHeader() {
         return <div className="modal__header ml-24 mr-24">
             <h1 className="modal__title">Add CVE</h1>
-            <button type="button" className="transparent " onClick={this.props.close}>
+            <button type="button" className="dc__transparent " onClick={this.props.close}>
                 <Close className="icon-dim-20" />
             </button>
         </div>
@@ -155,7 +155,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState>{
                 {this.renderHeader()}
                 <form className="whitelist-cve" onSubmit={(event) => { event.preventDefault() }}>
                     <div className="whitelist-cve__cve-id ml-24 mr-24 mb-20">
-                        <label className="block flex-1 mb-5 mr-16 ">
+                        <label className="dc__block flex-1 mb-5 mr-16 ">
                             <span className="form__label">CVE ID</span>
                             <input autoComplete="off" ref={node => this._inputRef = node} type="text" className="form__input" autoFocus tabIndex={1} placeholder="Enter CVE ID" value={this.state.cve} onChange={this.handleCveChange} />
                             <span className="form__error">

@@ -30,13 +30,13 @@ export class Project extends Component<ProjectProps, ProjectState>  {
 
     constructor(props) {
         super(props)
-      
+
         this.state = {
            deleting: false,
            confirmation: false,
         }
       }
-      
+
     toggleConfirmation = () => {
         this.setState((prevState)=>{
            return{ confirmation: !prevState.confirmation}
@@ -64,7 +64,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                 <span className="project-title">{this.props.name}</span>
                 <button
                     type="button"
-                    className="project__row__trash transparent align-right"
+                    className="project__row__trash dc__transparent dc__align-right"
                     onClick={() => {
                         this.toggleConfirmation();
                     }}
@@ -99,7 +99,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         let isValid = this.props.isValid;
         let errorMessage = this.props.errorMessage;
         return <div>
-            <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16" >
+            <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16 dashed" >
                 <div className="white-card__header"> {this.props.id ? "Edit project" : "Add Project"} </div>
                 <label className="form__row">
                     <span className="form__label">Project name*</span>
@@ -136,7 +136,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         if (this.props.isCollapsed) {
             return this.renderCollapsedView();
         }
-        else{ 
+        else{
             return this.renderForm();
         }
     }

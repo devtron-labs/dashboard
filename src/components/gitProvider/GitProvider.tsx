@@ -91,7 +91,7 @@ export default function GitProvider({ ...props }) {
         return <Progressing pageLoader />;
     }
     if (isErrorLoading) {
-        return <ErrorScreenManager code={error?.code} />;
+        return <ErrorScreenManager code={error?.code} reloadClass="dc__align-reload-center" />;
     }
 
     let allProviders = [
@@ -114,7 +114,7 @@ export default function GitProvider({ ...props }) {
             <div className="form__subtitle">
                 Manage your organization’s git accounts. &nbsp;
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
                     rel="noopener noreferrer"
                     target="_blank"
@@ -246,7 +246,7 @@ function CollapsedList({
                             </span>
                         </div>
                     )}
-                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}
+                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
                 </List.Logo>
                 <div className="flex left">
                     <List.Title
@@ -468,13 +468,13 @@ function GitForm({
             <components.MenuList {...props}>
                 {props.children}
                 <div
-                    className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top "
+                    className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top "
                     onClick={(selected) => {
                         setGitProviderConfigModal(true);
                         toggleCollapse(false);
                     }}
                 >
-                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " /> Add Git Host
+                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 dc__vertical-align-bottom  " /> Add Git Host
                 </div>
             </components.MenuList>
         );
@@ -501,7 +501,7 @@ function GitForm({
         }
         return true;
     }
-    
+
     let payload = {
         id: id || 0,
         name: state.name.value,
@@ -509,7 +509,7 @@ function GitForm({
         gitHostId: gitHost?.value?.value || 0,
         authMode: state.auth.value || '',
         active,
-        username: customState.username.value || '', 
+        username: customState.username.value || '',
         password: customState.password.value || '',
         accessToken: customState.accessToken.value || '',
         sshPrivateKey: customState.sshInput.value || '',
@@ -659,7 +659,7 @@ function GitForm({
                 )}
                 <div className={`form__row form__buttons`}>
                     {id && (
-                        <button className={`cta delete m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
+                        <button className={`cta delete dc__m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}

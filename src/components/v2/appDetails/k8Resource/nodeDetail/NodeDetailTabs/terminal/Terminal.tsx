@@ -5,23 +5,14 @@ import { FitAddon } from 'xterm-addon-fit';
 import CopyToast, { handleSelectionChange } from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
-import { SocketConnectionType } from '../node.type';
+import { ERROR_MESSAGE, SocketConnectionType, TerminalViewProps } from '../node.type';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga4';
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
-import { elementDidMount, useOnline } from '../../../../../../common';
-
-interface TerminalViewProps {
-    nodeName: string;
-    shell: any;
-    containerName: string;
-    socketConnection: SocketConnectionType;
-    terminalCleared: boolean;
-    setTerminalCleared: (flag: boolean) => void;
-    setSocketConnection: (flag: SocketConnectionType) => void;
-}
+import { elementDidMount, useOnline, showError } from '../../../../../../common';
+import { ServerErrors } from '../../../../../../../modals/commonTypes';
 
 let socket = undefined;
 let terminal = undefined;
@@ -33,6 +24,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
     const [popupText, setPopupText] = useState<boolean>(false);
     const isOnline = useOnline();
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     useEffect(() => {
         if (!popupText) return;
@@ -277,7 +269,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         get(url)
             .then((response: any) => {
-                let sessionId = response?.result.SessionID;
+                let sessionId = response?.result.SessionID
 
                 if (!terminal) {
                     elementDidMount('#terminal-id').then(() => {
@@ -288,9 +280,15 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     postInitialize(sessionId)
                 }
             })
-            .catch((error) => {
-                console.log('error while getNewSession ', error);
-            });
+            .catch((err) => {
+                showError(err)
+                if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                    const _invalidNameErr = err.errors[0].userMessage
+                    if (_invalidNameErr.includes('Unauthorized')) {
+                        setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                    }
+                }
+            })
     };
 
     const onClickResume = (e) => {
@@ -301,45 +299,51 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const renderConnectionStrip = () => {
         return !isOnline ? (
-            <div className="terminal-strip capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
+            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
                 You’re offline. Please check your internet connection.
             </div>
         ) : (
-            <div
-                className={`terminal-strip capitalize ${
-                    terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
-                        ? `${
-                              terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                  ? 'bcy-2'
-                                  : 'bcr-7'
-                          }  pl-20`
-                        : 'pb-10'
-                } ${
-                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
-                } m-0 pl-20 w-100`}
-            >
-                {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && (
-                    <span
-                        className={
-                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                ? 'loading-dots'
-                                : ''
-                        }
+            <div className="terminal-strip dc__first-letter-capitalize">
+                {errorMessage && errorMessage.length > 0 ? (
+                    <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
+                ) : (
+                    <div
+                        className={`dc__first-letter-capitalize ${
+                            terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
+                                ? `${
+                                      terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                          ? 'bcy-2'
+                                          : 'bcr-7'
+                                  }  pl-20`
+                                : 'pb-10'
+                        } ${
+                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
+                        } m-0 pl-20 w-100`}
                     >
-                        {terminalViewProps.socketConnection?.toLowerCase()}
-                    </span>
-                )}
-                {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
-                    <React.Fragment>
-                        <span>.&nbsp;</span>
-                        <button
-                            type="button"
-                            onClick={onClickResume}
-                            className="cursor transparent inline-block dc__underline"
-                        >
-                            Resume
-                        </button>
-                    </React.Fragment>
+                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && (
+                            <span
+                                className={
+                                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                        ? 'dc__loading-dots'
+                                        : ''
+                                }
+                            >
+                                {terminalViewProps.socketConnection?.toLowerCase()}
+                            </span>
+                        )}
+                        {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
+                            <React.Fragment>
+                                <span>.&nbsp;</span>
+                                <button
+                                    type="button"
+                                    onClick={onClickResume}
+                                    className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                                >
+                                    Resume
+                                </button>
+                            </React.Fragment>
+                        )}
+                    </div>
                 )}
             </div>
         )
@@ -354,7 +358,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
+                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}

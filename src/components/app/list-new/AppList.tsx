@@ -17,7 +17,7 @@ import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, ModuleNameMap, Moment12HourFormat } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -29,22 +29,21 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 
-export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
+export default function AppList({ isSuperAdmin, appListCount }: AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
     const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
+    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
+    const [isDataSyncing, setDataSyncing] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
@@ -52,7 +51,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
 
     // API master data
-    const [appCheckListRes, setAppCheckListRes] = useState({ result: null })
     const [projectListRes, setProjectListRes] = useState({ result: [] })
     const [environmentListRes, setEnvironmentListRes] = useState({ result: [] })
 
@@ -95,7 +93,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         // fetch master filters data and some master data
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
-                setAppCheckListRes(initData.appCheckListRes)
                 setProjectListRes(initData.projectsRes)
                 setEnvironmentListRes(initData.environmentListRes)
                 setMasterFilters(initData.filters)
@@ -112,16 +109,26 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     }, [])
 
     // update lasy sync time on tab change
+
+    const renderDataSyncingText = () => {
+        return <div className="dc__loading-dots">Syncing</div>
+    }
+
     useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
+      let interval
+        if (isDataSyncing) {
+            setLastDataSyncTimeString(renderDataSyncingText)
+        } else {
+            const _lastDataSyncTime = Date()
             setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
+             interval = setInterval(() => {
+                setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+            }, 1000)
         }
-    }, [lastDataSync])
+        return () => {
+          interval && clearInterval(interval)
+      }
+    }, [isDataSyncing])
 
     useEffect(() => {
         setParsedPayloadOnUrlChange(onRequestUrlChange())
@@ -346,8 +353,8 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         return `/app/${appId}/trigger`
     }
 
-    const updateLastDataSync = (): void => {
-        setLastDataSync(!lastDataSync)
+    const updateDataSyncing = (loading: boolean): void => {
+        setDataSyncing(loading)
     }
 
     const handleAppSearchOperation = (_searchString: string): void => {
@@ -689,10 +696,14 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
 
     const renderActionButtons = () => {
         return (
-            serverMode === SERVER_MODE.FULL && (
-                <button type="button" className="flex cta h-32 lh-n" onClick={() => handleCreateButton()}>
+            serverMode === SERVER_MODE.FULL ? (
+                <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton}>
                     Create
                     <DropDown className="icon-dim-20" />
+                </button>
+            ) : (
+                <button type="button" className="flex cta h-32 lh-n" onClick={redirectToHelmAppDiscover}>
+                    Deploy helm charts
                 </button>
             )
         )
@@ -781,7 +792,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         showPulsatingDot={showPulsatingDot}
                     />
                     <Filter
-                        rootClassName="no-margin-left"
+                        rootClassName="ml-0-imp"
                         position={showExportCsvButton ? 'left' : 'right'}
                         list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
                         labelKey="label"
@@ -821,7 +832,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         let count = 0
         let keys = Object.keys(masterFilters)
         let appliedFilters = (
-            <div className="saved-filters__wrap position-rel">
+            <div className="saved-filters__wrap dc__position-rel">
                 {keys.map((key) => {
                     let filterType = ''
                     let _filterKey = ''
@@ -921,19 +932,16 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
                             (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
                             <span>
-                                {lastDataSyncTimeString}{' '}
-                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
-                                    Sync now
-                                </button>
+                                {lastDataSyncTimeString}&nbsp;
+                                {!isDataSyncing && (
+                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
+                                        Sync now
+                                    </button>
+                                )}
                             </span>
                         )}
                     {params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps && (
-                        <div className="flex left">
-                            <span className="mr-10">
-                                <Progressing />
-                            </span>
-                            <span>Fetching apps...</span>
-                        </div>
+                       renderDataSyncingText()
                     )}
                 </div>
             </div>
@@ -982,20 +990,16 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                 rootClassName="app-create-model-wrapper"
                 onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
             >
-                {serverMode == SERVER_MODE.FULL &&
-                    appCheckListRes.result?.appChecklist &&
-                    Object.values(appCheckListRes.result.appChecklist).every((check) => check) && (
-                        <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
-                            <AddIcon className="icon-dim-20 fcn-9" />
-                            <div className="ml-8">
-                                <strong>Custom app</strong>
-                                <div>
-                                    Connect a git repository to deploy <br /> a custom application
-                                </div>
-                            </div>
+                <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
+                    <AddIcon className="icon-dim-20 fcn-9" />
+                    <div className="ml-8">
+                        <strong>Custom app</strong>
+                        <div>
+                            Connect a git repository to deploy <br /> a custom application
                         </div>
-                    )}
-                <div className="app-create-child c-pointer" onClick={redirectToHelmAppDiscover}>
+                    </div>
+                </div>
+                <div className="app-create-child cursor" onClick={redirectToHelmAppDiscover}>
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
                         <strong>From Chart store</strong>
@@ -1011,12 +1015,12 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     return (
         <div>
             {dataStateType === AppListViewType.LOADING && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
             {dataStateType === AppListViewType.ERROR && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
@@ -1027,53 +1031,52 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                        <>
-                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
-                                serverMode === SERVER_MODE.FULL && (
-                                    <DevtronAppListContainer
-                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        appCheckListRes={appCheckListRes}
-                                        clearAllFilters={removeAllFilters}
-                                        sortApplicationList={sortApplicationList}
-                                        updateLastDataSync={updateLastDataSync}
-                                        appListCount={appListCount}
-                                        isSuperAdmin={isSuperAdmin}
-                                        openDevtronAppCreateModel={openDevtronAppCreateModel}
-                                        setAppCount={setAppCount}
+                    <>
+                        {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                            serverMode === SERVER_MODE.FULL && (
+                                <DevtronAppListContainer
+                                    payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                    clearAllFilters={removeAllFilters}
+                                    sortApplicationList={sortApplicationList}
+                                    appListCount={appListCount}
+                                    isSuperAdmin={isSuperAdmin}
+                                    openDevtronAppCreateModel={openDevtronAppCreateModel}
+                                    setAppCount={setAppCount}
+                                    updateDataSyncing={updateDataSyncing}
+                                />
+                            )}
+                        {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                            serverMode === SERVER_MODE.EA_ONLY && (
+                                <div style={{ height: 'calc(100vh - 250px)' }}>
+                                    <EAEmptyState
+                                        title="Create, build, deploy and debug custom apps"
+                                        msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
+                                        stateType={EAEmptyStateType.DEVTRONAPPS}
+                                        knowMoreLink={DOCUMENTATION.HOME_PAGE}
                                     />
-                                )}
-                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
-                                serverMode === SERVER_MODE.EA_ONLY && (
-                                    <div style={{ height: 'calc(100vh - 250px)' }}>
-                                        <EAEmptyState
-                                            title='Create, build, deploy and debug custom apps'
-                                            msg='Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
-                                            stateType={EAEmptyStateType.DEVTRONAPPS}
-                                            knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                                        />
+                                </div>
+                            )}
+                        {params.appType === AppListConstants.AppType.HELM_APPS && (
+                            <>
+                                <HelmAppList
+                                    serverMode={serverMode}
+                                    payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                    sortApplicationList={sortApplicationList}
+                                    clearAllFilters={removeAllFilters}
+                                    fetchingExternalApps={fetchingExternalApps}
+                                    setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                    updateDataSyncing={updateDataSyncing}
+                                    setShowPulsatingDotState={setShowPulsatingDotState}
+                                    masterFilters={masterFilters}
+                                />
+                                {fetchingExternalApps && (
+                                    <div className="mt-16">
+                                        <Progressing size={32} />
                                     </div>
                                 )}
-                            {params.appType === AppListConstants.AppType.HELM_APPS && (
-                                <>
-                                    <HelmAppList
-                                        serverMode={serverMode}
-                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        sortApplicationList={sortApplicationList}
-                                        clearAllFilters={removeAllFilters}
-                                        fetchingExternalApps={fetchingExternalApps}
-                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                        updateLastDataSync={updateLastDataSync}
-                                        setShowPulsatingDotState={setShowPulsatingDotState}
-                                        masterFilters={masterFilters}
-                                    />
-                                    {fetchingExternalApps && (
-                                        <div className="mt-16">
-                                            <Progressing size={32} />
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </>
+                            </>
+                        )}
+                    </>
                 </>
             )}
         </div>

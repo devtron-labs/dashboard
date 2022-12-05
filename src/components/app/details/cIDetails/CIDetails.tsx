@@ -17,7 +17,17 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap } from '../../../../config'
+import {
+    Host,
+    Routes,
+    URLS,
+    SourceTypeMap,
+    ModuleNameMap,
+    EVENT_STREAM_EVENTS_MAP,
+    TERMINAL_STATUS_MAP,
+    POD_STATUS,
+    LOGS_RETRY_COUNT,
+} from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -48,12 +58,18 @@ import ReactGA from 'react-ga4'
 import './ciDetails.scss'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import { renderConfigurationError } from '../cdDetails/cd.utils'
+import { getModuleConfigured } from '../appDetails/appDetails.service'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 function useCIEventSource(url: string, maxLength?: number) {
     const [data, setData] = useState([])
+    let retryCount = LOGS_RETRY_COUNT
+    const [logsNotAvailableError, setLogsNotAvailableError] = useState<boolean>(false)
     const [interval, setInterval] = useState(1000)
     const buffer = useRef([])
     const eventSourceRef = useRef(null)
@@ -69,32 +85,55 @@ function useCIEventSource(url: string, maxLength?: number) {
 
     function handleMessage(event) {
         if (event.type === 'message') {
+            retryCount = LOGS_RETRY_COUNT
             buffer.current.push(event.data)
         }
     }
 
     function handleStreamStart() {
+        retryCount = LOGS_RETRY_COUNT
         buffer.current = []
         setData([])
     }
 
     function handleStreamEnd() {
+        retryCount = LOGS_RETRY_COUNT
         setData((data) => [...data, ...buffer.current])
         buffer.current = []
         eventSourceRef.current.close()
         setInterval(null)
     }
 
-    useEffect(() => {
+    function handleError(error: any) {
+        retryCount--
+        if (eventSourceRef.current) {
+            eventSourceRef.current.close()
+        }
+        if (retryCount > 0) {
+            getData()
+        } else {
+            setLogsNotAvailableError(true)
+            setInterval(null)
+        }
+    }
+
+    function getData() {
         buffer.current = []
         eventSourceRef.current = new EventSource(url, { withCredentials: true })
-        eventSourceRef.current.addEventListener('message', handleMessage)
-        eventSourceRef.current.addEventListener('START_OF_STREAM', handleStreamStart)
-        eventSourceRef.current.addEventListener('END_OF_STREAM', handleStreamEnd)
+        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.MESSAGE, handleMessage)
+        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.START_OF_STREAM, handleStreamStart)
+        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.END_OF_STREAM, handleStreamEnd)
+        eventSourceRef.current.addEventListener(EVENT_STREAM_EVENTS_MAP.ERROR, handleError)
+    }
+
+    useEffect(() => {
+        if (url) {
+            getData()
+        }
         return closeEventSource
     }, [url, maxLength])
 
-    return [data, eventSourceRef.current]
+    return [data, eventSourceRef.current, logsNotAvailableError]
 }
 
 interface Pipelines {
@@ -113,6 +152,8 @@ export default function CIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
+    const [, securityModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -220,6 +261,10 @@ export default function CIDetails() {
                                 pipeline={pipeline}
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
+                                isSecurityModuleInstalled={
+                                    securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false
+                                }
+                                isBlobStorageConfigured={blobStorageConfiguration?.result?.enabled || false}
                             />
                         </Route>
                     )}
@@ -297,11 +342,11 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
                     }}
                 >
                     <div
-                        className={`app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     ></div>
-                    <div className="flex column left ellipsis-right">
+                    <div className="flex column left dc__ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="cn-7 fs-12">
                             {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
@@ -322,7 +367,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
             <div className="flex column left ">
                 <div className="flex left fs-12 cn-7">
                     <div>{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
-                    <div className="bullet ml-6 mr-6"></div>
+                    <div className="dc__bullet ml-6 mr-6"></div>
                     <div>{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                 </div>
                 {triggerDetails?.ciMaterials?.map((ciMaterial) => {
@@ -340,9 +385,9 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                             key={ciMaterial.id}
                             style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}
                         >
-                            {sourceType != SourceTypeMap.WEBHOOK && (
+                            {sourceType != SourceTypeMap.WEBHOOK && gitDetail?.Commit && (
                                 <>
-                                    <div className="git-logo"> </div>
+                                    <div className="dc__git-logo"> </div>
                                     <div className="flex left column">
                                         <a
                                             href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)}
@@ -390,6 +435,8 @@ interface BuildDetails {
     fullScreenView: boolean
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     synchroniseState: (triggerId: number, triggerDetails: History) => void
+    isSecurityModuleInstalled: boolean
+    isBlobStorageConfigured: boolean
 }
 const BuildDetails: React.FC<BuildDetails> = ({
     triggerHistory,
@@ -397,6 +444,8 @@ const BuildDetails: React.FC<BuildDetails> = ({
     fullScreenView,
     setFullScreenView,
     synchroniseState,
+    isSecurityModuleInstalled,
+    isBlobStorageConfigured,
 }) => {
     const { buildId, appId, pipelineId, envId } = useParams<{
         appId: string
@@ -421,6 +470,8 @@ const BuildDetails: React.FC<BuildDetails> = ({
             setFullScreenView={setFullScreenView}
             synchroniseState={synchroniseState}
             triggerHistory={triggerHistory}
+            isSecurityModuleInstalled={isSecurityModuleInstalled}
+            isBlobStorageConfigured={isBlobStorageConfigured}
         />
     )
 }
@@ -431,6 +482,8 @@ const Details: React.FC<BuildDetails> = ({
     setFullScreenView,
     synchroniseState,
     triggerHistory,
+    isSecurityModuleInstalled,
+    isBlobStorageConfigured,
 }) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -482,7 +535,7 @@ const Details: React.FC<BuildDetails> = ({
                             type="CI"
                             abort={() => cancelCiTrigger({ pipelineId, workflowId: buildId })}
                         />
-                        <ul className="ml-20 tab-list tab-list--borderd mr-20">
+                        <ul className="ml-20 tab-list dc__border-bottom mr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
                                     Logs
@@ -508,16 +561,18 @@ const Details: React.FC<BuildDetails> = ({
                                     Artifacts
                                 </NavLink>
                             </li>
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to={`security`}
-                                >
-                                    Security
-                                </NavLink>
-                            </li>
+                            {isSecurityModuleInstalled && (
+                                <li className="tab-list__tab">
+                                    <NavLink
+                                        replace
+                                        className="tab-list__tab-link"
+                                        activeClassName="active"
+                                        to={`security`}
+                                    >
+                                        Security
+                                    </NavLink>
+                                </li>
+                            )}
                         </ul>
                     </>
                 )}
@@ -527,6 +582,7 @@ const Details: React.FC<BuildDetails> = ({
                 pipeline={pipeline}
                 triggerDetails={triggerDetails}
                 setFullScreenView={setFullScreenView}
+                isBlobStorageConfigured={isBlobStorageConfigured}
             />
         </>
     )
@@ -563,7 +619,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         <time className="cn-7 fs-12">
                             {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
-                        <div className="bullet mr-6 ml-6"></div>
+                        <div className="dc__bullet mr-6 ml-6"></div>
                         <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                             {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
                         </div>
@@ -579,7 +635,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                                 rel="noopener noreferer"
                                                 key={ciMaterial.id}
                                                 href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
-                                                className="app-commit__hash mr-12 bcn-1 cn-7"
+                                                className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                             >
                                                 {gitDetail?.Commit?.substr(0, 8)}
                                             </a>
@@ -587,7 +643,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                         {ciMaterial.type == 'WEBHOOK' &&
                                             gitDetail.WebhookData &&
                                             gitDetail.WebhookData.Data && (
-                                                <span className="app-commit__hash">
+                                                <span className="dc__app-commit__hash">
                                                     {gitDetail.WebhookData.EventActionType == 'merged'
                                                         ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
                                                         : gitDetail.WebhookData.Data['target checkout']}
@@ -597,7 +653,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                 )
                             })}
                         {type === 'CD' && (
-                            <div className="app-commit__hash ">
+                            <div className="dc__app-commit__hash ">
                                 <img src={docker} className="commit-hash__icon grayscale" />
                                 {triggerDetails.artifact.split(':')[1]}
                             </div>
@@ -611,17 +667,24 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                 </div>
                 {
                     {
-                        succeeded: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        healthy: <Succeeded triggerDetails={triggerDetails} type={type} />,
-                        running: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        progressing: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        starting: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
-                        failed: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.SUCCEEDED]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.HEALTHY]: <Succeeded triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.RUNNING]: (
+                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
+                        ),
+                        [TERMINAL_STATUS_MAP.PROGRESSING]: (
+                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
+                        ),
+                        [TERMINAL_STATUS_MAP.STARTING]: (
+                            <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />
+                        ),
+                        [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[triggerDetails.status.toLowerCase()]
                 }
-                {!['succeeded', 'healthy', 'running', 'progressing', 'starting', 'failed'].includes(
-                    triggerDetails.status.toLowerCase(),
-                ) && <Generic triggerDetails={triggerDetails} type={type} />}
+                {!Object.values(TERMINAL_STATUS_MAP).includes(triggerDetails.status.toLowerCase()) && (
+                    <Generic triggerDetails={triggerDetails} type={type} />
+                )}
             </div>
         </div>
     )
@@ -645,7 +708,11 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
 }) => {
     return (
         <div className="flex column left">
-            <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>{triggerDetails.status}</div>
+            <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>
+                {triggerDetails.status && triggerDetails.status.toLowerCase() === 'cancelled'
+                    ? 'ABORTED'
+                    : triggerDetails.status}
+            </div>
             <div className="flex left">
                 {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
                     <time className="cn-7 fs-12 mr-12">
@@ -653,7 +720,7 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
                     </time>
                 )}
                 {type === 'CI' && triggerDetails.artifact && (
-                    <div className="app-commit__hash ">
+                    <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
                         {triggerDetails.artifact.split(':')[1]}
                     </div>
@@ -698,7 +765,7 @@ const ProgressingStatus: React.FC<{ triggerDetails: History; abort?: () => Promi
         if (error) {
             showError(error)
         } else {
-            toast.success('Build cancelled.')
+            toast.success('Build Aborted')
             setAbortConfiguration(false)
         }
     }
@@ -768,7 +835,8 @@ const HistoryLogs: React.FC<{
     pipeline: CIPipeline
     triggerDetails: History
     setFullScreenView: (...args) => void
-}> = ({ pipeline, triggerDetails, setFullScreenView }) => {
+    isBlobStorageConfigured?: boolean
+}> = ({ pipeline, triggerDetails, setFullScreenView, isBlobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
@@ -785,7 +853,11 @@ const HistoryLogs: React.FC<{
                     <Switch>
                         <Route path={`${path}/logs`}>
                             <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} />
+                                <LogsRenderer
+                                    triggerDetails={triggerDetails}
+                                    setFullScreenView={setFullScreenView}
+                                    isBlobStorageConfigured={isBlobStorageConfigured}
+                                />
                             </div>
                         </Route>
                         <Route
@@ -842,12 +914,14 @@ const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
             <label className="form__label">Select Pipeline</label>
             <Select onChange={handlePipelineChange} value={+pipelineId}>
                 <Select.Button rootClassName="select-button--default">
-                    <div className="ellipsis-left w-100 flex right">{pipeline ? pipeline.name : 'Select Pipeline'}</div>
+                    <div className="dc__ellipsis-left w-100 flex right">
+                        {pipeline ? pipeline.name : 'Select Pipeline'}
+                    </div>
                 </Select.Button>
                 {pipelines.map((item, idx) => {
                     return (
                         <Select.Option key={idx} value={item.id}>
-                            <span className="ellipsis-left">{item.name}</span>
+                            <span className="dc__ellipsis-left">{item.name}</span>
                         </Select.Option>
                     )
                 })}
@@ -954,10 +1028,11 @@ function NoArtifactsView() {
     )
 }
 
-export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void }> = ({
-    triggerDetails,
-    setFullScreenView,
-}) => {
+export const LogsRenderer: React.FC<{
+    triggerDetails: History
+    setFullScreenView: (...args) => void
+    isBlobStorageConfigured: boolean
+}> = ({ triggerDetails, setFullScreenView, isBlobStorageConfigured }) => {
     const keys = useKeyDown()
 
     useEffect(() => {
@@ -971,8 +1046,10 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
-    const [logs, eventSource] = useCIEventSource(
-        `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
+    const [logs, eventSource, logsNotAvailable] = useCIEventSource(
+        triggerDetails.podStatus &&
+            triggerDetails.podStatus !== POD_STATUS.PENDING &&
+            `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
     )
     function createMarkup(log) {
         try {
@@ -983,19 +1060,22 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
             return { __html: log }
         }
     }
-    return (
-        <>
-            <div className="logs__body">
-                {logs.map((log, index) => {
-                    return <p className="mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(log)} />
-                })}
-                {eventSource && eventSource.readyState <= 1 && (
-                    <div className="flex left event-source-status">
-                        <Progressing />
-                    </div>
-                )}
-            </div>
-        </>
+
+    return triggerDetails.podStatus !== POD_STATUS.PENDING &&
+        logsNotAvailable &&
+        (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
+        renderConfigurationError(isBlobStorageConfigured)
+    ) : (
+        <div className="logs__body">
+            {logs.map((log, index) => {
+                return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
+            })}
+            {(triggerDetails.podStatus === POD_STATUS.PENDING || (eventSource && eventSource.readyState <= 1)) && (
+                <div className="flex left event-source-status">
+                    <Progressing />
+                </div>
+            )}
+        </div>
     )
 }
 
@@ -1003,7 +1083,7 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
     return (
         <div
             style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-            className="element-scroller"
+            className="dc__element-scroller"
         >
             <Tippy className="default-tt" arrow={false} content="Scroll to Top">
                 <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
@@ -1047,11 +1127,11 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
         <div style={{ padding: '16px' }} className="flex left column">
             <CIListItem type="artifact">
                 <div className="flex column left">
-                    <div className="cn-9 fs-14 flex left visible-hover visible-hover--parent">
+                    <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
                         {triggerDetails.artifact.split(':')[1]}
                         <Tippy content={'Copy to clipboard'}>
                             <CopyIcon
-                                className="pointer visible-hover--child ml-6 icon-dim-16"
+                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
                                 onClick={(e) =>
                                     copyToClipboard(triggerDetails.artifact.split(':')[1], () =>
                                         toast.info('copied to clipboard'),
@@ -1060,11 +1140,11 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                             />
                         </Tippy>
                     </div>
-                    <div className="cn-7 fs-12 flex left visible-hover visible-hover--parent">
+                    <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
                         {triggerDetails.artifact}
                         <Tippy content={'Copy to clipboard'}>
                             <CopyIcon
-                                className="pointer visible-hover--child ml-6 icon-dim-16"
+                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
                                 onClick={(e) =>
                                     copyToClipboard(triggerDetails.artifact, () => toast.info('copied to clipboard'))
                                 }
@@ -1073,7 +1153,7 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                     </div>
                 </div>
             </CIListItem>
-            {getArtifactPromise && (
+            {triggerDetails.blobStorageEnabled && getArtifactPromise && (
                 <CIListItem type="report">
                     <div className="flex column left">
                         <div className="cn-9 fs-14">Reports.zip</div>
@@ -1094,24 +1174,26 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return (
-        <div
-            key={gitTrigger?.Commit}
-            className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
-            style={{ width: 'min( 100%, 800px )' }}
-        >
-            <GitCommitInfoGeneric
-                materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
-                showMaterialInfo={true}
-                commitInfo={gitTrigger}
-                materialSourceType={
-                    gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
-                }
-                selectedCommitInfo={''}
-                materialSourceValue={
-                    gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
-                }
-            />
-        </div>
+            gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
+                <div
+                    key={gitTrigger?.Commit}
+                    className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                    style={{ width: 'min( 100%, 800px )' }}
+                >
+                    <GitCommitInfoGeneric
+                        materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
+                        showMaterialInfo={true}
+                        commitInfo={gitTrigger}
+                        materialSourceType={
+                            gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
+                        }
+                        selectedCommitInfo={''}
+                        materialSourceValue={
+                            gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
+                        }
+                    />
+                </div>
+            )
     )
 }
 
@@ -1196,16 +1278,16 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                         style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
-                    <div className="security-scan__last-scan ellipsis-right">{securityData.lastExecution}</div>
-                    {total === 0 ? <span className="fill-pass">Passed</span> : null}
+                    <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
+                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
                     {severityCount.critical !== 0 ? (
-                        <span className="fill-critical">{severityCount.critical} Critical</span>
+                        <span className="dc__fill-critical">{severityCount.critical} Critical</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="fill-moderate">{severityCount.moderate} Moderate</span>
+                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="fill-low">{severityCount.low} Low</span>
+                        <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type">post build execution</div>
                 </div>
@@ -1228,7 +1310,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                             {securityData.vulnerabilities.map((item) => {
                                 return (
                                     <tr className="security-scan-table__row">
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve cve-cell">
+                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
                                             <a
                                                 href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
                                                 target="_blank"

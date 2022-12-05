@@ -23,17 +23,20 @@ export const URLS = {
     APP_DETAILS_LOG: 'log-analyzer', // for V2
     APP_DETAILS_DEFAULT: 'default-view',
     APP_TRIGGER: 'trigger',
+    APP_OVERVIEW: 'overview',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
+    APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: 'deployment-template',
     APP_WORKFLOW_CONFIG: 'workflow',
     APP_CM_CONFIG: 'configmap',
     APP_CS_CONFIG: 'secrets',
     APP_ENV_OVERRIDE_CONFIG: 'env-override',
+    APP_EXTERNAL_LINKS: 'external-links',
     APP_CI_CONFIG: 'ci-pipeline',
     APP_CD_CONFIG: 'cd-pipeline',
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
@@ -75,7 +78,7 @@ export const URLS = {
     CHART: '/chart',
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
-    DEPLOYMENT_STATUS: 'app/deployment-status/timeline'
+    DETAILS: '/details'
 }
 
 export enum APP_COMPOSE_STAGE {

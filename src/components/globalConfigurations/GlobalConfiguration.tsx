@@ -8,17 +8,15 @@ import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { getHostURLConfiguration } from '../../services/service'
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { Routes, SERVER_MODE } from '../../config/constants'
+import { ModuleNameMap, MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { ModuleNameMap } from '../v2/devtronStackManager/DevtronStackManager.utils'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -44,7 +42,7 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
-    const { serverMode, setServerMode } = useContext(mainContext)
+    const { serverMode } = useContext(mainContext)
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -136,12 +134,13 @@ export default function GlobalConfiguration(props) {
 
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
-    const [installedModule, setInstalledModule] = useState([])
+    const {installedModuleMap} = useContext(mainContext)
+    const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
-
+    let moduleStatusTimer = null
     const ConfigRequired = [
         {
             name: 'Host URL',
@@ -158,7 +157,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             isAvailableInEA: true,
         },
         { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        { name: 'Container Registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
     ]
 
     const ConfigOptional = [
@@ -194,24 +193,35 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: UserGroup,
             isAvailableInEA: true,
         },
-        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
+        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, moduleName: ModuleNameMap.NOTIFICATION },
     ]
-    let showError =
-        (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
-        !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
-        getGitOpsModuleStatus()
+        getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
+        getModuleStatus(ModuleNameMap.NOTIFICATION, MODULE_STATUS_RETRY_COUNT)
     }, [])
 
-    async function getGitOpsModuleStatus() {
-        try {
-            const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
-            }
-        } catch (error) {}
+    const getModuleStatus = async (moduleName: string, retryOnError: number): Promise<void> => {
+      if (installedModuleMap.current?.[moduleName]) {
+          return
+      }
+      try {
+          const { result } = await getModuleInfo(moduleName)
+          if (result?.status === ModuleStatus.INSTALLED) {
+              installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
+              setForceUpdateTime(Date.now())
+          } else if (result?.status === ModuleStatus.INSTALLING) {
+              moduleStatusTimer = setTimeout(() => {
+                  getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
+              }, MODULE_STATUS_POLLING_INTERVAL)
+          }
+      } catch (error) {
+          if (retryOnError >= 0) {
+              getModuleStatus(moduleName, retryOnError--)
+          }
+      }
     }
+
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
         return (
             <NavLink
@@ -232,11 +242,6 @@ function NavItem({ hostURLConfig, serverMode }) {
             >
                 <div className={`flexbox flex-justify ${className || ''}`}>
                     <div>{route.name}</div>
-                    {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                        <Error className="global-configuration__error-icon icon-dim-20" />
-                    ) : (
-                        ''
-                    )}
                 </div>
             </NavLink>
         )
@@ -290,18 +295,18 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
+                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
                 (route, index) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
+                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) &&
                     (route.group ? (
                         <>
                             <NavLink
                                 key={`nav_item_${index}`}
                                 to={route.href}
-                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
+                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex dc__content-space`}
                                 onClick={(e) => {
                                     handleGroupCollapsedState(e, route)
                                 }}
@@ -330,7 +335,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                 key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                 activeClassName="active-route"
             >
-                <div className="flexbox flex-justify">External links</div>
+                <div className="flexbox flex-justify">External Links</div>
             </NavLink>
         </div>
     )
@@ -345,13 +350,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 path={URLS.GLOBAL_CONFIG_HOST_URL}
                 render={(props) => {
                     return (
-                        <div className="flexbox h-100">
+                        <div className="flexbox">
                             <HostURLConfiguration
                                 {...props}
                                 refreshGlobalConfig={getHostURLConfig}
                                 handleChecklistUpdate={handleChecklistUpdate}
                             />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -360,9 +364,8 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 path={URLS.GLOBAL_CONFIG_GITOPS}
                 render={(props) => {
                     return (
-                        <div className="flexbox h-100">
+                        <div className="flexbox">
                             <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -371,9 +374,8 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 path={URLS.GLOBAL_CONFIG_PROJECT}
                 render={(props) => {
                     return (
-                        <div className="flexbox h-100">
+                        <div className="flexbox">
                             <Project {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -382,9 +384,8 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <div className="flexbox h-100">
+                        <div className="flexbox">
                             <ClusterList {...props} serverMode={serverMode} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -393,20 +394,18 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 path={URLS.GLOBAL_CONFIG_GIT}
                 render={(props) => {
                     return (
-                        <div className="flexbox h-100">
+                        <div className="flexbox">
                             <GitProvider {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
             />
             <Route
-                path={URLS.GLOBAL_CONFIG_DOCKER}
+                path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                 render={(props) => {
                     return (
-                        <div className="flexbox h-100">
+                        <div className="flexbox">
                             <Docker {...props} handleChecklistUpdate={handleChecklistUpdate} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
                     )
                 }}
@@ -517,6 +516,7 @@ export function CustomInput({
     disabled = false,
     autoComplete = 'off',
     labelClassName = '',
+    placeholder = '',
 }) {
     return (
         <div className="flex column left top">
@@ -530,6 +530,7 @@ export function CustomInput({
                     e.persist()
                     onChange(e)
                 }}
+                placeholder={placeholder}
                 value={value}
                 disabled={disabled}
             />
@@ -566,7 +567,7 @@ export function ProtectedInput({
             <label htmlFor="" className={`form__label ${labelClassName}`}>
                 {label}
             </label>
-            <div className="position-rel w-100">
+            <div className="dc__position-rel w-100">
                 <input
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}

@@ -31,16 +31,11 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             pageSize: 20,
             expandedRow: false,
             appData: null,
-            isAppCreated: false,
-            appChecklist: undefined,
-            chartChecklist: undefined,
-            appStageCompleted: 0,
-            chartStageCompleted: 0
         }
     }
 
     componentDidMount() {
-        buildInitState(this.props.payloadParsedFromUrl, this.props.appCheckListRes).then((response) => {
+        buildInitState(this.props.payloadParsedFromUrl).then((response) => {
             this.setState({
                 code: response.code,
                 apps: [],
@@ -51,19 +46,9 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                     key: response.sortBy,
                     order: response.sortOrder,
                 },
-                isAppCreated: response.isAppCreated,
-                appChecklist: response.appChecklist,
-                chartChecklist: response.chartChecklist,
-                appStageCompleted: response.appStageCompleted,
-                chartStageCompleted: response.chartStageCompleted
             });
         }).then(() => {
-            if (this.state.isAppCreated) {
-                this.getAppList(this.props.payloadParsedFromUrl);
-            }
-            else {
-                this.setState({ view: AppListViewType.EMPTY });
-            }
+          this.getAppList(this.props.payloadParsedFromUrl);
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
@@ -114,6 +99,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     getAppList = (request): void => {
+        this.props.updateDataSyncing(true);
         let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
@@ -152,8 +138,9 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 showError(errors);
                 this.setState({ code: errors.code, view: ViewType.ERROR });
             }
+        }).finally(() => {
+          this.props.updateDataSyncing(false);
         })
-        this.props.updateLastDataSync();
     }
 
     handleEditApp = (appId: number): void => {
@@ -186,6 +173,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             isSuperAdmin={this.props.isSuperAdmin}
             appListCount={this.props.appListCount}
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
+            updateDataSyncing= {this.props.updateDataSyncing}
         />
     }
 }
