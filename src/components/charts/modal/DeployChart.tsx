@@ -202,7 +202,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
             else {
                 let payload = {
-                    teamId: serverMode == SERVER_MODE.FULL ? selectedProject.value : 0 ,
+                    teamId: selectedProject.value ,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
                     environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
@@ -457,7 +457,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                             <input autoComplete="off" tabIndex={1} placeholder="App name" className="form__input" value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
                         </label>
                         {
-                            serverMode == SERVER_MODE.FULL &&
+                            // serverMode == SERVER_MODE.FULL &&
                             <label className="form__row form__row--w-100">
                                 <span className="form__label">Project</span>
                                 <ReactSelect
