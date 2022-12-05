@@ -56,8 +56,8 @@ export default function DeploymentConfig({
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
     const [yamlMode, toggleYamlMode] = useState(true)
-    const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
-    const [currentViewEditor, setCurrentViewEditor] = useState(null)
+    const [isBasicLocked, setIsBasicLocked] = useState(false)
+    const [currentEditorView, setEditorView] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
@@ -110,13 +110,13 @@ export default function DeploymentConfig({
             } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
-        if (!currentViewEditor) {
+        if (!currentEditorView || !_currentViewEditor) {
             _currentViewEditor =
                 _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
-            setIsBasicViewLocked(_isBasicViewLocked)
-            setCurrentViewEditor(_currentViewEditor)
+            setIsBasicLocked(_isBasicViewLocked)
+            setEditorView(_currentViewEditor)
             toggleYamlMode(_currentViewEditor === EDITOR_VIEW.BASIC ? false : true)
         }
         if (!_isBasicViewLocked) {
@@ -127,10 +127,11 @@ export default function DeploymentConfig({
                 !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
                 !_basicFieldValues[BASIC_FIELDS.RESOURCES]
             ) {
-                setIsBasicViewLocked(true)
-                setCurrentViewEditor(EDITOR_VIEW.ADVANCED)
+                setIsBasicLocked(true)
+                setEditorView(EDITOR_VIEW.ADVANCED)
                 toggleYamlMode(true)
             } else {
+                setIsBasicLocked(_isBasicViewLocked)
                 setBasicFieldValues(_basicFieldValues)
                 setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
             }
@@ -207,8 +208,8 @@ export default function DeploymentConfig({
                 isAppMetricsEnabled,
             }
             if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
-                requestBody.isBasicViewLocked = isBasicViewLocked
-                requestBody.currentViewEditor = isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor
+                requestBody.isBasicViewLocked = isBasicLocked
+                requestBody.currentViewEditor = isBasicLocked ? EDITOR_VIEW.ADVANCED : currentEditorView
                 if (!yamlMode) {
                     requestBody.valuesOverride = patchBasicData(obj, basicFieldValues)
                 }
@@ -252,12 +253,12 @@ export default function DeploymentConfig({
             selectedChart &&
             (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
             str &&
-            currentViewEditor &&
-            !isBasicViewLocked &&
+            currentEditorView &&
+            !isBasicLocked &&
             !fromBasic
         ) {
             try {
-                setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+                setIsBasicLocked(isBasicValueChanged(YAML.parse(str)))
             } catch (error) {}
         }
     }
@@ -284,7 +285,7 @@ export default function DeploymentConfig({
             toggleYamlMode(false)
             return
         }
-        if (isBasicViewLocked) {
+        if (isBasicLocked) {
             return
         }
 
@@ -327,7 +328,7 @@ export default function DeploymentConfig({
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
                     yamlMode={yamlMode}
-                    isBasicViewLocked={isBasicViewLocked}
+                    isBasicViewLocked={isBasicLocked}
                     codeEditorValue={tempFormData}
                     basicFieldValuesErrorObj={basicFieldValuesErrorObj}
                     changeEditorMode={changeEditorMode}
