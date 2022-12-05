@@ -193,6 +193,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             _terminal.write(' | ')
             _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
             _terminal.writeln('')
+        }else if(status === 'Running'){
+            _terminal.write('..')
         }
     }
 
@@ -417,6 +419,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         setIsReconnection(true)
     }
 
+    const clusterSocketConnecting: boolean = terminalViewProps.clusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+
     const renderConnectionStrip = () => {
         return !isOnline ? (
             <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
@@ -440,7 +444,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 ) : (
                     <div
                         className={`dc__first-letter-capitalize ${
-                            terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
+                            terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !clusterSocketConnecting
                                 ? `${
                                       terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
                                           ? 'bcy-2'
@@ -451,7 +455,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                             terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
                         } m-0 pl-20 w-100`}
                     >
-                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !(terminalViewProps.clusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) && (
+                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !clusterSocketConnecting && (
                             <span
                                 className={
                                     terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
