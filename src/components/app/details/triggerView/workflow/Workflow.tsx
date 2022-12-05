@@ -227,7 +227,7 @@ export class Workflow extends Component<WorkflowProps> {
 
     render() {
         const isExternalCiWorkflow = this.props.nodes.some(
-            (node) => node.isExternalCI && node.type === WorkflowNodeType.CI,
+            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
         return (
             <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
