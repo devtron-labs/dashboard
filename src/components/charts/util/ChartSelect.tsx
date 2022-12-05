@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, { useContext } from 'react'
 import Tippy from '@tippyjs/react'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
@@ -72,8 +72,6 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
     const onClickChartSelect = (): void => {
         onClick(chart.id)
     }
-
-
 
     return (
         <div
