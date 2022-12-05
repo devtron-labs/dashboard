@@ -701,7 +701,7 @@ function ChartValuesView({
                 }
             } else if (isDeployChartView) {
                 const payload = {
-                    teamId: serverMode == SERVER_MODE.FULL ? commonState.selectedProject.value : 0,
+                    teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
                     referenceValueKind: commonState.chartValues.kind,
                     environmentId: serverMode == SERVER_MODE.FULL ? commonState.selectedEnvironment.value : 0,
