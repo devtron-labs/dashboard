@@ -1215,8 +1215,7 @@ function ChartValuesView({
                                 invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />
                         )}
-                        {!isExternalApp &&
-                            ((!isDeployChartView && commonState.selectedProject) ||
+                        {((!isDeployChartView && commonState.selectedProject) ||
                                 (isDeployChartView)) && (
                                 <ChartProjectSelector
                                     isDeployChartView={isDeployChartView}
