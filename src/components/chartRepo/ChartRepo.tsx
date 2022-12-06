@@ -92,7 +92,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
         toggleCollapse(true)
     }
 
-    const handlerCollapse = (e) => {
+    const handleCollapse = (e) => {
         if(isEditable) {
             e.stopPropagation();toggleCollapse(t => !t)
         }
@@ -115,7 +115,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                         </Tippy>
                     }
                 </div>
-                {id && <List.DropDown onClick={handlerCollapse} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
+                {id && <List.DropDown onClick={handleCollapse} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
             {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
         </article>
