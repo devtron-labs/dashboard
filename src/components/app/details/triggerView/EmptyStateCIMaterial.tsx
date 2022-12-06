@@ -71,7 +71,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     let { title, subtitle, img, cta } = this.getData();
     if (this.props.isMaterialLoading) {
       return <EmptyState>
-        <EmptyState.Loading text={"Fetching repository. This might take few minutes"} />
+        <EmptyState.Loading text="Fetching... This might take few minutes" />
       </EmptyState>
     }
     else {

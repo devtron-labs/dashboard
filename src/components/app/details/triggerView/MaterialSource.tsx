@@ -19,7 +19,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
         if (material.isMaterialLoading) {
             return (
                 <div className="material-last-update">
-                    <div className="material-last-update__fetching">Fetching Repo...</div>
+                    <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
         } else if (material.isBranchError || material.isRepoError) {
@@ -69,18 +69,19 @@ export class MaterialSource extends Component<MaterialSourceProps> {
         return (
             <>
                 {this.props.material.map((material, index) => {
-                    let selectedClass = material.isSelected ? 'material-selected' : ''
                     return (
                         <div
                             key={index}
-                            className={`material-list__item ${selectedClass}`}
+                            className={`material-list__item ${material.isSelected ? 'material-selected' : ''}`}
                             onClick={(e) => {
                                 e.stopPropagation()
                                 this.props.selectMaterial(material.id.toString())
                             }}
                         >
                             <div className="material-info">
-                                <div className="material-info__name flex-1">/{material.gitMaterialName}</div>
+                                <div className="material-info__name flex-1 dc__ellipsis-right">
+                                    /{material.gitMaterialName}
+                                </div>
                                 <div className="icon-dim-22 git"></div>
                             </div>
                             <div className="branch-name ">

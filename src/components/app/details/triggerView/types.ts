@@ -528,8 +528,7 @@ export interface BranchRegexModalProps {
     showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
-    context
-    onClickNextButton: (context) => void
+    onClickNextButton: () => void
     onShowCIModal: () => void
     handleRegexInputValue: (id, value, mat) => void
     regexValue
