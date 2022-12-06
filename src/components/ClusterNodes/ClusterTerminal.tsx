@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
-import Select from 'react-select'
+import Select, { components } from 'react-select'
 import { shellTypes } from '../../config/constants'
 import { SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
@@ -431,7 +431,8 @@ export default function ClusterTerminal({
                                     backgroundColor: 'transparent',
                                     cursor: 'pointer',
                                     height: '28px',
-                                    minHeight: '28px'
+                                    minHeight: '28px',
+                                    minWidth: '350px'
                                 }),
                                 singleValue: (base, state) => ({
                                     ...base,
@@ -440,6 +441,8 @@ export default function ClusterTerminal({
                                     direction: 'rtl',
                                     textAlign: 'left',
                                     marginLeft: '2px',
+                                    minWidth: '150px',
+                                    maxWidth: '380px',
                                 }),
                                 indicatorsContainer: (base, state) => ({
                                     ...base,
@@ -454,6 +457,16 @@ export default function ClusterTerminal({
                             components={{
                                 IndicatorSeparator: null,
                                 Option,
+                                MenuList: (
+                                    props
+                                  ) => {
+                                    return (
+                                      <components.MenuList {...props}>
+                                        <div className='fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style'>Use custom image: Enter path for publicly available image</div>
+                                        {props.children}
+                                      </components.MenuList>
+                                    )
+                                  }
                             }}
                         />
                     </div>

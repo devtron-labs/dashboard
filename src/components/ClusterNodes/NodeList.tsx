@@ -681,24 +681,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 {filteredFlattenNodeList
                                     .slice(nodeListOffset, nodeListOffset + pageSize)
                                     ?.map((nodeData) => renderNodeList(nodeData))}
-                                    {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                                    {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                                    {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                                    {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                                    {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                                    {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
                             {!showTerminal && renderPagination()}
                         </>
