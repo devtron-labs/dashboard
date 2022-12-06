@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { ConfirmationDialog, DeleteDialog, noop, showError } from '../components/common';
 import { ServerErrors } from '../modals/commonTypes';
