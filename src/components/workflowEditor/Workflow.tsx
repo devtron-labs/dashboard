@@ -126,7 +126,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         if (ci) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.GIT) {
-                    return this.renderSourceNode(node)
+                    return this.renderSourceNode(node, ci)
                 } else if (node.type == WorkflowNodeType.CI) {
                     return this.renderCINodes(node)
                 } else if (_nodesData.cdNamesList.length > 0) {
@@ -186,7 +186,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             </foreignObject>
         )
     }
-    renderSourceNode(node) {
+    renderSourceNode(node, ci) {
         return (
             <StaticNode
                 x={node.x}
@@ -203,6 +203,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 sourceType={node.sourceType}
                 regex={node.regex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
+                to={this.openCIPipeline(ci)} //ci attribites for a git material
+                hideWebhookTippy={this.props.hideWebhookTippy}
             />
         )
     }

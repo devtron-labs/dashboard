@@ -117,6 +117,9 @@ export function CiPipelineSourceConfig({
         regexTippyContent()
     }, [])
 
+    if(sourceValue==="Not Configured") {
+            showIcons= false
+    }
     return (
         <div className={showTooltip ? 'branch-name' : ''}>
             {loading && showIcons && <span className="dc__loading-dots">loading</span>}
