@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { ConfirmationDialog, DeleteDialog, noop, showError } from '../components/common'
+import { ConfirmationDialog, DeleteDialog } from '../components/common'
 import { ServerErrors } from '../modals/commonTypes'
 import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
@@ -30,14 +30,12 @@ function DeleteComponent({
             await deleteComponent(payload)
             toast.success('Successfully deleted')
             toggleConfirmation(false)
-            setDeleting(false)
             if (redirectTo) {
                 push(url)
             } else {
                 reload()
             }
         } catch (serverError) {
-            
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
                 if (toggleRepoSelectionTippy && setRepo) {
@@ -86,7 +84,7 @@ function DeleteComponent({
     return (
         <div>
             {!showCannotDeleteDialogModal && renderDeleteDialog()}
-            {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
+            {showCannotDeleteDialogModal && !(toggleRepoSelectionTippy && setRepo) && renderCannotDeleteDialogModal()}
         </div>
     )
 }
