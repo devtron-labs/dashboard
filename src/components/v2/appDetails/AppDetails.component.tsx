@@ -43,7 +43,7 @@ const AppDetailsComponent = ({
             appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString(),
         (event) => setStreamData(JSON.parse(event.data)),
     );
-    if(appDeleteError.length > 0){
+    if(appDeleteError){
         const handleConfigure = ()=>{
             console.log(push)
             const url = `/app/dc/deployments/${params.appId}/env/${params.envId}/values`
@@ -55,7 +55,7 @@ const AppDetailsComponent = ({
                     <img src={AppNotDeployed} alt="" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h4>app details not found, {appDeleteError}</h4>
+                    <h4>App details not found, {appDeleteError}</h4>
                 </EmptyState.Title>
                 <EmptyState.Subtitle>you can go ahead and delete this app from Devtron from Configure tab</EmptyState.Subtitle>
                 <EmptyState.Button>

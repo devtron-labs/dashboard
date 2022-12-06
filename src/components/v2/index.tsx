@@ -27,7 +27,7 @@ function RouterComponent({ envType }) {
     const location = useLocation();
     const history = useHistory();
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
-    const [appDeleteError , setAppDeleteError] = useState("")
+    const [appDeleteError , setAppDeleteError] = useState('')
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
@@ -88,7 +88,7 @@ function RouterComponent({ envType }) {
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
             }
             if (response.result?.appDeleteError){
-                setAppDeleteError(response.result?.appDeleteError)
+                setAppDeleteError(response.result.appDeleteError)
             }
             if (response.result?.clusterId) {
                 Promise.all([

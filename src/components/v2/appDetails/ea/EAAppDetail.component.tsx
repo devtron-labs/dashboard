@@ -16,7 +16,7 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
     const history = useHistory();
-    const [appDeleteError, setAppDeleteError]= useState("");
+    const [appDeleteError, setAppDeleteError]= useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
