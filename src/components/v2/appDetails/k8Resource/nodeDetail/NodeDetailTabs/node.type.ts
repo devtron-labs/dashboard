@@ -26,3 +26,8 @@ export enum SocketConnectionType {
 export const ERROR_MESSAGE = {
     UNAUTHORIZED: 'Not authorized. You do not have permission to access the terminal for this application.',
 }
+
+export const POD_LINKS = {
+    POD_MANIFEST : 'Check Pod Manifest',
+    POD_EVENTS : 'Check Pod Events'
+}

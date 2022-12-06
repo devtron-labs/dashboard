@@ -5,7 +5,7 @@ import { FitAddon } from 'xterm-addon-fit'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { ERROR_MESSAGE, SocketConnectionType, TerminalViewProps } from '../node.type'
+import { ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
 import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import './terminal.css'
@@ -59,14 +59,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const webFontAddon = new XtermWebfont()
         terminal.loadAddon(fitAddon)
         terminal.loadAddon(webFontAddon)
-        terminal.registerLinkMatcher(new RegExp(/Check Pod Manifest|Check Pod Events/),
-          (_event, text) => {
-            if(text === 'Check Pod Events'){
+        var regex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
+        terminal.registerLinkMatcher(regex, (_event, text) => {
+            if (text === POD_LINKS.POD_EVENTS) {
                 terminalViewProps.setTerminalTab(1)
-            }else if(text === 'Check Pod Manifest'){
+            } else if (text === POD_LINKS.POD_MANIFEST) {
                 terminalViewProps.setTerminalTab(2)
             }
-          })
+        })
         terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
         fitAddon.fit()
         terminal.reset()
@@ -115,7 +115,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         })
 
         _socket.onopen = function () {
-            if(terminalViewProps.clusterTerminal){
+            if (terminalViewProps.clusterTerminal) {
                 preFetchData('Running', true)
             }
             const startData = { Op: 'bind', SessionID: sessionId }
@@ -146,7 +146,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onclose = function (evt) {
             disableInput()
-            if(terminalViewProps.clusterTerminal){
+            if (terminalViewProps.clusterTerminal) {
                 _terminal.writeln('')
                 _terminal.writeln('---------------------------------------------')
                 _terminal.writeln(`Disconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
@@ -171,32 +171,32 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }, 100)
     }
 
-    const preFetchData = (status = '',firstMessageReceived = false) => {
+    const preFetchData = (status = '', firstMessageReceived = false) => {
         const _terminal = terminal
         _terminal?.reset()
         // const _fitAddon = fitAddon
-        
+
         _terminal.write('Creating pod.')
-        if(status === 'Running'){
+        if (status === 'Running') {
             _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
             _terminal.writeln('')
             _terminal.write('Connecting to pod terminal.')
-        }else if(status === 'Failed'){
+        } else if (status === 'Failed') {
             _terminal.write('Failed')
             _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
             _terminal.write(' | ')
             _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
-        }else{
+        } else {
             _terminal.write('..')
         }
-        
-        if(firstMessageReceived){
+
+        if (firstMessageReceived) {
             _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
             _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
             _terminal.write(' | ')
             _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
             _terminal.writeln('')
-        }else if(status === 'Running'){
+        } else if (status === 'Running') {
             _terminal.write('..')
         }
     }
@@ -275,17 +275,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         if (firstMessageReceived) {
-            if(terminalViewProps.clusterTerminal){
-                if(terminalViewProps.isterminalTab){
+            if (terminalViewProps.clusterTerminal) {
+                if (terminalViewProps.isterminalTab) {
                     fitAddon.fit()
                 }
-            }else{
+            } else {
                 fitAddon.fit()
             }
             terminal.setOption('cursorBlink', true)
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED)
         }
-    }, [firstMessageReceived,terminalViewProps.isterminalTab])
+    }, [firstMessageReceived, terminalViewProps.isterminalTab])
 
     useEffect(() => {
         if (!window.location.origin) {
@@ -352,16 +352,16 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         get(url)
             .then((response: any) => {
                 let sessionId = response.result.userTerminalSessionId
-                let status = response.result.status 
+                let status = response.result.status
                 preFetchData(status)
                 if (!sessionId && count) {
                     clustertimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
                     }, 3000)
-                } else if(sessionId) {
-                        postInitialize(sessionId)
+                } else if (sessionId) {
+                    postInitialize(sessionId)
                 } else {
-                    preFetchData('Failed',false)
+                    preFetchData('Failed', false)
                 }
             })
             .catch((err) => {
@@ -378,50 +378,46 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const getNewSession = () => {
         if (terminalViewProps.clusterTerminal) {
             if (!terminalViewProps.terminalId) return
-        } else if (
-            !terminalViewProps.nodeName ||
-            !terminalViewProps.containerName ||
-            !terminalViewProps.shell.value ||
-            !appDetails
-        ) {
-            return
-        }
-
-        let url = ''
-        if (terminalViewProps.clusterTerminal) {
-            url = `user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`
+            getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 8)
         } else {
+            if (
+                !terminalViewProps.nodeName ||
+                !terminalViewProps.containerName ||
+                !terminalViewProps.shell.value ||
+                !appDetails
+            ) {
+                return
+            }
+            let url
             if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
                 url = `k8s/pod/exec/session/${appDetails.appId}`
             } else {
                 url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
             }
             url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
-        }
-        terminalViewProps.clusterTerminal
-            ? getClusterData(url, 8)
-            : get(url)
-                  .then((response: any) => {
-                      let sessionId = response?.result.SessionID
+            get(url)
+                .then((response: any) => {
+                    let sessionId = response?.result.SessionID
 
-                      if (!terminal) {
-                          elementDidMount('#terminal-id').then(() => {
-                              createNewTerminal()
-                              postInitialize(sessionId)
-                          })
-                      } else {
-                          postInitialize(sessionId)
-                      }
-                  })
-                  .catch((err) => {
-                      showError(err)
-                      if (err instanceof ServerErrors && Array.isArray(err.errors)) {
-                          const _invalidNameErr = err.errors[0].userMessage
-                          if (_invalidNameErr.includes('Unauthorized')) {
-                              setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
-                          }
-                      }
-                  })
+                    if (!terminal) {
+                        elementDidMount('#terminal-id').then(() => {
+                            createNewTerminal()
+                            postInitialize(sessionId)
+                        })
+                    } else {
+                        postInitialize(sessionId)
+                    }
+                })
+                .catch((err) => {
+                    showError(err)
+                    if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                        const _invalidNameErr = err.errors[0].userMessage
+                        if (_invalidNameErr.includes('Unauthorized')) {
+                            setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                        }
+                    }
+                })
+        }
     }
 
     const onClickResume = (e) => {
@@ -430,69 +426,78 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         setIsReconnection(true)
     }
 
-    const clusterSocketConnecting: boolean = terminalViewProps.clusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+    const clusterSocketConnecting: boolean =
+        terminalViewProps.clusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
 
     const renderConnectionStrip = () => {
-        return !isOnline ? (
-            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
-                You’re offline. Please check your internet connection.
-            </div>
-        ) : terminalViewProps.fetchRetry ? (
-            <div className="bcr-7 pl-20 cn-0">
-                Concurrent connection limit reached.&nbsp;
-                <button
-                    type="button"
-                    onClick={terminalViewProps.disconnectRetry}
-                    className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
-                >
-                    Terminate all and retry
-                </button>
-            </div>
-        ) : (
-            <div className="terminal-strip dc__first-letter-capitalize">
-                {errorMessage && errorMessage.length > 0 ? (
-                    <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
-                ) : (
-                    <div
-                        className={`dc__first-letter-capitalize ${
-                            terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !clusterSocketConnecting
-                                ? `${
-                                      terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                          ? 'bcy-2'
-                                          : 'bcr-7'
-                                  }  pl-20`
-                                : 'pb-10'
-                        } ${
-                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
-                        } m-0 pl-20 w-100`}
+        if (!isOnline) {
+            return (
+                <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
+                    You’re offline. Please check your internet connection.
+                </div>
+            )
+        } else if (terminalViewProps.fetchRetry) {
+            return (
+                <div className="bcr-7 pl-20 cn-0">
+                    Concurrent connection limit reached.&nbsp;
+                    <button
+                        type="button"
+                        onClick={terminalViewProps.disconnectRetry}
+                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
                     >
-                        {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && !clusterSocketConnecting && (
-                            <span
-                                className={
-                                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                        ? 'dc__loading-dots'
-                                        : ''
-                                }
-                            >
-                                {terminalViewProps.socketConnection?.toLowerCase()}
-                            </span>
-                        )}
-                        {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
-                            <React.Fragment>
-                                <span>.&nbsp;</span>
-                                <button
-                                    type="button"
-                                    onClick={onClickResume}
-                                    className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
-                                >
-                                    Resume
-                                </button>
-                            </React.Fragment>
-                        )}
-                    </div>
-                )}
-            </div>
-        )
+                        Terminate all and retry
+                    </button>
+                </div>
+            )
+        } else {
+            return (
+                <div className="terminal-strip dc__first-letter-capitalize">
+                    {errorMessage && errorMessage.length > 0 ? (
+                        <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
+                    ) : (
+                        <div
+                            className={`dc__first-letter-capitalize ${
+                                terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED &&
+                                !clusterSocketConnecting
+                                    ? `${
+                                          terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                              ? 'bcy-2'
+                                              : 'bcr-7'
+                                      }  pl-20`
+                                    : 'pb-10'
+                            } ${
+                                terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
+                            } m-0 pl-20 w-100`}
+                        >
+                            {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED &&
+                                !clusterSocketConnecting && (
+                                    <span
+                                        className={
+                                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+                                                ? 'dc__loading-dots'
+                                                : ''
+                                        }
+                                    >
+                                        {terminalViewProps.socketConnection?.toLowerCase()}
+                                    </span>
+                                )}
+                            {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
+                                <React.Fragment>
+                                    <span>.&nbsp;</span>
+                                    <button
+                                        type="button"
+                                        onClick={onClickResume}
+                                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                                    >
+                                        Resume
+                                    </button>
+                                </React.Fragment>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )
+        }
     }
 
     return (

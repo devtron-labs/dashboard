@@ -1,6 +1,7 @@
 import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
 import { LabelTag, OptionType } from '../app/types'
+import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -131,6 +132,16 @@ export interface ClusterListType {
     namespaceList: string[]
 }
 
+export interface ClusterTerminalType {
+    clusterId: number
+    clusterName?: string
+    nodeList: string[]
+    closeTerminal?: () => void
+    clusterImageList: string[]
+    isNodeDetailsPage?: boolean
+    namespaceList: string[]
+}
+
 export const TEXT_COLOR_CLASS = {
     Ready: 'cg-5',
     'Not ready': 'cr-5',
@@ -239,3 +250,39 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
+
+export const clusterSelectStyle = {
+        ...multiSelectStyles,
+        menu: (base) => ({
+            ...base,
+            zIndex: 9999,
+            textAlign: 'left',
+            minWidth: '150px',
+            maxWidth: '380px',
+        }),
+        control: (base, state) => ({
+            ...base,
+            borderColor: 'transparent',
+            backgroundColor: 'transparent',
+            cursor: 'pointer',
+            height: '28px',
+            minHeight: '28px',
+        }),
+        singleValue: (base, state) => ({
+            ...base,
+            fontWeight: 600,
+            color: 'var(--N900)',
+            direction: 'rtl',
+            textAlign: 'left',
+            marginLeft: '2px',
+        }),
+        indicatorsContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+        }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
+}

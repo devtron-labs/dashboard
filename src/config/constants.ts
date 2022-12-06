@@ -183,6 +183,7 @@ export const Routes = {
     SSO_UPDATE: 'sso/update',
     INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
     EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls',
+    CLUSTER_TERMINAL: 'user/terminal'
 }
 
 export const ViewType = {

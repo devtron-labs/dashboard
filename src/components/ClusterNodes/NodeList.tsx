@@ -66,8 +66,8 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    const [showTerminal, setTerminal] = useState(false)
-    const [terminalclusterData, setTerminalCluster] = useState()
+    const [showTerminal, setTerminal] = useState<boolean>(false)
+    const [terminalclusterData, setTerminalCluster] = useState<string>()
     const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const pageSize = 15
 
@@ -632,12 +632,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         return <Progressing pageLoader />
     }
 
-    const openTerminal = (clusterData) => {
+    const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData.name)
         setTerminal(true)
     }
 
-    const closeTerminal = () => {
+    const closeTerminal = (): void => {
         setTerminal(false)
     }
 

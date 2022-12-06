@@ -16,7 +16,7 @@ import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function ClusterList({imageList, isSuperAdmin, namespaceList}: ClusterListType) {
+export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
@@ -116,19 +116,23 @@ export default function ClusterList({imageList, isSuperAdmin, namespaceList}: Cl
         )
     }
 
-    const openTerminal = (clusterData) => {
+    const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData)
         setShowTerminal(true)
     }
 
-    const closeTerminal = () => {
+    const closeTerminal = (): void => {
         setShowTerminal(false)
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
-            <div className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''}`}>
+            <div
+                className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
+                    clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
+                }`}
+            >
                 <div className="cb-5 dc__ellipsis-right">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
@@ -199,7 +203,10 @@ export default function ClusterList({imageList, isSuperAdmin, namespaceList}: Cl
                 {noResults ? (
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
-                    <div className='dc__overflow-scroll' style={{ height: `calc(${showTerminalModal ? '50vh' : '100vh'} - 125px)` }}>
+                    <div
+                        className="dc__overflow-scroll"
+                        style={{ height: `calc(${showTerminalModal ? '50vh' : '100vh'} - 125px)` }}
+                    >
                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
                             <div>Connection status</div>
@@ -218,9 +225,10 @@ export default function ClusterList({imageList, isSuperAdmin, namespaceList}: Cl
                     clusterId={terminalclusterData.id}
                     clusterName={terminalclusterData.name}
                     nodeList={terminalclusterData.nodeNames}
-                    closeTerminal={closeTerminal} 
+                    closeTerminal={closeTerminal}
                     clusterImageList={imageList}
-                    namespaceList={namespaceList}                />
+                    namespaceList={namespaceList}
+                />
             )}
         </div>
     )

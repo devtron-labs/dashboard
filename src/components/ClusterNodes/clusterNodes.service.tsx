@@ -34,27 +34,27 @@ export const updateNodeManifest = (
 }
 
 export const clusterTerminalStart = (data): Promise<ResponseType> => {
-    return put(`user/terminal/start`, data)
+    return put(`${Routes.CLUSTER_TERMINAL}/start`, data)
 }
 
 export const clusterterminalUpdate = (data): Promise<ResponseType> => {
-    return post(`user/terminal/update`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/update`, data)
 }
 
 export const clusterterminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
-    return post(`user/terminal/disconnect?terminalAccessId=${terminalAccessId}`, null)
+    return post(`${Routes.CLUSTER_TERMINAL}/disconnect?terminalAccessId=${terminalAccessId}`, null)
 }
 
 export const clusterDisconnectAndRetry = (data):  Promise<ResponseType> => {
-    return post(`user/terminal/disconnectAndRetry`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/disconnectAndRetry`, data)
 }
 
 export const clusterTerminalStop = (terminalAccessId):  Promise<ResponseType> => {
-    return post(`user/terminal/stop?terminalAccessId=${terminalAccessId}`, null)
+    return post(`${Routes.CLUSTER_TERMINAL}/stop?terminalAccessId=${terminalAccessId}`, null)
 }
 
 export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
-    return post(`user/terminal/update/shell`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/update/shell`, data)
 }
 
 export const clusterNamespaceList = (): Promise<ResponseType> => {
@@ -62,9 +62,9 @@ export const clusterNamespaceList = (): Promise<ResponseType> => {
 }
 
 export const getclusterManifest = (terminalAccessId):  Promise<ResponseType> => {
-    return get(`user/terminal/pod/manifest?terminalAccessId=${terminalAccessId}`)
+    return get(`${Routes.CLUSTER_TERMINAL}/pod/manifest?terminalAccessId=${terminalAccessId}`)
 }
 
 export const getclusterEvents = (terminalAccessId):  Promise<ResponseType> => {
-    return get(`user/terminal/pod/events?terminalAccessId=${terminalAccessId}`)
+    return get(`${Routes.CLUSTER_TERMINAL}/pod/events?terminalAccessId=${terminalAccessId}`)
 }

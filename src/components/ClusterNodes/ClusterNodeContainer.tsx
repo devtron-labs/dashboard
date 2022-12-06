@@ -17,14 +17,14 @@ export default function ClusterNodeContainer() {
     useEffect(() => {
         Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),getUserRole(),clusterNamespaceList()]).then(([hostUrlConfig, userRole, namespaceList]) => {
             if(hostUrlConfig.result) {
-                const imageValue: string = hostUrlConfig.result.value
+                const imageValue: string = hostUrlConfig.result.value || ''
                 setImageList(imageValue.split(','))
             }
             if(userRole.result) {
                 setSuperAdmin(userRole.result?.superAdmin)
             }
             if(namespaceList.result) {
-                setNameSpaceList(namespaceList.result.default_cluster)
+                setNameSpaceList(namespaceList.result.default_cluster?.sort())
             }
         }).catch((error) => {
             showError(error)

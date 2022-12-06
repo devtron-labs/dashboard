@@ -26,6 +26,10 @@ import { showError } from '../common'
 import { ServerErrors } from '../../modals/commonTypes'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
+import TippyWhite from '../common/TippyWhite'
+import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
+import { clusterSelectStyle, ClusterTerminalType } from './types'
 
 export default function ClusterTerminal({
     clusterId,
@@ -34,16 +38,8 @@ export default function ClusterTerminal({
     closeTerminal,
     clusterImageList,
     isNodeDetailsPage,
-    namespaceList
-}: {
-    clusterId: number
-    clusterName?: string
-    nodeList: string[]
-    closeTerminal?: () => void
-    clusterImageList: string[]
-    isNodeDetailsPage?: boolean
-    namespaceList: string[]
-}) {
+    namespaceList,
+}: ClusterTerminalType) {
     const clusterNodeList = nodeList.map((node) => {
         return { label: node, value: node }
     })
@@ -61,7 +57,9 @@ export default function ClusterTerminal({
     const [terminalAccessId, setTerminalId] = useState()
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
-    const [selectedNamespace, setNamespace] = useState(defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0])
+    const [selectedNamespace, setNamespace] = useState(
+        defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0],
+    )
     const [update, setUpdate] = useState<boolean>(false)
     const [fullScreen, setFullScreen] = useState(false)
     const [fetchRetry, setRetry] = useState(false)
@@ -70,13 +68,12 @@ export default function ClusterTerminal({
     const [toggleOption, settoggleOption] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
 
-
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage,
         shellName: selectedtTerminalType.value,
         nodeName: selectedContainerName.value,
-        namespace: selectedNamespace.value
+        namespace: selectedNamespace.value,
     }
 
     useEffect(() => {
@@ -190,7 +187,7 @@ export default function ClusterTerminal({
         }
     }
 
-    const reconnectTerminal = () => {
+    const reconnectTerminal = (): void => {
         setConnectTerminal(true)
         setTerminalId(null)
         setReconnect(!reconnect)
@@ -229,24 +226,35 @@ export default function ClusterTerminal({
         socketDiconnecting()
     }
 
-    const toggleScreenView = () => {
+    const toggleScreenView = (): void => {
         setFullScreen(!fullScreen)
     }
 
-    const toggleOptionChange = () => {
+    const toggleOptionChange = (): void => {
         settoggleOption(!toggleOption)
     }
 
-    const selectTerminalTab = () => {
+    const selectTerminalTab = (): void => {
         setSelectedTabIndex(0)
     }
 
-    const selectEventsTab = () => {
+    const selectEventsTab = (): void => {
         setSelectedTabIndex(1)
     }
 
-    const selectManifestTab = () => {
+    const selectManifestTab = (): void => {
         setSelectedTabIndex(2)
+    }
+
+    const menuComponent = (props) => {
+        return (
+            <components.MenuList {...props}>
+                <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                    Use custom image: Enter path for publicly available image
+                </div>
+                {props.children}
+            </components.MenuList>
+        )
     }
 
     const terminalContainer = () => {
@@ -314,41 +322,7 @@ export default function ClusterTerminal({
                                     defaultValue={selectedContainerName}
                                     value={selectedContainerName}
                                     onChange={onChangeNodes}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        menu: (base) => ({
-                                            ...base,
-                                            zIndex: 9999,
-                                            textAlign: 'left',
-                                            minWidth: '150px',
-                                            maxWidth: '380px',
-                                        }),
-                                        control: (base, state) => ({
-                                            ...base,
-                                            borderColor: 'transparent',
-                                            backgroundColor: 'transparent',
-                                            cursor: 'pointer',
-                                            height: '28px',
-                                            minHeight: '28px'
-                                        }),
-                                        singleValue: (base, state) => ({
-                                            ...base,
-                                            fontWeight: 600,
-                                            color: '#06c',
-                                            direction: 'rtl',
-                                            textAlign: 'left',
-                                            marginLeft: '2px',
-                                        }),
-                                        indicatorsContainer: (base, state) => ({
-                                            ...base,
-                                            height: '28px'
-                                        }),
-                                        valueContainer: (base, state) => ({
-                                            ...base,
-                                            height: '28px',
-                                            padding: '0 6px'
-                                          }),
-                                    }}
+                                    styles={clusterSelectStyle}
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
@@ -366,41 +340,7 @@ export default function ClusterTerminal({
                             options={defaultNamespaceList}
                             defaultValue={selectedNamespace}
                             onChange={onChangeNamespace}
-                            styles={{
-                                ...multiSelectStyles,
-                                menu: (base) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                    textAlign: 'left',
-                                    minWidth: '150px',
-                                    maxWidth: '380px',
-                                }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    borderColor: 'transparent',
-                                    backgroundColor: 'transparent',
-                                    cursor: 'pointer',
-                                    height: '28px',
-                                    minHeight: '28px'
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    fontWeight: 600,
-                                    color: '#06c',
-                                    direction: 'rtl',
-                                    textAlign: 'left',
-                                    marginLeft: '2px',
-                                }),
-                                indicatorsContainer: (base, state) => ({
-                                    ...base,
-                                    height: '28px'
-                                }),
-                                valueContainer: (base, state) => ({
-                                    ...base,
-                                    height: '28px',
-                                    padding: '0 6px'
-                                  }),
-                            }}
+                            styles={clusterSelectStyle}
                             components={{
                                 IndicatorSeparator: null,
                                 Option,
@@ -409,22 +349,27 @@ export default function ClusterTerminal({
                     </div>
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Image </div>
+                    <div className="cn-6 ml-8 mr-4">Image</div>
+                    <TippyWhite
+                        heading={'Image'}
+                        placement={'top'}
+                        children={<HelpIcon className="icon-dim-16 mr-8" />}
+                        interactive={true}
+                        trigger="click"
+                        className="w-300"
+                        Icon={Help}
+                        showCloseButton={true}
+                        iconClass="icon-dim-20 fcv-5"
+                        infoText="Select image you want to run inside the pod. 
+                        You can use publicly available custom images as well."
+                    />
                     <div>
                         <CreatableSelect
                             placeholder="Select Image"
                             options={imageList}
                             defaultValue={imageList[0]}
                             onChange={onChangeImages}
-                            styles={{
-                                ...multiSelectStyles,
-                                menu: (base) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                    textAlign: 'left',
-                                    minWidth: '150px',
-                                    maxWidth: '380px',
-                                }),
+                            styles={{...clusterSelectStyle,
                                 control: (base, state) => ({
                                     ...base,
                                     borderColor: 'transparent',
@@ -434,39 +379,11 @@ export default function ClusterTerminal({
                                     minHeight: '28px',
                                     minWidth: '350px'
                                 }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    fontWeight: 600,
-                                    color: '#06c',
-                                    direction: 'rtl',
-                                    textAlign: 'left',
-                                    marginLeft: '2px',
-                                    minWidth: '150px',
-                                    maxWidth: '380px',
-                                }),
-                                indicatorsContainer: (base, state) => ({
-                                    ...base,
-                                    height: '28px'
-                                }),
-                                valueContainer: (base, state) => ({
-                                    ...base,
-                                    height: '28px',
-                                    padding: '0 6px'
-                                  }),
                             }}
                             components={{
                                 IndicatorSeparator: null,
                                 Option,
-                                MenuList: (
-                                    props
-                                  ) => {
-                                    return (
-                                      <components.MenuList {...props}>
-                                        <div className='fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style'>Use custom image: Enter path for publicly available image</div>
-                                        {props.children}
-                                      </components.MenuList>
-                                    )
-                                  }
+                                MenuList: menuComponent,
                             }}
                         />
                     </div>
@@ -491,18 +408,22 @@ export default function ClusterTerminal({
                         </div>
                         {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
-                     {terminalAccessId && <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
-                            Pod Events
-                        </div>
-                        {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>}
-                    {terminalAccessId && <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
-                            Pod Manifest
-                        </div>
-                        {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>}
+                    {terminalAccessId && (
+                        <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                                Pod Events
+                            </div>
+                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                        </li>
+                    )}
+                    {terminalAccessId && (
+                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                                Pod Manifest
+                            </div>
+                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                        </li>
+                    )}
                 </ul>
                 {selectedTabIndex == 0 && (
                     <>
@@ -552,41 +473,7 @@ export default function ClusterTerminal({
                                 options={shellTypes}
                                 defaultValue={shellTypes[0]}
                                 onChange={onChangeTerminalType}
-                                styles={{
-                                    ...multiSelectStyles,
-                                    menu: (base) => ({
-                                        ...base,
-                                        zIndex: 9999,
-                                        textAlign: 'left',
-                                        minWidth: '150px',
-                                        maxWidth: '380px',
-                                    }),
-                                    control: (base, state) => ({
-                                        ...base,
-                                        borderColor: 'transparent',
-                                        backgroundColor: 'transparent',
-                                        cursor: 'pointer',
-                                        height: '28px',
-                                        minHeight: '28px'
-                                    }),
-                                    singleValue: (base, state) => ({
-                                        ...base,
-                                        fontWeight: 600,
-                                        color: '#06c',
-                                        direction: 'rtl',
-                                        textAlign: 'left',
-                                        marginLeft: '2px',
-                                    }),
-                                    indicatorsContainer: (base, state) => ({
-                                        ...base,
-                                        height: '28px'
-                                    }),
-                                    valueContainer: (base, state) => ({
-                                        ...base,
-                                        height: '28px',
-                                        padding: '0 6px'
-                                      }),
-                                }}
+                                styles={clusterSelectStyle}
                                 components={{
                                     IndicatorSeparator: null,
                                     Option,
@@ -601,11 +488,17 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
-                    {terminalContainer()}
-                </div>
-                {selectedTabIndex === 1 && <div className='h-100'><ClusterEvents clusterId={terminalAccessId} /></div>}
-                {selectedTabIndex === 2 && <div className='h-100'><ClusterManifest clusterId={terminalAccessId} /></div>}
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
+                {selectedTabIndex === 1 && (
+                    <div className="h-100">
+                        <ClusterEvents clusterId={terminalAccessId} />
+                    </div>
+                )}
+                {selectedTabIndex === 2 && (
+                    <div className="h-100">
+                        <ClusterManifest clusterId={terminalAccessId} />
+                    </div>
+                )}
             </div>
         </div>
     )
