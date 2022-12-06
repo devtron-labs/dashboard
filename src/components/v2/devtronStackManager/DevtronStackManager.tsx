@@ -24,7 +24,6 @@ import {
     LogPodNameResponse,
     ModuleDetails,
     ModuleInfo,
-    ModuleResourceStatus,
     ModuleStatus,
     ReleaseNotesResponse,
     ServerInfo,
@@ -34,9 +33,8 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
-import IndexStore from '../appDetails/index.store'
-import { AppDetails, AppType } from '../appDetails/appDetails.type'
 import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
+import { buildResourceStatusModalData } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -367,48 +365,6 @@ export default function DevtronStackManager({
         setShowResourceStatusModal(false)
     }
 
-    const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
-        const _nodes = []
-        const _resources = []
-        moduleResourcesStatus?.forEach((moduleResourceStatus) => {
-            const _resource = {
-                group: moduleResourceStatus.group,
-                version: moduleResourceStatus.version,
-                kind: moduleResourceStatus.kind,
-                name: moduleResourceStatus.name,
-                health: {
-                    status: moduleResourceStatus.healthStatus,
-                    message: moduleResourceStatus.healthMessage,
-                },
-            }
-            _nodes.push(_resource)
-            _resources.push(_resource)
-        })
-        const _appStreamData = {
-            result: {
-                application: {
-                    status: {
-                        operationState: {
-                            syncResult: {
-                                resources: _resources,
-                            },
-                        },
-                    },
-                },
-            },
-        }
-        const _appDetail: AppDetails = JSON.parse(
-            JSON.stringify({
-                resourceTree: {
-                    nodes: _nodes,
-                    status: 'INTEGRATION_INSTALLING',
-                },
-            }),
-        )
-        IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-        return _appStreamData
-    }
-
     /**
      * This is to handle the module selection
      */
@@ -587,7 +543,7 @@ export default function DevtronStackManager({
                                             selectedModule.moduleResourcesStatus,
                                         )}
                                         showAppStatusMessage={true}
-                                        title={'Integration installation status'}
+                                        title="Integration installation status"
                                         appStatusText={
                                             selectedModule.installationStatus == ModuleStatus.INSTALLING
                                                 ? 'Installing'
