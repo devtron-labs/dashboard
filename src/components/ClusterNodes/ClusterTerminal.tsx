@@ -105,13 +105,15 @@ export default function ClusterTerminal({
                     })
                     .catch((error) => {
                         showError(error)
-                        setConnectTerminal(false)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                             error.errors.map(({ userMessage }) => {
                                 if (userMessage === 'session-limit-reached') {
                                     setRetry(true)
+                                    setConnectTerminal(true)
                                 }
                             })
+                        }else{
+                            setConnectTerminal(false)
                         }
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
@@ -372,7 +374,10 @@ export default function ClusterTerminal({
                             styles={{...clusterSelectStyle,
                                 menu: (base, state) => ({
                                     ...base,
-                                    minWidth: '350px'
+                                    zIndex: 9999,
+                                    textAlign: 'left',
+                                    maxWidth: '380px',
+                                    minWidth: '350px',
                                 }),
                             }}
                             components={{
@@ -483,7 +488,7 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
+                {connectTerminal && <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>}
                 {selectedTabIndex === 1 && (
                     <div className="h-100">
                         <ClusterEvents clusterId={terminalAccessId} />
