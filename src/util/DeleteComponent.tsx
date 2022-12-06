@@ -20,7 +20,7 @@ function DeleteComponent({
     toggleRepoSelectionTippy = noop,
     setRepo = noop,
 }: DeleteComponentProps) {
-    const [showDeleteDialogModal, setDeleteDialogModal] = useState(false);
+    const [showDeleteDialogModal, setDeleteDialogModal] = useState(true);
     const { push } = useHistory();
 
     async function handleDelete() {
@@ -37,7 +37,7 @@ function DeleteComponent({
             }
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
-                setDeleteDialogModal(true)
+                setDeleteDialogModal(false)
                 toggleRepoSelectionTippy()
                 setRepo(title)
             }
@@ -61,7 +61,7 @@ function DeleteComponent({
     };
     return (
         <div>
-            {!showDeleteDialogModal && renderDeleteDialog()}
+            {showDeleteDialogModal && renderDeleteDialog()}
         </div>
     );
 }
