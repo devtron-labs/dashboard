@@ -370,13 +370,8 @@ export default function ClusterTerminal({
                             defaultValue={imageList[0]}
                             onChange={onChangeImages}
                             styles={{...clusterSelectStyle,
-                                control: (base, state) => ({
+                                menu: (base, state) => ({
                                     ...base,
-                                    borderColor: 'transparent',
-                                    backgroundColor: 'transparent',
-                                    cursor: 'pointer',
-                                    height: '28px',
-                                    minHeight: '28px',
                                     minWidth: '350px'
                                 }),
                             }}
