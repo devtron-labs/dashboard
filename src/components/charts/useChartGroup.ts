@@ -64,7 +64,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         gitOpsModuleInstalledAndConfigured,
                     ] = responses.map((response) => response?.value?.result || [])
                   
-                    let chartRepos = chartRepoList
+                    let chartRepos = chartRepoList.filter((e)=> e.active)
                         .map((chartRepo) => {
                             return {
                                 value: chartRepo.id,
