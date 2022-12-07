@@ -87,7 +87,7 @@ function RouterComponent({ envType }) {
                 response = await getInstalledAppDetail(+params.appId, +params.envId);
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
             }
-            if (response.result?.appDeleteError){
+            if (response.result?.appDeleteError) {
                 setAppDeleteError(response.result.appDeleteError)
             }
             if (response.result?.clusterId) {

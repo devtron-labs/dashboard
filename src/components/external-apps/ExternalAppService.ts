@@ -53,7 +53,7 @@ export interface InstalledAppInfo {
 }
 
 export interface HelmAppDetail {
-    appDeleteError : string,
+    appDeleteError: string,
     applicationStatus: string,
     releaseStatus: HelmReleaseStatus,
     lastDeployed: DeployedAt,

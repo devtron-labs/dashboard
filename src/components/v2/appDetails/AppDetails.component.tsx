@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './appDetails.scss';
-import {useHistory, useParams} from 'react-router';
+import { useHistory, useParams } from 'react-router'
 import { AppStreamData, AppType } from './appDetails.type';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
@@ -11,8 +11,8 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
 import { getSaveTelemetry } from './appDetails.api';
-import EmptyState from "../../EmptyState/EmptyState";
-import AppNotDeployed from "../../../assets/img/app-not-deployed.png";
+import EmptyState from '../../EmptyState/EmptyState'
+import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -21,13 +21,13 @@ const AppDetailsComponent = ({
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    appDeleteError:string
+    appDeleteError: string
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-    const {push} = useHistory()
+    const { push } = useHistory()
     useEffect(() => {
      if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){
       getSaveTelemetry(params.appId)
@@ -43,8 +43,8 @@ const AppDetailsComponent = ({
             appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString(),
         (event) => setStreamData(JSON.parse(event.data)),
     );
-    if(appDeleteError){
-        const handleConfigure = ()=>{
+    if (appDeleteError) {
+        const handleConfigure = () => {
             push(`/app/dc/deployments/${params.appId}/env/${params.envId}/values`)
         }
         return (
@@ -55,9 +55,13 @@ const AppDetailsComponent = ({
                 <EmptyState.Title>
                     <h4>App details not found, {appDeleteError}</h4>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>you can go ahead and delete this app from Devtron from Configure tab</EmptyState.Subtitle>
+                <EmptyState.Subtitle>
+                    you can go ahead and delete this app from Devtron from Configure tab
+                </EmptyState.Subtitle>
                 <EmptyState.Button>
-                    <button onClick={handleConfigure} className="cta flex">Go To Configure</button>
+                    <button onClick={handleConfigure} className="cta flex">
+                        Go To Configure
+                    </button>
                 </EmptyState.Button>
             </EmptyState>
         )
