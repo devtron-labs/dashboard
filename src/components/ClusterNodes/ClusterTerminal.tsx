@@ -112,7 +112,7 @@ export default function ClusterTerminal({
                                     setConnectTerminal(true)
                                 }
                             })
-                        }else{
+                        } else {
                             setConnectTerminal(false)
                         }
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -371,7 +371,8 @@ export default function ClusterTerminal({
                             options={imageList}
                             defaultValue={imageList[0]}
                             onChange={onChangeImages}
-                            styles={{...clusterSelectStyle,
+                            styles={{
+                                ...clusterSelectStyle,
                                 menu: (base, state) => ({
                                     ...base,
                                     zIndex: 9999,
@@ -425,70 +426,72 @@ export default function ClusterTerminal({
                         </li>
                     )}
                 </ul>
-                {selectedTabIndex == 0 && (
-                    <>
-                        <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
-                        {connectTerminal && (
-                            <Tippy
-                                className="default-tt cursor"
-                                arrow={false}
-                                placement="bottom"
-                                content={
-                                    socketConnection === SocketConnectionType.CONNECTING ||
-                                    socketConnection === SocketConnectionType.CONNECTED
-                                        ? 'Stop'
-                                        : 'Resume'
-                                }
-                            >
-                                {socketConnection === SocketConnectionType.CONNECTING ||
-                                socketConnection === SocketConnectionType.CONNECTED ? (
-                                    <span className="mr-8 cursor">
-                                        <div
-                                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                                            onClick={stopterminalConnection}
-                                        />
-                                    </span>
-                                ) : (
-                                    <span className="mr-8 flex">
-                                        <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
-                                    </span>
-                                )}
-                            </Tippy>
-                        )}
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                            <div className="flex">
-                                <Abort
-                                    className="icon-dim-16 mr-4 fcn-6 cursor"
-                                    onClick={(e) => {
-                                        setTerminalCleared(true)
-                                    }}
-                                />
-                            </div>
+                <div className={`${selectedTabIndex !== 0 ? 'dc__hide-section' : 'flex'}`}>
+                    <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+                    {connectTerminal && (
+                        <Tippy
+                            className="default-tt cursor"
+                            arrow={false}
+                            placement="bottom"
+                            content={
+                                socketConnection === SocketConnectionType.CONNECTING ||
+                                socketConnection === SocketConnectionType.CONNECTED
+                                    ? 'Stop'
+                                    : 'Resume'
+                            }
+                        >
+                            {socketConnection === SocketConnectionType.CONNECTING ||
+                            socketConnection === SocketConnectionType.CONNECTED ? (
+                                <span className="mr-8 cursor">
+                                    <div
+                                        className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
+                                        onClick={stopterminalConnection}
+                                    />
+                                </span>
+                            ) : (
+                                <span className="mr-8 flex">
+                                    <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
+                                </span>
+                            )}
                         </Tippy>
-                        <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                        <div className="cn-6 ml-8 mr-10">Shell </div>
-                        <div>
-                            <Select
-                                placeholder="Select Shell"
-                                options={shellTypes}
-                                defaultValue={shellTypes[0]}
-                                onChange={onChangeTerminalType}
-                                styles={clusterSelectStyle}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option,
+                    )}
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+                        <div className="flex">
+                            <Abort
+                                className="icon-dim-16 mr-4 fcn-6 cursor"
+                                onClick={(e) => {
+                                    setTerminalCleared(true)
                                 }}
                             />
                         </div>
-                    </>
-                )}
+                    </Tippy>
+                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+                    <div className="cn-6 ml-8 mr-10">Shell </div>
+                    <div>
+                        <Select
+                            placeholder="Select Shell"
+                            options={shellTypes}
+                            defaultValue={shellTypes[0]}
+                            onChange={onChangeTerminalType}
+                            styles={clusterSelectStyle}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option,
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
             <div
                 className={`cluster-terminal__wrapper ${fullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                {connectTerminal && <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>}
+                {connectTerminal && (
+                    <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                        {terminalContainer()}
+                    </div>
+                )}
                 {selectedTabIndex === 1 && (
                     <div className="h-100">
                         <ClusterEvents clusterId={terminalAccessId} />
