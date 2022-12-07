@@ -144,15 +144,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
      getHostURLConfig = async () => {
          try {
              const { result } = await getHostURLConfiguration()
-
              if (!result?.value) {
                  const payload = {
-                     id: result.id,
-                     key: result.key,
+                     id: result?.id,
+                     key: result?.key || 'url',
                      value: window.location.origin,
-                     active: result.active,
+                     active: result?.active || true,
                  }
-                await saveHostURLConfiguration(payload)
+                 await saveHostURLConfiguration(payload)
              }
          } catch (error) {
              showError(error)
