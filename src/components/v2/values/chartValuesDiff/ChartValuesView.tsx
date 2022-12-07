@@ -25,7 +25,7 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { ConfigurationType, SERVER_MODE, URLS } from '../../../../config'
+import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -41,6 +41,7 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
     ValueNameInput,
+    DeploymentAppSelector,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -710,6 +711,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
+                    deploymentAppType: commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -1044,6 +1046,13 @@ function ChartValuesView({
         }
     }
 
+    const handleDeploymentAppTypeSelection = (event) => {
+        dispatch({
+            type: ChartValuesViewActionTypes.selectedDeploymentApp,
+            payload: event.target.value,
+        })
+    }
+
     const handleVersionSelection = (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
         dispatch({
             type: ChartValuesViewActionTypes.multipleOptions,
@@ -1174,6 +1183,7 @@ function ChartValuesView({
     }
 
     const renderData = () => {
+        const deployedAppDetail = isExternalApp && appId && appId.split('|')
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1230,6 +1240,14 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
                         )}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp &&(
+                            <DeploymentAppSelector
+                                commonState={commonState}
+                                isUpdate={isUpdate}
+                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                isDeployChartView={isDeployChartView}
+                            />
+                        )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {!isDeployChartView && (
                             <ChartRepoSelector
@@ -1265,14 +1283,20 @@ function ChartValuesView({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {!isDeployChartView && chartValueId !== '0' && (
-                            <DeleteApplicationButton
-                                type={isCreateValueView ? 'preset value' : 'Application'}
-                                isUpdateInProgress={commonState.isUpdateInProgress}
-                                isDeleteInProgress={commonState.isDeleteInProgress}
-                                dispatch={dispatch}
-                            />
-                        )}
+
+                        {!isDeployChartView &&
+                            chartValueId !== '0' &&
+                            !(
+                                deployedAppDetail &&
+                                checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
+                            ) && (
+                                <DeleteApplicationButton
+                                    type={isCreateValueView ? 'preset value' : 'Application'}
+                                    isUpdateInProgress={commonState.isUpdateInProgress}
+                                    isDeleteInProgress={commonState.isDeleteInProgress}
+                                    dispatch={dispatch}
+                                />
+                            )}
                     </div>
                     {commonState.openReadMe && (
                         <ActiveReadmeColumn
