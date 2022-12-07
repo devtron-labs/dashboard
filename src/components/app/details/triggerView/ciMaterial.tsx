@@ -38,16 +38,16 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     componentDidMount() {
-      this.getSecurityModuleStatus()
+        this.getSecurityModuleStatus()
     }
 
     async getSecurityModuleStatus(): Promise<void> {
-      try {
-          const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
-          if (result?.enabled) {
-              this.setState({ isBlobStorageConfigured: true })
-          }
-      } catch (error) {}
+        try {
+            const { result } = await getModuleConfigured(ModuleNameMap.BLOB_STORAGE)
+            if (result?.enabled) {
+                this.setState({ isBlobStorageConfigured: true })
+            }
+        } catch (error) {}
     }
 
     onClickStopPropagation = (e): void => {
@@ -141,7 +141,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let canTrigger = this.props.material.reduce((isValid, mat) => {
-            isValid = isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)
+            isValid =
+                (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
+                mat.branchErrorMsg === 'Source not configured'
             return isValid
         }, true)
         if (this.props.material.length > 0) {
@@ -161,6 +163,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
+                        appId={this.props.match.params.appId}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
                 </>

@@ -6,6 +6,7 @@ import { SourceTypeMap } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
+import { TriggerViewContext } from '../app/details/triggerView/TriggerView'
 export interface CIPipelineSourceConfigInterface {
     sourceType
     sourceValue
@@ -15,6 +16,9 @@ export interface CIPipelineSourceConfigInterface {
     regex?: any
     isRegex?: boolean
     primaryBranchAfterRegex?: string
+    // setPipelineId?: React.Dispatch<React.SetStateAction<string>>
+    // setPipelineTitle?: React.Dispatch<React.SetStateAction<string>>
+    downstreams?: string[]
 }
 
 export function CiPipelineSourceConfig({
@@ -26,6 +30,7 @@ export function CiPipelineSourceConfig({
     regex,
     isRegex,
     primaryBranchAfterRegex,
+    downstreams,
 }: CIPipelineSourceConfigInterface) {
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
     let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
@@ -33,7 +38,9 @@ export function CiPipelineSourceConfig({
     const [sourceValueBase, setSourceValueBase] = useState<ReactNode>('')
     const [sourceValueAdv, setSourceValueAdv] = useState<ReactNode>('')
     const [loading, setLoading] = useState(_isWebhook ? true : false)
-
+    // const [pipelineId, setPipelineId] = useState('')
+    // const [pipelineTitle, setPipelineTitle] = useState('')
+    let pipelineId= downstreams.forEach((downstream, index)=> downstream.split('-')[1])
     useEffect(() => {
         updateSourceValue()
     }, [sourceValue])
@@ -121,7 +128,11 @@ export function CiPipelineSourceConfig({
             showIcons= false
     }
     return (
-        <div className={showTooltip ? 'branch-name' : ''}>
+        <TriggerViewContext.Consumer>{(context)=>
+        <div className={showTooltip ? 'branch-name' : ''} onClick={(event) => {
+            event.stopPropagation()
+            // context.onClickCIMaterial(pipelineId)
+        }}>
             {loading && showIcons && <span className="dc__loading-dots">loading</span>}
             {!loading && (
                 <>
@@ -138,7 +149,7 @@ export function CiPipelineSourceConfig({
                                 {!baseText && (
                                     <div className="flex left">
                                         <div className="dc__ellipsis-right">{sourceValueBase}</div>
-                                        <Info className="icon-dim-12 fcn-5 ml-4" />
+                                        {sourceValue!=='--' ? <Info className="icon-dim-12 fcn-5 ml-4" /> : ''}
                                     </div>
                                 )}
                                 {baseText && (
@@ -156,6 +167,7 @@ export function CiPipelineSourceConfig({
                     )}
                 </>
             )}
-        </div>
+        </div>}
+        </TriggerViewContext.Consumer>
     )
 }

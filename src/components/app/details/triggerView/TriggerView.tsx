@@ -592,6 +592,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let ciPipelineMaterials = []
         for (let i = 0; i < node.inputMaterialList.length; i++) {
             if (node.inputMaterialList[i]) {
+                if (node.inputMaterialList[i].value==='--') continue
                 let history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) history.push(node.inputMaterialList[i].history[0])
                 history.map((element) => {

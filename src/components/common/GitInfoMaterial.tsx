@@ -13,7 +13,8 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
-import { noop } from '../common'
+import { getCIPipelineURL, noop } from '../common'
+import { useHistory } from 'react-router'
 
 export default function GitInfoMaterial({
     context,
@@ -29,9 +30,11 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     onClickShowBranchRegexModal,
+    appId,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
+    const { push } = useHistory()
     useEffect(() => {
         if (!selectedMaterial || !selectedMaterial.searchText) {
             setSearchText('')
@@ -209,6 +212,13 @@ export default function GitInfoMaterial({
                             noSearchResults={material.noSearchResult}
                             noSearchResultsMsg={material.noSearchResultsMsg}
                             clearSearch={clearSearch}
+                            appId={appId}
+                            handleGoToWorkFlowEditor={(e) => {
+                                var baseUrl = `/app/${appId}/edit/workflow`
+                                var url = getCIPipelineURL(appId=appId.toString(), workflowId= workflowId.toString(), pipelineId= pipelineId.toString())
+                                push(`${baseUrl}/${url}`)
+                                  
+                            }}
                         />
                     </div>
                 ) : (
