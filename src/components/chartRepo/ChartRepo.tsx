@@ -94,10 +94,12 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
 
     const handleCollapse = (e) => {
         if (isEditable) {
-            e.stopPropagation();
-            toggleCollapse(t => !t)
+            e.stopPropagation()
+            toggleCollapse((t) => !t)
         } else {
-            toast.info(`Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`)
+            toast.info(
+                `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`,
+            )
         }
     }
     return (
