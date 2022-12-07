@@ -45,8 +45,7 @@ const AppDetailsComponent = ({
     );
     if(appDeleteError){
         const handleConfigure = ()=>{
-            const url = `/app/dc/deployments/${params.appId}/env/${params.envId}/values`
-            push(url)
+            push(`/app/dc/deployments/${params.appId}/env/${params.envId}/values`)
         }
         return (
             <EmptyState>
