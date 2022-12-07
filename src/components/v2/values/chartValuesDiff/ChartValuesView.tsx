@@ -159,13 +159,13 @@ function ChartValuesView({
                     const _installedAppInfo = releaseInfoResponse.result.installedAppInfo
                     const _fetchedReadMe = commonState.fetchedReadMe
                     _fetchedReadMe.set(0, _releaseInfo.readme)
-
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
+                            selectedProject: _installedAppInfo? _installedAppInfo.teamName : "",
                             activeTab:
                                 !_releaseInfo.valuesSchemaJson || presetValueId || isCreateValueView ? 'yaml' : 'gui',
                         },
@@ -567,7 +567,7 @@ function ChartValuesView({
             isDeployChartView &&
             (!_validatedAppName.isValid ||
                 !commonState.selectedEnvironment ||
-                (serverMode === SERVER_MODE.FULL && !commonState.selectedProject))
+                (!commonState.selectedProject))
         ) {
             return false
         }
@@ -701,7 +701,7 @@ function ChartValuesView({
                 }
             } else if (isDeployChartView) {
                 const payload = {
-                    teamId: serverMode == SERVER_MODE.FULL ? commonState.selectedProject.value : 0,
+                    teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
                     referenceValueKind: commonState.chartValues.kind,
                     environmentId: serverMode == SERVER_MODE.FULL ? commonState.selectedEnvironment.value : 0,
@@ -1215,7 +1215,7 @@ function ChartValuesView({
                                 invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />
                         )}
-                        {!isExternalApp &&
+                        {
                             ((!isDeployChartView && commonState.selectedProject) ||
                                 (isDeployChartView)) && (
                                 <ChartProjectSelector

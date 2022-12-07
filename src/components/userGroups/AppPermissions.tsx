@@ -69,9 +69,9 @@ export default function AppPermissions({
     useEffect(() => {
         if (!data) {
             let emptyPermissionArr = [emptyDirectPermissionHelmApps]
-            if (serverMode !== SERVER_MODE.EA_ONLY) {
-                emptyPermissionArr.push(emptyDirectPermissionDevtronApps)
-            }
+
+            emptyPermissionArr.push(emptyDirectPermissionDevtronApps)
+
             setDirectPermission(emptyPermissionArr)
             return
         }
@@ -79,7 +79,7 @@ export default function AppPermissions({
     }, [data])
 
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
-        if (serverMode !== SERVER_MODE.EA_ONLY && directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
+        if ( directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
                 { label: 'All applications', value: '*' },
                 ...(
@@ -152,33 +152,35 @@ export default function AppPermissions({
             foundHelmApps = false,
             uniqueProjectIdsDevtronApps = [],
             uniqueProjectIdsHelmApps = []
-        if (serverMode !== SERVER_MODE.EA_ONLY) {
-            roleFilters?.forEach((element) => {
-                if (element.entity === EntityTypes.DIRECT) {
-                    const projectId = projectsMap.get(element.team)?.id
-                    if (typeof projectId !== 'undefined' && projectId != null) {
-                        if (!element['accessType']) {
-                            uniqueProjectIdsDevtronApps.push(projectId)
-                        } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
-                            uniqueProjectIdsHelmApps.push(projectId)
-                        }
+
+
+        roleFilters?.forEach((element) => {
+            if (element.entity === EntityTypes.DIRECT) {
+                const projectId = projectsMap.get(element.team)?.id
+                if (typeof projectId !== 'undefined' && projectId != null) {
+                    if (!element['accessType']) {
+                        uniqueProjectIdsDevtronApps.push(projectId)
+                    } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
+                        uniqueProjectIdsHelmApps.push(projectId)
                     }
                 }
-            })
-            await Promise.all([
-                fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
-                fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
-            ])
-        }
+            }
+        })
+
+        await Promise.all([
+            fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
+            fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
+        ])
+
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
             ?.filter(
                 (roleFilter: APIRoleFilter) =>
                     roleFilter.entity === EntityTypes.DIRECT &&
-                    (serverMode !== SERVER_MODE.EA_ONLY || roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS),
+                    (roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS),
             )
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId =
-                    serverMode !== SERVER_MODE.EA_ONLY &&
+
                     directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
                     projectsMap.get(directRolefilter.team)?.id
                 if (!directRolefilter['accessType']) {
@@ -201,7 +203,7 @@ export default function AppPermissions({
                 } as DirectPermissionsRoleFilter
             })
 
-        if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
+        if (!foundDevtronApps ) {
             directPermissions.push(emptyDirectPermissionDevtronApps)
         }
         if (!foundHelmApps) {
@@ -368,7 +370,7 @@ export default function AppPermissions({
                     foundHelmApps = true
                 }
             }
-            if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
+            if (!foundDevtronApps) {
                 permissionArr.push(emptyDirectPermissionDevtronApps)
             }
             if (!foundHelmApps) {
