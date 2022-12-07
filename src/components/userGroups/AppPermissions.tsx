@@ -176,11 +176,10 @@ export default function AppPermissions({
             ?.filter(
                 (roleFilter: APIRoleFilter) =>
                     roleFilter.entity === EntityTypes.DIRECT &&
-                    (roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS),
+                    (roleFilter.accessType===ACCESS_TYPE_MAP.DEVTRON_APPS || roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS ),
             )
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId =
-
                     directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
                     projectsMap.get(directRolefilter.team)?.id
                 if (!directRolefilter['accessType']) {
@@ -370,7 +369,7 @@ export default function AppPermissions({
                     foundHelmApps = true
                 }
             }
-            if (!foundDevtronApps) {
+            if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
                 permissionArr.push(emptyDirectPermissionDevtronApps)
             }
             if (!foundHelmApps) {
