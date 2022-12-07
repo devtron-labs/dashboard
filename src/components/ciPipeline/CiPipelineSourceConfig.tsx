@@ -40,7 +40,7 @@ export function CiPipelineSourceConfig({
     const [loading, setLoading] = useState(_isWebhook ? true : false)
     // const [pipelineId, setPipelineId] = useState('')
     // const [pipelineTitle, setPipelineTitle] = useState('')
-    let pipelineId= downstreams.forEach((downstream, index)=> downstream.split('-')[1])
+    // let pipelineId= downstreams.forEach((downstream, index)=> downstream.split('-')[1])
     useEffect(() => {
         updateSourceValue()
     }, [sourceValue])
