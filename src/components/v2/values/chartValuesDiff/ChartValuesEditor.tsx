@@ -18,6 +18,13 @@ import ReactSelect, { components } from 'react-select'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
+import {
+    CompareValuesSelectStyles,
+    GROUPED_OPTION_LABELS,
+    ListToTraverseKeys,
+    MANIFEST_OUTPUT_INFO_TEXT,
+    MANIFEST_OUTPUT_TIPPY_CONTENT,
+} from './ChartValuesView.constants'
 
 const formatOptionLabel = (option: ChartValuesDiffOptionType): JSX.Element => {
     return (
@@ -61,27 +68,24 @@ const CompareWithDropdown = ({
         const _groupedOptions = []
         if (deploymentHistoryOptionsList.length > 0) {
             _groupedOptions.push({
-                label: 'Previous deployments',
+                label: GROUPED_OPTION_LABELS.PreviousDeployments,
                 options: deploymentHistoryOptionsList,
             })
         }
+
+        const noOptions = [{ label: GROUPED_OPTION_LABELS.NoOptions, value: 0, info: '' }]
         _groupedOptions.push(
             {
-                label: 'Other apps using this chart',
-                options:
-                    deployedChartValues.length > 0
-                        ? deployedChartValues
-                        : [{ label: 'No options', value: 0, info: '' }],
+                label: GROUPED_OPTION_LABELS.OtherApps,
+                options: deployedChartValues.length > 0 ? deployedChartValues : noOptions,
             },
             {
-                label: 'Preset values',
-                options:
-                    presetChartValues.length > 0 ? presetChartValues : [{ label: 'No options', value: 0, info: '' }],
+                label: GROUPED_OPTION_LABELS.PresetValues,
+                options: presetChartValues.length > 0 ? presetChartValues : noOptions,
             },
             {
-                label: 'Default values',
-                options:
-                    defaultChartValues.length > 0 ? defaultChartValues : [{ label: 'No options', value: 0, info: '' }],
+                label: GROUPED_OPTION_LABELS.DefaultValues,
+                options: defaultChartValues.length > 0 ? defaultChartValues : noOptions,
             },
         )
         setGroupedOptions(_groupedOptions)
@@ -101,43 +105,7 @@ const CompareWithDropdown = ({
                 ValueContainer: customValueContainer,
                 Option,
             }}
-            styles={{
-                control: (base) => ({
-                    ...base,
-                    backgroundColor: 'var(--N100)',
-                    border: 'none',
-                    boxShadow: 'none',
-                    minHeight: '32px',
-                }),
-                option: (base, state) => ({
-                    ...base,
-                    color: 'var(--N900)',
-                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                }),
-                menu: (base) => ({
-                    ...base,
-                    marginTop: '2px',
-                    minWidth: '240px',
-                }),
-                menuList: (base) => ({
-                    ...base,
-                    position: 'relative',
-                    paddingBottom: 0,
-                    paddingTop: 0,
-                    maxHeight: '250px',
-                }),
-                dropdownIndicator: (base, state) => ({
-                    ...base,
-                    padding: 0,
-                    color: 'var(--N400)',
-                    transition: 'all .2s ease',
-                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                }),
-                noOptionsMessage: (base) => ({
-                    ...base,
-                    color: 'var(--N600)',
-                }),
-            }}
+            styles={CompareValuesSelectStyles}
             onChange={handleSelectedVersionForDiff}
         />
     )
@@ -321,8 +289,10 @@ export default function ChartValuesEditor({
             let _selectedVersionForDiff
             if (isCreateValueView && selectedChartValues && valuesForDiffState.selectedVersionForDiff) {
                 if (valuesForDiffState.selectedVersionForDiff.value !== selectedChartValues?.id) {
-                    let listToTraverse =
-                        selectedChartValues.kind === ChartKind.DEPLOYED ? 'deployedChartValues' : 'defaultChartValues'
+                    const listToTraverse =
+                        selectedChartValues.kind === ChartKind.DEPLOYED
+                            ? ListToTraverseKeys.deployedChartValues
+                            : ListToTraverseKeys.defaultChartValues
                     _selectedVersionForDiff = valuesForDiffState[listToTraverse].find(
                         (chartData) => chartData.value === selectedChartValues.id,
                     )
@@ -354,11 +324,11 @@ export default function ChartValuesEditor({
 
     const getDynamicHeight = (): string => {
         if (isDeployChartView && (!showInfoText || showEditorHeader)) {
-            return 'height: calc(100vh - 130px)'
+            return 'calc(100vh - 130px)'
         } else if (isDeployChartView || (!isDeployChartView && (!showInfoText || showEditorHeader))) {
-            return 'height: calc(100vh - 162px)'
+            return 'calc(100vh - 162px)'
         } else {
-            return 'height: calc(100vh - 196px)'
+            return 'calc(100vh - 196px)'
         }
     }
 
@@ -442,17 +412,12 @@ export default function ChartValuesEditor({
                     />
                 )}
                 {manifestView && showInfoText && (
-                    <CodeEditor.Information
-                        className="dc__ellipsis-right"
-                        text="Manifest is generated locally from the YAML."
-                    >
+                    <CodeEditor.Information className="dc__ellipsis-right" text={MANIFEST_OUTPUT_INFO_TEXT}>
                         <Tippy
                             className="default-tt w-250"
                             arrow={false}
                             placement="bottom"
-                            content={
-                                'This manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. whether an API is supported) is NOT done. K8s version based templating may be different depending on cluster version.'
-                            }
+                            content={MANIFEST_OUTPUT_TIPPY_CONTENT}
                         >
                             <span className="cursor cb-5 fw-6">&nbsp;Know more</span>
                         </Tippy>

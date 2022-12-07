@@ -16,7 +16,7 @@ import {
     ChartValuesViewActionTypes,
     ValueNameInputType,
     AppNameInputType,
-    ConnetToHelmChartTippyProps,
+    ConnectToHelmChartTippyProps,
     ActiveReadmeColumnProps,
     DeleteChartDialogProps,
     DeleteApplicationButtonProps,
@@ -26,6 +26,13 @@ import {
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import EmptyState from '../../../EmptyState/EmptyState'
 import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
+import {
+    CONNECT_TO_HELM_CHART_TEXTS,
+    DELETE_CHART_APP_DESCRIPTION_LINES,
+    DELETE_PRESET_VALUE_DESCRIPTION_LINES,
+    UPDATE_APP_BUTTON_TEXTS,
+} from './ChartValuesView.constants'
+import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -225,15 +232,13 @@ export const DeleteChartDialog = ({
         >
             {isCreateValueView ? (
                 <DeleteDialog.Description>
-                    <p>
-                        This will delete the preset value and it will no longer be available to be used for deployment.
-                    </p>
-                    <p>Are you sure?</p>
+                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.First}</p>
+                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.Second}</p>
                 </DeleteDialog.Description>
             ) : (
                 <DeleteDialog.Description>
-                    <p>This will delete all resources associated with this application.</p>
-                    <p>Deleted applications cannot be restored.</p>
+                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.First}</p>
+                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.Second}</p>
                 </DeleteDialog.Description>
             )}
         </DeleteDialog>
@@ -246,7 +251,7 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
             <div className="error-label-icon">
                 <Error className="icon-dim-16" />
             </div>
-            <div className="ml-4 cr-5">{message ? message : 'This is a required field'}</div>
+            <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
         </div>
     )
 }
@@ -355,21 +360,25 @@ export const UpdateApplicationButton = ({
                 <div className="flex">
                     <span>
                         {isCreateValueView
-                            ? `Saving ${chartValueId !== '0' ? 'changes' : 'value'}`
+                            ? `${UPDATE_APP_BUTTON_TEXTS.Saving} ${
+                                  chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
+                              }`
                             : isDeployChartView
-                            ? 'Deploying chart'
-                            : 'Updating and deploying'}
+                            ? UPDATE_APP_BUTTON_TEXTS.Deploying
+                            : UPDATE_APP_BUTTON_TEXTS.Updating}
                     </span>
                     <span className="ml-10">
                         <Progressing />
                     </span>
                 </div>
             ) : isCreateValueView ? (
-                `Save ${chartValueId !== '0' ? 'changes' : 'value'}`
+                `${UPDATE_APP_BUTTON_TEXTS.Save} ${
+                    chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
+                }`
             ) : isDeployChartView ? (
-                'Deploy chart'
+                UPDATE_APP_BUTTON_TEXTS.Deploy
             ) : (
-                'Update and deploy'
+                UPDATE_APP_BUTTON_TEXTS.Update
             )}
         </button>
     )
@@ -386,11 +395,11 @@ export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
     )
 }
 
-export const ConnetToHelmChartTippy = ({
+export const ConnectToHelmChartTippy = ({
     condition,
     hideConnectToChartTippy,
     children,
-}: ConnetToHelmChartTippyProps) => {
+}: ConnectToHelmChartTippyProps) => {
     return (
         <TippyCustomized
             theme={TippyTheme.black}
@@ -400,8 +409,8 @@ export const ConnetToHelmChartTippy = ({
             Icon={LinkIcon}
             iconClass="link-chart-icon"
             iconSize={32}
-            infoTextHeading="Connect app to helm chart and deploy"
-            infoText="Manifest output is available only for applications deployed using a connected helm chart."
+            infoTextHeading={CONNECT_TO_HELM_CHART_TEXTS.InfoTextHeading}
+            infoText={CONNECT_TO_HELM_CHART_TEXTS.InfoText}
             showCloseButton={true}
             trigger="manual"
             interactive={true}

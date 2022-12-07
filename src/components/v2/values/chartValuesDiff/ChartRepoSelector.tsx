@@ -9,8 +9,9 @@ import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../../config'
 import Tippy from '@tippyjs/react'
-import { ConnetToHelmChartTippy } from './ChartValuesView.component'
-import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
+import { ConnectToHelmChartTippy } from './ChartValuesView.component'
+import { getCommonSelectStyle, noMatchingOptions } from '../../common/ReactSelect.utils'
+import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
 
 export function ChartRepoSelector({
     isExternal,
@@ -97,7 +98,9 @@ export function ChartRepoSelector({
                         {props.data.chartRepoName}/{props.data.chartName}
                     </span>
                 </div>
-                {props.data.deprecated && <div className="dropdown__deprecated-text">Chart deprecated</div>}
+                {props.data.deprecated && (
+                    <div className="dropdown__deprecated-text">{CHART_DEPCRECATED_TEXTS.Label}</div>
+                )}
             </div>
         )
     }
@@ -112,9 +115,9 @@ export function ChartRepoSelector({
                             <Info className="icon-dim-16" />
                         </div>
                         <div className="sticky-information__note fs-13">
-                            Unable to find the desired chart? To connect or re-sync a repo.&nbsp;
+                            {CONNECT_CHART_REPO_TEXTS.InfoText}&nbsp;
                             <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank" className="fw-6">
-                                Go to chart repository
+                                {CONNECT_CHART_REPO_TEXTS.LinkText}
                             </NavLink>
                         </div>
                     </div>
@@ -126,8 +129,6 @@ export function ChartRepoSelector({
     const onFocus = (): void => {
         handleRepoChartFocus(false)
     }
-
-    const noMatchingOptions = () => 'No matching results'
 
     return (
         (isExternal || isUpdate) && (
@@ -150,7 +151,7 @@ export function ChartRepoSelector({
                     </Tippy>
                 </div>
                 <div className="repo-chart-selector flex">
-                    <ConnetToHelmChartTippy
+                    <ConnectToHelmChartTippy
                         condition={showConnectToChartTippy}
                         hideConnectToChartTippy={hideConnectToChartTippy}
                     >
@@ -180,20 +181,18 @@ export function ChartRepoSelector({
                                 clearIndicator: (base) => ({
                                     ...base,
                                     padding: '0px 8px',
-                                    color: 'var(--N400)'
+                                    color: 'var(--N400)',
                                 }),
                             })}
                         />
-                    </ConnetToHelmChartTippy>
+                    </ConnectToHelmChartTippy>
                 </div>
                 {repoChartValue.deprecated && (
                     <div className="chart-deprecated-wrapper flex top left br-4 cn-9 bcy-1 mt-12">
                         <div className="icon-dim-16 mr-10">
                             <Error className="icon-dim-16 chart-deprecated-icon" />
                         </div>
-                        <span className="chart-deprecated-text fs-12 fw-4">
-                            This chart has been deprecated. Please select another chart to continue receiving updates.
-                        </span>
+                        <span className="chart-deprecated-text fs-12 fw-4">{CHART_DEPCRECATED_TEXTS.InfoText}</span>
                     </div>
                 )}
             </div>

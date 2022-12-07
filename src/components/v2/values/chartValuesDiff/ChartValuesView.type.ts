@@ -336,7 +336,7 @@ export interface ChaartValuesGUIFormType {
     formValidationError: Record<string, boolean>
 }
 
-export interface ConnetToHelmChartTippyProps {
+export interface ConnectToHelmChartTippyProps {
     condition: boolean
     hideConnectToChartTippy: () => void
     children: React.ReactElement<any>

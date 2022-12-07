@@ -38,7 +38,7 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
     ValueNameInput,
-    ConnetToHelmChartTippy,
+    ConnectToHelmChartTippy,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -1291,7 +1291,7 @@ function ChartValuesView({
                             isExternalApp &&
                             !commonState.installedAppInfo &&
                             !commonState.showRepoSelector && (
-                                <ConnetToHelmChartTippy
+                                <ConnectToHelmChartTippy
                                     condition={commonState.showConnectToChartTippy}
                                     hideConnectToChartTippy={hideConnectToChartTippy}
                                 >
@@ -1302,7 +1302,7 @@ function ChartValuesView({
                                         linkOnClick={handleConnectToChartClick}
                                         linkText={renderConnectToHelmChart()}
                                     />
-                                </ConnetToHelmChartTippy>
+                                </ConnectToHelmChartTippy>
                             )}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
