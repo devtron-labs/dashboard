@@ -4,14 +4,13 @@ import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTa
 import MessageUI from '../v2/common/message.ui'
 import { getclusterEvents } from './clusterNodes.service'
 
-export default function ClusterEvents({ clusterId }) {
+export default function ClusterEvents({ clusterId }: { clusterId: number }) {
     const [events, setEvents] = useState([])
-    const [loading, setLoading] = useState<boolean>()
-    const [isResourceMissing, setIsResourceMissing] = useState(false)
+    const [loading, setLoading] = useState<boolean>(true)
+    const [isResourceMissing, setResourceMissing] = useState(false)
 
     useEffect(() => {
         if (clusterId) {
-            setLoading(true)
             getclusterEvents(clusterId)
                 .then((response) => {
                     setLoading(false)
@@ -20,10 +19,11 @@ export default function ClusterEvents({ clusterId }) {
                 })
                 .catch((error) => {
                     showError(error)
+                }).finally(() => {
                     setLoading(false)
                 })
         } else {
-            setIsResourceMissing(true)
+            setResourceMissing(true)
             setLoading(false)
         }
     }, [])

@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getclusterManifest } from './clusterNodes.service'
 import YAML from 'yaml'
 import { MODES } from '../../config'
 
-export default function ClusterManifest({ clusterId }) {
+export default function ClusterManifest({ clusterId }: { clusterId: number }) {
     const [manifestValue, setManifest] = useState('')
-    const [loading, setLoading] = useState<boolean>()
-    const [isResourceMissing, setIsResourceMissing] = useState(false)
+    const [loading, setLoading] = useState<boolean>(true)
+    const [isResourceMissing, setResourceMissing] = useState(false)
 
     useEffect(() => {
-        setLoading(true)
         if (clusterId) {
             getclusterManifest(clusterId)
                 .then((response) => {
@@ -20,11 +19,11 @@ export default function ClusterManifest({ clusterId }) {
                     setManifest(_manifest)
                 })
                 .catch((error) => {
-                    setIsResourceMissing(true)
+                    setResourceMissing(true)
                     setLoading(false)
                 })
         } else {
-            setIsResourceMissing(true)
+            setResourceMissing(true)
             setLoading(false)
         }
     }, [clusterId])
