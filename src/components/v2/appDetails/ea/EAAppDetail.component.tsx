@@ -113,7 +113,7 @@ function ExternalAppDetail({appId, appName}) {
                                         }))
                                         .sort(sortOptionsByValue) || [],
                             })
-                            setAppDeleteError(appDetailResponse.result?.appDetail.appDeleteError)
+                            setAppDeleteError(appDetailResponse.result?.appDetail?.appDeleteError)
                             setIsLoading(false)
                             isAPICallInProgress = false
                         })
