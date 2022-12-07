@@ -84,6 +84,11 @@
     transform: rotate(180deg);
 }
 
+.app-status-healthy {
+    background-image: url('../assets/icons/appstatus/ic-heart-green.svg');
+    background-size: 20px,20px;
+}
+
 .icon-dim-10 {
     width: 10px;
     height: 10px;

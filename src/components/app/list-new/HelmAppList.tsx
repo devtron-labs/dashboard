@@ -336,6 +336,9 @@ export default function HelmAppList({
                         </button>
                     )}
                 </div>
+                <div className="app-list__cell app-list__cell--cluster">
+                    <span className="app-list__cell-header">App Status</span>
+                </div>
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">Environment</span>
                     <Tippy
@@ -360,6 +363,14 @@ export default function HelmAppList({
         );
     }
 
+    function renderAppStatus(app) {
+        return (
+            <div className="app-list__cell app-list__cell--cluster">
+                <figure className={`progressing dc__app-summary__icon mr-4 icon-dim-20`}></figure>
+                <p className="dc__truncate-text  m-0"> {app.environmentDetail.clusterName}</p>
+            </div>
+        )
+    }
     function renderApplicationList() {
         return (
             <>
@@ -412,6 +423,7 @@ export default function HelmAppList({
                                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
                                     <div className="dc__truncate-text  m-0">{app.chartName}</div>
                                 </div>
+                                {renderAppStatus(app)}
                                 <div className="app-list__cell app-list__cell--env">
                                     <p className="dc__truncate-text  m-0">
                                         {app.environmentDetail.environmentName

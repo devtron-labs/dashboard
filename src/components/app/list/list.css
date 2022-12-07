@@ -166,6 +166,7 @@
     background-image: url('../../../assets/icons/appstatus/bg-white.svg');
 }
 
+.app-list__cell--app-status,
 .app-list__cell--env,
 .app-list__cell--cluster,
 .app-list__cell--namespace {

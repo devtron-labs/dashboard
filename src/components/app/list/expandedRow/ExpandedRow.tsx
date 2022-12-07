@@ -21,6 +21,10 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                         <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
                     </svg>
                 </div>
+                <div className="app-list__cell app-list__cell--app-status">
+                    <figure className={`${env.status.toLowerCase()} app-status-healthy mr-4 icon-dim-20`}></figure>
+                    {env.status}
+                </div>
                 <div className="app-list__cell app-list__cell--env">{env.name}</div>
                 <div className="app-list__cell app-list__cell--cluster">{env.clusterName}</div>
                 <div className="app-list__cell app-list__cell--namespace">{env.namespace}</div>

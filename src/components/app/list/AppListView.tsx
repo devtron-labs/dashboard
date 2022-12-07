@@ -11,7 +11,25 @@ import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-o
 import Tippy from '@tippyjs/react';
 import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
 
-export class AppListView extends Component<AppListViewProps>{
+export class AppListView extends Component<AppListViewProps> {
+
+    renderAppStatus(app) {
+        //show app status ,not cluster-name
+        if (app.defaultEnv && app.defaultEnv.name) {
+            let status = app.defaultEnv.status;
+            let statusImage = 'hibernating'
+            if( status === 'Not Deployed'){
+                status = ''
+            }
+            return (
+                <div className="app-list__cell app-list__cell--app-status">
+                    <figure className={`${statusImage} mr-4 icon-dim-20`}></figure>
+                    <p className="m-0 value"> {status}</p>
+                </div>
+            )
+            
+        } else return <div className="app-list__cell app-list__cell--cluster"></div>
+    }
 
     renderEnvironmentList(app) {
         let len = app.environments.length;
@@ -37,6 +55,9 @@ export class AppListView extends Component<AppListViewProps>{
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
                         </button>
+                    </div>
+                    <div className="app-list__cell app-list__cell--app-status">
+                        <span className="app-list__cell-header">App Status</span>
                     </div>
                     <div className="app-list__cell app-list__cell--env">
                         <span className="app-list__cell-header mr-4">Environment</span>
@@ -65,6 +86,7 @@ export class AppListView extends Component<AppListViewProps>{
                                 <div className="app-list__cell app-list__cell--name">
                                     <p className="dc__truncate-text  m-0 value">{app.name}</p>
                                 </div>
+                                {this.renderAppStatus(app)}
                                 {this.renderEnvironmentList(app)}
                                 <div className="app-list__cell app-list__cell--cluster">
                                     <p className="dc__truncate-text  m-0"> {app.defaultEnv ? app.defaultEnv.clusterName : ""}</p>
