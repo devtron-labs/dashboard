@@ -248,6 +248,7 @@ export interface ChartGroupState {
     noGitOpsConfigAvailable?: boolean
     pageOffset?: number,
     pageSize?: number,
+    hasMoreCharts?: boolean,
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {

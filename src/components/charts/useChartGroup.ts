@@ -44,7 +44,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         chartGroupDetailsLoading: false,
         noGitOpsConfigAvailable: false,
         pageOffset: PaginationParams.pageOffset,
-        pageSize: PaginationParams.pageSize
+        pageSize: PaginationParams.pageSize,
+        hasMoreCharts: true
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -178,12 +179,22 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
             if (resetPage){
                 const { result: availableCharts } = await getAvailableCharts(queryString, PaginationParams.pageOffset, state.pageSize)
+
+                if (availableCharts.length < state.pageSize){
+                    setState((state)=>({...state, hasMoreCharts: false}))
+                }
+
                 setState((state) => ({ ...state,
                     availableCharts: mapByKey(availableCharts,'id'),
                     pageOffset: state.pageOffset + state.pageSize}))
             }
             else{
                 const { result: availableCharts } = await getAvailableCharts(queryString,state.pageOffset, state.pageSize)
+
+                if (availableCharts.length < state.pageSize){
+                    setState((state)=>({...state, hasMoreCharts: false}))
+                }
+
                 setState((state) => ({ ...state,
                     availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]),
                     pageOffset: state.pageOffset + state.pageSize }))

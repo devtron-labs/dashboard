@@ -270,7 +270,7 @@ export default function ChartGroupUpdate({}) {
                                             selectedInstances={state.selectedInstances}
                                             isGrid={isGrid}
                                         />
-                                        <DetectBottom callback={reloadNextAfterBottom} />
+                                        {state.hasMoreCharts &&  <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
                                 )}
                             </div>

@@ -412,7 +412,7 @@ function DiscoverChartList() {
 
                                                                     ))}
 
-                                                                <DetectBottom callback={reloadNextAfterBottom} />
+                                                                {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
 
 
                                                             </div>
