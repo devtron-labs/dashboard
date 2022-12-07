@@ -493,7 +493,7 @@ export default function ClusterTerminal({
                     </div>
                 )}
                 {selectedTabIndex === 1 && (
-                    <div className="h-100">
+                    <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents clusterId={terminalAccessId} />
                     </div>
                 )}
