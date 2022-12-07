@@ -20,6 +20,7 @@ export default function ClusterManifest({ clusterId }: { clusterId: number }) {
                 })
                 .catch((error) => {
                     setResourceMissing(true)
+                }).finally(() => {
                     setLoading(false)
                 })
         } else {

@@ -1,11 +1,13 @@
 import moment from 'moment'
 import React from 'react'
+import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
+import { EventTableType } from './node.type'
 
-export function EventsTable({ loading, eventsList }) {
+export function EventsTable({ loading, eventsList }: EventTableType) {
     const renderEventsTable = () => {
         if (loading) {
-            return <MessageUI msg="Fetching events" icon={MsgUIType.LOADING} size={24} />
+            return <MessageUI msg={MESSAGING_UI.FETCHING_EVENTS} icon={MsgUIType.LOADING} size={24} />
         } else {
             if (eventsList && eventsList.length > 0) {
                 return (
@@ -55,10 +57,10 @@ export function EventsTable({ loading, eventsList }) {
                     </div>
                 )
             } else {
-                return <MessageUI msg="Events not available" size={24} />
+                return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
             }
         }
     }
 
-    return <React.Fragment>{renderEventsTable()}</React.Fragment>
+    return <>{renderEventsTable()}</>
 }

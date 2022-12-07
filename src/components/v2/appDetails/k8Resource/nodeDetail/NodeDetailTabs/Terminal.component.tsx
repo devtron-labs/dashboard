@@ -165,7 +165,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                     nodeName={params.podName}
                     containerName={selectedContainerName}
                     socketConnection={socketConnection}
-                    terminalCleared={terminalCleared}
+                    isTerminalCleared={terminalCleared}
                     shell={selectedtTerminalType}
                     setTerminalCleared={setTerminalCleared}
                     setSocketConnection={setSocketConnection}

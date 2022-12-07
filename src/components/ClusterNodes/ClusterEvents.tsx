@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { showError } from '../common'
-import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Events.table'
+import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable'
 import MessageUI from '../v2/common/message.ui'
 import { getclusterEvents } from './clusterNodes.service'
 

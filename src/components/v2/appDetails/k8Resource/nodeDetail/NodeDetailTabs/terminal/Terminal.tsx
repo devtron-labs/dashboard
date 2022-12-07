@@ -13,6 +13,7 @@ import IndexStore from '../../../../index.store'
 import { AppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline, showError } from '../../../../../../common'
 import { ServerErrors } from '../../../../../../../modals/commonTypes'
+import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/types'
 
 let socket = undefined
 let terminal = undefined
@@ -115,8 +116,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         })
 
         _socket.onopen = function () {
-            if (terminalViewProps.clusterTerminal) {
-                preFetchData('Running', true)
+            if (terminalViewProps.isClusterTerminal) {
+                preFetchData(CLUSTER_STATUS.RUNNING, true)
             }
             const startData = { Op: 'bind', SessionID: sessionId }
             _socket.send(JSON.stringify(startData))
@@ -146,7 +147,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onclose = function (evt) {
             disableInput()
-            if (terminalViewProps.clusterTerminal) {
+            if (terminalViewProps.isClusterTerminal) {
                 _terminal.writeln('')
                 _terminal.writeln('---------------------------------------------')
                 _terminal.writeln(`Disconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
@@ -176,11 +177,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         _terminal?.reset()
 
         _terminal.write('Creating pod.')
-        if (status === 'Running') {
+        if (status === CLUSTER_STATUS.RUNNING) {
             _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
             _terminal.writeln('')
             _terminal.write('Connecting to pod terminal.')
-        } else if (status === 'Failed') {
+        } else if (status === CLUSTER_STATUS.FAILED) {
             _terminal.write(' \u001b[31mFailed\u001b[0m')
             _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
             _terminal.write(' | ')
@@ -225,7 +226,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
 
-        if (!terminalViewProps.clusterTerminal) {
+        if (!terminalViewProps.isClusterTerminal) {
             reconnect()
         } else {
             terminal?.reset()
@@ -239,7 +240,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
 
-        if (!terminalViewProps.clusterTerminal) {
+        if (!terminalViewProps.isClusterTerminal) {
             reconnect()
         } else {
             terminal?.reset()
@@ -253,7 +254,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
 
-        if (!terminalViewProps.clusterTerminal) {
+        if (!terminalViewProps.isClusterTerminal) {
             reconnect()
         } else {
             terminal?.reset()
@@ -262,19 +263,19 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     useEffect(() => {
         terminal?.reset()
-    }, [terminalViewProps.toggleOption])
+    }, [terminalViewProps.isToggleOption])
 
     useEffect(() => {
-        if (terminalViewProps.terminalCleared) {
+        if (terminalViewProps.isTerminalCleared) {
             terminal?.clear()
             terminal?.focus()
             terminalViewProps.setTerminalCleared(false)
         }
-    }, [terminalViewProps.terminalCleared])
+    }, [terminalViewProps.isTerminalCleared])
 
     useEffect(() => {
         if (firstMessageReceived) {
-            if (terminalViewProps.clusterTerminal) {
+            if (terminalViewProps.isClusterTerminal) {
                 if (terminalViewProps.isterminalTab) {
                     fitAddon.fit()
                 }
@@ -326,12 +327,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }, [])
 
     useEffect(() => {
-        if (terminalViewProps.terminalCleared) {
+        if (terminalViewProps.isTerminalCleared) {
             terminal?.clear()
             terminal?.focus()
             terminalViewProps.setTerminalCleared(false)
         }
-    }, [terminalViewProps.terminalCleared])
+    }, [terminalViewProps.isTerminalCleared])
 
     const getClusterData = (url, count) => {
         if (
@@ -361,7 +362,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     postInitialize(sessionId)
                     preFetchData(status)
                 } else {
-                    preFetchData('Failed', false)
+                    preFetchData(CLUSTER_STATUS.FAILED, false)
                 }
             })
             .catch((err) => {
@@ -376,7 +377,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const getNewSession = () => {
-        if (terminalViewProps.clusterTerminal) {
+        if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
             getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 8)
         } else {
@@ -427,7 +428,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const clusterSocketConnecting: boolean =
-        terminalViewProps.clusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
+        terminalViewProps.isClusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
 
     const renderConnectionStrip = () => {
         if (!isOnline) {
@@ -436,7 +437,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     You’re offline. Please check your internet connection.
                 </div>
             )
-        } else if (terminalViewProps.fetchRetry) {
+        } else if (terminalViewProps.isFetchRetry) {
             return (
                 <div className="bcr-7 pl-20 cn-0">
                     Concurrent connection limit reached.&nbsp;

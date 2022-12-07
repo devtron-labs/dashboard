@@ -34,37 +34,37 @@ export const updateNodeManifest = (
 }
 
 export const clusterTerminalStart = (data): Promise<ResponseType> => {
-    return put(`${Routes.CLUSTER_TERMINAL}/start`, data)
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
 }
 
 export const clusterterminalUpdate = (data): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/update`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
 }
 
 export const clusterterminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/disconnect?terminalAccessId=${terminalAccessId}`, null)
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT}?terminalAccessId=${terminalAccessId}`, null)
 }
 
 export const clusterDisconnectAndRetry = (data):  Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/disconnectAndRetry`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT_RETRY}`, data)
 }
 
 export const clusterTerminalStop = (terminalAccessId):  Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/stop?terminalAccessId=${terminalAccessId}`, null)
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
 }
 
 export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/update/shell`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE_SHELL}`, data)
 }
 
 export const clusterNamespaceList = (): Promise<ResponseType> => {
-    return get('/cluster/namespaces')
+    return get(`/${Routes.CLUSTER_NAMESPACE}`)
 }
 
 export const getclusterManifest = (terminalAccessId):  Promise<ResponseType> => {
-    return get(`${Routes.CLUSTER_TERMINAL}/pod/manifest?terminalAccessId=${terminalAccessId}`)
+    return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_MANIFEST}?terminalAccessId=${terminalAccessId}`)
 }
 
 export const getclusterEvents = (terminalAccessId):  Promise<ResponseType> => {
-    return get(`${Routes.CLUSTER_TERMINAL}/pod/events?terminalAccessId=${terminalAccessId}`)
+    return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
 }

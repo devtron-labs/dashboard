@@ -29,7 +29,7 @@ import ClusterEvents from './ClusterEvents'
 import TippyWhite from '../common/TippyWhite'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
-import { clusterSelectStyle, ClusterTerminalType } from './types'
+import { clusterSelectStyle, ClusterTerminalType, CLUSTER_STATUS } from './types'
 
 export default function ClusterTerminal({
     clusterId,
@@ -107,7 +107,7 @@ export default function ClusterTerminal({
                         showError(error)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                             error.errors.map(({ userMessage }) => {
-                                if (userMessage === 'session-limit-reached') {
+                                if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
                                     setRetry(true)
                                     setConnectTerminal(true)
                                 }
@@ -265,15 +265,15 @@ export default function ClusterTerminal({
                 nodeName={selectedContainerName.label}
                 containerName={selectedContainerName.label}
                 socketConnection={socketConnection}
-                terminalCleared={terminalCleared}
+                isTerminalCleared={terminalCleared}
                 shell={selectedtTerminalType}
                 setTerminalCleared={setTerminalCleared}
                 setSocketConnection={setSocketConnection}
-                clusterTerminal={true}
+                isClusterTerminal={true}
                 terminalId={terminalAccessId}
                 disconnectRetry={disconnectRetry}
-                fetchRetry={fetchRetry}
-                toggleOption={toggleOption}
+                isFetchRetry={fetchRetry}
+                isToggleOption={toggleOption}
                 isFullScreen={fullScreen}
                 isterminalTab={selectedTabIndex === 0}
                 setTerminalTab={setSelectedTabIndex}

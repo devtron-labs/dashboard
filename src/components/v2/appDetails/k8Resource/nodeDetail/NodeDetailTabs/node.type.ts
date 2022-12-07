@@ -3,17 +3,22 @@ export interface TerminalViewProps {
     shell: any
     containerName: string
     socketConnection: SocketConnectionType
-    terminalCleared: boolean
+    isTerminalCleared: boolean
     setTerminalCleared: (terminalCleared: boolean) => void
     setSocketConnection: (socketConnection: SocketConnectionType) => void
-    clusterTerminal?: boolean
+    isClusterTerminal?: boolean
     terminalId?: string
-    fetchRetry?: boolean
+    isFetchRetry?: boolean
     disconnectRetry?: () => void
-    toggleOption?: boolean
+    isToggleOption?: boolean
     isFullScreen?: boolean
     isterminalTab?: boolean
     setTerminalTab?: (selectedTabIndex: number) => void
+}
+
+export interface EventTableType {
+    loading: boolean,
+     eventsList: any[]
 }
 
 export enum SocketConnectionType {

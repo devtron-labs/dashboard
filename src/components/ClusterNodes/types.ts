@@ -147,6 +147,12 @@ export const TEXT_COLOR_CLASS = {
     'Not ready': 'cr-5',
 }
 
+export const CLUSTER_STATUS = {
+    RUNNING: 'Running',
+    FAILED: 'Failed',
+    SESSION_LIMIT_REACHED :'session-limit-reached'
+}
+
 export const COLUMN_METADATA: ColumnMetadataType[] = [
     {
         sortType: 'string',

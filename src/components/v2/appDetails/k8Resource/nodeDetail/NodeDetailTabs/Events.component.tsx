@@ -6,7 +6,8 @@ import { getEvent } from '../nodeDetail.api';
 import { NodeType } from '../../../appDetails.type';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { showError } from '../../../../../common';
-import { EventsTable } from './Events.table';
+import { EventsTable } from './EventsTable';
+import { MESSAGING_UI } from '../../../../../../config/constants';
 
 function EventsComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
@@ -47,7 +48,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
         <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
             {isDeleted ? (
                 <div>
-                    <MessageUI msg="This resource no longer exists" size={32} />
+                    <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} />
                 </div>
             ) : (
                 pods &&
@@ -55,7 +56,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                     <EventsTable loading={loading} eventsList={events} />
                 )
             )}
-            {pods.length === 0 && <MessageUI msg="Events not available" size={24} />}
+            {pods.length === 0 && <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />}
         </div>
     );
 }
