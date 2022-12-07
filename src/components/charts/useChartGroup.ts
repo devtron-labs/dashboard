@@ -209,7 +209,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
 
     function resetPaginationOffset(): void{
-        setState((state)=>( {...state, pageOffset: 0, availableCharts: new Map<number, Chart>()} ))
+        setState((state)=>( {...state, pageOffset: 0, hasMoreCharts: true, availableCharts: new Map<number, Chart>()} ))
     }
 
 
