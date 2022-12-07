@@ -45,7 +45,6 @@ const AppDetailsComponent = ({
     );
     if(appDeleteError){
         const handleConfigure = ()=>{
-            console.log(push)
             const url = `/app/dc/deployments/${params.appId}/env/${params.envId}/values`
             push(url)
         }
