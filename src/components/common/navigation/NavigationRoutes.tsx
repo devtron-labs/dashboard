@@ -6,6 +6,7 @@ import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
+import TagManager from 'react-gtm-module'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -144,6 +145,13 @@ export default function NavigationRoutes() {
                         action: 'First Land',
                     })
                 })
+            }
+
+            if (window._env_.GTM_ENABLED) {
+                const tagManagerArgs = {
+                    gtmId: window._env_.GTM_ID,
+                }
+                TagManager.initialize(tagManagerArgs)
             }
         }
 
