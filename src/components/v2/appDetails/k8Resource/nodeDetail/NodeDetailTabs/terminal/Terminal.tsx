@@ -174,7 +174,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const preFetchData = (status = '', firstMessageReceived = false) => {
         const _terminal = terminal
         _terminal?.reset()
-        // const _fitAddon = fitAddon
 
         _terminal.write('Creating pod.')
         if (status === 'Running') {
@@ -182,7 +181,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             _terminal.writeln('')
             _terminal.write('Connecting to pod terminal.')
         } else if (status === 'Failed') {
-            _terminal.write('Failed')
+            _terminal.write(' \u001b[31mFailed\u001b[0m')
             _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
             _terminal.write(' | ')
             _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
@@ -353,13 +352,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             .then((response: any) => {
                 let sessionId = response.result.userTerminalSessionId
                 let status = response.result.status
-                preFetchData(status)
                 if (!sessionId && count) {
+                    preFetchData(status)
                     clustertimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
                     }, 3000)
                 } else if (sessionId) {
                     postInitialize(sessionId)
+                    preFetchData(status)
                 } else {
                     preFetchData('Failed', false)
                 }
