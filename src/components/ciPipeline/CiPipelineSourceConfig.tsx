@@ -137,8 +137,13 @@ export function CiPipelineSourceConfig({
                             <div>
                                 {!baseText && (
                                     <div className="flex left">
-                                        <div className="dc__ellipsis-right">{sourceValueBase}</div>
-                                        {sourceValue!=='--' ? <Info className="icon-dim-12 fcn-5 ml-4" /> : ''}
+                                        <div
+                                            className="dc__ellipsis-right"
+                                            style={sourceValue === 'Not Configured' ? { color: 'red' } : null}
+                                        >
+                                            {sourceValueBase}
+                                        </div>
+                                        {sourceValue !== '--' ? <Info className="icon-dim-12 fcn-5 ml-4" /> : ''}
                                     </div>
                                 )}
                                 {baseText && (

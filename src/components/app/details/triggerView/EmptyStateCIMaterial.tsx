@@ -52,7 +52,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
                         {this.props.repoUrl}
                     </a>
                 ) : (
-                    <h1 className="dc__empty-title fs-13">{notConfiguredError}</h1>
+                    <h1 className="dc__empty-title fs-13" style={{color: 'gray'}}>{notConfiguredError}</h1>
                 ),
                 cta: this.props.repoUrl ? null : (
                         <button type="button" className="cta flex" onClick={this.props.handleGoToWorkFlowEditor}>

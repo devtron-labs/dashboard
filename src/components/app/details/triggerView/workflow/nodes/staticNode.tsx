@@ -19,14 +19,20 @@ export interface StaticNodeProps {
     regex?: string
     isRegex?: boolean
     primaryBranchAfterRegex?: string
+    handleGoToWorkFlowEditor?: (...args)=>void
 }
 
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
         return (
-            <div className={`workflow-node workflow-node--static ${this.props.branch==='Not Configured' ? "workflow-node--dash" : ""}`}>
+            <div
+                className={`workflow-node workflow-node--static ${
+                    this.props.branch === 'Not Configured' ? 'cursor workflow-node--dash' : ''
+                }`}
+                onClick={this.props.branch === 'Not Configured' ? this.props.handleGoToWorkFlowEditor : null}
+            >
                 <div className={`workflow-node__git-icon`} />
-                <div className="workflow-node__title workflow-node__title--static" >
+                <div className="workflow-node__title workflow-node__title--static">
                     <span>/{this.props.title}</span>
                     <CiPipelineSourceConfig
                         sourceType={this.props.sourceType}

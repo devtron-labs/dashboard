@@ -140,10 +140,17 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
+        let isMaterialActive = false
+        for (let i = 0; i < this.props.material.length; i++) {
+            if (this.props.material[i].active) {
+                isMaterialActive = true
+                break
+            }
+        }
         let canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =
                 (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
-                mat.branchErrorMsg === 'Source not configured'
+                (mat.branchErrorMsg === 'Source not configured' && isMaterialActive)
             return isValid
         }, true)
         if (this.props.material.length > 0) {

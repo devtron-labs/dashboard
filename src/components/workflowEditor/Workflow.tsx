@@ -120,7 +120,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
-        const _nodesData = this.getNodesData(ci?.id || webhook?.id ||'')
+        const _nodesData = this.getNodesData(ci?.id || webhook?.id || '')
         const _nodes = _nodesData.nodes
 
         if (ci) {
@@ -141,21 +141,21 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 return this.renderCDNodes(node, ci.id, false)
             })
         } else if (webhook) {
-          return _nodes.map((node: NodeAttr) => {
-              if (node.type == WorkflowNodeType.WEBHOOK) {
-                  return this.renderWebhookNode(node)
-              } else if (_nodesData.cdNamesList.length > 0) {
-                  return (
-                      <>
-                          {this.renderAdditionalEdge()}
-                          {this.renderCDNodes(node, webhook.id, true, _nodesData.cdNamesList)}
-                      </>
-                  )
-              }
+            return _nodes.map((node: NodeAttr) => {
+                if (node.type == WorkflowNodeType.WEBHOOK) {
+                    return this.renderWebhookNode(node)
+                } else if (_nodesData.cdNamesList.length > 0) {
+                    return (
+                        <>
+                            {this.renderAdditionalEdge()}
+                            {this.renderCDNodes(node, webhook.id, true, _nodesData.cdNamesList)}
+                        </>
+                    )
+                }
 
-              return this.renderCDNodes(node, webhook.id, true)
-          })
-      } else {
+                return this.renderCDNodes(node, webhook.id, true)
+            })
+        } else {
             return this.renderAddCIpipeline()
         }
     }
@@ -187,6 +187,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
     renderSourceNode(node, ci) {
+        let appId = this.props.match.params.appId
+        let workflowId = this.props.id
+        let pipelineId = node.downstreams[0].split('-')[1]
         return (
             <StaticNode
                 x={node.x}
@@ -205,27 +208,32 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
                 to={this.openCIPipeline(ci)} //ci attribites for a git material
                 hideWebhookTippy={this.props.hideWebhookTippy}
+                handleGoToWorkFlowEditor={(e) => {
+                    var baseUrl = `/app/${appId}/edit/workflow`
+                    var url = getCIPipelineURL(appId.toString(), workflowId.toString(), pipelineId.toString())
+                    this.props.history.push(`${baseUrl}/${url}`)
+                }}
             />
         )
     }
     renderWebhookNode(node) {
-      return (
-          <WebhookNode
-              x={node.x}
-              y={node.y}
-              height={node.height}
-              width={node.width}
-              key={`webhook-${node.id}`}
-              id={node.id}
-              to={this.openWebhookDetails(node)}
-              configDiffView={this.props.cdWorkflowList?.length > 0}
-              toggleCDMenu={() => {
-                  this.props.hideWebhookTippy()
-                  this.props.handleCDSelect(this.props.id, node.id, PipelineType.WEBHOOK, node.id, true)
-              }}
-              hideWebhookTippy={this.props.hideWebhookTippy}
-          />
-      )
+        return (
+            <WebhookNode
+                x={node.x}
+                y={node.y}
+                height={node.height}
+                width={node.width}
+                key={`webhook-${node.id}`}
+                id={node.id}
+                to={this.openWebhookDetails(node)}
+                configDiffView={this.props.cdWorkflowList?.length > 0}
+                toggleCDMenu={() => {
+                    this.props.hideWebhookTippy()
+                    this.props.handleCDSelect(this.props.id, node.id, PipelineType.WEBHOOK, node.id, true)
+                }}
+                hideWebhookTippy={this.props.hideWebhookTippy}
+            />
+        )
     }
 
     openCDPipeline(node: NodeAttr, isWebhookCD: boolean) {
@@ -233,13 +241,19 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return (
             this.props.match.url +
             '/' +
-            getCDPipelineURL(appId, this.props.id.toString(), String(node.connectingCiPipelineId ?? 0), isWebhookCD, node.id)
+            getCDPipelineURL(
+                appId,
+                this.props.id.toString(),
+                String(node.connectingCiPipelineId ?? 0),
+                isWebhookCD,
+                node.id,
+            )
         )
     }
 
     openCIPipeline(node: NodeAttr) {
-        if(node.isExternalCI && !node.isLinkedCI){
-          return `${this.props.match.url}/deprecated-warning`
+        if (node.isExternalCI && !node.isLinkedCI) {
+            return `${this.props.match.url}/deprecated-warning`
         }
         let { appId } = this.props.match.params
         let url = ''
@@ -346,8 +360,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     renderWebhookTippyContent() {
-      const webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
-      return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
+        const webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
+        return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
     }
 
     renderWorkflow() {

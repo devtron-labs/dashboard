@@ -20,21 +20,19 @@ export interface StaticNodeProps {
     regex?: string
     primaryBranchAfterRegex?: string
     to?: string
-    hideWebhookTippy?: ()=>void
+    hideWebhookTippy?: () => void
+    handleGoToWorkFlowEditor?: (...args) => void
 }
 
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
         return (
-            <ConditionalWrap 
-                condition={this.props.branch==="Not Configured"}
-                wrap={(children)=>(
-                    <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
-                        {children}
-                    </Link>
-                )}
-                >
-            <div className={`workflow-node workflow-node--static ${this.props.branch==='Not Configured' ? "workflow-node--dash" : ""}`}>
+            <div
+                className={`workflow-node workflow-node--static ${
+                    this.props.branch === 'Not Configured' ? 'cursor workflow-node--dash' : ''
+                }`}
+                onClick={this.props.branch === 'Not Configured' ? this.props.handleGoToWorkFlowEditor : null}
+            >
                 <div className={`workflow-node__git-icon`} />
                 <div className="workflow-node__title workflow-node__title--static">
                     <span>/{this.props.title}</span>
@@ -47,7 +45,6 @@ export class StaticNode extends Component<StaticNodeProps> {
                     />
                 </div>
             </div>
-            </ConditionalWrap>
         )
     }
 

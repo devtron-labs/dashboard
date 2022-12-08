@@ -5,10 +5,11 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { RectangularEdge as Edge } from '../../../../common'
+import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
+import { useHistory } from 'react-router-dom'
 
 export class Workflow extends Component<WorkflowProps> {
     renderNodes() {
@@ -18,8 +19,8 @@ export class Workflow extends Component<WorkflowProps> {
             } else if (node.type === WorkflowNodeType.CI) {
                 return this.renderCINodes(node)
             } else if (node.type === PipelineType.WEBHOOK) {
-              return this.renderWebhookNode(node)
-          } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
+                return this.renderWebhookNode(node)
+            } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
                 return this.renderPrePostCDNodes(node)
             } else if (node.type === WorkflowNodeType.CD) {
                 return this.renderCDNodes(node)
@@ -28,6 +29,9 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     renderSourceNode(node: NodeAttr) {
+        let appId = this.props.match.params.appId
+        let workflowId = this.props.id
+        let pipelineId = node.downstreams[0].split('-')[1]
         return (
             <StaticNode
                 key={`${node.type}-${node.id}`}
@@ -46,20 +50,29 @@ export class Workflow extends Component<WorkflowProps> {
                 regex={node.regex}
                 isRegex={node.isRegex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
+                handleGoToWorkFlowEditor={(e) => {
+                    var baseUrl = `/app/${appId}/edit/workflow`
+                    var url = getCIPipelineURL(
+                        (appId = appId.toString()),
+                        (workflowId = workflowId.toString()),
+                        (pipelineId = pipelineId.toString()),
+                    )
+                    this.props.history.push(`${baseUrl}/${url}`)
+                }}
             />
         )
     }
     renderWebhookNode(node) {
-      return (
-          <WebhookNode
-              x={node.x}
-              y={node.y}
-              height={node.height}
-              width={node.width}
-              key={`webhook-${node.id}`}
-              id={node.id}
-          />
-      )
+        return (
+            <WebhookNode
+                x={node.x}
+                y={node.y}
+                height={node.height}
+                width={node.width}
+                key={`webhook-${node.id}`}
+                id={node.id}
+            />
+        )
     }
 
     renderCINodes(node: NodeAttr) {
