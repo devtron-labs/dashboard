@@ -50,7 +50,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                 await Promise.allSettled([
                     getChartRepoList(),
                     serverMode == SERVER_MODE.FULL ? getChartGroups() : { value:{ status: "fulfilled",result: undefined} },
-                    getAvailableCharts(`?includeDeprecated=1`),
                     getTeamList(),
                     getEnvironmentListMin(),
                     isGitOpsModuleInstalledAndConfigured(),
@@ -58,7 +57,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     const [
                         chartRepoList,
                         chartGroup,
-                        availableCharts,
                         projects,
                         environments,
                         gitOpsModuleInstalledAndConfigured,
@@ -77,7 +75,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         loading: false,
                         chartRepos,
                         chartGroups: chartGroup?.groups || [],
-                        availableCharts: mapByKey(availableCharts, 'id'),
                         projects,
                         environments,
                         noGitOpsConfigAvailable:
