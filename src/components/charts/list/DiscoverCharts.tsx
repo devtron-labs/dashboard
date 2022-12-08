@@ -411,11 +411,12 @@ function DiscoverChartList() {
                                                                         />
 
                                                                     ))}
-                                                                {state.hasMoreCharts && <Progressing/>}
                                                                 {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
 
 
                                                             </div>
+                                                            {state.hasMoreCharts && <Progressing size={25} styles={{height:'0%', paddingBottom:'5px'}}/>}
+
                                                         </>
                                                     ) : (
                                                         <ChartEmptyState onClickViewChartButton={clearSearch}>
