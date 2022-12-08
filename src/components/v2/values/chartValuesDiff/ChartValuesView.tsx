@@ -704,7 +704,7 @@ function ChartValuesView({
                     teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
                     referenceValueKind: commonState.chartValues.kind,
-                    environmentId: serverMode == SERVER_MODE.FULL ? commonState.selectedEnvironment.value : 0,
+                    environmentId: commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0,
                     clusterId: commonState.selectedEnvironment.clusterId,
                     namespace: commonState.selectedEnvironment.namespace,
                     appStoreVersion: commonState.selectedVersion,
