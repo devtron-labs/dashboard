@@ -411,8 +411,8 @@ function DiscoverChartList() {
                                                                         />
 
                                                                     ))}
-
-                                                                {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
+                                                                {state.hasMoreCharts && <Progressing pageLoader/>}
+                                                                {state.hasMoreCharts && <Progressing pageLoader/>  && <DetectBottom callback={reloadNextAfterBottom} />}
 
 
                                                             </div>
