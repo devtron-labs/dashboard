@@ -9,7 +9,7 @@ import { URLS, Host, DOCUMENTATION } from '../../config'
 import { Progressing, showError } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
-import './login.css'
+import './login.scss'
 import { dashboardAccessed } from '../../services/service'
 
 export default class Login extends Component<LoginProps, LoginFormState> {

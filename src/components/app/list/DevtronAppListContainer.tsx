@@ -9,7 +9,7 @@ import { showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import './list.css';
+import './list.scss';
 
 class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;

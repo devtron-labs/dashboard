@@ -8,21 +8,27 @@
     z-index: 1;
 }
 
-.app-list-filters.filters .filter {
-    min-width: unset;
-    flex-basis: unset;
-}
+.app-list-filters {
+    &.filters {
+        .filter {
+            min-width: unset;
+            flex-basis: unset;
 
-.app-list-filters.filters .filter .filter__trigger {
-    padding: 1px 12px;
-}
+            .filter__trigger {
+                padding: 1px 12px;
+            }
 
-.app-list-filters.filters .filter .filter__menu {
-    min-width: 200px;
-}
+            .filter__menu {
+                min-width: 200px;
+            }
 
-.app-list-filters.filters .filter button .filter-icon {
-    margin-left: 10px;
+            button {
+                .filter-icon {
+                    margin-left: 10px;
+                }
+            }
+        }
+    }
 }
 
 .filters {
@@ -96,8 +102,12 @@
     z-index: var(--app-list-header-index);
 }
 
-.saved-filters + .app-list .app-list__header {
-    top: 116px;
+.saved-filters {
+    &+.app-list {
+        .app-list__header {
+            top: 116px;
+        }
+    }
 }
 
 .app-list__row {
@@ -115,6 +125,38 @@
     cursor: pointer;
     background-color: white;
     box-shadow: inset 0 -1px 0 0 var(--N100);
+
+    &:hover {
+        text-decoration: none;
+        color: var(--N900);
+        background-color: var(--N100);
+
+        .app-list__cell--status {
+            .bg {
+                background-image: url('../../../assets/icons/appstatus/bg-gray.svg');
+            }
+        }
+
+        .cell__link {
+            color: var(--B500);
+            font-weight: 600;
+        }
+
+        .dc__app-commit__hash {
+            background-color: var(--N000);
+            color: var(--N700);
+        }
+
+        .app-list__cell--action {
+            visibility: visible;
+        }
+    }
+
+    .dc__app-commit__hash {
+        &:hover {
+            color: var(--B500);
+        }
+    }
 }
 
 .app-list__cell {
@@ -150,20 +192,20 @@
     justify-content: flex-start;
     flex-basis: 18%;
     padding-left: 0px;
-}
 
-.app-list__cell--name .value {
-    color: #0066cc;
+    .value {
+        color: #0066cc;
+    }
 }
 
 .app-list__cell--status {
     flex-basis: 16%;
     position: relative;
     overflow: visible;
-}
 
-.app-list__cell--status .bg {
-    background-image: url('../../../assets/icons/appstatus/bg-white.svg');
+    .bg {
+        background-image: url('../../../assets/icons/appstatus/bg-white.svg');
+    }
 }
 
 .app-list__cell--env,
@@ -180,10 +222,10 @@
     margin: 0px;
     display: block;
     margin-right: 7px;
-}
 
-.app-list__cell--env-text.not-configured {
-    color: var(--N500);
+    &.not-configured {
+        color: var(--N500);
+    }
 }
 
 .app-list__cell--material-info {
@@ -213,6 +255,10 @@
     letter-spacing: normal;
     padding: 0px;
     border: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .round-button {
@@ -220,6 +266,10 @@
     background-color: var(--B500);
     color: var(--white);
     font-size: 14px;
+
+    &:hover {
+        background-color: #0558af;
+    }
 }
 
 .round-button__icon {
@@ -237,10 +287,10 @@
     letter-spacing: normal;
     color: var(--white);
     border: none;
-}
 
-.button-edit .fill-color {
-    fill: var(--N000);
+    .fill-color {
+        fill: var(--N000);
+    }
 }
 
 .button-edit__icon {
@@ -340,44 +390,12 @@
     border: none;
 }
 
-.app-list__row:hover {
-    text-decoration: none;
-    color: var(--N900);
-    background-color: var(--N100);
-}
-
-.app-list__row:hover .app-list__cell--status .bg {
-    background-image: url('../../../assets/icons/appstatus/bg-gray.svg');
-}
-
-.app-list__row:hover .cell__link {
-    color: var(--B500);
-    font-weight: 600;
-}
-
-.app-list__row:hover .dc__app-commit__hash {
-    background-color: var(--N000);
-    color: var(--N700);
-}
-
-.app-list__row .dc__app-commit__hash:hover {
-    color: var(--B500);
-}
-
-.dc__app-commit__hash:hover .stroke-color {
-    stroke: var(--B500);
-}
-
-.app-list__row:hover .app-list__cell--action {
-    visibility: visible;
-}
-
-.round-button:hover {
-    background-color: #0558af;
-}
-
-.cell__link:hover {
-    text-decoration: underline;
+.dc__app-commit__hash {
+    &:hover {
+        .stroke-color {
+            stroke: var(--B500);
+        }
+    }
 }
 
 @media (min-width: 1024px) {
@@ -385,14 +403,17 @@
         flex-direction: row;
         align-items: center;
     }
+
     .search {
         flex-basis: 250px;
         margin-bottom: 0px;
     }
+
     .filters__label {
         margin: 0px;
     }
 }
+
 
 .app-create-model-wrapper {
     position: fixed;
@@ -400,37 +421,39 @@
     top: 50px;
 }
 
-.app-create-model-wrapper .app-create-child {
-    padding: 10px 15px;
-    display: flex;
-}
+.app-create-model-wrapper {
+    .app-create-child {
+        padding: 10px 15px;
+        display: flex;
 
-.app-create-model-wrapper .app-create-child:first-child {
-    border-bottom: 1px solid #edf1f5;
-}
+        &:first-child {
+            border-bottom: 1px solid #edf1f5;
+        }
 
-.app-create-model-wrapper .app-create-child:hover {
-    background-color: #edf1f5;
+        &:hover {
+            background-color: #edf1f5;
+        }
+    }
 }
 
 .app-tabs-wrapper {
     position: relative;
     border-bottom: 1px solid #ddd;
-}
 
-.app-tabs-wrapper .tab-list {
-    padding-left: 20px;
-    background-color: white;
-}
+    .tab-list {
+        padding-left: 20px;
+        background-color: white;
+    }
 
-.app-tabs-wrapper .app-tabs-sync {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-}
+    .app-tabs-sync {
+        position: absolute;
+        right: 20px;
+        top: 10px;
 
-.app-tabs-wrapper .app-tabs-sync button {
-    margin-top: -2px;
+        button {
+            margin-top: -2px;
+        }
+    }
 }
 
 .filter-divider {
@@ -453,10 +476,12 @@
 .helm-permission-message-strip {
     background-color: var(--Y100);
     border: solid 1px #ffcb5d;
-}
 
-.helm-permission-message-strip .icon path[fill='#F33E3E'] {
-    fill: var(--Y700);
+    .icon {
+        path[fill='#F33E3E'] {
+            fill: var(--Y700);
+        }
+    }
 }
 
 .above-header-message {

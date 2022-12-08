@@ -12,7 +12,7 @@ import { getWorkflowList } from './../../services/service';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { SourceMaterials } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
-import './ciPipeline.css';
+import './ciPipeline.scss';
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
 

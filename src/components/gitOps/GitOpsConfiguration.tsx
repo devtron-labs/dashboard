@@ -12,7 +12,7 @@ import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-fi
 import { toast } from 'react-toastify';
 import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
 import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
-import '../login/login.css';
+import '../login/login.scss';
 import './gitops.scss';
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';

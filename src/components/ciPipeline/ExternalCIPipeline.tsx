@@ -15,7 +15,7 @@ import { getHostURLConfiguration } from '../../services/service';
 import { URLS } from '../../config';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { SourceMaterials } from './SourceMaterials';
-import './ciPipeline.css';
+import './ciPipeline.scss';
 
 
 export default class ExternalCIPipeline extends Component<CIPipelineProps, ExternalCIPipelineState> {

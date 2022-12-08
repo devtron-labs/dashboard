@@ -27,7 +27,7 @@ import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png';
-import '../list/list.css';
+import '../list/list.scss';
 
 export default function HelmAppList({
     serverMode,

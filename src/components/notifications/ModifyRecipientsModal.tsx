@@ -9,7 +9,7 @@ import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from '.
 import { toast } from 'react-toastify'
 import CreatableSelect from 'react-select/creatable'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
-import './notifications.css'
+import './notifications.scss'
 import { EMAIL_AGENT } from './types'
 
 interface ModifyRecipientsModalProps {
