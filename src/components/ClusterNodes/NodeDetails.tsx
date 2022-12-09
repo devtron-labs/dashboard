@@ -893,7 +893,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 nodeList={[nodeName]}
                 clusterImageList={imageList}
                 isNodeDetailsPage={true}
-                namespaceList={namespaceList}
+                namespaceList={namespaceList[nodeDetail.clusterName]}
             />
         )
     }

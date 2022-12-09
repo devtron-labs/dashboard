@@ -227,7 +227,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     nodeList={terminalclusterData.nodeNames}
                     closeTerminal={closeTerminal}
                     clusterImageList={imageList}
-                    namespaceList={namespaceList}
+                    namespaceList={namespaceList[terminalclusterData.name]}
                 />
             )}
         </div>

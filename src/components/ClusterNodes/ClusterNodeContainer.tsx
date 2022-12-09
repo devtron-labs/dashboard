@@ -24,7 +24,7 @@ export default function ClusterNodeContainer() {
                 setSuperAdmin(userRole.result?.superAdmin)
             }
             if(namespaceList.result) {
-                setNameSpaceList(namespaceList.result.default_cluster?.sort())
+                setNameSpaceList(namespaceList.result)
             }
         }).catch((error) => {
             showError(error)

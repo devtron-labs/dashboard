@@ -15,7 +15,6 @@ import {
 import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { Option } from '../../components/v2/common/ReactSelect.utils'
-import { multiSelectStyles } from '../../components/v2/common/ReactSelectCustomization'
 import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2.svg'
@@ -39,6 +38,7 @@ export default function ClusterTerminal({
     clusterImageList,
     isNodeDetailsPage,
     namespaceList,
+    node,
 }: ClusterTerminalType) {
     const clusterNodeList = nodeList.map((node) => {
         return { label: node, value: node }
@@ -51,9 +51,15 @@ export default function ClusterTerminal({
         return { value: item, label: item }
     })
 
-    const [selectedContainerName, setSelectedContainerName] = useState(clusterNodeList[0])
+    const selectedNode = {
+        label: node,
+        value: node,
+    }
+
+    const [selectedContainerName, setSelectedContainerName] = useState(node ? selectedNode : clusterNodeList[0])
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
-    const [terminalCleared, setTerminalCleared] = useState(false)
+    const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
+    const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [terminalAccessId, setTerminalId] = useState()
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
@@ -61,11 +67,11 @@ export default function ClusterTerminal({
         defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0],
     )
     const [update, setUpdate] = useState<boolean>(false)
-    const [fullScreen, setFullScreen] = useState(false)
-    const [fetchRetry, setRetry] = useState(false)
-    const [connectTerminal, setConnectTerminal] = useState(false)
-    const [reconnect, setReconnect] = useState(false)
-    const [toggleOption, settoggleOption] = useState(false)
+    const [fullScreen, setFullScreen] = useState<boolean>(false)
+    const [fetchRetry, setRetry] = useState<boolean>(false)
+    const [connectTerminal, setConnectTerminal] = useState<boolean>(false)
+    const [reconnect, setReconnect] = useState<boolean>(false)
+    const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
 
     const payload = {
@@ -78,13 +84,15 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         if (update) {
-            setSelectedContainerName(clusterNodeList[0])
+            setSelectedContainerName(selectedNode || clusterNodeList[0])
         }
-    }, [clusterId, nodeList])
+    }, [clusterId, nodeList, node])
+console.log(selectedContainerName);
 
     useEffect(() => {
         try {
             setSelectedTabIndex(0)
+            setPodCreated(true)
             if (update) {
                 clusterterminalUpdate({ ...payload, id: terminalAccessId })
                     .then((response) => {
@@ -93,6 +101,7 @@ export default function ClusterTerminal({
                     })
                     .catch((error) => {
                         setRetry(true)
+                        setPodCreated(false)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             } else {
@@ -105,6 +114,7 @@ export default function ClusterTerminal({
                     })
                     .catch((error) => {
                         showError(error)
+                        setPodCreated(false)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                             error.errors.map(({ userMessage }) => {
                                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
@@ -137,6 +147,7 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         showError(error)
                         setRetry(true)
+                        setPodCreated(false)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             }
@@ -154,7 +165,9 @@ export default function ClusterTerminal({
                 closeTerminal()
             }
             setConnectTerminal(false)
-            await clusterterminalDisconnect(terminalAccessId)
+            if(isPodCreated){
+                await clusterterminalDisconnect(terminalAccessId)
+            }
             socketDiconnecting()
             toggleOptionChange()
             setUpdate(false)
@@ -175,6 +188,7 @@ export default function ClusterTerminal({
 
     async function disconnectRetry(): Promise<void> {
         try {
+            setPodCreated(true)
             clusterDisconnectAndRetry(payload).then((response) => {
                 setTerminalId(response.result.terminalAccessId)
                 setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -185,6 +199,7 @@ export default function ClusterTerminal({
             })
             toggleOptionChange()
         } catch (error) {
+            setPodCreated(false)
             showError(error)
         }
     }
@@ -428,7 +443,7 @@ export default function ClusterTerminal({
                 </ul>
                 <div className={`${selectedTabIndex !== 0 ? 'dc__hide-section' : 'flex'}`}>
                     <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
-                    {connectTerminal && (
+                    {connectTerminal && isPodCreated && (
                         <Tippy
                             className="default-tt cursor"
                             arrow={false}
@@ -487,11 +502,9 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                {connectTerminal && (
-                    <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
-                        {terminalContainer()}
-                    </div>
-                )}
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                    {terminalContainer()}
+                </div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents clusterId={terminalAccessId} />

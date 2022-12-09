@@ -140,6 +140,7 @@ export interface ClusterTerminalType {
     clusterImageList: string[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
+    node?: string
 }
 
 export const TEXT_COLOR_CLASS = {
