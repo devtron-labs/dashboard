@@ -448,8 +448,15 @@ function ChartValuesView({
                     modifiedValuesYaml: result?.valuesOverrideYaml,
                 },
             })
-        } catch (e) {
+        } catch (e: any) {
             dispatch({ type: ChartValuesViewActionTypes.isLoading, payload: false })
+
+
+            if (Array.isArray(e.errors)) {
+                e.errors.map(({ userMessage }, idx) => toast.error(userMessage));
+            }
+
+
         }
     }
 
