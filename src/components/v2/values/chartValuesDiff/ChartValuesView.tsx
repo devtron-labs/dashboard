@@ -79,6 +79,15 @@ import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfigure
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
+import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG } from '../../../../config/constantMessaging'
+import {
+    CHART_VALUE_TOAST_MSGS,
+    COMPARISON_OPTION_LABELS,
+    COMPARISON_OPTION_TIPPY_CONTENT,
+    CONNECT_TO_HELM_CHART_TEXTS,
+    DATA_VALIDATION_ERROR_MSG,
+    MANIFEST_TAB_VALIDATION_ERROR,
+} from './ChartValuesView.constants'
 
 function ChartValuesView({
     appId,
@@ -614,7 +623,7 @@ function ChartValuesView({
                     invalidValueNameMessage: validatedName.message,
                 },
             })
-            toast.error('Some required fields are missing')
+            toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return false
         } else if (!isValidData(validatedName)) {
             dispatch({
@@ -626,7 +635,7 @@ function ChartValuesView({
                     invalidProject: !commonState.selectedProject,
                 },
             })
-            toast.error('Some required fields are missing')
+            toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return false
         } else if (commonState.activeTab === 'gui' && commonState.schemaJson?.size) {
             const requiredValues = [...commonState.schemaJson.values()].filter((_val) => _val.isRequired && !_val.value)
@@ -640,7 +649,7 @@ function ChartValuesView({
                     type: ChartValuesViewActionTypes.formValidationError,
                     payload: formErrors,
                 })
-                toast.error('Some required fields are missing')
+                toast.error(MULTI_REQUIRED_FIELDS_MSG)
                 return false
             } else {
                 dispatch({
@@ -654,7 +663,7 @@ function ChartValuesView({
         try {
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`Encountered data validation error while updating. “${err}”`)
+            toast.error(`${DATA_VALIDATION_ERROR_MSG} “${err}”`)
             return false
         }
 
@@ -736,10 +745,10 @@ function ChartValuesView({
                 if (chartValueId !== '0') {
                     payload['id'] = parseInt(chartValueId)
                     payload['chartVersion'] = commonState.chartValues.chartVersion
-                    toastMessage = 'Chart Value Updated'
+                    toastMessage = CHART_VALUE_TOAST_MSGS.Updated
                     res = await updateChartValues(payload)
                 } else {
-                    toastMessage = 'Chart Value Created'
+                    toastMessage = CHART_VALUE_TOAST_MSGS.Created
                     res = await createChartValues(payload)
                 }
             } else {
@@ -766,13 +775,13 @@ function ChartValuesView({
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
-                toast.success('Deployment initiated')
+                toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
-                toast.success('Update and deployment initiated')
+                toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
-                toast.error('Some error occurred')
+                toast.error(SOME_ERROR_MSG)
             }
         } catch (err) {
             showError(err)
@@ -816,7 +825,7 @@ function ChartValuesView({
                             invalidValueNameMessage: validatedName.message,
                         },
                     })
-                    toast.error('Please provide the required inputs to view generated manifest')
+                    toast.error(MANIFEST_TAB_VALIDATION_ERROR)
                     return
                 } else if (isExternalApp && !commonState.installedAppInfo) {
                     dispatch({
@@ -836,7 +845,7 @@ function ChartValuesView({
                             invalidProject: !commonState.selectedProject,
                         },
                     })
-                    toast.error('Please provide the required inputs to view generated manifest')
+                    toast.error(MANIFEST_TAB_VALIDATION_ERROR)
                     return
                 }
             }
@@ -932,10 +941,10 @@ function ChartValuesView({
                     <Arrows className="option-open__icon icon-dim-16 mr-8" />
                 )}
                 {commonState.activeTab === 'manifest'
-                    ? 'Compare with deployed'
+                    ? COMPARISON_OPTION_LABELS.CompareDeployed
                     : commonState.openComparison
-                    ? 'Hide comparison'
-                    : 'Compare values'}
+                    ? COMPARISON_OPTION_LABELS.HideComparison
+                    : COMPARISON_OPTION_LABELS.CompareValues}
             </span>
         )
     }
@@ -978,16 +987,16 @@ function ChartValuesView({
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
             return isCreateValueView
-                ? 'Compare values with other values of this chart'
+                ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
                 : isDeployChartView
-                ? 'Compare values with other deployments of this chart'
-                : 'Compare values with previous deployments of this app or other deployments of this chart'
+                ? COMPARISON_OPTION_TIPPY_CONTENT.OtherDeployments
+                : COMPARISON_OPTION_TIPPY_CONTENT.PreviousDeployments
         }
 
         return (
             <>
-                <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
-                <p className="fs-12 fw-4 lh-18 m-0">No applications found using this chart</p>
+                <h2 className="fs-12 fw-6 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.Heading}</h2>
+                <p className="fs-12 fw-4 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.InfoText}</p>
             </>
         )
     }
@@ -1027,8 +1036,8 @@ function ChartValuesView({
                                     placement="bottom"
                                     content={
                                         commonState.fetchingReadMe
-                                            ? 'Fetching...'
-                                            : 'Readme is not available for this chart'
+                                            ? COMPARISON_OPTION_TIPPY_CONTENT.Fetching
+                                            : COMPARISON_OPTION_TIPPY_CONTENT.ReadmeNotAvailable
                                     }
                                 >
                                     {renderReadMeOption(true)}
@@ -1296,7 +1305,7 @@ function ChartValuesView({
                                     hideConnectToChartTippy={hideConnectToChartTippy}
                                 >
                                     <InfoColourBar
-                                        message="This app is not connected to a helm chart. Connect to a helm chart to keep up with latest chart versions."
+                                        message={CONNECT_TO_HELM_CHART_TEXTS.Message}
                                         classname="connect-to-chart-wrapper info_bar"
                                         Icon={InfoIcon}
                                         linkOnClick={handleConnectToChartClick}

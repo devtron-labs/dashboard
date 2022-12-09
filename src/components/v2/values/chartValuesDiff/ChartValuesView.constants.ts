@@ -14,13 +14,40 @@ export const ListToTraverseKeys = {
 export const MANIFEST_OUTPUT_INFO_TEXT = 'Manifest is generated locally from the YAML.'
 export const MANIFEST_OUTPUT_TIPPY_CONTENT =
     'This manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. whether an API is supported) is NOT done. K8s version based templating may be different depending on cluster version.'
+export const MANIFEST_TAB_VALIDATION_ERROR = 'Please provide the required inputs to view generated manifest'
+export const DATA_VALIDATION_ERROR_MSG = 'Encountered data validation error while updating.'
+
 export const DELETE_PRESET_VALUE_DESCRIPTION_LINES = {
     First: 'This will delete the preset value and it will no longer be available to be used for deployment.',
     Second: 'Are you sure?',
 }
+
 export const DELETE_CHART_APP_DESCRIPTION_LINES = {
     First: 'This will delete all resources associated with this application.',
     Second: 'Deleted applications cannot be restored.',
+}
+
+export const CHART_VALUE_TOAST_MSGS = {
+    Updated: 'Chart Value Updated',
+    Created: 'Chart Value Created',
+    DeploymentInitiated: 'Deployment initiated',
+    UpdateInitiated: 'Update and deployment initiated',
+}
+
+export const COMPARISON_OPTION_LABELS = {
+    CompareDeployed: 'Compare with deployed',
+    HideComparison: 'Hide comparison',
+    CompareValues: 'Compare values',
+}
+
+export const COMPARISON_OPTION_TIPPY_CONTENT = {
+    Heading: 'Nothing to compare with',
+    InfoText: 'No applications found using this chart',
+    OtherValues: 'Compare values with other values of this chart',
+    OtherDeployments: 'Compare values with other deployments of this chart',
+    PreviousDeployments: 'Compare values with previous deployments of this app or other deployments of this chart',
+    Fetching: 'Fetching...',
+    ReadmeNotAvailable: 'Readme is not available for this chart',
 }
 
 export const UPDATE_APP_BUTTON_TEXTS = {
@@ -37,6 +64,8 @@ export const UPDATE_APP_BUTTON_TEXTS = {
 export const CONNECT_TO_HELM_CHART_TEXTS = {
     InfoTextHeading: 'Connect app to helm chart and deploy',
     InfoText: 'Manifest output is available only for applications deployed using a connected helm chart.',
+    Message:
+        'This app is not connected to a helm chart. Connect to a helm chart to keep up with latest chart versions.',
 }
 
 export const CHART_DEPCRECATED_TEXTS = {
@@ -47,42 +76,4 @@ export const CHART_DEPCRECATED_TEXTS = {
 export const CONNECT_CHART_REPO_TEXTS = {
     InfoText: 'Unable to find the desired chart? To connect or re-sync a repo.',
     LinkText: 'Go to chart repository',
-}
-
-export const CompareValuesSelectStyles = {
-    control: (base) => ({
-        ...base,
-        backgroundColor: 'var(--N100)',
-        border: 'none',
-        boxShadow: 'none',
-        minHeight: '32px',
-    }),
-    option: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: '2px',
-        minWidth: '240px',
-    }),
-    menuList: (base) => ({
-        ...base,
-        position: 'relative',
-        paddingBottom: 0,
-        paddingTop: 0,
-        maxHeight: '250px',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        padding: 0,
-        color: 'var(--N400)',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    }),
-    noOptionsMessage: (base) => ({
-        ...base,
-        color: 'var(--N600)',
-    }),
 }

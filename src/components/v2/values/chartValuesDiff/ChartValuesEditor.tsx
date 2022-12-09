@@ -19,12 +19,12 @@ import CodeEditor from '../../../CodeEditor/CodeEditor'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import {
-    CompareValuesSelectStyles,
     GROUPED_OPTION_LABELS,
     ListToTraverseKeys,
     MANIFEST_OUTPUT_INFO_TEXT,
     MANIFEST_OUTPUT_TIPPY_CONTENT,
 } from './ChartValuesView.constants'
+import { getCompareValuesSelectStyles } from './ChartValuesView.utils'
 
 const formatOptionLabel = (option: ChartValuesDiffOptionType): JSX.Element => {
     return (
@@ -105,7 +105,7 @@ const CompareWithDropdown = ({
                 ValueContainer: customValueContainer,
                 Option,
             }}
-            styles={CompareValuesSelectStyles}
+            styles={getCompareValuesSelectStyles()}
             onChange={handleSelectedVersionForDiff}
         />
     )
