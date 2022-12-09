@@ -14,6 +14,7 @@ export interface TerminalViewProps {
     isFullScreen?: boolean
     isterminalTab?: boolean
     setTerminalTab?: (selectedTabIndex: number) => void
+    isPodConnected?: boolean
 }
 
 export interface EventTableType {

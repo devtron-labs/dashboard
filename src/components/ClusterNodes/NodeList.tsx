@@ -67,7 +67,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
-    const [terminalclusterData, setTerminalCluster] = useState<string>()
     const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const [selectedNode, setSelectedNode] = useState<string>()
     const pageSize = 15
@@ -633,7 +632,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const openTerminal = (clusterData): void => {
-        setTerminalCluster(clusterData.name)
         setSelectedNode(clusterData.name)
         setTerminal(true)
     }
@@ -688,7 +686,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     )}
                 </div>
             </div>
-            {showTerminal && terminalclusterData &&
+            {showTerminal && selectedNode &&
                                 <ClusterTerminal
                                     clusterId={Number(clusterId)}
                                     nodeList={nodeList}

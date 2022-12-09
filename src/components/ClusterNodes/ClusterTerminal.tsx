@@ -40,6 +40,7 @@ export default function ClusterTerminal({
     namespaceList,
     node,
 }: ClusterTerminalType) {
+    const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' ||  types.label === 'bash' )
     const clusterNodeList = nodeList.map((node) => {
         return { label: node, value: node }
     })
@@ -67,10 +68,10 @@ export default function ClusterTerminal({
         defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0],
     )
     const [update, setUpdate] = useState<boolean>(false)
-    const [fullScreen, setFullScreen] = useState<boolean>(false)
-    const [fetchRetry, setRetry] = useState<boolean>(false)
+    const [isFullScreen, setFullScreen] = useState<boolean>(false)
+    const [isFetchRetry, setRetry] = useState<boolean>(false)
     const [connectTerminal, setConnectTerminal] = useState<boolean>(false)
-    const [reconnect, setReconnect] = useState<boolean>(false)
+    const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
 
@@ -84,22 +85,22 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         if (update) {
-            setSelectedContainerName(selectedNode || clusterNodeList[0])
+            setSelectedContainerName(node ? selectedNode : clusterNodeList[0])
         }
     }, [clusterId, nodeList, node])
-console.log(selectedContainerName);
 
     useEffect(() => {
         try {
             setSelectedTabIndex(0)
-            setPodCreated(true)
             if (update) {
                 clusterterminalUpdate({ ...payload, id: terminalAccessId })
                     .then((response) => {
                         setTerminalId(response.result.terminalAccessId)
                         setSocketConnection(SocketConnectionType.CONNECTING)
+                        setPodCreated(true)
                     })
                     .catch((error) => {
+                        showError(error)
                         setRetry(true)
                         setPodCreated(false)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -111,6 +112,7 @@ console.log(selectedContainerName);
                         setUpdate(true)
                         socketConnecting()
                         setConnectTerminal(true)
+                        setPodCreated(true)
                     })
                     .catch((error) => {
                         showError(error)
@@ -134,7 +136,7 @@ console.log(selectedContainerName);
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedContainerName.value, selectedImage, reconnect, selectedNamespace.value])
+    }, [selectedContainerName.value, selectedImage, isReconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -207,7 +209,7 @@ console.log(selectedContainerName);
     const reconnectTerminal = (): void => {
         setConnectTerminal(true)
         setTerminalId(null)
-        setReconnect(!reconnect)
+        setReconnect(!isReconnect)
     }
 
     const socketConnecting = (): void => {
@@ -244,7 +246,7 @@ console.log(selectedContainerName);
     }
 
     const toggleScreenView = (): void => {
-        setFullScreen(!fullScreen)
+        setFullScreen(!isFullScreen)
     }
 
     const toggleOptionChange = (): void => {
@@ -262,6 +264,9 @@ console.log(selectedContainerName);
     const selectManifestTab = (): void => {
         setSelectedTabIndex(2)
     }
+
+    console.log(connectTerminal);
+    
 
     const menuComponent = (props) => {
         return (
@@ -287,11 +292,12 @@ console.log(selectedContainerName);
                 isClusterTerminal={true}
                 terminalId={terminalAccessId}
                 disconnectRetry={disconnectRetry}
-                isFetchRetry={fetchRetry}
+                isFetchRetry={isFetchRetry}
                 isToggleOption={toggleOption}
-                isFullScreen={fullScreen}
+                isFullScreen={isFullScreen}
                 isterminalTab={selectedTabIndex === 0}
                 setTerminalTab={setSelectedTabIndex}
+                isPodConnected={connectTerminal}
             />
         )
     }
@@ -299,13 +305,14 @@ console.log(selectedContainerName);
     return (
         <div
             className={`${
-                fullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+                isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
             } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
         >
             <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
                 <div className="flex left">
                     {clusterName && (
                         <>
+                            <div className="cn-6 mr-16">Cluster</div>
                             <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
                             <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
                         </>
@@ -331,7 +338,7 @@ console.log(selectedContainerName);
 
                     {!isNodeDetailsPage && (
                         <>
-                            <div className="cn-6 ml-8 mr-10">Nodes </div>
+                            <div className="cn-6 ml-8 mr-10">Node</div>
                             <div style={{ minWidth: '145px' }}>
                                 <Select
                                     placeholder="Select Containers"
@@ -350,7 +357,7 @@ console.log(selectedContainerName);
                     )}
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Namespace </div>
+                    <div className="cn-6 ml-8 mr-10">Namespace</div>
                     <div>
                         <CreatableSelect
                             placeholder="Select Namespace"
@@ -406,7 +413,7 @@ console.log(selectedContainerName);
                 </div>
                 {!isNodeDetailsPage && (
                     <span className="flex">
-                        {fullScreen ? (
+                        {isFullScreen ? (
                             <ExitScreen className="mr-12 cursor fcn-6" onClick={toggleScreenView} />
                         ) : (
                             <FullScreen className="mr-12 cursor fcn-6" onClick={toggleScreenView} />
@@ -442,69 +449,69 @@ console.log(selectedContainerName);
                     )}
                 </ul>
                 <div className={`${selectedTabIndex !== 0 ? 'dc__hide-section' : 'flex'}`}>
-                    <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
                     {connectTerminal && isPodCreated && (
-                        <Tippy
-                            className="default-tt cursor"
-                            arrow={false}
-                            placement="bottom"
-                            content={
-                                socketConnection === SocketConnectionType.CONNECTING ||
-                                socketConnection === SocketConnectionType.CONNECTED
-                                    ? 'Stop'
-                                    : 'Resume'
-                            }
-                        >
-                            {socketConnection === SocketConnectionType.CONNECTING ||
-                            socketConnection === SocketConnectionType.CONNECTED ? (
-                                <span className="mr-8 cursor">
-                                    <div
-                                        className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                                        onClick={stopterminalConnection}
+                        <>
+                            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+                            <Tippy
+                                className="default-tt cursor"
+                                arrow={false}
+                                placement="bottom"
+                                content={
+                                    socketConnection === SocketConnectionType.CONNECTING ||
+                                    socketConnection === SocketConnectionType.CONNECTED
+                                        ? 'Stop'
+                                        : 'Resume'
+                                }
+                            >
+                                {socketConnection === SocketConnectionType.CONNECTING ||
+                                socketConnection === SocketConnectionType.CONNECTED ? (
+                                    <span className="mr-8 cursor">
+                                        <div
+                                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
+                                            onClick={stopterminalConnection}
+                                        />
+                                    </span>
+                                ) : (
+                                    <span className="mr-8 flex">
+                                        <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
+                                    </span>
+                                )}
+                            </Tippy>
+                            <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+                                <div className="flex">
+                                    <Abort
+                                        className="icon-dim-16 mr-4 fcn-6 cursor"
+                                        onClick={(e) => {
+                                            setTerminalCleared(true)
+                                        }}
                                     />
-                                </span>
-                            ) : (
-                                <span className="mr-8 flex">
-                                    <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
-                                </span>
-                            )}
-                        </Tippy>
+                                </div>
+                            </Tippy>
+                            <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+                            <div className="cn-6 ml-8 mr-10">Shell </div>
+                            <div>
+                                <Select
+                                    placeholder="Select Shell"
+                                    options={clusterShellTypes}
+                                    defaultValue={clusterShellTypes[0]}
+                                    onChange={onChangeTerminalType}
+                                    styles={clusterSelectStyle}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        Option,
+                                    }}
+                                />
+                            </div>
+                        </>
                     )}
-                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                        <div className="flex">
-                            <Abort
-                                className="icon-dim-16 mr-4 fcn-6 cursor"
-                                onClick={(e) => {
-                                    setTerminalCleared(true)
-                                }}
-                            />
-                        </div>
-                    </Tippy>
-                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Shell </div>
-                    <div>
-                        <Select
-                            placeholder="Select Shell"
-                            options={shellTypes}
-                            defaultValue={shellTypes[0]}
-                            onChange={onChangeTerminalType}
-                            styles={clusterSelectStyle}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                            }}
-                        />
-                    </div>
                 </div>
             </div>
             <div
-                className={`cluster-terminal__wrapper ${fullScreen ? 'full-screen-terminal' : ''} ${
+                className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
-                    {terminalContainer()}
-                </div>
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents clusterId={terminalAccessId} />

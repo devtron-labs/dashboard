@@ -437,6 +437,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     You’re offline. Please check your internet connection.
                 </div>
             )
+        }else if (terminalViewProps.isClusterTerminal && !terminalViewProps.isPodConnected) {
+            return
         } else if (terminalViewProps.isFetchRetry) {
             return (
                 <div className="bcr-7 pl-20 cn-0">
