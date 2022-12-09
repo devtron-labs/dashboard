@@ -98,10 +98,10 @@ export default function ClusterTerminal({
                         setTerminalId(response.result.terminalAccessId)
                         setSocketConnection(SocketConnectionType.CONNECTING)
                         setPodCreated(true)
+                        setRetry(false)
                     })
                     .catch((error) => {
-                        showError(error)
-                        setRetry(true)
+                        sessionError(error)
                         setPodCreated(false)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
@@ -113,6 +113,7 @@ export default function ClusterTerminal({
                         socketConnecting()
                         setConnectTerminal(true)
                         setPodCreated(true)
+                        setRetry(false)
                     })
                     .catch((error) => {
                         showError(error)
@@ -125,7 +126,7 @@ export default function ClusterTerminal({
                                 }
                             })
                         } else {
-                            setConnectTerminal(false)
+                        setConnectTerminal(false)
                         }
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
@@ -203,6 +204,17 @@ export default function ClusterTerminal({
         } catch (error) {
             setPodCreated(false)
             showError(error)
+        }
+    }
+
+    const sessionError = (error): void => {
+        showError(error)
+        if (error instanceof ServerErrors && Array.isArray(error.errors)) {
+            error.errors.map(({ userMessage }) => {
+                if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
+                    setRetry(true)
+                }
+            })
         }
     }
 
@@ -295,6 +307,7 @@ export default function ClusterTerminal({
                 isterminalTab={selectedTabIndex === 0}
                 setTerminalTab={setSelectedTabIndex}
                 isPodConnected={connectTerminal}
+                sessionError={sessionError}
             />
         )
     }
@@ -319,7 +332,7 @@ export default function ClusterTerminal({
                             className="default-tt"
                             arrow={false}
                             placement="bottom"
-                            content={connectTerminal ? 'Disconnect' : 'Connect'}
+                            content={connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
                         >
                             {connectTerminal ? (
                                 <span className="flex mr-8">
@@ -428,7 +441,7 @@ export default function ClusterTerminal({
                         </div>
                         {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
-                    {terminalAccessId && (
+                    {terminalAccessId && connectTerminal && (
                         <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
                                 Pod Events
@@ -436,7 +449,7 @@ export default function ClusterTerminal({
                             {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                         </li>
                     )}
-                    {terminalAccessId && (
+                    {terminalAccessId && connectTerminal && (
                         <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
                                 Pod Manifest
@@ -456,8 +469,8 @@ export default function ClusterTerminal({
                                 content={
                                     socketConnection === SocketConnectionType.CONNECTING ||
                                     socketConnection === SocketConnectionType.CONNECTED
-                                        ? 'Stop'
-                                        : 'Resume'
+                                        ? 'Disconnect from pod'
+                                        : 'Reconnect to pod'
                                 }
                             >
                                 {socketConnection === SocketConnectionType.CONNECTING ||

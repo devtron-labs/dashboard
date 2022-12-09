@@ -367,12 +367,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             })
             .catch((err) => {
                 showError(err)
-                if (err instanceof ServerErrors && Array.isArray(err.errors)) {
-                    const _invalidNameErr = err.errors[0].userMessage
-                    if (_invalidNameErr.includes('Unauthorized')) {
-                        setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
-                    }
-                }
+                terminalViewProps.sessionError(err)
             })
     }
 

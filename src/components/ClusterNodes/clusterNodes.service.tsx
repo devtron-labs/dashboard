@@ -34,11 +34,11 @@ export const updateNodeManifest = (
 }
 
 export const clusterTerminalStart = (data): Promise<ResponseType> => {
-    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
 }
 
 export const clusterterminalUpdate = (data): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
 }
 
 export const clusterterminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
@@ -50,11 +50,11 @@ export const clusterDisconnectAndRetry = (data):  Promise<ResponseType> => {
 }
 
 export const clusterTerminalStop = (terminalAccessId):  Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
 }
 
 export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE_SHELL}`, data)
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE_SHELL}`, data)
 }
 
 export const clusterNamespaceList = (): Promise<ResponseType> => {

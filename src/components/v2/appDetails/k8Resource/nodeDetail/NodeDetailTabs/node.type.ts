@@ -15,6 +15,7 @@ export interface TerminalViewProps {
     isterminalTab?: boolean
     setTerminalTab?: (selectedTabIndex: number) => void
     isPodConnected?: boolean
+    sessionError?: (error: any) => void
 }
 
 export interface EventTableType {
