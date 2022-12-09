@@ -265,9 +265,6 @@ export default function ClusterTerminal({
         setSelectedTabIndex(2)
     }
 
-    console.log(connectTerminal);
-    
-
     const menuComponent = (props) => {
         return (
             <components.MenuList {...props}>
