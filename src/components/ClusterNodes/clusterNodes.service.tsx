@@ -37,11 +37,11 @@ export const clusterTerminalStart = (data): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
 }
 
-export const clusterterminalUpdate = (data): Promise<ResponseType> => {
+export const clusterTerminalUpdate = (data): Promise<ResponseType> => {
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
 }
 
-export const clusterterminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
+export const clusterTerminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT}?terminalAccessId=${terminalAccessId}`, null)
 }
 
@@ -61,10 +61,10 @@ export const clusterNamespaceList = (): Promise<ResponseType> => {
     return get(`/${Routes.CLUSTER_NAMESPACE}`)
 }
 
-export const getclusterManifest = (terminalAccessId):  Promise<ResponseType> => {
+export const getClusterManifest = (terminalAccessId):  Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_MANIFEST}?terminalAccessId=${terminalAccessId}`)
 }
 
-export const getclusterEvents = (terminalAccessId):  Promise<ResponseType> => {
+export const getClusterEvents = (terminalAccessId):  Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
 }

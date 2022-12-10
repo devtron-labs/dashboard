@@ -6,11 +6,11 @@ import { SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/Nod
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
 import {
     clusterDisconnectAndRetry,
-    clusterterminalDisconnect,
+    clusterTerminalDisconnect,
     clusterTerminalStart,
     clusterTerminalStop,
     clusterTerminalTypeUpdate,
-    clusterterminalUpdate,
+    clusterTerminalUpdate,
 } from './clusterNodes.service'
 import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
@@ -56,7 +56,7 @@ export default function ClusterTerminal({
         label: node,
         value: node,
     }
-
+    const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
     const [selectedContainerName, setSelectedContainerName] = useState(node ? selectedNode : clusterNodeList[0])
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
@@ -64,9 +64,7 @@ export default function ClusterTerminal({
     const [terminalAccessId, setTerminalId] = useState()
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
-    const [selectedNamespace, setNamespace] = useState(
-        defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0],
-    )
+    const [selectedNamespace, setNamespace] = useState(defaultNameSpace)
     const [update, setUpdate] = useState<boolean>(false)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
     const [isFetchRetry, setRetry] = useState<boolean>(false)
@@ -86,6 +84,7 @@ export default function ClusterTerminal({
     useEffect(() => {
         if (update) {
             setSelectedContainerName(node ? selectedNode : clusterNodeList[0])
+            setNamespace(defaultNameSpace)
         }
     }, [clusterId, nodeList, node])
 
@@ -93,9 +92,11 @@ export default function ClusterTerminal({
         try {
             setSelectedTabIndex(0)
             if (update) {
-                clusterterminalUpdate({ ...payload, id: terminalAccessId })
+                socketDiconnecting()
+                clusterTerminalUpdate({ ...payload, id: terminalAccessId })
                     .then((response) => {
                         setTerminalId(response.result.terminalAccessId)
+                        setTerminalCleared(true)
                         setSocketConnection(SocketConnectionType.CONNECTING)
                         setPodCreated(true)
                         setRetry(false)
@@ -169,7 +170,7 @@ export default function ClusterTerminal({
             }
             setConnectTerminal(false)
             if(isPodCreated){
-                await clusterterminalDisconnect(terminalAccessId)
+                await clusterTerminalDisconnect(terminalAccessId)
             }
             socketDiconnecting()
             toggleOptionChange()
@@ -232,29 +233,25 @@ export default function ClusterTerminal({
         setSocketConnection(SocketConnectionType.DISCONNECTING)
     }
 
+    const resumePodConnection = (): void => {
+        setRetry(true)
+        socketConnecting()
+    }
+
     const onChangeNodes = (selected): void => {
         setSelectedContainerName(selected)
-        setTerminalCleared(true)
-        socketDiconnecting()
     }
 
     const onChangeTerminalType = (selected): void => {
         setSelectedtTerminalType(selected)
-        setTerminalCleared(true)
-        socketDiconnecting()
     }
 
     const onChangeImages = (selected): void => {
         setImage(selected.value)
-        setTerminalCleared(true)
-        socketDiconnecting()
     }
 
     const onChangeNamespace = (selected): void => {
         setNamespace(selected)
-        setTerminalCleared(true)
-        toggleOptionChange()
-        socketDiconnecting()
     }
 
     const toggleScreenView = (): void => {
@@ -373,6 +370,7 @@ export default function ClusterTerminal({
                             placeholder="Select Namespace"
                             options={defaultNamespaceList}
                             defaultValue={selectedNamespace}
+                            value={selectedNamespace}
                             onChange={onChangeNamespace}
                             styles={clusterSelectStyle}
                             components={{
@@ -483,7 +481,7 @@ export default function ClusterTerminal({
                                     </span>
                                 ) : (
                                     <span className="mr-8 flex">
-                                        <Play className="icon-dim-16 mr-4 cursor" onClick={socketConnecting} />
+                                        <Play className="icon-dim-16 mr-4 cursor" onClick={resumePodConnection} />
                                     </span>
                                 )}
                             </Tippy>

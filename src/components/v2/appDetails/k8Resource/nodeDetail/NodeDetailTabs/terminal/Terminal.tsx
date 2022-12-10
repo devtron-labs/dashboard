@@ -368,13 +368,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             .catch((err) => {
                 showError(err)
                 terminalViewProps.sessionError(err)
+                terminal?.reset()
             })
     }
 
     const getNewSession = () => {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
-            getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 8)
+            getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 5)
         } else {
             if (
                 !terminalViewProps.nodeName ||
