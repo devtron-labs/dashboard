@@ -167,9 +167,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         terminal?.reset()
 
-        setTimeout(() => {
+        if (terminalViewProps.isClusterTerminal){
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-        }, 100)
+        }else{
+            setTimeout(() => {
+                terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
+            }, 100)
+        }
     }
 
     const preFetchData = (status = '', firstMessageReceived = false) => {
@@ -240,11 +244,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
 
-        if (!terminalViewProps.isClusterTerminal) {
-            reconnect()
-        } else {
-            terminal?.reset()
-        }
+        reconnect()
     }, [terminalViewProps.containerName])
 
     useEffect(() => {
@@ -254,11 +254,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
 
-        if (!terminalViewProps.isClusterTerminal) {
-            reconnect()
-        } else {
-            terminal?.reset()
-        }
+        reconnect()
     }, [terminalViewProps.shell])
 
     useEffect(() => {

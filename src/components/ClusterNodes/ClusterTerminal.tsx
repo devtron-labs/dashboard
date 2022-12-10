@@ -143,6 +143,7 @@ export default function ClusterTerminal({
     useEffect(() => {
         try {
             if (update) {
+                socketDiconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessId })
                     .then((response) => {
                         setTerminalId(response.result.terminalAccessId)
@@ -234,7 +235,7 @@ export default function ClusterTerminal({
     }
 
     const resumePodConnection = (): void => {
-        setRetry(true)
+        setRetry(false)
         socketConnecting()
     }
 
