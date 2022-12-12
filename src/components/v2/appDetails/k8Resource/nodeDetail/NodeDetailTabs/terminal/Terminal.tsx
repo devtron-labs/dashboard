@@ -186,7 +186,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             _terminal.writeln('')
             _terminal.write('Connecting to pod terminal.')
         } else if (status === CLUSTER_STATUS.FAILED) {
-            _terminal.write(' \u001b[31mFailed\u001b[0m')
+            _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
             _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
             _terminal.write(' | ')
             _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')

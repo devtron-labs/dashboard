@@ -15,6 +15,7 @@ import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
+import { OptionType } from '../app/types'
 
 export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -28,6 +29,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const [searchApplied, setSearchApplied] = useState(false)
     const [showTerminalModal, setShowTerminal] = useState(false)
     const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
+    const [selectedNode, setSelectedNode] = useState<OptionType>()
 
     const getData = () => {
         setLoader(true)
@@ -228,6 +230,8 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     closeTerminal={closeTerminal}
                     clusterImageList={imageList}
                     namespaceList={namespaceList[terminalclusterData.name]}
+                    selectedNode={selectedNode}
+                    setSelectedNode={setSelectedNode}
                 />
             )}
         </div>

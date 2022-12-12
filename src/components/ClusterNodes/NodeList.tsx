@@ -68,7 +68,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
     const nodeList = filteredFlattenNodeList.map((node) => node['name'])
-    const [selectedNode, setSelectedNode] = useState<string>()
+    const [selectedNode, setSelectedNode] = useState<OptionType>()
     const pageSize = 15
 
     useEffect(() => {
@@ -632,7 +632,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const openTerminal = (clusterData): void => {
-        setSelectedNode(clusterData.name)
+        setSelectedNode({
+            label: clusterData.name,
+            value: clusterData.name,
+        })
         setTerminal(true)
     }
 
@@ -643,7 +646,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     return (
         <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div className="node-list dc__overflow-scroll" style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 61px)` }}>
+            <div
+                className="node-list dc__overflow-scroll"
+                style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 61px)` }}
+            >
                 {renderClusterSummary()}
                 <div
                     className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
@@ -686,16 +692,17 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     )}
                 </div>
             </div>
-            {showTerminal && selectedNode &&
-                                <ClusterTerminal
-                                    clusterId={Number(clusterId)}
-                                    nodeList={nodeList}
-                                    closeTerminal={closeTerminal}
-                                    clusterImageList={imageList}
-                                    namespaceList={namespaceList[selectedCluster.label]}
-                                    node={selectedNode}
-                                />
-                            }
+            {showTerminal && selectedNode && (
+                <ClusterTerminal
+                    clusterId={Number(clusterId)}
+                    nodeList={nodeList}
+                    closeTerminal={closeTerminal}
+                    clusterImageList={imageList}
+                    namespaceList={namespaceList[selectedCluster.label]}
+                    selectedNode={selectedNode}
+                    setSelectedNode={setSelectedNode}
+                />
+            )}
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
 import { LabelTag, OptionType } from '../app/types'
@@ -140,7 +141,8 @@ export interface ClusterTerminalType {
     clusterImageList: string[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
-    node?: string
+    selectedNode: OptionType
+    setSelectedNode: React.Dispatch<React.SetStateAction<OptionType>>
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -151,7 +153,8 @@ export const TEXT_COLOR_CLASS = {
 export const CLUSTER_STATUS = {
     RUNNING: 'Running',
     FAILED: 'Failed',
-    SESSION_LIMIT_REACHED :'session-limit-reached'
+    SESSION_LIMIT_REACHED:'session-limit-reached',
+    POD_TERMINATED: 'pod-terminated'
 }
 
 export const COLUMN_METADATA: ColumnMetadataType[] = [

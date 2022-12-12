@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
-import Select, { components } from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { shellTypes } from '../../config/constants'
 import { SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
@@ -21,7 +21,7 @@ import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2
 import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
-import { showError } from '../common'
+import { convertToOptionsList, showError } from '../common'
 import { ServerErrors } from '../../modals/commonTypes'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
@@ -38,26 +38,14 @@ export default function ClusterTerminal({
     clusterImageList,
     isNodeDetailsPage,
     namespaceList,
-    node,
+    selectedNode,
+    setSelectedNode,
 }: ClusterTerminalType) {
-    const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' ||  types.label === 'bash' )
-    const clusterNodeList = nodeList.map((node) => {
-        return { label: node, value: node }
-    })
-    const imageList = clusterImageList.map((image) => {
-        return { value: image, label: image }
-    })
-
-    const defaultNamespaceList = namespaceList.map((item) => {
-        return { value: item, label: item }
-    })
-
-    const selectedNode = {
-        label: node,
-        value: node,
-    }
+    const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
+    const clusterNodeList = convertToOptionsList(nodeList)
+    const imageList = convertToOptionsList(clusterImageList)
+    const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
-    const [selectedContainerName, setSelectedContainerName] = useState(node ? selectedNode : clusterNodeList[0])
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
@@ -72,21 +60,20 @@ export default function ClusterTerminal({
     const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-
+    const _selectedNode = selectedNode || clusterNodeList[0]
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage,
         shellName: selectedtTerminalType.value,
-        nodeName: selectedContainerName.value,
+        nodeName: _selectedNode.value,
         namespace: selectedNamespace.value,
     }
 
     useEffect(() => {
         if (update) {
-            setSelectedContainerName(node ? selectedNode : clusterNodeList[0])
             setNamespace(defaultNameSpace)
         }
-    }, [clusterId, nodeList, node])
+    }, [clusterId, nodeList])
 
     useEffect(() => {
         try {
@@ -124,10 +111,14 @@ export default function ClusterTerminal({
                                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
                                     setRetry(true)
                                     setConnectTerminal(true)
+                                } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
+                                    setRetry(true)
+                                    setUpdate(false)
+                                    setConnectTerminal(true)
                                 }
                             })
                         } else {
-                        setConnectTerminal(false)
+                            setConnectTerminal(false)
                         }
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
@@ -138,7 +129,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedContainerName.value, selectedImage, isReconnect, selectedNamespace.value])
+    }, [_selectedNode.value, selectedImage, isReconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -170,7 +161,7 @@ export default function ClusterTerminal({
                 closeTerminal()
             }
             setConnectTerminal(false)
-            if(isPodCreated){
+            if (isPodCreated) {
                 await clusterTerminalDisconnect(terminalAccessId)
             }
             socketDiconnecting()
@@ -215,6 +206,10 @@ export default function ClusterTerminal({
             error.errors.map(({ userMessage }) => {
                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
                     setRetry(true)
+                } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
+                    setRetry(true)
+                    setUpdate(false)
+                    setConnectTerminal(true)
                 }
             })
         }
@@ -241,7 +236,7 @@ export default function ClusterTerminal({
     }
 
     const onChangeNodes = (selected): void => {
-        setSelectedContainerName(selected)
+        setSelectedNode(selected)
     }
 
     const onChangeTerminalType = (selected): void => {
@@ -290,8 +285,8 @@ export default function ClusterTerminal({
     const terminalContainer = () => {
         return (
             <Terminal
-                nodeName={selectedContainerName.label}
-                containerName={selectedContainerName.label}
+                nodeName={_selectedNode.label}
+                containerName={_selectedNode.label}
                 socketConnection={socketConnection}
                 isTerminalCleared={terminalCleared}
                 shell={selectedtTerminalType}
@@ -349,11 +344,11 @@ export default function ClusterTerminal({
                         <>
                             <div className="cn-6 ml-8 mr-10">Node</div>
                             <div style={{ minWidth: '145px' }}>
-                                <Select
+                                <ReactSelect
                                     placeholder="Select Containers"
                                     options={clusterNodeList}
-                                    defaultValue={selectedContainerName}
-                                    value={selectedContainerName}
+                                    defaultValue={_selectedNode}
+                                    value={_selectedNode}
                                     onChange={onChangeNodes}
                                     styles={clusterSelectStyle}
                                     components={{
@@ -385,9 +380,8 @@ export default function ClusterTerminal({
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
                     <div className="cn-6 ml-8 mr-4">Image</div>
                     <TippyWhite
-                        heading={'Image'}
-                        placement={'top'}
-                        children={<HelpIcon className="icon-dim-16 mr-8" />}
+                        heading="Image"
+                        placement="top"
                         interactive={true}
                         trigger="click"
                         className="w-300"
@@ -396,7 +390,9 @@ export default function ClusterTerminal({
                         iconClass="icon-dim-20 fcv-5"
                         infoText="Select image you want to run inside the pod. 
                         You can use publicly available custom images as well."
-                    />
+                    >
+                        <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                    </TippyWhite>
                     <div>
                         <CreatableSelect
                             placeholder="Select Image"
@@ -411,6 +407,10 @@ export default function ClusterTerminal({
                                     textAlign: 'left',
                                     maxWidth: '380px',
                                     minWidth: '350px',
+                                }),
+                                control: (base, state) => ({
+                                    ...clusterSelectStyle.control(base, state),
+                                    maxWidth: '300px',
                                 }),
                             }}
                             components={{
@@ -500,7 +500,7 @@ export default function ClusterTerminal({
                             <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
                             <div className="cn-6 ml-8 mr-10">Shell </div>
                             <div>
-                                <Select
+                                <ReactSelect
                                     placeholder="Select Shell"
                                     options={clusterShellTypes}
                                     defaultValue={clusterShellTypes[0]}
