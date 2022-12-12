@@ -8,20 +8,23 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { DeleteDialog, Progressing, Select } from '../../../common'
 import {
-    ChartEnvironmentSelectorType,
-    ChartVersionSelectorType,
-    ChartValuesSelectorType,
-    ChartVersionValuesSelectorType,
-    ChartProjectSelectorType,
-    ChartValuesViewActionTypes,
-    ValueNameInputType,
-    AppNameInputType,
-    ConnectToHelmChartTippyProps,
     ActiveReadmeColumnProps,
-    DeleteChartDialogProps,
+    AppNameInputType,
+    ChartEnvironmentSelectorType,
+    ChartProjectSelectorType,
+    ChartValuesSelectorType,
+    ChartValuesViewActionTypes,
+    ChartVersionSelectorType,
+    ChartVersionValuesSelectorType,
+    ConnectToHelmChartTippyProps,
     DeleteApplicationButtonProps,
-    UpdateApplicationButtonProps,
+    DeleteChartDialogProps,
+    DeploymentAppSelectorType,
+    DeploymentAppType,
+    DeploymentAppTypeNameMapping,
     ErrorScreenWithInfoProps,
+    UpdateApplicationButtonProps,
+    ValueNameInputType,
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import EmptyState from '../../../EmptyState/EmptyState'
@@ -33,6 +36,9 @@ import {
     UPDATE_APP_BUTTON_TEXTS,
 } from './ChartValuesView.constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
+import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
+import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
+import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -77,6 +83,52 @@ export const ChartEnvironmentSelector = ({
                 options={environments}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
+        </div>
+    )
+}
+
+export const DeploymentAppSelector = ({
+    commonState,
+    isUpdate,
+    handleDeploymentAppTypeSelection,
+    isDeployChartView,
+}: DeploymentAppSelectorType): JSX.Element => {
+    return !isDeployChartView ? (
+        <div className="chart-values__deployment-type">
+            <h2 className="fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+            <div className="flex left">
+                <span className="fs-13 fw-6  cn-9 md-6 ">
+                    {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
+                        ? DeploymentAppTypeNameMapping.HelmKeyValue
+                        : DeploymentAppTypeNameMapping.GitOpsKeyValue}
+                </span>
+                <span>
+                    {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
+                        <ArgoCD className="icon-dim-24 ml-6" />
+                    ) : (
+                        <Helm className="icon-dim-24 ml-6" />
+                    )}
+                </span>
+            </div>
+        </div>
+    ) : (
+        <div className="form__row form__row--w-100 fw-4">
+            <div className="form__row">
+                <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
+                    How do you want to deploy?
+                </label>
+                <p className="fs-12px cr-5"> Cannot be changed after deployment </p>
+                <RadioGroup
+                    value={commonState.deploymentAppType}
+                    name="DeploymentAppTypeGroup"
+                    onChange={handleDeploymentAppTypeSelection}
+                    disabled={isUpdate}
+                >
+                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
+
+                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                </RadioGroup>
+            </div>
         </div>
     )
 }

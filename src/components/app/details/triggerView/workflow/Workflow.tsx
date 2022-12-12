@@ -8,6 +8,7 @@ import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
+import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 
 export class Workflow extends Component<WorkflowProps> {
     renderNodes() {
@@ -225,11 +226,15 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     render() {
+        const isExternalCiWorkflow = this.props.nodes.some(
+            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
+        )
         return (
             <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
                 <div className="workflow__header">
                     <span className="workflow__name">{this.props.name}</span>
                 </div>
+                {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}

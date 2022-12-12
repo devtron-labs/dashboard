@@ -75,6 +75,13 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     invalidaEnvironment: boolean
 }
 
+export interface DeploymentAppSelectorType {
+    commonState: ChartValuesViewState
+    isUpdate: boolean
+    handleDeploymentAppTypeSelection?: (event) => void
+    isDeployChartView: boolean
+}
+
 export interface ChartProjectSelectorType {
     isDeployChartView: boolean
     selectedProject: ChartValuesOptionType
@@ -196,6 +203,7 @@ export interface ChartInstalledConfig {
     referenceValueId: number
     referenceValueKind: string
     valuesSchemaJson?: string
+    deploymentAppType?: string
 }
 
 export interface ChartValuesViewState {
@@ -249,6 +257,7 @@ export interface ChartValuesViewState {
     invalidProject: boolean
     formValidationError: Record<string, boolean>
     showNoGitOpsWarning: boolean
+    deploymentAppType: string
 }
 
 export enum ChartValuesViewActionTypes {
@@ -299,7 +308,19 @@ export enum ChartValuesViewActionTypes {
     formValidationError = 'formValidationError',
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
+    selectedDeploymentApp = 'selectedDeploymentApp',
 }
+
+export enum DeploymentAppType {
+    Helm = 'helm',
+    GitOps = 'argo_cd',
+}
+
+export enum DeploymentAppTypeNameMapping {
+    HelmKeyValue = 'Helm',
+    GitOpsKeyValue = 'GitOps',
+}
+
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any

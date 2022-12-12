@@ -8,6 +8,7 @@ export interface ChartValuesType {
     id: number;
     appStoreVersionId?: number;
     environmentName?: string;
+    deploymentAppType?: string
 };
 
 export interface ChartValuesNativeType {
@@ -245,6 +246,9 @@ export interface ChartGroupState {
     loading: boolean;
     chartGroupDetailsLoading: boolean;
     noGitOpsConfigAvailable?: boolean
+    pageOffset?: number,
+    pageSize?: number,
+    hasMoreCharts?: boolean,
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {
@@ -283,8 +287,9 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     discardValuesYamlChanges: (index: number) => void;
     updateChartGroupEntriesFromResponse: () => void;
     reloadState: () => void;
-    applyFilterOnCharts: (qs: string) => Promise<void>;
+    applyFilterOnCharts: (qs: string, resetPage?: boolean) => Promise<void>;
     setCharts: (charts: ChartGroupEntry[]) => void;
+    resetPaginationOffset: ()=> void;
 }
 
 export interface HelmTemplateChartRequest {

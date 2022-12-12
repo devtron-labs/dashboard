@@ -21,6 +21,7 @@ import trash from '../../assets/icons/misc/delete.svg'
 import { WebhookNode } from './nodes/WebhookNode'
 import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
+import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -235,6 +236,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     openCIPipeline(node: NodeAttr) {
+        if(node.isExternalCI && !node.isLinkedCI){
+          return `${this.props.match.url}/deprecated-warning`
+        }
         let { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
@@ -349,7 +353,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
-
+        const isExternalCiWorkflow = this.props.nodes.some(
+            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
+        )
         return (
             <ConditionalWrap
                 condition={this.props.showWebhookTippy}
@@ -393,6 +399,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             </>
                         )}
                     </div>
+                    {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div className="workflow__body">
                         <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                             {this.renderEdgeList()}
