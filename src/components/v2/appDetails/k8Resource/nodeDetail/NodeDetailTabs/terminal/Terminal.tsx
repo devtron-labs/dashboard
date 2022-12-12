@@ -167,9 +167,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         terminal?.reset()
 
-        if (terminalViewProps.isClusterTerminal){
+        if (terminalViewProps.isClusterTerminal) {
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-        }else{
+        } else {
             setTimeout(() => {
                 terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
             }, 100)
@@ -214,10 +214,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 clearTimeout(clustertimeOut)
             }
             if (socket) {
-                    socket.close()
-                    socket = undefined
-                }
+                socket.close()
+                socket = undefined
             }
+        }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession()
         }
@@ -229,7 +229,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             action: `Selected Pod`,
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
-        
+
         reconnect()
     }, [terminalViewProps.nodeName])
 
@@ -351,8 +351,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         getClusterData(url, count - 1)
                     }, 3000)
                 } else if (sessionId) {
-                    postInitialize(sessionId)
-                    preFetchData(status)
+                    if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
+                        postInitialize(sessionId)
+                        preFetchData(status)
+                    }
                 } else {
                     preFetchData(CLUSTER_STATUS.FAILED, false)
                 }
@@ -426,7 +428,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     You’re offline. Please check your internet connection.
                 </div>
             )
-        }else if (terminalViewProps.isClusterTerminal && !terminalViewProps.isPodConnected) {
+        } else if (terminalViewProps.isClusterTerminal && !terminalViewProps.isPodConnected) {
             return
         } else if (terminalViewProps.isFetchRetry) {
             return (

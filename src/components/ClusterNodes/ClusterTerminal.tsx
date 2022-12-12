@@ -175,7 +175,7 @@ export default function ClusterTerminal({
     }
 
     async function stopterminalConnection(): Promise<void> {
-        setSocketConnection(SocketConnectionType.DISCONNECTED)
+        setSocketConnection(SocketConnectionType.DISCONNECTING)
         try {
             await clusterTerminalStop(terminalAccessId)
         } catch (error) {
