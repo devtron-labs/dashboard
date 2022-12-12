@@ -54,6 +54,7 @@ import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
+import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -116,6 +117,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
+                deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? "" : DeploymentAppType.Helm,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -299,6 +301,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             runPreStageInEnv: pipelineConfigFromRes.runPreStageInEnv || false,
             runPostStageInEnv: pipelineConfigFromRes.runPostStageInEnv || false,
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
+            deploymentAppType: pipelineConfigFromRes.deploymentAppType || '',
         }
         this.preStage = pipelineConfigFromRes.preStage.config || ''
         this.postStage = pipelineConfigFromRes.postStage.config || ''
@@ -481,6 +484,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
+    handleDeploymentAppTypeChange = (event) => {
+        const { pipelineConfig } = { ...this.state }
+        pipelineConfig.deploymentAppType = event.target.value
+        this.setState({ pipelineConfig })
+    }
+
     handlePipelineName = (event) => {
         let { pipelineConfig } = { ...this.state }
         pipelineConfig.name = event.target.value
@@ -562,7 +571,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             !!this.state.pipelineConfig.environmentId &&
             this.validationRules.name(this.state.pipelineConfig.name).isValid &&
             !!this.state.pipelineConfig.namespace &&
-            !!this.state.pipelineConfig.triggerType
+            !!this.state.pipelineConfig.triggerType &&
+            !! ( this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
 
         if (!valid) {
             this.setState({ loadingData: false })
@@ -656,6 +666,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     toast.success('Pipeline Deleted')
                     this.setState({ loadingData: false })
                     this.props.close()
+                    if(this.isWebhookCD){
+                      this.props.refreshParentWorkflows()
+                    }
                     this.props.getWorkflows()
                 }
             })
@@ -949,6 +962,41 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         } else return null
     }
 
+    // renderTriggerType() {
+    //     return (
+    //         <div className="form__row">
+    //             <label className="form__label form__label--sentence dc__bold">
+    //                 When do you want the pipeline to execute?*
+    //             </label>
+    //             <RadioGroup
+    //                 value={this.state.pipelineConfig.triggerType}
+    //                 name="trigger-type"
+    //                 onChange={this.handleTriggerChange}
+    //             >
+    //                 <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
+    //                 <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
+    //             </RadioGroup>
+    //         </div>
+    //     )
+    // }
+
+    renderDeploymentAppType() {
+        return (
+            <div className="form__row">
+                <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
+                <RadioGroup
+                    value={this.state.pipelineConfig.deploymentAppType ? this.state.pipelineConfig.deploymentAppType: DeploymentAppType.Helm}
+                    name="deployment-app-type"
+                    onChange={this.handleDeploymentAppTypeChange}
+                    disabled={!!this.props.match.params.cdPipelineId}
+                >
+                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                </RadioGroup>
+            </div>
+        )
+    }
+
     renderDeleteCDModal() {
         if (this.props.match.params.cdPipelineId) {
             if (this.state.showDeleteModal) {
@@ -1229,6 +1277,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.showDeploymentStage ? (
                     <>
                         {this.renderEnvNamespaceAndTriggerType()}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </>
                 ) : null}
@@ -1277,6 +1326,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9 mb-12">Deploy to environment</p>
                 {this.renderEnvNamespaceAndTriggerType()}
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>
                         <p className="fs-14 fw-6 cn-9 mb-12">Deployment Strategy</p>
