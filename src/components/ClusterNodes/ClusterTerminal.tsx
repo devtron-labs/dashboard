@@ -97,7 +97,7 @@ export default function ClusterTerminal({
                     .then((response) => {
                         setTerminalId(response.result.terminalAccessId)
                         setTerminalCleared(true)
-                        setSocketConnection(SocketConnectionType.CONNECTING)
+                        socketConnecting()
                         setPodCreated(true)
                         setRetry(false)
                     })
@@ -221,6 +221,7 @@ export default function ClusterTerminal({
     }
 
     const reconnectTerminal = (): void => {
+        socketConnecting()
         setConnectTerminal(true)
         setTerminalId(null)
         setReconnect(!isReconnect)

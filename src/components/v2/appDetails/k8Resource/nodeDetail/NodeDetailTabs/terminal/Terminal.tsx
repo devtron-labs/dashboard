@@ -371,6 +371,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const getNewSession = () => {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
             getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 5)
         } else {
             if (
