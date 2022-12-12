@@ -1,9 +1,18 @@
 export const clusterImages = {
-    'ubuntu:latest': 'Ubuntu is a Debian-based Linux distribution.',
-    'alpine:latest': 'Alpine Linux contains musl, BusyBox and OpenRC.',
-    'centos:latest': 'CentOS is a Red Hat Enterprise Linux (RHEL) based Linux distribution.',
-    'busybox:latest': 'Busybox comes with many Linux utilities to debug into your cluster.',
-    'nikolaka/netshoot:latest':
-        'Contains Docker + Kubernetes network troubleshooting utilities. (eg. bash, curl, jq, tcpdump, )',
-    'curlimages/curl:latest': 'Curl allows you to debug into your applications by hitting accessible URLs.',
+    'quay.io/devtron/ubuntu-k8s-utils:latest': {
+        label: 'Ubuntu: Kubernetes utilities',
+        info: 'Ubuntu is a Debian-based Linux distribution.',
+    },
+    'quay.io/devtron/alpine-k8s-utils:latest': {
+        label: 'Alpine: Kubernetes utilities',
+        info: 'Alpine Linux contains musl, BusyBox and OpenRC.',
+    },
+    'quay.io/devtron/centos-k8s-utils:latest': {
+        label: 'CentOs: Kubernetes utilities',
+        info: 'CentOS is a Red Hat Enterprise Linux (RHEL) based Linux distribution.',
+    },
+    'quay.io/devtron/alpine-netshoot:latest': {
+        label: 'Alpine: Netshoot',
+        info: 'Busybox comes with many Linux utilities to debug into your cluster.',
+    },
 }

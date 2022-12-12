@@ -44,7 +44,7 @@ export default function ClusterTerminal({
 }: ClusterTerminalType) {
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const clusterNodeList = convertToOptionsList(nodeList)
-    const imageList = convertToOptionsList(clusterImageList)
+    const imageList = convertToOptionsList(clusterImageList, clusterImages)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
@@ -284,7 +284,7 @@ export default function ClusterTerminal({
     const terminalContainer = () => {
         return (
             <Terminal
-                nodeName={_selectedNode.label}
+                nodeName={_selectedNode.value}
                 containerName={_selectedNode.label}
                 socketConnection={socketConnection}
                 isTerminalCleared={terminalCleared}
@@ -302,6 +302,26 @@ export default function ClusterTerminal({
                 isPodConnected={connectTerminal}
                 sessionError={sessionError}
             />
+        )
+    }
+
+    const imageTippyInfo = () => {
+        return (
+            <div className="p-12 fs-13">
+                Select image you want to run inside the pod. Images contain utility tools (eg. kubectl, helm,
+                curl,&nbsp;
+                <a href="https://github.com/nicolaka/netshoot" target="_blank">
+                    netshoot
+                </a>
+                ,&nbsp;
+                <a href="https://busybox.net/" target="_blank">
+                    busybox
+                </a>
+                ) which can be used to debug clusters and workloads.
+                <br />
+                <br />
+                You can use publicly available custom images as well.
+            </div>
         )
     }
 
@@ -387,8 +407,7 @@ export default function ClusterTerminal({
                         Icon={Help}
                         showCloseButton={true}
                         iconClass="icon-dim-20 fcv-5"
-                        infoText="Select image you want to run inside the pod. 
-                        You can use publicly available custom images as well."
+                        additionalContent={imageTippyInfo()}
                     >
                         <HelpIcon className="icon-dim-16 mr-8 cursor" />
                     </TippyWhite>
@@ -418,9 +437,9 @@ export default function ClusterTerminal({
                                     <Option
                                         {...props}
                                         tippyClass="default-tt w-200"
-                                        showTippy={!!clusterImages[props.data.value]}
+                                        showTippy={!!clusterImages[props.data.value]?.info}
                                         placement="left"
-                                        tippyContent={clusterImages[props.data.value]}
+                                        tippyContent={clusterImages[props.data.value]?.info || ''}
                                     />
                                 ),
                                 MenuList: menuComponent,

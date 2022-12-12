@@ -1014,8 +1014,16 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
     }, {})
 }
 
-export const convertToOptionsList = (arr: any[], labelKey?: string, valueKey?: string): OptionType[] => {
+export const convertToOptionsList = (
+    arr: any[],
+    customObjToPickLabel?: Record<string, any>,
+    labelKey?: string,
+    valueKey?: string,
+): OptionType[] => {
     return arr.map((ele) => {
-        return { label: labelKey ? ele[labelKey] : ele, value: valueKey ? ele[valueKey] : ele }
+        return {
+            label: customObjToPickLabel ? customObjToPickLabel[ele]?.label : labelKey ? ele[labelKey] : ele,
+            value: valueKey ? ele[valueKey] : ele,
+        }
     })
 }
