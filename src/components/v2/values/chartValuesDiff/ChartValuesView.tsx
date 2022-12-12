@@ -165,7 +165,7 @@ function ChartValuesView({
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
-                            selectedProject: _installedAppInfo? _installedAppInfo.teamName : "",
+                            selectedProject: _installedAppInfo? { value: _installedAppInfo.teamId, label: _installedAppInfo.teamName } : "",
                             activeTab:
                                 !_releaseInfo.valuesSchemaJson || presetValueId || isCreateValueView ? 'yaml' : 'gui',
                         },
