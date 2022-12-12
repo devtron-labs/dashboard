@@ -362,6 +362,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 }
             })
             .catch((err) => {
+                clearTimeout(clustertimeOut)
                 showError(err)
                 terminalViewProps.sessionError(err)
                 terminal?.reset()

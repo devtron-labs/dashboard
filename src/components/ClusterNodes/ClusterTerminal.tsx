@@ -29,6 +29,7 @@ import TippyWhite from '../common/TippyWhite'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { clusterSelectStyle, ClusterTerminalType, CLUSTER_STATUS } from './types'
+import { clusterImages } from './constants'
 
 export default function ClusterTerminal({
     clusterId,
@@ -415,7 +416,15 @@ export default function ClusterTerminal({
                             }}
                             components={{
                                 IndicatorSeparator: null,
-                                Option,
+                                Option: (props) => (
+                                    <Option
+                                        {...props}
+                                        tippyClass="default-tt w-200"
+                                        showTippy={!!clusterImages[props.data.value]}
+                                        placement="left"
+                                        tippyContent={clusterImages[props.data.value]}
+                                    />
+                                ),
                                 MenuList: menuComponent,
                             }}
                         />
