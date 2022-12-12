@@ -114,7 +114,7 @@ export default function ClusterTerminal({
                                     setConnectTerminal(true)
                                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
                                     setUpdate(false)
-                                    setConnectTerminal(true)
+                                    setConnectTerminal(false)
                                 }
                             })
                         } else {
@@ -208,7 +208,7 @@ export default function ClusterTerminal({
                     setRetry(true)
                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
                     setUpdate(false)
-                    setConnectTerminal(true)
+                    setConnectTerminal(false)
                 }
             })
         }
