@@ -14,7 +14,7 @@ import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
 import { noop } from '../common'
-import { TriggerViewContext } from '../app/details/triggerView/TriggerView'
+import { TriggerViewContext } from '../app/details/triggerView/config'
 
 export default function GitInfoMaterial({
     material,

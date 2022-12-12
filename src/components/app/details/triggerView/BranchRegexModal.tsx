@@ -8,7 +8,7 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { BranchRegexModalProps } from './types'
-import { TriggerViewContext } from './TriggerView'
+import { TriggerViewContext } from './config'
 
 function BranchRegexModal({
     material,

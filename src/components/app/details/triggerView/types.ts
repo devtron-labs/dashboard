@@ -34,13 +34,13 @@ export interface CDMaterialProps {
 export enum DeploymentWithConfigType {
     LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
     LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
-    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG'
+    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG',
 }
 
 export interface ConfigToDeployOptionType {
-    label: string,
-    value: DeploymentWithConfigType,
-    infoText: string,
+    label: string
+    value: DeploymentWithConfigType
+    infoText: string
 }
 
 export interface CDMaterialState {
@@ -124,8 +124,13 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isCacheAvailable?: boolean
 }
 
+export interface RegexValueType {
+    value: string
+    isInvalid: boolean
+}
+
 export interface CIMaterialState {
-    regexValue: Record<number, { value: string; isInvalid: boolean }>
+    regexValue: Record<number, RegexValueType>
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -244,6 +249,22 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     nodes: NodeAttr[]
 }
 
+export interface TriggerViewContextType {
+    invalidateCache: boolean
+    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+    onClickTriggerCINode: () => void
+    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
+    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
+    closeCIModal: () => void
+    selectCommit: (materialId: string, hash: string) => void
+    selectMaterial: (materialId) => void
+    toggleChanges: (materialId: string, hash: string) => void
+    toggleInvalidateCache: () => void
+    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
+}
+
 export interface TriggerViewRouterProps {
     appId: string
     envId: string
@@ -327,17 +348,17 @@ export interface ApplicationConditionResponse {
 export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK'
+    WEBHOOK = 'WEBHOOK',
 }
 
 export enum CIPipelineNodeType {
-  EXTERNAL_CI ='EXTERNAL-CI',
-  CI='CI',
-  LINKED_CI='LINKED-CI'
+    EXTERNAL_CI = 'EXTERNAL-CI',
+    CI = 'CI',
+    LINKED_CI = 'LINKED-CI',
 }
 
 export enum WorkflowNodeType {
-    GIT= 'GIT',
+    GIT = 'GIT',
     CI = 'CI',
     WEBHOOK = 'WEBHOOK',
     PRE_CD = 'PRECD',
@@ -557,7 +578,7 @@ export interface TriggerViewConfigDiffProps {
 export const MATERIAL_TYPE = {
     rollbackMaterialList: 'rollbackMaterialList',
     inputMaterialList: 'inputMaterialList',
-    none: 'none'
+    none: 'none',
 }
 
 export const STAGE_TYPE = {

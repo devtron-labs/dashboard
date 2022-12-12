@@ -1,37 +1,30 @@
 import React, { Component } from 'react'
-import { CIMaterialProps, CIMaterialState } from './types'
+import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
-import { TriggerViewContext } from './TriggerView'
+import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing, sortCallback } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
+import { TriggerViewContext } from './config'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
     constructor(props) {
         super(props)
-        let regexValue: Record<
-            number,
-            {
-                value: string
-                isInvalid: boolean
+        const regexValue: Record<number, RegexValueType> = {}
+        this.props.material.forEach((mat) => {
+            regexValue[mat.gitMaterialId] = {
+                value: mat.value,
+                isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
             }
-        > = {}
-        this.props.material.forEach(
-            (mat, index) =>
-                (regexValue[mat.gitMaterialId] = {
-                    value: mat.value,
-                    isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
-                }),
-        )
+        })
         this.state = {
             regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
@@ -55,8 +48,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     onClickStopPropagation = (e): void => {
         e.stopPropagation()
     }
-
-    onClickTrigger = (): void => {}
 
     renderIgnoreCache = () => {
         if (this.props.isFirstTrigger) {
@@ -141,8 +132,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderCIModal() {
-        let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
-        let canTrigger = this.props.material.reduce((isValid, mat) => {
+        const selectedMaterial = this.props.material.find((mat) => mat.isSelected)
+        const canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid = isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)
             return isValid
         }, true)
@@ -192,7 +183,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         // Populate the ciPipelineMaterial with flatten object
         if (this.state.selectedCIPipeline?.ciMaterial?.length) {
-            for (let _cm of this.state.selectedCIPipeline.ciMaterial) {
+            for (const _cm of this.state.selectedCIPipeline.ciMaterial) {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
                 let _updatedCM
                 if (regVal?.value && _cm.source.regex) {
@@ -232,15 +223,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     handleRegexInputValue = (id, value, mat) => {
-        const isValid = new RegExp(mat.regex).test(value)
         this.setState((prevState) => {
-            let rt = {
+            return {
                 regexValue: {
                     ...prevState.regexValue,
-                    [id]: { value, isInvalid: mat.regex && !isValid },
+                    [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
                 },
             }
-            return rt
         })
     }
 

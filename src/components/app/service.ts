@@ -64,7 +64,7 @@ export function getCITriggerInfoModal(
                 lastFetchTime: mat.lastFetchTime || '',
             }
         })
-        if (materials.length>0 && !materials.find((mat) => mat.isSelected)) {
+        if (materials.length > 0 && !materials.find((mat) => mat.isSelected)) {
             materials[0].isSelected = true
         }
         return {
@@ -171,45 +171,43 @@ const gitTriggersModal = (triggers, materials) => {
 }
 
 export const getCIMaterialList = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
-    return get(URL).then((response) => {
-        let materials = response?.result
-            ? response?.result?.map((material, index) => {
-                  return {
-                      ...material,
-                      isSelected: index == 0,
-                      gitURL: material.gitMaterialUrl || '',
-                      lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
-                      isMaterialLoading: false,
-                      history: material.history
-                          ? material.history.map((history, indx) => {
-                                return {
-                                    commitURL: material.gitMaterialUrl
-                                        ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
-                                        : '',
-                                    changes: history.Changes || [],
-                                    author: history.Author,
-                                    message: history.Message,
-                                    date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
-                                    commit: history?.Commit,
-                                    isSelected: indx == 0,
-                                    showChanges: false,
-                                    webhookData: history.WebhookData
-                                        ? {
-                                              id: history.WebhookData.id,
-                                              eventActionType: history.WebhookData.eventActionType,
-                                              data: history.WebhookData.data,
-                                          }
-                                        : null,
-                                }
-                            })
-                          : [],
-                  }
-              })
+    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`).then((response) => {
+        const materials = Array.isArray(response?.result)
+            ? response.result
+                  .sort((a, b) => sortCallback('id', a, b))
+                  .map((material, index) => {
+                      return {
+                          ...material,
+                          isSelected: index == 0,
+                          gitURL: material.gitMaterialUrl || '',
+                          lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                          isMaterialLoading: false,
+                          history: material.history
+                              ? material.history.map((history, indx) => {
+                                    return {
+                                        commitURL: material.gitMaterialUrl
+                                            ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
+                                            : '',
+                                        changes: history.Changes || [],
+                                        author: history.Author,
+                                        message: history.Message,
+                                        date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
+                                        commit: history?.Commit,
+                                        isSelected: indx == 0,
+                                        showChanges: false,
+                                        webhookData: history.WebhookData
+                                            ? {
+                                                  id: history.WebhookData.id,
+                                                  eventActionType: history.WebhookData.eventActionType,
+                                                  data: history.WebhookData.data,
+                                              }
+                                            : null,
+                                    }
+                                })
+                              : [],
+                      }
+                  })
             : []
-        materials.sort((a, b) => {
-            sortCallback('id', a, b)
-        })
         return {
             code: response.code,
             status: response.status,
@@ -308,7 +306,14 @@ export const triggerCINode = (request) => {
 }
 
 // stageType: 'PRECD' | 'CD' | 'POSTCD'
-export const triggerCDNode = (pipelineId: any, ciArtifactId: any, appId: string, stageType: string, deploymentWithConfig?: string, wfrId?: number) => {
+export const triggerCDNode = (
+    pipelineId: any,
+    ciArtifactId: any,
+    appId: string,
+    stageType: string,
+    deploymentWithConfig?: string,
+    wfrId?: number,
+) => {
     const request = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
@@ -436,7 +441,11 @@ export const createAppLabels = (request: CreateAppLabelsRequest): Promise<Respon
     return post(Routes.APP_LABELS, request)
 }
 
-export const getIngressServiceUrls = (params: { appId?: string; envId: string; installedAppId?: string }): Promise<ResponseType> => {
+export const getIngressServiceUrls = (params: {
+    appId?: string
+    envId: string
+    installedAppId?: string
+}): Promise<ResponseType> => {
     const urlParams = Object.entries(params).map(([key, value]) => {
         if (!value) return
         return `${key}=${value}`
