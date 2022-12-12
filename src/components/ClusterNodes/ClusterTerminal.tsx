@@ -113,7 +113,6 @@ export default function ClusterTerminal({
                                     setRetry(true)
                                     setConnectTerminal(true)
                                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
-                                    setRetry(true)
                                     setUpdate(false)
                                     setConnectTerminal(true)
                                 }
@@ -208,7 +207,6 @@ export default function ClusterTerminal({
                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
                     setRetry(true)
                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
-                    setRetry(true)
                     setUpdate(false)
                     setConnectTerminal(true)
                 }
