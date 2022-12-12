@@ -214,10 +214,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 clearTimeout(clustertimeOut)
             }
             if (socket) {
-                socket.close()
-                socket = undefined
+                    socket.close()
+                    socket = undefined
+                }
             }
-        }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession()
         }
@@ -229,12 +229,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             action: `Selected Pod`,
             label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
         })
-
-        if (!terminalViewProps.isClusterTerminal) {
-            reconnect()
-        } else {
-            terminal?.reset()
-        }
+        
+        reconnect()
     }, [terminalViewProps.nodeName])
 
     useEffect(() => {
@@ -363,7 +359,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             })
             .catch((err) => {
                 clearTimeout(clustertimeOut)
-                showError(err)
                 terminalViewProps.sessionError(err)
                 terminal?.reset()
             })
