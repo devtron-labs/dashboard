@@ -74,7 +74,7 @@ export default function ClusterTerminal({
         if (update) {
             setNamespace(defaultNameSpace)
         }
-    }, [clusterId, nodeList, selectedNode])
+    }, [clusterId, nodeList])
 
     useEffect(() => {
         try {

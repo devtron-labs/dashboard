@@ -121,6 +121,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData)
         setShowTerminal(true)
+        setSelectedNode(null)
     }
 
     const closeTerminal = (): void => {
