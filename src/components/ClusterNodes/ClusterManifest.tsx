@@ -3,7 +3,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
 import YAML from 'yaml'
-import { MODES } from '../../config'
+import { MESSAGING_UI, MODES } from '../../config'
 
 export default function ClusterManifest({ clusterId }: { clusterId: number }) {
     const [manifestValue, setManifest] = useState('')
@@ -31,9 +31,9 @@ export default function ClusterManifest({ clusterId }: { clusterId: number }) {
 
     const renderManifest = () => {
         if (isResourceMissing) {
-            return <MessageUI msg="Manifest not available" size={24} />
+            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} />
         } else if (loading) {
-            return <MessageUI msg={'Fetching manifest'} icon={MsgUIType.LOADING} size={24} />
+            return <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
         } else {
             return (
                 manifestValue && (

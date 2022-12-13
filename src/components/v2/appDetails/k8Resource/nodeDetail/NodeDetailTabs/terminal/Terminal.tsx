@@ -13,14 +13,14 @@ import IndexStore from '../../../../index.store'
 import { AppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline, showError } from '../../../../../../common'
 import { ServerErrors } from '../../../../../../../modals/commonTypes'
-import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/types'
 import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
+import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 
 let socket = undefined
 let terminal = undefined
 let fitAddon = undefined
-let clustertimeOut = undefined
+let clusterTimeOut = undefined
 
 function TerminalView(terminalViewProps: TerminalViewProps) {
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>()
@@ -38,7 +38,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }, [popupText])
 
     useEffect(() => {
-        if (terminal && fitAddon && terminalViewProps.isterminalTab) {
+        if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
             fitAddon.fit()
         }
     }, [terminalViewProps.isFullScreen])
@@ -219,8 +219,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         socketConnectionRef.current = terminalViewProps.socketConnection
 
         if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
-            if (clustertimeOut) {
-                clearTimeout(clustertimeOut)
+            if (clusterTimeOut) {
+                clearTimeout(clusterTimeOut)
             }
             if (socket) {
                 socket.close()
@@ -277,7 +277,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     useEffect(() => {
         if (firstMessageReceived) {
             if (terminalViewProps.isClusterTerminal) {
-                if (terminalViewProps.isterminalTab) {
+                if (terminalViewProps.isTerminalTab) {
                     fitAddon.fit()
                 }
             } else {
@@ -286,7 +286,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             terminal.setOption('cursorBlink', true)
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED)
         }
-    }, [firstMessageReceived, terminalViewProps.isterminalTab])
+    }, [firstMessageReceived, terminalViewProps.isTerminalTab])
 
     useEffect(() => {
         if (!window.location.origin) {
@@ -315,7 +315,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             socket = undefined
             terminal = undefined
             fitAddon = undefined
-            clearTimeout(clustertimeOut)
+            clearTimeout(clusterTimeOut)
 
             let duration = moment(ga_session_duration).fromNow()
 
@@ -337,11 +337,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const getClusterData = (url, count) => {
         if (
-            clustertimeOut &&
+            clusterTimeOut &&
             (socketConnectionRef.current === SocketConnectionType.DISCONNECTED ||
                 socketConnectionRef.current === SocketConnectionType.DISCONNECTING)
         ) {
-            clearTimeout(clustertimeOut)
+            clearTimeout(clusterTimeOut)
             return
         }
         if (!terminal) {
@@ -356,7 +356,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 let status = response.result.status
                 if (!sessionId && count) {
                     preFetchData(status)
-                    clustertimeOut = setTimeout(() => {
+                    clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
                     }, 3000)
                 } else if (sessionId) {
@@ -369,7 +369,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 }
             })
             .catch((err) => {
-                clearTimeout(clustertimeOut)
+                clearTimeout(clusterTimeOut)
                 terminalViewProps.sessionError(err)
                 terminal?.reset()
             })

@@ -14,7 +14,6 @@ import {
 import {
     ClusterCapacityType,
     ClusterListResponse,
-    COLUMN_METADATA,
     ColumnMetadataType,
     TEXT_COLOR_CLASS,
     ERROR_TYPE,
@@ -34,6 +33,7 @@ import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
+import { COLUMN_METADATA } from './constants'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()

@@ -12,7 +12,7 @@ export interface TerminalViewProps {
     disconnectRetry?: () => void
     isToggleOption?: boolean
     isFullScreen?: boolean
-    isterminalTab?: boolean
+    isTerminalTab?: boolean
     setTerminalTab?: (selectedTabIndex: number) => void
     isPodConnected?: boolean
     sessionError?: (error: any) => void

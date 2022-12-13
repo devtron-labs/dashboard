@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { Option } from '../common'
-import { COLUMN_METADATA, ColumnMetadataType } from './types'
+import { ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import { useColumnFilterContext } from './NodeListSearchFilter'
+import { COLUMN_METADATA } from './constants'
 
 const ValueContainer = (props: any): JSX.Element => {
     const length = props.getValue().length

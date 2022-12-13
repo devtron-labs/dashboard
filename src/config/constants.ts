@@ -663,5 +663,7 @@ export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
 export const MESSAGING_UI = {
     NO_RESOURCE: 'This resource no longer exists',
     NO_EVENTS: 'Events not available',
-    FETCHING_EVENTS: 'Fetching events'
+    FETCHING_EVENTS: 'Fetching events',
+    MANIFEST_NOT_AVAILABLE: 'Manifest not available',
+    FETCHING_MANIFEST: 'Fetching manifest'
 }

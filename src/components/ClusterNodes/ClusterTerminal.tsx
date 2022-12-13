@@ -28,8 +28,8 @@ import ClusterEvents from './ClusterEvents'
 import TippyWhite from '../common/TippyWhite'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
-import { clusterSelectStyle, ClusterTerminalType, CLUSTER_STATUS } from './types'
-import { clusterImages } from './constants'
+import { ClusterTerminalType } from './types'
+import { clusterImages, clusterSelectStyle, CLUSTER_STATUS } from './constants'
 
 export default function ClusterTerminal({
     clusterId,
@@ -297,7 +297,7 @@ export default function ClusterTerminal({
                 isFetchRetry={isFetchRetry}
                 isToggleOption={toggleOption}
                 isFullScreen={isFullScreen}
-                isterminalTab={selectedTabIndex === 0}
+                isTerminalTab={selectedTabIndex === 0}
                 setTerminalTab={setSelectedTabIndex}
                 isPodConnected={connectTerminal}
                 sessionError={sessionError}
