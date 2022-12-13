@@ -167,3 +167,10 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
     IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
     return _appStreamData
 }
+
+export const AppStatusClass = {
+  [ModuleStatus.INSTALLING]: 'progressing',
+  [ModuleStatus.TIMEOUT]: 'degraded',
+  [ModuleStatus.INSTALL_FAILED]: 'degraded',
+  [ModuleStatus.INSTALLED]: 'healthy'
+}

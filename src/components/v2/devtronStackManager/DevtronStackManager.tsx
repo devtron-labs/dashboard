@@ -34,7 +34,7 @@ import './devtronStackManager.scss'
 import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
 import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import { buildResourceStatusModalData } from './DevtronStackManager.utils'
+import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -544,16 +544,8 @@ export default function DevtronStackManager({
                                         )}
                                         showAppStatusMessage={true}
                                         title="Integration installation status"
-                                        appStatusText={
-                                            selectedModule.installationStatus == ModuleStatus.INSTALLING
-                                                ? 'Installing'
-                                                : 'Timeout'
-                                        }
-                                        appStatus={
-                                            selectedModule.installationStatus == ModuleStatus.INSTALLING
-                                                ? 'progressing'
-                                                : 'degraded'
-                                        }
+                                        appStatusText={selectedModule.installationStatus}
+                                        appStatus={AppStatusClass[selectedModule.installationStatus] || ''}
                                         showFooter={true}
                                     />
                                 )}
