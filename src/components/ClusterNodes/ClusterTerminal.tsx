@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { shellTypes } from '../../config/constants'
@@ -39,7 +39,7 @@ export default function ClusterTerminal({
     clusterImageList,
     isNodeDetailsPage,
     namespaceList,
-    selectedNode,
+    node,
     setSelectedNode,
 }: ClusterTerminalType) {
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
@@ -47,6 +47,9 @@ export default function ClusterTerminal({
     const imageList = convertToOptionsList(clusterImageList, clusterImages)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
+    const [selectedContainerName, setSelectedContainerName] = useState(
+        node ? { label: node, value: node } : clusterNodeList[0],
+    )
     const [selectedTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
@@ -61,20 +64,20 @@ export default function ClusterTerminal({
     const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-    const _selectedNode = selectedNode || clusterNodeList[0]
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage,
         shellName: selectedTerminalType.value,
-        nodeName: _selectedNode.value,
+        nodeName: selectedContainerName.value,
         namespace: selectedNamespace.value,
     }
 
     useEffect(() => {
         if (update) {
             setNamespace(defaultNameSpace)
+            updateSelectedContainerName()
         }
-    }, [clusterId, nodeList])
+    }, [clusterId, nodeList, node])
 
     useEffect(() => {
         try {
@@ -129,7 +132,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [_selectedNode.value, selectedImage, isReconnect, selectedNamespace.value])
+    }, [selectedContainerName.value, selectedImage, isReconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -154,6 +157,16 @@ export default function ClusterTerminal({
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
     }, [selectedTerminalType.value])
+
+    function updateSelectedContainerName() {
+        if (node) {
+            if (node !== selectedContainerName.value) {
+                setSelectedContainerName({ label: node, value: node })
+            }
+        } else {
+            setSelectedContainerName(clusterNodeList[0])
+        }
+    }
 
     async function closeTerminalModal(): Promise<void> {
         try {
@@ -235,7 +248,11 @@ export default function ClusterTerminal({
     }
 
     const onChangeNodes = (selected): void => {
-        setSelectedNode(selected)
+        setSelectedContainerName(selected)
+
+        if (setSelectedNode) {
+            setSelectedNode(selected.value)
+        }
     }
 
     const onChangeTerminalType = (selected): void => {
@@ -284,8 +301,8 @@ export default function ClusterTerminal({
     const terminalContainer = () => {
         return (
             <Terminal
-                nodeName={_selectedNode.value}
-                containerName={_selectedNode.label}
+                nodeName={selectedContainerName.value}
+                containerName={selectedContainerName.label}
                 socketConnection={socketConnection}
                 isTerminalCleared={terminalCleared}
                 shell={selectedTerminalType}
@@ -366,8 +383,8 @@ export default function ClusterTerminal({
                                 <ReactSelect
                                     placeholder="Select Containers"
                                     options={clusterNodeList}
-                                    defaultValue={_selectedNode}
-                                    value={_selectedNode}
+                                    defaultValue={selectedContainerName}
+                                    value={selectedContainerName}
                                     onChange={onChangeNodes}
                                     styles={clusterSelectStyle}
                                     components={{

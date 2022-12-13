@@ -140,8 +140,8 @@ export interface ClusterTerminalType {
     clusterImageList: string[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
-    selectedNode: OptionType
-    setSelectedNode: React.Dispatch<React.SetStateAction<OptionType>>
+    node?: string
+    setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const TEXT_COLOR_CLASS = {

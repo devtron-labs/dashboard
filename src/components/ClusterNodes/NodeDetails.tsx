@@ -70,7 +70,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
     const [showAllTaints, setShowAllTaints] = useState(false)
-    const [selectedNode, setSelectedNode] = useState<OptionType>()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -896,8 +895,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 clusterImageList={imageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}
-                selectedNode={selectedNode}
-                setSelectedNode={setSelectedNode}
             />
         )
     }

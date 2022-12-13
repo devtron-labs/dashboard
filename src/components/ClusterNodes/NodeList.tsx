@@ -68,7 +68,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
     const nodeList = filteredFlattenNodeList.map((node) => node['name'])
-    const [selectedNode, setSelectedNode] = useState<OptionType>()
+    const [selectedNode, setSelectedNode] = useState<string>()
     const pageSize = 15
 
     useEffect(() => {
@@ -632,10 +632,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const openTerminal = (clusterData): void => {
-        setSelectedNode({
-            label: clusterData.name,
-            value: clusterData.name,
-        })
+        setSelectedNode(clusterData.name)
         setTerminal(true)
     }
 
@@ -699,7 +696,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     closeTerminal={closeTerminal}
                     clusterImageList={imageList}
                     namespaceList={namespaceList[selectedCluster.label]}
-                    selectedNode={selectedNode}
+                    node={selectedNode}
                     setSelectedNode={setSelectedNode}
                 />
             )}

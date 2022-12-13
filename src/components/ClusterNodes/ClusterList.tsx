@@ -29,7 +29,6 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const [searchApplied, setSearchApplied] = useState(false)
     const [showTerminalModal, setShowTerminal] = useState(false)
     const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
-    const [selectedNode, setSelectedNode] = useState<OptionType>()
 
     const getData = () => {
         setLoader(true)
@@ -121,7 +120,6 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData)
         setShowTerminal(true)
-        setSelectedNode(null)
     }
 
     const closeTerminal = (): void => {
@@ -231,8 +229,6 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     closeTerminal={closeTerminal}
                     clusterImageList={imageList}
                     namespaceList={namespaceList[terminalclusterData.name]}
-                    selectedNode={selectedNode}
-                    setSelectedNode={setSelectedNode}
                 />
             )}
         </div>
