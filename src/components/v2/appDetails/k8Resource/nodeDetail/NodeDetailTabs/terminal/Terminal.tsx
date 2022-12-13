@@ -1,5 +1,5 @@
 import moment from 'moment'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
@@ -14,6 +14,8 @@ import { AppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline, showError } from '../../../../../../common'
 import { ServerErrors } from '../../../../../../../modals/commonTypes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/types'
+import { SERVER_MODE } from '../../../../../../../config'
+import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 
 let socket = undefined
 let terminal = undefined
@@ -28,6 +30,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const isOnline = useOnline()
     const [errorMessage, setErrorMessage] = useState<string>('')
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
+    const { serverMode } = useContext(mainContext)
 
     useEffect(() => {
         if (!popupText) return
@@ -82,7 +85,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const postInitialize = (sessionId: string) => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+        if (
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (terminalViewProps.isClusterTerminal && serverMode === SERVER_MODE.EA_ONLY)
+        ) {
             socketURL += '/k8s/pod/exec/sockjs/ws/'
         } else {
             socketURL += '/api/vi/pod/exec/ws/'
