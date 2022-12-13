@@ -184,6 +184,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const preFetchData = (status = '', firstMessageReceived = false) => {
         const _terminal = terminal
+
+        if(!_terminal) return
+        
         _terminal?.reset()
 
         _terminal.write('Creating pod.')
