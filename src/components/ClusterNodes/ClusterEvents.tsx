@@ -30,7 +30,7 @@ export default function ClusterEvents({ clusterId }: { clusterId: number }) {
     }, [])
 
     return isResourceMissing ? (
-        <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} />
+        <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
     ) : (
         <EventsTable loading={loading} eventsList={events} />
     )
