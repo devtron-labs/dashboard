@@ -19,8 +19,8 @@ export interface TerminalViewProps {
 }
 
 export interface EventTableType {
-    loading: boolean,
-     eventsList: any[]
+    loading: boolean
+    eventsList: any[]
 }
 
 export enum SocketConnectionType {
@@ -35,6 +35,6 @@ export const ERROR_MESSAGE = {
 }
 
 export const POD_LINKS = {
-    POD_MANIFEST : 'Check Pod Manifest',
-    POD_EVENTS : 'Check Pod Events'
+    POD_MANIFEST: 'Check Pod Manifest',
+    POD_EVENTS: 'Check Pod Events',
 }

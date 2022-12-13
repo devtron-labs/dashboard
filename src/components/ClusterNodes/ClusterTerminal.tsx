@@ -47,7 +47,7 @@ export default function ClusterTerminal({
     const imageList = convertToOptionsList(clusterImageList, clusterImages)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
-    const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
+    const [selectedTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [terminalAccessId, setTerminalId] = useState()
@@ -65,7 +65,7 @@ export default function ClusterTerminal({
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage,
-        shellName: selectedtTerminalType.value,
+        shellName: selectedTerminalType.value,
         nodeName: _selectedNode.value,
         namespace: selectedNamespace.value,
     }
@@ -153,7 +153,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedtTerminalType.value])
+    }, [selectedTerminalType.value])
 
     async function closeTerminalModal(): Promise<void> {
         try {
@@ -173,7 +173,7 @@ export default function ClusterTerminal({
         }
     }
 
-    async function stopterminalConnection(): Promise<void> {
+    async function stopTerminalConnection(): Promise<void> {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
         try {
             await clusterTerminalStop(terminalAccessId)
@@ -288,7 +288,7 @@ export default function ClusterTerminal({
                 containerName={_selectedNode.label}
                 socketConnection={socketConnection}
                 isTerminalCleared={terminalCleared}
-                shell={selectedtTerminalType}
+                shell={selectedTerminalType}
                 setTerminalCleared={setTerminalCleared}
                 setSocketConnection={setSocketConnection}
                 isClusterTerminal={true}
@@ -504,7 +504,7 @@ export default function ClusterTerminal({
                                     <span className="mr-8 cursor">
                                         <div
                                             className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                                            onClick={stopterminalConnection}
+                                            onClick={stopTerminalConnection}
                                         />
                                     </span>
                                 ) : (
