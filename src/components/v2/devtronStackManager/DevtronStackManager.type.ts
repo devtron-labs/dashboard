@@ -5,15 +5,16 @@ import React from "react";
 
 export enum ModuleStatus {
     HEALTHY = 'healthy',
-    INSTALLED = 'installed',
-    INSTALLING = 'installing',
-    INSTALL_FAILED = 'installFailed',
     NONE = 'none',
-    NOT_INSTALLED = 'notInstalled',
-    TIMEOUT = 'timeout',
     UNKNOWN = 'unknown',
     UPGRADING = 'upgrading',
     UPGRADE_FAILED = 'upgradeFailed',
+    //Module Status
+    INSTALLED = 'installed',
+    INSTALLING = 'installing',
+    INSTALL_FAILED = 'installFailed',
+    NOT_INSTALLED = 'notInstalled',
+    TIMEOUT = 'timeout',
 }
 
 export enum ModuleActions {
