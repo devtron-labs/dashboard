@@ -80,7 +80,7 @@ export default function ClusterTerminal({
         try {
             setSelectedTabIndex(0)
             if (update) {
-                socketDiconnecting()
+                socketDisconnecting()
                 clusterTerminalUpdate({ ...payload, id: terminalAccessId })
                     .then((response) => {
                         setTerminalId(response.result.terminalAccessId)
@@ -134,7 +134,7 @@ export default function ClusterTerminal({
     useEffect(() => {
         try {
             if (update) {
-                socketDiconnecting()
+                socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessId })
                     .then((response) => {
                         setTerminalId(response.result.terminalAccessId)
@@ -164,7 +164,7 @@ export default function ClusterTerminal({
             if (isPodCreated) {
                 await clusterTerminalDisconnect(terminalAccessId)
             }
-            socketDiconnecting()
+            socketDisconnecting()
             toggleOptionChange()
             setUpdate(false)
         } catch (error) {
@@ -225,7 +225,7 @@ export default function ClusterTerminal({
         setSocketConnection(SocketConnectionType.CONNECTING)
     }
 
-    const socketDiconnecting = (): void => {
+    const socketDisconnecting = (): void => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
     }
 
