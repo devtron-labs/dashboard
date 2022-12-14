@@ -293,6 +293,7 @@ export const DOCUMENTATION = {
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
+    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/deployment`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
 }
@@ -580,6 +581,7 @@ export const EXTERNAL_TYPES = {
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
+export const DEPLOYMENT = 'Deployment'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',

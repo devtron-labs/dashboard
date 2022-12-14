@@ -2318,9 +2318,13 @@ textarea::placeholder {
     transform: translate(-50%, -50%);
 }
 
+// opacity
+.dc__opacity-0_5 {
+  opacity: 0.5;
+}
+
 .dc__hover-n50:hover {
     background-color: var(--N50);
-
 }
 
 .dc_width-max-content {
