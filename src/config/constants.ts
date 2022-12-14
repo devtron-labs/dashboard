@@ -183,6 +183,17 @@ export const Routes = {
     SSO_UPDATE: 'sso/update',
     INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
     EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls',
+    CLUSTER_TERMINAL: 'user/terminal',
+    START: 'start',
+    DISCONNECT_RETRY: 'disconnectAndRetry',
+    UPDATE_SHELL: 'update/shell',
+    CLUSTER_NAMESPACE: 'cluster/namespaces',
+    DISCONNECT: 'disconnect',
+    STOP: 'stop',
+    POD_MANIFEST: 'pod/manifest',
+    POD_EVENTS: 'pod/events'
+    
+
 }
 
 export const ViewType = {
@@ -630,6 +641,13 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 
+export const shellTypes = [
+    { label: 'sh', value: 'sh' },
+    { label: 'bash', value: 'bash' },
+    { label: 'powershell', value: 'powershell' },
+    { label: 'cmd', value: 'cmd' },
+]
+
 export enum AppDetailsErrorType {
     ERRIMAGEPULL = 'errimagepull',
     IMAGEPULLBACKOFF = 'imagepullbackoff',
@@ -640,4 +658,12 @@ export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
   LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
   LINE_THREE:  'You can continue to deploy images from external build services',
   DOC_LINK_TEXT: 'Refer documentation to learn more.',
+}
+
+export const MESSAGING_UI = {
+    NO_RESOURCE: 'This resource no longer exists',
+    NO_EVENTS: 'Events not available',
+    FETCHING_EVENTS: 'Fetching events',
+    MANIFEST_NOT_AVAILABLE: 'Manifest not available',
+    FETCHING_MANIFEST: 'Fetching manifest'
 }

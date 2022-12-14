@@ -312,6 +312,10 @@ a:focus {
     display: inline-block;
 }
 
+.dc__inline-flex {
+    display: inline-flex;
+}
+
 //remove
 .form {
     margin: 0px;
@@ -327,7 +331,7 @@ a:focus {
     white-space: nowrap;
     overflow: auto;
     resize: none;
-    background: #0b0f22;
+    background: var(--terminal-bg);
     padding: 16px;
     font-family: monospace;
 }
@@ -1702,7 +1706,7 @@ button.anchor {
 }
 
 .dark-background {
-    background-color: #0b0f22;
+    background-color: var(--terminal-bg);
 }
 
 .white-background {
@@ -2317,4 +2321,12 @@ textarea::placeholder {
 .dc__hover-n50:hover {
     background-color: var(--N50);
 
+}
+
+.dc_width-max-content {
+    width: 'max-content'
+}
+
+.dc_min-w-100{
+    min-width: 100%
 }
