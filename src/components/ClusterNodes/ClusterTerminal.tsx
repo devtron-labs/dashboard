@@ -47,7 +47,7 @@ export default function ClusterTerminal({
     const imageList = convertToOptionsList(clusterImageList, clusterImages)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
-    const [selectedContainerName, setSelectedContainerName] = useState(
+    const [selectedNodeName, setSelectedNodeName] = useState(
         node ? { label: node, value: node } : clusterNodeList[0],
     )
     const [selectedTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
@@ -68,7 +68,7 @@ export default function ClusterTerminal({
         clusterId: clusterId,
         baseImage: selectedImage,
         shellName: selectedTerminalType.value,
-        nodeName: selectedContainerName.value,
+        nodeName: selectedNodeName.value,
         namespace: selectedNamespace.value,
     }
 
@@ -134,7 +134,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedContainerName.value, selectedImage, isReconnect, selectedNamespace.value])
+    }, [selectedNodeName.value, selectedImage, isReconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -162,11 +162,11 @@ export default function ClusterTerminal({
 
     function updateSelectedContainerName() {
         if (node) {
-            if (node !== selectedContainerName.value) {
-                setSelectedContainerName({ label: node, value: node })
+            if (node !== selectedNodeName.value) {
+                setSelectedNodeName({ label: node, value: node })
             }
         } else {
-            setSelectedContainerName(clusterNodeList[0])
+            setSelectedNodeName(clusterNodeList[0])
         }
     }
 
@@ -250,7 +250,7 @@ export default function ClusterTerminal({
     }
 
     const onChangeNodes = (selected): void => {
-        setSelectedContainerName(selected)
+        setSelectedNodeName(selected)
 
         if (setSelectedNode) {
             setSelectedNode(selected.value)
@@ -303,8 +303,8 @@ export default function ClusterTerminal({
     const terminalContainer = () => {
         return (
             <Terminal
-                nodeName={selectedContainerName.value}
-                containerName={selectedContainerName.label}
+                nodeName={selectedNodeName.value}
+                containerName={selectedNodeName.label}
                 socketConnection={socketConnection}
                 isTerminalCleared={terminalCleared}
                 shell={selectedTerminalType}
@@ -385,8 +385,8 @@ export default function ClusterTerminal({
                                 <ReactSelect
                                     placeholder="Select Containers"
                                     options={clusterNodeList}
-                                    defaultValue={selectedContainerName}
-                                    value={selectedContainerName}
+                                    defaultValue={selectedNodeName}
+                                    value={selectedNodeName}
                                     onChange={onChangeNodes}
                                     styles={clusterSelectStyle}
                                     components={{
