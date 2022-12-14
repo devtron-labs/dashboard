@@ -14,13 +14,7 @@ import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
 import { flatContainers } from '../nodeDetail.util';
-
-const shellTypes = [
-    { label: 'sh', value: 'sh' },
-    { label: 'bash', value: 'bash' },
-    { label: 'powershell', value: 'powershell' },
-    { label: 'cmd', value: 'cmd' },
-];
+import { shellTypes } from '../../../../../../config/constants';
 
 function TerminalComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
@@ -171,7 +165,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                     nodeName={params.podName}
                     containerName={selectedContainerName}
                     socketConnection={socketConnection}
-                    terminalCleared={terminalCleared}
+                    isTerminalCleared={terminalCleared}
                     shell={selectedtTerminalType}
                     setTerminalCleared={setTerminalCleared}
                     setSocketConnection={setSocketConnection}
