@@ -894,12 +894,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
-        const labelValueMap = mapByKey(environments, 'value')
 
         const sortedEnvironments =
             openMenu === 'environment' ? environments : sortBySelected(permission.environment, environments, 'value')
-
-        sortedEnvironments.forEach((item, index, arr)=> { arr[index]['label'] = (labelValueMap.has(item['label']) ? labelValueMap.get(item['label'])['label'] : item['label'] )})
 
         const sortedApplications =
             openMenu === 'entityName' ? applications : sortBySelected(permission.entityName, applications, 'value')

@@ -884,10 +884,13 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-    const availableArrayMap = mapByKey(availableArray, matchKey)
-    const actualSelectedArray = selectedArray.filter(item => availableArrayMap.has(item[matchKey]))
-    const selectedArrayMap = mapByKey(actualSelectedArray, matchKey)
+
+    const selectedArrayMap = mapByKey(selectedArray, matchKey)
+
+    const actualSelectedArray = availableArray.filter(item => selectedArrayMap.has(item[matchKey]))
+
     const unselectedAvailableArray = availableArray.filter(item => !selectedArrayMap.has(item[matchKey]))
+
     return [...sortObjectArrayAlphabetically(actualSelectedArray, matchKey), ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey)]
 }
 
