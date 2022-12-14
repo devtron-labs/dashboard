@@ -518,27 +518,27 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     onChange={(e) => setAppName(e.target.value)}
                                 />
                             </label>
-                            {
-                                <label className="form__row form__row--w-100">
-                                    <span className="form__label">Project</span>
-                                    <ReactSelect
-                                        components={{
-                                            IndicatorSeparator: null,
-                                            DropdownIndicator,
-                                            Option,
-                                        }}
-                                        isDisabled={!!isUpdate}
-                                        placeholder="Select Project"
-                                        value={selectedProject}
-                                        styles={{
-                                            ...styles,
-                                            ...menuList,
-                                        }}
-                                        onChange={selectProject}
-                                        options={projects}
-                                    />
-                                </label>
-                            }
+
+                            <label className="form__row form__row--w-100">
+                                <span className="form__label">Project</span>
+                                <ReactSelect
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                    }}
+                                    isDisabled={!!isUpdate}
+                                    placeholder="Select Project"
+                                    value={selectedProject}
+                                    styles={{
+                                        ...styles,
+                                        ...menuList,
+                                    }}
+                                    onChange={selectProject}
+                                    options={projects}
+                                />
+                            </label>
+
                             <div className="form__row form__row--w-100">
                                 <span className="form__label">Environment</span>
                                 {serverMode == SERVER_MODE.FULL && (
