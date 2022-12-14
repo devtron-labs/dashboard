@@ -63,7 +63,7 @@ export default function ClusterTerminal({
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const payload = {
-        clusterId: +clusterId,
+        clusterId: clusterId,
         baseImage: selectedImage,
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
