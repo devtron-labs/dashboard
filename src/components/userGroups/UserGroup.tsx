@@ -198,7 +198,7 @@ export default function UserGroupRoute() {
             Promise.allSettled([
                 getGroupList(),
                 get(Routes.PROJECT_LIST),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
+                getEnvironmentListMin(),
                 serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
                 getEnvironmentListHelmApps(),
@@ -217,7 +217,7 @@ export default function UserGroupRoute() {
     }, [lists])
 
     async function fetchAppList(projectIds: number[]) {
-        // if (serverMode === SERVER_MODE.EA_ONLY) return
+        if (serverMode === SERVER_MODE.EA_ONLY) return
         const missingProjects = projectIds.filter((projectId) => !appsList.has(projectId))
         if (missingProjects.length === 0) return
         setAppsList((appList) => {
@@ -253,7 +253,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-        // if (serverMode === SERVER_MODE.EA_ONLY) return
+
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
