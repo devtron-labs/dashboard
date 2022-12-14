@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { shellTypes } from '../../config/constants'
@@ -74,7 +74,9 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         if (update) {
-            setNamespace(defaultNameSpace)
+            if(!node){
+                setNamespace(defaultNameSpace)
+            }
             updateSelectedContainerName()
         }
     }, [clusterId, nodeList, node])
