@@ -12,6 +12,7 @@ import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/Validate
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -152,12 +153,19 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
+    const [chartRepoType, setChartRepoType] = useState<string>('PUBLIC')
+    
+    if(chartRepoType==='PUBLIC'){
+        state.auth.value= 'ANONYMOUS'
+    }else{
+        state.auth.value= 'USERNAME_PASSWORD'
+    }
 
     const chartRepoPayload = {
         id: id || 0,
         name: state.name.value,
         url: state.url.value,
-        authMode: state.auth.value,
+        authMode: chartRepoType==='PUBLIC'?'ANONYMOUS':'USERNAME_PASSWORD',
         active: true,
         ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
         ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
@@ -249,9 +257,43 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
 
+    function toggleIsPublicChartType(e) {
+        customState.username = { value: '', error: '' }
+        customState.password = { value: '', error: '' }
+        if (chartRepoType === 'PUBLIC') {
+            setChartRepoType('PRIVATE')
+        } else {
+            setChartRepoType('PUBLIC')
+        }
+    }
+    const ChartRepoType = [
+        { value: 'PUBLIC', label: 'Public repository' },
+        { value: 'PRIVATE', label: 'Private repository' },
+    ]
+
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-            < ValidateForm
+            <div className="flex left mb-16">
+                {id ? (
+                    <></>
+                ) : (
+                    <RadioGroup
+                        className="chartrepo-type__radio-group"
+                        value={chartRepoType}
+                        name={`chartrepo-type_${chartRepoType}`}
+                        onChange={toggleIsPublicChartType}
+                    >
+                        {ChartRepoType.map(({ label, value }) => (
+                            <RadioGroupItem value={value}>
+                                <span className={`dc__no-text-transform ${chartRepoType === value ? 'fw-6' : 'fw-4'}`}>
+                                    {label}
+                                </span>
+                            </RadioGroupItem>
+                        ))}
+                    </RadioGroup>
+                )}
+            </div>
+            <ValidateForm
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
@@ -261,8 +303,45 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             />
 
             <div className="form__row form__row--two-third">
-                <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                <CustomInput
+                    autoComplete="off"
+                    value={state.name.value}
+                    onChange={handleOnChange}
+                    name="name"
+                    error={state.name.error}
+                    label="Name*"
+                />
+                <CustomInput
+                    autoComplete="off"
+                    value={state.url.value}
+                    onChange={handleOnChange}
+                    name="url"
+                    error={state.url.error}
+                    label="URL*"
+                />
+                {chartRepoType === 'PUBLIC' ? (
+                    <></>
+                ) : (
+                    <>
+                        <CustomInput
+                            autoComplete="off"
+                            value={customState.username.value}
+                            onChange={customHandleChange}
+                            name="username"
+                            error={customState.username.error}
+                            label="Username*"
+                            labelClassName="mt-12"
+                        />
+                        <ProtectedInput
+                            value={customState.password.value}
+                            onChange={customHandleChange}
+                            name="password"
+                            error={customState.password.error}
+                            label="Password*"
+                            labelClassName="mt-12"
+                        />
+                    </>
+                )}
             </div>
             {/* <div className="form__label">Authentication type*</div>
             <div className="form__row form__row--auth-type pl-12 pointer">
@@ -280,14 +359,21 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>} */}
             <div className="form__row form__buttons">
-                   {
-                       id &&
-                       <button className="cta delete dc__m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                   }
-                <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+                {id && (
+                    <button
+                        className="cta delete dc__m-auto chart_repo__delete-button"
+                        type="button"
+                        onClick={() => toggleConfirmation(true)}
+                    >
+                        {deleting ? <Progressing /> : 'Delete'}
+                    </button>
+                )}
+                <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                    Cancel
+                </button>
+                <button className="cta" type="submit" disabled={loading}>
+                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                </button>
             </div>
             {confirmation && (
                 <DeleteComponent
