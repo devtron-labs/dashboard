@@ -17,6 +17,7 @@ import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import PageHeader from '../common/header/PageHeader'
+import {DetectBottom} from "../app/details/cIDetails/CIDetails";
 
 export default function ChartGroupUpdate({}) {
     const history = useHistory()
@@ -42,6 +43,7 @@ export default function ChartGroupUpdate({}) {
         updateChartGroupNameAndDescription,
         reloadState,
         applyFilterOnCharts,
+        resetPaginationOffset,
     } = useChartGroup(Number(groupId))
     const isLeavingPageNotAllowed = useRef(false)
     const [selectedChartRepo, setSelectedChartRepo] = useState([])
@@ -111,8 +113,9 @@ export default function ChartGroupUpdate({}) {
 
     useEffect(() => {
         if (!state.loading) {
+            resetPaginationOffset()
             initialiseFromQueryParams(state.chartRepos)
-            callApplyFilterOnCharts()
+            callApplyFilterOnCharts(true)
         }
     }, [location.search, state.loading])
 
@@ -164,10 +167,15 @@ export default function ChartGroupUpdate({}) {
         if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
-    async function callApplyFilterOnCharts() {
+    async function callApplyFilterOnCharts(resetPage?: boolean) {
         setChartListLoading(true)
-        await applyFilterOnCharts(location.search)
+        await applyFilterOnCharts(location.search, resetPage)
         setChartListLoading(false)
+    }
+
+
+    async function reloadNextAfterBottom(e) {
+        await applyFilterOnCharts(location.search, false)
     }
 
     const renderBreadcrumbs = () => {
@@ -262,6 +270,8 @@ export default function ChartGroupUpdate({}) {
                                             selectedInstances={state.selectedInstances}
                                             isGrid={isGrid}
                                         />
+                                        {state.hasMoreCharts && <Progressing/>}
+                                        {state.hasMoreCharts &&  <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
                                 )}
                             </div>
