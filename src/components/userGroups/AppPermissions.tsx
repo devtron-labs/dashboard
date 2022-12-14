@@ -175,8 +175,7 @@ export default function AppPermissions({
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
             ?.filter(
                 (roleFilter: APIRoleFilter) =>
-                    roleFilter.entity === EntityTypes.DIRECT &&
-                    (roleFilter.accessType===ACCESS_TYPE_MAP.DEVTRON_APPS || roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS ),
+                    roleFilter.entity === EntityTypes.DIRECT
             )
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId =
@@ -202,7 +201,7 @@ export default function AppPermissions({
                 } as DirectPermissionsRoleFilter
             })
 
-        if (!foundDevtronApps ) {
+        if (!foundDevtronApps && serverMode != SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionDevtronApps)
         }
         if (!foundHelmApps) {
