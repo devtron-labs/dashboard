@@ -153,3 +153,5 @@ export function ValueContainerWithIcon(props) {
         </components.ValueContainer>
     )
 }
+
+export const noMatchingOptions = () => 'No matching results'

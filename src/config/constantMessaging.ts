@@ -38,3 +38,7 @@ export const enum DeleteComponentsName {
 }
 
 //DELETE COMPONENT ENDS
+
+export const REQUIRED_FIELD_MSG = 'This is a required field'
+export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
+export const SOME_ERROR_MSG = 'Some error occurred'
