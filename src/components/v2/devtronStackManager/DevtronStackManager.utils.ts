@@ -5,12 +5,15 @@ import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
 import { ModuleNameMap, URLS } from '../../../config'
+import IndexStore from '../appDetails/index.store'
+import { AppDetails, AppType } from '../appDetails/appDetails.type'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
 import {
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
+    ModuleResourceStatus,
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
@@ -121,4 +124,53 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
         linkText: 'Configure GitOps',
         link: URLS.GLOBAL_CONFIG_GITOPS,
     },
+}
+
+export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
+    const _nodes = []
+    const _resources = []
+    moduleResourcesStatus?.forEach((moduleResourceStatus) => {
+        const _resource = {
+            group: moduleResourceStatus.group,
+            version: moduleResourceStatus.version,
+            kind: moduleResourceStatus.kind,
+            name: moduleResourceStatus.name,
+            health: {
+                status: moduleResourceStatus.healthStatus,
+                message: moduleResourceStatus.healthMessage,
+            },
+        }
+        _nodes.push(_resource)
+        _resources.push(_resource)
+    })
+    const _appStreamData = {
+        result: {
+            application: {
+                status: {
+                    operationState: {
+                        syncResult: {
+                            resources: _resources,
+                        },
+                    },
+                },
+            },
+        },
+    }
+    const _appDetail: AppDetails = JSON.parse(
+        JSON.stringify({
+            resourceTree: {
+                nodes: _nodes,
+                status: 'INTEGRATION_INSTALLING',
+            },
+        }),
+    )
+    IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
+    return _appStreamData
+}
+
+export const AppStatusClass = {
+  [ModuleStatus.INSTALLING]: 'progressing',
+  [ModuleStatus.TIMEOUT]: 'degraded',
+  [ModuleStatus.INSTALL_FAILED]: 'degraded',
+  [ModuleStatus.INSTALLED]: 'healthy'
 }
