@@ -5,14 +5,14 @@ import { getClusterManifest } from './clusterNodes.service'
 import YAML from 'yaml'
 import { MESSAGING_UI, MODES } from '../../config'
 
-export default function ClusterManifest({ clusterId }: { clusterId: number }) {
+export default function ClusterManifest({ terminalAccessId }: { terminalAccessId: number }) {
     const [manifestValue, setManifest] = useState('')
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
 
     useEffect(() => {
-        if (clusterId) {
-            getClusterManifest(clusterId)
+        if (terminalAccessId) {
+            getClusterManifest(terminalAccessId)
                 .then((response) => {
                     setLoading(false)
                     const _manifest = YAML.stringify(response.result?.manifest)
@@ -27,7 +27,7 @@ export default function ClusterManifest({ clusterId }: { clusterId: number }) {
             setResourceMissing(true)
             setLoading(false)
         }
-    }, [clusterId])
+    }, [terminalAccessId])
 
     const renderManifest = () => {
         if (isResourceMissing) {

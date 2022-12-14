@@ -61,10 +61,10 @@ export const clusterNamespaceList = (): Promise<ResponseType> => {
     return get(`/${Routes.CLUSTER_NAMESPACE}`)
 }
 
-export const getClusterManifest = (terminalAccessId):  Promise<ResponseType> => {
+export const getClusterManifest = (terminalAccessId: number):  Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_MANIFEST}?terminalAccessId=${terminalAccessId}`)
 }
 
-export const getClusterEvents = (terminalAccessId):  Promise<ResponseType> => {
+export const getClusterEvents = (terminalAccessId: number):  Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
 }

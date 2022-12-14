@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { shellTypes } from '../../config/constants'
@@ -42,18 +42,16 @@ export default function ClusterTerminal({
     node,
     setSelectedNode,
 }: ClusterTerminalType) {
+    const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const clusterNodeList = convertToOptionsList(nodeList)
     const imageList = convertToOptionsList(clusterImageList, clusterImages)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
-    const [selectedNodeName, setSelectedNodeName] = useState(
-        node ? { label: node, value: node } : clusterNodeList[0],
-    )
+    const [selectedNodeName, setSelectedNodeName] = useState(node ? { label: node, value: node } : clusterNodeList[0])
     const [selectedTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
-    const [terminalAccessId, setTerminalId] = useState()
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<string>(clusterImageList[0])
     const [selectedNamespace, setNamespace] = useState(defaultNameSpace)
@@ -65,7 +63,7 @@ export default function ClusterTerminal({
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const payload = {
-        clusterId: clusterId,
+        clusterId: +clusterId,
         baseImage: selectedImage,
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
@@ -73,10 +71,7 @@ export default function ClusterTerminal({
     }
 
     useEffect(() => {
-        if (update) {
-            if(!node){
-                setNamespace(defaultNameSpace)
-            }
+        if (update && !isNodeDetailsPage) {
             updateSelectedContainerName()
         }
     }, [clusterId, nodeList, node])
@@ -86,9 +81,9 @@ export default function ClusterTerminal({
             setSelectedTabIndex(0)
             if (update) {
                 socketDisconnecting()
-                clusterTerminalUpdate({ ...payload, id: terminalAccessId })
+                clusterTerminalUpdate({ ...payload, id: terminalAccessIdRef.current })
                     .then((response) => {
-                        setTerminalId(response.result.terminalAccessId)
+                        terminalAccessIdRef.current = response.result.terminalAccessId
                         setTerminalCleared(true)
                         socketConnecting()
                         setPodCreated(true)
@@ -102,7 +97,7 @@ export default function ClusterTerminal({
             } else {
                 clusterTerminalStart(payload)
                     .then((response) => {
-                        setTerminalId(response.result.terminalAccessId)
+                        terminalAccessIdRef.current = response.result.terminalAccessId
                         setUpdate(true)
                         socketConnecting()
                         setConnectTerminal(true)
@@ -140,9 +135,9 @@ export default function ClusterTerminal({
         try {
             if (update) {
                 socketDisconnecting()
-                clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessId })
+                clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
-                        setTerminalId(response.result.terminalAccessId)
+                        terminalAccessIdRef.current = response.result.terminalAccessId
                         socketConnecting()
                     })
                     .catch((error) => {
@@ -160,12 +155,20 @@ export default function ClusterTerminal({
         }
     }, [selectedTerminalType.value])
 
+    // Disconnect terminal on unmount of the component
+    useEffect(() => {
+        return (): void => {
+            closeTerminalModal()
+        }
+    }, [])
+
     function updateSelectedContainerName() {
         if (node) {
             if (node !== selectedNodeName.value) {
                 setSelectedNodeName({ label: node, value: node })
             }
         } else {
+            setNamespace(defaultNameSpace)
             setSelectedNodeName(clusterNodeList[0])
         }
     }
@@ -176,8 +179,8 @@ export default function ClusterTerminal({
                 closeTerminal()
             }
             setConnectTerminal(false)
-            if (isPodCreated) {
-                await clusterTerminalDisconnect(terminalAccessId)
+            if (isPodCreated && terminalAccessIdRef.current) {
+                await clusterTerminalDisconnect(terminalAccessIdRef.current)
             }
             socketDisconnecting()
             toggleOptionChange()
@@ -191,7 +194,7 @@ export default function ClusterTerminal({
     async function stopTerminalConnection(): Promise<void> {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
         try {
-            await clusterTerminalStop(terminalAccessId)
+            await clusterTerminalStop(terminalAccessIdRef.current)
         } catch (error) {
             showError(error)
         }
@@ -201,7 +204,7 @@ export default function ClusterTerminal({
         try {
             setPodCreated(true)
             clusterDisconnectAndRetry(payload).then((response) => {
-                setTerminalId(response.result.terminalAccessId)
+                terminalAccessIdRef.current = response.result.terminalAccessId
                 setSocketConnection(SocketConnectionType.DISCONNECTED)
                 setUpdate(true)
                 socketConnecting()
@@ -230,9 +233,9 @@ export default function ClusterTerminal({
     }
 
     const reconnectTerminal = (): void => {
+        terminalAccessIdRef.current = null
         socketConnecting()
         setConnectTerminal(true)
-        setTerminalId(null)
         setReconnect(!isReconnect)
     }
 
@@ -311,7 +314,7 @@ export default function ClusterTerminal({
                 setTerminalCleared={setTerminalCleared}
                 setSocketConnection={setSocketConnection}
                 isClusterTerminal={true}
-                terminalId={terminalAccessId}
+                terminalId={terminalAccessIdRef.current}
                 disconnectRetry={disconnectRetry}
                 isFetchRetry={isFetchRetry}
                 isToggleOption={toggleOption}
@@ -486,7 +489,7 @@ export default function ClusterTerminal({
                         </div>
                         {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
-                    {terminalAccessId && connectTerminal && (
+                    {terminalAccessIdRef.current && connectTerminal && (
                         <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
                                 Pod Events
@@ -494,7 +497,7 @@ export default function ClusterTerminal({
                             {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                         </li>
                     )}
-                    {terminalAccessId && connectTerminal && (
+                    {terminalAccessIdRef.current && connectTerminal && (
                         <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
                                 Pod Manifest
@@ -569,12 +572,12 @@ export default function ClusterTerminal({
                 <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
-                        <ClusterEvents clusterId={terminalAccessId} />
+                        <ClusterEvents terminalAccessId={terminalAccessIdRef.current} />
                     </div>
                 )}
                 {selectedTabIndex === 2 && (
                     <div className="h-100">
-                        <ClusterManifest clusterId={terminalAccessId} />
+                        <ClusterManifest terminalAccessId={terminalAccessIdRef.current} />
                     </div>
                 )}
             </div>

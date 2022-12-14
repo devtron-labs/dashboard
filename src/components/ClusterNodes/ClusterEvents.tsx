@@ -5,14 +5,14 @@ import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTa
 import MessageUI from '../v2/common/message.ui'
 import { getClusterEvents } from './clusterNodes.service'
 
-export default function ClusterEvents({ clusterId }: { clusterId: number }) {
+export default function ClusterEvents({ terminalAccessId }: { terminalAccessId: number }) {
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
 
     useEffect(() => {
-        if (clusterId) {
-            getClusterEvents(clusterId)
+        if (terminalAccessId) {
+            getClusterEvents(terminalAccessId)
                 .then((response) => {
                     setLoading(false)
                     const events = response.result?.events.items
