@@ -781,8 +781,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
-    console.log(projectId)
-    // const projectId =projectsList.find((project) => project.name === permission.team.value)?.id
+
     const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER]
     const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN]
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
