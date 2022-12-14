@@ -3,6 +3,8 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
+import {Teams} from "../../../../services/service.types";
+import {AppMetaInfo, LabelTagsType} from "../../../app/types";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -351,4 +353,15 @@ export interface ChaartValuesGUIFormType {
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
+}
+
+export interface ProjectSelectorTypes {
+    isLoading: boolean
+    appId: number
+    appName: string
+    onClose: () => void
+    appMetaInfo: AppMetaInfo
+    getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    fetchingProjects: boolean
+    projectsList: Teams[]
 }
