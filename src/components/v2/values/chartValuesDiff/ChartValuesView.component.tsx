@@ -456,7 +456,7 @@ export const ConnectToHelmChartTippy = ({
         <TippyCustomized
             theme={TippyTheme.black}
             visible={condition}
-            className="w-300 ml-4"
+            className="w-300 ml-4 dc__border-radius-8-imp"
             placement="right"
             Icon={LinkIcon}
             iconClass="link-chart-icon"
