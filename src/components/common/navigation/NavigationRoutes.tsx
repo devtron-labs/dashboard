@@ -6,6 +6,7 @@ import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
+import TagManager from 'react-gtm-module'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -145,6 +146,13 @@ export default function NavigationRoutes() {
                     })
                 })
             }
+
+            if (window._env_.GTM_ENABLED) {
+                const tagManagerArgs = {
+                    gtmId: window._env_.GTM_ID,
+                }
+                TagManager.initialize(tagManagerArgs)
+            }
         }
 
         if (typeof Storage !== 'undefined') {
@@ -174,10 +182,10 @@ export default function NavigationRoutes() {
             }
         }
         getServerMode()
-        getCurrentServerInfo()
+        getCurrentServerInfo(null, true)
     }, [])
 
-    const getCurrentServerInfo = async (section?: string) => {
+    const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
         if (
             currentServerInfo.fetchingServerInfo ||
             (section === 'navigation' && currentServerInfo.serverInfo && location.pathname.includes('/stack-manager'))
@@ -191,7 +199,7 @@ export default function NavigationRoutes() {
         })
 
         try {
-            const { result } = await getServerInfo()
+            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'))
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
@@ -231,6 +239,7 @@ export default function NavigationRoutes() {
                     moduleInInstallingState,
                     setModuleInInstallingState,
                     installedModuleMap,
+                    currentServerInfo
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -240,9 +249,6 @@ export default function NavigationRoutes() {
                             match={match}
                             location={location}
                             serverMode={serverMode}
-                            fetchingServerInfo={currentServerInfo.fetchingServerInfo}
-                            serverInfo={currentServerInfo.serverInfo}
-                            getCurrentServerInfo={getCurrentServerInfo}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
                         />

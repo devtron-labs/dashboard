@@ -62,6 +62,10 @@
     align-items: center;
 }
 
+.display-grid {
+    display: grid;
+}
+
 // margins and paddings from 0-40
 $margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
 
@@ -160,6 +164,20 @@ $color-suffix: 00;
     }
 }
 
+@mixin cta-disabled-opacity($bg, $color, $border) {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background: $bg;
+        color: $color;
+        border: 1px solid $border;
+        cursor: not-allowed;
+    }
+}
+
 .cta,
 .cta-with-img {
     height: 40px;
@@ -174,6 +192,10 @@ $color-suffix: 00;
     line-height: 40px;
     text-align: center;
     @include cta(var(--B500), var(--white), transparent);
+
+    &.disabled-opacity {
+        @include cta-disabled-opacity(var(--B500), var(--white), transparent)
+    }
 
     &.small {
         height: 32px;

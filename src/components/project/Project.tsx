@@ -99,7 +99,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         let isValid = this.props.isValid;
         let errorMessage = this.props.errorMessage;
         return <div>
-            <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16" >
+            <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16 dashed" >
                 <div className="white-card__header"> {this.props.id ? "Edit project" : "Add Project"} </div>
                 <label className="form__row">
                     <span className="form__label">Project name*</span>

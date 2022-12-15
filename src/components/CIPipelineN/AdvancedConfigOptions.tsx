@@ -1,29 +1,32 @@
 import React, { useState } from 'react'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
+import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
+import TippyWhite from '../common/TippyWhite'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
     formData,
     setFormData,
     setDockerConfigOverridden,
+    setLoadingData,
 }: AdvancedConfigOptionsProps) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
-        selectedCIPipeline: ciPipeline,
+        selectedCIPipeline: ciPipeline ? JSON.parse(JSON.stringify(ciPipeline)) : null,
         dockerRegistries: null,
         sourceConfig: null,
         ciConfig: null,
         defaultDockerConfigs: null,
+        currentCIBuildType: null,
     })
 
     const addDockerArg = (): void => {
@@ -54,12 +57,11 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
-    const updateDockerConfigOverride = (key: string, value: any) => {
+    const updateDockerConfigOverride = (key: string, value: CIBuildConfigType | boolean | string): void => {
+        // Shallow copy all data from formData to _form
         const _form = {
-            isDockerConfigOverridden: ciPipeline?.isDockerConfigOverridden,
             ...formData,
         }
-        const keyPair = key.split('.')
 
         // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
         if (
@@ -70,26 +72,32 @@ export default function AdvancedConfigOptions({
             _form.dockerConfigOverride = {
                 dockerRegistry: parentState.ciConfig.dockerRegistry,
                 dockerRepository: parentState.ciConfig.dockerRepository,
-                dockerBuildConfig: {
-                    gitMaterialId: parentState.ciConfig.dockerBuildConfig.gitMaterialId,
-                    dockerfileRelativePath: parentState.ciConfig.dockerBuildConfig.dockerfileRelativePath,
-                },
+                ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig)),
             }
         }
 
         // Update the specific config value present at different level from dockerConfigOverride
-        if (key.startsWith('dockerConfigOverride.dockerBuildConfig')) {
-            _form[keyPair[0]][keyPair[1]][keyPair[2]] = value
-        } else if (key.startsWith('dockerConfigOverride')) {
-            _form[keyPair[0]][keyPair[1]] = value
-        } else if (key === 'isDockerConfigOverridden') {
-            _form.isDockerConfigOverridden = value
-            setAllowOverride(value)
+        if (key === DockerConfigOverrideKeys.isDockerConfigOverridden) {
+            const _value = value as boolean
+            _form.isDockerConfigOverridden = _value
+            setAllowOverride(_value)
 
             // Empty dockerConfigOverride when deleting override
-            if (!value) {
+            if (!_value) {
                 _form.dockerConfigOverride = {} as DockerConfigOverrideType
             }
+        } else if (
+            key === DockerConfigOverrideKeys.dockerRegistry ||
+            key === DockerConfigOverrideKeys.dockerRepository
+        ) {
+            _form.dockerConfigOverride[key] = value as string
+        } else {
+            _form.dockerConfigOverride[DockerConfigOverrideKeys.ciBuildConfig] = value as CIBuildConfigType
+        }
+
+        // No need to pass the id in the request
+        if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
+            delete _form.dockerConfigOverride.ciBuildConfig.id
         }
 
         setFormData(_form)
@@ -101,7 +109,22 @@ export default function AdvancedConfigOptions({
     const renderDockerArgs = () => {
         return (
             <div>
-                <h3 className="fs-13 fw-6 cn-9 lh-20 m-0">Docker build arguments</h3>
+                <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
+                    Docker build arguments
+                    <TippyWhite
+                        className="w-300"
+                        placement="top"
+                        Icon={HelpIcon}
+                        iconClass="fcv-5"
+                        heading="Docker Build Arguments"
+                        infoText="Key/value pair will be appended as docker build arguments (--build-args)."
+                        showCloseButton={true}
+                        trigger="click"
+                        interactive={true}
+                    >
+                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    </TippyWhite>
+                </h3>
                 <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg}>
                     <Add className="add-icon mt-6" />
@@ -144,45 +167,47 @@ export default function AdvancedConfigOptions({
         )
     }
 
-    const toggleAdvancedOptions = () => {
+    const toggleAdvancedOptions = (): void => {
         setCollapsedSection(!collapsedSection)
+    }
+
+    const toggleAllowOverride = (): void => {
+        if (updateDockerConfigOverride) {
+            updateDockerConfigOverride(DockerConfigOverrideKeys.isDockerConfigOverridden, !allowOverride)
+        }
     }
 
     return (
         <div className="ci-advanced-options__container mb-20">
             <hr />
             <div className="ci-advanced-options__toggle flex left pointer" onClick={toggleAdvancedOptions}>
-                <div className="icon-dim-40 mr-16">
-                    <PluginIcon />
-                </div>
                 <div>
-                    <h2 className="fs-14 fw-6 cn-9 lh-20 m-0">Advanced options</h2>
+                    <h2 className="fs-14 fw-6 cn-9 lh-20 m-0">Override Options</h2>
                     <p className="fs-13 fw-4 cn-7 lh-20 m-0">
-                        Override container registry, override dockerfile, docker build arguments for this pipeline.
+                        Override container registry, container image for this pipeline.
                     </p>
                 </div>
-                <div className="icon-dim-20 ml-auto">
-                    <Dropdown
-                        style={{
-                            transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)',
-                            transition: 'all .2s ease',
-                        }}
-                    />
-                </div>
+                <button
+                    className={`allow-config-override flex h-28 ml-auto cta ${allowOverride ? 'delete' : 'ghosted'}`}
+                    onClick={toggleAllowOverride}
+                >
+                    {`${allowOverride ? 'Delete' : 'Allow'} Override`}
+                </button>
             </div>
-            {collapsedSection && (
-                <div className="ci-advanced-options__wrapper">
-                    <CIConfig
-                        respondOnSuccess={noop}
-                        configOverrideView={true}
-                        allowOverride={allowOverride}
-                        parentState={parentState}
-                        setParentState={setParentState}
-                        updateDockerConfigOverride={updateDockerConfigOverride}
-                    />
-                    {parentState?.loadingState === ComponentStates.loaded && renderDockerArgs()}
-                </div>
-            )}
+            <div className="ci-advanced-options__wrapper">
+                <CIConfig
+                    respondOnSuccess={noop}
+                    configOverrideView={true}
+                    allowOverride={allowOverride}
+                    parentState={parentState}
+                    setParentState={setParentState}
+                    updateDockerConfigOverride={updateDockerConfigOverride}
+                    setLoadingData={setLoadingData}
+                />
+                {parentState?.loadingState === ComponentStates.loaded &&
+                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
+                    renderDockerArgs()}
+            </div>
         </div>
     )
 }

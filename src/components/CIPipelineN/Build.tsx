@@ -28,10 +28,12 @@ export function Build({
         formData,
         setFormData,
         formDataErrorObj,
+        setLoadingData,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         formDataErrorObj: FormErrorObjectType
+        setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
     } = useContext(ciPipelineContext)
     const validationRules = new ValidationRules()
 
@@ -254,6 +256,7 @@ export function Build({
                         formData={formData}
                         setFormData={setFormData}
                         setDockerConfigOverridden={setDockerConfigOverridden}
+                        setLoadingData={setLoadingData}
                     />
                 </>
             )}

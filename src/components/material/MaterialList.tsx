@@ -179,6 +179,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 key={mat.name}
                                 appId={Number(this.props.match.params.appId)}
                                 isMultiGit={this.state.materials.length > 0}
+                                preventRepoDelete={this.state.materials.length === 1}
                                 providers={this.state.providers}
                                 material={mat}
                                 refreshMaterials={this.refreshMaterials}

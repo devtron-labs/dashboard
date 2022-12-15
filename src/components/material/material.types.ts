@@ -72,6 +72,7 @@ export interface MaterialViewProps {
     handleSubmoduleCheckbox:(event) => void;
     appId?: number;
     reload: ()=> void;
+    preventRepoDelete?: boolean
 }
 
 export interface MaterialViewState {

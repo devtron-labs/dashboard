@@ -30,6 +30,9 @@ import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { ServerError } from '../../modals/commonTypes';
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
+import { PermissionType } from '../apiTokens/authorization.utils';
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -67,7 +70,7 @@ export default function UserForm({
     const { serverMode } = useContext(mainContext);
     const { userGroupsList, superAdmin } = useUserGroupContext();
     const userGroupsMap = mapByKey(userGroupsList, 'name');
-    const [localSuperAdmin, setSuperAdmin] = useState<boolean>(false);
+    const [localSuperAdmin, setSuperAdmin] = useState<string>("SPECIFIC");
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     );
@@ -183,7 +186,7 @@ export default function UserForm({
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
             ],
-            superAdmin: localSuperAdmin,
+            superAdmin: localSuperAdmin === 'SUPERADMIN',
         };
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
@@ -203,7 +206,19 @@ export default function UserForm({
                 toast.success('User created');
             }
         } catch (err) {
-            showError(err);
+
+            const code = err["code"]
+            const message = err["errors"][0].userMessage
+
+            if (code === 400 ){
+                toast.error(message)
+            }
+            else if (code === 417){
+                toast.warn(message)
+            }
+            else{
+                showError(err);
+            }
         } finally {
             setSubmitting(false);
         }
@@ -218,7 +233,7 @@ export default function UserForm({
         setUserGroups(groups?.map((group) => ({ label: group, value: group })) || []);
         setEmailState({ emails: [{ label: email_id, value: email_id }], inputEmailValue: '', emailError: '' });
         if (superAdmin) {
-            setSuperAdmin(superAdmin);
+            setSuperAdmin(superAdmin ? 'SUPERADMIN' : 'SPECIFIC');
         }
     }
 
@@ -309,6 +324,10 @@ export default function UserForm({
         [],
     );
 
+    const handlePermissionType = (e) => {
+        setSuperAdmin(e.target.value)
+    }
+
     const creatableOptions = useMemo(() => [], []);
 
     const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }));
@@ -316,7 +335,7 @@ export default function UserForm({
     return (
         <div className="user-form">
             {!id && (
-                <div className="mb-24">
+                <div className="mb-16">
                     <label htmlFor="" className="mb-8">
                         Email addresses*
                     </label>
@@ -346,8 +365,23 @@ export default function UserForm({
                     )}
                 </div>
             )}
-            {superAdmin && <SuperAdmin superAdmin={localSuperAdmin} setSuperAdmin={setSuperAdmin} />}
-            {!localSuperAdmin && (
+            <div className="flex left mb-16">
+                <RadioGroup
+                    className="permission-type__radio-group"
+                    value={localSuperAdmin}
+                    name={`permission-type_${id}`}
+                    onChange={handlePermissionType}
+                >
+                    {PermissionType.map(({ label, value }) => (
+                        <RadioGroupItem value={value}>
+                            <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
+                                {label}
+                            </span>
+                        </RadioGroupItem>
+                    ))}
+                </RadioGroup>
+            </div>
+            {localSuperAdmin === 'SPECIFIC' && (
                 <>
                     <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
                     <Select
@@ -384,28 +418,6 @@ export default function UserForm({
                         onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
                         className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
                     />
-                    {userGroups.length > 0 && id && (
-                        <div
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '184px 1fr 24px',
-                                gridAutoRows: '48px',
-                                gridColumnGap: '16px',
-                                alignItems: 'center',
-                            }}
-                        >
-                            {userGroups.map((userGroup, idx) => (
-                                <GroupRow
-                                    key={idx}
-                                    name={userGroup.value}
-                                    description={userGroupsMap.get(userGroup.value)?.description || ''}
-                                    removeRow={(e) =>
-                                        setUserGroups((userGroups) => removeItemsFromArray(userGroups, idx, 1))
-                                    }
-                                />
-                            ))}
-                        </div>
-                    )}
                     <AppPermissions
                         data={userData}
                         directPermission={directPermission}
@@ -441,7 +453,7 @@ export default function UserForm({
                 />
             )}
         </div>
-    );
+    )
 }
 
 const SuperAdmin: React.FC<{

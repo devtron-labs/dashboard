@@ -24,6 +24,7 @@ export interface CINodeProps {
     to: string
     toggleCDMenu: () => void
     configDiffView?: boolean
+    hideWebhookTippy?:  () => void
 }
 
 export class CINode extends Component<CINodeProps> {
@@ -46,27 +47,39 @@ export class CINode extends Component<CINodeProps> {
     renderCardContent() {
         const pipeline = this.props.isLinkedCI ? 'Build: Linked' : this.props.isExternalCI ? 'Build: External' : 'Build'
         return (
-            <div className="workflow-node cursor">
-                <Link to={this.props.to} className="dc__no-decor">
-                    {this.props.linkedCount > 0 && (
-                        <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.linkedCount}>
-                            <span className="link-count">
-                                <img src={link} className="icon-dim-12 mr-5" alt="" />
-                                {this.props.linkedCount}
-                            </span>
-                        </Tippy>
-                    )}
-                    <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
-                        {this.props.triggerType}
-                    </div>
-                    <div className="workflow-node__title flex">
-                        <div className="workflow-node__full-width-minus-Icon">
-                            <span className="workflow-node__text-light">{pipeline}</span>
-                            <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
-                                <div className="dc__ellipsis-left">{this.props.title}</div>
+            <>
+                <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
+                    <div className="workflow-node cursor">
+                        {this.props.linkedCount > 0 && (
+                            <Tippy
+                                className="default-tt"
+                                arrow={true}
+                                placement="bottom"
+                                content={this.props.linkedCount}
+                            >
+                                <span className="link-count">
+                                    <img src={link} className="icon-dim-12 mr-5" alt="" />
+                                    {this.props.linkedCount}
+                                </span>
                             </Tippy>
+                        )}
+                        <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
+                            {this.props.triggerType}
                         </div>
-                        <div className="workflow-node__icon-common workflow-node__CI-icon"></div>
+                        <div className="workflow-node__title flex">
+                            <div className="workflow-node__full-width-minus-Icon">
+                                <span className="workflow-node__text-light">{pipeline}</span>
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={true}
+                                    placement="bottom"
+                                    content={this.props.title}
+                                >
+                                    <div className="dc__ellipsis-left">{this.props.title}</div>
+                                </Tippy>
+                            </div>
+                            <div className="workflow-node__icon-common workflow-node__CI-icon"></div>
+                        </div>
                     </div>
                 </Link>
                 <button className="workflow-node__add-cd-btn">
@@ -87,7 +100,7 @@ export class CINode extends Component<CINodeProps> {
                         />
                     </Tippy>
                 </button>
-            </div>
+            </>
         )
     }
 

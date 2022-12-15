@@ -1,6 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
-import { DockerConfigOverrideType } from '../../../ciPipeline/types'
+import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
+import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 export type CDMdalTabType = 'SECURITY' | 'CHANGES'
 
@@ -12,18 +13,51 @@ export interface CDMaterialProps {
     redirectToCD?: () => void
     stageType: string
     changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType) => void
-    triggerDeploy: (stageType: string) => void
+    triggerDeploy: (stageType: string, deploymentWithConfig?: string, wfrId?: number) => void
     selectImage: (index: number, materialType: string) => void
     toggleSourceInfo: (materialIndex: number) => void
     closeCDModal: () => void
+    onClickRollbackMaterial?: (
+        cdNodeId: number,
+        offset?: number,
+        size?: number,
+        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+    ) => void
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
     hideInfoTabsContainer?: boolean
+    appId?: number
+    pipelineId?: number
 }
 
-export interface CDMaterialState{
-  isSecurityModuleInstalled: boolean
+export enum DeploymentWithConfigType {
+    LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
+    LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
+    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG'
+}
+
+export interface ConfigToDeployOptionType {
+    label: string,
+    value: DeploymentWithConfigType,
+    infoText: string,
+}
+
+export interface CDMaterialState {
+    isSecurityModuleInstalled: boolean
+    checkingDiff: boolean
+    diffFound: boolean
+    diffOptions: Record<string, boolean>
+    showConfigDiffView: boolean
+    loadingMore: boolean
+    showOlderImages: boolean
+    noMoreImages: boolean
+    selectedConfigToDeploy: ConfigToDeployOptionType
+    isRollbackTrigger: boolean
+    recentDeploymentConfig: any
+    latestDeploymentConfig: any
+    specificDeploymentConfig: any
+    selectedMaterial: CDMaterialType
 }
 
 export interface CDMaterialType {
@@ -45,6 +79,8 @@ export interface CDMaterialType {
     vulnerabilities: VulnerabilityType[]
     vulnerable: boolean
     deployedTime: string
+    deployedBy?: string
+    wfrId?: number
     buildTime: string
     image: string
     isSelected: boolean
@@ -109,7 +145,7 @@ export interface NodeAttr {
     isGitSource: boolean
     isRoot: boolean
     downstreams: string[]
-    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD'
+    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD' | 'WEBHOOK'
     parentCiPipeline?: number
     parentAppId?: number
     url?: string
@@ -224,6 +260,7 @@ export interface WorkflowType {
     height: number
     nodes: NodeAttr[]
     dag: any
+    showTippy?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -290,6 +327,22 @@ export interface ApplicationConditionResponse {
 export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
+    WEBHOOK = 'WEBHOOK'
+}
+
+export enum CIPipelineNodeType {
+  EXTERNAL_CI ='EXTERNAL-CI',
+  CI='CI',
+  LINKED_CI='LINKED-CI'
+}
+
+export enum WorkflowNodeType {
+    GIT= 'GIT',
+    CI = 'CI',
+    WEBHOOK = 'WEBHOOK',
+    PRE_CD = 'PRECD',
+    CD = 'CD',
+    POST_CD = 'POSTCD',
 }
 
 export interface Task {
@@ -394,7 +447,7 @@ export interface CiPipelineResult {
     appId?: number
     dockerRegistry?: string
     dockerRepository?: string
-    dockerBuildConfig?: DockerBuildConfig
+    ciBuildConfig?: CIBuildConfigType
     ciPipelines?: CiPipeline[]
     appName?: string
     version?: string
@@ -484,4 +537,35 @@ export interface BranchRegexModalProps {
 }
 export interface AppDetailsProps {
     isV2: boolean
+}
+
+export interface TriggerViewDeploymentConfigType {
+    configMap: DeploymentHistoryDetail[]
+    deploymentTemplate: DeploymentHistoryDetail
+    pipelineStrategy: DeploymentHistoryDetail
+    secret: DeploymentHistoryDetail[]
+}
+
+export interface TriggerViewConfigDiffProps {
+    currentConfiguration: TriggerViewDeploymentConfigType
+    baseTemplateConfiguration: TriggerViewDeploymentConfigType
+    selectedConfigToDeploy
+    handleConfigSelection: (selected) => void
+    isConfigAvailable: (optionValue) => boolean
+    diffOptions: Record<string, boolean>
+}
+
+export const MATERIAL_TYPE = {
+    rollbackMaterialList: 'rollbackMaterialList',
+    inputMaterialList: 'inputMaterialList',
+    none: 'none'
+}
+
+export const STAGE_TYPE = {
+    CD: 'CD',
+    CI: 'CI',
+    GIT: 'GIT',
+    PRECD: 'PRECD',
+    POSTCD: 'POSTCD',
+    ROLLBACK: 'ROLLBACK',
 }

@@ -1,22 +1,31 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
-import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync } from '../common'
+import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync, not } from '../common'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import {
     DeploymentConfigFormCTA,
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from './DeploymentTemplateView'
-import { DeploymentChartVersionType, DeploymentConfigProps } from './types'
+import { BasicFieldErrorObj, ChartMetadataType, DeploymentChartVersionType, DeploymentConfigProps } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../config'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { mainContext } from '../common/navigation/NavigationRoutes'
+import {
+    getBasicFieldValue,
+    isBasicValueChanged,
+    patchBasicData,
+    updateTemplateFromBasicValue,
+    validateBasicView,
+} from './DeploymentConfig.utils'
+import { BASIC_FIELDS, EDITOR_VIEW } from './constants'
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -26,7 +35,9 @@ export default function DeploymentConfig({
     environments,
     setEnvironments,
 }: DeploymentConfigProps) {
+    const { currentServerInfo } = useContext(mainContext)
     const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
+    const [chartsMetadata, setChartsMetadata] = useState<Record<string, ChartMetadataType>>({})
     const [selectedChartRefId, selectChartRefId] = useState(0)
     const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
     const [template, setTemplate] = useState('')
@@ -44,12 +55,17 @@ export default function DeploymentConfig({
     const history = useHistory()
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
+    const [yamlMode, toggleYamlMode] = useState(true)
+    const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
+    const [currentViewEditor, setCurrentViewEditor] = useState(null)
+    const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
+    const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
         !!appId,
     )
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
 
     useEffect(() => {
         initialise()
@@ -69,9 +85,10 @@ export default function DeploymentConfig({
         setChartConfigLoading(true)
         try {
             const {
-                result: { chartRefs, latestAppChartRef, latestChartRef },
+                result: { chartRefs, latestAppChartRef, latestChartRef, chartMetadata },
             } = await getChartReferences(+appId)
             setCharts(chartRefs)
+            setChartsMetadata(chartMetadata)
             let selectedChartId: number = latestAppChartRef || latestChartRef
             let chart = chartRefs.find((chart) => chart.id === selectedChartId)
             selectChartRefId(selectedChartId)
@@ -79,6 +96,44 @@ export default function DeploymentConfig({
         } catch (err) {
         } finally {
             setChartConfigLoading(false)
+        }
+    }
+
+    const parseDataForView = async (
+        _isBasicViewLocked: boolean,
+        _currentViewEditor: string,
+        template,
+    ): Promise<void> => {
+        if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
+            const {
+                result: { defaultAppOverride },
+            } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
+            _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
+        }
+        if (!currentViewEditor) {
+            _currentViewEditor =
+                _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+                    ? EDITOR_VIEW.ADVANCED
+                    : EDITOR_VIEW.BASIC
+            setIsBasicViewLocked(_isBasicViewLocked)
+            setCurrentViewEditor(_currentViewEditor)
+            toggleYamlMode(_currentViewEditor === EDITOR_VIEW.BASIC ? false : true)
+        }
+        if (!_isBasicViewLocked) {
+            const _basicFieldValues = getBasicFieldValue(template)
+            if (
+                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+            ) {
+                setIsBasicViewLocked(true)
+                setCurrentViewEditor(EDITOR_VIEW.ADVANCED)
+                toggleYamlMode(true)
+            } else {
+                setBasicFieldValues(_basicFieldValues)
+                setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+            }
         }
     }
 
@@ -96,6 +151,8 @@ export default function DeploymentConfig({
                         chartRefId,
                         readme,
                         schema,
+                        isBasicViewLocked,
+                        currentViewEditor,
                     },
                 },
             } = await getDeploymentTemplate(+appId, +selectedChart.id)
@@ -105,6 +162,10 @@ export default function DeploymentConfig({
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
+            if (selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                updateTemplateFromBasicValue(defaultAppOverride)
+                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -116,6 +177,10 @@ export default function DeploymentConfig({
         e.preventDefault()
         if (!obj) {
             toast.error(error)
+            return
+        }
+        if (selectedChart.name === ROLLOUT_DEPLOYMENT && !yamlMode && !basicFieldValuesErrorObj.isValid) {
+            toast.error('Some required fields are missing')
             return
         }
         if (chartConfig.id) {
@@ -133,9 +198,14 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride: obj,
+                valuesOverride:
+                    !yamlMode && selectedChart.name === ROLLOUT_DEPLOYMENT
+                        ? patchBasicData(obj, basicFieldValues)
+                        : obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
+                isBasicViewLocked: isBasicViewLocked,
+                currentViewEditor: isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor,
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
@@ -170,8 +240,13 @@ export default function DeploymentConfig({
         toggleConfirmation(false)
     }
 
-    const editorOnChange = (str: string): void => {
+    const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempFormData(str)
+        if (str && currentViewEditor && !isBasicViewLocked && !fromBasic) {
+            try {
+                setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+            } catch (error) {}
+        }
     }
 
     const handleReadMeClick = () => {
@@ -188,6 +263,31 @@ export default function DeploymentConfig({
         if (showReadme) {
             setShowReadme(false)
         }
+    }
+
+    const changeEditorMode = (): void => {
+        if (basicFieldValuesErrorObj && !basicFieldValuesErrorObj.isValid) {
+            toast.error('Some required fields are missing')
+            toggleYamlMode(false)
+            return
+        }
+        if (isBasicViewLocked) {
+            return
+        }
+
+        try {
+            const parsedCodeEditorValue = YAML.parse(tempFormData)
+            if (yamlMode) {
+                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+                setBasicFieldValues(_basicFieldValues)
+                setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+            } else {
+                const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldValues)
+                updateTemplateFromBasicValue(newTemplate)
+                editorOnChange(YAML.stringify(newTemplate), !yamlMode)
+            }
+            toggleYamlMode(not)
+        } catch (error) {}
     }
 
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
@@ -209,9 +309,15 @@ export default function DeploymentConfig({
                     handleReadMeClick={handleReadMeClick}
                     isUnSet={isUnSet}
                     charts={charts}
+                    chartsMetadata={chartsMetadata}
                     selectedChart={selectedChart}
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
+                    yamlMode={yamlMode}
+                    isBasicViewLocked={isBasicViewLocked}
+                    codeEditorValue={tempFormData}
+                    basicFieldValuesErrorObj={basicFieldValuesErrorObj}
+                    changeEditorMode={changeEditorMode}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -229,11 +335,23 @@ export default function DeploymentConfig({
                     environments={environments || []}
                     fetchedValues={fetchedValues}
                     setFetchedValues={setFetchedValues}
+                    yamlMode={yamlMode}
+                    basicFieldValues={basicFieldValues}
+                    setBasicFieldValues={setBasicFieldValues}
+                    basicFieldValuesErrorObj={basicFieldValuesErrorObj}
+                    setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
+                    changeEditorMode={changeEditorMode}
                 />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA
                         loading={loading || chartConfigLoading}
-                        showAppMetricsToggle={charts && selectedChart && appMetricsEnvironmentVariableEnabled && grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                        showAppMetricsToggle={
+                            charts &&
+                            selectedChart &&
+                            appMetricsEnvironmentVariableEnabled &&
+                            grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                            yamlMode
+                        }
                         isAppMetricsEnabled={isAppMetricsEnabled}
                         isCiPipeline={isCiPipeline}
                         currentChart={selectedChart}

@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { ServerErrors } from '../../modals/commonTypes'
 import { History } from './details/cIDetails/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
-import { CDMdalTabType } from './details/triggerView/types'
+import { CDMdalTabType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
@@ -64,7 +64,7 @@ export function getCITriggerInfoModal(
                 lastFetchTime: mat.lastFetchTime || '',
             }
         })
-        if (!materials.find((mat) => mat.isSelected)) {
+        if (materials.length>0 && !materials.find((mat) => mat.isSelected)) {
             materials[0].isSelected = true
         }
         return {
@@ -221,22 +221,22 @@ export const getCIMaterialList = (params) => {
 export function getCDMaterialList(cdMaterialId, stageType: 'PRECD' | 'CD' | 'POSTCD') {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
     return get(URL).then((response) => {
-        return cdMaterialListModal(response.result.ci_artifacts)
+        return cdMaterialListModal(response.result.ci_artifacts, true)
     })
 }
 
-export function getRollbackMaterialList(cdMaterialId): Promise<ResponseType> {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback`
+export function getRollbackMaterialList(cdMaterialId, offset: number, size: number): Promise<ResponseType> {
+    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
     return get(URL).then((response) => {
         return {
             code: response.code,
             status: response.status,
-            result: cdMaterialListModal(response?.result.ci_artifacts),
+            result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
         }
     })
 }
 
-function cdMaterialListModal(artifacts) {
+function cdMaterialListModal(artifacts: any[], markFirstSelected: boolean) {
     if (!artifacts || !artifacts.length) return []
 
     let materials = artifacts.map((material, index) => {
@@ -245,12 +245,14 @@ function cdMaterialListModal(artifacts) {
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
                 : 'Not Deployed',
+            deployedBy: material.deployedBy,
+            wfrId: material.wfrId,
             tab: CDModalTab.Changes,
             image: material.image.split(':')[1],
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
-            isSelected: !material.vulnerable && index === 0,
+            isSelected: markFirstSelected ? !material.vulnerable && index === 0 : false,
             showSourceInfo: false,
             deployed: material.deployed || false,
             latest: material.latest || false,
@@ -275,9 +277,6 @@ function cdMaterialListModal(artifacts) {
                 : [],
         }
     })
-    materials.sort((a, b) => {
-        sortCallback('id', a, b)
-    })
     return materials
 }
 
@@ -291,19 +290,43 @@ export const cancelPrePostCdTrigger = (pipelineId, workflowRunner) => {
     return trash(URL)
 }
 
+export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {
+    return get(`${Routes.RECENT_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
+}
+
+export const getLatestDeploymentConfig = (appId: number, pipelineId: number) => {
+    return get(`${Routes.LATEST_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
+}
+
+export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, wfrId: number) => {
+    return get(`${Routes.SPECIFIC_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}/${wfrId}`)
+}
+
 export const triggerCINode = (request) => {
     let URL = `${Routes.CI_PIPELINE_TRIGGER}`
     return post(URL, request)
 }
+
 // stageType: 'PRECD' | 'CD' | 'POSTCD'
-export const triggerCDNode = (pipelineId, ciArtifactId, appId, stageType: string) => {
-    let URL = `${Routes.CD_TRIGGER_POST}`
-    return post(URL, {
+export const triggerCDNode = (pipelineId: any, ciArtifactId: any, appId: string, stageType: string, deploymentWithConfig?: string, wfrId?: number) => {
+    const request = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
-    })
+    }
+
+    if (deploymentWithConfig) {
+        request['deploymentWithConfig'] =
+            deploymentWithConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
+                ? deploymentWithConfig
+                : DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+
+        if (deploymentWithConfig !== DeploymentWithConfigType.LAST_SAVED_CONFIG) {
+            request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
+        }
+    }
+    return post(Routes.CD_TRIGGER_POST, request)
 }
 
 export const getPrePostCDTriggerStatus = (params) => {
@@ -411,4 +434,12 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
 
 export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
     return post(Routes.APP_LABELS, request)
+}
+
+export const getIngressServiceUrls = (params: { appId?: string; envId: string; installedAppId?: string }): Promise<ResponseType> => {
+    const urlParams = Object.entries(params).map(([key, value]) => {
+        if (!value) return
+        return `${key}=${value}`
+    })
+    return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)
 }

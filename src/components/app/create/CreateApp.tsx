@@ -11,7 +11,7 @@ import {
 import { AddNewAppProps, AddNewAppState } from '../types';
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config';
 import { ValidationRules } from './validationRules';
-import { getTeamListMin } from '../../../services/service';
+import { getHostURLConfiguration, getTeamListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
@@ -25,6 +25,7 @@ import AsyncSelect from 'react-select/async';
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil';
 import { Option } from '../../v2/common/ReactSelect.utils';
+import { saveHostURLConfiguration } from '../../hostURL/hosturl.service';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -56,7 +57,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
-        };
+
+        }
         this.createApp = this.createApp.bind(this);
         this.handleAppname = this.handleAppname.bind(this);
         this.handleProject = this.handleProject.bind(this);
@@ -139,6 +141,23 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return true;
     };
 
+     getHostURLConfig = async () => {
+         try {
+             const { result } = await getHostURLConfiguration()
+             if (!result?.value) {
+                 const payload = {
+                     id: result?.id,
+                     key: result?.key || 'url',
+                     value: window.location.origin,
+                     active: result?.active || true,
+                 }
+                 await saveHostURLConfiguration(payload)
+             }
+         } catch (error) {
+             showError(error)
+         }
+     }
+
     createApp(): void {
         const validForm = this.validateForm();
         if (!validForm) {
@@ -175,6 +194,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         createApp(request)
             .then((response) => {
                 if (response.result) {
+                  this.getHostURLConfig()
                     let { form, isValid } = { ...this.state };
                     form.appId = response.result.id;
                     form.appName = response.result.appName;
@@ -453,3 +473,5 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 }
+
+

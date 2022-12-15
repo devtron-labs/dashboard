@@ -17,6 +17,8 @@ interface customEnv {
     APPLICATION_METRICS_ENABLED?: boolean
     GA_ENABLED?: boolean
     GA_TRACKING_ID?: string
+    GTM_ENABLED?: boolean
+    GTM_ID?: string
     RECOMMEND_SECURITY_SCANNING?: boolean
     FORCE_SECURITY_SCANNING?: boolean
     HIDE_DISCORD?: boolean
@@ -26,6 +28,8 @@ interface customEnv {
     HELM_APP_DETAILS_POLLING_INTERVAL?: number
     EA_APP_DETAILS_POLLING_INTERVAL?: number
     CENTRAL_API_ENDPOINT?: string
+    HIDE_DEPLOYMENT_GROUPS?: boolean
+    HIDE_GITOPS_OR_HELM_OPTION ?: boolean
 }
 declare global {
     interface Window {
@@ -102,6 +106,7 @@ if (!window || !window._env_) {
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
+        GTM_ENABLED: false,
         APPLICATION_METRICS_ENABLED: false,
         POSTHOG_ENABLED: false,
         POSTHOG_TOKEN: '',
@@ -111,7 +116,9 @@ if (!window || !window._env_) {
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
-        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai'
+        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        HIDE_DEPLOYMENT_GROUPS: true,
+        HIDE_GITOPS_OR_HELM_OPTION: true
     }
 }
 

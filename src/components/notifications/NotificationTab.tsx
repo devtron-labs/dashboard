@@ -3,7 +3,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
-import { PopupMenu, Checkbox, Progressing, showError, Pagination, DeleteDialog } from '../common';
+import { PopupMenu, Checkbox, Progressing, showError, Pagination, DeleteDialog, toastAccessDenied } from '../common';
 import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmailsFilteredByEmail, deleteNotification } from './notifications.service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
@@ -20,7 +20,7 @@ import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useHistory } from 'react-router-dom';
 import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
@@ -79,6 +79,7 @@ export interface NotificationTabState {
     deleting: boolean;
     confirmation: boolean;
     singleDeletedId: number;
+    disableEdit: boolean
 }
 
 export class NotificationTab extends Component<any, NotificationTabState> {
@@ -118,7 +119,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             hostURLConfig: undefined,
            deleting: false,
            confirmation: false,
-           singleDeletedId: 0
+           singleDeletedId: 0,
+           disableEdit: false
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -178,7 +180,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             })
             this.setState({ channelList: list })
         }).catch((error) => {
-            showError(error)
+           this.setState({disableEdit: true})
         })
     }
 
@@ -357,15 +359,48 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
+    CreateNewNotification = () => {
+        if(this.state.disableEdit){
+            toastAccessDenied()
+        }
+        else{
+            this.props.history.push(URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW)
+        }
+    }
+
     renderEmptyState() {
         return <EmptyState>
             <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
             <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
             <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} className="cta flex dc__no-decor">
+            <div onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
                 <Add className="icon-dim-20 mr-5" />Add Notification
-            </Link>
+            </div>
         </EmptyState>
+    }
+
+    validateAccess = (updateState): void => {
+        if (this.state.disableEdit) {
+            toastAccessDenied()
+        } else {
+            this.setState(updateState)
+        }
+    }
+
+    showDeleteModal = (): void => {
+        this.validateAccess({ showDeleteDialog: !this.state.showDeleteDialog, singleDeletedId: 0 })
+    }
+
+    applyModifyEvents = (event) => {
+        if (this.state.disableEdit) {
+            toastAccessDenied()
+        } else {
+            this.updateNotificationEvents(event)
+        }
+    }
+
+    showModifyModal = (): void => {
+        this.validateAccess({ showModifyRecipientsModal: !this.state.showModifyRecipientsModal })
     }
 
     renderOptions() {
@@ -373,7 +408,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return <div className="dc__block mt-20 mb-20">
                 <Tippy placement="top" content="Delete" >
                     <Delete className="icon-dim-24 mr-20 notification-tab__option"
-                        onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog, singleDeletedId: 0 }) }} />
+                        onClick={this.showDeleteModal} />
                 </Tippy>
                 <PopupMenu onToggleCallback={(isOpen) => {
                     if (isOpen) {
@@ -417,7 +452,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </ul>
                         <div className="kebab-menu__sticky-bottom">
                             <button type="button" className="cta w-100"
-                                onClick={this.updateNotificationEvents}>
+                                onClick={this.applyModifyEvents}>
                                 Apply
                             </button>
                         </div>
@@ -425,7 +460,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 </PopupMenu>
                 <Tippy placement="top" content="Modify Recipients" >
                     <User className="icon-dim-24 mr-20 notification-tab__option"
-                        onClick={(event) => { this.setState({ showModifyRecipientsModal: !this.state.showModifyRecipientsModal }) }} />
+                        onClick={this.showModifyModal} />
                 </Tippy>
             </div>
         }
@@ -526,13 +561,19 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </td>
                         <td className="pipeline-list__hover flex">
                              <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                <button type="button" className="dc__transparent dc__align-right" onClick={(event) => {
-                                    this.setState({
-                                        showDeleteDialog: !this.state.showDeleteDialog,
-                                        singleDeletedId: row.id
-                                    });
-                                     }}  >
-                                 <Trash className="scn-5 icon-dim-20" />
+                                <button
+                                        type="button"
+                                        className="dc__transparent dc__align-right"
+                                        onClick={(event) => {
+                                            this.validateAccess(
+                                               {
+                                                    showDeleteDialog: !this.state.showDeleteDialog,
+                                                    singleDeletedId: row.id,
+                                                },
+                                            )
+                                        }}
+                                    >
+                                        <Trash className="scn-5 icon-dim-20" />
                                 </button>
                             </Tippy>
                             </td>
@@ -545,10 +586,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody() {
         return <div className="notification-tab">
-            <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} style={{ width: "100px" }}
+            <div onClick={this.CreateNewNotification} style={{ width: "100px" }}
                 className="cta small flex dc__no-decor">
                 <Add className="icon-dim-16 mr-5" />Add New
-            </Link>
+            </div>
             {this.renderOptions()}
             {this.renderPipelineList()}
             {this.state.pagination.size > 0 ? <Pagination offset={this.state.pagination.offset}

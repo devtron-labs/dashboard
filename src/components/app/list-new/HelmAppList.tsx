@@ -36,7 +36,7 @@ export default function HelmAppList({
     clearAllFilters,
     fetchingExternalApps,
     setFetchingExternalAppsState,
-    updateLastDataSync,
+    updateDataSyncing,
     setShowPulsatingDotState,
     masterFilters,
 }) {
@@ -57,8 +57,6 @@ export default function HelmAppList({
     // component load
     useEffect(() => {
         init();
-
-
     }, []);
 
     // it means filter/sorting has been applied
@@ -87,10 +85,12 @@ export default function HelmAppList({
     }, [externalHelmAppsList]);
 
     useEffect(() => {
+      updateDataSyncing(true);
         if (serverMode == SERVER_MODE.EA_ONLY) {
-            setDataStateType(AppListViewType.LIST);
+            setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
-                _getExternalHelmApps();
+                _getExternalHelmApps()
+                updateDataSyncing(false)
             }
         } else {
             getDevtronInstalledHelmApps(clusterIdsCsv)
@@ -99,17 +99,20 @@ export default function HelmAppList({
                         devtronInstalledHelmAppsListResponse.result
                             ? devtronInstalledHelmAppsListResponse.result.helmApps
                             : [],
-                    );
-                    setDataStateType(AppListViewType.LIST);
-                    _getExternalHelmApps();
+                    )
+                    setDataStateType(AppListViewType.LIST)
+                    _getExternalHelmApps()
                 })
                 .catch((errors: ServerErrors) => {
-                    showError(errors);
-                    setDataStateType(AppListViewType.ERROR);
-                    setErrorResponseCode(errors.code);
-                });
+                    showError(errors)
+                    setDataStateType(AppListViewType.ERROR)
+                    setErrorResponseCode(errors.code)
+                })
+                .finally(() => {
+                    updateDataSyncing(false)
+                })
         }
-        updateLastDataSync();
+
     }, [clusterIdsCsv]);
 
     // reset data

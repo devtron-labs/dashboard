@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from 'react'
+import React, { useState, useEffect, useReducer, useCallback, useContext } from 'react'
 import { useParams } from 'react-router'
 import {
     getDeploymentTemplate,
@@ -7,6 +7,7 @@ import {
     deleteDeploymentTemplate,
     chartRefAutocomplete,
 } from './service'
+import { getDeploymentTemplate as getBaseDeploymentTemplate } from '../deploymentConfig/service'
 import { Override } from './ConfigMapOverrides'
 import { showError, not, Progressing, ConfirmationDialog, useEffectAfterMount, useJsonYaml, useAsync } from '../common'
 import { toast } from 'react-toastify'
@@ -18,11 +19,20 @@ import {
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from '../deploymentConfig/DeploymentTemplateView'
-import { DeploymentChartVersionType } from '../deploymentConfig/types'
+import { BasicFieldErrorObj, DeploymentChartVersionType } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../config'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import {
+    getBasicFieldValue,
+    isBasicValueChanged,
+    patchBasicData,
+    updateTemplateFromBasicValue,
+    validateBasicView,
+} from '../deploymentConfig/DeploymentConfig.utils'
+import { mainContext } from '../common/navigation/NavigationRoutes'
+import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
 
 export default function DeploymentTemplateOverride({
     parentState,
@@ -30,15 +40,22 @@ export default function DeploymentTemplateOverride({
     environments,
     environmentName,
 }: DeploymentTemplateOverrideProps) {
+    const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, setLoading] = useState(false)
     const [chartRefLoading, setChartRefLoading] = useState(null)
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const initialState = {
         showReadme: false,
         openComparison: false,
         charts: [],
         selectedChart: null,
+        basicFieldValues: null,
+        basicFieldValuesErrorObj: null,
+        yamlMode: true,
+        isBasicViewLocked: null,
+        currentViewEditor: null,
+        isBasicViewLockedInBase: null,
     }
     const memoisedReducer = useCallback(
         (state, action) => {
@@ -51,6 +68,9 @@ export default function DeploymentTemplateOverride({
                             action.value.IsOverride || state.duplicate
                                 ? action.value.environmentConfig.envOverrideValues || action.value.globalConfig
                                 : null,
+                        isBasicViewLockedInBase:
+                            action.value.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
+                            action.value.environmentConfig.isBasicViewLocked,
                     }
                 case 'setCharts':
                     // Use other latest ref id instead of selectedChartRefId on delete override action
@@ -91,6 +111,16 @@ export default function DeploymentTemplateOverride({
                     return { ...state, dialog: !state.dialog }
                 case 'reset':
                     return { ...initialState, selectedChartRefId: null }
+                case 'changeEditorMode':
+                    return { ...state, yamlMode: action.value }
+                case 'setIsBasicViewLocked':
+                    return { ...state, isBasicViewLocked: action.value }
+                case 'multipleOptions':
+                    return { ...state, ...action.value }
+                case 'setBasicFieldValues':
+                    return { ...state, basicFieldValues: action.value }
+                case 'setBasicFieldValuesErrorObj':
+                    return { ...state, basicFieldValuesErrorObj: action.value }
                 default:
                     return state
             }
@@ -153,6 +183,15 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues || result.globalConfig)
+                parseDataForView(
+                    result.environmentConfig.isBasicViewLocked,
+                    result.environmentConfig.currentViewEditor,
+                    result.globalConfig,
+                    result.environmentConfig.envOverrideValues,
+                )
+            }
             dispatch({ type: 'setResult', value: result })
             setParentState(ComponentStates.loaded)
         } catch (err) {
@@ -171,7 +210,32 @@ export default function DeploymentTemplateOverride({
                 dispatch({ type: 'toggleDialog' })
             } else {
                 //remove copy
-                dispatch({ type: 'removeDuplicate' })
+                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                    if (state.isBasicViewLockedInBase !== null && state.isBasicViewLockedInBase !== undefined) {
+                        const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
+                        let _isBasicViewLocked = false
+                        if (
+                            _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                            !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                            !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                            !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+                        ) {
+                            _isBasicViewLocked = true
+                        }
+                        dispatch({
+                            type: 'multipleOptions',
+                            value: {
+                                basicFieldValues: _basicFieldValues,
+                                basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                                isBasicViewLocked: state.isBasicViewLockedInBase || _isBasicViewLocked,
+                                duplicate: null,
+                            },
+                        })
+                    } else {
+                        dispatch({ type: 'removeDuplicate' })
+                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null)
+                    }
+                }
             }
         } else {
             //create copy
@@ -188,6 +252,66 @@ export default function DeploymentTemplateOverride({
         } catch (err) {
         } finally {
             dispatch({ type: 'toggleDialog' })
+        }
+    }
+
+    const parseDataForView = async (
+        _isBasicViewLocked: boolean,
+        _currentViewEditor: string,
+        baseTemplate,
+        envOverrideValues,
+    ): Promise<void> => {
+        if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
+            if (!envOverrideValues) {
+                const {
+                    result: { defaultAppOverride },
+                } = await getBaseDeploymentTemplate(
+                    +appId,
+                    state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
+                    true,
+                )
+                _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
+            } else {
+                _isBasicViewLocked = isBasicValueChanged(baseTemplate, envOverrideValues)
+            }
+        }
+
+        const statesToUpdate = {}
+        if (!state.currentViewEditor || !state.duplicate) {
+            _currentViewEditor =
+                _isBasicViewLocked ||
+                state.openComparison ||
+                state.showReadme ||
+                currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+                    ? EDITOR_VIEW.ADVANCED
+                    : EDITOR_VIEW.BASIC
+            statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.BASIC ? false : true
+            statesToUpdate['currentViewEditor'] = _currentViewEditor
+            statesToUpdate['isBasicViewLocked'] = _isBasicViewLocked
+        }
+
+        if (!_isBasicViewLocked) {
+            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
+            if (
+                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
+                !_basicFieldValues[BASIC_FIELDS.PORT] ||
+                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
+                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
+            ) {
+              statesToUpdate['yamlMode'] =  true
+              statesToUpdate['currentViewEditor'] = EDITOR_VIEW.ADVANCED
+              statesToUpdate['isBasicViewLocked'] = true
+            } else {
+                statesToUpdate['basicFieldValues'] = _basicFieldValues
+                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
+            }
+        }
+
+        if (statesToUpdate !== {}) {
+            dispatch({
+                type: 'multipleOptions',
+                value: statesToUpdate,
+            })
         }
     }
 
@@ -212,7 +336,7 @@ export default function DeploymentTemplateOverride({
                     initialise={initialise}
                     handleAppMetrics={handleAppMetrics}
                     handleDelete={handleDelete}
-                    isGrafanaModuleInstalled= {grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                    isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
                 />
             )}
         </div>
@@ -229,7 +353,7 @@ function DeploymentTemplateOverrideForm({
     handleAppMetrics,
     handleDelete,
     chartRefLoading,
-    isGrafanaModuleInstalled
+    isGrafanaModuleInstalled,
 }) {
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
@@ -246,20 +370,32 @@ function DeploymentTemplateOverrideForm({
 
     async function handleSubmit(e) {
         e.preventDefault()
-        if (!obj) {
+        if (!obj && state.yamlMode) {
             toast.error(error)
+            return
+        }
+        if (
+            state.selectedChart.name === ROLLOUT_DEPLOYMENT &&
+            !state.yamlMode &&
+            !state.basicFieldValuesErrorObj.isValid
+        ) {
+            toast.error('Some required fields are missing')
             return
         }
         const api =
             state.data.environmentConfig && state.data.environmentConfig.id > 0
                 ? updateDeploymentTemplate
                 : createDeploymentTemplate
+        const envOverrideValuesWithBasic =
+            !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
         const payload = {
             environmentId: +envId,
-            envOverrideValues: obj,
+            envOverrideValues: envOverrideValuesWithBasic || obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
             isAppMetricsEnabled: state.data.appMetrics,
+            currentViewEditor: state.isBasicViewLocked ? EDITOR_VIEW.ADVANCED : state.currentViewEditor,
+            isBasicViewLocked: state.isBasicViewLocked,
             ...(state.data.environmentConfig.id > 0
                 ? {
                       id: state.data.environmentConfig.id,
@@ -273,6 +409,9 @@ function DeploymentTemplateOverrideForm({
         try {
             setLoading(not)
             await api(+appId, +envId, payload)
+            if (envOverrideValuesWithBasic) {
+                editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
+            }
             toast.success(
                 <div className="toast">
                     <div className="toast__title">
@@ -307,6 +446,40 @@ function DeploymentTemplateOverrideForm({
         }
     }
 
+    const changeEditorMode = (): void => {
+        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
+            toast.error('Some required fields are missing')
+            return
+        }
+        if (state.isBasicViewLocked) {
+            return
+        }
+        try {
+            const parsedCodeEditorValue =
+                tempValue && tempValue !== '' ? YAML.parse(tempValue) : state.duplicate || state.data.globalConfig
+            if (state.yamlMode) {
+                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+                dispatch({
+                    type: 'multipleOptions',
+                    value: {
+                        basicFieldValues: _basicFieldValues,
+                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                        yamlMode: !state.yamlMode,
+                    },
+                })
+                return
+            } else {
+                const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
+                updateTemplateFromBasicValue(newTemplate)
+                editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
+            }
+            dispatch({
+                type: 'changeEditorMode',
+                value: true,
+            })
+        } catch (err) {}
+    }
+
     const handleComparisonClick = () => {
         dispatch({
             type: 'openComparison',
@@ -321,12 +494,29 @@ function DeploymentTemplateOverrideForm({
         }
     }
 
-    const editorOnChange = (str: string): void => {
+    const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempValue(str)
+        if (str && state.currentViewEditor && !state.isBasicViewLocked && !fromBasic) {
+            try {
+                const _isBasicViewLocked = isBasicValueChanged(YAML.parse(str))
+                dispatch({
+                    type: 'setIsBasicViewLocked',
+                    value: _isBasicViewLocked,
+                })
+            } catch (error) {}
+        }
     }
 
     const handleSelectChart = (selectedChart: DeploymentChartVersionType) => {
         dispatch({ type: 'selectChart', value: selectedChart })
+    }
+
+    const setBasicFieldValues = (basicFieldValues: Record<string, any>) => {
+        dispatch({ type: 'setBasicFieldValues', value: basicFieldValues })
+    }
+
+    const setBasicFieldValuesErrorObj = (basicFieldErrorObj: BasicFieldErrorObj) => {
+        dispatch({ type: 'setBasicFieldValuesErrorObj', value: basicFieldErrorObj })
     }
 
     const closeConfirmationDialog = () => {
@@ -363,6 +553,19 @@ function DeploymentTemplateOverrideForm({
                     selectedChart={state.selectedChart}
                     selectChart={handleSelectChart}
                     selectedChartRefId={state.selectedChartRefId}
+                    yamlMode={state.yamlMode}
+                    isBasicViewLocked={state.isBasicViewLocked}
+                    codeEditorValue={
+                        tempValue
+                            ? tempValue
+                            : state
+                            ? state.duplicate
+                                ? YAML.stringify(state.duplicate, { indent: 2 })
+                                : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                            : ''
+                    }
+                    basicFieldValuesErrorObj={state.basicFieldValuesErrorObj}
+                    changeEditorMode={changeEditorMode}
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
@@ -397,6 +600,12 @@ function DeploymentTemplateOverrideForm({
                     setFetchedValues={setFetchedValues}
                     readOnly={!state.duplicate}
                     globalChartRefId={state.data.globalChartRefId}
+                    yamlMode={state.yamlMode}
+                    changeEditorMode={changeEditorMode}
+                    basicFieldValues={state.basicFieldValues}
+                    setBasicFieldValues={setBasicFieldValues}
+                    basicFieldValuesErrorObj={state.basicFieldValuesErrorObj}
+                    setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
                 />
                 {!state.openComparison && !state.showReadme && (
                     <DeploymentConfigFormCTA
@@ -405,7 +614,11 @@ function DeploymentTemplateOverrideForm({
                         disableButton={!state.duplicate}
                         disableCheckbox={!state.duplicate}
                         showAppMetricsToggle={
-                            state.charts && state.selectedChart && appMetricsEnvironmentVariableEnabled && isGrafanaModuleInstalled
+                            state.charts &&
+                            state.selectedChart &&
+                            appMetricsEnvironmentVariableEnabled &&
+                            isGrafanaModuleInstalled &&
+                            state.yamlMode
                         }
                         isAppMetricsEnabled={state.data.appMetrics}
                         currentChart={state.selectedChart}
