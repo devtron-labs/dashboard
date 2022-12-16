@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
 
@@ -82,7 +83,7 @@ export interface LogResizeButtonType {
 export interface ScrollerType {
     scrollToTop: (e: any) => void
     scrollToBottom: (e: any) => void
-    style: any
+    style: CSSProperties
 }
 
 export interface GitChangesType {

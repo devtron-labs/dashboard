@@ -19,6 +19,7 @@ import { NavLink } from 'react-router-dom'
 import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 import ReactGA from 'react-ga4'
+import DetectBottom from '../../../common/DetectBottom'
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
@@ -270,19 +271,3 @@ const SummaryTooltipCard = React.memo(
         )
     },
 )
-
-const DetectBottom = ({ callback }): JSX.Element => {
-    const target = useRef<HTMLSpanElement>(null)
-    const intersected = useIntersection(target, {
-        rootMargin: '0px',
-        once: false,
-    })
-
-    useEffect(() => {
-        if (intersected) {
-            callback()
-        }
-    }, [intersected])
-
-    return <span className="pb-5" ref={target}></span>
-}
