@@ -432,6 +432,10 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
 }
 
+export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse>{
+    return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
+}
+
 export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
     return post(Routes.APP_LABELS, request)
 }

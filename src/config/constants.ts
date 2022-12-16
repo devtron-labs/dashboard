@@ -132,6 +132,7 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    HELM_APP_META_INFO: 'app/helm/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
     APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',

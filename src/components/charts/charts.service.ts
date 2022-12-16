@@ -228,6 +228,12 @@ interface appName {
     suggestedName?: string
 }
 
+interface HelmProjectUpdatePaylaod{
+    appId: string
+    appName: string
+    teamId: number
+}
+
 interface AppNameValidated extends RootObject {
     result?: appName[]
 }
@@ -242,4 +248,8 @@ export function getChartsByKeyword(input: string) {
 
 export function deleteChartGroup(request) {
     return trash(Routes.CHART_GROUP, request)
+}
+
+export function updateHelmAppProject(payload: HelmProjectUpdatePaylaod ): Promise<any> {
+    return put(`app-store/deployment/application/update/project`, payload)
 }

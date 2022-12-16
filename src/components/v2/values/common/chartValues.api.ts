@@ -11,6 +11,7 @@ import {
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
+import exp from "constants";
 
 export async function fetchChartVersionsData(
     id: number,
@@ -197,6 +198,29 @@ export async function fetchProjectsAndEnvironments(
             type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 environments: envList,
+                projects: projectList,
+            },
+        })
+    })
+}
+
+export async function fetchProjects(
+    dispatch: (action: ChartValuesViewAction) => void,
+): Promise<void> {
+    Promise.allSettled([
+        getTeamListMin()
+    ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
+        const projectListRes: Teams[] = responses[0].value?.result || []
+
+        const projectList = projectListRes
+            .map((p) => {
+                return { value: p.id, label: p.name }
+            })
+            .sort((a, b) => sortCallback('label', a, b, true))
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
                 projects: projectList,
             },
         })

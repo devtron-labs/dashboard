@@ -89,6 +89,8 @@ export interface ChartProjectSelectorType {
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void
     projects: ChartValuesOptionType[]
+    releaseInfo?: ReleaseInfo
+    installedConfig?: ChartInstalledConfig
     invalidProject: boolean
 }
 
@@ -356,12 +358,10 @@ export interface ChaartValuesGUIFormType {
 }
 
 export interface ProjectSelectorTypes {
-    isLoading: boolean
-    appId: number
+    appId: string
     appName: string
     onClose: () => void
     appMetaInfo: AppMetaInfo
+    projectsList: ChartValuesOptionType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
-    fetchingProjects: boolean
-    projectsList: Teams[]
 }
