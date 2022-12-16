@@ -1004,7 +1004,7 @@ export const stopPropagation = (event): void => {
     event.stopPropagation()
 }
 
-// Creates object of arrays containing items grouped by item value of provided key 
+// Creates object of arrays containing items grouped by item value of provided key
 export const createGroupedItemsByKey = (arr: any[], key: string) => {
     return arr.reduce((prevObj, currentObj) => {
         return {
@@ -1026,4 +1026,16 @@ export const convertToOptionsList = (
             value: valueKey ? ele[valueKey] : ele,
         }
     })
+}
+
+export const importComponentFromFELibrary =(componentName: string, defaultComponent?)=>{
+  try {
+    const module = require('@devtron-labs/devtron-fe-lib')
+    return module[componentName]?.default || defaultComponent || null;
+  } catch (e) {
+      if (e['code'] !== 'MODULE_NOT_FOUND') {
+          throw e;
+      }
+      return defaultComponent || null
+  }
 }

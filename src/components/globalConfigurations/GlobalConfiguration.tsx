@@ -2,7 +2,7 @@ import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
-import { Toggle, Progressing, ErrorBoundary } from '../common'
+import { Toggle, Progressing, ErrorBoundary, importComponentFromFELibrary } from '../common'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -30,6 +30,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const TagList = importComponentFromFELibrary('TagList')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -295,12 +296,18 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) && renderNavItem(route),
+                (route) =>
+                    ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
+                        route.isAvailableInEA ||
+                        installedModuleMap.current?.[route.moduleName]) &&
+                    renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
                 (route, index) =>
-                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) &&
+                    ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
+                        route.isAvailableInEA ||
+                        installedModuleMap.current?.[route.moduleName]) &&
                     (route.group ? (
                         <>
                             <NavLink
@@ -337,6 +344,14 @@ function NavItem({ hostURLConfig, serverMode }) {
             >
                 <div className="flexbox flex-justify">External Links</div>
             </NavLink>
+            {TagList && (
+                <>
+                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    <NavLink to={URLS.GLOBAL_CONFIG_TAGS} key={URLS.GLOBAL_CONFIG_TAGS} activeClassName="active-route">
+                        <div className="flexbox flex-justify">Tags</div>
+                    </NavLink>
+                </>
+            )}
         </div>
     )
 }
@@ -447,6 +462,9 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
             <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                 <ExternalLinks />
             </Route>
+            {TagList && <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                <TagList />
+            </Route>}
             <Redirect
                 to={
                     serverMode &&
