@@ -183,7 +183,7 @@ interface Health {
     message?: string;
 }
 
-interface Resource {
+export interface Resource {
     group: string;
     version: string;
     kind: string;

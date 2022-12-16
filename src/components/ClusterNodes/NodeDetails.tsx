@@ -27,6 +27,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
+    ClusterListType,
     NodeDetail,
     NodeDetailResponse,
     PodType,
@@ -42,15 +43,19 @@ import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
 import { ServerErrors } from '../../modals/commonTypes'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import ClusterTerminal from './ClusterTerminal'
+import { OptionType } from '../app/types'
 
-export default function NodeDetails() {
+export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
+    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
+    const nodeListRef = useRef([nodeName])
     const [loader, setLoader] = useState(false)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
-    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
     const [copied, setCopied] = useState(false)
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
@@ -157,6 +162,24 @@ export default function NodeDetails() {
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
+                {isSuperAdmin && (
+                    <li
+                        className="tab-list__tab pointer"
+                        onClick={() => {
+                            setSelectedTabIndex(3)
+                        }}
+                    >
+                        <div
+                            className={`mb-6 flexbox fs-13 tab-hover${
+                                selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
+                            }`}
+                        >
+                            <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
+                            Debug
+                        </div>
+                        {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
+                    </li>
+                )}
             </ul>
         )
     }
@@ -865,11 +888,25 @@ export default function NodeDetails() {
         )
     }
 
+    const renderTerminal = () => {
+        return (
+            <ClusterTerminal
+                clusterId={Number(clusterId)}
+                nodeList={nodeListRef.current}
+                clusterImageList={imageList}
+                isNodeDetailsPage={true}
+                namespaceList={namespaceList[nodeDetail.clusterName]}
+            />
+        )
+    }
+
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
         } else if (selectedTabIndex === 2) {
             return renderConditions()
+        } else if (selectedTabIndex === 3) {
+            return renderTerminal()
         } else {
             return renderSummary()
         }
