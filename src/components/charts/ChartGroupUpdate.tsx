@@ -174,7 +174,7 @@ export default function ChartGroupUpdate({}) {
     }
 
 
-    async function reloadNextAfterBottom(e) {
+    async function reloadNextAfterBottom() {
         await applyFilterOnCharts(location.search, false)
     }
 

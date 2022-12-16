@@ -285,7 +285,7 @@ function DiscoverChartList() {
         )
     }
 
-    async function reloadNextAfterBottom(e) {
+    async function reloadNextAfterBottom() {
         callPaginationOnCharts()
     }
 
