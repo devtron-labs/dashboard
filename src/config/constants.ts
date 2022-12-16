@@ -183,6 +183,17 @@ export const Routes = {
     SSO_UPDATE: 'sso/update',
     INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
     EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls',
+    CLUSTER_TERMINAL: 'user/terminal',
+    START: 'start',
+    DISCONNECT_RETRY: 'disconnectAndRetry',
+    UPDATE_SHELL: 'update/shell',
+    CLUSTER_NAMESPACE: 'cluster/namespaces',
+    DISCONNECT: 'disconnect',
+    STOP: 'stop',
+    POD_MANIFEST: 'pod/manifest',
+    POD_EVENTS: 'pod/events'
+    
+
 }
 
 export const ViewType = {
@@ -282,6 +293,7 @@ export const DOCUMENTATION = {
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
+    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/deployment`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
 }
@@ -538,6 +550,7 @@ export const BuildTabText = {
 export const APP_STATUS_CUSTOM_MESSAGES = {
     HIBERNATED: "This application's workloads are scaled down to 0 replicas",
     'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
+    "INTEGRATION_INSTALLING" : "The installation will complete when status for all the below resources become HEALTHY.",
 }
 
 export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
@@ -568,6 +581,7 @@ export const EXTERNAL_TYPES = {
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
+export const DEPLOYMENT = 'Deployment'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
@@ -630,6 +644,13 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 
+export const shellTypes = [
+    { label: 'sh', value: 'sh' },
+    { label: 'bash', value: 'bash' },
+    { label: 'powershell', value: 'powershell' },
+    { label: 'cmd', value: 'cmd' },
+]
+
 export enum AppDetailsErrorType {
     ERRIMAGEPULL = 'errimagepull',
     IMAGEPULLBACKOFF = 'imagepullbackoff',
@@ -640,4 +661,12 @@ export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
   LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
   LINE_THREE:  'You can continue to deploy images from external build services',
   DOC_LINK_TEXT: 'Refer documentation to learn more.',
+}
+
+export const MESSAGING_UI = {
+    NO_RESOURCE: 'This resource no longer exists',
+    NO_EVENTS: 'Events not available',
+    FETCHING_EVENTS: 'Fetching events',
+    MANIFEST_NOT_AVAILABLE: 'Manifest not available',
+    FETCHING_MANIFEST: 'Fetching manifest'
 }

@@ -15,7 +15,7 @@ import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
@@ -56,8 +56,8 @@ export default function DeploymentConfig({
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
     const [yamlMode, toggleYamlMode] = useState(true)
-    const [isBasicViewLocked, setIsBasicViewLocked] = useState(false)
-    const [currentViewEditor, setCurrentViewEditor] = useState(null)
+    const [isBasicLocked, setIsBasicLocked] = useState(false)
+    const [currentEditorView, setEditorView] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
     const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
@@ -110,13 +110,13 @@ export default function DeploymentConfig({
             } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
-        if (!currentViewEditor) {
+        if (!currentEditorView || !_currentViewEditor) {
             _currentViewEditor =
                 _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
-            setIsBasicViewLocked(_isBasicViewLocked)
-            setCurrentViewEditor(_currentViewEditor)
+            setIsBasicLocked(_isBasicViewLocked)
+            setEditorView(_currentViewEditor)
             toggleYamlMode(_currentViewEditor === EDITOR_VIEW.BASIC ? false : true)
         }
         if (!_isBasicViewLocked) {
@@ -127,10 +127,11 @@ export default function DeploymentConfig({
                 !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
                 !_basicFieldValues[BASIC_FIELDS.RESOURCES]
             ) {
-                setIsBasicViewLocked(true)
-                setCurrentViewEditor(EDITOR_VIEW.ADVANCED)
+                setIsBasicLocked(true)
+                setEditorView(EDITOR_VIEW.ADVANCED)
                 toggleYamlMode(true)
             } else {
+                setIsBasicLocked(_isBasicViewLocked)
                 setBasicFieldValues(_basicFieldValues)
                 setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
             }
@@ -162,7 +163,7 @@ export default function DeploymentConfig({
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
             setAppMetricsEnabled(isAppMetricsEnabled)
             setTempFormData(YAML.stringify(defaultAppOverride, null))
-            if (selectedChart.name === ROLLOUT_DEPLOYMENT) {
+            if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(defaultAppOverride)
                 parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
             }
@@ -179,7 +180,11 @@ export default function DeploymentConfig({
             toast.error(error)
             return
         }
-        if (selectedChart.name === ROLLOUT_DEPLOYMENT && !yamlMode && !basicFieldValuesErrorObj.isValid) {
+        if (
+            (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
+            !yamlMode &&
+            !basicFieldValuesErrorObj.isValid
+        ) {
             toast.error('Some required fields are missing')
             return
         }
@@ -198,14 +203,16 @@ export default function DeploymentConfig({
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
                 appId: +appId,
                 chartRefId: selectedChart.id,
-                valuesOverride:
-                    !yamlMode && selectedChart.name === ROLLOUT_DEPLOYMENT
-                        ? patchBasicData(obj, basicFieldValues)
-                        : obj,
+                valuesOverride: obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
-                isBasicViewLocked: isBasicViewLocked,
-                currentViewEditor: isBasicViewLocked ? EDITOR_VIEW.ADVANCED : currentViewEditor,
+            }
+            if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
+                requestBody.isBasicViewLocked = isBasicLocked
+                requestBody.currentViewEditor = isBasicLocked ? EDITOR_VIEW.ADVANCED : currentEditorView
+                if (!yamlMode) {
+                    requestBody.valuesOverride = patchBasicData(obj, basicFieldValues)
+                }
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
@@ -242,9 +249,16 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         setTempFormData(str)
-        if (str && currentViewEditor && !isBasicViewLocked && !fromBasic) {
+        if (
+            selectedChart &&
+            (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
+            str &&
+            currentEditorView &&
+            !isBasicLocked &&
+            !fromBasic
+        ) {
             try {
-                setIsBasicViewLocked(isBasicValueChanged(YAML.parse(str)))
+                setIsBasicLocked(isBasicValueChanged(YAML.parse(str)))
             } catch (error) {}
         }
     }
@@ -271,7 +285,7 @@ export default function DeploymentConfig({
             toggleYamlMode(false)
             return
         }
-        if (isBasicViewLocked) {
+        if (isBasicLocked) {
             return
         }
 
@@ -314,7 +328,7 @@ export default function DeploymentConfig({
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
                     yamlMode={yamlMode}
-                    isBasicViewLocked={isBasicViewLocked}
+                    isBasicViewLocked={isBasicLocked}
                     codeEditorValue={tempFormData}
                     basicFieldValuesErrorObj={basicFieldValuesErrorObj}
                     changeEditorMode={changeEditorMode}
@@ -354,8 +368,8 @@ export default function DeploymentConfig({
                         }
                         isAppMetricsEnabled={isAppMetricsEnabled}
                         isCiPipeline={isCiPipeline}
-                        currentChart={selectedChart}
                         toggleAppMetrics={toggleAppMetrics}
+                        selectedChart={selectedChart}
                     />
                 )}
             </form>

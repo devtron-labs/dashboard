@@ -376,5 +376,24 @@
             border-radius: 0;
             margin-bottom: 0;
         }
+        .form__row--gui-container {
+            &.gui {
+                height: calc(100% - 220px);
+            }
+        }
+    }
+}
+
+.chart-selector-container {
+    width: 400px;
+    max-height: 350px;
+    overflow: auto;
+    .top-0 {
+        top: 0;
+    }
+    .chart-row {
+        &:hover:not(.bcb-1) {
+            background-color: var(--N50);
+        }
     }
 }
