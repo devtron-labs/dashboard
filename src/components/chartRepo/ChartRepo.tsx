@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody } from '../common'
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody, Checkbox } from '../common'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
@@ -124,6 +124,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const [validationStatus, setValidationStatus] = useState(VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS)
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
+    const [secureWithTls, setSecureWithTls] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -161,14 +162,26 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         state.auth.value= 'USERNAME_PASSWORD'
     }
 
+
     const chartRepoPayload = {
         id: id || 0,
         name: state.name.value,
         url: state.url.value,
-        authMode: chartRepoType==='PUBLIC'?'ANONYMOUS':'USERNAME_PASSWORD',
+        authMode: id
+            ? password.length > 0
+                ? 'USERNAME_PASSWORD'
+                : 'ANONYMOUS'
+            : chartRepoType === 'PUBLIC'
+            ? 'ANONYMOUS'
+            : 'USERNAME_PASSWORD',
         active: true,
-        ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
-        ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+        ...(state.auth.value === 'USERNAME_PASSWORD' || authMode === 'USERNAME_PASSWORD'
+            ? { secured: secureWithTls }
+            : {}),
+        ...(state.auth.value === 'USERNAME_PASSWORD' || authMode === 'USERNAME_PASSWORD'
+            ? { username: customState.username.value, password: customState.password.value }
+            : {}),
+        ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
     }
 
     const isFormInvalid = () => {
@@ -271,6 +284,10 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         { value: 'PRIVATE', label: 'Private repository' },
     ]
 
+    function toggleSkipTLSVerification(e) {
+        setSecureWithTls(!secureWithTls)
+    }
+
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             <div className="flex left mb-16">
@@ -342,6 +359,29 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                         />
                     </>
                 )}
+                {id && authMode === 'USERNAME_PASSWORD' ? (
+                    <>
+                        <CustomInput
+                            autoComplete="off"
+                            value={customState.username.value}
+                            onChange={customHandleChange}
+                            name="username"
+                            error={customState.username.error}
+                            label="Username*"
+                            labelClassName="mt-12"
+                        />
+                        <ProtectedInput
+                            value={customState.password.value}
+                            onChange={customHandleChange}
+                            name="password"
+                            error={customState.password.error}
+                            label="Password*"
+                            labelClassName="mt-12"
+                        />
+                    </>
+                ) : (
+                    <></>
+                )}
             </div>
             {/* <div className="form__label">Authentication type*</div>
             <div className="form__row form__row--auth-type pl-12 pointer">
@@ -358,6 +398,18 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>} */}
+            {chartRepoType !== 'PUBLIC' ? (
+                <Checkbox
+                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
+                    isChecked={secureWithTls === true}
+                    value={'CHECKED'}
+                    onChange={toggleSkipTLSVerification}
+                >
+                    <div> Secure With TLS</div>
+                </Checkbox>
+            ) : (
+                <></>
+            )}
             <div className="form__row form__buttons">
                 {id && (
                     <button
