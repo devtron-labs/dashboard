@@ -22,7 +22,6 @@ import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManage
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
-import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
@@ -60,7 +59,6 @@ export default function NavigationRoutes() {
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
-    const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
@@ -109,7 +107,7 @@ export default function NavigationRoutes() {
             }
         }
 
-        // Check for external app count also
+        // Check for external app count also before redirecting user on GETTING STARTED page
         if (!count && superAdmin && appListCount === 0) {
             try {
                 const { result } = await getClusterListMinWithoutAuth()
@@ -117,18 +115,21 @@ export default function NavigationRoutes() {
                     const _sseConnection = new EventSource(`${Host}/application?clusterIds=${result[0].id}`, {
                         withCredentials: true,
                     })
-                    _sseConnection.onmessage = function (message) {
+                    _sseConnection.onmessage = (message) => {
                         const externalAppData: AppListResponse = JSON.parse(message.data)
                         if (externalAppData.result?.helmApps?.length <= 1) {
                             history.push(`/${URLS.GETTING_STARTED}`)
                         }
                         _sseConnection.close()
                     }
-                    _sseConnection.onerror = function (err) {
+                    _sseConnection.onerror = (err) => {
                         _sseConnection.close()
+                        history.push(`/${URLS.GETTING_STARTED}`)
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+                history.push(`/${URLS.GETTING_STARTED}`)
+            }
         }
     }
 
@@ -234,10 +235,6 @@ export default function NavigationRoutes() {
         }
     }
 
-    const onClickedDeployManageCardClicked = () => {
-        setDeployManageCardClicked(true)
-    }
-
     if (pageState === ViewType.LOADING || loginLoader) {
         return <Progressing pageLoader />
     } else if (pageState === ViewType.ERROR) {
@@ -316,18 +313,11 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide
-                                                isGettingStartedClicked={isGettingStartedClicked}
-                                                loginCount={loginCount}
-                                            />
-                                        </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
                                                 serverMode={serverMode}
-                                                onClickedDeployManageCardClicked={onClickedDeployManageCardClicked}
                                                 isGettingStartedClicked={isGettingStartedClicked}
                                             />
                                         </Route>

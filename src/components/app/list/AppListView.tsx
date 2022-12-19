@@ -111,40 +111,42 @@ export class AppListView extends Component<AppListViewProps>{
 
     render() {
         if (this.props.view === AppListViewType.LOADING) {
-            return <React.Fragment>
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            </React.Fragment>
-        }
-
-        else if (this.props.view === AppListViewType.EMPTY) {
-            return <React.Fragment>
-                <DevtronAppGuidePage openDevtronAppCreateModel={this.props.openDevtronAppCreateModel} />
-            </React.Fragment>
-        }
-
-        else if (this.props.view === AppListViewType.NO_RESULT) {
-            return <React.Fragment>
-                <Empty view={this.props.view}
-                    title={"No apps found"}
-                    message={"We couldn't find any matching applications."}
-                    buttonLabel={"Clear filters"}
-                    clickHandler={this.props.clearAll} />
-            </React.Fragment>
-        }
-        else if (this.props.view === AppListViewType.ERROR) {
-            return <React.Fragment>
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={this.props.code} />
-                </div>
-            </React.Fragment>
-        }
-        else {
-            return <React.Fragment>
-                {this.renderAppList()}
-                {this.renderPagination()}
-            </React.Fragment>
+            return (
+                <React.Fragment>
+                    <div className="dc__loading-wrapper">
+                        <Progressing pageLoader />
+                    </div>
+                </React.Fragment>
+            )
+        } else if (this.props.view === AppListViewType.EMPTY) {
+            return <DevtronAppGuidePage openDevtronAppCreateModel={this.props.openDevtronAppCreateModel} />
+        } else if (this.props.view === AppListViewType.NO_RESULT) {
+            return (
+                <React.Fragment>
+                    <Empty
+                        view={this.props.view}
+                        title={'No apps found'}
+                        message={"We couldn't find any matching applications."}
+                        buttonLabel={'Clear filters'}
+                        clickHandler={this.props.clearAll}
+                    />
+                </React.Fragment>
+            )
+        } else if (this.props.view === AppListViewType.ERROR) {
+            return (
+                <React.Fragment>
+                    <div className="dc__loading-wrapper">
+                        <ErrorScreenManager code={this.props.code} />
+                    </div>
+                </React.Fragment>
+            )
+        } else {
+            return (
+                <React.Fragment>
+                    {this.renderAppList()}
+                    {this.renderPagination()}
+                </React.Fragment>
+            )
         }
     }
 }

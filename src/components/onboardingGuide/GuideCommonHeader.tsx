@@ -1,16 +1,18 @@
 import React from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
 import { GuideCommonHeaderType } from './OnboardingGuide.type'
-import { URLS } from '../../config'
 
-function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, isGettingStartedClicked }: GuideCommonHeaderType) {
+function GuideCommonHeader({
+    loginCount,
+    title,
+    subtitle,
+    isGettingStartedClicked,
+}: GuideCommonHeaderType) {
     const history = useHistory()
-    const match = useRouteMatch()
-    const isGuidePage = match.url.includes(`${URLS.GETTING_STARTED}/${URLS.GUIDE}`)
     const showCloseIcon = loginCount > 0 || isGettingStartedClicked
-    const onClickedGoBack = () => {
+
+    const onClickCloseButton = () => {
         history.goBack()
     }
 
@@ -18,17 +20,16 @@ function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, is
         <div className="common-guide__container">
             <div className={`deploy-manage__header mh-300 dc__window-bg bcn-1`}>
                 {showCloseIcon && (
-                    <button type="button" className="w-100 flex right dc__transparent p-20" onClick={onClickCloseButton}>
+                    <button
+                        type="button"
+                        className="w-100 flex right dc__transparent p-20"
+                        onClick={onClickCloseButton}
+                    >
                         <Close className="icon-dim-24" />
                     </button>
                 )}
-                <div className={`${showCloseIcon ? 'deploy-manage__upper top' : 'mh-300'} flex`}>
+                <div className={`flex deploy-manage__upper top ${showCloseIcon ? '' : 'pt-64'}`}>
                     <div className="deploy__title flex center">
-                        {isGuidePage && (
-                            <div className="bcn-0 deploy_arrow flex cursor" onClick={onClickedGoBack}>
-                                <GoBack className="icon-dim-24" />
-                            </div>
-                        )}
                         <div className="flex column">
                             <h1 className="fw-6 mb-8">{title}</h1>
                             <p className="fs-14 cn-7">{subtitle}</p>
