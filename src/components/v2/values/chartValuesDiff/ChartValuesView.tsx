@@ -1198,8 +1198,10 @@ function ChartValuesView({
     }
 
     useEffect(() => {
-        getHelmAppMetaInfoRes()
-    }, [appId, isDeployChartView])
+        if (!isDeployChartView) {
+            getHelmAppMetaInfoRes()
+        }
+    }, [appId])
 
     const getHelmAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
