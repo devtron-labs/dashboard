@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import img from '../../assets/img/ic-checklist-chart@2x.png';
 import './checklist.css';
+import { DEPLOY_CHART_MESSAGING } from './constants';
 
 export class AllChartsCheck extends Component<{}, {}> {
     render() {
@@ -10,9 +11,9 @@ export class AllChartsCheck extends Component<{}, {}> {
             <div className="bcg-1 flexbox">
                 <img className="img-width pt-12 pb-12 pl-16 " src={img} />
                 <div className="pl-20 fs-13">
-                    <div className="pt-16 cn-9"> Deploy charts using Devtron.</div>
+                    <div className="pt-16 cn-9"> {DEPLOY_CHART_MESSAGING.DEPLOY_DEVTRON}</div>
                     <NavLink to={`${URLS.CHARTS}/discover`} className="dc__no-decor cb-5 fw-6">
-                        Discover Helm charts
+                        {DEPLOY_CHART_MESSAGING.DISCOVER_HELM}
                     </NavLink>
                 </div>
             </div>
