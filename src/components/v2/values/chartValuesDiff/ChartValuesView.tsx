@@ -1204,8 +1204,7 @@ function ChartValuesView({
     const getHelmAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
 
-            const installedAppId = commonState.installedConfig?.installedAppId
-            const { result } = await getHelmAppMetaInfo(appId, installedAppId?installedAppId:0)
+            const { result } = await getHelmAppMetaInfo(appId)
             if (result) {
                 setAppName(result.appName)
                 setAppMetaInfo(result)
