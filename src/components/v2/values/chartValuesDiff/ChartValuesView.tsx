@@ -164,14 +164,15 @@ function ChartValuesView({
                     const _installedAppInfo = releaseInfoResponse.result.installedAppInfo
                     const _fetchedReadMe = commonState.fetchedReadMe
                     _fetchedReadMe.set(0, _releaseInfo.readme)
-
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
-                            selectedProject: _installedAppInfo? _installedAppInfo.teamName ? { value: _installedAppInfo.teamId, label: _installedAppInfo.teamName }  : "" : "",
+                            selectedProject: _installedAppInfo?.teamName
+                                ? { value: _installedAppInfo.teamId, label: _installedAppInfo.teamName }
+                                : '',
                             activeTab:
                                 !_releaseInfo.valuesSchemaJson || presetValueId || isCreateValueView ? 'yaml' : 'gui',
                         },
@@ -459,7 +460,7 @@ function ChartValuesView({
                     modifiedValuesYaml: result?.valuesOverrideYaml,
                 },
             })
-        } catch (e) {
+        } catch (e: any) {
             dispatch({ type: ChartValuesViewActionTypes.isLoading, payload: false })
         }
     }
@@ -576,9 +577,7 @@ function ChartValuesView({
 
         if (
             isDeployChartView &&
-            (!_validatedAppName.isValid ||
-                !commonState.selectedEnvironment ||
-                (serverMode === SERVER_MODE.FULL && !commonState.selectedProject))
+            (!_validatedAppName.isValid || !commonState.selectedEnvironment || !commonState.selectedProject)
         ) {
             return false
         }
@@ -934,8 +933,9 @@ function ChartValuesView({
 
     const renderValuesTabs = () => {
         const initialSelectedTab =
-            (!(presetValueId || isCreateValueView) && ((isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-            !!commonState.installedConfig?.valuesSchemaJson))
+            !(presetValueId || isCreateValueView) &&
+            ((isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                !!commonState.installedConfig?.valuesSchemaJson)
                 ? ConfigurationType.GUI
                 : ConfigurationType.YAML
 
@@ -947,13 +947,17 @@ function ChartValuesView({
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                {initialSelectedTab === ConfigurationType.GUI && <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>{ConfigurationType.GUI} (Beta)</RadioGroup.Radio>}
+                {initialSelectedTab === ConfigurationType.GUI && (
+                    <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
+                        {ConfigurationType.GUI} (Beta)
+                    </RadioGroup.Radio>
+                )}
                 <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
                     <Edit className="icon-dim-12 mr-6" />
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
-                    value='manifest'
+                    value="manifest"
                     showTippy={isExternalApp && !commonState.installedAppInfo}
                     canSelect={isValidData()}
                     tippyContent={
@@ -1303,7 +1307,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp &&(
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && (
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}
@@ -1351,7 +1355,11 @@ function ChartValuesView({
                             chartValueId !== '0' &&
                             !(
                                 deployedAppDetail &&
-                                checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
+                                checkIfDevtronOperatorHelmRelease(
+                                    deployedAppDetail[2],
+                                    deployedAppDetail[1],
+                                    deployedAppDetail[0],
+                                )
                             ) && (
                                 <DeleteApplicationButton
                                     type={isCreateValueView ? 'preset value' : 'Application'}

@@ -197,8 +197,8 @@ export default function UserGroupRoute() {
         () =>
             Promise.allSettled([
                 getGroupList(),
-                serverMode === SERVER_MODE.EA_ONLY ? null : get(Routes.PROJECT_LIST),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
+                get(Routes.PROJECT_LIST),
+                getEnvironmentListMin(),
                 serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
                 getEnvironmentListHelmApps(),
@@ -253,7 +253,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-        if (serverMode === SERVER_MODE.EA_ONLY) return
+
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
@@ -778,9 +778,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     const { serverMode } = useContext(mainContext)
     const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
     const projectId =
-        permission.team && serverMode !== SERVER_MODE.EA_ONLY && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
+        permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
+
     const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER]
     const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN]
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
@@ -892,8 +893,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
+
         const sortedEnvironments =
             openMenu === 'environment' ? environments : sortBySelected(permission.environment, environments, 'value')
+
         const sortedApplications =
             openMenu === 'entityName' ? applications : sortBySelected(permission.entityName, applications, 'value')
         setEnvironments(sortedEnvironments)
@@ -1014,9 +1017,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 name="team"
                 isMulti={false}
                 placeholder="Select project"
-                options={(serverMode === SERVER_MODE.EA_ONLY
-                    ? [{ name: HELM_APP_UNASSIGNED_PROJECT }]
-                    : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
+                options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? [{ name: HELM_APP_UNASSIGNED_PROJECT }, ...(projectsList || [])]
                     : projectsList
                 )?.map((project) => ({ label: project.name, value: project.name }))}
