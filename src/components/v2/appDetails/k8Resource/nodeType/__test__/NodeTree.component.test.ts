@@ -1,5 +1,5 @@
-import { generateSelectedNodes } from './NodeTree.component';
-import { testData1, testData2, testData3 } from './NodeTree.component.data.test';
+import { generateSelectedNodes } from '../NodeTree.component';
+import { testData1, testData2, testData3 } from './NodeTree.component.mock';
 test('base test with no click data', () => {
     expect(generateSelectedNodes(testData1.arguments.clickedNodes, testData1.arguments._treeNodes, testData1.arguments._node, testData1.arguments.parents)).toStrictEqual(testData1.response.clickedNodes)
 })

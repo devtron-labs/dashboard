@@ -3,7 +3,7 @@ import { Subject } from './Subject';
 test("Subscriber test", () => {
     let rec: Array<string> = new Array()
     let subject = new Subject()
-    let subscriber = (s: string) => { console.log(s); rec.push(s) }
+    let subscriber = (s: string) => { rec.push(s) }
     subject.subscribe(subscriber)
     subject.publish("hello")
     subject.publish("world")
@@ -16,7 +16,7 @@ test("Subscriber test", () => {
 test("Subscriber removal test", () => {
     let rec: Array<string> = new Array()
     let subject = new Subject()
-    let subscriber = (s: string) => { console.log(s); rec.push(s) }
+    let subscriber = (s: string) => { rec.push(s) }
     let [added, unsubsribe] = subject.subscribe(subscriber)
     subject.publish("hello")
     subject.publish("world")
@@ -30,7 +30,7 @@ test("Subscriber removal test", () => {
 test("Unsubscribe subscribe test", () => {
     let rec: Array<string> = new Array()
     let subject = new Subject()
-    let subscriber = (s: string) => { console.log(s); rec.push(s) }
+    let subscriber = (s: string) => { rec.push(s) }
     let [added, unsubsribe] = subject.subscribe(subscriber)
     unsubsribe();
     [added, unsubsribe] = subject.subscribe(subscriber)

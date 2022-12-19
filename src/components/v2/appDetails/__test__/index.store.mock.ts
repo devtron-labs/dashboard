@@ -1,4 +1,4 @@
-import { iNode, Node } from './appDetails.type';
+import { iNode, Node } from '../appDetails.type';
 
 export const nodesWithPodOnly = [
     {

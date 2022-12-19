@@ -1,4 +1,4 @@
-import { iNode } from '../../appDetails.type';
+import { iNode } from '../../../appDetails.type';
 
 export const testData1 = {
     arguments: {

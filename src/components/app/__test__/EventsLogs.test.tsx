@@ -8,7 +8,7 @@ import '@testing-library/jest-dom';
 
 import { aggregateNodes } from '../details/appDetails/utils';
 
-import { nodes, podMetadata } from '../details/appDetails/__test__/appDetails.data';
+import { nodes, podMetadata } from '../details/appDetails/__test__/appDetails.mock';
 import { Nodes, AggregationKeys, NodeDetailTabs, AppDetails } from '../types';
 
 import {NodeManifestView, LogsView, EventsView, parsePipes, getGrepTokens} from '../EventsLogs';

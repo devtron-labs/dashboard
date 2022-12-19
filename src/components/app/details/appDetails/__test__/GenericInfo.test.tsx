@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import {aggregateNodes} from '../utils'
 import ResourceTreeNodes ,{GenericInfo, NestedTable, GenericRow, Name, NodeGroup, StatusFilterButton, AllPods } from '../../../ResourceTreeNodes'
 import { BrowserRouter, MemoryRouter, Route, Router } from 'react-router-dom';
-import {nodes, podMetadata} from './appDetails.data'
+import {nodes, podMetadata} from './appDetails.mock'
 import {Nodes, AggregationKeys} from '../../../types'
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
