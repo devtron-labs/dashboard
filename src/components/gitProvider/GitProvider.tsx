@@ -396,7 +396,7 @@ function GitForm({
                 ? { username: customState.username.value, password: customState.password.value }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: customState.sshInput.value } : {}),
+            ...(state.auth.value === 'SSH' ? { sshPrivateKey: customState.sshInput.value.trim() } : {}),
         };
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;
