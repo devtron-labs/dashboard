@@ -255,11 +255,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return;
         }
         this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true });
+        let finalHostUrl
+        if (this.state.form.host) {
+            let index = this.state.form.host.indexOf('/', 8)
+            if (index === -1) {
+                finalHostUrl = this.state.form.host + '/'
+            } else {
+                finalHostUrl = this.state.form.host.slice(0, index) + '/'
+            }
+        }
         let payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
             username: this.state.form.username,
-            host: this.state.form.host,
+            host: finalHostUrl,
             token: this.state.form.token,
             gitLabGroupId: this.state.form.gitLabGroupId,
             gitHubOrgId: this.state.form.gitHubOrgId,
