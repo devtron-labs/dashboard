@@ -5,16 +5,19 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
 import { handleUTCTime, Progressing, showError } from '../common'
-import { ClusterDetail, ClusterListResponse } from './types'
+import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
+import ClusterTerminal from './ClusterTerminal'
+import { OptionType } from '../app/types'
 
-export default function ClusterList() {
+export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
@@ -24,6 +27,8 @@ export default function ClusterList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
+    const [showTerminalModal, setShowTerminal] = useState(false)
+    const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
 
     const getData = () => {
         setLoader(true)
@@ -112,10 +117,23 @@ export default function ClusterList() {
         )
     }
 
+    const openTerminal = (clusterData): void => {
+        setTerminalCluster(clusterData)
+        setShowTerminal(true)
+    }
+
+    const closeTerminal = (): void => {
+        setShowTerminal(false)
+    }
+
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
-            <div className="cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
+            <div
+                className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
+                    clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
+                }`}
+            >
                 <div className="cb-5 dc__ellipsis-right">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
@@ -157,6 +175,7 @@ export default function ClusterList() {
                 </div>
                 <div>{clusterData.cpu?.capacity}</div>
                 <div>{clusterData.memory?.capacity}</div>
+                <TerminalIcon className="cursor dc__visible-hover--child" onClick={() => openTerminal(clusterData)} />
             </div>
         )
     }
@@ -185,7 +204,10 @@ export default function ClusterList() {
                 {noResults ? (
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
-                    <div style={{ minHeight: 'calc(100vh - 125px)' }}>
+                    <div
+                        className="dc__overflow-scroll"
+                        style={{ height: `calc(${showTerminalModal ? '50vh' : '100vh'} - 125px)` }}
+                    >
                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
                             <div>Connection status</div>
@@ -199,6 +221,16 @@ export default function ClusterList() {
                     </div>
                 )}
             </div>
+            {showTerminalModal && terminalclusterData && (
+                <ClusterTerminal
+                    clusterId={terminalclusterData.id}
+                    clusterName={terminalclusterData.name}
+                    nodeList={terminalclusterData.nodeNames}
+                    closeTerminal={closeTerminal}
+                    clusterImageList={imageList}
+                    namespaceList={namespaceList[terminalclusterData.name]}
+                />
+            )}
         </div>
     )
 }
