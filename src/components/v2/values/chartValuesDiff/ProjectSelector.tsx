@@ -18,10 +18,11 @@ export default function ProjectModal({
     appName,
     onClose,
     appMetaInfo,
+    installedAppId,
     projectsList,
     getAppMetaInfoRes,
 }: ProjectSelectorTypes) {
-    console.log("appId", appId)
+
     const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
     const [submitting, setSubmitting] = useState(false)
@@ -89,6 +90,7 @@ export default function ProjectModal({
             appId: appId,
             appName: appName,
             teamId: selectedProject.value,
+            installedAppId: installedAppId ? installedAppId : 0
         }
 
         try {

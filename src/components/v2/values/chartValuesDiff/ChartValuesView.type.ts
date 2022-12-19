@@ -362,6 +362,7 @@ export interface ProjectSelectorTypes {
     appName: string
     onClose: () => void
     appMetaInfo: AppMetaInfo
+    installedAppId: number
     projectsList: ChartValuesOptionType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
 }
