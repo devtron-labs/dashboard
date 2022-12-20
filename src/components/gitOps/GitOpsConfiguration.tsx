@@ -289,9 +289,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let isValidUrl = this.isValidUrl()
         if (!isValidUrl) {
             this.setState({ isUrlValidationError: true })
+            this.setState({ validationStatus: VALIDATION_STATUS.DRY_RUN, saveLoading: false, validateLoading: false })
         } else {
             this.setState({ isUrlValidationError: false })  
         }
+
         if(!this.state.isUrlValidationError){
             this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true })
             let payload = {
@@ -355,6 +357,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let isValidUrl = this.isValidUrl()
         if (!isValidUrl) {
             this.setState({ isUrlValidationError: true })
+            this.setState({ validationStatus: VALIDATION_STATUS.DRY_RUN, saveLoading: false, validateLoading: false });
         } else {
             this.setState({ isUrlValidationError: false })  
         }
