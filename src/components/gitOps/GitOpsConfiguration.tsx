@@ -16,6 +16,8 @@ import './gitops.css';
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -29,6 +31,13 @@ const GitHost = {
     GITLAB: "https://gitlab.com/",
     AZURE_DEVOPS: 'https://dev.azure.com/',
     BITBUCKET_CLOUD: "https://bitbucket.org/"
+}
+
+const ShortGitHost = {
+    GITHUB: "github.com",
+    GITLAB: "gitlab.com",
+    AZURE_DEVOPS: 'dev.azure.com',
+    BITBUCKET_CLOUD: "bitbucket.org"
 }
 
 const GitLink = {
@@ -119,7 +128,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             validatedTime: "",
             validationError: [],
             validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
-            deleteRepoError: false
+            deleteRepoError: false,
+            isUrlValidationError: false
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -179,6 +189,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isError: isError,
             isFormEdited: false,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
+            isUrlValidationError: false,
         })
     }
 
@@ -247,52 +258,88 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         return isInvalid;
     }
-
-    saveGitOps() {
-        let isInvalid = this.isInvalid();
-        if (isInvalid) {
-            toast.error("Some Required Fields are missing");
-            return;
-        }
-        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true });
-        // removing substring after domain from hostUrl (and appending "/" in last)
+    trimHostUrl() {
         let trimmedHostUrlStr = this.state.form.host
         if (trimmedHostUrlStr) {
             try {
                 let trimmedHostUrl = new URL(trimmedHostUrlStr)
-                trimmedHostUrlStr = trimmedHostUrl.protocol + '//' + trimmedHostUrl.host + '/'
+                trimmedHostUrlStr = trimmedHostUrl.protocol + '//' + trimmedHostUrl.host + '/'            
             } catch (e) {}
         }
-        let payload = {
-            id: this.state.form.id,
-            provider: this.state.form.provider,
-            username: this.state.form.username,
-            host: trimmedHostUrlStr,
-            token: this.state.form.token,
-            gitLabGroupId: this.state.form.gitLabGroupId,
-            gitHubOrgId: this.state.form.gitHubOrgId,
-            azureProjectName: this.state.form.azureProjectName,
-            bitBucketWorkspaceId : this.state.form.bitBucketWorkspaceId,
-            bitBucketProjectKey : this.state.form.bitBucketProjectKey,
-            active: true,
+        if(trimmedHostUrlStr === ShortGitHost.GITHUB || trimmedHostUrlStr === ShortGitHost.GITLAB ||trimmedHostUrlStr === ShortGitHost.AZURE_DEVOPS ||trimmedHostUrlStr === ShortGitHost.BITBUCKET_CLOUD){
+            trimmedHostUrlStr = 'https://'+trimmedHostUrlStr+'/'
         }
-        let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload);
-        promise.then((response) => {
-            let resp = response.result
-            let errorMap = resp.stageErrorMap;
-            if (errorMap != null && Object.keys(errorMap).length == 0) {
-                this.props.handleChecklistUpdate('gitOps')
-                toast.success("Configuration validated and saved successfully");
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
-                this.fetchGitOpsConfigurationList();
-            } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
-                toast.error("Configuration validation failed");
+        DefaultGitOpsConfig.host = trimmedHostUrlStr
+    }
+    isValidUrl() {
+        let urlCheck = /[a-zA-Z0-9:\/]+\/$/.test(this.state.form.host)
+        
+        return urlCheck
+    }
+
+    saveGitOps() {
+        let isInvalid = this.isInvalid()
+        if (isInvalid) {
+            toast.error('Some Required Fields are missing')
+            return
+        }
+        // removing substring after domain from hostUrl (and appending "/" in last)
+        this.trimHostUrl()
+
+        let isValidUrl = this.isValidUrl()
+        if (!isValidUrl) {
+            this.setState({ isUrlValidationError: true })
+        } else {
+            this.setState({ isUrlValidationError: false })  
+        }
+        if(!this.state.isUrlValidationError){
+            this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true })
+            let payload = {
+                id: this.state.form.id,
+                provider: this.state.form.provider,
+                username: this.state.form.username,
+                host: this.state.form.host,
+                token: this.state.form.token,
+                gitLabGroupId: this.state.form.gitLabGroupId,
+                gitHubOrgId: this.state.form.gitHubOrgId,
+                azureProjectName: this.state.form.azureProjectName,
+                bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
+                bitBucketProjectKey: this.state.form.bitBucketProjectKey,
+                active: true,
             }
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
-        })
+        
+            let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload)
+        promise
+            .then((response) => {
+                let resp = response.result
+                let errorMap = resp.stageErrorMap
+                if (errorMap != null && Object.keys(errorMap).length == 0) {
+                    this.props.handleChecklistUpdate('gitOps')
+                    toast.success('Configuration validated and saved successfully')
+                    this.setState({
+                        validationStatus: VALIDATION_STATUS.SUCCESS,
+                        saveLoading: false,
+                        isFormEdited: false,
+                        deleteRepoError: resp.deleteRepoFailed,
+                    })
+                    this.fetchGitOpsConfigurationList()
+                } else {
+                    this.setState({
+                        validationStatus: VALIDATION_STATUS.FAILURE,
+                        saveLoading: false,
+                        isFormEdited: false,
+                        validationError: errorMap || [],
+                        deleteRepoError: resp.deleteRepoFailed,
+                    })
+                    toast.error('Configuration validation failed')
+                }
+            })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false })
+            })
+        }
+        
     }
 
     validateGitOps(tab) {
@@ -302,35 +349,47 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             toast.error("Some Required Fields are missing");
             return;
         }
-        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true, validateLoading: true });
-        let payload = {
-            id: this.state.form.id,
-            provider: this.state.form.provider,
-            username: this.state.form.username,
-            host: this.state.form.host,
-            token: this.state.form.token,
-            gitLabGroupId: this.state.form.gitLabGroupId,
-            gitHubOrgId: this.state.form.gitHubOrgId,
-            azureProjectName: this.state.form.azureProjectName,
-            bitBucketWorkspaceId : this.state.form.bitBucketWorkspaceId,
-            bitBucketProjectKey : this.state.form.bitBucketProjectKey,
-            active: true,
+        // removing substring after domain from hostUrl (and appending "/" in last)
+        this.trimHostUrl()
+
+        let isValidUrl = this.isValidUrl()
+        if (!isValidUrl) {
+            this.setState({ isUrlValidationError: true })
+        } else {
+            this.setState({ isUrlValidationError: false })  
         }
-        let promise = validateGitOpsConfiguration(payload);
-        promise.then((response) => {
-            let resp = response.result
-            let errorMap = resp.stageErrorMap;
-            if (errorMap != null && Object.keys(errorMap).length > 0) {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, validateLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
-                toast.error("Configuration validation failed");
-            } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, validateLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
-                toast.success("Configuration validated");
+        if(!this.state.isUrlValidationError){
+            this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true, validateLoading: true });
+            let payload = {
+                id: this.state.form.id,
+                provider: this.state.form.provider,
+                username: this.state.form.username,
+                host: this.state.form.host,
+                token: this.state.form.token,
+                gitLabGroupId: this.state.form.gitLabGroupId,
+                gitHubOrgId: this.state.form.gitHubOrgId,
+                azureProjectName: this.state.form.azureProjectName,
+                bitBucketWorkspaceId : this.state.form.bitBucketWorkspaceId,
+                bitBucketProjectKey : this.state.form.bitBucketProjectKey,
+                active: true,
             }
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code });
-        })
+        
+            let promise = validateGitOpsConfiguration(payload);
+            promise.then((response) => {
+                let resp = response.result
+                let errorMap = resp.stageErrorMap;
+                if (errorMap != null && Object.keys(errorMap).length > 0) {
+                    this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, validateLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
+                    toast.error("Configuration validation failed");
+                } else {
+                    this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, validateLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
+                    toast.success("Configuration validated");
+                }
+            }).catch((error) => {
+                showError(error);
+                this.setState({ view: ViewType.ERROR, statusCode: error.code });
+            })
+        }
     }
 
     getGitOpsOrgId = () => {
@@ -347,6 +406,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return 'gitHubOrgId'
         }
     }
+    handleHostURLLocation(value: string): void {
+        this.setState({
+            form: {
+                ...this.state.form,
+                host: value
+                
+            },
+        })
+    }
 
     render() {
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId();
@@ -359,106 +427,268 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
             </div>
         }
-        return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-            <h2 className="form__title">GitOps</h2>
-            <p className="form__subtitle">Devtron uses GitOps configuration to store kubernetes configuration files of applications.
-            <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}> Learn more about GitOps </a> </span></p>
-            <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20" autoComplete="off">
-                <div className="login__sso-flex">
-                    <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITHUB} gitops="GitHub" saveLoading={this.state.saveLoading} />
-                    <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.GITLAB} gitops="GitLab" saveLoading={this.state.saveLoading} />
-                    <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.AZURE_DEVOPS} gitops="Azure" saveLoading={this.state.saveLoading} />
-                    <GitProviderTab providerTab={this.state.providerTab} handleGitopsTab={this.handleGitopsTab} lastActiveGitOp={this.state.lastActiveGitOp} provider={GitProvider.BITBUCKET_CLOUD} gitops="Bitbucket Cloud" saveLoading={this.state.saveLoading} />
-                </div>
-                <GitInfoTab
-                    tab={this.state.providerTab}
-                    gitLink={this.state.providerTab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.providerTab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? GitLink.BITBUCKET_WORKSPACE : GitLink.GITHUB}
-                    gitProvider={this.state.providerTab === GitProvider.GITLAB ? "GitLab" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure" : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? "BitBucket" : "GitHub"}
-                    gitProviderGroupAlias={this.state.providerTab === GitProvider.GITLAB ? "group" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "project" : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? "workspace" : "organization"}
-               />
+        return (
+            <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                <h2 className="form__title">GitOps</h2>
+                <p className="form__subtitle">
+                    Devtron uses GitOps configuration to store kubernetes configuration files of applications.
+                    <span>
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className="dc__link"
+                            href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}
+                        >
+                            {' '}
+                            Learn more about GitOps{' '}
+                        </a>{' '}
+                    </span>
+                </p>
+                <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20" autoComplete="off">
+                    <div className="login__sso-flex">
+                        <GitProviderTab
+                            providerTab={this.state.providerTab}
+                            handleGitopsTab={this.handleGitopsTab}
+                            lastActiveGitOp={this.state.lastActiveGitOp}
+                            provider={GitProvider.GITHUB}
+                            gitops="GitHub"
+                            saveLoading={this.state.saveLoading}
+                        />
+                        <GitProviderTab
+                            providerTab={this.state.providerTab}
+                            handleGitopsTab={this.handleGitopsTab}
+                            lastActiveGitOp={this.state.lastActiveGitOp}
+                            provider={GitProvider.GITLAB}
+                            gitops="GitLab"
+                            saveLoading={this.state.saveLoading}
+                        />
+                        <GitProviderTab
+                            providerTab={this.state.providerTab}
+                            handleGitopsTab={this.handleGitopsTab}
+                            lastActiveGitOp={this.state.lastActiveGitOp}
+                            provider={GitProvider.AZURE_DEVOPS}
+                            gitops="Azure"
+                            saveLoading={this.state.saveLoading}
+                        />
+                        <GitProviderTab
+                            providerTab={this.state.providerTab}
+                            handleGitopsTab={this.handleGitopsTab}
+                            lastActiveGitOp={this.state.lastActiveGitOp}
+                            provider={GitProvider.BITBUCKET_CLOUD}
+                            gitops="Bitbucket Cloud"
+                            saveLoading={this.state.saveLoading}
+                        />
+                    </div>
+                    <GitInfoTab
+                        tab={this.state.providerTab}
+                        gitLink={
+                            this.state.providerTab === GitProvider.GITLAB
+                                ? GitLink.GITLAB
+                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                ? GitLink.AZURE_DEVOPS
+                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                ? GitLink.BITBUCKET_WORKSPACE
+                                : GitLink.GITHUB
+                        }
+                        gitProvider={
+                            this.state.providerTab === GitProvider.GITLAB
+                                ? 'GitLab'
+                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                ? 'Azure'
+                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                ? 'BitBucket'
+                                : 'GitHub'
+                        }
+                        gitProviderGroupAlias={
+                            this.state.providerTab === GitProvider.GITLAB
+                                ? 'group'
+                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                ? 'project'
+                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                ? 'workspace'
+                                : 'organization'
+                        }
+                    />
 
-                < ValidateForm
-                    id={this.state.form.id}
-                    onClickValidate={() => this.validateGitOps(this.state.providerTab)}
-                    validationError={this.state.validationError}
-                    validationStatus={this.state.validationStatus}
-                    configName="gitops "
-                    warning={this.state.deleteRepoError? warning : ""}
-                />
+                    <ValidateForm
+                        id={this.state.form.id}
+                        onClickValidate={() => this.validateGitOps(this.state.providerTab)}
+                        validationError={this.state.validationError}
+                        validationStatus={this.state.validationStatus}
+                        configName="gitops "
+                        warning={this.state.deleteRepoError ? warning : ''}
+                    />
 
-                <CustomInput autoComplete="off"
-                    value={this.state.form.host}
-                    onChange={(event) => this.handleChange(event, 'host')}
-                    name="Enter host"
-                    error={this.state.isError.host}
-                    label={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Organisation Url*" : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? "Bitbucket Host*" : "Git Host*"}
-                    tabIndex={1}
-                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
+                    <CustomInput
+                        autoComplete="off"
+                        value={this.state.form.host}
+                        onChange={(event) => this.handleChange(event, 'host')}
+                        name="Enter host"
+                        error={this.state.isError.host}
+                        label={
+                            this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                ? 'Azure DevOps Organisation Url* (Use http:// or https://)'
+                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                ? 'Bitbucket Host* (Use http:// or https://)'
+                                : 'Git Host* (Use http:// or https://)'
+                        }
+                        tabIndex={1}
+                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                    />
+                    {this.state.isUrlValidationError ? (
+                        <div className="flex fs-12 left pt-4">
+                            <div className="form__error">
+                                <Error className="form__icon form__icon--error fs-13" />
+                            This is not a Fully Qualified Domain Name(FQDN). 
+                            </div>
+                            Please Use: 
+                            {/* <div className="hosturl__autodetection flex fs-12 left pt-4"> */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => this.handleHostURLLocation(DefaultGitOpsConfig.host)}
+                                    className="hosturl__url fw-4 cg-5"
+                                >
+                                    {DefaultGitOpsConfig.host}
+                                </button>
+                            {/* </div> */}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
 
-                <div className="mt-16 ">
-                    {
-                        this.state.providerTab === GitProvider.BITBUCKET_CLOUD && <CustomInput autoComplete="off"
-                            value={this.state.form.bitBucketWorkspaceId}
-                            onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
+                    <div className="mt-16 ">
+                        {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                            <CustomInput
+                                autoComplete="off"
+                                value={this.state.form.bitBucketWorkspaceId}
+                                onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
+                                showLink={true}
+                                link={GitLink.BITBUCKET_WORKSPACE}
+                                linkText={'(How to create workspace in bitbucket?)'}
+                                name="Enter workspace ID"
+                                error={this.state.isError.bitBucketWorkspaceId}
+                                label={'Bitbucket Workspace ID*'}
+                                tabIndex={1}
+                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                            />
+                        )}
+                    </div>
+                    <div className="mt-16">
+                        <CustomInput
+                            autoComplete="off"
+                            value={this.state.form[key]}
+                            tabIndex={2}
+                            error={this.state.isError[key]}
                             showLink={true}
-                            link={GitLink.BITBUCKET_WORKSPACE}
-                            linkText={"(How to create workspace in bitbucket?)"}
-                            name="Enter workspace ID"
-                            error={this.state.isError.bitBucketWorkspaceId}
-                            label={"Bitbucket Workspace ID*"}
-                            tabIndex={1}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4" />
-                    }
-                </div>
-                <div className="mt-16">
-                    <CustomInput autoComplete="off" value={this.state.form[key]}
-                        tabIndex={2}
-                        error={this.state.isError[key]}
-                        showLink={true}
-                        link={this.state.providerTab === GitProvider.GITLAB ? GitLink.GITLAB : this.state.providerTab === GitProvider.AZURE_DEVOPS ? GitLink.AZURE_DEVOPS : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? GitLink.BITBUCKET_PROJECT : GitLink.GITHUB}
-                        linkText={this.state.providerTab === GitProvider.GITLAB ? "(How to create group in GitLab?)" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "(How to create project in Azure?)" : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? "(How to create project in bitbucket?)" : "(How to create organization in GitHub?)"}
-                        label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Group ID*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Project Name*" : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? "Bitbucket Project Key" : "GitHub Organisation Name*"}
-                        onChange={(event) => { this.handleChange(event, key); }}
-                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
-                </div>
-                {this.state.providerTab === GitProvider.BITBUCKET_CLOUD &&
-                <div className="mt-4 flex left">
-                   <InfoFill className="icon-dim-16" />
-                   <span className="ml-4 fs-11">If the project is not provided, the repository is automatically assigned to the oldest project in the workspace.</span>
-                </div>
-                }
-                <hr />
-                <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
-
-                <div className="form__row--two-third gitops__id mb-20 fs-13">
-                    <div>
-                        <CustomInput autoComplete="off"
-                            value={this.state.form.username}
-                            onChange={(event) => this.handleChange(event, 'username')}
-                            name="Enter username"
-                            error={this.state.isError.username}
-                            tabIndex={3}
-                            label={this.state.providerTab === GitProvider.GITLAB ? "GitLab Username*" : this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Username*" : this.state.providerTab === GitProvider.BITBUCKET_CLOUD ? "Bitbucket Username*" : "GitHub Username*"}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13" />
+                            link={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? GitLink.GITLAB
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                    ? GitLink.AZURE_DEVOPS
+                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? GitLink.BITBUCKET_PROJECT
+                                    : GitLink.GITHUB
+                            }
+                            linkText={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? '(How to create group in GitLab?)'
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                    ? '(How to create project in Azure?)'
+                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? '(How to create project in bitbucket?)'
+                                    : '(How to create organization in GitHub?)'
+                            }
+                            label={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? 'GitLab Group ID*'
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                    ? 'Azure DevOps Project Name*'
+                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? 'Bitbucket Project Key'
+                                    : 'GitHub Organisation Name*'
+                            }
+                            onChange={(event) => {
+                                this.handleChange(event, key)
+                            }}
+                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
+                        />
                     </div>
-                    <div>
-                        <ProtectedInput value={this.state.form.token}
-                            onChange={(event) => this.handleChange(event, 'token')}
-                            name="Enter token"
-                            tabIndex={4}
-                            error={this.state.isError.token}
-                            label={<>{this.state.providerTab === GitProvider.AZURE_DEVOPS ? "Azure DevOps Access Token* " : "Personal Access Token* "}<a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK} className="cursor fs-13 onlink">(Check permissions required for PAT)</a></>}
-                            labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13" />
-                    </div>
-                </div>
+                    {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                        <div className="mt-4 flex left">
+                            <InfoFill className="icon-dim-16" />
+                            <span className="ml-4 fs-11">
+                                If the project is not provided, the repository is automatically assigned to the oldest
+                                project in the workspace.
+                            </span>
+                        </div>
+                    )}
+                    <hr />
+                    <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
 
-                <div className="form__buttons">
-                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.saveGitOps() }} tabIndex={5} className={`cta ${this.state.saveLoading ? 'cursor-not-allowed': '' }`}>
-                    {this.state.saveLoading && !this.state.validateLoading ? <Progressing /> : "Save"}
-                    </button>
-                </div>
-            </form>
-        </section>
+                    <div className="form__row--two-third gitops__id mb-20 fs-13">
+                        <div>
+                            <CustomInput
+                                autoComplete="off"
+                                value={this.state.form.username}
+                                onChange={(event) => this.handleChange(event, 'username')}
+                                name="Enter username"
+                                error={this.state.isError.username}
+                                tabIndex={3}
+                                label={
+                                    this.state.providerTab === GitProvider.GITLAB
+                                        ? 'GitLab Username*'
+                                        : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                        ? 'Azure DevOps Username*'
+                                        : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'Bitbucket Username*'
+                                        : 'GitHub Username*'
+                                }
+                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
+                            />
+                        </div>
+                        <div>
+                            <ProtectedInput
+                                value={this.state.form.token}
+                                onChange={(event) => this.handleChange(event, 'token')}
+                                name="Enter token"
+                                tabIndex={4}
+                                error={this.state.isError.token}
+                                label={
+                                    <>
+                                        {this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                            ? 'Azure DevOps Access Token* '
+                                            : 'Personal Access Token* '}
+                                        <a
+                                            target="_blank"
+                                            href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK}
+                                            className="cursor fs-13 onlink"
+                                        >
+                                            (Check permissions required for PAT)
+                                        </a>
+                                    </>
+                                }
+                                labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form__buttons">
+                        <button
+                            type="submit"
+                            disabled={this.state.saveLoading}
+                            onClick={(e) => {
+                                e.preventDefault()
+                                this.saveGitOps()
+                            }}
+                            tabIndex={5}
+                            className={`cta ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
+                        >
+                            {this.state.saveLoading && !this.state.validateLoading ? <Progressing /> : 'Save'}
+                        </button>
+                    </div>
+                </form>
+            </section>
+        )
     }
 }
 
