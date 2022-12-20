@@ -27,16 +27,8 @@ import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
 import '../charts/modal/DeployChart.scss'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../common/header/PageHeader'
-
-export enum OutputObjectTabs {
-    OUTPUT = 'Output',
-    IMPACTED_OBJECTS = 'Impacted objects',
-}
-
-const STATUS = {
-    ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
-    EMPTY_IMPACTED: 'We could not find any matching devtron applications.',
-}
+import { BULK_EDIT_MESSAGING, OutputObjectTabs, STATUS } from './constants'
+import { BlockList } from 'net'
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
     return (
@@ -115,14 +107,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
                     <Question className="icon-dim-16 mr-13 fcv-5" />
                     <div>
-                        Run scripts to bulk edit configurations for multiple devtron components.
+                        {BULK_EDIT_MESSAGING.HEADER_TEXT}
                         <a
                             className="dc__link"
                             href={DOCUMENTATION.BULK_UPDATE}
                             rel="noreferrer noopener"
                             target="_blank"
                         >
-                            Learn more
+                            {BULK_EDIT_MESSAGING.HEADER_LINK_TEXT}
                         </a>
                     </div>
                     <Close
@@ -227,14 +219,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <span>
                         <PlayButton className="flex icon-dim-16 mr-8 " />
                     </span>
-                    <div>Run</div>
+                    <div>{BULK_EDIT_MESSAGING.RUN}</div>
                 </button>
                 <button
                     className="fs-12 en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12"
                     style={{ maxHeight: '32px' }}
                     onClick={() => this.handleShowImpactedObjectButton()}
                 >
-                    Show Impacted Objects
+                    {BULK_EDIT_MESSAGING.SHOW_IMPACTED_OBJECTS}
                 </button>
                 {!this.state.showExamples ? (
                     <div
@@ -242,7 +234,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         onClick={() => this.setState({ showExamples: true })}
                         style={{ margin: 'auto', marginRight: '0' }}
                     >
-                        See Samples
+                        {BULK_EDIT_MESSAGING.SEE_SAMPLES}
                     </div>
                 ) : null}
             </div>
@@ -324,11 +316,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    *CONFIGMAPS: <br />
+                    {BULK_EDIT_MESSAGING.CONFIGMAPS}<br />
                     <br />
                 </div>
                 <div>
-                    #Message: <br />
+                    {BULK_EDIT_MESSAGING.MESSAGE_TEXT}<br />
                     <br />
                     {this.state.outputResult.configMap?.message?.map((elm) => {
                         return (
@@ -342,11 +334,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 --------------------------
                 <br />
                 <div>
-                    #Failed Operations:
+                    {BULK_EDIT_MESSAGING.FAILED_OPERATION}
                     <br />
                     <br />
                     {this.state.outputResult.configMap?.failure == null ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.outputResult.configMap?.failure.map((elm) => {
@@ -358,10 +350,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 --------------------------
                 <br />
                 <div>
-                    #Successful Operations: <br />
+                    {BULK_EDIT_MESSAGING.SUCCESSFUL_OPERATIONS}<br />
                     <br />
                     {this.state.outputResult.configMap?.successful == null ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.outputResult.configMap?.successful.map((elm) => {
@@ -378,10 +370,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
         return (
             <div>
-                App Id: {DTOutputKeys.appId} <br />
-                App Name: {DTOutputKeys.appName} <br />
-                Environment Id: {DTOutputKeys.envId} <br />
-                Message: {DTOutputKeys.message} <br />
+                {BULK_EDIT_MESSAGING.APP_ID}{DTOutputKeys.appId} <br />
+                {BULK_EDIT_MESSAGING.APP_NAME}{DTOutputKeys.appName} <br />
+                {BULK_EDIT_MESSAGING.ENV_ID}{DTOutputKeys.envId} <br />
+                {BULK_EDIT_MESSAGING.MESSAGE}{DTOutputKeys.message} <br />
                 <br />
             </div>
         )
@@ -390,11 +382,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOutputKeys) => {
         return (
             <div>
-                App Id: {CMandSecretOutputKeys.appId} <br />
-                App Name: {CMandSecretOutputKeys.appName} <br />
-                Environment Id: {CMandSecretOutputKeys.envId} <br />
-                Names : {CMandSecretOutputKeys.names.join(', ')} <br />
-                Message: {CMandSecretOutputKeys.message} <br />
+                {BULK_EDIT_MESSAGING.APP_ID}{CMandSecretOutputKeys.appId} <br />
+                {BULK_EDIT_MESSAGING.APP_NAME}{CMandSecretOutputKeys.appName} <br />
+                {BULK_EDIT_MESSAGING.ENV_ID}{CMandSecretOutputKeys.envId} <br />
+                {BULK_EDIT_MESSAGING.NAMES}{CMandSecretOutputKeys.names.join(', ')} <br />
+                {BULK_EDIT_MESSAGING.MESSAGE}{CMandSecretOutputKeys.message} <br />
                 <br />
             </div>
         )
@@ -403,10 +395,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretImpactedObjects) => {
         return (
             <div>
-                App Id: {CMandSecretImpactedObject.appId} <br />
-                App Name: {CMandSecretImpactedObject.appName} <br />
-                Environment Id: {CMandSecretImpactedObject.envId} <br />
-                Names : {CMandSecretImpactedObject.names.join(', ')} <br />
+                {BULK_EDIT_MESSAGING.APP_ID}{CMandSecretImpactedObject.appId} <br />
+                {BULK_EDIT_MESSAGING.APP_NAME}{CMandSecretImpactedObject.appName} <br />
+                {BULK_EDIT_MESSAGING.ENV_ID}{CMandSecretImpactedObject.envId} <br />
+                {BULK_EDIT_MESSAGING.NAMES}{CMandSecretImpactedObject.names.join(', ')} <br />
                 <br />
             </div>
         )
@@ -416,11 +408,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    *DEPLOYMENT TEMPLATE: <br />
+                    {BULK_EDIT_MESSAGING.DEPLOYMENT_TEMPLATE}<br />
                     <br />
                 </div>
                 <div>
-                    #Message: <br />
+                {BULK_EDIT_MESSAGING.MESSAGE_TEXT}<br />
+<br />
                     <br />
                     {this.state.outputResult.deploymentTemplate?.message?.map((elm) => {
                         return (
@@ -434,11 +427,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 --------------------------
                 <br />
                 <div>
-                    #Failed Operations:
+                    {BULK_EDIT_MESSAGING.FAILED_OPERATION}
                     <br />
                     <br />
                     {this.state.outputResult.deploymentTemplate?.failure == null ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
@@ -451,10 +444,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 --------------------------
                 <br />
                 <div>
-                    #Successful Operations: <br />
+                    {BULK_EDIT_MESSAGING.SUCCESSFUL_OPERATIONS}<br />
                     <br />
                     {this.state.outputResult.deploymentTemplate?.successful == null ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
@@ -472,11 +465,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    *SECRETS: <br />
+                    {BULK_EDIT_MESSAGING.SECRETS_TEXT}<br />
                     <br />
                 </div>
                 <div>
-                    #Message: <br />
+                    {BULK_EDIT_MESSAGING.MESSAGE_TEXT}<br />
                     <br />
                     {this.state.outputResult.secret?.message?.map((elm) => {
                         return (
@@ -490,11 +483,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 --------------------------
                 <br />
                 <div>
-                    #Failed Operations:
+                    {BULK_EDIT_MESSAGING.FAILED_OPERATION}
                     <br />
                     <br />
                     {this.state.outputResult.secret?.failure == null ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.outputResult.secret?.failure.map((elm) => {
@@ -507,10 +500,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 --------------------------
                 <br />
                 <div>
-                    #Successful Operations: <br />
+                    {BULK_EDIT_MESSAGING.SUCCESSFUL_OPERATIONS}<br />
                     <br />
                     {this.state.outputResult.secret?.successful == null ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.outputResult.secret?.successful.map((elm) => {
@@ -548,9 +541,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    *CONFIGMAPS: <br /> <br />
+                    {BULK_EDIT_MESSAGING.CONFIGMAPS}<br /> <br />
                     {this.state.impactedObjects.configMap.length === 0 ? (
-                        <>No Result Found </>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND} </>
                     ) : (
                         <>
                             {this.state.impactedObjects.configMap.map((elm) => {
@@ -568,17 +561,17 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    *DEPLOYMENT TEMPLATE: <br /> <br />
+                    {BULK_EDIT_MESSAGING.DEPLOYMENT_TEMPLATE}<br /> <br />
                     {this.state.impactedObjects.deploymentTemplate.length === 0 ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.impactedObjects.deploymentTemplate.map((elm) => {
                                 return (
                                     <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
+                                        {BULK_EDIT_MESSAGING.APP_ID}{elm.appId} <br />
+                                        {BULK_EDIT_MESSAGING.APP_NAME}{elm.appName} <br />
+                                        {BULK_EDIT_MESSAGING.ENV_ID}{elm.envId} <br />
                                         <br />
                                     </div>
                                 )
@@ -595,9 +588,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    *SECRETS: <br /> <br />
+                    {BULK_EDIT_MESSAGING.SECRETS_TEXT}<br /> <br />
                     {this.state.impactedObjects.secret.length === 0 ? (
-                        <>No Result Found</>
+                        <>{BULK_EDIT_MESSAGING.NO_RESULT_FOUND}</>
                     ) : (
                         <>
                             {this.state.impactedObjects.secret.map((elm) => {
