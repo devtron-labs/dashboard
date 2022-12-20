@@ -271,6 +271,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         DefaultGitOpsConfig.host = trimmedHostUrlStr
     }
+
     isValidUrl() {
         let urlCheck = /[a-zA-Z0-9:\/]+\/$/.test(this.state.form.host)
         
@@ -288,15 +289,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         let isValidUrl = this.isValidUrl()
         if (!isValidUrl) {
-            this.setState({ isUrlValidationError: true })
-            this.setState({ validationStatus: VALIDATION_STATUS.DRY_RUN, saveLoading: false, validateLoading: false })
-        } else {
-            this.setState({ isUrlValidationError: false })  
-        }
-
-        if(!this.state.isUrlValidationError){
-            this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true })
-            let payload = {
+            this.setState({
+                isUrlValidationError: true,
+                validationStatus: VALIDATION_STATUS.DRY_RUN,
+                saveLoading: false,
+                validateLoading: false,
+            })
+        }else {
+            this.setState({ isUrlValidationError: false, validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true })
+            const payload = {
                 id: this.state.form.id,
                 provider: this.state.form.provider,
                 username: this.state.form.username,
@@ -356,14 +357,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         let isValidUrl = this.isValidUrl()
         if (!isValidUrl) {
-            this.setState({ isUrlValidationError: true })
-            this.setState({ validationStatus: VALIDATION_STATUS.DRY_RUN, saveLoading: false, validateLoading: false });
+            this.setState({
+                isUrlValidationError: true,
+                validationStatus: VALIDATION_STATUS.DRY_RUN,
+                saveLoading: false,
+                validateLoading: false,
+            })
         } else {
-            this.setState({ isUrlValidationError: false })  
-        }
-        if(!this.state.isUrlValidationError){
-            this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true, validateLoading: true });
-            let payload = {
+            this.setState({ isUrlValidationError: false, validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true, validateLoading: true })
+            const payload = {
                 id: this.state.form.id,
                 provider: this.state.form.provider,
                 username: this.state.form.username,
@@ -372,26 +374,40 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 gitLabGroupId: this.state.form.gitLabGroupId,
                 gitHubOrgId: this.state.form.gitHubOrgId,
                 azureProjectName: this.state.form.azureProjectName,
-                bitBucketWorkspaceId : this.state.form.bitBucketWorkspaceId,
-                bitBucketProjectKey : this.state.form.bitBucketProjectKey,
+                bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
+                bitBucketProjectKey: this.state.form.bitBucketProjectKey,
                 active: true,
             }
-        
-            let promise = validateGitOpsConfiguration(payload);
-            promise.then((response) => {
-                let resp = response.result
-                let errorMap = resp.stageErrorMap;
-                if (errorMap != null && Object.keys(errorMap).length > 0) {
-                    this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, validateLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
-                    toast.error("Configuration validation failed");
-                } else {
-                    this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, validateLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
-                    toast.success("Configuration validated");
-                }
-            }).catch((error) => {
-                showError(error);
-                this.setState({ view: ViewType.ERROR, statusCode: error.code });
-            })
+
+            validateGitOpsConfiguration(payload)
+                .then((response) => {
+                    let resp = response.result
+                    let errorMap = resp.stageErrorMap
+                    if (errorMap != null && Object.keys(errorMap).length > 0) {
+                        this.setState({
+                            validationStatus: VALIDATION_STATUS.FAILURE,
+                            saveLoading: false,
+                            validateLoading: false,
+                            isFormEdited: false,
+                            validationError: errorMap || [],
+                            deleteRepoError: resp.deleteRepoFailed,
+                        })
+                        toast.error('Configuration validation failed')
+                    } else {
+                        this.setState({
+                            validationStatus: VALIDATION_STATUS.SUCCESS,
+                            saveLoading: false,
+                            validateLoading: false,
+                            isFormEdited: false,
+                            deleteRepoError: resp.deleteRepoFailed,
+                        })
+                        toast.success('Configuration validated')
+                    }
+                })
+                .catch((error) => {
+                    showError(error)
+                    this.setState({ view: ViewType.ERROR, statusCode: error.code })
+                })
         }
     }
 
@@ -538,9 +554,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                     />
-                    {this.state.isUrlValidationError ? (
+                    {this.state.isUrlValidationError && this.state.form.host.length  ? (
                         <div className="flex fs-12 left pt-4">
-                            <div className="form__error">
+                            <div className="form__error mr-4">
                                 <Error className="form__icon form__icon--error fs-13" />
                             This is not a Fully Qualified Domain Name(FQDN). 
                             </div>
@@ -549,7 +565,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 <button
                                     type="button"
                                     onClick={(e) => this.handleHostURLLocation(DefaultGitOpsConfig.host)}
-                                    className="hosturl__url fw-4 cg-5"
+                                    className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
                                 >
                                     {DefaultGitOpsConfig.host}
                                 </button>
