@@ -667,4 +667,12 @@ export const MESSAGING_UI = {
     FETCHING_EVENTS: 'Fetching events',
     MANIFEST_NOT_AVAILABLE: 'Manifest not available',
     FETCHING_MANIFEST: 'Fetching manifest',
+    CANCEL: 'Cancel'
+}
+
+export const VALIDATION_MESSAGING = {
+    REQUIRED_FIELD_TEXT: "This is a required field",
+    CHARACTER_REQUIRED: "Atleast 3 characters required",
+    CHARACTER_VALIDATION_MESSAGE: "Max 50 characters allowed; Start and end with lowercase; Use (a-z), (0-9), (-), (_)",
+    MAX_350_CHAR_ALLOWED: "Max 350 characters allowed"
 }

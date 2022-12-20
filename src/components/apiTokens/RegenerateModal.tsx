@@ -9,6 +9,7 @@ import { RegenerateModalType, TokenResponseType } from './authorization.type'
 import { updateGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
+import { API_LIST_MESSAGING } from './constants'
 
 function RegeneratedModal({
     close,
@@ -53,7 +54,7 @@ function RegeneratedModal({
         return (
             <div className="modal__header p-16 dc__border-bottom w-100 mb-0">
                 <h2 className="modal__title fs-16 flex dc__content-space w-100">
-                    <span>Regenerate API token</span>
+                    <span>{API_LIST_MESSAGING.REGENERATE_API_TOKEN}</span>
                     <button type="button" className=" dc__transparent" onClick={close}>
                         <Close className="icon-dim-24" />
                     </button>
@@ -108,7 +109,7 @@ function RegeneratedModal({
                 {renderModalHeader()}
                 <div className="p-20 w-100">
                     <InfoColourBar
-                        message="Submitting this form will generate a new token. Be aware that any scripts or applications using the current token will need to be updated."
+                        message={API_LIST_MESSAGING.SUBMIT_TOKEN_TEXT}
                         classname="warn"
                         Icon={Warn}
                         iconClass="warning-icon"
@@ -124,7 +125,7 @@ function RegeneratedModal({
                     {selectedExpirationDate.label === 'Custom' && invalidCustomDate && (
                         <span className="form__error flexbox-imp flex-align-center">
                             <Warn className="form__icon--error icon-dim-16 mr-4" />
-                            Custom expiration can't be blank. Please select a date.
+                            {API_LIST_MESSAGING.SELECT_DATE}
                         </span>
                     )}
                 </div>
@@ -132,7 +133,7 @@ function RegeneratedModal({
                     loader={loader}
                     onCancel={() => setShowRegeneratedModal(false)}
                     onSave={handleRegenrateToken}
-                    buttonText="Regenerate Token"
+                    buttonText={API_LIST_MESSAGING.REGENERATE_TOKEN}
                 />
             </div>
         </VisibleModal>

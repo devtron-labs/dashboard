@@ -1,6 +1,8 @@
 import React from 'react'
+import { MESSAGING_UI } from '../../config'
 import { ButtonWithLoader } from '../common'
 import { GenerateActionButtonType } from './authorization.type'
+import { API_LIST_MESSAGING } from './constants'
 
 function GenerateActionButton({
     loader,
@@ -20,7 +22,7 @@ function GenerateActionButton({
                     isLoading={false}
                     loaderColor="white"
                 >
-                    Delete token
+                    {API_LIST_MESSAGING.DELETE_TOKEN}
                 </ButtonWithLoader>
             )}
             <div className="flex">
@@ -31,7 +33,7 @@ function GenerateActionButton({
                     isLoading={false}
                     loaderColor="white"
                 >
-                    Cancel
+                    {MESSAGING_UI.CANCEL}
                 </ButtonWithLoader>
                 <ButtonWithLoader
                     rootClassName="flex cta h-36"

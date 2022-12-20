@@ -11,17 +11,19 @@ import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
 import EmptyState from '../EmptyState/EmptyState'
+import { API_LIST_MESSAGING } from './constants'
+import { EmptyStateMessaging } from '../../config/constantMessaging'
 
 function NoMatchingResults() {
     return (
         <EmptyState>
             <EmptyState.Image>
-                <img src={NoResults} width="250" height="200" alt="No matching results" />
+                <img src={NoResults} width="250" height="200" alt={EmptyStateMessaging.NoMatchingResults} />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
+                <h2 className="fs-16 fw-4 c-9">{EmptyStateMessaging.NoMatchingResults}</h2>
             </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn't find any matching token</EmptyState.Subtitle>
+            <EmptyState.Subtitle>{EmptyStateMessaging.NoMatchingTokens}</EmptyState.Subtitle>
         </EmptyState>
     )
 }
@@ -41,21 +43,21 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     }
     return (
         <div>
-            <div className="cn-9 fw-6 fs-16">API tokens</div>
-            <p className="fs-12 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
+            <div className="cn-9 fw-6 fs-16">{API_LIST_MESSAGING.API_TOKEN_TITLE}</div>
+            <p className="fs-12 fw-4">{API_LIST_MESSAGING.API_TOKEN_SUBTITLE}</p>
             <div className="flex dc__content-space mb-16">
                 <button className="flex cta h-32" onClick={() => handleGenerateRowActionButton('create')}>
-                    Generate new token
+                    {API_LIST_MESSAGING.API_TOKEN_BUTTON}
                 </button>
                 {renderSearchToken()}
             </div>
             <div className="api-token__list en-2 bw-1 bcn-0 br-8">
                 <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                     <div></div>
-                    <div>Name</div>
-                    <div>Last Used On</div>
-                    <div>Last used by Ip add.</div>
-                    <div>Expires on</div>
+                    <div>{API_LIST_MESSAGING.ROW_NAME}</div>
+                    <div>{API_LIST_MESSAGING.ROW_LAST_USED}</div>
+                    <div>{API_LIST_MESSAGING.ROW_LAST_USED_BY_IP}</div>
+                    <div>{API_LIST_MESSAGING.ROW_EXPIRES_ON}</div>
                     <div></div>
                 </div>
                 {!tokenList || tokenList.length === 0 ? (

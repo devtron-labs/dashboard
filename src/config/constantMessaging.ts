@@ -38,3 +38,9 @@ export const enum DeleteComponentsName {
 }
 
 //DELETE COMPONENT ENDS
+
+export const enum EmptyStateMessaging {
+    NoMatchingResults = "No matching results",
+    NoMatchingTokens = "We couldn't find any matching token",
+    NO_INFO_FOR_ADMIN = "Information on this page is available only to superadmin users."
+}

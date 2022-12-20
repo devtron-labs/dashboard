@@ -1,0 +1,45 @@
+export const API_TOKEN_MESSAGING = {
+    GENERATE_TOKEN_TITLE: 'Generate a token to access the Devtron API',
+    GENERATE_TOKEN_SUBTITLE:
+        'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.',
+    GENERATE_TOKEN_BUTTON: 'Generate new token',
+}
+
+export const API_LIST_MESSAGING = {
+    API_TOKEN_TITLE: "API tokens",
+    API_TOKEN_SUBTITLE: "Tokens you have generated that can be used to access the Devtron API.",
+    API_TOKEN_BUTTON: "Generate new token",
+    ROW_NAME: "Name",
+    ROW_LAST_USED: "Last Used On",
+    ROW_LAST_USED_BY_IP: "Last used by Ip add.",
+    ROW_EXPIRES_ON: "Expires on",
+    NEW_API_TOKEN: "/ New API token",
+    API_TOKEN_TEXT:
+    "API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.",
+    DESCRIPTION: "Description",
+    SELECT_DATE: "Custom expiration can't be blank. Please select a date.",
+    TOKEN_DESCRIPTION: "Token description:",
+    NO_API_ACCESS_TEXT: "Any applications or scripts using this token will no longer be able to access the Devtron API.",
+    DELETE_TOKEN_TEXT: "You cannot undo this action. Are you sure you want to delete this token?",
+    REGENERATE_TOKEN: 'Regenerate token',
+    REGENERATE_TEXT: "To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated.",
+    TOKEN_EXPIRED: "This token expired on",
+    TOKEN_EXPIRES: "This token expires on",
+    NO_EXPIRATION_DATE: "This token has no expiration date.",
+    EDIT_API_TOKEN: "/ Edit API token",
+    EDIT_API_TEXT: "API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git over HTTPS, or can be used to authenticate to the API over Basic Authentication.",
+    MAX_30_CHAR: "Max 350 characters allowed.",
+    TOKEN: "token",
+    EXPIRATION: "Expiration",
+    SET_EXPIRATION: "To set a new expiration date you must",
+    SET_EXPIRATION_LINK: "regenerate the token.",
+    TOKEN_WILL_EXPIRE_ON: "This token will expire on",
+    TOKEN_WILL_NEVER_EXPIRE: "The token will never expire!",
+    NO_EXPIRATION_DATE_MESSAGE: "Devtron strongly recommends that you set an expiration date for your token to help keep your information secure.",
+    DELETE_TOKEN: "Delete token",
+    API_TOKEN: "API token",
+    COPY_TOKEN: "Copy token",
+    GROUP_PERMISSION: "Group permissions",
+    REGENERATE_API_TOKEN: "Regenerate API token",
+    SUBMIT_TOKEN_TEXT: "Submitting this form will generate a new token. Be aware that any scripts or applications using the current token will need to be updated."
+}

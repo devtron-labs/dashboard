@@ -6,6 +6,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { GenerateTokenModalType } from './authorization.type'
 import Tippy from '@tippyjs/react'
+import { API_LIST_MESSAGING } from './constants'
 
 function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) {
     const [copied, setCopied] = useState(false)
@@ -38,7 +39,7 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
 
                 <div className="modal__header ">
                     <h2 className="modal__title fs-16">
-                        API token {`${isRegenerationModal ? 'regenerated' : 'generated'}`}
+                        {API_LIST_MESSAGING.API_TOKEN} {`${isRegenerationModal ? 'regenerated' : 'generated'}`}
                     </h2>
                 </div>
                 <div
@@ -60,7 +61,7 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
                 >
                     <button className="flex cta mt-20 mb-20" onClick={handleCopyToClipboard}>
                         <Clipboard className="icon-dim-16" />
-                        &nbsp; Copy token
+                        &nbsp; {API_LIST_MESSAGING.COPY_TOKEN}
                     </button>
                 </Tippy>
             </div>

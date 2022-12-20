@@ -28,6 +28,7 @@ import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
+import { API_LIST_MESSAGING } from './constants'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -209,13 +210,12 @@ function CreateAPIToken({
         <>
             <div className="cn-9 fw-6 fs-16">
                 <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                    API tokens
-                </span>{' '}
-                / New API token
+                    {API_LIST_MESSAGING.API_TOKEN_TITLE}
+                </span> 
+                {API_LIST_MESSAGING.NEW_API_TOKEN}
             </div>
             <p className="fs-12 fw-4">
-                API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for
-                programmatic access to API.
+                {API_LIST_MESSAGING.API_TOKEN_TEXT}
             </p>
 
             <div className="bcn-0 br-8 en-2 bw-1">
@@ -223,7 +223,7 @@ function CreateAPIToken({
                     <div>
                         <label className="form__row w-400">
                             <span className="form__label">
-                                Name <span className="cr-5">*</span>
+                                {API_LIST_MESSAGING.ROW_NAME} <span className="cr-5">*</span>
                             </span>
                             <input
                                 tabIndex={1}
@@ -243,7 +243,7 @@ function CreateAPIToken({
                             )}
                         </label>
                         <label className="form__row">
-                            <span className="form__label">Description</span>
+                            <span className="form__label">{API_LIST_MESSAGING.DESCRIPTION}</span>
                             <textarea
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
@@ -271,7 +271,7 @@ function CreateAPIToken({
                             {formData.dateType === 'Custom' && formDataErrorObj.invalidCustomDate && (
                                 <span className="form__error">
                                     <Error className="form__icon form__icon--error" />
-                                    Custom expiration can't be blank. Please select a date.
+                                    {API_LIST_MESSAGING.SELECT_DATE}
                                 </span>
                             )}
                         </label>

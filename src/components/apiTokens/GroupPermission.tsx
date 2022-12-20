@@ -13,6 +13,7 @@ import { GroupRow, useUserGroupContext } from '../userGroups/UserGroup'
 import Select from 'react-select'
 import { OptionType } from '../app/types'
 import { ChartGroupPermissionsFilter, CreateUser, DirectPermissionsRoleFilter } from '../userGroups/userGroups.types'
+import { API_LIST_MESSAGING } from './constants'
 
 function GroupPermission({
     userData,
@@ -57,7 +58,7 @@ function GroupPermission({
 
     return (
         <>
-            <div className="cn-9 fs-13 mt-10 fw-4 mb-6">Group permissions</div>
+            <div className="cn-9 fs-13 mt-10 fw-4 mb-6">{API_LIST_MESSAGING.GROUP_PERMISSION}</div>
             <Select
                 placeholder="Select permission groups"
                 value={userGroups}

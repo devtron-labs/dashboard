@@ -11,6 +11,8 @@ import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './authorization.type'
+import { API_TOKEN_MESSAGING } from './constants'
+import { EmptyStateMessaging } from '../../config/constantMessaging'
 
 function ApiTokens() {
     const { path } = useRouteMatch()
@@ -186,15 +188,14 @@ function ApiTokens() {
                         <img src={emptyGeneratToken} alt="Empty api token links" />
                     </EmptyState.Image>
                     <EmptyState.Title>
-                        <h4 className="title">Generate a token to access the Devtron API</h4>
+                        <h4 className="title">{API_TOKEN_MESSAGING.GENERATE_TOKEN_TITLE}</h4>
                     </EmptyState.Title>
                     <EmptyState.Subtitle>
-                        API tokens are like ordinary OAuth access tokens. They can be used instead of username and
-                        password for programmatic access to API.
+                        {API_TOKEN_MESSAGING.GENERATE_TOKEN_SUBTITLE}
                     </EmptyState.Subtitle>
                     <EmptyState.Button>
                         <button className="flex cta h-32" onClick={redirectToCreate}>
-                            Generate new token
+                            {API_TOKEN_MESSAGING.GENERATE_TOKEN_BUTTON}
                         </button>
                     </EmptyState.Button>
                 </EmptyState>
@@ -209,7 +210,7 @@ function ApiTokens() {
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenManager
                     code={errorStatusCode}
-                    subtitle="Information on this page is available only to superadmin users."
+                    subtitle={EmptyStateMessaging.NO_INFO_FOR_ADMIN}
                 />
             </div>
         )

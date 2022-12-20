@@ -3,6 +3,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { DeleteDialog, showError } from '../common'
 import { deleteUser } from '../userGroups/userGroup.service'
+import { API_LIST_MESSAGING } from './constants'
 import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({
@@ -53,16 +54,16 @@ const DeleteAPITokenModal = ({
             <DeleteDialog.Description>
                 {tokenData.description && (
                     <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4 dc__break-word">
-                        {tokenData.description && <span className="fw-6">Token description:</span>}
+                        {tokenData.description && <span className="fw-6">{API_LIST_MESSAGING.TOKEN_DESCRIPTION}</span>}
                         <br />
                         <span>{tokenData.description}</span>
                     </p>
                 )}
                 <p className="fs-14 cn-7 lh-20">
-                    Any applications or scripts using this token will no longer be able to access the Devtron API.
+                    {API_LIST_MESSAGING.NO_API_ACCESS_TEXT}
                 </p>
                 <p className="fs-14 cn-7 lh-20">
-                    You cannot undo this action. Are you sure you want to delete this token?
+                    {API_LIST_MESSAGING.DELETE_TOKEN_TEXT}
                 </p>
             </DeleteDialog.Description>
         </DeleteDialog>

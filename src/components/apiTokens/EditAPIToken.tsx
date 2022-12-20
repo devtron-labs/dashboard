@@ -28,6 +28,7 @@ import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { API_LIST_MESSAGING } from './constants'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -86,7 +87,7 @@ function EditAPIToken({
                 className="cr-5 cursor flexbox top fw-6"
                 onClick={() => setShowRegeneratedModal(true)}
             >
-                Regenerate token
+                {API_LIST_MESSAGING.REGENERATE_TOKEN}
             </span>
         )
     }
@@ -94,7 +95,7 @@ function EditAPIToken({
     const renderRegenerateInfoBar = () => {
         return (
             <InfoColourBar
-                message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
+                message={API_LIST_MESSAGING.REGENERATE_TEXT}
                 classname="info_bar m-20"
                 Icon={InfoIcon}
                 iconClass="icon-dim-20"
@@ -192,17 +193,17 @@ function EditAPIToken({
         if (isTokenExpired(editData.expireAtInMs)) {
             return (
                 <span className="cr-5">
-                    This token expired on&nbsp;
+                    {API_LIST_MESSAGING.TOKEN_EXPIRED}&nbsp;
                     {moment(editData.expireAtInMs).format(MomentDateFormat)}.
                 </span>
             )
         } else if (editData.expireAtInMs === 0) {
-            return <span>This token has no expiration date.</span>
+            return <span>{API_LIST_MESSAGING.NO_EXPIRATION_DATE}</span>
         }
 
         return (
             <span>
-                This token expires on&nbsp;
+                {API_LIST_MESSAGING.TOKEN_EXPIRES}&nbsp;
                 {moment(editData.expireAtInMs).format(MomentDateFormat)}.
             </span>
         )
@@ -228,13 +229,12 @@ function EditAPIToken({
         <div className="fs-13 fw-4" style={{ minHeight: 'calc(100vh - 235px)' }}>
             <div className="cn-9 fw-6 fs-16">
                 <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                    API tokens
+                    {API_LIST_MESSAGING.API_TOKEN_TITLE}
                 </span>{' '}
-                / Edit API token
+                {API_LIST_MESSAGING.EDIT_API_TOKEN}
             </div>
             <p className="fs-12 fw-4">
-                API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
-                over HTTPS, or can be used to authenticate to the API over Basic Authentication.
+                {API_LIST_MESSAGING.EDIT_API_TEXT}
             </p>
 
             <div className="bcn-0 br-8 en-2 bw-1">
@@ -242,11 +242,11 @@ function EditAPIToken({
                 <div className="pl-20 pr-20 pb-20 ">
                     <div>
                         <label className="form__row w-400">
-                            <span className="form__label">Name</span>
+                            <span className="form__label">{API_LIST_MESSAGING.ROW_NAME}</span>
                             <input tabIndex={1} className="form__input" value={editData.name} disabled={true} />
                         </label>
                         <label className="form__row">
-                            <span className="form__label">Description</span>
+                            <span className="form__label">{API_LIST_MESSAGING.DESCRIPTION}</span>
                             <textarea
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
@@ -258,12 +258,12 @@ function EditAPIToken({
                             {invalidDescription && (
                                 <span className="form__error flexbox-imp flex-align-center">
                                     <Warn className="form__icon--error icon-dim-16 mr-4" />
-                                    Max 350 characters allowed.
+                                    {API_LIST_MESSAGING.MAX_30_CHAR}
                                 </span>
                             )}
                         </label>
                         <label className="form__row">
-                            <span className="form__label">Token</span>
+                            <span className="form__label">{API_LIST_MESSAGING.TOKEN}</span>
                             <div className="flex dc__content-space top cn-9">
                                 <span className="mono fs-14 dc__break-word">
                                     {editData.token}
@@ -289,13 +289,13 @@ function EditAPIToken({
                             </div>
                         </label>
                         <label className="form__row">
-                            <span className="form__label">Expiration</span>
+                            <span className="form__label">{API_LIST_MESSAGING.EXPIRATION}</span>
                             <div className="dc__align-left">
                                 {getExpirationText()}
                                 &nbsp;
-                                <span className="fw-4">To set a new expiration date you must</span>&nbsp;
+                                <span className="fw-4">{API_LIST_MESSAGING.SET_EXPIRATION}</span>&nbsp;
                                 <span className="cb-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
-                                    regenerate the token.
+                                    {API_LIST_MESSAGING.SET_EXPIRATION_LINK}
                                 </span>
                             </div>
                         </label>
