@@ -183,7 +183,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 placeholder="Eg. main"
                                                 type="text"
                                                 disabled={!props.handleSourceChange}
-                                                value={mat.value.trim()}
+                                                value={mat.value}
                                                 onChange={(event) => {
                                                     props?.handleSourceChange(
                                                         event,
