@@ -45,13 +45,14 @@ import {
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
-    fetchChartVersionsData, fetchProjects,
+    fetchChartVersionsData,
+    fetchProjects,
     fetchProjectsAndEnvironments,
     getChartRelatedReadMe,
     getChartValuesList,
 } from '../common/chartValues.api'
 import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
-import {ReactComponent as EditIcon, ReactComponent as Edit} from '../../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as EditIcon, ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
@@ -77,9 +78,9 @@ import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
-import {AppMetaInfo} from "../../../app/types";
-import {getAppMetaInfo, getHelmAppMetaInfo} from "../../../app/service";
-import ProjectModal from "./ProjectSelector";
+import { AppMetaInfo } from '../../../app/types'
+import { getAppMetaInfo, getHelmAppMetaInfo } from '../../../app/service'
+import ProjectModal from './ProjectSelector'
 
 function ChartValuesView({
     appId,
@@ -277,10 +278,9 @@ function ChartValuesView({
                 .catch((e) => {})
         }
 
-        if (!isDeployChartView){
+        if (!isDeployChartView) {
             fetchProjects(dispatch)
         }
-
     }, [])
 
     useEffect(() => {
@@ -424,6 +424,12 @@ function ChartValuesView({
             dispatch({ type: ChartValuesViewActionTypes.isComparisonAvailable, payload: isVersionAvailableForDiff })
         }
     }, [chartValuesList, commonState.deploymentHistoryArr])
+
+    useEffect(() => {
+        if (!isDeployChartView) {
+            getHelmAppMetaInfoRes()
+        }
+    }, [appId])
 
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
         try {
@@ -1197,15 +1203,8 @@ function ChartValuesView({
         setValueName(newValueName)
     }
 
-    useEffect(() => {
-        if (!isDeployChartView) {
-            getHelmAppMetaInfoRes()
-        }
-    }, [appId])
-
     const getHelmAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
-
             const { result } = await getHelmAppMetaInfo(appId)
             if (result) {
                 setAppName(result.appName)
@@ -1216,6 +1215,7 @@ function ChartValuesView({
             showError(err)
         }
     }
+    console.log(appMetaInfo && appMetaInfo)
 
     const toggleChangeProjectModal = () => {
         // setChangeProjectView(!isChangeProjectView)
@@ -1256,44 +1256,39 @@ function ChartValuesView({
                             />
                         )}
 
-                        {
-                            !isDeployChartView && (
-                                <div className="mb-16">
-                                    <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
-                                    <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
-                                        {appMetaInfo.projectName ? appMetaInfo.projectName : "unassigned"}
-                                        <EditIcon className="icon-dim-20 cursor" onClick={toggleChangeProjectModal}  />
-                                    </div>
+                        {!isDeployChartView && (
+                            <div className="mb-16">
+                                <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
+                                <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
+                                    {appMetaInfo?.projectName ? appMetaInfo?.projectName : 'unassigned'}
+                                    <EditIcon className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
                                 </div>
-                            )
-                        }
+                            </div>
+                        )}
 
-                        {
-                            !isDeployChartView && showUpdateAppModal && (
-                                <ProjectModal
-                                    appId={appId}
-                                    appName={appName}
-                                    appMetaInfo={appMetaInfo}
-                                    installedAppId={commonState.installedConfig?.installedAppId}
-                                    onClose = {toggleChangeProjectModal}
-                                    projectsList={commonState.projects}
-                                    getAppMetaInfoRes={getHelmAppMetaInfoRes}
-                                />
-                            )
-                        }
+                        {!isDeployChartView && showUpdateAppModal && (
+                            <ProjectModal
+                                appId={appId}
+                                appName={appName}
+                                appMetaInfo={appMetaInfo}
+                                installedAppId={commonState.installedConfig?.installedAppId}
+                                onClose={toggleChangeProjectModal}
+                                projectsList={commonState.projects}
+                                getAppMetaInfoRes={getHelmAppMetaInfoRes}
+                            />
+                        )}
 
-                        {
-                                (isDeployChartView ) && (
-                                <ChartProjectSelector
-                                    isDeployChartView={isDeployChartView}
-                                    selectedProject={commonState.selectedProject}
-                                    handleProjectSelection={handleProjectSelection}
-                                    projects={commonState.projects}
-                                    invalidProject={commonState.invalidProject}
-                                    installedConfig = {commonState.installedConfig}
-                                    releaseInfo = {commonState.releaseInfo}
-                                />
-                            )}
+                        {isDeployChartView && (
+                            <ChartProjectSelector
+                                isDeployChartView={isDeployChartView}
+                                selectedProject={commonState.selectedProject}
+                                handleProjectSelection={handleProjectSelection}
+                                projects={commonState.projects}
+                                invalidProject={commonState.invalidProject}
+                                installedConfig={commonState.installedConfig}
+                                releaseInfo={commonState.releaseInfo}
+                            />
+                        )}
                         {(isDeployChartView ||
                             (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
                             <ChartEnvironmentSelector
@@ -1457,7 +1452,7 @@ function ChartValuesView({
         )
     }
 
-    if (commonState.isLoading) {
+    if (commonState.isLoading || appMetaInfo == null) {
         return (
             <div className="dc__loading-wrapper">
                 <Progressing pageLoader />
