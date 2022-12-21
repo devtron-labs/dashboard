@@ -259,7 +259,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         ShortGitHosts.forEach((shortGitHost) => {
             if(gitOpsUrl.indexOf(shortGitHost) >= 0){
                 suggestedValidGitOpsUrl =  "https://" + shortGitHost + "/"
-                break
             }
         });
         return suggestedValidGitOpsUrl
@@ -275,7 +274,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         ShortGitHosts.forEach((shortGitHost) => {
             if(gitOpsUrl.indexOf(shortGitHost) >= 0){
                 isUrlAccepted = gitOpsUrl.endsWith(shortGitHost) || gitOpsUrl.endsWith(shortGitHost + "/")
-                break
             }
         });
 
