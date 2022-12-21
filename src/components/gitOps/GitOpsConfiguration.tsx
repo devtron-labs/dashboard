@@ -547,10 +547,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         error={this.state.isError.host}
                         label={
                             this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                ? 'Azure DevOps Organisation Url* (Use http:// or https://)'
+                                ? 'Azure DevOps Organisation Url* (Use https://)'
                                 : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                ? 'Bitbucket Host* (Use http:// or https://)'
-                                : 'Git Host* (Use http:// or https://)'
+                                ? 'Bitbucket Host* (Use https://)'
+                                : 'Git Host* (Use https://)'
                         }
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
