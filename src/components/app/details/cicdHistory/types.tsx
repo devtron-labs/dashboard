@@ -67,6 +67,13 @@ export interface ArtifactType {
 
 export interface CopyTippyWithTextType {
     copyText: string
+    copied: boolean
+    setCopied: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface CIListItemType {
+    type: 'report' | 'artifact'
+    children: any
 }
 
 export interface LogsRendererType {
@@ -142,6 +149,10 @@ export interface TriggerDetailsType {
     artifact?: string
 }
 
+export interface TriggerDetailsStatusIconType {
+  status: string
+}
+
 export interface FinishedType {
     status: string
     finishedOn: string
@@ -180,8 +191,8 @@ export interface StartDetailsType {
     type: HistoryComponentType
 }
 
-export interface CICDSidebarFilterOptionType extends OptionType{
-  pipelineId: number
+export interface CICDSidebarFilterOptionType extends OptionType {
+    pipelineId: number
 }
 
 export enum HistoryComponentType {

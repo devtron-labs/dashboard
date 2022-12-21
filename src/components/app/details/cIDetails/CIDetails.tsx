@@ -4,7 +4,7 @@ import { Progressing, useScrollable, showError, useAsync, useInterval, mapByKey,
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
-import { BuildDetails, CIPipeline } from './types'
+import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
@@ -36,7 +36,7 @@ export default function CIDetails() {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [initDataLoading, initDataResults, ] = useAsync(
+    const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
                 getCIPipelines(+appId),
@@ -95,9 +95,9 @@ export default function CIDetails() {
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
 
-    if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId))
+    if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    if (!buildId && triggerHistory.size > 0) {
+    } else if (!buildId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, pipelineId }))
     }
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
@@ -111,8 +111,8 @@ export default function CIDetails() {
     return (
         <>
             <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                <div className="ci-details__history">
-                    {!fullScreenView && (
+                {!fullScreenView && (
+                    <div className="ci-details__history">
                         <Sidebar
                             filterOptions={pipelineOptions}
                             type={HistoryComponentType.CI}
@@ -120,8 +120,8 @@ export default function CIDetails() {
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
                         />
-                    )}
-                </div>
+                    </div>
+                )}
                 <div className="ci-details__body">
                     {!pipelineId ? (
                         <EmptyView
@@ -175,24 +175,13 @@ export default function CIDetails() {
     )
 }
 
-export const CIListItem: React.FC<{ type: 'report' | 'artifact'; children: any }> = ({ type, children }) => {
-    return (
-        <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
-            <div className="bcn-1 flex br-4">
-                <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
-            </div>
-            {children}
-        </div>
-    )
-}
-
-const Details: React.FC<BuildDetails> = ({
+const Details = ({
     fullScreenView,
     synchroniseState,
     triggerHistory,
     isSecurityModuleInstalled,
     isBlobStorageConfigured,
-}) => {
+}: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
     const [
@@ -302,13 +291,7 @@ const Details: React.FC<BuildDetails> = ({
     )
 }
 
-const HistoryLogs = ({
-    triggerDetails,
-    isBlobStorageConfigured,
-}: {
-    triggerDetails: History
-    isBlobStorageConfigured?: boolean
-}) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured }: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -319,7 +302,7 @@ const HistoryLogs = ({
         <div className="trigger-outputs-container">
             <Switch>
                 <Route path={`${path}/logs`}>
-                    <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
+                    <div ref={ref} className="dark-background h-100 dc__overflow-auto">
                         <LogsRenderer
                             triggerDetails={triggerDetails}
                             isBlobStorageConfigured={isBlobStorageConfigured}
@@ -359,15 +342,7 @@ const HistoryLogs = ({
     )
 }
 
-const SecurityTab = ({
-    ciPipelineId,
-    artifactId,
-    status,
-}: {
-    ciPipelineId: number
-    artifactId: number
-    status: string
-}) => {
+const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [securityData, setSecurityData] = useState({
         vulnerabilities: [],
@@ -426,16 +401,23 @@ const SecurityTab = ({
     const severityCount = securityData.severityCount
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
-    if (['failed', 'cancelled'].includes(status.toLowerCase()))
+    if (['failed', 'cancelled'].includes(status.toLowerCase())) {
         return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
-    if (['starting', 'running'].includes(status.toLowerCase())) return <CIRunningView isSecurityTab={true} />
-    if (securityData.isLoading) return <Progressing pageLoader />
-    if (securityData.isError) return <Reload />
-    if (artifactId && !securityData.scanned) {
-        if (!securityData.scanEnabled) return <ScanDisabledView redirectToCreate={redirectToCreate} />
-        return <ImageNotScannedView />
+    } else if (['starting', 'running'].includes(status.toLowerCase())) {
+        return <CIRunningView isSecurityTab={true} />
+    } else if (securityData.isLoading) {
+        return <Progressing pageLoader />
+    } else if (securityData.isError) {
+        return <Reload />
+    } else if (artifactId && !securityData.scanned) {
+        if (!securityData.scanEnabled) {
+            return <ScanDisabledView redirectToCreate={redirectToCreate} />
+        } else {
+            return <ImageNotScannedView />
+        }
+    } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
+        return <NoVulnerabilityView />
     }
-    if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) return <NoVulnerabilityView />
 
     return (
         <>

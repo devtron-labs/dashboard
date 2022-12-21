@@ -1,16 +1,46 @@
 import React, { useState } from 'react'
-import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog } from '../../../common'
+import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog, not } from '../../../common'
 import { toast } from 'react-toastify'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import { statusColor as colorMap } from '../../config'
-import { Moment12HourFormat } from '../../../../config'
+import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
-import { CurrentStatusType, FinishedType, GitTriggers, HistoryComponentType, ProgressingStatusType, PROGRESSING_STATUS, StartDetailsType, TERMINAL_STATUS_COLOR_CLASS_MAP, TriggerDetailsType, WorkerStatusType } from '../cicdHistory/types'
+import {
+    CurrentStatusType,
+    FinishedType,
+    GitTriggers,
+    HistoryComponentType,
+    ProgressingStatusType,
+    PROGRESSING_STATUS,
+    StartDetailsType,
+    TERMINAL_STATUS_COLOR_CLASS_MAP,
+    TriggerDetailsStatusIconType,
+    TriggerDetailsType,
+    WorkerStatusType,
+} from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
+
+const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
+    return (
+        <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
+            <circle
+                cx="12.5"
+                cy="74.5"
+                r="6"
+                fill={colorMap[status]}
+                stroke={colorMap[status]}
+                strokeWidth="12"
+                strokeOpacity="0.3"
+            />
+            <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
+        </svg>
+    )
+})
 
 export const TriggerDetails = React.memo(
     ({
@@ -26,28 +56,13 @@ export const TriggerDetails = React.memo(
         type,
         stage,
         artifact,
-    }: TriggerDetailsType) => {
+    }: TriggerDetailsType): JSX.Element => {
         return (
-            <div
-                className="trigger-details"
-                style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}
-            >
-                <div className="trigger-details__status flex">
-                    <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
-                        <circle
-                            cx="12.5"
-                            cy="74.5"
-                            r="6"
-                            fill={colorMap[status?.toLowerCase()]}
-                            stroke={colorMap[status?.toLowerCase()]}
-                            strokeWidth="12"
-                            strokeOpacity="0.3"
-                        />
-                        <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
-                    </svg>
+            <div className="trigger-details">
+                <div className="flex">
+                    <TriggerDetailsStatusIcon status={status?.toLowerCase()} />
                 </div>
-                <div className="trigger-details__summary" style={{ display: 'grid', gridTemplateRows: '1fr 1fr' }}>
+                <div className="trigger-details__summary">
                     <StartDetails
                         startedOn={startedOn}
                         triggeredBy={triggeredBy}
@@ -72,65 +87,51 @@ export const TriggerDetails = React.memo(
     },
 )
 
-const Finished = React.memo(
-    ({ status, finishedOn, artifact }: FinishedType) => {
-        return (
-            <div className="flex column left">
-                <div
-                    className={`${status} fs-14 fw-6 ${
-                        TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'
-                    }`}
-                >
-                    {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
-                </div>
-                <div className="flex left">
-                    {finishedOn && finishedOn !== '0001-01-01T00:00:00Z' && (
-                        <time className="cn-7 fs-12 mr-12">
-                            {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                        </time>
-                    )}
-                    {artifact && (
-                        <div className="dc__app-commit__hash ">
-                            <img src={docker} className="commit-hash__icon grayscale" />
-                            {artifact.split(':')[1]}
+const Finished = React.memo(({ status, finishedOn, artifact }: FinishedType): JSX.Element => {
+    return (
+        <div className="flex column left">
+            <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
+                {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
+            </div>
+            <div className="flex left">
+                {finishedOn && finishedOn !== ZERO_TIME_STRING && (
+                    <time className="cn-7 fs-12 mr-12">
+                        {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                    </time>
+                )}
+                {artifact && (
+                    <div className="dc__app-commit__hash ">
+                        <img src={docker} className="commit-hash__icon grayscale" />
+                        {artifact.split(':')[1]}
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+})
+
+const WorkerStatus = React.memo(({ message, podStatus, stage }: WorkerStatusType): JSX.Element | null => {
+    if (!message && !podStatus) return null
+    return (
+        <>
+            <span style={{ height: '80%', borderRight: '1px solid var(--N100)', margin: '0 16px' }} />
+            <div className="flex left column">
+                <div className="flex left fs-14">
+                    <div className="mr-10">{stage === 'DEPLOY' ? 'Message' : 'Worker'}</div>
+                    {podStatus && (
+                        <div className="fw-6" style={{ color: colorMap[podStatus.toLowerCase()] }}>
+                            {podStatus}
                         </div>
                     )}
                 </div>
+                {message && <div className="fs-12 cn-7">{message}</div>}
             </div>
-        )
-    },
-)
-
-const WorkerStatus = React.memo(
-    ({ message, podStatus, stage }: WorkerStatusType) => {
-        if (!message && !podStatus) return null
-        return (
-            <>
-                <span style={{ height: '80%', borderRight: '1px solid var(--N100)', margin: '0 16px' }} />
-                <div className="flex left column">
-                    <div className="flex left fs-14">
-                        <div className="mr-10">{stage === 'DEPLOY' ? 'Message' : 'Worker'}</div>
-                        {podStatus && (
-                            <div className="fw-6" style={{ color: colorMap[podStatus.toLowerCase()] }}>
-                                {podStatus}
-                            </div>
-                        )}
-                    </div>
-                    {message && <div className="fs-12 cn-7">{message}</div>}
-                </div>
-            </>
-        )
-    },
-)
+        </>
+    )
+})
 
 const ProgressingStatus = React.memo(
-    ({
-        status,
-        message,
-        podStatus,
-        stage,
-        type,
-    }: ProgressingStatusType) => {
+    ({ status, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
         const { buildId, triggerId, pipelineId } = useParams<{
@@ -155,23 +156,21 @@ const ProgressingStatus = React.memo(
                 setAbortConfiguration(false)
             }
         }
-        const showAbortConfiguration = (): void => {
-            setAbortConfiguration(true)
-        }
-        const hideAbortConfiguration = (): void => {
-            setAbortConfiguration(false)
+
+        const toggleAbortConfiguration = (): void => {
+            setAbortConfiguration(not)
         }
         return (
             <>
-                <div className="trigger-details__current flex left">
-                    <div style={{ color: '#ff7e5b' }} className={`${status} fs-14 fw-6 flex left`}>
+                <div className="flex left">
+                    <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                         In progress
                     </div>
                     {abort && (
                         <button
                             className="cta cancel ml-16"
                             style={{ minWidth: '72px' }}
-                            onClick={showAbortConfiguration}
+                            onClick={toggleAbortConfiguration}
                         >
                             Abort
                         </button>
@@ -182,7 +181,11 @@ const ProgressingStatus = React.memo(
                     <ConfirmationDialog>
                         <ConfirmationDialog.Icon src={warn} />
                         <ConfirmationDialog.Body
-                            title={type === HistoryComponentType.CD ? `Abort ${stage.toLowerCase()}-deployment?` : 'Abort build?'}
+                            title={
+                                type === HistoryComponentType.CD
+                                    ? `Abort ${stage.toLowerCase()}-deployment?`
+                                    : 'Abort build?'
+                            }
                         />
                         <p className="fs-13 cn-7 lh-1-54">
                             {type === HistoryComponentType.CD
@@ -190,7 +193,7 @@ const ProgressingStatus = React.memo(
                                 : 'Are you sure you want to abort this build?'}
                         </p>
                         <ConfirmationDialog.ButtonGroup>
-                            <button type="button" className="cta cancel" onClick={hideAbortConfiguration}>
+                            <button type="button" className="cta cancel" onClick={toggleAbortConfiguration}>
                                 Cancel
                             </button>
                             <button type="button" className="cta delete" onClick={abortRunning}>
@@ -205,22 +208,14 @@ const ProgressingStatus = React.memo(
 )
 
 const CurrentStatus = React.memo(
-    ({
-        status,
-        finishedOn,
-        artifact,
-        message,
-        podStatus,
-        stage,
-        type,
-    }: CurrentStatusType) => {
+    ({ status, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
                 <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
-                <div className="trigger-details__current flex left">
+                <div className="flex left">
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
@@ -237,7 +232,7 @@ const StartDetails = ({
     gitTriggers,
     artifact,
     type,
-}: StartDetailsType) => {
+}: StartDetailsType): JSX.Element => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
     return (

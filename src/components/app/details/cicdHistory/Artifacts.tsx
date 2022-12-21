@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { showError, copyToClipboard } from '../../../common'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -11,64 +10,92 @@ import Tippy from '@tippyjs/react'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType, CopyTippyWithTextType } from './types'
+import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
+import { TERMINAL_STATUS_MAP } from '../../../../config'
 export default function Artifacts({ status, artifact, blobStorageEnabled, getArtifactPromise }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
+    const [copied, setCopied] = useState(false)
+
+    useEffect(() => {
+        if (!copied) return
+        setTimeout(() => setCopied(false), 2000)
+    }, [copied])
+
     async function handleArtifact(e) {
         try {
             const response = await getArtifactPromise()
             const b = await (response as any).blob()
-            let a = document.createElement('a')
-            let url = URL.createObjectURL(b)
-            a.href = url
+            const a = document.createElement('a')
+            a.href = URL.createObjectURL(b)
             a.download = `${buildId || triggerId}.zip`
             a.click()
         } catch (err) {
             showError(err)
         }
     }
-    if (status.toLowerCase() === 'running') return <CIProgressView />
-    if (['failed', 'cancelled'].includes(status.toLowerCase()))
+    if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING) {
+        return <CIProgressView />
+    } else if (
+        status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
+        status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
+    ) {
         return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
-    return (
-        <div style={{ padding: '16px' }} className="flex left column">
-            <CIListItem type="artifact">
-                <div className="flex column left">
-                    <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
-                        <CopyTippyWithText copyText={artifact?.split(':')[1]} />
-                    </div>
-                    <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
-                        <CopyTippyWithText copyText={artifact} />
-                    </div>
-                </div>
-            </CIListItem>
-            {blobStorageEnabled && getArtifactPromise && (
-                <CIListItem type="report">
-                    <div className="flex column left">
-                        <div className="cn-9 fs-14">Reports.zip</div>
-                        <button
-                            type="button"
-                            onClick={handleArtifact}
-                            className="anchor p-0 cb-5 fs-12 flex left pointer"
-                        >
-                            Download
-                            <Download className="ml-5 icon-dim-16" />
-                        </button>
+    } else {
+        return (
+            <div className="flex left column p-16">
+                <CIListItem type="artifact">
+                    <div className="flex column left hover-trigger ">
+                        <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
+                            <CopyTippyWithText
+                                copyText={artifact?.split(':')[1]}
+                                copied={copied}
+                                setCopied={setCopied}
+                            />
+                        </div>
+                        <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
+                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                        </div>
                     </div>
                 </CIListItem>
-            )}
-        </div>
-    )
+                {blobStorageEnabled && getArtifactPromise && (
+                    <CIListItem type="report">
+                        <div className="flex column left">
+                            <div className="cn-9 fs-14">Reports.zip</div>
+                            <button
+                                type="button"
+                                onClick={handleArtifact}
+                                className="anchor p-0 cb-5 fs-12 flex left pointer"
+                            >
+                                Download
+                                <Download className="ml-5 icon-dim-16" />
+                            </button>
+                        </div>
+                    </CIListItem>
+                )}
+            </div>
+        )
+    }
 }
 
-const CopyTippyWithText = ({ copyText }: CopyTippyWithTextType): JSX.Element => {
+const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
+    const onClickCopyToClipboard = (e): void => {
+        copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
+    }
     return (
         <>
             {copyText}
-            <Tippy content={'Copy to clipboard'}>
+            <Tippy
+                className="default-tt"
+                arrow={false}
+                placement="bottom"
+                content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                trigger="mouseenter click"
+                interactive={true}
+            >
                 <CopyIcon
+                    data-copy-text={copyText}
                     className="pointer dc__visible-hover--child ml-6 icon-dim-16"
-                    onClick={() => copyToClipboard(copyText, () => toast.info('copied to clipboard'))}
+                    onClick={onClickCopyToClipboard}
                 />
             </Tippy>
         </>
@@ -91,7 +118,7 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-export const CIListItem: React.FC<{ type: 'report' | 'artifact'; children: any }> = ({ type, children }) => {
+const CIListItem = ({ type, children }: CIListItemType) => {
     return (
         <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
             <div className="bcn-1 flex br-4">

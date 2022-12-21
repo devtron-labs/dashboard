@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import { ConditionalWrap, createGitCommitUrl, multiSelectStyles, useIntersection } from '../../../common'
+import React from 'react'
+import { ConditionalWrap, createGitCommitUrl } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
 import ReactSelect from 'react-select'
 import { Option, DropdownIndicator } from '../../../v2/common/ReactSelect.utils'
@@ -7,7 +7,7 @@ import moment from 'moment'
 import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import {
-  CICDSidebarFilterOptionType,
+    CICDSidebarFilterOptionType,
     GitTriggers,
     HistoryComponentType,
     HistorySummaryCardType,
@@ -20,17 +20,18 @@ import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
+import { FILTER_STYLE } from './Constants'
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
         if (type === HistoryComponentType.CI) {
-          setPagination({ offset: 0, size: 20 })
+            setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
         } else {
-          setPagination({ offset: 0, size: 20 })
-            push(generatePath(path, { appId, envId: selectedFilter.value,  pipelineId: selectedFilter.pipelineId }))
+            setPagination({ offset: 0, size: 20 })
+            push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
         }
     }
     function reloadNextAfterBottom() {
@@ -47,7 +48,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     )
     return (
         <>
-            <div className="select-pipeline-wrapper w-100 pl-16 pr-16" style={{ overflow: 'hidden' }}>
+            <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
                 <label className="form__label">
                     Select {type === HistoryComponentType.CI ? 'Pipeline' : 'Environment'}
                 </label>
@@ -61,21 +62,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                         DropdownIndicator,
                         Option,
                     }}
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base) => ({
-                            ...base,
-                            minHeight: '36px',
-                            fontWeight: '400',
-                            backgroundColor: 'var(--N50)',
-                            cursor: 'pointer',
-                        }),
-                        dropdownIndicator: (base) => ({
-                            ...base,
-                            padding: '0 8px',
-                        }),
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                    }}
+                    styles={FILTER_STYLE}
                     menuPortalTarget={document.body}
                 />
             </div>
@@ -153,17 +140,8 @@ const HistorySummaryCard = React.memo(
                     </TippyHeadless>
                 )}
             >
-                <NavLink to={getPath} className="w-100 ci-details__build-card" activeClassName="active">
-                    <div
-                        className="w-100"
-                        style={{
-                            height: '64px',
-                            display: 'grid',
-                            gridTemplateColumns: '20px 1fr',
-                            padding: '12px 0',
-                            gridColumnGap: '12px',
-                        }}
-                    >
+                <NavLink to={getPath} className="w-100 ci-details__build-card-container" activeClassName="active">
+                    <div className="w-100 ci-details__build-card">
                         <div
                             className={`dc__app-summary__icon icon-dim-20 ${status
                                 ?.toLocaleLowerCase()
@@ -210,10 +188,7 @@ const SummaryTooltipCard = React.memo(
         gitTriggers,
     }: SummaryTooltipCardType): JSX.Element => {
         return (
-            <div
-                className="build-card-popup p-16 br-4 flex column left"
-                style={{ width: '400px', background: 'white' }}
-            >
+            <div className="build-card-popup p-16 br-4 flex column left w-400 bcn-0">
                 <span className="fw-6 fs-16 mb-4" style={{ color: colorMap[status.toLowerCase()] }}>
                     {status.toLowerCase() === 'cancelled' ? 'Aborted' : status}
                 </span>
@@ -226,18 +201,14 @@ const SummaryTooltipCard = React.memo(
                     {ciMaterials?.map((ciMaterial) => {
                         const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
                         const sourceType = gitDetail?.CiConfigureSourceType
-                            ? gitDetail?.CiConfigureSourceType
+                            ? gitDetail.CiConfigureSourceType
                             : ciMaterial?.type
                         const sourceValue = gitDetail?.CiConfigureSourceValue
-                            ? gitDetail?.CiConfigureSourceValue
+                            ? gitDetail.CiConfigureSourceValue
                             : ciMaterial?.value
-                        const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail?.GitRepoUrl : ciMaterial?.url
+                        const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail.GitRepoUrl : ciMaterial?.url
                         return (
-                            <div
-                                className="mt-22"
-                                key={ciMaterial.id}
-                                style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '8px' }}
-                            >
+                            <div className="mt-22 ci-material-detail" key={ciMaterial.id}>
                                 {sourceType != SourceTypeMap.WEBHOOK && gitDetail?.Commit && (
                                     <>
                                         <div className="dc__git-logo"> </div>

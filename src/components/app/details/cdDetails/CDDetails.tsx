@@ -102,10 +102,16 @@ export default function CDDetails() {
         }
     }
 
-    if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
-    if (result && (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines)))
+    if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) {
+        return <Progressing pageLoader />
+    } else if (
+        result &&
+        (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines))
+    ) {
         return <AppNotConfigured />
-    if (!result || (envId && dependencyState[2] !== envId)) return null
+    } else if (!result || (envId && dependencyState[2] !== envId)) {
+        return null
+    }
 
     const pipelines = result[1]['value'].pipelines
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
@@ -131,8 +137,8 @@ export default function CDDetails() {
     return (
         <>
             <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                <div className="ci-details__history">
-                    {!fullScreenView && (
+                {!fullScreenView && (
+                    <div className="ci-details__history">
                         <Sidebar
                             filterOptions={envOptions}
                             type={HistoryComponentType.CD}
@@ -140,8 +146,8 @@ export default function CDDetails() {
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
                         />
-                    )}
-                </div>
+                    </div>
+                )}
                 <div className="ci-details__body">
                     {triggerHistory.size > 0 ? (
                         <Route

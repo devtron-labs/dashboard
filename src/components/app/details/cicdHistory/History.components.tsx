@@ -7,7 +7,7 @@ import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-full
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import { CiMaterial, EmptyViewType, GitChangesType, GitTriggers, LogResizeButtonType, ScrollerType } from './types'
+import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { NavLink } from 'react-router-dom'
@@ -21,7 +21,7 @@ export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResize
         if (!pathname.includes('/logs')) return
         switch (keys.join('')) {
             case 'f':
-                setFullScreenView(not)
+                toggleFullScreen()
                 break
             case 'Escape':
                 setFullScreenView(false)
@@ -29,35 +29,31 @@ export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResize
         }
     }, [keys])
 
-    const hideFullScreen = (): void => {
-        setFullScreenView(false)
+    const toggleFullScreen = (): void => {
+        setFullScreenView(not)
     }
 
-    const showFullScreen = (): void => {
-        setFullScreenView(true)
-    }
-    return pathname.includes('/logs') ? (
-        <Tippy
-            placement="top"
-            arrow={false}
-            className="default-tt"
-            content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
-        >
-            {fullScreenView ? (
-                <ZoomOut className="zoom zoom--out pointer" onClick={hideFullScreen} />
-            ) : (
-                <ZoomIn className="zoom zoom--in pointer" onClick={showFullScreen} />
-            )}
-        </Tippy>
-    ) : null
+    return (
+        pathname.includes('/logs') && (
+            <Tippy
+                placement="top"
+                arrow={false}
+                className="default-tt"
+                content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
+            >
+                {fullScreenView ? (
+                    <ZoomOut className="zoom zoom--out pointer" onClick={toggleFullScreen} />
+                ) : (
+                    <ZoomIn className="zoom zoom--in pointer" onClick={toggleFullScreen} />
+                )}
+            </Tippy>
+        )
+    )
 }
 
 export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): JSX.Element => {
     return (
-        <div
-            style={{ ...style, display: 'flex', flexDirection: 'column', justifyContent: 'top' }}
-            className="dc__element-scroller"
-        >
+        <div style={style} className="dc__element-scroller flex column top">
             <Tippy className="default-tt" arrow={false} content="Scroll to Top">
                 <button className="flex" disabled={!scrollToTop} type="button" onClick={scrollToTop}>
                     <DropDownIcon className="rotate" style={{ ['--rotateBy' as any]: '180deg' }} />
@@ -84,16 +80,16 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                         style={{ width: 'min( 100%, 800px )' }}
                     >
                         <GitCommitInfoGeneric
-                            materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
+                            materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
                             showMaterialInfo={true}
                             commitInfo={gitTrigger}
                             materialSourceType={
-                                gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
+                                gitTrigger?.CiConfigureSourceType ? gitTrigger.CiConfigureSourceType : ciMaterial?.type
                             }
                             selectedCommitInfo={''}
                             materialSourceValue={
                                 gitTrigger?.CiConfigureSourceValue
-                                    ? gitTrigger?.CiConfigureSourceValue
+                                    ? gitTrigger.CiConfigureSourceValue
                                     : ciMaterial?.value
                             }
                         />

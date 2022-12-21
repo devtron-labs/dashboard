@@ -192,7 +192,7 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events'
-    
+
 
 }
 
@@ -611,6 +611,7 @@ export const TERMINAL_STATUS_MAP = {
     STARTING: 'starting',
     FAILED: 'failed',
     ERROR: 'error',
+    CANCELLED: 'cancelled'
 }
 
 export const POD_STATUS = {
@@ -670,3 +671,5 @@ export const MESSAGING_UI = {
     MANIFEST_NOT_AVAILABLE: 'Manifest not available',
     FETCHING_MANIFEST: 'Fetching manifest'
 }
+
+export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
