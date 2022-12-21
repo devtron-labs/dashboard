@@ -24,7 +24,7 @@ import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../.
 import { AuthenticationType } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar';
-import { SafeTrim } from '../../util/Util';
+import { safeTrim } from '../../util/Util';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList);
@@ -397,7 +397,7 @@ function GitForm({
                 ? { username: customState.username.value, password: customState.password.value }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: SafeTrim(customState.sshInput.value) } : {}),
+            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value) } : {}),
         };
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;

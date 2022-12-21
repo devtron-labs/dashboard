@@ -56,6 +56,6 @@ export const replaceLastOddBackslash = (str: string): string=>{
   return str
 }
 
-export const SafeTrim = (str: string): string => {
+export const safeTrim = (str: string): string => {
     return str ? str.trim() : str
 }

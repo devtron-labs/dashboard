@@ -3,7 +3,7 @@ import { get, post } from '../../services/api'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
-import { SafeTrim } from '../../util/Util';
+import { safeTrim } from '../../util/Util';
 
 
 const emptyStepsData = () => {
@@ -275,8 +275,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                     id: mat.id,
                     source: {
                         type: mat.type,
-                        value: SafeTrim(_value),
-                        regex: SafeTrim(mat.regex),
+                        value: safeTrim(_value),
+                        regex: safeTrim(mat.regex),
                     },
                 }
             }),
