@@ -4,7 +4,7 @@ import { DialogForm, DialogFormSubmit, showError } from '../common';
 import { createWorkflow, updateWorkflow } from './service';
 import { toast } from 'react-toastify';
 import { getWorkflowList } from '../../services/service';
-import { ServerErrors } from '../../modals/commonTypes';
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import error from '../../assets/icons/misc/errorInfo.svg';
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState>  {

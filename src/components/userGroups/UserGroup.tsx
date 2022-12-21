@@ -33,7 +33,7 @@ import {
     getGroupsDataToExport,
     getUserRole
 } from './userGroup.service'
-import { get } from '../../services/api'
+import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
@@ -535,7 +535,7 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
-        
+
     if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
     if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result.filter(

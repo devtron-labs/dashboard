@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { TOKEN_COOKIE_NAME } from '../../../config';
 import { toast } from 'react-toastify';
-import { ServerErrors } from '../../../modals/commonTypes';
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import * as Sentry from '@sentry/browser';
 import YAML from 'yaml';
 import { useWindowSize } from './UseWindowSize';

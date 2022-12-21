@@ -4,7 +4,7 @@ import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
-import { get } from '../../services/api'
+import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeStatus } from './service'
 import { Routes, Host } from "../../config";
 import { toast } from 'react-toastify';

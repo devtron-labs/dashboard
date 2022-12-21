@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Terminal } from 'xterm';
 import { Scroller } from '../app/details/cIDetails/CIDetails'
-import { get } from '../../services/api';
+import { get } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
 import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';

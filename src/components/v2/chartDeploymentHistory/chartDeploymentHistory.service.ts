@@ -1,5 +1,5 @@
 import { Routes } from '../../../config'
-import { get, put } from '../../../services/api'
+import { get, put } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseType } from '../../../services/service.types'
 import { ActionResponse, ChartMetadata, DeployedAt, InstalledAppInfo } from '../../external-apps/ExternalAppService'
 

@@ -1,5 +1,5 @@
 import { Routes } from '../../config/constants'
-import { get, post, trash, put } from '../../services/api'
+import { get, post, trash, put } from '@devtron-labs/devtron-fe-common-lib'
 import { sortCallback } from '../common'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'

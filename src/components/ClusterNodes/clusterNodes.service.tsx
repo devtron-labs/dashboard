@@ -1,5 +1,5 @@
 import { Routes } from '../../config'
-import { get, post, put } from '../../services/api'
+import { get, post, put } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseType } from '../../services/service.types'
 import {
     ClusterCapacityResponse,

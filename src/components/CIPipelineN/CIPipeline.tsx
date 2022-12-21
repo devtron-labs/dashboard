@@ -12,7 +12,7 @@ import {
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import {
     CIPipelineDataType,

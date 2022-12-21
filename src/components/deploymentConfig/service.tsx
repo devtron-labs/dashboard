@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { get, put, post } from '../../services/api';
+import { get, put, post } from '@devtron-labs/devtron-fe-common-lib';
 import { ConfigMapRequest } from './types';
 import yamlJsParser from 'yamljs';
 

@@ -1,5 +1,5 @@
 import { Routes } from '../../../config/constants'
-import { get, post, trash } from '../../../services/api'
+import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../../app/types'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'

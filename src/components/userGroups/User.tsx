@@ -30,7 +30,7 @@ import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ServerError } from '../../modals/commonTypes';
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { PermissionType } from '../apiTokens/authorization.utils';
 

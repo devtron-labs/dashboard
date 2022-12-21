@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, saveCIPipeline, deleteCIPipeline, getPipelineMetaConfiguration } from './ciPipeline.service';
 import { SourceTypeMap, TriggerType, ViewType } from '../../config';
-import { ServerErrors } from '../../modals/commonTypes';
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
 import { Progressing,  CopyButton, showError, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
 import { toast } from 'react-toastify';

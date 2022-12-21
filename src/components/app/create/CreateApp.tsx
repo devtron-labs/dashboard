@@ -14,7 +14,7 @@ import { ValidationRules } from './validationRules';
 import { getHostURLConfiguration, getTeamListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
-import { ServerErrors } from '../../../modals/commonTypes';
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import './createApp.scss';
 import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } from '../appLabelCommon';
 import TagLabelSelect from '../details/TagLabelSelect';

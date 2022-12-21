@@ -18,7 +18,7 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { ServerError } from '../../modals/commonTypes';
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 import { AuthenticationType } from '../cluster/cluster.type';

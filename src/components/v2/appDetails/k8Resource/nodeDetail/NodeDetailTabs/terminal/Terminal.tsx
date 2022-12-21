@@ -6,13 +6,12 @@ import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import { ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
-import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import './terminal.css'
 import IndexStore from '../../../../index.store'
 import { AppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline, showError } from '../../../../../../common'
-import { ServerErrors } from '../../../../../../../modals/commonTypes'
+import { get, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
@@ -186,7 +185,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const _terminal = terminal
 
         if(!_terminal) return
-        
+
         _terminal?.reset()
 
         _terminal.write('Creating pod.')

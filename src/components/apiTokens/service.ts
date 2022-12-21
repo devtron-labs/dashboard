@@ -1,5 +1,5 @@
 import { ResponseType } from '../../services/service.types'
-import { get, post, put, trash } from '../../services/api'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
 export function getGeneratedAPITokenList(): Promise<ResponseType> {

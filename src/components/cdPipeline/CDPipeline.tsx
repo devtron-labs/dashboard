@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
     VisibleModal,

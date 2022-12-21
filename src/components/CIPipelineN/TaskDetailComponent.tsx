@@ -13,7 +13,7 @@ import {
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'

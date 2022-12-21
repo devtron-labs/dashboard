@@ -9,7 +9,7 @@ import { TriggerViewContext } from './TriggerView'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap } from '../../../../config'
-import { ServerErrors } from '../../../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 

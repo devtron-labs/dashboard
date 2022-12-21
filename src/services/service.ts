@@ -1,4 +1,4 @@
-import { get, post } from './api';
+import { get, post } from '@devtron-labs/devtron-fe-common-lib';
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';

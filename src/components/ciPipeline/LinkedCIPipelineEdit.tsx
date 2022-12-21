@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineProps, LinkedCIPipelineState } from './types'
 import {
     Progressing,

@@ -1,5 +1,5 @@
 import { Routes } from '../../../config'
-import { get } from '../../../services/api'
+import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseType } from '../../../services/service.types'
 import { WebhookDetailsResponse, WebhookDetailsType, WebhookListResponse } from './types'
 

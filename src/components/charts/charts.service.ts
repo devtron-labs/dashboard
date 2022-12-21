@@ -1,4 +1,4 @@
-import { get, post, put, trash } from '../../services/api'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { handleUTCTime, sortCallback } from '../common'
 import { ChartValuesType, ChartGroup, HelmTemplateChartRequest } from './charts.types'

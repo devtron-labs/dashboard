@@ -1,5 +1,5 @@
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { get, post } from '../../services/api'
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'

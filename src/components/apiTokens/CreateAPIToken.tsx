@@ -27,7 +27,7 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 
 function CreateAPIToken({
     setShowGenerateModal,

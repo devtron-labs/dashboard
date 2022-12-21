@@ -1,5 +1,5 @@
 import { useAsync, showError, Progressing, PopupMenu, ConfirmationDialog, useInterval, ConditionalWrap, Td } from '../common'
-import { trash } from '../../services/api'
+import { trash } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as DeployButton } from '../../assets/icons/ic-deploy.svg';
 import React, { useState } from 'react'

@@ -10,7 +10,7 @@ import {
     CDModalTab,
     getGitMaterialByCommitHash,
 } from '../../service'
-import { ServerErrors } from '../../../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'

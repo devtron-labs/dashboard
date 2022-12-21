@@ -22,7 +22,7 @@ import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscr
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
 import { convertToOptionsList, showError } from '../common'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
 import TippyWhite from '../common/TippyWhite'

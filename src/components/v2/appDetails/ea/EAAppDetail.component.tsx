@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import {useLocation, useHistory} from 'react-router';
 import { showError, Progressing, ErrorScreenManager, sortOptionsByValue,  } from '../../../common';
 import { getAppDetail, HelmAppDetailResponse, HelmAppDetail, HelmAppDetailAndInstalledAppInfo } from '../../../external-apps/ExternalAppService';
-import { ServerErrors } from '../../../../modals/commonTypes';
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import IndexStore from '../index.store';
 import { AppDetails, AppType } from "../appDetails.type";
 import AppDetailsComponent from '../AppDetails.component';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, URLS } from '../../config';
-import { ServerErrors } from '../../modals/commonTypes';
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import { CIPipelineProps, CIPipelineState } from './types';
 import { Progressing, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';

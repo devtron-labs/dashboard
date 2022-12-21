@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { post, get } from '../../services/api';
+import { post, get } from '@devtron-labs/devtron-fe-common-lib';
 import { sortCallback } from '../common';
 import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service';
 

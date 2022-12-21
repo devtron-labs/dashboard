@@ -1,5 +1,5 @@
 import React from 'react';
-import { ServerError } from '../../../modals/commonTypes';
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
 import { RouteComponentProps } from 'react-router';
 
 export interface AppListState {
