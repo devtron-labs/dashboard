@@ -1,11 +1,12 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import { noop } from '../helpers/Helpers'
 import './ContentCard.scss'
 
 interface ContentCardProps {
     redirectTo: string
-    onClick: (e) => void
+    onClick?: (e) => void
     imgSrc: string
     title: string
     linkText: string
@@ -22,7 +23,7 @@ export default function ContentCard({ redirectTo, onClick, imgSrc, title, linkTe
                 to={redirectTo}
                 className="dc__no-decor fw-6 cursor cn-9"
                 activeClassName="active"
-                onClick={onClick}
+                onClick={onClick || noop}
             >
                 <img className="content-card-img dc__top-radius-4" src={imgSrc} alt={title} />
                 <div className="fw-6 fs-16 cn-9 pt-24 pb-12 pl-24 pr-24 dc__break-word">{title}</div>

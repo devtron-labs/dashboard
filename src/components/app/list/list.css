@@ -473,3 +473,11 @@
 .first-app-container {
     margin-top: 60px;
 }
+
+.guided-content-cards-wrapper {
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-gap: 20px;
+    justify-content: center;
+    padding: 60px 20px 20px;
+}
