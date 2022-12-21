@@ -20,7 +20,7 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-inte
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService';
 import { deleteInstalledChart } from '../../../charts/charts.service';
 import { toast } from 'react-toastify';
-import dots from '../../assets/icons/ic-menu-dot.svg'
+import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
 import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
 
@@ -249,8 +249,8 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                 ) && (
                     <div>
                         <PopupMenu autoClose>
-                            <PopupMenu.Button isKebab={true}>
-                                <img src={dots} className="pod-info__dots ml-8" />
+                            <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                                <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
                             </PopupMenu.Button>
                             <PopupMenu.Body>
                                 <Popup />
