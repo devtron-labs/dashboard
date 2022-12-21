@@ -1273,20 +1273,17 @@ function ChartValuesView({
                                 appMetaInfo={appMetaInfo}
                                 installedAppId={commonState.installedConfig?.installedAppId}
                                 onClose={toggleChangeProjectModal}
-                                projectsList={commonState.projects}
+                                projectList={commonState.projects}
                                 getAppMetaInfoRes={getHelmAppMetaInfoRes}
                             />
                         )}
 
                         {isDeployChartView && (
                             <ChartProjectSelector
-                                isDeployChartView={isDeployChartView}
                                 selectedProject={commonState.selectedProject}
                                 handleProjectSelection={handleProjectSelection}
                                 projects={commonState.projects}
                                 invalidProject={commonState.invalidProject}
-                                installedConfig={commonState.installedConfig}
-                                releaseInfo={commonState.releaseInfo}
                             />
                         )}
                         {(isDeployChartView ||

@@ -44,7 +44,6 @@ import EmptyState from '../../../EmptyState/EmptyState'
 import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import ProjectModal from "./ProjectSelector";
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -140,13 +139,10 @@ export const DeploymentAppSelector = ({
 }
 
 export const ChartProjectSelector = ({
-    isDeployChartView,
     selectedProject,
     handleProjectSelection,
     projects,
     invalidProject,
-    installedConfig,
-    releaseInfo
 }: ChartProjectSelectorType): JSX.Element => {
     return  (
 

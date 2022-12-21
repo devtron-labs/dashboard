@@ -2,41 +2,37 @@ import React, { useEffect, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { Progressing, showError, VisibleModal } from '../../../common'
 import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
-import { createOption, handleKeyDown, TAG_VALIDATION_MESSAGE, validateTags } from '../../../app/appLabelCommon'
-import ReactSelect, { ActionMeta, InputActionMeta } from 'react-select'
+import ReactSelect from 'react-select'
 import InfoColourbar from '../../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import { AboutAppInfoModalProps, LabelTagsType, NumberOptionType, OptionType } from '../../../app/types'
-import { createAppLabels } from '../../../app/service'
+import {  NumberOptionType } from '../../../app/types'
 import { toast } from 'react-toastify'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
-import common from 'mocha/lib/interfaces/common'
 
 export default function ProjectModal({
     appId,
     onClose,
     appMetaInfo,
     installedAppId,
-    projectsList,
+    projectList,
     getAppMetaInfoRes,
 }: ProjectSelectorTypes) {
-    const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
+    const [projectOptions, setProjectOptions] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
-    const [submitting, setSubmitting] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
-        if (Array.isArray(projectsList)) {
-            const _projectsOption = projectsList.map((_project) => {
+        if (Array.isArray(projectList)) {
+            const _projectOptions = projectList.map((_project) => {
                 if (!selectedProject && _project.label === appMetaInfo.projectName) {
                     setSelectedProject({ label: _project.label, value: _project.value })
                 }
                 return { label: _project.label, value: _project.value }
             })
-            console.log(_projectsOption)
-            setProjectsOption(_projectsOption)
+            setProjectOptions(_projectOptions)
         }
-    }, [appMetaInfo, projectsList])
+    }, [appMetaInfo])
 
     const renderAboutModalInfoHeader = (): JSX.Element => {
         return (
@@ -54,7 +50,7 @@ export default function ProjectModal({
     const renderProjectSelect = (): JSX.Element => {
         return (
             <ReactSelect
-                options={projectsOptions}
+                options={projectOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
                 components={{
@@ -80,7 +76,7 @@ export default function ProjectModal({
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
 
-        setSubmitting(true)
+        setIsSubmitting(true)
 
         const payload = {
             appId: appId,
@@ -107,7 +103,7 @@ export default function ProjectModal({
             }
         } finally {
             onClose()
-            setSubmitting(false)
+            setIsSubmitting(false)
         }
     }
 
@@ -150,7 +146,7 @@ export default function ProjectModal({
                     <button
                         className="cta cancel flex h-36 mr-12"
                         type="button"
-                        disabled={submitting}
+                        disabled={isSubmitting}
                         onClick={onClose}
                         tabIndex={6}
                     >
@@ -159,11 +155,11 @@ export default function ProjectModal({
                     <button
                         className="cta flex h-36"
                         type="submit"
-                        disabled={submitting}
+                        disabled={isSubmitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
                     >
-                        {submitting ? <Progressing /> : 'Save'}
+                        {isSubmitting ? <Progressing /> : 'Save'}
                     </button>
                 </div>
             </>

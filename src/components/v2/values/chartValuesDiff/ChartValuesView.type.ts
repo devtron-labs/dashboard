@@ -85,12 +85,9 @@ export interface DeploymentAppSelectorType {
 }
 
 export interface ChartProjectSelectorType {
-    isDeployChartView: boolean
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void
     projects: ChartValuesOptionType[]
-    releaseInfo?: ReleaseInfo
-    installedConfig?: ChartInstalledConfig
     invalidProject: boolean
 }
 
@@ -362,6 +359,6 @@ export interface ProjectSelectorTypes {
     onClose: () => void
     appMetaInfo: AppMetaInfo
     installedAppId: number
-    projectsList: ChartValuesOptionType[]
+    projectList: ChartValuesOptionType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
 }
