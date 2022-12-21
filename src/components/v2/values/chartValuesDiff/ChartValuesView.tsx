@@ -102,6 +102,7 @@ function ChartValuesView({
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
+    const [isProjectLoading, setProjectLoading] = useState(false)
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -1205,6 +1206,7 @@ function ChartValuesView({
 
     const getHelmAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
+            setProjectLoading(true)
             const { result } = await getHelmAppMetaInfo(appId)
             if (result) {
                 setAppName(result.appName)
@@ -1213,9 +1215,10 @@ function ChartValuesView({
             }
         } catch (err) {
             showError(err)
+        } finally {
+            setProjectLoading(false)
         }
     }
-    console.log(appMetaInfo && appMetaInfo)
 
     const toggleChangeProjectModal = () => {
         // setChangeProjectView(!isChangeProjectView)
@@ -1452,7 +1455,7 @@ function ChartValuesView({
         )
     }
 
-    if (commonState.isLoading || (appMetaInfo == null && !isDeployChartView)) {
+    if (commonState.isLoading || isProjectLoading) {
         return (
             <div className="dc__loading-wrapper">
                 <Progressing pageLoader />
