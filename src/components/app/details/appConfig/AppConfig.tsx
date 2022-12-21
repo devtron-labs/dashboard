@@ -484,10 +484,10 @@ function renderNavItem(item: CustomNavItemsType) {
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
             }}
-            className={'app-compose__nav-item cursor'}
+            className="app-compose__nav-item cursor"
             to={item.href}
         >
-            {item.title}
+            <span className="dc__ellipsis-right nav-text">{item.title}</span>
             {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
         </NavLink>
     )

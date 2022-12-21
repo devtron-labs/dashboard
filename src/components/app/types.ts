@@ -183,17 +183,17 @@ interface Health {
     message?: string
 }
 
-interface Resource {
-    group: string
-    version: string
-    kind: string
-    namespace: string
-    name: string
-    status: string
-    message: string
-    hookPhase: string
-    syncPhase: string
-    health?: Health
+export interface Resource {
+    group: string;
+    version: string;
+    kind: string;
+    namespace: string;
+    name: string;
+    status: string;
+    message: string;
+    hookPhase: string;
+    syncPhase: string;
+    health?: Health;
 }
 
 interface Destination {
