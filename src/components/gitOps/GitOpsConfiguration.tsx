@@ -426,13 +426,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     updateGitopsUrl(value: string): void {
-        this.setState({
-            form: {
-                ...this.state.form,
-                host: value,
-                
-            },
-            isUrlValidationError : false
+        this.setState((prevState) => {
+            return {
+                form: {
+                    ...prevState.form,
+                    host: value,
+                },
+                isUrlValidationError: false
+            }
         })
     }
 
@@ -459,9 +460,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}
                         >
-                            {' '}
-                            Learn more about GitOps{' '}
-                        </a>{' '}
+                            &nbsp;
+                            Learn more about GitOps&nbsp;
+                        </a>&nbsp;
                     </span>
                 </p>
                 <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20" autoComplete="off">
