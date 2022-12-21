@@ -16,7 +16,6 @@ import './gitops.css';
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 
 enum GitProvider {
@@ -33,12 +32,7 @@ const GitHost = {
     BITBUCKET_CLOUD: "https://bitbucket.org/"
 }
 
-const ShortGitHost = {
-    GITHUB: "github.com",
-    GITLAB: "gitlab.com",
-    AZURE_DEVOPS: 'dev.azure.com',
-    BITBUCKET_CLOUD: "bitbucket.org"
-}
+const ShortGitHosts = ['github.com', 'gitlab.com', 'dev.azure.com', 'bitbucket.org']
 
 const GitLink = {
     GITHUB: "https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch",
@@ -258,24 +252,34 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         return isInvalid;
     }
-    trimHostUrl() {
-        let trimmedHostUrlStr = this.state.form.host
-        if (trimmedHostUrlStr) {
-            try {
-                let trimmedHostUrl = new URL(trimmedHostUrlStr)
-                trimmedHostUrlStr = trimmedHostUrl.protocol + '//' + trimmedHostUrl.host + '/'            
-            } catch (e) {}
-        }
-        if(trimmedHostUrlStr === ShortGitHost.GITHUB || trimmedHostUrlStr === ShortGitHost.GITLAB ||trimmedHostUrlStr === ShortGitHost.AZURE_DEVOPS ||trimmedHostUrlStr === ShortGitHost.BITBUCKET_CLOUD){
-            trimmedHostUrlStr = 'https://'+trimmedHostUrlStr+'/'
-        }
-        DefaultGitOpsConfig.host = trimmedHostUrlStr
+
+    suggestedValidGitOpsUrl() {
+        let gitOpsUrl = this.state.form.host
+        let suggestedValidGitOpsUrl : string;
+        ShortGitHosts.forEach((shortGitHost) => {
+            if(gitOpsUrl.indexOf(shortGitHost) >= 0){
+                suggestedValidGitOpsUrl =  "https://" + shortGitHost + "/"
+                break
+            }
+        });
+        return suggestedValidGitOpsUrl
     }
 
-    isValidUrl() {
-        let urlCheck = /[a-zA-Z0-9:\/]+\/$/.test(this.state.form.host)
-        
-        return urlCheck
+    isValidGitOpsUrl() {
+        let gitOpsUrl = this.state.form.host
+        if (!gitOpsUrl){
+            return true
+        }
+
+        let isUrlAccepted : boolean = true
+        ShortGitHosts.forEach((shortGitHost) => {
+            if(gitOpsUrl.indexOf(shortGitHost) >= 0){
+                isUrlAccepted = gitOpsUrl.endsWith(shortGitHost) || gitOpsUrl.endsWith(shortGitHost + "/")
+                break
+            }
+        });
+
+        return isUrlAccepted
     }
 
     saveGitOps() {
@@ -284,11 +288,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             toast.error('Some Required Fields are missing')
             return
         }
-        // removing substring after domain from hostUrl (and appending "/" in last)
-        this.trimHostUrl()
 
-        let isValidUrl = this.isValidUrl()
-        if (!isValidUrl) {
+        let isValidGitOpsUrl = this.isValidGitOpsUrl()
+        if (!isValidGitOpsUrl) {
             this.setState({
                 isUrlValidationError: true,
                 validationStatus: VALIDATION_STATUS.DRY_RUN,
@@ -352,11 +354,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             toast.error("Some Required Fields are missing");
             return;
         }
-        // removing substring after domain from hostUrl (and appending "/" in last)
-        this.trimHostUrl()
 
-        let isValidUrl = this.isValidUrl()
-        if (!isValidUrl) {
+        let isValidGitOpsUrl = this.isValidGitOpsUrl()
+        if (!isValidGitOpsUrl) {
             this.setState({
                 isUrlValidationError: true,
                 validationStatus: VALIDATION_STATUS.DRY_RUN,
@@ -430,7 +430,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             form: {
                 ...this.state.form,
                 host: value
-                
             },
         })
     }
@@ -560,16 +559,18 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 <Error className="form__icon form__icon--error fs-13" />
                             This is not a Fully Qualified Domain Name(FQDN). 
                             </div>
-                            Please Use: 
-                            {/* <div className="hosturl__autodetection flex fs-12 left pt-4"> */}
-                                <button
+                            {
+                                this.suggestedValidGitOpsUrl() &&
+                                <> Please Use:
+                                    <button
                                     type="button"
-                                    onClick={(e) => this.handleHostURLLocation(DefaultGitOpsConfig.host)}
+                                    onClick={(e) => this.handleHostURLLocation(this.suggestedValidGitOpsUrl())}
                                     className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
-                                >
-                                    {DefaultGitOpsConfig.host}
-                                </button>
-                            {/* </div> */}
+                                    >
+                                        {this.suggestedValidGitOpsUrl()}
+                                    </button>
+                                </>
+                            }
                         </div>
                     ) : (
                         <></>
