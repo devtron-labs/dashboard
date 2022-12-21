@@ -198,7 +198,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 [key]: event.target.value.length === 0 ? "This is a required field" : "",
             },
             isFormEdited: false,
-            isUrlValidationError: false
+            isUrlValidationError: key == 'host' ? false : this.state.isUrlValidationError,
         })
     }
 
