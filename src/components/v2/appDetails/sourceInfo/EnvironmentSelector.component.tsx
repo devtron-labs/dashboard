@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { multiSelectStyles } from '../../../common';
+import { multiSelectStyles, PopupMenu, showError } from '../../../common';
 import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';
@@ -16,8 +16,15 @@ import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
 import Tippy from '@tippyjs/react';
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl';
 import { ReactComponent as LinkIcon }  from '../../../../assets/icons/ic-link.svg'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
+import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService';
+import { deleteInstalledChart } from '../../../charts/charts.service';
+import { toast } from 'react-toastify';
+import dots from '../../assets/icons/ic-menu-dot.svg'
+import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
+import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
 
-function EnvironmentSelectorComponent() {
+function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean}) {
     const params = useParams<{ appId: string; envId?: string }>();
     const { url, path } = useRouteMatch();
     const history = useHistory();
@@ -26,6 +33,7 @@ function EnvironmentSelectorComponent() {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -67,6 +75,47 @@ function EnvironmentSelectorComponent() {
     const showInfoUrl = (): void => {
         showUrlInfo(true)
     }
+
+    const Popup = () => {
+        return (
+            <div className="pod-info__popup-container">
+                <span
+                    className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
+                    onClick={(e) => {
+                        setShowDeleteConfirmation(true)
+                    }}
+                >
+                    <span>Delete</span>
+                    <Trash className="icon-dim-20 scr-5" />
+                </span>
+            </div>
+        )
+    }
+
+    const getDeleteApplicationApi = (force?: boolean): Promise<any> => {
+        if (isExternalApp) {
+            return deleteApplicationRelease(params.appId)
+        } else {
+            return deleteInstalledChart(params.appId)
+        }
+    }
+
+    const toggleShowDeleteConfirmation = () => {
+        setShowDeleteConfirmation(!showDeleteConfirmation)
+    }
+
+    async function deleteResourceAction() {
+        try {
+            await getDeleteApplicationApi()
+            setShowDeleteConfirmation(false)
+            toast.success('Deletion initiated successfully.')
+            history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
+        } catch (error) {
+            showError(error)
+        }
+    }
+
+    const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -167,11 +216,9 @@ function EnvironmentSelectorComponent() {
                 </div>
             </div>
             <div className="flex">
-                <button
-                    className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
-                    onClick={showInfoUrl}
-                >
-                    <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />Urls
+                <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
+                    <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
+                    Urls
                 </button>
                 {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
                     <>
@@ -195,6 +242,29 @@ function EnvironmentSelectorComponent() {
                             </Tippy>
                         )}
                     </>
+                )}
+                {!(
+                    deployedAppDetail &&
+                    checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
+                ) && (
+                    <div>
+                        <PopupMenu autoClose>
+                            <PopupMenu.Button isKebab={true}>
+                                <img src={dots} className="pod-info__dots ml-8" />
+                            </PopupMenu.Button>
+                            <PopupMenu.Body>
+                                <Popup />
+                            </PopupMenu.Body>
+                        </PopupMenu>
+                        {showDeleteConfirmation && (
+                            <DeleteChartDialog
+                                appName={appDetails.appName}
+                                handleDelete={deleteResourceAction}
+                                toggleConfirmation={toggleShowDeleteConfirmation}
+                                isCreateValueView={true}
+                            />
+                        )}
+                    </div>
                 )}
             </div>
             {urlInfo && (
