@@ -1,6 +1,6 @@
 .app-compose {
     display: grid;
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 255px 1fr;
     height: calc(100vh - 77px);
     background: white;
     overflow: hidden;
@@ -98,6 +98,10 @@
             &:hover:not(.no-hover) {
                 background: var(--B100);
             }
+        }
+
+        .nav-text {
+          max-width: 192px;
         }
     }
 

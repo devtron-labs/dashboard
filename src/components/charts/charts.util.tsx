@@ -95,3 +95,8 @@ export const QueryParams = {
     AppStoreName: 'appStoreName',
 
 }
+
+export const PaginationParams = {
+    pageOffset: 0,
+    pageSize: 20
+}
