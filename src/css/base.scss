@@ -2045,9 +2045,17 @@ textarea,
     width: auto;
 }
 
+.dc_width-max-content {
+    width: max-content;
+}
+
 //min width
 .min-w-200 {
     min-width: 200px;
+}
+
+.dc_min-w-100{
+    min-width: 100%;
 }
 
 // Height in pixels
@@ -2327,10 +2335,3 @@ textarea::placeholder {
     background-color: var(--N50);
 }
 
-.dc_width-max-content {
-    width: max-content;
-}
-
-.dc_min-w-100{
-    min-width: 100%
-}
