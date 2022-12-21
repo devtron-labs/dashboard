@@ -255,10 +255,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     suggestedValidGitOpsUrl() {
-        const gitOpsUrl = this.state.form.host
         let suggestedValidGitOpsUrl : string;
         ShortGitHosts.forEach((shortGitHost) => {
-            if(gitOpsUrl.indexOf(shortGitHost) >= 0){
+            if(this.state.form.host.indexOf(shortGitHost) >= 0){
                 suggestedValidGitOpsUrl =  "https://" + shortGitHost + "/"
             }
         });
@@ -266,15 +265,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     isValidGitOpsUrl() {
-        const gitOpsUrl = this.state.form.host
-        if (!gitOpsUrl){
+        if (!this.state.form.host){
             return true
         }
 
         let isUrlAccepted : boolean = true
         ShortGitHosts.forEach((shortGitHost) => {
-            if(gitOpsUrl.indexOf(shortGitHost) >= 0){
-                isUrlAccepted = gitOpsUrl.endsWith(shortGitHost + "/") || gitOpsUrl.endsWith(shortGitHost)
+            if(this.state.form.host.indexOf(shortGitHost) >= 0){
+                isUrlAccepted = this.state.form.host.endsWith(shortGitHost + "/") || this.state.form.host.endsWith(shortGitHost)
             }
         });
 
