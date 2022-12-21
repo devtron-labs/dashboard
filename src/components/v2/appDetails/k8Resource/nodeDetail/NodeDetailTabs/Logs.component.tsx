@@ -9,7 +9,7 @@ import { getLogsURL } from '../nodeDetail.api';
 import IndexStore from '../../../index.store';
 import WebWorker from '../../../../../app/WebWorker';
 import sseWorker from '../../../../../app/grepSSEworker';
-import { Host } from '../../../../../../config';
+import { Host } from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject';
 import LogViewerComponent from './LogViewer.component';
 import { useKeyDown } from '../../../../../common';

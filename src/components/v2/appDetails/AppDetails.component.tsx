@@ -11,6 +11,7 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
 import { getSaveTelemetry } from './appDetails.api';
+import { Host } from '@devtron-labs/devtron-fe-common-lib';
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -22,7 +23,6 @@ const AppDetailsComponent = ({
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
-    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
 
     useEffect(() => {
      if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){

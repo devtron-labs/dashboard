@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { fetchAppDetailsInTime } from '../../service';
 import {
     URLS,
-    Host,
     getAppDetailsURL,
     getAppTriggerURL,
     DOCUMENTATION,
@@ -80,6 +79,7 @@ import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentS
 import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
 import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component';
+import { Host } from '@devtron-labs/devtron-fe-common-lib';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 

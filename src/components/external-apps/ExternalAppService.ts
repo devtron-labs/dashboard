@@ -1,6 +1,5 @@
-import {get, post, put, trash} from '@devtron-labs/devtron-fe-common-lib';
+import {get, post, put, trash, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
 import {Routes} from '../../config';
-import {ResponseType} from '../../services/service.types';
 import {HelmApp, AppEnvironmentDetail} from '../app/list-new/AppListService';
 import {ResourceTree} from '../v2/appDetails/appDetails.type';
 

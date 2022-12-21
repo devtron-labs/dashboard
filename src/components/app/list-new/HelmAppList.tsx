@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
+import { ServerErrors, Host } from '@devtron-labs/devtron-fe-common-lib';
 import { useLocation, useHistory } from 'react-router';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
@@ -11,7 +11,7 @@ import {
     LazyImage,
     handleUTCTime,
 } from '../../common';
-import { Host, SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
+import { SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';

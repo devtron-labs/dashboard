@@ -18,7 +18,6 @@ import {
     ConditionalWrap,
 } from '../../../common'
 import {
-    Host,
     Routes,
     URLS,
     SourceTypeMap,
@@ -62,6 +61,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { renderConfigurationError } from '../cdDetails/cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
+import { Host } from '@devtron-labs/devtron-fe-common-lib'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])

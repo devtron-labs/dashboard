@@ -4,9 +4,9 @@ import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { get, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeStatus } from './service'
-import { Routes, Host } from "../../config";
+import { Routes } from "../../config";
 import { toast } from 'react-toastify';
 import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';

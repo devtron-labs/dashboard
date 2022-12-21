@@ -1,6 +1,4 @@
-export const RequestTimeout = 60000
 export const DEFAULT_STATUS = 'Checking Status...'
-export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -192,7 +190,7 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events'
-    
+
 
 }
 

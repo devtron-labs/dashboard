@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -45,6 +45,7 @@ import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { renderConfigurationError } from './cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
+import { Host } from '@devtron-labs/devtron-fe-common-lib'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
