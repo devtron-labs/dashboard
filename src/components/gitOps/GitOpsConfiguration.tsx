@@ -425,12 +425,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return 'gitHubOrgId'
         }
     }
-    handleHostURLLocation(value: string): void {
+
+    updateGitopsUrl(value: string): void {
         this.setState({
             form: {
                 ...this.state.form,
-                host: value
+                host: value,
             },
+            isUrlValidationError : false
         })
     }
 
@@ -564,7 +566,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 <> Please Use:
                                     <button
                                     type="button"
-                                    onClick={(e) => this.handleHostURLLocation(this.suggestedValidGitOpsUrl())}
+                                    onClick={(e) => this.updateGitopsUrl(this.suggestedValidGitOpsUrl())}
                                     className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
                                     >
                                         {this.suggestedValidGitOpsUrl()}
