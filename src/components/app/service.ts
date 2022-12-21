@@ -1,6 +1,5 @@
 import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config'
-import { get, post, trash, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
-import { ResponseType } from '../../services/service.types'
+import { get, post, trash, ServerErrors, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cIDetails/types'

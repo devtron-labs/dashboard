@@ -1,7 +1,6 @@
 import { getClusterListMin, getEnvironmentListMinPublic } from '../../services/service';
 import { Routes } from '../../config';
-import { get, post } from '@devtron-labs/devtron-fe-common-lib';
-import { ResponseType } from '../../services/service.types';
+import { get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib';
 import { sortCallback } from '../common';
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types';
 import moment from 'moment';

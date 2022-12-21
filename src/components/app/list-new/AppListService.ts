@@ -1,7 +1,7 @@
 import { getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
 import {Routes, SERVER_MODE} from '../../../config';
-import {get, post} from '@devtron-labs/devtron-fe-common-lib';
-import {ResponseType, ClusterEnvironmentDetail, EnvironmentListHelmResult, EnvironmentHelmResult, ClusterListResponse, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
+import {get, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
+import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 
 
 export interface AppListResponse extends ResponseType{

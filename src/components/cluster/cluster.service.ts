@@ -1,6 +1,5 @@
 import { Routes } from '../../config';
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
-import { ResponseType } from '../../services/service.types';
+import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib';
 
 export function getClusterList(): Promise<any> {
     const URL = `${Routes.CLUSTER}`;

@@ -1,19 +1,6 @@
 import { VulnerabilityType } from '../components/common';
 import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
 
-export interface ResponseType {
-    code: number;
-    status: string;
-    result?: any;
-    errors?: any;
-}
-
-export interface APIOptions {
-    timeout?: number;
-    signal?: AbortSignal;
-    preventAutoLogout?: boolean;
-}
-
 export interface RootObject {
     code: number;
     status?: string;

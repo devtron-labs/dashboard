@@ -1,6 +1,5 @@
 import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service'
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { ResponseType } from '../../services/service.types'
+import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { CreateGroup, CreateUser } from './userGroups.types'
 import { Routes } from '../../config'
 

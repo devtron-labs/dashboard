@@ -1,7 +1,6 @@
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
 import { History } from '../cIDetails/types'
-import { ResponseType } from '../../../../services/service.types'
 import {
     DeploymentTemplateList,
     HistoryDiffSelectorList,
