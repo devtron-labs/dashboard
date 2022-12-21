@@ -255,7 +255,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     suggestedValidGitOpsUrl() {
-        let gitOpsUrl = this.state.form.host
+        const gitOpsUrl = this.state.form.host
         let suggestedValidGitOpsUrl : string;
         ShortGitHosts.forEach((shortGitHost) => {
             if(gitOpsUrl.indexOf(shortGitHost) >= 0){
@@ -266,7 +266,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     isValidGitOpsUrl() {
-        let gitOpsUrl = this.state.form.host
+        const gitOpsUrl = this.state.form.host
         if (!gitOpsUrl){
             return true
         }
@@ -288,7 +288,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return
         }
 
-        let isValidGitOpsUrl = this.isValidGitOpsUrl()
+        const isValidGitOpsUrl = this.isValidGitOpsUrl()
         if (!isValidGitOpsUrl) {
             this.setState({
                 isUrlValidationError: true,
@@ -312,11 +312,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 active: true,
             }
         
-            let promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload)
+            const promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload)
         promise
             .then((response) => {
-                let resp = response.result
-                let errorMap = resp.stageErrorMap
+                const resp = response.result
+                const errorMap = resp.stageErrorMap
                 if (errorMap != null && Object.keys(errorMap).length == 0) {
                     this.props.handleChecklistUpdate('gitOps')
                     toast.success('Configuration validated and saved successfully')
@@ -354,7 +354,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return;
         }
 
-        let isValidGitOpsUrl = this.isValidGitOpsUrl()
+        const isValidGitOpsUrl = this.isValidGitOpsUrl()
         if (!isValidGitOpsUrl) {
             this.setState({
                 isUrlValidationError: true,
