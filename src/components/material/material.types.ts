@@ -82,4 +82,5 @@ export interface MaterialViewProps {
 export interface MaterialViewState {
     deleting: boolean;
     confirmation: boolean;
+    showDeleteTippy: boolean;
 }

@@ -30,12 +30,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
       this.state = {
          deleting: false,
          confirmation: false,
+         showDeleteTippy: false,
       }
     }
 
     toggleConfirmation = () => {
         this.setState((prevState)=>{
-           return{ confirmation: !prevState.confirmation}
+           return{ confirmation: !prevState.confirmation, showDeleteTippy: !prevState.showDeleteTippy}
            })
     }
 
