@@ -273,7 +273,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let isUrlAccepted : boolean = true
         ShortGitHosts.forEach((shortGitHost) => {
             if(gitOpsUrl.indexOf(shortGitHost) >= 0){
-                isUrlAccepted = gitOpsUrl.endsWith(shortGitHost) || gitOpsUrl.endsWith(shortGitHost + "/")
+                isUrlAccepted = (gitOpsUrl.startsWith("http://") || gitOpsUrl.startsWith("https://")) && (gitOpsUrl.endsWith(shortGitHost) || gitOpsUrl.endsWith(shortGitHost + "/")) 
             }
         });
 
