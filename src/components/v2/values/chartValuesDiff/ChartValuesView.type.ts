@@ -359,7 +359,6 @@ export interface ChaartValuesGUIFormType {
 
 export interface ProjectSelectorTypes {
     appId: string
-    appName: string
     onClose: () => void
     appMetaInfo: AppMetaInfo
     installedAppId: number

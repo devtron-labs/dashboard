@@ -11,42 +11,38 @@ import { createAppLabels } from '../../../app/service'
 import { toast } from 'react-toastify'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
-import common from "mocha/lib/interfaces/common";
+import common from 'mocha/lib/interfaces/common'
 
 export default function ProjectModal({
     appId,
-    appName,
     onClose,
     appMetaInfo,
     installedAppId,
     projectsList,
     getAppMetaInfoRes,
 }: ProjectSelectorTypes) {
-
     const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
     const [submitting, setSubmitting] = useState(false)
 
     useEffect(() => {
         if (Array.isArray(projectsList)) {
-
-            const _projectsOption = projectsList.map( (_project) => {
+            const _projectsOption = projectsList.map((_project) => {
                 if (!selectedProject && _project.label === appMetaInfo.projectName) {
                     setSelectedProject({ label: _project.label, value: _project.value })
                 }
-                return {label: _project.label, value: _project.value}
+                return { label: _project.label, value: _project.value }
             })
             console.log(_projectsOption)
             setProjectsOption(_projectsOption)
         }
     }, [appMetaInfo, projectsList])
 
-
     const renderAboutModalInfoHeader = (): JSX.Element => {
         return (
             <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
                 <h2 className="fs-16 cn-9 fw-6 m-0"> Change Project </h2>
-                <Close className="icon-dim-20 cursor"  onClick={onClose} />
+                <Close className="icon-dim-20 cursor" onClick={onClose} />
             </div>
         )
     }
@@ -88,9 +84,9 @@ export default function ProjectModal({
 
         const payload = {
             appId: appId,
-            appName: appName,
+            appName: appMetaInfo.appName,
             teamId: selectedProject.value,
-            installedAppId: installedAppId ? installedAppId : 0
+            installedAppId: installedAppId ? installedAppId : 0,
         }
 
         try {
@@ -112,7 +108,6 @@ export default function ProjectModal({
         } finally {
             onClose()
             setSubmitting(false)
-
         }
     }
 
@@ -152,7 +147,13 @@ export default function ProjectModal({
                     </>
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
-                    <button className="cta cancel flex h-36 mr-12" type="button" disabled={submitting} onClick={onClose} tabIndex={6}>
+                    <button
+                        className="cta cancel flex h-36 mr-12"
+                        type="button"
+                        disabled={submitting}
+                        onClick={onClose}
+                        tabIndex={6}
+                    >
                         Cancel
                     </button>
                     <button

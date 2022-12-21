@@ -228,7 +228,7 @@ interface appName {
     suggestedName?: string
 }
 
-interface HelmProjectUpdatePaylaod{
+interface HelmProjectUpdatePayload {
     appId: string
     appName: string
     teamId: number
@@ -250,6 +250,6 @@ export function deleteChartGroup(request) {
     return trash(Routes.CHART_GROUP, request)
 }
 
-export function updateHelmAppProject(payload: HelmProjectUpdatePaylaod ): Promise<any> {
-    return put(`app-store/deployment/application/update/project`, payload)
+export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise<any> {
+    return put(Routes.UPDATE_HELM_APP_META_INFO, payload)
 }

@@ -79,7 +79,7 @@ import './ChartValuesView.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import { AppMetaInfo } from '../../../app/types'
-import { getAppMetaInfo, getHelmAppMetaInfo } from '../../../app/service'
+import { getHelmAppMetaInfo } from '../../../app/service'
 import ProjectModal from './ProjectSelector'
 
 function ChartValuesView({
@@ -1209,7 +1209,6 @@ function ChartValuesView({
             setProjectLoading(true)
             const { result } = await getHelmAppMetaInfo(appId)
             if (result) {
-                setAppName(result.appName)
                 setAppMetaInfo(result)
                 return result
             }
@@ -1221,7 +1220,6 @@ function ChartValuesView({
     }
 
     const toggleChangeProjectModal = () => {
-        // setChangeProjectView(!isChangeProjectView)
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
@@ -1272,7 +1270,6 @@ function ChartValuesView({
                         {!isDeployChartView && showUpdateAppModal && (
                             <ProjectModal
                                 appId={appId}
-                                appName={appName}
                                 appMetaInfo={appMetaInfo}
                                 installedAppId={commonState.installedConfig?.installedAppId}
                                 onClose={toggleChangeProjectModal}
