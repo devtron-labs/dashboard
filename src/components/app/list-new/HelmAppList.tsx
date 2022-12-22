@@ -28,9 +28,11 @@ import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
-import '../list/list.css'
 import ContentCard from '../../common/ContentCard/ContentCard'
+import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
+import '../list/list.css'
 
 export default function HelmAppList({
     serverMode,
@@ -460,18 +462,26 @@ export default function HelmAppList({
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
                     .map((app) => renderHelmAppLink(app))}
                 {showGuidedContentCards && (
-                    <div className="guided-content-cards-wrapper">
+                    <div className="helm-app-guided-cards-wrapper">
                         <ContentCard
                             redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
+                            direction={CardContentDirection.Horizontal}
                             imgSrc={HelmCluster}
                             title="Discover and manage existing helm releases via GUI"
                             linkText="Connect Kubernetes Cluster"
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                         <ContentCard
                             redirectTo={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
+                            direction={CardContentDirection.Horizontal}
                             imgSrc={DeployCICD}
                             title="Deploy custom applications using CI/CD pipelines"
                             linkText="Install CI/CD Integration"
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                     </div>
                 )}

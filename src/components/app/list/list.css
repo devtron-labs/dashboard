@@ -474,10 +474,18 @@
     margin-top: 60px;
 }
 
-.guided-content-cards-wrapper {
+.helm-app-guided-cards-wrapper,
+.devtron-app-guided-cards-wrapper {
     display: grid;
-    grid-template-columns: 300px 300px;
-    grid-gap: 20px;
     justify-content: center;
-    padding: 60px 20px 20px;
+    padding: 40px 20px 20px;
+    grid-gap: 20px;
+}
+
+.helm-app-guided-cards-wrapper {
+    grid-template-rows: 140px 140px;
+}
+
+.devtron-app-guided-cards-wrapper {
+    grid-template-columns: 300px 300px;
 }

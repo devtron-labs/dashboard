@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import { AppListViewType } from '../config';
 import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ExpandedRow } from './expandedRow/ExpandedRow';
 import { Empty } from './emptyView/Empty';
-import { App, AppListState, AppListViewProps, OrderBy, SortBy } from './types';
+import { AppListViewProps, OrderBy, SortBy } from './types';
+import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
+import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
+import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
 import Tippy from '@tippyjs/react';
-import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
+import ContentCard from '../../common/ContentCard/ContentCard';
+import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config';
+import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types';
 
 export class AppListView extends Component<AppListViewProps>{
 
@@ -108,6 +114,34 @@ export class AppListView extends Component<AppListViewProps>{
         }
     }
 
+    renderGuidedCards() {
+        return (
+            <div className="devtron-app-guided-cards-container">
+                <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
+                <div className="devtron-app-guided-cards-wrapper">
+                    <ContentCard
+                        redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
+                        isExternalRedirect={true}
+                        imgSrc={NodeAppThumbnail}
+                        title="Watch how to deploy a basic K8s Node.js app using Devtron"
+                        linkText="Watch video"
+                        LinkIcon={PlayMedia}
+                        linkIconClass="scb-5 mr-8"
+                        linkIconPlacement={CardLinkIconPlacement.BeforeLink}
+                    />
+                    <ContentCard
+                        redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                        imgSrc={DeployCICD}
+                        title="Deploy custom applications using CI/CD pipelines"
+                        linkText="Create Application"
+                        LinkIcon={ArrowRight}
+                        linkIconClass="scb-5"
+                        linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                    />
+                </div>
+            </div>
+        )
+    }
 
     render() {
         if (this.props.view === AppListViewType.LOADING) {
@@ -119,7 +153,7 @@ export class AppListView extends Component<AppListViewProps>{
                 </React.Fragment>
             )
         } else if (this.props.view === AppListViewType.EMPTY) {
-            return <DevtronAppGuidePage openDevtronAppCreateModel={this.props.openDevtronAppCreateModel} />
+            return this.renderGuidedCards()
         } else if (this.props.view === AppListViewType.NO_RESULT) {
             return (
                 <React.Fragment>

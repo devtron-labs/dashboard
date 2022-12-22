@@ -34,30 +34,6 @@
     height: calc(100vh - 454px);
 }
 
-.guide-container {
-    position: absolute;
-    top: 100px;
-    left: 50%;
-    transform: translate(-50%, 0);
-
-    .guide-cards__wrap {
-        display: grid;
-        grid-template-columns: 300px 300px;
-        grid-gap: 20px;
-        position: absolute;
-        top: -80px;
-    }
-
-    .guide-card__img {
-        width: 298px;
-        height: 210px;
-    }
-
-    .guide-card:hover {
-        box-shadow: 0 8px 12px 0 var(--gray);
-    }
-}
-
 .common-guide__container {
     .deploy-manage__upper {
         &.pt-64 {

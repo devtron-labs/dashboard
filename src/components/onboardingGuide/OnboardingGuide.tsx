@@ -11,6 +11,7 @@ import { OnboardingGuideProps } from './OnboardingGuide.type'
 import { updateLoginCount } from '../../services/service'
 import './onboardingGuide.scss'
 import ContentCard from '../common/ContentCard/ContentCard'
+import { CardLinkIconPlacement } from '../common/ContentCard/ContentCard.types'
 
 export default function OnboardingGuide({ loginCount, serverMode, isGettingStartedClicked }: OnboardingGuideProps) {
     useEffect(() => {
@@ -72,6 +73,9 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             imgSrc={HelmCollage}
                             title="Deploy and manage your favourite Kubernetes packages"
                             linkText="Browse Helm Charts"
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                         <ContentCard
                             redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
@@ -79,6 +83,9 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             imgSrc={HelmCluster}
                             title="Discover and manage existing helm releases via GUI"
                             linkText="Connect Kubernetes Cluster"
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                         <ContentCard
                             redirectTo={redirectDeployCardToCICD()}
@@ -88,6 +95,9 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             linkText={
                                 serverMode === SERVER_MODE.FULL ? 'Create Application' : 'Install CI/CD Integration'
                             }
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
                         />
                     </div>
                     <div className="fs-14 mt-40 mb-20 flex column">

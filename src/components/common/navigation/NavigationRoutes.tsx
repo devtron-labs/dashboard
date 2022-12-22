@@ -273,7 +273,11 @@ export default function NavigationRoutes() {
                     )}
 
                     {serverMode && (
-                        <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
+                        <div
+                            className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
+                                pageOverflowEnabled ? '' : 'main__overflow-disabled'
+                            }`}
+                        >
                             <Suspense fallback={<Progressing pageLoader />}>
                                 <ErrorBoundary>
                                     <Switch>

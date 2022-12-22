@@ -4,9 +4,21 @@
         border-radius: 400;
     }
 
-    .content-card-img {
-        width: 298px;
-        height: 210px;
+    .Horizontal {
+        display: flex;
+        max-width: 500px;
+
+        .content-card-img {
+            width: 200px;
+            height: 140px;
+        }
+    }
+
+    .Vertical {
+        .content-card-img {
+            width: 298px;
+            height: 210px;
+        }
     }
 
     a {
