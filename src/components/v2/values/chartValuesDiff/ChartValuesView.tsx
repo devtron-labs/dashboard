@@ -52,7 +52,7 @@ import {
     getChartValuesList,
 } from '../common/chartValues.api'
 import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
-import { ReactComponent as EditIcon, ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
@@ -1261,7 +1261,7 @@ function ChartValuesView({
                                 <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
                                 <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
                                     {appMetaInfo?.projectName ? appMetaInfo?.projectName : 'unassigned'}
-                                    <EditIcon className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
+                                    <Edit className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
                                 </div>
                             </div>
                         )}
