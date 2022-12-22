@@ -1,18 +1,20 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { ResponseType } from '../../../services/service.types'
 import { ActionResponse } from '../../external-apps/ExternalAppService'
+import React from "react";
 
 export enum ModuleStatus {
     HEALTHY = 'healthy',
-    INSTALLED = 'installed',
-    INSTALLING = 'installing',
-    INSTALL_FAILED = 'installFailed',
     NONE = 'none',
-    NOT_INSTALLED = 'notInstalled',
-    TIMEOUT = 'timeout',
     UNKNOWN = 'unknown',
     UPGRADING = 'upgrading',
     UPGRADE_FAILED = 'upgradeFailed',
+    //Module Status
+    INSTALLED = 'installed',
+    INSTALLING = 'installing',
+    INSTALL_FAILED = 'installFailed',
+    NOT_INSTALLED = 'notInstalled',
+    TIMEOUT = 'timeout',
 }
 
 export enum ModuleActions {
@@ -71,6 +73,16 @@ export interface ModuleDetails {
     baseMinVersionSupported?: string
     isModuleConfigurable?: boolean
     isModuleConfigured?: boolean
+    moduleResourcesStatus?: ModuleResourceStatus[]
+}
+
+export interface ModuleResourceStatus {
+    group: string
+    version: string
+    kind: string
+    name: string
+    healthStatus: string
+    healthMessage: string
 }
 
 export interface ModuleListingViewType {
@@ -91,6 +103,7 @@ export interface ModuleDetailsViewType {
     handleActionTrigger: (actionName: string, actionState: boolean) => void
     history: RouteComponentProps['history']
     location: RouteComponentProps['location']
+    setShowResourceStatusModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleInstallationStatusType {
@@ -101,6 +114,8 @@ export interface ModuleInstallationStatusType {
     isUpgradeView?: boolean
     latestVersionAvailable: boolean
     isCICDModule?: boolean
+    moduleDetails?: ModuleDetails
+    setShowResourceStatusModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface InstallationWrapperType {
@@ -121,6 +136,7 @@ export interface InstallationWrapperType {
     setShowPreRequisiteConfirmationModal?: React.Dispatch<React.SetStateAction<boolean>>
     preRequisiteChecked?: boolean
     setPreRequisiteChecked?: React.Dispatch<React.SetStateAction<boolean>>
+    setShowResourceStatusModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleDetailsInfo {
@@ -156,6 +172,7 @@ export interface ModuleInfo {
     id: number
     name: string
     status: ModuleStatus
+    moduleResourcesStatus?: ModuleResourceStatus[]
 }
 
 export interface ModuleInfoResponse extends ResponseType {

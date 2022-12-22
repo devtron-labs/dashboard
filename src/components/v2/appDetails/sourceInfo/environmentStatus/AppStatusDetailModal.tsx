@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Drawer } from '../../../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as InfoIcon } from '../../../../../assets/icons/info-filled.svg'
+import { ReactComponent as Chat } from '../../../../../assets/icons/ic-chat-circle-dots.svg'
 import IndexStore from '../../index.store'
 import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
@@ -28,7 +30,15 @@ const STATUS_SORTING_ORDER = {
     [NodeStatus.Healthy]: 4,
 }
 
-function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: AppStatusDetailType) {
+function AppStatusDetailModal({
+    close,
+    appStreamData,
+    showAppStatusMessage,
+    title,
+    appStatus,
+    appStatusText,
+    showFooter,
+}: AppStatusDetailType) {
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
@@ -117,11 +127,13 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
             <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
                 <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
                     <div>
-                        <div className="title cn-9 fs-16 fw-6 mb-4">App status detail</div>
+                        <div className="title cn-9 fs-16 fw-6 mb-4">{title ? title : 'App status detail'}</div>
                         <div
-                            className={`subtitle app-summary__status-name fw-6 fs-13 f-${_appDetails.resourceTree.status.toLowerCase()} mr-16`}
+                            className={`subtitle app-summary__status-name fw-6 fs-13 f-${
+                                appStatus ? appStatus : _appDetails.resourceTree.status.toLowerCase()
+                            } mr-16`}
                         >
-                            {_appDetails.resourceTree.status.toUpperCase()}
+                            {appStatusText ? appStatusText : _appDetails.resourceTree.status.toUpperCase()}
                         </div>
                     </div>
                     <span className="cursor" onClick={close}>
@@ -149,14 +161,14 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: Ap
                             {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree.status.toUpperCase()]}
                         </div>
                     )}
-                    <AppStatusDetailsChart appStreamData={appStreamData} />
+                    <AppStatusDetailsChart appStreamData={appStreamData} showFooter={showFooter} />
                 </div>
             </div>
         </Drawer>
     )
 }
 
-export function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = false }) {
+export function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = false, showFooter }) {
     const _appDetails = IndexStore.getAppDetails()
     const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [currentFilter, setCurrentFilter] = useState('')
@@ -233,8 +245,8 @@ export function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = fals
                         </div>
                     ))}
                 </div>
-                <div className="resource-list fs-13">
-                    {filteredFlattendNodes()
+                <div className={`resource-list fs-13 ${showFooter ? 'with-footer' : ''}`}>
+                    {flattenedNodes.length > 0 ? (filteredFlattendNodes()
                         .filter(
                             (nodeDetails) =>
                                 currentFilter === 'all' || nodeDetails.health.status?.toLowerCase() === currentFilter,
@@ -255,8 +267,29 @@ export function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = fals
                                 </div>
                                 <div>{getNodeMessage(nodeDetails.kind, nodeDetails.name)}</div>
                             </div>
-                        ))}
+                        ))
+                        ) : (
+                            <div className="flex dc__height-inherit">
+                                <div className="dc__align-center">
+                                    <InfoIcon className="icon-dim-20" />
+                                    <div>No resources available</div>
+                                </div>
+                            </div>
+                        )}
                 </div>
+                {showFooter && (
+                            <div className="dc__position-fixed bcn-0 flexbox dc__content-space dc__border-top p-16 fs-13 fw-6 footer">
+                                <span className="fs-13 fw-6">Facing issues in installing integration?</span>
+                                <a
+                                    className="help-chat cb-5 flex left"
+                                    href="https://discord.devtron.ai/"
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                >
+                                    <Chat className="icon-dim-20 mr-8" /> Chat with support
+                                </a>
+                            </div>
+                        )}
             </div>
         </>
     )

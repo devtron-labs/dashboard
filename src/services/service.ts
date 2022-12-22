@@ -8,6 +8,7 @@ import { fetchWithFullRoute } from './fetchWithFullRoute';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
+import { CdPipeline } from '../components/app/details/triggerView/types';
 
 
 export function getAppConfigStatus(appId: number): Promise<any> {
@@ -98,8 +99,14 @@ export function getProjectFilteredApps(
     return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`);
 }
 
-export function getAvailableCharts(queryString?: string, options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
+export function getAvailableCharts(queryString?: string, pageOffset?: number, pageSize?: number, options?: APIOptions ): Promise<{ code: number, result: Chart[] }> {
     let url = `${Routes.CHART_AVAILABLE}/discover/`;
+
+
+    if (pageOffset>=0 && pageSize){
+        queryString = `${queryString? queryString:'?'}&offset=${pageOffset}&size=${pageSize}`
+    }
+
     if (queryString) {
         url = `${url}${queryString}`
     }
@@ -275,8 +282,8 @@ export function getChartRepoList(): Promise<ResponseType> {
     return get(URL);
 }
 
-export function getHostURLConfiguration(): Promise<ResponseType> {
-    const URL = `${Routes.HOST_URL}?key=url`;
+export function getHostURLConfiguration(key: string = 'url'): Promise<ResponseType> {
+    const URL = `${Routes.HOST_URL}?key=${key}`;
     return get(URL);
 }
 

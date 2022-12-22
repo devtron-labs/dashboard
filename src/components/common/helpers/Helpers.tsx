@@ -9,6 +9,7 @@ import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom';
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
 import { toastAccessDenied } from '../ToastBody';
+import { OptionType } from '../../app/types';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -1000,5 +1001,29 @@ export const setActionWithExpiry = (key: string, days: number): void => {
 }
 
 export const stopPropagation = (event): void => {
-  event.stopPropagation()
+    event.stopPropagation()
+}
+
+// Creates object of arrays containing items grouped by item value of provided key 
+export const createGroupedItemsByKey = (arr: any[], key: string) => {
+    return arr.reduce((prevObj, currentObj) => {
+        return {
+            ...prevObj,
+            [currentObj[key]]: (prevObj[currentObj[key]] || []).concat(currentObj),
+        }
+    }, {})
+}
+
+export const convertToOptionsList = (
+    arr: any[],
+    customObjToPickLabel?: Record<string, any>,
+    labelKey?: string,
+    valueKey?: string,
+): OptionType[] => {
+    return arr.map((ele) => {
+        return {
+            label: customObjToPickLabel ? customObjToPickLabel[ele]?.label : labelKey ? ele[labelKey] : ele,
+            value: valueKey ? ele[valueKey] : ele,
+        }
+    })
 }

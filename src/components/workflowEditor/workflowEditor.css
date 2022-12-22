@@ -46,55 +46,16 @@
     margin-top: 4px;
 }
 
-.white-card__header.white-card__header--pipeline-webhook {
-    font-size: 16px;
-    margin: 16px;
-}
-
-.pipeline-webhook {
-    width: 416px;
-    padding: 0px 0px 16px 0px;
+.pipeline-select-container {
+    width: 320px;
     box-shadow: 0 6px 12px -3px rgba(0, 56, 112, 0.3);
 }
 
-.pipeline-webhook__icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 12px;
-    border-radius: 8px;
+.pipeline-select-item:hover {
+    background-color: var(--N50);
 }
 
-.pipeline-webhook__item {
-    display: flex;
-    align-items: center;
-    padding: 8px 16px;
-    cursor: pointer;
-}
-
-.pipeline-webhook__title {
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-top: 0px;
-    margin-bottom: 4px;
-}
-
-.pipeline-webhook__text {
-    font-size: 12px;
-    font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.4;
-    letter-spacing: normal;
-    color: var(--N700);
-    margin-bottom: 0px;
-}
-
-.pipeline-webhook__err-text {
+.pipeline-select-container__err-text {
     color: var(--R500);
 }
 
@@ -111,10 +72,6 @@
     z-index: 3;
 }
 
-.pipeline-webhook__item:hover {
-    background-color: var(--N100);
-}
-
 .cd-success-icon-container {
     height: 60px;
 }
@@ -125,4 +82,25 @@
 
 .action-card:hover {
     background: var(--N50);
+}
+
+.webhook-tippy-card-container .webhook-tippy-card {
+    background-color: var(--tippy-card-black-bg);
+    position: fixed;
+    z-index: 6;
+    right: 20px;
+    top: -100px;
+}
+
+.webhook-tippy-card-container .webhook-icon-white path[fill='#4A4A4A'] {
+    fill: var(--N0);
+}
+
+.webhook-tippy-card-container .arrow-down {
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid var(--tippy-card-black-bg);
+  right: 50%;
+  position: fixed;
+  top: 85px;
 }
