@@ -52,7 +52,7 @@
         "test": "react-app-rewired test",
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
-        "test:ci": "./node_modules/.bin/react-app-rewired test --watchAll=false --ci --coverage --reporters=default --reporters=jest-junit",
+        "test:ci": "react-app-rewired test --watchAll=false --ci --coverage",
         "eject": "react-app-rewired eject",
         "jest": "jest"
     },
@@ -84,7 +84,6 @@
         "eslint-plugin-prettier": "^4.0.0",
         "husky": "^7.0.4",
         "jest-extended": "^2.0.0",
-        "jest-junit": "^13.0.0",
         "jsdom-worker": "^0.2.1",
         "prettier": "^2.6.0",
         "react-scripts": "3.2.0",
@@ -94,18 +93,6 @@
         "ts-node": "^10.7.0",
         "typescript": "^4.6.2",
         "worker-loader": "3.0.8"
-    },
-    "jest": {
-        "collectCoverageFrom": [
-            "**/*.{js,jsx}",
-            "!**/node_modules/**",
-            "!**/coverage/**",
-            "!**/serviceWorker.js",
-            "!**/index.js"
-        ],
-        "setupFilesAfterEnv": [
-            "jest-extended"
-        ]
     },
     "husky": {
         "hooks": {
