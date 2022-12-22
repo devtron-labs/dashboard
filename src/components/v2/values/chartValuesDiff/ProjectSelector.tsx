@@ -9,6 +9,7 @@ import {  NumberOptionType } from '../../../app/types'
 import { toast } from 'react-toastify'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
+import {ProjectChangeMessageList} from "./constant";
 
 export default function ProjectModal({
     appId,
@@ -20,10 +21,10 @@ export default function ProjectModal({
 }: ProjectSelectorTypes) {
     const [projectOptions, setProjectOptions] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSubmitting, setSubmitting] = useState(false)
 
     useEffect(() => {
-        if (Array.isArray(projectList)) {
+        if (appMetaInfo && Array.isArray(projectList)) {
             const _projectOptions = projectList.map((_project) => {
                 if (!selectedProject && _project.label === appMetaInfo.projectName) {
                     setSelectedProject({ label: _project.label, value: _project.value })
@@ -76,7 +77,7 @@ export default function ProjectModal({
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
 
-        setIsSubmitting(true)
+        setSubmitting(true)
 
         const payload = {
             appId: appId,
@@ -103,7 +104,7 @@ export default function ProjectModal({
             }
         } finally {
             onClose()
-            setIsSubmitting(false)
+            setSubmitting(false)
         }
     }
 
@@ -112,10 +113,9 @@ export default function ProjectModal({
             <>
                 <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
                 <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4 m-0">
-                    <li>Current users losing access to this application.</li>
+                    <li> {ProjectChangeMessageList.MessageOne} </li>
                     <li>
-                        Users getting an access to the application automatically, if they have an access to the selected
-                        project.
+                        {ProjectChangeMessageList.MessageTwo}
                     </li>
                 </ol>
             </>
@@ -131,13 +131,10 @@ export default function ProjectModal({
                         {renderProjectSelect()}
                         {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
                             <InfoColourbar
-                                classname="warn cn-9 lh-20"
+                                classname="warn cn-9 lh-20 pt-8 pr-12"
                                 Icon={Error}
                                 message={projectChangeMessage()}
                                 iconClass="warning-icon"
-                                styles={{
-                                    padding: '8px 12px',
-                                }}
                             />
                         )}
                     </>

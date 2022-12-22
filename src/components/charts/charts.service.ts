@@ -1,8 +1,9 @@
 import { get, post, put, trash } from '../../services/api'
 import { Routes } from '../../config'
 import { handleUTCTime, sortCallback } from '../common'
-import { ChartValuesType, ChartGroup, HelmTemplateChartRequest } from './charts.types'
+import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
+import {ResponseType} from "../../services/service.types";
 
 interface RootObject {
     code: number
@@ -228,11 +229,6 @@ interface appName {
     suggestedName?: string
 }
 
-interface HelmProjectUpdatePayload {
-    appId: string
-    appName: string
-    teamId: number
-}
 
 interface AppNameValidated extends RootObject {
     result?: appName[]

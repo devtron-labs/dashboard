@@ -7,7 +7,7 @@ import warn, { ReactComponent as Error } from '../../../../assets/icons/ic-warni
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
-import {ReactComponent as EditIcon, ReactComponent as Edit} from '../../../../assets/icons/ic-pencil.svg'
+import {ReactComponent as Edit} from '../../../../assets/icons/ic-pencil.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
 import {

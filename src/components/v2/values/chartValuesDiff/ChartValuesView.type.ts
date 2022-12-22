@@ -360,5 +360,5 @@ export interface ProjectSelectorTypes {
     appMetaInfo: AppMetaInfo
     installedAppId: number
     projectList: ChartValuesOptionType[]
-    getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    getAppMetaInfoRes: () => Promise<void>
 }

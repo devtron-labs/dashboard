@@ -198,7 +198,7 @@ export default function UserGroupRoute() {
             Promise.allSettled([
                 getGroupList(),
                 get(Routes.PROJECT_LIST),
-                getEnvironmentListMin(),
+                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
                 serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
                 getEnvironmentListHelmApps(),
@@ -298,7 +298,7 @@ export default function UserGroupRoute() {
                         fetchAppList,
                         appsList,
                         userGroupsList: userGroups.status === 'fulfilled' ? userGroups?.value?.result : [],
-                        environmentsList: environments.status === 'fulfilled' ? environments?.value?.result : [],
+                        environmentsList: environments?.status === 'fulfilled' ? environments?.value?.result : [],
                         projectsList: projects.status === 'fulfilled' ? projects?.value?.result : [],
                         chartGroupsList: chartGroups.status === 'fulfilled' ? chartGroups?.value?.result?.groups : [],
                         superAdmin: userRole.status === 'fulfilled' ? userRole?.value?.result?.superAdmin : false,

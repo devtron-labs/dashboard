@@ -11,7 +11,6 @@ import {
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
-import exp from 'constants'
 
 export async function fetchChartVersionsData(
     id: number,

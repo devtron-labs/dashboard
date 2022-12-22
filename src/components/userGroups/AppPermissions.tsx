@@ -201,7 +201,7 @@ export default function AppPermissions({
                 } as DirectPermissionsRoleFilter
             })
 
-        if (!foundDevtronApps && serverMode != SERVER_MODE.EA_ONLY) {
+        if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionDevtronApps)
         }
         if (!foundHelmApps) {

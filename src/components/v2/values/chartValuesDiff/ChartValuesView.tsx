@@ -1204,13 +1204,12 @@ function ChartValuesView({
         setValueName(newValueName)
     }
 
-    const getHelmAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
+    const getHelmAppMetaInfoRes = async (): Promise<void> => {
         try {
             setProjectLoading(true)
             const { result } = await getHelmAppMetaInfo(appId)
             if (result) {
                 setAppMetaInfo(result)
-                return result
             }
         } catch (err) {
             showError(err)
