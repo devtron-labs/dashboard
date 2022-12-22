@@ -281,8 +281,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     saveGitOps() {
-        let isInvalid = this.isInvalid()
-        if (isInvalid) {
+        if (this.isInvalid()) {
             toast.error('Some Required Fields are missing')
             return
         }
