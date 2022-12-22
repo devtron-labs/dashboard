@@ -96,6 +96,9 @@ export default function ProjectModal({
 
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
+
+            onClose()
+
         } catch (err) {
             if (err['code'] === 403 && appMetaInfo.projectName !== selectedProject.label) {
                 toast.error(`You don't have the required access to the target project ${selectedProject.label}`)
@@ -103,7 +106,6 @@ export default function ProjectModal({
                 showError(err)
             }
         } finally {
-            onClose()
             setSubmitting(false)
         }
     }
