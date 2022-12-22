@@ -85,7 +85,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                         setShowDeleteConfirmation(true)
                     }}
                 >
-                    <span>Delete</span>
+                    <span>Delete application</span>
                     <Trash className="icon-dim-20 scr-5" />
                 </span>
             </div>
@@ -261,7 +261,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                                 appName={appDetails.appName}
                                 handleDelete={deleteResourceAction}
                                 toggleConfirmation={toggleShowDeleteConfirmation}
-                                isCreateValueView={true}
+                                isCreateValueView={false}
                             />
                         )}
                     </div>
