@@ -36,7 +36,12 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
         const script = document.createElement("script");
         script.src = "https://cdn.devtron.ai/js/snowstorm-min.js";
-        script.async = true;
+        script.async = true
+        script.onload = () => {
+            if (window['snowStorm']?.start) {
+                window['snowStorm'].start()
+            }
+        }
         document.body.appendChild(script);
 
         //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
