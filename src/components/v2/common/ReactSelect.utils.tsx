@@ -94,7 +94,7 @@ export const styles = {
 }
 
 export function Option(props) {
-    const { selectProps, data, showTippy, style } = props
+    const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
@@ -105,7 +105,12 @@ export function Option(props) {
     }
 
     return showTippy ? (
-        <Tippy className="default-white" arrow={false} placement="right" content={data.label}>
+        <Tippy
+            className={tippyClass || "default-white"}
+            arrow={false}
+            placement={placement || 'right'}
+            content={tippyContent || data.label}
+        >
             {getOption()}
         </Tippy>
     ) : (

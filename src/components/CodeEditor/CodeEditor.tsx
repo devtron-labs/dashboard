@@ -256,7 +256,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         roundedSelection: false,
         readOnly,
         lineDecorationsWidth: lineDecorationsWidth,
-        automaticLayout: false,
+        automaticLayout: true,
         scrollBeyondLastLine: false,
         minimap: {
             enabled: false
