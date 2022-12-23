@@ -176,7 +176,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             : 'USERNAME_PASSWORD',
         active: true,
         ...(state.auth.value === 'USERNAME_PASSWORD' || authMode === 'USERNAME_PASSWORD'
-            ? { secured: secureWithTls }
+            ? { allow_insecure_connection: !secureWithTls }
             : {}),
         ...(state.auth.value === 'USERNAME_PASSWORD' || authMode === 'USERNAME_PASSWORD'
             ? { username: customState.username.value, password: customState.password.value }
