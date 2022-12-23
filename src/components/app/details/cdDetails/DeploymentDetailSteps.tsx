@@ -10,13 +10,13 @@ import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { URLS } from '../../../../config'
+import { DEPLOYMENT_STATUS, TIMELINE_STATUS, URLS } from '../../../../config'
 
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
-    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus !== 'Aborted')
+    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus.toUpperCase() !== TIMELINE_STATUS.ABORTED)
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
 
@@ -27,7 +27,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
                     deploymentStatusDetailRes.result,
                 )
-                if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+                if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
                     initTimer = setTimeout(() => {
                         getDeploymentDetailStepsData()
                     }, 10000)
@@ -63,7 +63,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         history.push(newUrl)
     }
 
-    return deploymentStatus === 'Aborted' || deploymentStatusDetailsBreakdownData.deploymentStatus === 'superseded' ? (
+    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED || deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted">
             <CDEmptyState
                 title="Deployment failed"
