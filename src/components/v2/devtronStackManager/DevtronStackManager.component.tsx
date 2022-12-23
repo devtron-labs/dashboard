@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
+    InstallationType,
+    InstallationWrapperType,
+    ModuleDetails,
     ModuleDetailsCardType,
-    ModuleStatus,
     ModuleDetailsViewType,
+    ModuleInstallationStatusType,
     ModuleListingViewType,
+    ModuleStatus,
     StackManagerNavItemType,
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
-    ModuleInstallationStatusType,
-    InstallationWrapperType,
-    InstallationType,
-    ModuleDetails,
 } from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
@@ -30,7 +30,6 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     ConditionalWrap,
-    noop,
     Progressing,
     showError,
     ToastBody,
@@ -46,8 +45,8 @@ import {
     DEVTRON_UPGRADE_MESSAGE,
     handleAction,
     isLatestVersionAvailable,
-    ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
+    ModulesSection,
     MORE_MODULE_DETAILS,
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
@@ -311,7 +310,17 @@ const InstallationStatus = ({
     isUpgradeView,
     latestVersionAvailable,
     isCICDModule,
+    moduleDetails,
+    setShowResourceStatusModal,
 }: ModuleInstallationStatusType): JSX.Element => {
+    const openCheckResourceStatusModal = (e) => {
+        e.stopPropagation()
+
+        if (setShowResourceStatusModal) {
+            setShowResourceStatusModal(true)
+        }
+    }
+
     return (
         <div
             className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 status-${installationStatus} ${
@@ -326,6 +335,7 @@ const InstallationStatus = ({
                     </div>
                 </>
             )}
+
             {(installationStatus === ModuleStatus.INSTALLED ||
                 (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
                 <>
@@ -355,6 +365,13 @@ const InstallationStatus = ({
                           }`}
                 </div>
             )}
+            {!isCICDModule &&
+                moduleDetails &&
+                (installationStatus == ModuleStatus.INSTALLING || installationStatus === ModuleStatus.TIMEOUT) && (
+                    <a className={`mt-8 dc__no-decor fs-13 fw-6 cursor ${installationStatus === ModuleStatus.INSTALLING? '': 'ml-32'}`} onClick={openCheckResourceStatusModal}>
+                        Check resource status
+                    </a>
+                )}
             {appName &&
                 installationStatus !== ModuleStatus.NOT_INSTALLED &&
                 installationStatus !== ModuleStatus.INSTALLED &&
@@ -458,6 +475,7 @@ export const InstallationWrapper = ({
     setShowPreRequisiteConfirmationModal,
     preRequisiteChecked,
     setPreRequisiteChecked,
+    setShowResourceStatusModal,
 }: InstallationWrapperType): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -475,6 +493,7 @@ export const InstallationWrapper = ({
     const [preRequisiteList, setPreRequisiteList] = useState<
         { version: string; prerequisiteMessage: string; tagLink: string }[]
     >([])
+
     useEffect(() => {
         if (releaseNotes) {
             fetchPreRequisiteListFromReleaseNotes()
@@ -704,6 +723,8 @@ export const InstallationWrapper = ({
                                 isUpgradeView={isUpgradeView}
                                 latestVersionAvailable={latestVersionAvailable}
                                 isCICDModule={moduleName === ModuleNameMap.CICD}
+                                moduleDetails={moduleDetails}
+                                setShowResourceStatusModal={setShowResourceStatusModal}
                             />
                         )}
                         {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
@@ -738,6 +759,7 @@ export const ModuleDetailsView = ({
     handleActionTrigger,
     history,
     location,
+    setShowResourceStatusModal,
 }: ModuleDetailsViewType): JSX.Element | null => {
     const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
@@ -780,6 +802,7 @@ export const ModuleDetailsView = ({
                     updateActionTrigger={(isActionTriggered) =>
                         handleActionTrigger(`moduleAction-${moduleDetails.name?.toLowerCase()}`, isActionTriggered)
                     }
+                    setShowResourceStatusModal={setShowResourceStatusModal}
                 />
             </div>
         </div>

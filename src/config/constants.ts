@@ -183,6 +183,15 @@ export const Routes = {
     SSO_UPDATE: 'sso/update',
     INGRESS_SERVICE_MANIFEST: 'app/resource/urls',
     EA_INGRESS_SERVICE_MANIFEST: 'k8s/resource/urls',
+    CLUSTER_TERMINAL: 'user/terminal',
+    START: 'start',
+    DISCONNECT_RETRY: 'disconnectAndRetry',
+    UPDATE_SHELL: 'update/shell',
+    CLUSTER_NAMESPACE: 'cluster/namespaces',
+    DISCONNECT: 'disconnect',
+    STOP: 'stop',
+    POD_MANIFEST: 'pod/manifest',
+    POD_EVENTS: 'pod/events',
 }
 
 export const ViewType = {
@@ -243,46 +252,47 @@ export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 const DOCUMENTATION_HOME_PAGE = 'https://docs.devtron.ai'
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
-    APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/create-application`,
-    APP_CREATE_MATERIAL: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/git-material`,
-    APP_CREATE_CI_CONFIG: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/docker-build-configuration`,
-    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
-    APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template`,
-    APP_CREATE_CONFIG_MAP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/config-maps`,
-    APP_CREATE_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets`,
-    APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/workflow`,
-    APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/environment-overrides`,
-    BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/bulk-update`,
-    CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart`,
-    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/chart-group`,
-    CHART_LIST: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts`,
-    CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/deploy-chart/overview-of-charts#custom-values`,
-    SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/security-features`,
-    GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops`,
-    GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/git-accounts`,
-    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/docker-registries`,
-    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/cluster-and-environments`,
-    GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/chart-repo`,
-    GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/manage-notification`,
-    GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/projects`,
-    GLOBAL_CONFIG_SSO: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/sso-login`,
-    GLOBAL_CONFIG_USER: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/user-access`,
-    GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/permission-groups`,
+    APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application`,
+    APP_CREATE_MATERIAL: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/git-material`,
+    APP_CREATE_CI_CONFIG: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration`,
+    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template`,
+    APP_CREATE_CONFIG_MAP: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/config-maps`,
+    APP_CREATE_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets`,
+    APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/workflow`,
+    APP_CREATE_ENVIRONMENT_OVERRIDE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/environment-overrides`,
+    BULK_UPDATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/bulk-update`,
+    CHART_DEPLOY: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart`,
+    CHART_GROUP: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart/chart-group`,
+    CHART_LIST: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart/overview-of-charts`,
+    CUSTOM_VALUES: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/deploy-chart/overview-of-charts#custom-values`,
+    SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/security-features`,
+    GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
+    GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
+    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
+    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
+    GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
+    GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,
+    GLOBAL_CONFIG_SSO: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/sso-login`,
+    GLOBAL_CONFIG_USER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/user-access`,
+    GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/permission-groups`,
     HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
-    BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline#build-stage`,
-    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
-    CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts`,
-    CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts#prerequisites`,
-    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/install-devtron#devtron-admin-credentials`,
-    EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/external-links`,
-    GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
-    DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
-    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
-    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets#external-secrets`,
-    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/installation-configuration#configuration-of-blob-storage`,
-    ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
-    JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/job-and-cronjob`,
-    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/authorization/api-tokens`,
+    BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#build-stage`,
+    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
+    CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts`,
+    CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts#prerequisites`,
+    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/install-devtron#devtron-admin-credentials`,
+    EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/external-links`,
+    GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops#4.-git-access-credential`,
+    DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/upgrade`,
+    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/app-details/app-metrics`,
+    EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets#external-secrets`,
+    BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/job-and-cronjob`,
+    DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
+    WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
 }
 
@@ -538,6 +548,7 @@ export const BuildTabText = {
 export const APP_STATUS_CUSTOM_MESSAGES = {
     HIBERNATED: "This application's workloads are scaled down to 0 replicas",
     'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
+    INTEGRATION_INSTALLING: 'The installation will complete when status for all the below resources become HEALTHY.',
 }
 
 export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
@@ -568,6 +579,7 @@ export const EXTERNAL_TYPES = {
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
+export const DEPLOYMENT = 'Deployment'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
@@ -630,16 +642,31 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 
+export const shellTypes = [
+    { label: 'sh', value: 'sh' },
+    { label: 'bash', value: 'bash' },
+    { label: 'powershell', value: 'powershell' },
+    { label: 'cmd', value: 'cmd' },
+]
+
 export enum AppDetailsErrorType {
     ERRIMAGEPULL = 'errimagepull',
     IMAGEPULLBACKOFF = 'imagepullbackoff',
 }
 
-export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
-  LINE_ONE: 'This workflow uses a deprecated method to receive container images from external build services.',
-  LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
-  LINE_THREE:  'You can continue to deploy images from external build services',
-  DOC_LINK_TEXT: 'Refer documentation to learn more.',
+export const DEPRECATED_EXTERNAL_CI_MESSAGE = {
+    LINE_ONE: 'This workflow uses a deprecated method to receive container images from external build services.',
+    LINE_TWO: 'Deprecated workflows will be deleted in the next Devtron update.',
+    LINE_THREE: 'You can continue to deploy images from external build services',
+    DOC_LINK_TEXT: 'Refer documentation to learn more.',
+}
+
+export const MESSAGING_UI = {
+    NO_RESOURCE: 'This resource no longer exists',
+    NO_EVENTS: 'Events not available',
+    FETCHING_EVENTS: 'Fetching events',
+    MANIFEST_NOT_AVAILABLE: 'Manifest not available',
+    FETCHING_MANIFEST: 'Fetching manifest',
 }
 
 export const CHART_REPO_TYPE = {
