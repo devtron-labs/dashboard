@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, TIMELINE_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -293,9 +293,10 @@ export default function CDDetails() {
 }
 
 export const triggerStatus = (triggerDetailStatus: string): string => {
-    if(triggerDetailStatus === 'Aborted' || triggerDetailStatus === 'Degraded') {
+    let triggerStatus = triggerDetailStatus.toUpperCase()
+    if(triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
         return 'Failed'
-    }else if (triggerDetailStatus === 'Healthy') {
+    }else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
     } else {
         return triggerDetailStatus

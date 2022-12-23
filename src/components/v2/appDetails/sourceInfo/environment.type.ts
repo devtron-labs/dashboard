@@ -7,3 +7,14 @@ export interface AppEnvironment {
     prod: boolean;
     isSelected? : boolean;
 }
+
+export interface NodeStreamMap {
+    group: string
+    kind: string
+    message: string
+    name: string
+    namespace: string
+    status: string
+    syncPhase: string
+    version: string
+}

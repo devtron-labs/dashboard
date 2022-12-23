@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 import { APP_STATUS_HEADERS, DEPLOYMENT_STATUS, Moment12HourFormat, TIMELINE_STATUS } from '../../../../config'
 import { showError } from '../../../common'
 import { ShowMoreText } from '../../../common/ShowMoreText'
-import { AppStatusDetailsChart } from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import { getManualSync } from '../../service'
 import { AppStreamData } from '../../types'
 import { DeploymentStatusDetailRowType, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
@@ -16,6 +15,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { ReactComponent as TimeOut } from '../../../../assets/icons/ic-timeout-red.svg'
+import AppStatusDetailsChart from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailsChart'
 
 export function DeploymentStatusDetailRow({
     type,
