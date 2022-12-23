@@ -414,6 +414,4 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
-    toggleRepoSelectionTippy?: () => void
-    setRepo?: React.Dispatch<React.SetStateAction<string>>
 }

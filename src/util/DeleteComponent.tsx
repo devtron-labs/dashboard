@@ -18,8 +18,6 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
-    toggleRepoSelectionTippy,
-    setRepo,
 }: DeleteComponentProps) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)
     const { push } = useHistory()
@@ -38,10 +36,6 @@ function DeleteComponent({
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
-                if (toggleRepoSelectionTippy && setRepo) {
-                    toggleRepoSelectionTippy()
-                    setRepo(title)
-                }
             }
         } finally {
             setDeleting(false)
@@ -84,7 +78,7 @@ function DeleteComponent({
     return (
         <div>
             {!showCannotDeleteDialogModal && renderDeleteDialog()}
-            {showCannotDeleteDialogModal && !(toggleRepoSelectionTippy && setRepo) && renderCannotDeleteDialogModal()}
+            {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
         </div>
     )
 }

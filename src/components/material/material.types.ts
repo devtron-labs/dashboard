@@ -15,6 +15,7 @@ export interface GitMaterialType {
     checkoutPath: string;
     active: boolean;
     fetchSubmodules: boolean;
+    isUsedInCiConfig?: boolean;
 }
 
 
@@ -82,5 +83,4 @@ export interface MaterialViewProps {
 export interface MaterialViewState {
     deleting: boolean;
     confirmation: boolean;
-    showDeleteTippy: boolean;
 }

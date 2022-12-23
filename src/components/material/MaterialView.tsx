@@ -22,6 +22,7 @@ import { DeleteComponentsName, DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE, D
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { AuthenticationType } from '../cluster/cluster.type';
 import InfoColourBar from '../common/infocolourBar/InfoColourbar';
+import { timeStamp } from 'console';
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
 
     constructor(props) {
@@ -30,13 +31,12 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
       this.state = {
          deleting: false,
          confirmation: false,
-         showDeleteTippy: false,
       }
     }
 
     toggleConfirmation = () => {
         this.setState((prevState)=>{
-           return{ confirmation: !prevState.confirmation, showDeleteTippy: !prevState.showDeleteTippy}
+           return{ confirmation: !prevState.confirmation }
            })
     }
 
@@ -99,6 +99,17 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <h2 className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">Cannot Delete!</h2>
             <p className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">At least one repository is required.</p>
         </>
+    }
+
+    onClickDelete = () => {
+        if(this.props.material.isUsedInCiConfig){
+            if (this.props.toggleRepoSelectionTippy && this.props.setRepo) {
+                this.props.toggleRepoSelectionTippy()
+                this.props.setRepo(this.props.material.name)
+            }
+        }else{
+            this.toggleConfirmation()
+        }
     }
 
     renderForm() {
@@ -279,7 +290,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             <button
                                 className="cta delete dc__m-auto ml-0"
                                 type="button"
-                                onClick={this.toggleConfirmation}
+                                onClick={this.onClickDelete}
                                 disabled={this.props.preventRepoDelete}
                             >
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
@@ -305,8 +316,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     component={DeleteComponentsName.GitRepo}
                     confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
                     reload={this.props.reload}
-                    toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
-                    setRepo={this.props.setRepo}
                 />
              }
         </form>

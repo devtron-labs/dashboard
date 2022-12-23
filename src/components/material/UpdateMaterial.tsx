@@ -32,6 +32,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 checkoutPath: this.props.material.checkoutPath,
                 active: this.props.material.active,
                 fetchSubmodules: this.props.material.fetchSubmodules,
+                isUsedInCiConfig: this.props.material.isUsedInCiConfig
             },
             isCollapsed: true,
             isChecked: true,
