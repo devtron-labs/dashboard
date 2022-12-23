@@ -246,6 +246,6 @@ export function deleteChartGroup(request) {
     return trash(Routes.CHART_GROUP, request)
 }
 
-export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise<any> {
+export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise<ResponseType> {
     return put(Routes.UPDATE_HELM_APP_META_INFO, payload)
 }
