@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
+import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import {
@@ -6,8 +6,8 @@ import {
     ErrorScreenManager,
     Progressing,
     showError,
-    useInterval,
     ToastBody3 as UpdateToast,
+    useInterval,
 } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
@@ -33,6 +33,8 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
+import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
+import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -67,6 +69,7 @@ export default function DevtronStackManager({
 
     const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)
     const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
+    const [showResourceStatusModal, setShowResourceStatusModal] = useState(false)
     useEffect(() => {
         getModuleDetails()
         getCurrentServerInfo()
@@ -203,6 +206,7 @@ export default function DevtronStackManager({
                     const currentModule = {
                         ..._stackDetails.discoverModulesList[currentModuleIndex],
                         installationStatus: result.status,
+                        moduleResourcesStatus: result.moduleResourcesStatus,
                     }
                     setSelectedModule({
                         ...currentModule,
@@ -282,6 +286,7 @@ export default function DevtronStackManager({
                         const _moduleDetails: ModuleDetails = {
                             ...currentModule,
                             installationStatus: result?.status,
+                            moduleResourcesStatus: result?.moduleResourcesStatus,
                         }
 
                         /**
@@ -356,6 +361,10 @@ export default function DevtronStackManager({
             })
     }
 
+    const closeCheckResourceStatusModal = () => {
+        setShowResourceStatusModal(false)
+    }
+
     /**
      * This is to handle the module selection
      */
@@ -411,6 +420,7 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
+                        setShowResourceStatusModal={setShowResourceStatusModal}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -425,6 +435,7 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
+                        setShowResourceStatusModal={setShowResourceStatusModal}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
@@ -525,6 +536,19 @@ export default function DevtronStackManager({
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body />
+                                {showResourceStatusModal && selectedModule && (
+                                    <AppStatusDetailModal
+                                        close={closeCheckResourceStatusModal}
+                                        appStreamData={buildResourceStatusModalData(
+                                            selectedModule.moduleResourcesStatus,
+                                        )}
+                                        showAppStatusMessage={true}
+                                        title="Integration installation status"
+                                        appStatusText={selectedModule.installationStatus}
+                                        appStatus={AppStatusClass[selectedModule.installationStatus] || ''}
+                                        showFooter={true}
+                                    />
+                                )}
                             </ErrorBoundary>
                         </Suspense>
                     </section>
