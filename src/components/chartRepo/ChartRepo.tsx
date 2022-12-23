@@ -271,8 +271,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     }
 
     function toggleIsPublicChartType(e) {
-        customState.username = { value: '', error: '' }
-        customState.password = { value: '', error: '' }
+        setCustomState(state => ({ ...state, password: { value: '', error: '' }, username: { value: '', error: '' } }))
+
         if (chartRepoType === CHART_REPO_TYPE.PUBLIC) {
             setChartRepoType(CHART_REPO_TYPE.PRIVATE)
         } else {
