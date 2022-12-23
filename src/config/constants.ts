@@ -641,3 +641,14 @@ export const DEPRECATED_EXTERNAL_CI_MESSAGE ={
   LINE_THREE:  'You can continue to deploy images from external build services',
   DOC_LINK_TEXT: 'Refer documentation to learn more.',
 }
+
+export const CHART_REPO_TYPE = {
+    PUBLIC: 'PUBLIC',
+    PRIVATE: 'PRIVATE',
+}
+
+export const CHART_REPO_AUTH_TYPE = {
+    ANONYMOUS: 'ANONYMOUS',
+    USERNAME_PASSWORD: 'USERNAME_PASSWORD',
+    ACCESS_TOKEN: 'ACCESS_TOKEN',
+}
