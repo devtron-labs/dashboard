@@ -139,7 +139,7 @@ export function DeploymentStatusDetailRow({
                         </div>
                     )}
                     <div className="pb-12">
-                        <AppStatusDetailsChart appStreamData={streamData} filterRemoveHealth={true} />
+                        <AppStatusDetailsChart appStreamData={streamData} filterRemoveHealth={true} showFooter={false} />
                     </div>
                 </div>
             )
