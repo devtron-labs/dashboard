@@ -679,3 +679,8 @@ export const CHART_REPO_AUTH_TYPE = {
     USERNAME_PASSWORD: 'USERNAME_PASSWORD',
     ACCESS_TOKEN: 'ACCESS_TOKEN',
 }
+
+export const CHART_REPO_LABEL = [
+    { value: 'PUBLIC' , label: 'Public repository' },
+    { value: 'PRIVATE' , label: 'Private repository' },
+]

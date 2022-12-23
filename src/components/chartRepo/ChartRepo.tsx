@@ -7,7 +7,7 @@ import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoCo
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE } from '../../config';
+import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
@@ -279,10 +279,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             setChartRepoType(CHART_REPO_TYPE.PUBLIC)
         }
     }
-    const ChartRepoType = [
-        { value: CHART_REPO_TYPE.PUBLIC, label: 'Public repository' },
-        { value: CHART_REPO_TYPE.PRIVATE, label: 'Private repository' },
-    ]
 
     function toggleSkipTLSVerification(e) {
         setSecureWithTls(!secureWithTls)
@@ -298,7 +294,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                         name={`chartrepo-type_${chartRepoType}`}
                         onChange={toggleIsPublicChartType}
                     >
-                        {ChartRepoType.map(({ label, value }) => (
+                        {CHART_REPO_LABEL.map(({ label, value }) => (
                             <RadioGroupItem value={value}>
                                 <span className={`dc__no-text-transform ${chartRepoType === value ? 'fw-6' : 'fw-4'}`}>
                                     {label}
