@@ -80,7 +80,7 @@ import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/servi
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import { AppMetaInfo } from '../../../app/types'
 import { getHelmAppMetaInfo } from '../../../app/service'
-import ProjectModal from './ProjectSelector'
+import ProjectUpdateModal from './ProjectUpdateModal'
 
 function ChartValuesView({
     appId,
@@ -160,6 +160,9 @@ function ChartValuesView({
                 },
             })
         } else if (isExternalApp) {
+
+            fetchProjects(dispatch)
+
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
                     const _releaseInfo = releaseInfoResponse.result.releaseInfo
@@ -280,7 +283,7 @@ function ChartValuesView({
         }
 
         if (!isDeployChartView) {
-            fetchProjects(dispatch)
+            getHelmAppMetaInfoRes()
         }
     }, [])
 
@@ -426,11 +429,6 @@ function ChartValuesView({
         }
     }, [chartValuesList, commonState.deploymentHistoryArr])
 
-    useEffect(() => {
-        if (!isDeployChartView) {
-            getHelmAppMetaInfoRes()
-        }
-    }, [appId])
 
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
         try {
@@ -1267,7 +1265,7 @@ function ChartValuesView({
                         )}
 
                         {!isDeployChartView && showUpdateAppModal && (
-                            <ProjectModal
+                            <ProjectUpdateModal
                                 appId={appId}
                                 appMetaInfo={appMetaInfo}
                                 installedAppId={commonState.installedConfig?.installedAppId}

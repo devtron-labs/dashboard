@@ -11,7 +11,7 @@ import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
 import {ProjectChangeMessageList} from "./constant";
 
-export default function ProjectModal({
+export default function ProjectUpdateModal({
     appId,
     onClose,
     appMetaInfo,
