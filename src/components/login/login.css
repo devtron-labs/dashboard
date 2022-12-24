@@ -6,13 +6,13 @@
 }
 
 .login__bg {
-    background-color: #cee7ff;
+    background-color: #6AB2F6;
     width: 50%;
     min-height: 600px;
 }
 
 .login__image {
-    background-image: url('../../assets//img//bg-login.png');
+    background-image: url('../../assets/img/login-bg-christmas.png');
     min-height: 600px;
     height: 100vh;
     width: 100%;
