@@ -283,6 +283,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     function toggleSkipTLSVerification(e) {
         setSecureWithTls(!secureWithTls)
     }
+    const handleDeleteClick = () => toggleConfirmation(true)
+    const handleCancelClick = (e) => toggleCollapse((t) => !t)
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
@@ -328,48 +330,28 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                     error={state.url.error}
                     label="URL*"
                 />
-                {chartRepoType !== CHART_REPO_TYPE.PUBLIC && (
-                    <>
-                        <CustomInput
-                            autoComplete="off"
-                            value={customState.username.value}
-                            onChange={customHandleChange}
-                            name="username"
-                            error={customState.username.error}
-                            label="Username*"
-                            labelClassName="mt-12"
-                        />
-                        <ProtectedInput
-                            value={customState.password.value}
-                            onChange={customHandleChange}
-                            name="password"
-                            error={customState.password.error}
-                            label="Password*"
-                            labelClassName="mt-12"
-                        />
-                    </>
-                )}
-                {id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD && (
-                    <>
-                        <CustomInput
-                            autoComplete="off"
-                            value={customState.username.value}
-                            onChange={customHandleChange}
-                            name="username"
-                            error={customState.username.error}
-                            label="Username*"
-                            labelClassName="mt-12"
-                        />
-                        <ProtectedInput
-                            value={customState.password.value}
-                            onChange={customHandleChange}
-                            name="password"
-                            error={customState.password.error}
-                            label="Password*"
-                            labelClassName="mt-12"
-                        />
-                    </>
-                )}
+                {((chartRepoType !== CHART_REPO_TYPE.PUBLIC) ||
+                    (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) &&
+                        <>
+                            <CustomInput
+                                autoComplete="off"
+                                value={customState.username.value}
+                                onChange={customHandleChange}
+                                name="username"
+                                error={customState.username.error}
+                                label="Username*"
+                                labelClassName="mt-12"
+                            />
+                            <ProtectedInput
+                                value={customState.password.value}
+                                onChange={customHandleChange}
+                                name="password"
+                                error={customState.password.error}
+                                label="Password*"
+                                labelClassName="mt-12"
+                            />
+                        </>
+                    }
             </div>
 
             {chartRepoType !== CHART_REPO_TYPE.PUBLIC && (
@@ -379,7 +361,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={toggleSkipTLSVerification}
                 >
-                    <div> Secure With TLS</div>
+                    <div className="ml-1">Secure With TLS</div>
                 </Checkbox>
             )}
             <div className="form__row form__buttons">
@@ -387,12 +369,12 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                     <button
                         className="cta delete dc__m-auto chart_repo__delete-button"
                         type="button"
-                        onClick={() => toggleConfirmation(true)}
+                        onClick={handleDeleteClick}
                     >
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
-                <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                <button className="cta cancel" type="button" onClick={handleCancelClick}>
                     Cancel
                 </button>
                 <button className="cta" type="submit" disabled={loading}>
