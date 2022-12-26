@@ -16,6 +16,7 @@ import Tippy from '@tippyjs/react';
 import ContentCard from '../../common/ContentCard/ContentCard';
 import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config';
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types';
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants';
 
 export class AppListView extends Component<AppListViewProps>{
 
@@ -123,8 +124,8 @@ export class AppListView extends Component<AppListViewProps>{
                         redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
                         isExternalRedirect={true}
                         imgSrc={NodeAppThumbnail}
-                        title="Watch how to deploy a basic K8s Node.js app using Devtron"
-                        linkText="Watch video"
+                        title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
+                        linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
                         LinkIcon={PlayMedia}
                         linkIconClass="scb-5 mr-8"
                         linkIconPlacement={CardLinkIconPlacement.BeforeLink}
@@ -132,8 +133,8 @@ export class AppListView extends Component<AppListViewProps>{
                     <ContentCard
                         redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                         imgSrc={DeployCICD}
-                        title="Deploy custom applications using CI/CD pipelines"
-                        linkText="Create Application"
+                        title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
+                        linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
                         LinkIcon={ArrowRight}
                         linkIconClass="scb-5"
                         linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}

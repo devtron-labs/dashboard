@@ -1,6 +1,6 @@
 export enum CardContentDirection {
-    Vertical = "Vertical",
-    Horizontal = "Horizontal",
+    Vertical = "vertical",
+    Horizontal = "horizontal",
 }
 
 export enum CardLinkIconPlacement {

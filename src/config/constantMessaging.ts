@@ -38,3 +38,5 @@ export const enum DeleteComponentsName {
 }
 
 //DELETE COMPONENT ENDS
+
+export const LEARN_MORE = 'Learn more'

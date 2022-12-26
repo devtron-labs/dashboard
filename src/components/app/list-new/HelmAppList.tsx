@@ -33,6 +33,18 @@ import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import '../list/list.css'
+import {
+    EMPTY_STATE_SELECT_CLUSTER,
+    ENVIRONMENT_HEADER_TIPPY_CONTENT,
+    EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR,
+    EXTERNAL_HELM_APP_FETCH_ERROR,
+    EXTERNAL_HELM_SSE_CONNECTION_ERROR,
+    HELM_APP_LIST_HEADERS,
+    HELM_PERMISSION_MESSAGE,
+    SELECT_CLUSTER_FROM_FILTER_NOTE,
+} from './Constants'
+import { LEARN_MORE } from '../../../config/constantMessaging'
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 
 export default function HelmAppList({
     serverMode,
@@ -154,7 +166,7 @@ export default function HelmAppList({
                 )
             }
             _sseConnection.onerror = function (err) {
-                _externalAppFetchErrors.push('Some network error occured while fetching external apps.')
+                _externalAppFetchErrors.push(EXTERNAL_HELM_SSE_CONNECTION_ERROR)
                 setExternalHelmListFetchErrors([..._externalAppFetchErrors])
                 _closeSseConnection(_sseConnection)
             }
@@ -189,10 +201,9 @@ export default function HelmAppList({
             })
             let _errorMsg = ''
             if (_cluster) {
-                _errorMsg = `Error in getting external helm apps from cluster "${_cluster.label}". ERROR: `
+                _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster.label}". ERROR: `
             }
-            _errorMsg =
-                _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps')
+            _errorMsg = _errorMsg + (externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR)
             _externalAppFetchErrors.push(_errorMsg)
             setExternalHelmListFetchErrors([..._externalAppFetchErrors])
         }
@@ -205,7 +216,7 @@ export default function HelmAppList({
         setExternalHelmAppsList([..._externalAppRecievedHelmApps])
 
         // Show guided content card for connecting cluster or installing CI/CD integration
-        // when there's only one cluster & no app other than devtron-operator is installed 
+        // when there's only one cluster & no app other than devtron-operator is installed
         if (serverMode === SERVER_MODE.EA_ONLY) {
             setShowGuidedContentCards(
                 masterFilters.clusters.length === 1 &&
@@ -320,8 +331,9 @@ export default function HelmAppList({
         }
     }
 
-    function _removeExternalAppFetchError(index: number) {
-        let _externalHelmListFetchErrors = [...externalHelmListFetchErrors]
+    function _removeExternalAppFetchError(e) {
+        const index = Number(e.target.dataset.id)
+        const _externalHelmListFetchErrors = [...externalHelmListFetchErrors]
         _externalHelmListFetchErrors.splice(index, 1)
         setExternalHelmListFetchErrors(_externalHelmListFetchErrors)
     }
@@ -331,7 +343,7 @@ export default function HelmAppList({
             <div className="app-list__header">
                 <div className="app-list__cell--icon"></div>
                 <div className="app-list__cell app-list__cell--name">
-                    {sseConnection && <span>App/Release name</span>}
+                    {sseConnection && <span>{HELM_APP_LIST_HEADERS.AppName}</span>}
                     {!sseConnection && (
                         <button
                             className="app-list__cell-header"
@@ -340,7 +352,7 @@ export default function HelmAppList({
                                 sortApplicationList('appNameSort')
                             }}
                         >
-                            App/Release name
+                            {HELM_APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
                                 <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'}`}></span>
                             ) : (
@@ -350,24 +362,24 @@ export default function HelmAppList({
                     )}
                 </div>
                 <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header mr-4">Environment</span>
+                    <span className="app-list__cell-header mr-4">{HELM_APP_LIST_HEADERS.Environment}</span>
                     <Tippy
                         className="default-tt"
                         arrow={true}
                         placement="top"
-                        content="Environment is a unique combination of cluster and namespace"
+                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
                     >
                         <HelpOutlineIcon className="icon-dim-20" />
                     </Tippy>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
-                    <span className="app-list__cell-header">Cluster</span>
+                    <span className="app-list__cell-header">{HELM_APP_LIST_HEADERS.Cluster}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
-                    <span className="app-list__cell-header">Namespace</span>
+                    <span className="app-list__cell-header">{HELM_APP_LIST_HEADERS.Namespace}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <span className="app-list__cell-header">Last deployed at</span>
+                    <span className="app-list__cell-header">{HELM_APP_LIST_HEADERS.LastDeployedAt}</span>
                 </div>
             </div>
         )
@@ -383,8 +395,9 @@ export default function HelmAppList({
                     </span>
                     <span>{externalHelmListFetchError}</span>
                     <CloseIcon
+                        data-id={index}
                         className="icon-dim-24 dc__align-right cursor"
-                        onClick={() => _removeExternalAppFetchError(index)}
+                        onClick={_removeExternalAppFetchError}
                     />
                 </div>
             </div>
@@ -445,10 +458,9 @@ export default function HelmAppList({
                                 <InfoFillPurple className="icon-dim-20" />
                             </span>
                             <span>
-                                To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters.&nbsp;
+                                {SELECT_CLUSTER_FROM_FILTER_NOTE}&nbsp;
                                 <a className="dc__link cursor" target="_blank" href={DOCUMENTATION.HYPERION}>
-                                    Learn more
+                                    {LEARN_MORE}
                                 </a>
                             </span>
                         </div>
@@ -467,8 +479,8 @@ export default function HelmAppList({
                             redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
                             direction={CardContentDirection.Horizontal}
                             imgSrc={HelmCluster}
-                            title="Discover and manage existing helm releases via GUI"
-                            linkText="Connect Kubernetes Cluster"
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
+                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.linkText}
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
@@ -477,8 +489,8 @@ export default function HelmAppList({
                             redirectTo={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
                             direction={CardContentDirection.Horizontal}
                             imgSrc={DeployCICD}
-                            title="Deploy custom applications using CI/CD pipelines"
-                            linkText="Install CI/CD Integration"
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
+                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.installLinkText}
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
@@ -504,10 +516,10 @@ export default function HelmAppList({
         return (
             <div style={{ height: 'calc(100vh - 150px)' }}>
                 <EmptyState>
-                    <img src={NoClusterSelectImage} width="250" height="250" alt="No Cluster Selected" />
-                    <h2 className="fs-16 fw-4 c-9">Select cluster to see deployed apps</h2>
+                    <img src={NoClusterSelectImage} width="250" height="250" alt={EMPTY_STATE_SELECT_CLUSTER.altText} />
+                    <h2 className="fs-16 fw-4 c-9">{EMPTY_STATE_SELECT_CLUSTER.heading}</h2>
                     <p className="text-left" style={{ width: '300px' }}>
-                        Helm-based applications deployed from devtron or other sources will be shown here.
+                        {EMPTY_STATE_SELECT_CLUSTER.infoText}
                     </p>
                 </EmptyState>
             </div>
@@ -534,9 +546,7 @@ export default function HelmAppList({
                             </span>
                             <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
                                 <span className="fw-6">Tip </span>
-                                <span>
-                                    Select a cluster from above filters to see apps deployed from outside devtron.
-                                </span>
+                                <span>{EMPTY_STATE_SELECT_CLUSTER.selectCluster}</span>
                             </div>
                         </p>
                     </div>
@@ -553,14 +563,19 @@ export default function HelmAppList({
         return (
             <div style={{ height: 'calc(100vh - 150px)' }}>
                 <EmptyState>
-                    <img src={noChartInClusterImage} width="250" height="250" alt="Please connect cluster" />
-                    <h2 className="fs-16 fw-4 c-9">No helm charts found in connected clusters</h2>
+                    <img
+                        src={noChartInClusterImage}
+                        width="250"
+                        height="250"
+                        alt={EMPTY_STATE_SELECT_CLUSTER.connectClusterAltText}
+                    />
+                    <h2 className="fs-16 fw-4 c-9">{EMPTY_STATE_SELECT_CLUSTER.noHelmChartsFound}</h2>
                     <p className="text-left" style={{ width: '450px' }}>
-                        Connect a kubernetes cluster containing helm apps to view them here.
+                        {EMPTY_STATE_SELECT_CLUSTER.connectClusterInfoText}
                     </p>
                     <Link to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}>
                         <button type="button" className="cta flex">
-                            Connect a cluster
+                            {EMPTY_STATE_SELECT_CLUSTER.connectClusterLabel}
                         </button>
                     </Link>
                 </EmptyState>
@@ -576,10 +591,7 @@ export default function HelmAppList({
                     <span className="mr-8 flex">
                         <AlertTriangleIcon className="icon-dim-20 icon" />
                     </span>
-                    <span>
-                        Permissions for helm apps are now managed separately under user access. Please request
-                        permission from super-admin if required.
-                    </span>
+                    <span>{HELM_PERMISSION_MESSAGE}</span>
                 </div>
             </>
         )

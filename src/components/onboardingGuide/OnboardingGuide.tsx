@@ -12,6 +12,12 @@ import { updateLoginCount } from '../../services/service'
 import './onboardingGuide.scss'
 import ContentCard from '../common/ContentCard/ContentCard'
 import { CardLinkIconPlacement } from '../common/ContentCard/ContentCard.types'
+import {
+    GUIDE_COMMON_HEADER,
+    HELM_GUIDED_CONTENT_CARDS_TEXTS,
+    SKIP_AND_EXPLORE_NOTE,
+    TIP_RETURN_FROM_HELP_MENU,
+} from './OnboardingGuide.constants'
 
 export default function OnboardingGuide({ loginCount, serverMode, isGettingStartedClicked }: OnboardingGuideProps) {
     useEffect(() => {
@@ -60,8 +66,8 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
         <div className="onboarding-container h-100">
             <GuideCommonHeader
                 loginCount={loginCount}
-                title="What will you use devtron for?"
-                subtitle="This will help us in guiding you towards relevant product features"
+                title={GUIDE_COMMON_HEADER.title}
+                subtitle={GUIDE_COMMON_HEADER.subtitle}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
             <div className="bcn-0 onboarding__bottom flex dc__position-rel cn-9">
@@ -71,8 +77,8 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             redirectTo={URLS.CHARTS_DISCOVER}
                             onClick={onClickHelmChart}
                             imgSrc={HelmCollage}
-                            title="Deploy and manage your favourite Kubernetes packages"
-                            linkText="Browse Helm Charts"
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.title}
+                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.linkText}
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
@@ -81,8 +87,8 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
                             onClick={onClickCluster}
                             imgSrc={HelmCluster}
-                            title="Discover and manage existing helm releases via GUI"
-                            linkText="Connect Kubernetes Cluster"
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
+                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.linkText}
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
@@ -91,9 +97,11 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             redirectTo={redirectDeployCardToCICD()}
                             onClick={onClickedCICD}
                             imgSrc={DeployCICD}
-                            title="Deploy custom applications using CI/CD pipelines"
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
                             linkText={
-                                serverMode === SERVER_MODE.FULL ? 'Create Application' : 'Install CI/CD Integration'
+                                serverMode === SERVER_MODE.FULL
+                                    ? HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText
+                                    : HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.installLinkText
                             }
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
@@ -107,9 +115,9 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                             onClick={handleSkipOnboarding}
                         >
-                            Skip and explore Devtron on your own
+                            {SKIP_AND_EXPLORE_NOTE}
                         </NavLink>
-                        <div className="cn-7">Tip: You can return here anytime from the Help menu in header</div>
+                        <div className="cn-7">{TIP_RETURN_FROM_HELP_MENU}</div>
                     </div>
                 </div>
             </div>
