@@ -76,14 +76,16 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         showUrlInfo(true)
     }
 
+    const showDeleteConfitmationPopup = () => {
+        setShowDeleteConfirmation(true)
+    }
+
     const Popup = () => {
         return (
             <div className="pod-info__popup-container">
                 <span
                     className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                    onClick={(e) => {
-                        setShowDeleteConfirmation(true)
-                    }}
+                    onClick={showDeleteConfitmationPopup}
                 >
                     <span>Delete application</span>
                     <Trash className="icon-dim-20 scr-5" />
@@ -92,7 +94,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         )
     }
 
-    const getDeleteApplicationApi = (force?: boolean): Promise<any> => {
+    const getDeleteApplicationApi = (): Promise<any> => {
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
