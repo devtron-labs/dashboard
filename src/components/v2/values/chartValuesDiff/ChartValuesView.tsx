@@ -844,12 +844,6 @@ function ChartValuesView({
                     })
                     toast.error(MANIFEST_TAB_VALIDATION_ERROR)
                     return
-                } else if (isExternalApp && !commonState.installedAppInfo) {
-                    dispatch({
-                        type: ChartValuesViewActionTypes.showConnectToChartTippy,
-                        payload: true,
-                    })
-                    return
                 } else if (!isValidData(validatedName)) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
