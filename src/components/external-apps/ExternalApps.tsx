@@ -18,7 +18,7 @@ export default function ExternalApps() {
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                        <ExternalAppDetail appId={params.appId} appName={params.appName} />
+                        <ExternalAppDetail appId={params.appId} appName={params.appName} isExternalApp={true} />
                     </Route>
                     <Route path={`${path}/${URLS.APP_VALUES}`}>
                         <ChartValuesView appId={params.appId} isExternalApp={true} />
