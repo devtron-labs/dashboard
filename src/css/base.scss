@@ -1794,6 +1794,16 @@ button.anchor {
     border-bottom-right-radius: 0 !important;
 }
 
+.dc__no-left-radius {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.dc__no-right-radius {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
 .dc__left-radius-4 {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -2016,6 +2026,10 @@ textarea,
     width: 600px;
 }
 
+.w-800 {
+    width: 800px;
+}
+
 // Width in percentage
 .w-25 {
     width: 25%;
@@ -2048,6 +2062,9 @@ textarea,
 //min width
 .min-w-200 {
     min-width: 200px;
+}
+.min-w-20 {
+    min-width: 20px;
 }
 
 // Height in pixels
