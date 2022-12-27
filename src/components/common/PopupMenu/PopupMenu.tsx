@@ -60,7 +60,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
                 }
                 if(x + width > rootBounds.width){
                     // setPopupPosition(position => ({ right: document.documentElement.clientWidth - buttonLeft,...position, left:'unset' }))
-                    setPopupPosition(position=>({...position, right: 0, left:'unset'}))
+                    setPopupPosition(position=>({...position, right: '20px', left:'unset'}))
                     setOpacity(1)
                 }
             }
