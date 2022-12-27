@@ -1915,6 +1915,15 @@ textarea,
     }
 }
 
+.icon-color-n6 {
+    path:nth-child(1) {
+        fill: none !important;
+    }
+    path:nth-child(2) {
+        fill: var(--N600);
+    }
+}
+
 // Text Transform
 .dc__lowercase {
     text-transform: lowercase;
