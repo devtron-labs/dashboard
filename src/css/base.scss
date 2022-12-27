@@ -1145,6 +1145,27 @@ button.anchor {
     }
 }
 
+.tippy-box.default-black {
+    color: var(--N0);
+    background-color: var(--tippy-card-black-bg);
+    &.no-content-padding {
+        .tippy-content {
+            padding: 0;
+        }
+    }
+    &.tippy-shadow {
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    .tippy-arrow {
+        color: var(--tippy-card-black-bg);
+
+        &::before {
+            scale: 1.4;
+        }
+    }
+}
+
 .dc__devtron-breadcrumb {
     font-size: 12px;
     line-height: 1.34;
@@ -1814,6 +1835,10 @@ button.anchor {
 
 .dc__border-radius-50-per {
     border-radius: 50%;
+}
+
+.dc__border-radius-8-imp {
+    border-radius: 8px !important;
 }
 
 .dc__no-top-border {
