@@ -147,33 +147,27 @@ export class AppListView extends Component<AppListViewProps>{
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return (
-                <React.Fragment>
-                    <div className="dc__loading-wrapper">
-                        <Progressing pageLoader />
-                    </div>
-                </React.Fragment>
+                <div className="dc__loading-wrapper">
+                    <Progressing pageLoader />
+                </div>
             )
         } else if (this.props.view === AppListViewType.EMPTY) {
             return this.renderGuidedCards()
         } else if (this.props.view === AppListViewType.NO_RESULT) {
             return (
-                <React.Fragment>
-                    <Empty
-                        view={this.props.view}
-                        title={'No apps found'}
-                        message={"We couldn't find any matching applications."}
-                        buttonLabel={'Clear filters'}
-                        clickHandler={this.props.clearAll}
-                    />
-                </React.Fragment>
+                <Empty
+                    view={this.props.view}
+                    title={'No apps found'}
+                    message={"We couldn't find any matching applications."}
+                    buttonLabel={'Clear filters'}
+                    clickHandler={this.props.clearAll}
+                />
             )
         } else if (this.props.view === AppListViewType.ERROR) {
             return (
-                <React.Fragment>
-                    <div className="dc__loading-wrapper">
-                        <ErrorScreenManager code={this.props.code} />
-                    </div>
-                </React.Fragment>
+                <div className="dc__loading-wrapper">
+                    <ErrorScreenManager code={this.props.code} />
+                </div>
             )
         } else {
             return (

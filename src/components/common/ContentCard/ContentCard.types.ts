@@ -1,13 +1,13 @@
 export enum CardContentDirection {
-    Vertical = "vertical",
-    Horizontal = "horizontal",
+    Vertical = 'vertical',
+    Horizontal = 'horizontal',
 }
 
 export enum CardLinkIconPlacement {
-    BeforeLink = "BeforeLink",
-    AfterLink = "AfterLink",
-    AfterLinkApart = "AfterLinkApart",
-    BeforeLinkApart = "BeforeLinkApart",
+    BeforeLink = 'BeforeLink',
+    AfterLink = 'AfterLink',
+    AfterLinkApart = 'AfterLinkApart',
+    BeforeLinkApart = 'BeforeLinkApart',
 }
 
 export interface ContentCardProps {

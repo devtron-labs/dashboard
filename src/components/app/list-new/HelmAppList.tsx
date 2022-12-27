@@ -338,6 +338,11 @@ export default function HelmAppList({
         setExternalHelmListFetchErrors(_externalHelmListFetchErrors)
     }
 
+    function sortByAppName(e) {
+        e.preventDefault()
+        sortApplicationList('appNameSort')
+    }
+
     function renderHeaders() {
         return (
             <div className="app-list__header">
@@ -347,10 +352,7 @@ export default function HelmAppList({
                     {!sseConnection && (
                         <button
                             className="app-list__cell-header"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                sortApplicationList('appNameSort')
-                            }}
+                            onClick={sortByAppName}
                         >
                             {HELM_APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
