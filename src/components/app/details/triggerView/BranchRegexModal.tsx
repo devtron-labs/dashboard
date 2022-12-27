@@ -9,8 +9,10 @@ import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-ba
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { BranchRegexModalProps } from './types'
 import { TriggerViewContext } from './config'
+import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
+import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 
-function BranchRegexModal({
+export default function BranchRegexModal({
     material,
     selectedCIPipeline,
     showWebhookModal,
@@ -26,7 +28,7 @@ function BranchRegexModal({
 
     const getBranchRegexName = (gitMaterialId: number): string => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
-            for (let _ciMaterial of selectedCIPipeline.ciMaterial) {
+            for (const _ciMaterial of selectedCIPipeline.ciMaterial) {
                 if (
                     _ciMaterial.gitMaterialId === gitMaterialId &&
                     _ciMaterial.source &&
@@ -107,11 +109,8 @@ function BranchRegexModal({
                     )}
 
                     <div>
-                        <h4 className="mb-0 fw-6 ">Set a primary branch</h4>
-                        <p className="mt-4">
-                            Primary branch will be used to trigger automatic builds on every commit. This can be changed
-                            later.
-                        </p>
+                        <h4 className="mb-0 fw-6">{BRANCH_REGEX_MODAL_MESSAGING.SetPrimaryHeading}</h4>
+                        <p className="mt-4">{BRANCH_REGEX_MODAL_MESSAGING.SetPrimaryInfoText}</p>
                     </div>
                 </div>
                 {material?.map((mat, index) => {
@@ -133,7 +132,7 @@ function BranchRegexModal({
                                     <span>
                                         <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
                                         <div className="pb-12">
-                                            Use branch name matching&nbsp;
+                                            {BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchName}&nbsp;
                                             <span className="fw-6">
                                                 {getBranchRegexName(mat.gitMaterialId) || mat.regex}
                                             </span>
@@ -142,7 +141,7 @@ function BranchRegexModal({
                                 </div>
                                 <input
                                     tabIndex={index}
-                                    placeholder="Enter branch name matching regex"
+                                    placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
                                     className="form__input ml-36 w-95"
                                     name="name"
                                     value={_regexValue.value}
@@ -152,8 +151,8 @@ function BranchRegexModal({
                                 />
                                 {_regexValue.value &&
                                     _regexValue.isInvalid &&
-                                    renderValidationErrorLabel('Branch name does not match the regex.')}
-                                {!_regexValue.value && renderValidationErrorLabel('This is a required field')}
+                                    renderValidationErrorLabel(BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName)}
+                                {!_regexValue.value && renderValidationErrorLabel(REQUIRED_FIELD_MSG)}
                             </div>
                         )
                     )
@@ -163,5 +162,3 @@ function BranchRegexModal({
         </>
     )
 }
-
-export default BranchRegexModal

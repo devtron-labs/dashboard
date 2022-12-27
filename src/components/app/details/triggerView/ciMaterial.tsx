@@ -12,6 +12,7 @@ import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
+import { IGNORE_CACHE_INFO } from './Constants'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
@@ -55,10 +56,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <div className="flexbox">
                     <Info className="icon-dim-20 mr-8" />
                     <div>
-                        <div className="fw-6 fs-13">First pipeline run may take longer than usual</div>
-                        <div className="fw-4 fs-12">
-                            Future runs will have shorter build time if caching is enabled.
-                        </div>
+                        <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.FirstTrigger.title}</div>
+                        <div className="fw-4 fs-12">{IGNORE_CACHE_INFO.FirstTrigger.infoText}</div>
                     </div>
                 </div>
             )
@@ -67,15 +66,15 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <div className="flexbox flex-align-center">
                     <Storage className="icon-dim-24 mr-8" />
                     <div>
-                        <div className="fw-6 fs-13">Cache not available as storage is not setup</div>
+                        <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
                         <div className="fw-4 fs-12 flexbox">
-                            <span>Want to reduce build time?</span>
+                            <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
                             <a
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                 href={DOCUMENTATION.BLOB_STORAGE}
                                 target="_blank"
                             >
-                                Configure blob storage
+                                {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
                             </a>
                             <OpenInNew className="icon-dim-16 mt-3 ml-8" />
                         </div>
@@ -87,8 +86,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <div className="flexbox">
                     <Info className="icon-dim-20 mr-8" />
                     <div>
-                        <div className="fw-6 fs-13">Cache will be generated for this pipeline run</div>
-                        <div className="fw-4 fs-12">Cache will be used in future runs to reduce build time.</div>
+                        <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.CacheNotAvailable.title}</div>
+                        <div className="fw-4 fs-12">{IGNORE_CACHE_INFO.CacheNotAvailable.infoText}</div>
                     </div>
                 </div>
             )
@@ -102,12 +101,17 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     onChange={this.context.toggleInvalidateCache}
                 >
                     <div className="mr-5">
-                        <div className="fs-13 fw-6">Ignore Cache</div>
-                        <div className="fs-12 fw-4">Ignoring cache will lead to longer build time.</div>
+                        <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
+                        <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
                     </div>
                 </Checkbox>
             )
         }
+    }
+
+    handleStartBuildAction = (e) => {
+        e.stopPropagation()
+        this.context.onClickTriggerCINode()
     }
 
     renderMaterialStartBuild = (canTrigger) => {
@@ -119,10 +123,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     loaderColor="#ffffff"
                     disabled={!canTrigger}
                     isLoading={this.props.isLoading}
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        this.context.onClickTriggerCINode()
-                    }}
+                    onClick={this.handleStartBuildAction}
                 >
                     <Play className="trigger-btn__icon" />
                     Start Build

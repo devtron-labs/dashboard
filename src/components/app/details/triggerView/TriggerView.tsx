@@ -1,4 +1,4 @@
-import React, { Component, createContext } from 'react'
+import React, { Component } from 'react'
 import {
     getCDMaterialList,
     getRollbackMaterialList,
@@ -11,7 +11,14 @@ import {
     getGitMaterialByCommitHash,
 } from '../../service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, preventBodyScroll, Progressing, showError } from '../../../common'
+import {
+    createGitCommitUrl,
+    ErrorScreenManager,
+    ISTTimeModal,
+    preventBodyScroll,
+    Progressing,
+    showError,
+} from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
@@ -28,11 +35,7 @@ import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
-
-const TIME_STAMP_ORDER = {
-    DESCENDING: 'DESC',
-    ASCENDING: 'ASC',
-}
+import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -57,7 +60,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showWebhookModal: false,
             webhookPayloads: undefined,
             isWebhookPayloadLoading: false,
-            webhhookTimeStampOrder: 'DESC',
+            webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING,
             showCIModal: false,
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
@@ -408,10 +411,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         this.setState({ loader: true })
-        ReactGA.event({
-            category: 'Trigger View',
-            action: 'Select Material Clicked',
-        })
+        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection)
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -423,10 +423,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickCDMaterial(cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') {
-        ReactGA.event({
-            category: 'Trigger View',
-            action: 'Select Image Clicked',
-        })
+        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         getCDMaterialList(cdNodeId, nodeType)
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -462,10 +459,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
     ) => {
         if (!offset && !size) {
-            ReactGA.event({
-                category: 'Trigger View',
-                action: 'Select Rollback Material Clicked',
-            })
+            ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
         }
 
         const _offset = offset || 1
@@ -518,10 +512,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     // stageType'PRECD' | 'CD' | 'POSTCD'
     onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
-        ReactGA.event({
-            category: 'Trigger View',
-            action: `${nodeType} Triggered`,
-        })
+        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
         const appId = this.props.match.params.appId
         let node
@@ -568,10 +559,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickTriggerCINode = () => {
-        ReactGA.event({
-            category: 'Trigger View',
-            action: 'CI Triggered',
-        })
+        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CITriggered)
         this.setState({ isLoading: true })
         let node
         for (let i = 0; i < this.state.workflows.length; i++) {
@@ -827,10 +815,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickWebhookTimeStamp = () => {
-        if (this.state.webhhookTimeStampOrder === 'DESC') {
+        if (this.state.webhhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
             this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
-        }
-        if (this.state.webhhookTimeStampOrder === 'ASC') {
+        } else if (this.state.webhhookTimeStampOrder === TIME_STAMP_ORDER.ASCENDING) {
             this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
         }
     }
@@ -977,10 +964,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
                     <Error className="icon-dim-20 mr-8" />
                     <div className="cn-9 fs-13">
-                        Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
+                        {HOST_ERROR_MESSAGE.NotConfigured}
                         &nbsp;
                         <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
-                            Review and update
+                            {HOST_ERROR_MESSAGE.Review}
                         </NavLink>
                     </div>
                 </div>

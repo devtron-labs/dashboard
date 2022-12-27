@@ -589,3 +589,31 @@ export const STAGE_TYPE = {
     POSTCD: 'POSTCD',
     ROLLBACK: 'ROLLBACK',
 }
+
+export interface EmptyStateCIMaterialProps {
+    isRepoError: boolean;
+    isBranchError: boolean;
+    gitMaterialName: string;
+    sourceValue: string;
+    repoUrl: string;
+    branchErrorMsg: string;
+    repoErrorMsg: string;
+    isMaterialLoading: boolean;
+    onRetry: (...args) => void;
+    anyCommit: boolean;
+    isWebHook?: boolean;
+    noSearchResults?: boolean
+    noSearchResultsMsg?: string
+    toggleWebHookModal?: () => void;
+    clearSearch?: () => void
+  }
+
+export interface MaterialSourceProps {
+    material: CIMaterialType[]
+    selectMaterial: (materialId: string) => void
+    refreshMaterial?: {
+        pipelineId: number
+        title: string
+        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+    }
+}
