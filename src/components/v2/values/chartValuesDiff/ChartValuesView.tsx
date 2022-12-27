@@ -97,6 +97,9 @@ function ChartValuesView({
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
+    const [isCLIApp, setIsCLIApp] = useState(false)
+    const [deploymentVersion, setDeploymentVersion] = useState(1)
+
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -174,6 +177,7 @@ function ChartValuesView({
                     if (_installedAppInfo) {
                         initData(_installedAppInfo, _releaseInfo)
                     } else {
+                        setIsCLIApp(true)
                         const _chartVersionData: ChartVersionType = {
                             id: 0,
                             version: _releaseInfo.deployedAppDetail.chartVersion,
@@ -262,6 +266,9 @@ function ChartValuesView({
                         deploymentHistoryResponse.result?.deploymentHistory?.sort(
                             (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
                         ) || []
+
+                    setDeploymentVersion(_deploymentHistoryArr[0].version)
+
                     dispatch({
                         type: ChartValuesViewActionTypes.deploymentHistoryArr,
                         payload: _deploymentHistoryArr,
@@ -277,6 +284,8 @@ function ChartValuesView({
             ((commonState.chartValues.id && commonState.chartValues.chartVersion) ||
                 (isExternalApp && commonState.releaseInfo))
         ) {
+
+
             dispatch({ type: ChartValuesViewActionTypes.fetchingValuesYaml, payload: true })
             if (commonState.chartValues.id && commonState.chartValues.chartVersion) {
                 getChartValues(commonState.chartValues.id, commonState.chartValues.kind)
@@ -301,12 +310,15 @@ function ChartValuesView({
                         ) {
                             updateGeneratedManifest(
                                 isCreateValueView,
+                                isCLIApp,
                                 isExternalApp,
                                 isDeployChartView,
                                 appName,
                                 _valueName,
                                 commonState,
                                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                                appId,
+                                deploymentVersion,
                                 response.result.values,
                                 dispatch,
                             )
@@ -390,12 +402,15 @@ function ChartValuesView({
 
             updateGeneratedManifest(
                 isCreateValueView,
+                isCLIApp,
                 isExternalApp,
                 isDeployChartView,
                 appName,
                 valueName,
                 commonState,
                 appStoreApplicationVersionId,
+                appId,
+                deploymentVersion,
                 commonState.modifiedValuesYaml,
                 dispatch,
             )
@@ -943,12 +958,10 @@ function ChartValuesView({
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
                     value='manifest'
-                    showTippy={isExternalApp && !commonState.installedAppInfo}
                     canSelect={isValidData()}
                     tippyContent={
                         'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
                     }
-                    isDisabled={isExternalApp && !commonState.installedAppInfo}
                 >
                     Manifest output
                 </RadioGroup.Radio>
@@ -1093,12 +1106,15 @@ function ChartValuesView({
         if (commonState.activeTab === 'manifest') {
             updateGeneratedManifest(
                 isCreateValueView,
+                isCLIApp,
                 isExternalApp,
                 isDeployChartView,
                 appName,
                 valueName,
                 commonState,
                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                appId,
+                deploymentVersion,
                 commonState.modifiedValuesYaml,
                 dispatch,
             )
