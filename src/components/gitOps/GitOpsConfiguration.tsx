@@ -92,7 +92,6 @@ const GitInfoTab: React.FC<{ tab: string, gitLink: string, gitProvider: string, 
 }
 
 class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
-
     constructor(props) {
         super(props)
         this.state = {
@@ -110,56 +109,62 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isFormEdited: false,
             isError: {
-                host: "",
-                username: "",
-                token: "",
-                gitHubOrgId: "",
-                gitLabGroupId: "",
-                azureProjectName: "",
-                bitBucketWorkspaceId: "",
-                bitBucketProjectKey: ""
+                host: '',
+                username: '',
+                token: '',
+                gitHubOrgId: '',
+                gitLabGroupId: '',
+                azureProjectName: '',
+                bitBucketWorkspaceId: '',
+                bitBucketProjectKey: '',
             },
-            validatedTime: "",
+            validatedTime: '',
             validationError: [],
-            validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
+            validationStatus:
+                VALIDATION_STATUS.DRY_RUN ||
+                VALIDATION_STATUS.FAILURE ||
+                VALIDATION_STATUS.LOADER ||
+                VALIDATION_STATUS.SUCCESS,
             deleteRepoError: false,
-            isUrlValidationError: false
+            isUrlValidationError: false,
         }
-        this.handleGitopsTab = this.handleGitopsTab.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this);
+        this.handleGitopsTab = this.handleGitopsTab.bind(this)
+        this.handleChange = this.handleChange.bind(this)
+        this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this)
     }
 
     componentDidMount() {
-        this.fetchGitOpsConfigurationList();
+        this.fetchGitOpsConfigurationList()
     }
 
     fetchGitOpsConfigurationList() {
-        getGitOpsConfigurationList().then((response) => {
-            let lastActiveGitOp = response.result?.find(item => item.active);
-            let form = lastActiveGitOp;
-            if (!lastActiveGitOp) {
-                form = {
-                    ...DefaultGitOpsConfig,
-                    host: GitHost[this.state.providerTab],
-                    provider: GitProvider.GITHUB,
+        getGitOpsConfigurationList()
+            .then((response) => {
+                let lastActiveGitOp = response.result?.find((item) => item.active)
+                let form = lastActiveGitOp
+                if (!lastActiveGitOp) {
+                    form = {
+                        ...DefaultGitOpsConfig,
+                        host: GitHost[this.state.providerTab],
+                        provider: GitProvider.GITHUB,
+                    }
                 }
-            }
-            let isError = this.getFormErrors(false, form)
-            this.setState({
-                gitList: response.result || [],
-                saveLoading: false,
-                view: ViewType.FORM,
-                lastActiveGitOp: lastActiveGitOp,
-                providerTab: form.provider,
-                form: form,
-                isError: isError,
-                isFormEdited: false,
+                let isError = this.getFormErrors(false, form)
+                this.setState({
+                    gitList: response.result || [],
+                    saveLoading: false,
+                    view: ViewType.FORM,
+                    lastActiveGitOp: lastActiveGitOp,
+                    providerTab: form.provider,
+                    form: form,
+                    isError: isError,
+                    isFormEdited: false,
+                })
             })
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR, statusCode: error.code });
-        })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR, statusCode: error.code })
+            })
     }
 
     handleGitopsTab(event): void {
@@ -167,16 +172,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return
         }
 
-        let newGitOps = event.target.value;
-        let form = this.state.gitList.find(item => item.provider === newGitOps);
+        let newGitOps = event.target.value
+        let form = this.state.gitList.find((item) => item.provider === newGitOps)
         if (!form) {
             form = {
                 ...DefaultGitOpsConfig,
                 host: GitHost[newGitOps],
                 provider: newGitOps,
             }
-        };
-        let isError = this.getFormErrors(false, form);
+        }
+        let isError = this.getFormErrors(false, form)
         this.setState({
             providerTab: form.provider,
             form: form,
@@ -195,7 +200,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: {
                 ...this.state.isError,
-                [key]: event.target.value.length === 0 ? "This is a required field" : "",
+                [key]: event.target.value.length === 0 ? 'This is a required field' : '',
             },
             isFormEdited: false,
             //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
@@ -204,78 +209,82 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     getFormErrors(isFormEdited, form: GitOpsConfig): any {
-        if (!isFormEdited) return {
-            host: "",
-            username: "",
-            token: "",
-            gitHubOrgId: "",
-            gitLabGroupId: "",
-            azureProjectName: "",
-            bitBucketWorkspaceId: "",
-            bitBucketProjectKey: ""
-        }
+        if (!isFormEdited)
+            return {
+                host: '',
+                username: '',
+                token: '',
+                gitHubOrgId: '',
+                gitLabGroupId: '',
+                azureProjectName: '',
+                bitBucketWorkspaceId: '',
+                bitBucketProjectKey: '',
+            }
 
         let isError = {
-            host: form.host.length ? "" : "This is a required field",
-            username: form.username.length ? "" : "This is a required field",
-            token: form.token.length ? "" : "This is a required field",
-            gitHubOrgId: form.gitHubOrgId.length ? "" : "This is a required field",
-            gitLabGroupId: form.gitLabGroupId.length ? "" : "This is a required field",
-            azureProjectName: form.azureProjectName.length ? "" : "This is a required field",
-            bitBucketWorkspaceId: form.bitBucketWorkspaceId.length ? "" : "This is a required field",
-            bitBucketProjectKey: ""
-        };
-        return isError;
+            host: form.host.length ? '' : 'This is a required field',
+            username: form.username.length ? '' : 'This is a required field',
+            token: form.token.length ? '' : 'This is a required field',
+            gitHubOrgId: form.gitHubOrgId.length ? '' : 'This is a required field',
+            gitLabGroupId: form.gitLabGroupId.length ? '' : 'This is a required field',
+            azureProjectName: form.azureProjectName.length ? '' : 'This is a required field',
+            bitBucketWorkspaceId: form.bitBucketWorkspaceId.length ? '' : 'This is a required field',
+            bitBucketProjectKey: '',
+        }
+        return isError
     }
 
     isInvalid() {
-        let isError = this.state.isError;
+        let isError = this.state.isError
         if (!this.state.isFormEdited) {
-            isError = this.getFormErrors(true, this.state.form);
+            isError = this.getFormErrors(true, this.state.form)
             this.setState({
                 isError,
-                isFormEdited: true
+                isFormEdited: true,
             })
         }
 
-        let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0;
+        let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0
         if (this.state.providerTab === GitProvider.GITHUB) {
             isInvalid = isInvalid || isError.gitHubOrgId?.length > 0
-        }
-        else if (this.state.providerTab === GitProvider.GITLAB) {
+        } else if (this.state.providerTab === GitProvider.GITLAB) {
             isInvalid = isInvalid || isError.gitLabGroupId?.length > 0
-        }
-        else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD){
+        } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
             isInvalid = isInvalid || isError.bitBucketWorkspaceId?.length > 0
-        }
-        else {
+        } else {
             isInvalid = isInvalid || isError.azureProjectName?.length > 0
         }
 
-        return isInvalid;
+        return isInvalid
     }
 
     suggestedValidGitOpsUrl() {
-        let suggestedValidGitOpsUrl : string;
-        ShortGitHosts.forEach((shortGitHost) => {
-            if(this.state.form.host.indexOf(shortGitHost) >= 0){
-                suggestedValidGitOpsUrl =  "https://" + shortGitHost + "/"
-            }
-        });
+        let suggestedValidGitOpsUrl: string
+
+        if (this.state.providerTab === GitProvider.GITHUB) {
+            suggestedValidGitOpsUrl = GitHost.GITHUB
+        } else if (this.state.providerTab === GitProvider.GITLAB) {
+            suggestedValidGitOpsUrl = GitHost.GITLAB
+        } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
+            suggestedValidGitOpsUrl = GitHost.BITBUCKET_CLOUD
+        } else {
+            suggestedValidGitOpsUrl = GitHost.AZURE_DEVOPS
+        }
         return suggestedValidGitOpsUrl
     }
 
     isValidGitOpsUrl() {
-        if (!this.state.form.host){
+        if (!this.state.form.host) {
             return true
         }
 
-        let isUrlAccepted : boolean = true
+        let isUrlAccepted: boolean = true
         ShortGitHosts.forEach((shortGitHost) => {
-            if(this.state.form.host.indexOf(shortGitHost) >= 0){
-                isUrlAccepted = this.state.form.host.endsWith(shortGitHost + "/") || this.state.form.host.endsWith(shortGitHost)
+            if (this.state.form.host.indexOf(shortGitHost) >= 0) {
+                isUrlAccepted =
+                    this.state.form.host.endsWith(shortGitHost + '/') || this.state.form.host.endsWith(shortGitHost)
             }
-        });
+        })
 
         return isUrlAccepted
     }
@@ -294,8 +303,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 saveLoading: false,
                 validateLoading: false,
             })
-        }else {
-            this.setState({ isUrlValidationError: false, validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true })
+        } else {
+            this.setState({
+                isUrlValidationError: false,
+                validationStatus: VALIDATION_STATUS.LOADER,
+                saveLoading: true,
+            })
             const payload = {
                 id: this.state.form.id,
                 provider: this.state.form.provider,
@@ -309,47 +322,45 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 bitBucketProjectKey: this.state.form.bitBucketProjectKey,
                 active: true,
             }
-        
+
             const promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload)
-        promise
-            .then((response) => {
-                const resp = response.result
-                const errorMap = resp.stageErrorMap
-                if (errorMap != null && Object.keys(errorMap).length == 0) {
-                    this.props.handleChecklistUpdate('gitOps')
-                    toast.success('Configuration validated and saved successfully')
-                    this.setState({
-                        validationStatus: VALIDATION_STATUS.SUCCESS,
-                        saveLoading: false,
-                        isFormEdited: false,
-                        deleteRepoError: resp.deleteRepoFailed,
-                    })
-                    this.fetchGitOpsConfigurationList()
-                } else {
-                    this.setState({
-                        validationStatus: VALIDATION_STATUS.FAILURE,
-                        saveLoading: false,
-                        isFormEdited: false,
-                        validationError: errorMap || [],
-                        deleteRepoError: resp.deleteRepoFailed,
-                    })
-                    toast.error('Configuration validation failed')
-                }
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false })
-            })
+            promise
+                .then((response) => {
+                    const resp = response.result
+                    const errorMap = resp.stageErrorMap
+                    if (errorMap != null && Object.keys(errorMap).length == 0) {
+                        this.props.handleChecklistUpdate('gitOps')
+                        toast.success('Configuration validated and saved successfully')
+                        this.setState({
+                            validationStatus: VALIDATION_STATUS.SUCCESS,
+                            saveLoading: false,
+                            isFormEdited: false,
+                            deleteRepoError: resp.deleteRepoFailed,
+                        })
+                        this.fetchGitOpsConfigurationList()
+                    } else {
+                        this.setState({
+                            validationStatus: VALIDATION_STATUS.FAILURE,
+                            saveLoading: false,
+                            isFormEdited: false,
+                            validationError: errorMap || [],
+                            deleteRepoError: resp.deleteRepoFailed,
+                        })
+                        toast.error('Configuration validation failed')
+                    }
+                })
+                .catch((error) => {
+                    showError(error)
+                    this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false })
+                })
         }
-        
     }
 
     validateGitOps(tab) {
-
-        let isInvalid = this.isInvalid();
+        let isInvalid = this.isInvalid()
         if (isInvalid) {
-            toast.error("Some Required Fields are missing");
-            return;
+            toast.error('Some Required Fields are missing')
+            return
         }
 
         const isValidGitOpsUrl = this.isValidGitOpsUrl()
@@ -361,7 +372,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 validateLoading: false,
             })
         } else {
-            this.setState({ isUrlValidationError: false, validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true, validateLoading: true })
+            this.setState({
+                isUrlValidationError: false,
+                validationStatus: VALIDATION_STATUS.LOADER,
+                saveLoading: true,
+                validateLoading: true,
+            })
             const payload = {
                 id: this.state.form.id,
                 provider: this.state.form.provider,
@@ -411,14 +427,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     getGitOpsOrgId = () => {
         if (this.state.providerTab === GitProvider.GITLAB) {
             return 'gitLabGroupId'
-        }
-        else if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
+        } else if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
             return 'azureProjectName'
-        }
-        else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
+        } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
             return 'bitBucketProjectKey'
-        }
-        else {
+        } else {
             return 'gitHubOrgId'
         }
     }
@@ -430,21 +443,23 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState.form,
                     host: value,
                 },
-                isUrlValidationError: false
+                isUrlValidationError: false,
             }
         })
     }
 
     render() {
-        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId();
-        let warning = "Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.";
+        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
+        let warning =
+            'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        }
-        else if (this.state.view === ViewType.ERROR) {
-            return <div className="global-configuration__component flex">
-                <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
-            </div>
+        } else if (this.state.view === ViewType.ERROR) {
+            return (
+                <div className="global-configuration__component flex">
+                    <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
+                </div>
+            )
         }
         return (
             <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
@@ -458,9 +473,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}
                         >
-                            &nbsp;
-                            Learn more about GitOps&nbsp;
-                        </a>&nbsp;
+                            &nbsp; Learn more about GitOps&nbsp;
+                        </a>
+                        &nbsp;
                     </span>
                 </p>
                 <form className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20" autoComplete="off">
@@ -554,24 +569,25 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                     />
-                    {this.state.isUrlValidationError && this.state.form.host.length  ? (
+                    {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
                             <div className="form__error mr-4">
                                 <Error className="form__icon form__icon--error fs-13" />
-                            This is not a Fully Qualified Domain Name(FQDN). 
+                                This is not a Fully Qualified Domain Name(FQDN).
                             </div>
-                            {
-                                this.suggestedValidGitOpsUrl() &&
-                                <> Please Use:
+                            {this.suggestedValidGitOpsUrl() && (
+                                <>
+                                    {' '}
+                                    Please Use:
                                     <button
-                                    type="button"
-                                    onClick={(e) => this.updateGitopsUrl(this.suggestedValidGitOpsUrl())}
-                                    className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
+                                        type="button"
+                                        onClick={(e) => this.updateGitopsUrl(this.suggestedValidGitOpsUrl())}
+                                        className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
                                     >
                                         {this.suggestedValidGitOpsUrl()}
                                     </button>
                                 </>
-                            }
+                            )}
                         </div>
                     ) : (
                         <></>
