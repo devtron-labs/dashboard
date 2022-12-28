@@ -76,10 +76,10 @@ function InfoColourBar({
             >
                 <div className={`flex top ${typeof renderActionButton === 'function' ? 'mr-5' : ''}`}>
                     <div className={`icon-dim-${iconSize ?? '20'} mr-10`}>
-                        <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass} mr-8`} />
+                        <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass || ''} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
-                        <span className={linkText ? 'mr-5' : ''}>{message}</span>
+                        <span className={linkText && redirectLink ? 'mr-5' : ''}>{message}</span>
                         {renderLink()}
                     </div>
                 </div>

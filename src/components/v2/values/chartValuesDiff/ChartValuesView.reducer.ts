@@ -21,7 +21,8 @@ export const initState = (
         isUpdateInProgress: false,
         isDeleteInProgress: false,
         showDeleteAppConfirmationDialog: false,
-        showAppNotLinkedDialog: false,
+        showRepoSelector: false,
+        showConnectToChartTippy: false,
         selectedProject: null,
         selectedEnvironment: null,
         selectedVersion: selectedVersionFromParent,
@@ -83,8 +84,10 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, isDeleteInProgress: action.payload }
         case ChartValuesViewActionTypes.showDeleteAppConfirmationDialog:
             return { ...state, showDeleteAppConfirmationDialog: action.payload }
-        case ChartValuesViewActionTypes.showAppNotLinkedDialog:
-            return { ...state, showAppNotLinkedDialog: action.payload }
+        case ChartValuesViewActionTypes.showRepoSelector:
+            return { ...state, showRepoSelector: action.payload }
+        case ChartValuesViewActionTypes.showConnectToChartTippy:
+            return { ...state, showConnectToChartTippy: action.payload }
         case ChartValuesViewActionTypes.selectedProject:
             return { ...state, selectedProject: action.payload }
         case ChartValuesViewActionTypes.selectedEnvironment:

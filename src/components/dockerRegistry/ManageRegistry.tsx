@@ -15,8 +15,8 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import TippyWhite from '../common/TippyWhite'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 export function DropdownIndicator(props) {
     return (
@@ -321,7 +321,8 @@ function ManageRegistry({
             >
                 <div className="flex left">
                     <div className="fw-6">Manage access of registry credentials</div>
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         className="w-332"
                         placement="top"
                         Icon={HelpIcon}
@@ -336,7 +337,7 @@ function ManageRegistry({
                         interactive={true}
                     >
                         <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </TippyWhite>
+                    </TippyCustomized>
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { Checkbox } from '../formFields/Checkbox'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 
 export function Accordian({ header, options, value, onChange, onClickViewChartButton }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
@@ -21,17 +21,14 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
             </div>
             {collapsed && (
                 <div>
-                    <div className="pt-10 pb-10 pl-12 pr-12 br-4 bw-1 bcv-1 w-100 ev-2 flexbox">
-                        <div className="icon-dim-16 ">
-                            <Help className="icon-dim-16 fcv-5" />
-                        </div>
-                        <span className="ml-10 fw-4 lh-18 fs-12 ">
-                            To install charts from your own chart repo,
-                            <a target="_blank" onClick={onClickViewChartButton} className="cursor onlink">
-                                Connect chart repository
-                            </a>
-                        </span>
-                    </div>
+                    <button
+                        type="button"
+                        className="dc__transparent dc__hover-n50 cursor flex left cb-5 fs-13 fw-6 lh-20 h-32 pl-10 w-100"
+                        onClick={onClickViewChartButton}
+                    >
+                        <AddIcon className="icon-dim-16 fcb-5 mr-8" />
+                        Add chart repository
+                    </button>
                     {options.map((option) => (
                         <div className="dc__position-rel flex left cursor dc__hover-n50">
                             <Checkbox
