@@ -164,6 +164,7 @@ function RouterComponent({ envType }) {
                                 <AppDetailsComponent
                                     externalLinks={externalLinksAndTools.externalLinks}
                                     monitoringTools={externalLinksAndTools.monitoringTools}
+                                    isExternalApp={false}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>

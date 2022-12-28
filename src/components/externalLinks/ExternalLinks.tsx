@@ -18,7 +18,7 @@ import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outli
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
@@ -395,7 +395,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
                         External Links
-                        <TippyWhite
+                        <TippyCustomized
+                            theme={TippyTheme.white}
                             placement="bottom"
                             Icon={HelpIcon}
                             iconClass="fcv-5"
@@ -408,7 +409,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                             interactive={true}
                         >
                             <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
-                        </TippyWhite>
+                        </TippyCustomized>
                     </h3>
                     <div className="cta-search-filter-container flex">
                         {renderSearchFilterWrapper()}
