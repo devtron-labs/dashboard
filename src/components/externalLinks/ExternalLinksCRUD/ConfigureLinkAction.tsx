@@ -14,7 +14,7 @@ import {
 import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
-import TippyWhite from '../../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 import IdentifierSelector from './IdentifierSelector'
 
 export default function ConfigureLinkAction({
@@ -216,7 +216,8 @@ export default function ConfigureLinkAction({
                         >
                             <span className="fs-13 fw-4 lh-20 cn-9">App admins can edit</span>
                         </Checkbox>
-                        <TippyWhite
+                        <TippyCustomized
+                            theme={TippyTheme.white}
                             className="w-300"
                             placement="top"
                             Icon={HelpIcon}
@@ -228,7 +229,7 @@ export default function ConfigureLinkAction({
                             interactive={true}
                         >
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyWhite>
+                        </TippyCustomized>
                     </div>
                 )}
             </div>
