@@ -17,6 +17,7 @@ import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from "../../config/constantMessaging";
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -259,17 +260,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     suggestedValidGitOpsUrl() {
+        let gitOpsUrl = this.state.form.host
         let suggestedValidGitOpsUrl: string
-
-        if (this.state.providerTab === GitProvider.GITHUB) {
-            suggestedValidGitOpsUrl = GitHost.GITHUB
-        } else if (this.state.providerTab === GitProvider.GITLAB) {
-            suggestedValidGitOpsUrl = GitHost.GITLAB
-        } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-            suggestedValidGitOpsUrl = GitHost.BITBUCKET_CLOUD
-        } else {
-            suggestedValidGitOpsUrl = GitHost.AZURE_DEVOPS
-        }
+        ShortGitHosts.forEach((shortGitHost) => {
+            if (gitOpsUrl.indexOf(shortGitHost) >= 0) {
+                suggestedValidGitOpsUrl = 'https://' + shortGitHost + '/'
+            }
+        })
         return suggestedValidGitOpsUrl
     }
 
@@ -575,7 +572,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         <div className="flex fs-12 left pt-4">
                             <div className="form__error mr-4">
                                 <Error className="form__icon form__icon--error fs-13" />
-                                This is not a Fully Qualified Domain Name(FQDN).
+                                {this.state.form.host.startsWith('http:') ? GITOPS_HTTP_MESSAGE : GITOPS_FQDN_MESSAGE}
                             </div>
                             {this.suggestedValidGitOpsUrl() && (
                                 <>
