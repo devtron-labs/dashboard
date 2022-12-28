@@ -6,6 +6,7 @@ import { TriggerViewContext } from '../../TriggerView';
 import { URLS, DEFAULT_STATUS } from '../../../../../../config';
 import Tippy from '@tippyjs/react';
 import { Link } from 'react-router-dom';
+import { triggerStatus } from '../../../cdDetails/CDDetails';
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps>{
     constructor(props) {
@@ -23,15 +24,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
 
     renderStatus() {
         const url = this.getCDNodeDetailsURL();
-        let status = this.props.status ? this.props.status.toLowerCase() : "";
+        let statusText = this.props.status ? triggerStatus(this.props.status) : "";
+        let status = statusText ? statusText.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
             return <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
-                <span>{this.props.status}</span>
+                <span>{statusText}</span>
             </div>
         else return <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
             <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`}></span>
-            <span>{this.props.status}</span>
+            <span>{statusText}</span>
             <span className="mr-5 ml-5">/</span>
             <Link to={url} className="workflow-node__details-link">Details</Link>
         </div>

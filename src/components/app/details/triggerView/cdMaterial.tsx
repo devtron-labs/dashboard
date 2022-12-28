@@ -16,6 +16,7 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
+import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import {
@@ -211,7 +212,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderSequentialCDCardTitle = (mat) => {
         if (this.props.stageType !== STAGE_TYPE.CD) return
-
+        
         if (mat.latest && mat.runningOnParentCd) {
             return (
                 <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
@@ -231,16 +232,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
         } else if (mat.latest) {
             return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.envName} </span>
+                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
+                    {mat.latest && <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1">
+                        <div className="fw-4 fs-11 lh-16 flex">
+                            <World className="icon-dim-16 mr-4 scg-5" />
+                            Active on <span className="fw-6 ml-4">{this.props.envName} </span>
+                        </div>
+                    </span>}
                 </div>
             )
         } else if (mat.runningOnParentCd) {
             return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
+                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
+                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1">
+                        <div className="fw-4 fs-11 lh-16 flex">
+                            <World className="icon-dim-16 mr-4 scg-5" />
+                            Active on <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
+                        </div>
+                    </span>
                 </div>
             )
         }
