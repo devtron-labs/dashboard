@@ -13,7 +13,7 @@ import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/Ext
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
-function ExternalAppDetail({appId, appName}) {
+function ExternalAppDetail({appId, appName, isExternalApp}) {
     const location = useLocation();
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
@@ -152,6 +152,7 @@ function ExternalAppDetail({appId, appName}) {
                  <AppDetailsComponent
                     externalLinks={externalLinksAndTools.externalLinks}
                     monitoringTools={externalLinksAndTools.monitoringTools}
+                    isExternalApp={isExternalApp}
                 />
             }
 
