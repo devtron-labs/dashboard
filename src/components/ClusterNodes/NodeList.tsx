@@ -68,6 +68,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
     const nodeList = filteredFlattenNodeList.map((node) => node['name'])
+    const clusterName: string = filteredFlattenNodeList[0] ? filteredFlattenNodeList[0]['clusterName'] : ''
     const [selectedNode, setSelectedNode] = useState<string>()
     const pageSize = 15
 
@@ -695,7 +696,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     nodeList={nodeList}
                     closeTerminal={closeTerminal}
                     clusterImageList={imageList}
-                    namespaceList={namespaceList[selectedCluster.label]}
+                    namespaceList={namespaceList[clusterName]}
                     node={selectedNode}
                     setSelectedNode={setSelectedNode}
                 />
