@@ -282,7 +282,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         ShortGitHosts.forEach((shortGitHost) => {
             if (this.state.form.host.indexOf(shortGitHost) >= 0) {
                 isUrlAccepted =
-                    this.state.form.host.endsWith(shortGitHost + '/') || this.state.form.host.endsWith(shortGitHost)
+                    (this.state.form.host.endsWith(shortGitHost + '/') ||
+                        this.state.form.host.endsWith(shortGitHost)) &&
+                    this.state.form.host.startsWith('https')
             }
         })
 
