@@ -166,3 +166,32 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
+
+export const NODE_DETAILS_TABS = {
+  SUMMARY: 'Summary',
+  YAML: 'YAML',
+  Node_CONDITIONS: 'Node conditions',
+  DEBUG: 'Debug'
+}
+
+export const TAINT_OPTIONS: {
+    label: string
+    value: string
+    description: string
+}[] = [
+    {
+        label: 'Prevent Scheduling',
+        value: 'Prevent Scheduling',
+        description: 'Prevents all pods from being scheduled to the node.',
+    },
+    {
+        label: 'Prevent Scheduling if possible',
+        value: 'Prevent Scheduling if possible',
+        description: 'Prevents all pods from being scheduled to the node if possible.',
+    },
+    {
+        label: 'Prevent Scheduling and evict existing pods',
+        value: 'Prevent Scheduling and evict existing pods',
+        description: 'Prevents all pods from being scheduled to the node and evict all existing pods on the node.',
+    },
+]

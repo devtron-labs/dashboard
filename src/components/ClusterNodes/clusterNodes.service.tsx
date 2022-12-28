@@ -68,3 +68,15 @@ export const getClusterManifest = (terminalAccessId: number):  Promise<ResponseT
 export const getClusterEvents = (terminalAccessId: number):  Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
 }
+
+export const getNodeTaints = (clusterId: string, nodeName: string): Promise<any> => {
+  return get(`${Routes.TAINTS}?clusterId=${clusterId}&name=${nodeName}`)
+}
+
+export const updateTaints = (
+    clusterId: string,
+    nodeName: string,
+    taintData: any,
+): Promise<ResponseType> => {
+    return put(`${Routes.TAINTS}?clusterId=${clusterId}&name=${nodeName}`, taintData)
+}

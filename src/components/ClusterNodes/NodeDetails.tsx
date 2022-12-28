@@ -9,6 +9,7 @@ import {
     showError,
     useBreadcrumb,
     ToastBodyWithButton,
+    not,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -19,10 +20,11 @@ import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
-import { useParams } from 'react-router'
+import { useParams, useLocation, useHistory } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
@@ -46,6 +48,8 @@ import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import { OptionType } from '../app/types'
+import EditTaintsModal from './EditTaintsModal'
+import { NODE_DETAILS_TABS } from './constants'
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
@@ -71,6 +75,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
     const [showAllTaints, setShowAllTaints] = useState(false)
+    const [showEditTaints, setShowEditTaints] = useState(false)
+    const location = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+    const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -125,57 +133,70 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }, [lastDataSync])
 
+    useEffect(() => {
+        if (queryParams.has('tab')) {
+            const tab = queryParams.get('tab').replace('-', ' ')
+            if (tab === NODE_DETAILS_TABS.SUMMARY.toLowerCase()) {
+                setSelectedTabIndex(0)
+            } else if (tab === NODE_DETAILS_TABS.YAML.toLowerCase()) {
+                setSelectedTabIndex(1)
+            } else if (tab === NODE_DETAILS_TABS.Node_CONDITIONS.toLowerCase()) {
+                setSelectedTabIndex(2)
+            } else if (tab === NODE_DETAILS_TABS.DEBUG.toLowerCase()) {
+                setSelectedTabIndex(3)
+            }
+        }
+    }, [location.search])
+
+    const changeNodeTab = (e): void => {
+        const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
+        let _searchParam = '?tab='
+        if (_tabIndex === 0) {
+            _searchParam += NODE_DETAILS_TABS.SUMMARY.toLowerCase()
+        } else if (_tabIndex === 1) {
+            _searchParam += NODE_DETAILS_TABS.YAML.toLowerCase()
+        } else if (_tabIndex === 2) {
+            _searchParam += NODE_DETAILS_TABS.Node_CONDITIONS.toLowerCase().replace(' ', '-')
+        } else if (_tabIndex === 3) {
+            _searchParam += NODE_DETAILS_TABS.DEBUG.toLowerCase()
+        }
+        push({
+            pathname: location.pathname,
+            search: _searchParam,
+        })
+    }
+
     const renderNodeDetailsTabs = (): JSX.Element => {
         return (
             <ul role="tablist" className="tab-list">
-                <li
-                    className="tab-list__tab pointer"
-                    onClick={() => {
-                        setSelectedTabIndex(0)
-                    }}
-                >
+                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                        Summary
+                        {NODE_DETAILS_TABS.SUMMARY}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                <li
-                    className="tab-list__tab pointer"
-                    onClick={() => {
-                        setSelectedTabIndex(1)
-                    }}
-                >
+                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
-                        YAML
+                        {NODE_DETAILS_TABS.YAML}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
-                <li
-                    className="tab-list__tab pointer"
-                    onClick={() => {
-                        setSelectedTabIndex(2)
-                    }}
-                >
+                <li className="tab-list__tab pointer" data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                        Node conditions
+                        {NODE_DETAILS_TABS.Node_CONDITIONS}
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
                 {isSuperAdmin && (
-                    <li
-                        className="tab-list__tab pointer"
-                        onClick={() => {
-                            setSelectedTabIndex(3)
-                        }}
-                    >
+                    <li className="tab-list__tab pointer" data-tab-index="3" onClick={changeNodeTab}>
                         <div
                             className={`mb-6 flexbox fs-13 tab-hover${
                                 selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
                             }`}
                         >
                             <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
-                            Debug
+                            {NODE_DETAILS_TABS.DEBUG}
                         </div>
                         {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
                     </li>
@@ -708,8 +729,21 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
                     <div className="fw-6">
                         <div className="fs-16 cn-9">{nodeDetail.name}</div>
-                        <div className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
-                            {nodeDetail.status}
+                        <div className="flexbox">
+                            <span className={`fs-13 mr-16 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
+                                {nodeDetail.status}
+                            </span>
+                            <span className="cn-2">|</span>
+                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">Cordon</span>
+                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">Drain</span>
+                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={toggleTaints}>
+                                <Edit className="icon-dim-16 mt-2 mr-5 scb-5" />
+                                Edit taints
+                            </span>
+                            <span className="flexbox fw-6 cr-5 ml-16 fs-13 pointer">
+                                <Delete className="icon-dim-16 mt-2 mr-5" />
+                                Delete
+                            </span>
                         </div>
                     </div>
                     <div className="fs-13">
@@ -912,6 +946,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
+    const toggleTaints = (): void => {
+        setShowEditTaints(not)
+    }
+
     if (loader) {
         return <Progressing pageLoader />
     }
@@ -925,6 +963,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
+            {showEditTaints && (
+                <EditTaintsModal clusterId={clusterId} nodeName={nodeName} closeTaintsModal={toggleTaints} />
+            )}
         </div>
     )
 }

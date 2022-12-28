@@ -149,3 +149,15 @@ export const TEXT_COLOR_CLASS = {
     'Not ready': 'cr-5',
 }
 
+interface ErrorObj {
+    isValid: boolean
+    message: string | null
+}
+
+export interface TaintErrorObj {
+    isValid: boolean
+    taintErrorList: {
+        key: ErrorObj
+        value: ErrorObj
+    }[]
+}
