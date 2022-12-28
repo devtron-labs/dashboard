@@ -330,40 +330,38 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                     error={state.url.error}
                     label="URL*"
                 />
-                {((chartRepoType !== CHART_REPO_TYPE.PUBLIC) ||
-                    (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) &&
-                        <>
-                            <CustomInput
-                                autoComplete="off"
-                                value={customState.username.value}
-                                onChange={customHandleChange}
-                                name="username"
-                                error={customState.username.error}
-                                label="Username*"
-                                labelClassName="mt-12"
-                            />
-                            <ProtectedInput
-                                value={customState.password.value}
-                                onChange={customHandleChange}
-                                name="password"
-                                error={customState.password.error}
-                                label="Password*"
-                                labelClassName="mt-12"
-                            />
-                        </>
-                    }
+                {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
+                    (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
+                    <>
+                        <CustomInput
+                            autoComplete="off"
+                            value={customState.username.value}
+                            onChange={customHandleChange}
+                            name="username"
+                            error={customState.username.error}
+                            label="Username*"
+                            labelClassName="mt-12"
+                        />
+                        <ProtectedInput
+                            value={customState.password.value}
+                            onChange={customHandleChange}
+                            name="password"
+                            error={customState.password.error}
+                            label="Password*"
+                            labelClassName="mt-12"
+                        />
+                        <Checkbox
+                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                            isChecked={secureWithTls}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={toggleSkipTLSVerification}
+                        >
+                            <div className="ml-1">Secure With TLS</div>
+                        </Checkbox>
+                    </>
+                )}
             </div>
 
-            {chartRepoType !== CHART_REPO_TYPE.PUBLIC && (
-                <Checkbox
-                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
-                    isChecked={secureWithTls}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    onChange={toggleSkipTLSVerification}
-                >
-                    <div className="ml-1">Secure With TLS</div>
-                </Checkbox>
-            )}
             <div className="form__row form__buttons">
                 {id && (
                     <button
