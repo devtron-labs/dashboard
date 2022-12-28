@@ -719,7 +719,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={5}
                             className={`cta ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
                         >
-                            {this.state.saveLoading && !this.state.validateLoading ? <Progressing /> : 'Save'}
+                            {this.state.saveLoading && !this.state.validateLoading ? (
+                                <Progressing />
+                            ) : this.state.form.id ? (
+                                'Update'
+                            ) : (
+                                'Save'
+                            )}
                         </button>
                     </div>
                 </form>
