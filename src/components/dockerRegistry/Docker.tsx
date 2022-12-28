@@ -32,8 +32,8 @@ import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
 import Reload from '../Reload/Reload'
-import TippyWhite from '../common/TippyWhite'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -858,7 +858,8 @@ function DockerForm({
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
-                            <TippyWhite
+                            <TippyCustomized
+                                theme={TippyTheme.white}
                                 className="w-332"
                                 placement="top"
                                 Icon={HelpIcon}
@@ -873,7 +874,7 @@ function DockerForm({
                                 interactive={true}
                             >
                                 <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                            </TippyWhite>
+                            </TippyCustomized>
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>
                             Manage

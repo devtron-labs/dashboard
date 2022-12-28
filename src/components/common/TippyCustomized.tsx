@@ -82,8 +82,8 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
         return (
             <>
                 <div
-                    className={`dc__word-break dc__hyphens-auto flex top left ${
-                        isWhiteTheme ? 'p-12 dc__border-bottom-n1 cn-9' : 'pt-20 pb-12 pr-27 pl-20 cn-0'
+                    className={`dc__word-break dc__hyphens-auto flex left ${
+                        isWhiteTheme ? 'p-12 dc__border-bottom-n1 cn-9' : 'pt-20 pb-12 pr-20 pl-20 cn-0'
                     }`}
                 >
                     {iconPath ? (
@@ -102,22 +102,26 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
                     )}
                     {heading && <span className={`fs-14 fw-6 lh-20 ${showCloseButton ? 'mr-6' : ''}`}>{heading}</span>}
                     {showCloseButton && (
-                        <div className="icon-dim-20 ml-auto">
+                        <div className="icon-dim-16 ml-auto">
                             <CloseIcon
-                                className={`icon-dim-20 cursor ${isWhiteTheme ? 'fcn-9' : 'fcn-0'}`}
+                                className={`icon-dim-16 cursor ${isWhiteTheme ? 'fcn-9' : 'fcn-0'}`}
                                 onClick={closeTippy}
                             />
                         </div>
                     )}
                 </div>
                 {infoTextHeading && (
-                    <div className={`dc__word-break fs-14 fw-6 lh-20 ${isWhiteTheme ? 'pl-12 pr-12' : 'pl-20 pr-20'}`}>
+                    <div
+                        className={`dc__word-break dc__hyphens-auto fs-14 fw-6 lh-20 ${
+                            isWhiteTheme ? 'pl-12 pr-12' : 'pl-20 pr-20'
+                        }`}
+                    >
                         {infoTextHeading}
                     </div>
                 )}
                 {infoText && (
                     <div
-                        className={`dc__word-break fs-13 fw-4 lh-20 ${
+                        className={`dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 ${
                             isWhiteTheme
                                 ? 'p-12'
                                 : `pl-20 pr-20 pt-4 ${additionalContent && documentationLink ? 'pb-12' : 'pb-20'}`

@@ -25,7 +25,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) return null
@@ -433,7 +433,8 @@ export default function CIBuildpackBuildOptions({
                 <div className="form__field">
                     <label htmlFor="" className="form__label flexbox-imp flex-align-center">
                         Project Path (Relative)
-                        <TippyWhite
+                        <TippyCustomized
+                            theme={TippyTheme.white}
                             className="w-300"
                             placement="top"
                             Icon={HelpIcon}
@@ -445,7 +446,7 @@ export default function CIBuildpackBuildOptions({
                             interactive={true}
                         >
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyWhite>
+                        </TippyCustomized>
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{getAbsoluteProjectPath(projectPathVal)}</span>
@@ -571,7 +572,8 @@ export default function CIBuildpackBuildOptions({
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label className="form__label flexbox-imp flex-align-center">
                         {configOverrideView && !allowOverride ? 'Builder' : 'Select a Builder'}
-                        <TippyWhite
+                        <TippyCustomized
+                            theme={TippyTheme.white}
                             className="w-300"
                             placement="top"
                             Icon={HelpIcon}
@@ -583,7 +585,7 @@ export default function CIBuildpackBuildOptions({
                             interactive={true}
                         >
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyWhite>
+                        </TippyCustomized>
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
