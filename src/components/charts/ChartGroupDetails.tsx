@@ -70,10 +70,10 @@ export default function ChartGroupDetails() {
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
     function handleAdvancedChart() {
-            push(`${url}/deploy`, {
-                charts: state.charts,
-                configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
-            })
+        push(`${url}/deploy`, {
+            charts: state.charts,
+            configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
+        })
     }
 
     function redirectToConfigure() {
@@ -135,12 +135,12 @@ export default function ChartGroupDetails() {
         )
     }
 
-    const handleDeployButtonClick= (): void => {
-      handleActionButtonClick(false)
+    const handleDeployButtonClick = (): void => {
+        handleActionButtonClick(false)
     }
 
-    const handleAdvancedButtonClick= (): void => {
-      handleActionButtonClick(true)
+    const handleAdvancedButtonClick = (): void => {
+        handleActionButtonClick(true)
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {

@@ -35,7 +35,7 @@ export const enum DeleteComponentsName {
     SesConfigurationTab = 'ses',
     SMTPConfigurationTab = 'smtp',
     Project = 'project',
-    GitRepo = 'Repo'
+    GitRepo = 'Repo',
 }
 
 //DELETE COMPONENT ENDS
