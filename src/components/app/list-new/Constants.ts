@@ -1,5 +1,6 @@
-export const HELM_APP_LIST_HEADERS = {
-    AppName: 'App/Release name',
+export const APP_LIST_HEADERS = {
+    AppName: 'App name',
+    ReleaseName: 'App/Release name',
     Environment: 'Environment',
     Cluster: 'Cluster',
     Namespace: 'Namespace',
@@ -13,7 +14,7 @@ export const SELECT_CLUSTER_FROM_FILTER_NOTE =
     'To view helm charts deployed from outside devtron, please select a cluster from above filters.'
 export const HELM_PERMISSION_MESSAGE =
     'Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.'
-export const EMPTY_STATE_SELECT_CLUSTER = {
+export const APPLIST_EMPTY_STATE_MESSAGING = {
     heading: 'Select cluster to see deployed apps',
     infoText: 'Helm-based applications deployed from devtron or other sources will be shown here.',
     altText: 'No Cluster Selected',
@@ -22,4 +23,7 @@ export const EMPTY_STATE_SELECT_CLUSTER = {
     connectClusterInfoText: 'Connect a kubernetes cluster containing helm apps to view them here.',
     connectClusterAltText: 'Please connect cluster',
     connectClusterLabel: 'Connect a cluster',
+    noAppsFound: 'No apps found',
+    noAppsFoundInfoText: `We couldn't find any matching applications.`,
 }
+export const ClearFiltersLabel = 'Clear filters'

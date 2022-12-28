@@ -34,14 +34,15 @@ import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import '../list/list.css'
 import {
-    EMPTY_STATE_SELECT_CLUSTER,
+    APPLIST_EMPTY_STATE_MESSAGING,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
     EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR,
     EXTERNAL_HELM_APP_FETCH_ERROR,
     EXTERNAL_HELM_SSE_CONNECTION_ERROR,
-    HELM_APP_LIST_HEADERS,
+    APP_LIST_HEADERS,
     HELM_PERMISSION_MESSAGE,
     SELECT_CLUSTER_FROM_FILTER_NOTE,
+    ClearFiltersLabel,
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
@@ -348,13 +349,10 @@ export default function HelmAppList({
             <div className="app-list__header">
                 <div className="app-list__cell--icon"></div>
                 <div className="app-list__cell app-list__cell--name">
-                    {sseConnection && <span>{HELM_APP_LIST_HEADERS.AppName}</span>}
+                    {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
                     {!sseConnection && (
-                        <button
-                            className="app-list__cell-header"
-                            onClick={sortByAppName}
-                        >
-                            {HELM_APP_LIST_HEADERS.AppName}
+                        <button className="app-list__cell-header" onClick={sortByAppName}>
+                            {APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
                                 <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'}`}></span>
                             ) : (
@@ -364,7 +362,7 @@ export default function HelmAppList({
                     )}
                 </div>
                 <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header mr-4">{HELM_APP_LIST_HEADERS.Environment}</span>
+                    <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy
                         className="default-tt"
                         arrow={true}
@@ -375,13 +373,13 @@ export default function HelmAppList({
                     </Tippy>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
-                    <span className="app-list__cell-header">{HELM_APP_LIST_HEADERS.Cluster}</span>
+                    <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
-                    <span className="app-list__cell-header">{HELM_APP_LIST_HEADERS.Namespace}</span>
+                    <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <span className="app-list__cell-header">{HELM_APP_LIST_HEADERS.LastDeployedAt}</span>
+                    <span className="app-list__cell-header">{APP_LIST_HEADERS.LastDeployedAt}</span>
                 </div>
             </div>
         )
@@ -518,10 +516,15 @@ export default function HelmAppList({
         return (
             <div style={{ height: 'calc(100vh - 150px)' }}>
                 <EmptyState>
-                    <img src={NoClusterSelectImage} width="250" height="250" alt={EMPTY_STATE_SELECT_CLUSTER.altText} />
-                    <h2 className="fs-16 fw-4 c-9">{EMPTY_STATE_SELECT_CLUSTER.heading}</h2>
+                    <img
+                        src={NoClusterSelectImage}
+                        width="250"
+                        height="250"
+                        alt={APPLIST_EMPTY_STATE_MESSAGING.altText}
+                    />
+                    <h2 className="fs-16 fw-4 c-9">{APPLIST_EMPTY_STATE_MESSAGING.heading}</h2>
                     <p className="text-left" style={{ width: '300px' }}>
-                        {EMPTY_STATE_SELECT_CLUSTER.infoText}
+                        {APPLIST_EMPTY_STATE_MESSAGING.infoText}
                     </p>
                 </EmptyState>
             </div>
@@ -532,9 +535,9 @@ export default function HelmAppList({
         return (
             <Empty
                 view={AppListViewType.NO_RESULT}
-                title={'No apps found'}
-                message={"We couldn't find any matching applications."}
-                buttonLabel={'Clear filters'}
+                title={APPLIST_EMPTY_STATE_MESSAGING.noAppsFound}
+                message={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
+                buttonLabel={ClearFiltersLabel}
                 clickHandler={clearAllFilters}
             >
                 {showTipToSelectCluster && (
@@ -548,7 +551,7 @@ export default function HelmAppList({
                             </span>
                             <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
                                 <span className="fw-6">Tip </span>
-                                <span>{EMPTY_STATE_SELECT_CLUSTER.selectCluster}</span>
+                                <span>{APPLIST_EMPTY_STATE_MESSAGING.selectCluster}</span>
                             </div>
                         </p>
                     </div>
@@ -569,15 +572,15 @@ export default function HelmAppList({
                         src={noChartInClusterImage}
                         width="250"
                         height="250"
-                        alt={EMPTY_STATE_SELECT_CLUSTER.connectClusterAltText}
+                        alt={APPLIST_EMPTY_STATE_MESSAGING.connectClusterAltText}
                     />
-                    <h2 className="fs-16 fw-4 c-9">{EMPTY_STATE_SELECT_CLUSTER.noHelmChartsFound}</h2>
+                    <h2 className="fs-16 fw-4 c-9">{APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}</h2>
                     <p className="text-left" style={{ width: '450px' }}>
-                        {EMPTY_STATE_SELECT_CLUSTER.connectClusterInfoText}
+                        {APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
                     </p>
                     <Link to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}>
                         <button type="button" className="cta flex">
-                            {EMPTY_STATE_SELECT_CLUSTER.connectClusterLabel}
+                            {APPLIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
                         </button>
                     </Link>
                 </EmptyState>

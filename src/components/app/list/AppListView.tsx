@@ -17,6 +17,7 @@ import ContentCard from '../../common/ContentCard/ContentCard';
 import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config';
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types';
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants';
+import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants';
 
 export class AppListView extends Component<AppListViewProps>{
 
@@ -34,6 +35,11 @@ export class AppListView extends Component<AppListViewProps>{
         else return <div className="app-list__cell app-list__cell--env"></div>
     }
 
+    sortByAppName = (e) => { 
+        e.preventDefault()
+        this.props.sort('appNameSort') 
+    }
+
     renderAppList() {
         if (this.props.apps.length) {
             let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
@@ -41,24 +47,24 @@ export class AppListView extends Component<AppListViewProps>{
                 <div className="app-list__header">
                     <div className="app-list__cell--icon"></div>
                     <div className="app-list__cell app-list__cell--name">
-                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
+                        <button className="app-list__cell-header" onClick={this.sortByAppName}>{APP_LIST_HEADERS.AppName}
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
                         </button>
                     </div>
                     <div className="app-list__cell app-list__cell--env">
-                        <span className="app-list__cell-header mr-4">Environment</span>
+                        <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                         <Tippy className="default-tt" arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
                             <HelpOutlineIcon className="icon-dim-20"/>
                         </Tippy>
                     </div>
                     <div className="app-list__cell app-list__cell--cluster">
-                        <span className="app-list__cell-header">Cluster</span>
+                        <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
                     </div>
                     <div className="app-list__cell app-list__cell--namespace">
-                        <span className="app-list__cell-header">Namespace</span>
+                        <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                     </div>
                     <div className="app-list__cell app-list__cell--time">
-                        <span className="app-list__cell-header">Last deployed at</span>
+                        <span className="app-list__cell-header">{APP_LIST_HEADERS.LastDeployedAt}</span>
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </div>
@@ -157,9 +163,9 @@ export class AppListView extends Component<AppListViewProps>{
             return (
                 <Empty
                     view={this.props.view}
-                    title={'No apps found'}
-                    message={"We couldn't find any matching applications."}
-                    buttonLabel={'Clear filters'}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.noAppsFound}
+                    message={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
+                    buttonLabel={ClearFiltersLabel}
                     clickHandler={this.props.clearAll}
                 />
             )
