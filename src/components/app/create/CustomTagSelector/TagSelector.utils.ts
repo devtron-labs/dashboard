@@ -49,18 +49,23 @@ export const baseSelectStyles = {
     }),
 }
 
-export const validateKubernetesKey=(key: string)=>{
-  const invalidMessageList = []
-  const re = new RegExp('/', 'g');
+export const validateKubernetesKey = (key: string) => {
+    const invalidMessageList = []
+    if (!key || key.split('/')) {
+        invalidMessageList.push('Name is required')
+    } else {
+        const re = new RegExp('/', 'g')
+        const noOfSlashInKey = key.match(re).length
+        if (noOfSlashInKey > 1) {
+            invalidMessageList.push('Key: Max 1 ( / ) allowed')
+        } else {
+          let name = key
+            if (noOfSlashInKey === 1) {
+              const [prefix, name]=key.split('/')
 
-    // matching the pattern
-    const count = key.match(re).length;
-    if( key.match(re).length>1){
-      invalidMessageList.push('Key: Max 1 ( / ) allowed')
+            }
+        }
     }
-
 }
 
-export const validateKubernetesValue=(value: string)=>{
-
-}
+export const validateKubernetesValue = (value: string) => {}
