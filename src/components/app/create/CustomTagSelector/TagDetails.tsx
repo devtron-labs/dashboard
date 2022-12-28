@@ -11,7 +11,7 @@ export default function TagDetails() {
             </div>
             {/* <input type="text" className="form__input h-28 dc__no-right-radius" />
             <input type="text" className="form__input h-28 dc__no-left-radius dc__no-left-border" /> */}
-            <TagLabelValueSelector selectedVariableIndex={0} />
+            <TagLabelValueSelector selectedVariableIndex={0} propagateToResource={true} isRequired={true} />
             <TagLabelValueSelector selectedVariableIndex={0} />
             <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer">
                 <Close className="icon-dim-20 mt-4" />

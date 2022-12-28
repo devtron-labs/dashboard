@@ -48,3 +48,19 @@ export const baseSelectStyles = {
         marginTop: '0',
     }),
 }
+
+export const validateKubernetesKey=(key: string)=>{
+  const invalidMessageList = []
+  const re = new RegExp('/', 'g');
+
+    // matching the pattern
+    const count = key.match(re).length;
+    if( key.match(re).length>1){
+      invalidMessageList.push('Key: Max 1 ( / ) allowed')
+    }
+
+}
+
+export const validateKubernetesValue=(value: string)=>{
+
+}

@@ -6,7 +6,15 @@ import { getCustomOptionSelectionStyle } from '../../../v2/common/ReactSelect.ut
 import Tippy from '@tippyjs/react'
 import { OptionType } from '../../../app/types'
 
-export default function TagLabelValueSelector({ selectedVariableIndex }: { selectedVariableIndex: number }) {
+export default function TagLabelValueSelector({
+    selectedVariableIndex,
+    propagateToResource,
+    isRequired,
+}: {
+    selectedVariableIndex: number
+    propagateToResource?: boolean
+    isRequired?: boolean
+}) {
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
         value: '',
@@ -51,6 +59,11 @@ export default function TagLabelValueSelector({ selectedVariableIndex }: { selec
     }
 
     const showCustomKeyValidation = (): string => {
+        if (propagateToResource) {
+            return
+        } else if (isRequired) {
+            return
+        }
         return null
     }
 
