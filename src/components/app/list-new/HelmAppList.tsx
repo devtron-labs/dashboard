@@ -578,7 +578,7 @@ export default function HelmAppList({
                     <p className="text-left" style={{ width: '450px' }}>
                         {APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
                     </p>
-                    <Link to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}>
+                    <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
                         <button type="button" className="cta flex">
                             {APPLIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
                         </button>

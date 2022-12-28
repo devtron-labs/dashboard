@@ -177,10 +177,10 @@ export class AppListView extends Component<AppListViewProps>{
             )
         } else {
             return (
-                <React.Fragment>
+                <>
                     {this.renderAppList()}
                     {this.renderPagination()}
-                </React.Fragment>
+                </>
             )
         }
     }
