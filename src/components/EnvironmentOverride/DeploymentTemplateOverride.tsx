@@ -22,7 +22,7 @@ import {
 import { BasicFieldErrorObj, DeploymentChartVersionType } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getBasicFieldValue,
@@ -183,7 +183,7 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
-            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues || result.globalConfig)
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,
@@ -210,7 +210,7 @@ export default function DeploymentTemplateOverride({
                 dispatch({ type: 'toggleDialog' })
             } else {
                 //remove copy
-                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT) {
+                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                     if (state.isBasicViewLockedInBase !== null && state.isBasicViewLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
                         let _isBasicViewLocked = false
@@ -375,7 +375,7 @@ function DeploymentTemplateOverrideForm({
             return
         }
         if (
-            state.selectedChart.name === ROLLOUT_DEPLOYMENT &&
+            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
             !state.yamlMode &&
             !state.basicFieldValuesErrorObj.isValid
         ) {
@@ -621,8 +621,8 @@ function DeploymentTemplateOverrideForm({
                             state.yamlMode
                         }
                         isAppMetricsEnabled={state.data.appMetrics}
-                        currentChart={state.selectedChart}
                         toggleAppMetrics={handleAppMetrics}
+                        selectedChart={state.selectedChart}
                     />
                 )}
             </form>
