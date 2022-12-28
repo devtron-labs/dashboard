@@ -58,7 +58,7 @@ export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
 }
 
 export const clusterNamespaceList = (): Promise<ResponseType> => {
-    return get(`${Routes.CLUSTER_NAMESPACE}`)
+    return get(Routes.CLUSTER_NAMESPACE)
 }
 
 export const getClusterManifest = (terminalAccessId: number):  Promise<ResponseType> => {
