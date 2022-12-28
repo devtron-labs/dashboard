@@ -24,7 +24,7 @@ import {
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 
@@ -159,7 +159,8 @@ export const AppLevelExternalLinks = ({
                 key={`${linkOption.label}-${idx}`}
                 condition={!!linkOption.description}
                 wrap={(children) => (
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         className="w-300"
                         placement={isOverviewPage ? 'bottom' : 'top'}
                         iconPath={linkOption.icon}
@@ -167,7 +168,7 @@ export const AppLevelExternalLinks = ({
                         infoText={linkOption.description}
                     >
                         {children}
-                    </TippyWhite>
+                    </TippyCustomized>
                 )}
             >
                 <a
@@ -234,7 +235,8 @@ export const NodeLevelExternalLinks = ({
             <ConditionalWrap
                 condition={!!data.description}
                 wrap={(children) => (
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         className="w-300"
                         placement="left"
                         iconPath={data.icon}
@@ -242,7 +244,7 @@ export const NodeLevelExternalLinks = ({
                         infoText={data.description}
                     >
                         {children}
-                    </TippyWhite>
+                    </TippyCustomized>
                 )}
             >
                 <a
