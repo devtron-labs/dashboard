@@ -59,8 +59,8 @@ export const clusterSelectStyle = {
 export const CLUSTER_STATUS = {
     RUNNING: 'Running',
     FAILED: 'Failed',
-    SESSION_LIMIT_REACHED:'session-limit-reached',
-    POD_TERMINATED: 'pod-terminated'
+    SESSION_LIMIT_REACHED: 'session-limit-reached',
+    POD_TERMINATED: 'pod-terminated',
 }
 
 export const COLUMN_METADATA: ColumnMetadataType[] = [
@@ -166,3 +166,29 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
+
+export const DRAIN_NODE_MODAL_MESSAGING = {
+    GracePeriod: {
+        heading: 'Grace period',
+        infoText:
+            'Period of time in seconds given to each pod to terminate gracefully. If negative, the default value specified in the pod will be used.',
+    },
+    DeleteEmptyDirectoryData: {
+        heading: 'Delete empty directory data',
+        infoText:
+            'Continue even if there are pods using emptyDir (local data that will be deleted when the node is drained).',
+    },
+    DisableEviction: {
+        heading: 'Disable eviction (use with caution)',
+        infoText:
+            'Force drain to use delete, even if eviction is supported. This will bypass checking PodDisruptionBudgets, use with caution.',
+    },
+    ForceDrain: {
+        heading: 'Force drain',
+        infoText: 'Continue even if there are pods that do not declare a controller.',
+    },
+    IgnoreDaemonSets: {
+        heading: 'Ignore DaemonSets',
+        infoText: 'Ignore DaemonSet-managed pods.',
+    },
+}

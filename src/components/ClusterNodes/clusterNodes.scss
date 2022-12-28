@@ -292,3 +292,41 @@
        height: calc(100vh - 48px);
     }
 }
+
+.drain-node-options-container {
+    .grace-period-timer-icon {
+        margin-left: -3px;
+    }
+
+    .grace-period-input-wrapper {
+
+        .grace-period-input,
+        .grace-period-input-unit {
+            padding: 6px 10px;
+        }
+
+        .grace-period-input {
+            width: 98px;
+            background-color: var(--N50);
+            outline: none;
+        }
+
+        .grace-period-input-unit {
+            background-color: white;
+            border-left: none;
+        }
+    }
+
+    .drain-option-help-icon {
+        margin-top: -3px;
+    }
+
+    .form__checkbox-container {
+        margin-left: -5px;
+    }
+
+    .form__checkbox-label {
+        display: flex;
+        margin-left: 8px;
+    }
+}
