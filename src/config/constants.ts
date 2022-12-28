@@ -670,6 +670,22 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
+export const CHART_REPO_TYPE = {
+    PUBLIC: 'PUBLIC',
+    PRIVATE: 'PRIVATE',
+}
+
+export const CHART_REPO_AUTH_TYPE = {
+    ANONYMOUS: 'ANONYMOUS',
+    USERNAME_PASSWORD: 'USERNAME_PASSWORD',
+    ACCESS_TOKEN: 'ACCESS_TOKEN',
+}
+
+export const CHART_REPO_LABEL = [
+    { value: 'PUBLIC' , label: 'Public repository' },
+    { value: 'PRIVATE' , label: 'Private repository' },
+]
+
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = "DEPLOYMENT_INITIATED",
     GIT_COMMIT = "GIT_COMMIT",
