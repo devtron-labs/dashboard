@@ -443,7 +443,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className="w-800 dc__border-top flex flex-align-center flex-justify pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
+                className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
             >
                 <button className="cta flex h-36" onClick={this.createApp}>
                     {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone App' : 'Create App'}
@@ -469,7 +469,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     render() {
         return (
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            <Drawer position="right" width="800px">
                 <div className="h-100 bcn-0 create-app-container" ref={(node) => (this.createAppRef = node)}>
                     {this.renderHeaderSection()}
                     {this.renderPageDetails()}

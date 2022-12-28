@@ -7,7 +7,7 @@ export const baseSelectStyles = {
         borderRadius: 'none',
         height: '32px',
         fontSize: '12px',
-        borderLeft: '0',
+        borderRight: '0',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
     singleValue: (base, state) => ({
