@@ -198,7 +198,7 @@ export default function UserGroupRoute() {
             Promise.allSettled([
                 getGroupList(),
                 get(Routes.PROJECT_LIST),
-                serverMode === SERVER_MODE.EA_ONLY ? null : getEnvironmentListMin(),
+                getEnvironmentListMin(),
                 serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
                 getEnvironmentListHelmApps(),
