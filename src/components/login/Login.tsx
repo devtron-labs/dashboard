@@ -34,6 +34,16 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         let queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')       
         
+        const script = document.createElement("script");
+        script.src = "https://cdn.devtron.ai/js/snowstorm-min.js";
+        script.async = true
+        script.onload = () => {
+            if (window['snowStorm']?.start) {
+                window['snowStorm'].start()
+            }
+        }
+        document.body.appendChild(script);
+
         //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
             //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
             //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear 
