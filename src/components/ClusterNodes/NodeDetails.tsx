@@ -1051,7 +1051,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     name={nodeName}
                     version={nodeDetail.version}
                     kind={nodeDetail.kind}
-                    taints={nodeDetail.taints || []}
+                    taints={nodeDetail.taints}
                     closePopup={hideEditTaintsModal}
                 />
             )}

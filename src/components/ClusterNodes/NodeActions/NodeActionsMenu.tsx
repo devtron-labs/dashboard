@@ -157,7 +157,7 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                     name={nodeData.name}
                     version={nodeData.version}
                     kind={nodeData.kind}
-                    taints={nodeData.taints || []}
+                    taints={nodeData.taints}
                     closePopup={hideEditTaintsModal}
                 />
             )}

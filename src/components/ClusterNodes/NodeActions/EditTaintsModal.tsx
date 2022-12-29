@@ -20,7 +20,7 @@ import { useParams } from 'react-router-dom'
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
-    const [taintList, setTaintList] = useState<TaintType[]>(taints)
+    const [taintList, setTaintList] = useState<TaintType[]>(taints || [{ key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }])
     const [errorObj, setErrorObj] = useState<TaintErrorObj>({ isValid: true, taintErrorList: [] })
     const validationRules = new ValidationRules()
 
