@@ -1,10 +1,13 @@
 import { Routes } from '../../config'
-import { get, post, put } from '../../services/api'
+import { get, post, put, trash } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
+    NodeCordonRequest,
+    NodeActionRequest,
     NodeDetailResponse,
+    NodeDrainRequest,
     NodeListResponse,
     UpdateNodeRequestBody,
 } from './types'
@@ -23,6 +26,18 @@ export const getNodeList = (clusterId: string): Promise<NodeListResponse> => {
 
 export const getNodeCapacity = (clusterId: string, nodeName: string): Promise<NodeDetailResponse> => {
     return get(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
+}
+
+export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<ResponseType> => {
+    return put(`${Routes.NODE_CAPACITY}/cordon`, requestPayload)
+}
+
+export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> => {
+    return put(`${Routes.NODE_CAPACITY}/drain`, requestPayload)
+}
+
+export const deleteNodeCapacity = (requestPayload: NodeActionRequest): Promise<ResponseType> => {
+    return trash(Routes.NODE_CAPACITY, requestPayload)
 }
 
 export const updateNodeManifest = (
