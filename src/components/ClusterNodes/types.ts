@@ -172,31 +172,30 @@ export interface TaintErrorObj {
     }[]
 }
 interface NodeDataPropType {
-    nodeData: NodeDetail
-    getNodeListData: () => void
+  nodeData: NodeDetail
+  getNodeListData: () => void
 }
 
 export interface NodeActionsMenuProps extends NodeDataPropType {
-    openTerminal: (clusterData: NodeDetail) => void
-}
-
-export interface CordonNodeModalProps extends NodeDataPropType {
-    toggleShowCordonNodeDialog: () => void
-}
-
-export interface DrainNodeModalProps extends NodeDataPropType {
-    toggleShowDrainNodeDialog: () => void
-}
-
-export interface DeleteNodeModalProps extends NodeDataPropType {
-    toggleShowDeleteNodeDialog: () => void
+  openTerminal: (clusterData: NodeDetail) => void
 }
 
 export interface NodeActionRequest {
-    clusterId: number
+    clusterId?: number
     name: string
     version: string
     kind: string
+}
+export interface NodeActionModalPropType extends NodeActionRequest {
+    closePopup: (refreshData?: boolean) => void
+}
+
+export interface CordonNodeModalType extends NodeActionModalPropType {
+    unschedulable: boolean
+}
+
+export interface EditTaintsModalType extends NodeActionModalPropType {
+    taints: TaintType[]
 }
 
 interface NodeCordonHelper {

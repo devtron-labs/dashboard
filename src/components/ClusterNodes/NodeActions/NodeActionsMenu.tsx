@@ -13,6 +13,7 @@ import CordonNodeModal from './CordonNodeModal'
 import DrainNodeModal from './DrainNodeModal'
 import DeleteNodeModal from './DeleteNodeModal'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../constants'
+import EditTaintsModal from './EditTaintsModal'
 
 export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListData }: NodeActionsMenuProps) {
     const history = useHistory()
@@ -20,6 +21,7 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
+    const [showEditTaintNodeDialog, setEditTaintNodeDialog] = useState(false)
 
     const handleOpenTerminalAction = () => {
         openTerminal(nodeData)
@@ -29,16 +31,48 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
         history.push(`${url}/${nodeData.name}?tab=yaml`)
     }
 
-    const toggleShowCordonNodeDialog = () => {
-        setCordonNodeDialog((prevState) => !prevState)
+    const showCordonNodeModal = (): void => {
+      setCordonNodeDialog(true)
     }
 
-    const toggleShowDrainNodeDialog = () => {
-        setDrainNodeDialog((prevState) => !prevState)
+    const hideCordonNodeModal = (refreshData?: boolean): void => {
+      setCordonNodeDialog(false)
+        if (refreshData) {
+          getNodeListData()
+        }
     }
 
-    const toggleShowDeleteNodeDialog = () => {
-        setDeleteNodeDialog((prevState) => !prevState)
+    const showDrainNodeModal = (): void => {
+      setDrainNodeDialog(true)
+    }
+
+    const hideDrainNodeModal = (refreshData?: boolean): void => {
+      setDrainNodeDialog(false)
+        if (refreshData) {
+          getNodeListData()
+        }
+    }
+
+    const showDeleteNodeModal = (): void => {
+      setDeleteNodeDialog(true)
+    }
+
+    const hideDeleteNodeModal = (refreshData?: boolean): void => {
+      setDeleteNodeDialog(false)
+        if (refreshData) {
+          getNodeListData()
+        }
+    }
+
+    const showEditTaintsModal = (): void => {
+        setEditTaintNodeDialog(true)
+    }
+
+    const hideEditTaintsModal = (refreshData?: boolean): void => {
+        setEditTaintNodeDialog(false)
+        if (refreshData) {
+            getNodeListData()
+        }
     }
 
     return (
@@ -58,7 +92,7 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
-                            onClick={toggleShowCordonNodeDialog}
+                            onClick={showCordonNodeModal}
                         >
                             <CordonIcon className="mr-8" />
                             {nodeData.unschedulable
@@ -67,12 +101,12 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
-                            onClick={toggleShowDrainNodeDialog}
+                            onClick={showDrainNodeModal}
                         >
                             <DrainIcon className="mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.drain}
                         </span>
-                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
+                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showEditTaintsModal}>
                             <EditTaintsIcon className="mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.taints}
                         </span>
@@ -85,7 +119,7 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                            onClick={toggleShowDeleteNodeDialog}
+                            onClick={showDeleteNodeModal}
                         >
                             <DeleteIcon className="mr-8 scr-5" />
                             {CLUSTER_NODE_ACTIONS_LABELS.delete}
@@ -95,23 +129,36 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
             </PopupMenu>
             {showCordonNodeDialog && (
                 <CordonNodeModal
-                    nodeData={nodeData}
-                    getNodeListData={getNodeListData}
-                    toggleShowCordonNodeDialog={toggleShowCordonNodeDialog}
+                    name={nodeData.name}
+                    version={nodeData.version}
+                    kind={nodeData.kind}
+                    unschedulable={nodeData.unschedulable}
+                    closePopup={hideCordonNodeModal}
                 />
             )}
             {showDrainNodeDialog && (
                 <DrainNodeModal
-                    nodeData={nodeData}
-                    getNodeListData={getNodeListData}
-                    toggleShowDrainNodeDialog={toggleShowDrainNodeDialog}
+                    name={nodeData.name}
+                    version={nodeData.version}
+                    kind={nodeData.kind}
+                    closePopup={hideDrainNodeModal}
                 />
             )}
             {showDeleteNodeDialog && (
                 <DeleteNodeModal
-                    nodeData={nodeData}
-                    getNodeListData={getNodeListData}
-                    toggleShowDeleteNodeDialog={toggleShowDeleteNodeDialog}
+                    name={nodeData.name}
+                    version={nodeData.version}
+                    kind={nodeData.kind}
+                    closePopup={hideDeleteNodeModal}
+                />
+            )}
+            {showEditTaintNodeDialog && (
+                <EditTaintsModal
+                    name={nodeData.name}
+                    version={nodeData.version}
+                    kind={nodeData.kind}
+                    taints={nodeData.taints || []}
+                    closePopup={hideEditTaintsModal}
                 />
             )}
         </>

@@ -1,38 +1,24 @@
-import React, { useEffect, useState } from 'react'
-import { Drawer, Progressing, showError } from '../common'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { updateTaints } from './clusterNodes.service'
+import React, { useState } from 'react'
+import { Drawer, Progressing, showError } from '../../common'
+import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { updateTaints } from '../clusterNodes.service'
 import ReactSelect from 'react-select'
-import { OptionType } from '../app/types'
-import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
-import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { EFFECT_TYPE, TaintErrorObj, TaintType } from './types'
+import { OptionType } from '../../app/types'
+import { Option, DropdownIndicator } from '../../v2/common/ReactSelect.utils'
+import { containerImageSelectStyles } from '../../CIPipelineN/ciPipeline.utils'
+import { EditTaintsModalType, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
-import { DRAIN_NODE_MODAL_MESSAGING, EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from './constants'
+import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
 import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 
-interface EditTaintsModalType {
-    clusterId: string
-    nodeName: string
-    version: string
-    kind: string
-    taints: TaintType[]
-    closePopup: (refreshData?: boolean) => void
-}
-
-export default function EditTaintsModal({
-    clusterId,
-    nodeName,
-    version,
-    kind,
-    taints,
-    closePopup,
-}: EditTaintsModalType) {
+export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
+    const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
     const [taintList, setTaintList] = useState<TaintType[]>(taints)
     const [errorObj, setErrorObj] = useState<TaintErrorObj>({ isValid: true, taintErrorList: [] })
@@ -110,7 +96,7 @@ export default function EditTaintsModal({
             setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
-                name: nodeName,
+                name: name,
                 version: version,
                 kind: kind,
                 taintList,
@@ -130,7 +116,7 @@ export default function EditTaintsModal({
             <div className="bcn-0 h-100">
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                        {`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${nodeName}'`}
+                        {`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}
                     </h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <Close className="icon-dim-24" />
@@ -220,8 +206,8 @@ export default function EditTaintsModal({
                                     />
                                 </div>
                                 <div>
-                                    <Delete
-                                        className="icon-dim-20 scn-6 mt-4 pointer"
+                                    <DeleteIcon
+                                        className="icon-dim-20 mt-4 pointer"
                                         data-index={index}
                                         onClick={deleteTaint}
                                     />

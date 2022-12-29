@@ -1,4 +1,4 @@
-import { PATTERNS } from '../../config'
+import { PATTERNS } from '../../../config'
 
 export class ValidationRules {
     taintKey = (key: string): { message: string | null; isValid: boolean } => {

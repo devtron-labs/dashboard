@@ -19,12 +19,16 @@ import { ReactComponent as Memory } from '../../assets/icons/ic-memory.svg'
 import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
+import { ReactComponent as PlayIcon } from '../../assets/icons/ic-play.svg';
+import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
+import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
+import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import PageHeader from '../common/header/PageHeader'
 import { useParams, useLocation, useHistory } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
@@ -47,9 +51,11 @@ import './clusterNodes.scss'
 import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
-import { OptionType } from '../app/types'
-import EditTaintsModal from './EditTaintsModal'
+import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
+import CordonNodeModal from './NodeActions/CordonNodeModal'
+import DrainNodeModal from './NodeActions/DrainNodeModal'
+import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
@@ -75,6 +81,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
     const [showAllTaints, setShowAllTaints] = useState(false)
+    const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
+    const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
+    const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
@@ -734,14 +743,22 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                 {nodeDetail.status}
                             </span>
                             <span className="cn-2">|</span>
-                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">{CLUSTER_NODE_ACTIONS_LABELS.cordon}</span>
-                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">{CLUSTER_NODE_ACTIONS_LABELS.drain}</span>
+                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showCordonNodeModal}>
+
+                                {nodeDetail.unschedulable
+                                ? <><PlayIcon className="icon-dim-12 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.uncordon}</>
+                                : <><CordonIcon className="icon-dim-14 mt-3 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.cordon}</>}
+                            </span>
+                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showDrainNodeModal}>
+                                <DrainIcon className="icon-dim-14 mt-3 mr-5 scb-5" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.drain}
+                            </span>
                             <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showEditTaintsModal}>
-                                <Edit className="icon-dim-16 mt-2 mr-5 scb-5" />
+                                <EditTaintsIcon className="icon-dim-14 mt-3 mr-5 scb-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.taints}
                             </span>
-                            <span className="flexbox fw-6 cr-5 ml-16 fs-13 pointer">
-                                <Delete className="icon-dim-16 mt-2 mr-5" />
+                            <span className="flexbox fw-6 cr-5 ml-16 fs-13 pointer" onClick={showDeleteNodeModal}>
+                                <DeleteIcon className="icon-dim-14 mt-3 mr-5 scr-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.delete}
                             </span>
                         </div>
@@ -946,12 +963,45 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
+    const showCordonNodeModal = (): void => {
+        setCordonNodeDialog(true)
+    }
+
+    const hideCordonNodeModal = (refreshData?: boolean): void => {
+        setCordonNodeDialog(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
+    const showDrainNodeModal = (): void => {
+        setDrainNodeDialog(true)
+    }
+
+    const hideDrainNodeModal = (refreshData?: boolean): void => {
+        setDrainNodeDialog(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
+    const showDeleteNodeModal = (): void => {
+        setDeleteNodeDialog(true)
+    }
+
+    const hideDeleteNodeModal = (refreshData?: boolean): void => {
+        setDeleteNodeDialog(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
     const showEditTaintsModal = (): void => {
-        setShowEditTaints(not)
+        setShowEditTaints(true)
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {
-        setShowEditTaints(not)
+        setShowEditTaints(false)
         if (refreshData) {
             getData([])
         }
@@ -970,10 +1020,35 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
+
+            {showCordonNodeDialog && (
+                <CordonNodeModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    unschedulable={nodeDetail.unschedulable}
+                    closePopup={hideCordonNodeModal}
+                />
+            )}
+            {showDrainNodeDialog && (
+                <DrainNodeModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    closePopup={hideDrainNodeModal}
+                />
+            )}
+            {showDeleteNodeDialog && (
+                <DeleteNodeModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    closePopup={hideDeleteNodeModal}
+                />
+            )}
             {showEditTaints && (
                 <EditTaintsModal
-                    clusterId={clusterId}
-                    nodeName={nodeName}
+                    name={nodeName}
                     version={nodeDetail.version}
                     kind={nodeDetail.kind}
                     taints={nodeDetail.taints || []}

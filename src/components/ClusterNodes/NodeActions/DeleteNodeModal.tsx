@@ -2,32 +2,31 @@ import React, { useState } from 'react'
 import { DeleteDialog, showError } from '../../common'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { DeleteNodeModalProps } from '../types'
+import { NodeActionModalPropType } from '../types'
 import { useParams } from 'react-router-dom'
 import { deleteNodeCapacity } from '../clusterNodes.service'
 import { toast } from 'react-toastify'
 import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 
-export default function DeleteNodeModal({
-    nodeData,
-    toggleShowDeleteNodeDialog,
-    getNodeListData,
-}: DeleteNodeModalProps) {
+export default function DeleteNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
+
+    const onClose = (): void => {
+        closePopup()
+    }
 
     const deleteAPI = async () => {
         try {
             const payload = {
                 clusterId: Number(clusterId),
-                name: nodeData.name,
-                version: nodeData.version,
-                kind: nodeData.kind,
+                name: name,
+                version: version,
+                kind: kind,
             }
             await deleteNodeCapacity(payload)
             toast.success(DELETE_NODE_MODAL_MESSAGING.initiated)
-            getNodeListData()
-            toggleShowDeleteNodeDialog()
+            closePopup(true)
         } catch (err) {
             showError(err)
         } finally {
@@ -46,9 +45,9 @@ export default function DeleteNodeModal({
 
     return (
         <DeleteDialog
-            title={`${DELETE_NODE_MODAL_MESSAGING.delete} ‘${nodeData.name}’ ?`}
+            title={`${DELETE_NODE_MODAL_MESSAGING.delete} ‘${name}’ ?`}
             delete={deleteAPI}
-            closeDelete={toggleShowDeleteNodeDialog}
+            closeDelete={onClose}
             deletePostfix={DELETE_NODE_MODAL_MESSAGING.deletePostfix}
             apiCallInProgress={apiCallInProgress}
         >
