@@ -18,6 +18,7 @@ import {
     TEXT_COLOR_CLASS,
     ERROR_TYPE,
     ClusterListType,
+    NodeDetail,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -30,10 +31,10 @@ import NodeListSearchFilter from './NodeListSearchFilter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
-import './clusterNodes.scss'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import { COLUMN_METADATA } from './constants'
+import NodeActionsMenu from './NodeActions/NodeActionsMenu'
+import './clusterNodes.scss'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -576,9 +577,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                         {nodeData[column.value]}
                                     </NavLink>
                                 </div>
-                                <TerminalIcon
-                                    className="cursor dc__visible-hover--child"
-                                    onClick={() => openTerminal(nodeData)}
+                                <NodeActionsMenu
+                                    nodeData={nodeData as NodeDetail}
+                                    openTerminal={openTerminal}
+                                    getNodeListData={getNodeListData}
                                 />
                             </div>
                         </div>
