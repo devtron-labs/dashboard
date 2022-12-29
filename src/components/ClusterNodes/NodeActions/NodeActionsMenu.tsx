@@ -87,14 +87,14 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={handleOpenTerminalAction}
                         >
-                            <TerminalIcon className="mr-8" />
+                            <TerminalIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.terminal}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={showCordonNodeModal}
                         >
-                            <CordonIcon className="mr-8" />
+                            <CordonIcon className="icon-dim-16 mr-8" />
                             {nodeData.unschedulable
                                 ? CLUSTER_NODE_ACTIONS_LABELS.uncordon
                                 : CLUSTER_NODE_ACTIONS_LABELS.cordon}
@@ -103,25 +103,25 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={showDrainNodeModal}
                         >
-                            <DrainIcon className="mr-8" />
+                            <DrainIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.drain}
                         </span>
                         <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showEditTaintsModal}>
-                            <EditTaintsIcon className="mr-8" />
+                            <EditTaintsIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.taints}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={handleEditYamlAction}
                         >
-                            <EditFileIcon className="mr-8" />
+                            <EditFileIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.yaml}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50"
                             onClick={showDeleteNodeModal}
                         >
-                            <DeleteIcon className="mr-8 scr-5" />
+                            <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
                             {CLUSTER_NODE_ACTIONS_LABELS.delete}
                         </span>
                     </div>

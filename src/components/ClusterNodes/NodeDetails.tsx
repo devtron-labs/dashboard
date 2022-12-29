@@ -20,7 +20,7 @@ import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
-import { ReactComponent as PlayIcon } from '../../assets/icons/ic-play.svg';
+import {ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -746,7 +746,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                             <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showCordonNodeModal}>
 
                                 {nodeDetail.unschedulable
-                                ? <><PlayIcon className="icon-dim-12 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.uncordon}</>
+                                ? <><UncordonIcon className="icon-dim-14 mt-3 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.uncordon}</>
                                 : <><CordonIcon className="icon-dim-14 mt-3 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.cordon}</>}
                             </span>
                             <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showDrainNodeModal}>

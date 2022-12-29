@@ -41,7 +41,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
     const addNewTaint = (): void => {
         const _taintList = [...taintList, { key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }]
         setTaintList(_taintList)
-        validateTaintList(_taintList)
+        validateTaintList(_taintList, true)
     }
 
     const handleInputChange = (e): void => {
@@ -58,7 +58,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         setTaintList(_taintList)
     }
 
-    const validateTaintList = (_taintList): TaintErrorObj => {
+    const validateTaintList = (_taintList: TaintType[], ignoreNewlyAdded?: boolean): TaintErrorObj => {
         const _errorObj = { isValid: true, taintErrorList: [] }
         const uniqueTaintMap = new Map<string, boolean>()
         for (let index = 0; index < _taintList.length; index++) {
@@ -67,8 +67,8 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
             const validateTaintValue = validationRules.taintValue(element.value)
             if (uniqueTaintMap.get(uniqueKey)) {
                 _errorObj.taintErrorList.push({
-                    key: 'Duplicate taint key',
-                    value: { validateTaintValue },
+                    key: { isValid: false, message: 'Duplicate taint key' },
+                    value: validateTaintValue,
                 })
                 _errorObj.isValid = false
             } else {
@@ -80,6 +80,12 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                 })
                 _errorObj.isValid = _errorObj.isValid && validateTaintKey.isValid && validateTaintValue.isValid
             }
+        }
+        if (ignoreNewlyAdded) {
+            _errorObj.taintErrorList.splice(-1, 1, {
+                key: { isValid: true, message: null },
+                value: { isValid: true, message: null },
+            })
         }
         setErrorObj(_errorObj)
         return _errorObj
@@ -144,6 +150,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                         value={taintDetails.key}
                                         className="form__input h-32"
                                         onChange={handleInputChange}
+                                        placeholder="Key"
                                     />
                                     {_errorObj && !_errorObj['key'].isValid && (
                                         <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
@@ -160,6 +167,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                         value={taintDetails.value}
                                         className="form__input h-32"
                                         onChange={handleInputChange}
+                                        placeholder="Value"
                                     />
                                     {_errorObj && !_errorObj['value'].isValid && (
                                         <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">

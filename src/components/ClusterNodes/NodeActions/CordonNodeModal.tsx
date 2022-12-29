@@ -23,7 +23,7 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
                 name: name,
                 version: version,
                 kind: kind,
-                nodeCordonHelper: {
+                nodeCordonOptions: {
                     unschedulableDesired: !unschedulable,
                 },
             }
