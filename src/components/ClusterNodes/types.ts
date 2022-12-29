@@ -170,14 +170,12 @@ export interface DeleteNodeModalProps extends NodeDataPropType {
     toggleShowDeleteNodeDialog: () => void
 }
 
-interface NodeActionRequest {
+export interface NodeActionRequest {
     clusterId: number
     name: string
     version: string
     kind: string
 }
-
-export interface NodeDeleteRequest extends NodeActionRequest {}
 
 interface NodeCordonHelper {
     unschedulableDesired: boolean

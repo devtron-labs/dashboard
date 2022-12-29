@@ -12,6 +12,7 @@ import { NodeActionsMenuProps } from '../types'
 import CordonNodeModal from './CordonNodeModal'
 import DrainNodeModal from './DrainNodeModal'
 import DeleteNodeModal from './DeleteNodeModal'
+import { CLUSTER_NODE_ACTIONS_LABELS } from '../constants'
 
 export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListData }: NodeActionsMenuProps) {
     const history = useHistory()
@@ -53,39 +54,41 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                             onClick={handleOpenTerminalAction}
                         >
                             <TerminalIcon className="mr-8" />
-                            Terminal
+                            {CLUSTER_NODE_ACTIONS_LABELS.terminal}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={toggleShowCordonNodeDialog}
                         >
                             <CordonIcon className="mr-8" />
-                            {nodeData.unschedulable ? 'Uncordon' : 'Cordon'}
+                            {nodeData.unschedulable
+                                ? CLUSTER_NODE_ACTIONS_LABELS.uncordon
+                                : CLUSTER_NODE_ACTIONS_LABELS.cordon}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={toggleShowDrainNodeDialog}
                         >
                             <DrainIcon className="mr-8" />
-                            Drain
+                            {CLUSTER_NODE_ACTIONS_LABELS.drain}
                         </span>
                         <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
                             <EditTaintsIcon className="mr-8" />
-                            Edit taints
+                            {CLUSTER_NODE_ACTIONS_LABELS.taints}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
                             onClick={handleEditYamlAction}
                         >
                             <EditFileIcon className="mr-8" />
-                            Edit YAML
+                            {CLUSTER_NODE_ACTIONS_LABELS.yaml}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50"
                             onClick={toggleShowDeleteNodeDialog}
                         >
                             <DeleteIcon className="mr-8 scr-5" />
-                            Delete
+                            {CLUSTER_NODE_ACTIONS_LABELS.delete}
                         </span>
                     </div>
                 </PopupMenu.Body>

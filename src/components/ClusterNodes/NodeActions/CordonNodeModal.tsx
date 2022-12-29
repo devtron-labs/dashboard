@@ -44,11 +44,23 @@ export default function CordonNodeModal({
 
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400">
-            <ConfirmationDialog.Icon src={nodeData.unschedulable ? UncordonIcon : CordonIcon} />
-            <ConfirmationDialog.Body title={`${CORDON_NODE_MODAL_MESSAGING.cordon} ‘${nodeData.name}’ ?`} />
-            <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.infoText.lineOne}</p>
-            <br />
-            <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.infoText.lineTwo}</p>
+            {nodeData.unschedulable ? (
+                <>
+                    <ConfirmationDialog.Icon src={UncordonIcon} />
+                    <ConfirmationDialog.Body title={`${CORDON_NODE_MODAL_MESSAGING.uncordon} ‘${nodeData.name}’ ?`} />
+                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.uncordonInfoText.lineOne}</p>
+                    <br />
+                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.uncordonInfoText.lineTwo}</p>
+                </>
+            ) : (
+                <>
+                    <ConfirmationDialog.Icon src={CordonIcon} />
+                    <ConfirmationDialog.Body title={`${CORDON_NODE_MODAL_MESSAGING.cordon} ‘${nodeData.name}’ ?`} />
+                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.cordonInfoText.lineOne}</p>
+                    <br />
+                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.cordonInfoText.lineTwo}</p>
+                </>
+            )}
             <ConfirmationDialog.ButtonGroup>
                 <button
                     type="button"
@@ -58,7 +70,12 @@ export default function CordonNodeModal({
                 >
                     {CORDON_NODE_MODAL_MESSAGING.cancel}
                 </button>
-                <button type="button" className="flex cta delete h-36" disabled={apiCallInProgress} onClick={cordonAPI}>
+                <button
+                    type="button"
+                    className={`flex cta ${nodeData.unschedulable ? '' : 'delete'} h-36`}
+                    disabled={apiCallInProgress}
+                    onClick={cordonAPI}
+                >
                     {apiCallInProgress ? (
                         <Progressing />
                     ) : nodeData.unschedulable ? (

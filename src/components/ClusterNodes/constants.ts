@@ -167,10 +167,24 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
 
+export const CLUSTER_NODE_ACTIONS_LABELS = {
+    terminal: 'Terminal',
+    cordon: 'Cordon',
+    uncordon: 'Uncordon',
+    drain: 'Drain',
+    taints: 'Edit taints',
+    yaml: 'Edit YAML',
+    delete: 'Delete',
+}
+
 export const CORDON_NODE_MODAL_MESSAGING = {
-    infoText: {
+    cordonInfoText: {
         lineOne: 'Cordoning this node will mark this node as unschedulable.',
         lineTwo: 'By cordoning a node, you can be sure that no new pods will be scheduled on this node.',
+    },
+    uncordonInfoText: {
+        lineOne: 'Uncordoning this node will mark this node as schedulable.',
+        lineTwo: 'By uncordoning a node, you can allow pods to be scheduled on this node.',
     },
     cordon: 'Cordon node',
     uncordon: 'Uncordon node',
