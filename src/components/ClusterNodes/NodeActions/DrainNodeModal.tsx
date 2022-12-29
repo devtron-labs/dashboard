@@ -89,7 +89,7 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
                 },
             }
             await drainNodeCapacity(payload)
-            toast.success('Draining node')
+            toast.success(DRAIN_NODE_MODAL_MESSAGING.Actions.draining)
             getNodeListData()
             toggleShowDrainNodeDialog()
         } catch (err) {
@@ -102,8 +102,8 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400 dc__user-select-none">
             <ConfirmationDialog.Icon src={CubeIcon} />
-            <ConfirmationDialog.Body title={`Drain node ‘${nodeData.name}’ ?`} />
-            <p className="fs-14 fw-4 lh-20 mb-18">Drain will cordon off the node and evict all pods of the node.</p>
+            <ConfirmationDialog.Body title={`${DRAIN_NODE_MODAL_MESSAGING.Actions.drain} ‘${nodeData.name}’ ?`} />
+            <p className="fs-14 fw-4 lh-20 mb-18">{DRAIN_NODE_MODAL_MESSAGING.Actions.infoText}</p>
             <div className="drain-node-options-container fs-14">
                 <div className="flex left mb-8">
                     <TimerIcon className="grace-period-timer-icon icon-dim-20 scn-6" />
@@ -179,10 +179,10 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
                     disabled={apiCallInProgress}
                     onClick={toggleShowDrainNodeDialog}
                 >
-                    Cancel
+                    {DRAIN_NODE_MODAL_MESSAGING.Actions.cancel}
                 </button>
                 <button type="button" className="flex cta delete h-36" disabled={apiCallInProgress} onClick={drainAPI}>
-                    {apiCallInProgress ? <Progressing /> : 'Drain node'}
+                    {apiCallInProgress ? <Progressing /> : DRAIN_NODE_MODAL_MESSAGING.Actions.drain}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>

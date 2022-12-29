@@ -167,6 +167,18 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
 
+export const CORDON_NODE_MODAL_MESSAGING = {
+    infoText: {
+        lineOne: 'Cordoning this node will mark this node as unschedulable.',
+        lineTwo: 'By cordoning a node, you can be sure that no new pods will be scheduled on this node.',
+    },
+    cordon: 'Cordon node',
+    uncordon: 'Uncordon node',
+    cordoning: 'Cordoning node',
+    uncordoning: 'Uncordoning node',
+    cancel: 'Cancel',
+}
+
 export const DRAIN_NODE_MODAL_MESSAGING = {
     GracePeriod: {
         heading: 'Grace period',
@@ -191,4 +203,19 @@ export const DRAIN_NODE_MODAL_MESSAGING = {
         heading: 'Ignore DaemonSets',
         infoText: 'Ignore DaemonSet-managed pods.',
     },
+    Actions: {
+        infoText: 'Drain will cordon off the node and evict all pods of the node.',
+        drain: 'Drain node',
+        draining: 'Draining node',
+        cancel: 'Cancel',
+    },
+}
+
+export const DELETE_NODE_MODAL_MESSAGING = {
+    recommended: 'Recommended: ',
+    recommendedInfoText: 'Drain the node before deleting it as it may cause disruption because of pod deletion.',
+    delete: 'Delete node',
+    deletePostfix: ' Node',
+    description: 'Are you sure you want to delete this node?',
+    initiated: 'Node deletion initiated',
 }

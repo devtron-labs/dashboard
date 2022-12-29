@@ -6,6 +6,7 @@ import { DeleteNodeModalProps } from '../types'
 import { useParams } from 'react-router-dom'
 import { deleteNodeCapacity } from '../clusterNodes.service'
 import { toast } from 'react-toastify'
+import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 
 export default function DeleteNodeModal({
     nodeData,
@@ -24,7 +25,7 @@ export default function DeleteNodeModal({
                 kind: nodeData.kind,
             }
             await deleteNodeCapacity(payload)
-            toast.success('Node deletion initiated')
+            toast.success(DELETE_NODE_MODAL_MESSAGING.initiated)
             getNodeListData()
             toggleShowDeleteNodeDialog()
         } catch (err) {
@@ -37,18 +38,18 @@ export default function DeleteNodeModal({
     const RecommendedNote = () => {
         return (
             <div className="fs-13 fw-4 lh-20">
-                <span className="fw-6">Recommended: </span>Drain the node before deleting it as it may cause disruption
-                because of pod deletion.
+                <span className="fw-6">{DELETE_NODE_MODAL_MESSAGING.recommended}</span>
+                {DELETE_NODE_MODAL_MESSAGING.recommendedInfoText}
             </div>
         )
     }
 
     return (
         <DeleteDialog
-            title={`Delete node ‘${nodeData.name}’ ?`}
+            title={`${DELETE_NODE_MODAL_MESSAGING.delete} ‘${nodeData.name}’ ?`}
             delete={deleteAPI}
             closeDelete={toggleShowDeleteNodeDialog}
-            deletePostfix=" Node"
+            deletePostfix={DELETE_NODE_MODAL_MESSAGING.deletePostfix}
             apiCallInProgress={apiCallInProgress}
         >
             <InfoColourBar
@@ -58,7 +59,7 @@ export default function DeleteNodeModal({
                 iconClass="fcv-5"
             />
             <DeleteDialog.Description>
-                <p className="mt-12 mb-12">Are you sure you want to delete this node?</p>
+                <p className="mt-12 mb-12">{DELETE_NODE_MODAL_MESSAGING.description}</p>
             </DeleteDialog.Description>
         </DeleteDialog>
     )
