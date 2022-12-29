@@ -84,7 +84,7 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                 name: name,
                 version: version,
                 kind: kind,
-                nodeDrainHelper: {
+                nodeDrainOptions: {
                     gracePeriodSeconds: Number(gracePeriod),
                     deleteEmptyDirData: deleteEmptyDirData,
                     disableEviction: disableEviction,

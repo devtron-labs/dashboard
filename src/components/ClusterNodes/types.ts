@@ -198,15 +198,15 @@ export interface EditTaintsModalType extends NodeActionModalPropType {
     taints: TaintType[]
 }
 
-interface NodeCordonHelper {
+interface NodeCordonOptions {
     unschedulableDesired: boolean
 }
 
 export interface NodeCordonRequest extends NodeActionRequest {
-    nodeCordonHelper: NodeCordonHelper
+    nodeCordonOptions: NodeCordonOptions
 }
 
-interface NodeDrainHelper {
+interface NodeDrainOptions {
     gracePeriodSeconds: number
     deleteEmptyDirData: boolean
     disableEviction: boolean
@@ -215,7 +215,7 @@ interface NodeDrainHelper {
 }
 
 export interface NodeDrainRequest extends NodeActionRequest {
-    nodeDrainHelper: NodeDrainHelper
+  nodeDrainOptions: NodeDrainOptions
 }
 
 export interface EditTaintsRequest extends NodeActionRequest {
