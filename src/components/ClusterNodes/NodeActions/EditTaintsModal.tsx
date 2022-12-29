@@ -11,7 +11,7 @@ import ReactSelect from 'react-select'
 import { OptionType } from '../../app/types'
 import { Option, DropdownIndicator } from '../../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../../CIPipelineN/ciPipeline.utils'
-import { EditTaintsModalType, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
+import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
 import { toast } from 'react-toastify'
@@ -20,12 +20,14 @@ import { useParams } from 'react-router-dom'
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
-    const [taintList, setTaintList] = useState<TaintType[]>(taints || [{ key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }])
-    const [errorObj, setErrorObj] = useState<TaintErrorObj>({ isValid: true, taintErrorList: [] })
+    const [taintList, setTaintList] = useState<TaintType[]>(
+        taints || [{ key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }],
+    )
+    const [errorObj, setErrorObj] = useState<TaintErrorObj>(null)
     const validationRules = new ValidationRules()
 
     const onClose = (): void => {
-        closePopup()
+        !apiCallInProgress && closePopup()
     }
 
     const deleteTaint = (e): void => {
@@ -33,21 +35,13 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         const _taintList = [...taintList]
         _taintList.splice(index, 1)
         setTaintList(_taintList)
-        const _errorObj = { ...errorObj }
-        _errorObj.taintErrorList.splice(index, 1)
-        setErrorObj(_errorObj)
+        validateTaintList(_taintList)
     }
 
     const addNewTaint = (): void => {
         const _taintList = [...taintList, { key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }]
         setTaintList(_taintList)
-
-        const _errorObj = { ...errorObj }
-        _errorObj.taintErrorList.push({
-            key: { isValid: true, message: null },
-            value: { isValid: true, message: null },
-        })
-        setErrorObj(_errorObj)
+        validateTaintList(_taintList)
     }
 
     const handleInputChange = (e): void => {
@@ -55,14 +49,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         const index = e.currentTarget.dataset.index
         _taintList[index][e.target.name] = e.target.value
         setTaintList(_taintList)
-        const _errorObj = { ...errorObj }
-        if (e.target.name === 'key') {
-            _errorObj.taintErrorList[index][e.target.name] = validationRules.taintKey(e.target.value)
-        } else {
-            _errorObj.taintErrorList[index][e.target.name] = validationRules.taintValue(e.target.value)
-        }
-
-        setErrorObj(_errorObj)
+        validateTaintList(_taintList)
     }
 
     const onEffectChange = (selectedValue: OptionType, index: number): void => {
@@ -71,35 +58,45 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         setTaintList(_taintList)
     }
 
-    const validateTaintList = (): TaintErrorObj => {
-        const _taintList = [...taintList]
+    const validateTaintList = (_taintList): TaintErrorObj => {
         const _errorObj = { isValid: true, taintErrorList: [] }
+        const uniqueTaintMap = new Map<string, boolean>()
         for (let index = 0; index < _taintList.length; index++) {
             const element = _taintList[index]
-            const validateTaintKey = validationRules.taintKey(element.key)
+            const uniqueKey = `${element.key}-${element.effect}`
             const validateTaintValue = validationRules.taintValue(element.value)
-            _errorObj.taintErrorList.push({
-                key: validateTaintKey,
-                value: validateTaintValue,
-            })
-            _errorObj.isValid = _errorObj.isValid && validateTaintKey.isValid && validateTaintValue.isValid
+            if (uniqueTaintMap.get(uniqueKey)) {
+                _errorObj.taintErrorList.push({
+                    key: 'Duplicate taint key',
+                    value: { validateTaintValue },
+                })
+                _errorObj.isValid = false
+            } else {
+                uniqueTaintMap.set(uniqueKey, true)
+                const validateTaintKey = validationRules.taintKey(element.key)
+                _errorObj.taintErrorList.push({
+                    key: validateTaintKey,
+                    value: validateTaintValue,
+                })
+                _errorObj.isValid = _errorObj.isValid && validateTaintKey.isValid && validateTaintValue.isValid
+            }
         }
         setErrorObj(_errorObj)
         return _errorObj
     }
 
     const onSave = async (): Promise<void> => {
-        if (!validateTaintList().isValid) {
+        if (!validateTaintList(taintList).isValid) {
             return
         }
         try {
             setAPICallInProgress(true)
-            const payload = {
+            const payload: EditTaintsRequest = {
                 clusterId: Number(clusterId),
                 name: name,
                 version: version,
                 kind: kind,
-                taintList,
+                taints: taintList,
             }
             await updateTaints(payload)
             toast.success(EDIT_TAINTS_MODAL_MESSAGING.Actions.saving)
@@ -136,7 +133,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                         <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
                     </div>
                     {taintList?.map((taintDetails, index) => {
-                        const _errorObj = errorObj.taintErrorList[index]
+                        const _errorObj = errorObj?.taintErrorList[index]
                         return (
                             <div className="flexbox mb-8">
                                 <div className="w-100 mr-8">
@@ -217,10 +214,15 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                     })}
                 </div>
                 <div className="dc__border-top flex right p-16">
-                    <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={onClose}>
+                    <button
+                        className="cta cancel h-36 lh-36 mr-12"
+                        type="button"
+                        disabled={apiCallInProgress}
+                        onClick={onClose}
+                    >
                         {EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
                     </button>
-                    <button className="cta h-36 lh-36" onClick={onSave}>
+                    <button className="cta h-36 lh-36" disabled={apiCallInProgress} onClick={onSave}>
                         {apiCallInProgress ? <Progressing /> : EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
                     </button>
                 </div>

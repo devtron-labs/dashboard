@@ -217,3 +217,7 @@ interface NodeDrainHelper {
 export interface NodeDrainRequest extends NodeActionRequest {
     nodeDrainHelper: NodeDrainHelper
 }
+
+export interface EditTaintsRequest extends NodeActionRequest {
+  taints: TaintType[]
+}

@@ -9,7 +9,7 @@ export class ValidationRules {
             return { message: 'Key is required', isValid: false }
         } else {
             if (key.length > 253) {
-                return { message: 'Maximum 253 char is allowed', isValid: false }
+                return { message: 'Maximum 253 chars are allowed', isValid: false }
             } else if (key.indexOf('/') !== -1) {
                 const keyArr = key.split('/')
                 if (keyArr.length > 2) {
@@ -17,10 +17,10 @@ export class ValidationRules {
                 } else if (!keyPrefixRegex.test(keyArr[0])) {
                     return { message: `Invalid prefix in key`, isValid: false }
                 } else if (!keyNameRegex.test(keyArr[1])) {
-                    return { message: `Invalid name in key`, isValid: false }
+                    return { message: 'Invalid name in key', isValid: false }
                 }
             } else if (!keyNameRegex.test(key)) {
-                return { message: `Invalid key`, isValid: false }
+                return { message: 'Invalid key', isValid: false }
             }
         }
         return { message: null, isValid: true }
@@ -30,9 +30,9 @@ export class ValidationRules {
         const valueRegex = new RegExp(PATTERNS.KUBERNETES_VALUE)
         if (value) {
             if (value.length > 63) {
-                return { message: 'Maximum 63 char is allowed', isValid: false }
+                return { message: 'Maximum 63 chars are allowed', isValid: false }
             } else if (!valueRegex.test(value)) {
-                return { message: `Invalid value`, isValid: false }
+                return { message: 'Invalid value', isValid: false }
             }
         }
         return { message: null, isValid: true }
