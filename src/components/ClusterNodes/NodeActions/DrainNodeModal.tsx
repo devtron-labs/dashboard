@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Checkbox, CHECKBOX_VALUE, ConfirmationDialog, Progressing, showError, stopPropagation } from '../../common'
-import CubeIcon from '../../../assets/icons/ic-cube-line.svg'
+import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
@@ -101,7 +101,7 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
 
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400 dc__user-select-none">
-            <ConfirmationDialog.Icon src={CubeIcon} />
+            <ConfirmationDialog.Icon src={DrainIcon} />
             <ConfirmationDialog.Body title={`${DRAIN_NODE_MODAL_MESSAGING.Actions.drain} ‘${nodeData.name}’ ?`} />
             <p className="fs-14 fw-4 lh-20 mb-18">{DRAIN_NODE_MODAL_MESSAGING.Actions.infoText}</p>
             <div className="drain-node-options-container fs-14">

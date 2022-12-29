@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ConfirmationDialog, Progressing, showError } from '../../common'
-import CubeIcon from '../../../assets/icons/ic-cube-line.svg'
+import CordonIcon from '../../../assets/icons/ic-cordon-medium.svg'
+import UncordonIcon from '../../../assets/icons/ic-play-medium.svg'
 import { CordonNodeModalProps } from '../types'
 import { toast } from 'react-toastify'
 import { cordonNodeCapacity } from '../clusterNodes.service'
@@ -43,7 +44,7 @@ export default function CordonNodeModal({
 
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400">
-            <ConfirmationDialog.Icon src={CubeIcon} />
+            <ConfirmationDialog.Icon src={nodeData.unschedulable ? UncordonIcon : CordonIcon} />
             <ConfirmationDialog.Body title={`${CORDON_NODE_MODAL_MESSAGING.cordon} ‘${nodeData.name}’ ?`} />
             <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.infoText.lineOne}</p>
             <br />
