@@ -7,7 +7,11 @@ import { useParams } from 'react-router-dom'
 import { deleteNodeCapacity } from '../clusterNodes.service'
 import { toast } from 'react-toastify'
 
-export default function DeleteNodeModal({ nodeData, toggleShowDeleteNodeDialog }: DeleteNodeModalProps) {
+export default function DeleteNodeModal({
+    nodeData,
+    toggleShowDeleteNodeDialog,
+    getNodeListData,
+}: DeleteNodeModalProps) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
@@ -19,8 +23,9 @@ export default function DeleteNodeModal({ nodeData, toggleShowDeleteNodeDialog }
                 version: nodeData.version,
                 kind: nodeData.kind,
             }
-            // await deleteNodeCapacity(payload)
+            await deleteNodeCapacity(payload)
             toast.success('Node deletion initiated')
+            getNodeListData()
             toggleShowDeleteNodeDialog()
         } catch (err) {
             showError(err)

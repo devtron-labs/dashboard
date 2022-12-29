@@ -577,7 +577,11 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                         {nodeData[column.value]}
                                     </NavLink>
                                 </div>
-                                <NodeActionsMenu nodeData={nodeData as NodeDetail} openTerminal={openTerminal} />
+                                <NodeActionsMenu
+                                    nodeData={nodeData as NodeDetail}
+                                    openTerminal={openTerminal}
+                                    getNodeListData={getNodeListData}
+                                />
                             </div>
                         </div>
                     ) : (

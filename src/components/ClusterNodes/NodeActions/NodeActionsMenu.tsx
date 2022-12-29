@@ -6,12 +6,12 @@ import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-fi
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import MenuDots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { PopupMenu } from '../../common'
-import { ColumnMetadataType, NodeActionsMenuProps } from '../types'
+import { NodeActionsMenuProps } from '../types'
 import CordonNodeModal from './CordonNodeModal'
 import DrainNodeModal from './DrainNodeModal'
 import DeleteNodeModal from './DeleteNodeModal'
 
-export default function NodeActionsMenu({ nodeData, openTerminal }: NodeActionsMenuProps) {
+export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListData }: NodeActionsMenuProps) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
@@ -58,7 +58,7 @@ export default function NodeActionsMenu({ nodeData, openTerminal }: NodeActionsM
                             onClick={toggleShowCordonNodeDialog}
                         >
                             <CubeIcon className="mr-8" />
-                            Cordon
+                            {nodeData.unschedulable ? 'Uncordon' : 'Cordon'}
                         </span>
                         <span
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
@@ -89,13 +89,25 @@ export default function NodeActionsMenu({ nodeData, openTerminal }: NodeActionsM
                 </PopupMenu.Body>
             </PopupMenu>
             {showCordonNodeDialog && (
-                <CordonNodeModal nodeData={nodeData} toggleShowCordonNodeDialog={toggleShowCordonNodeDialog} />
+                <CordonNodeModal
+                    nodeData={nodeData}
+                    getNodeListData={getNodeListData}
+                    toggleShowCordonNodeDialog={toggleShowCordonNodeDialog}
+                />
             )}
             {showDrainNodeDialog && (
-                <DrainNodeModal nodeData={nodeData} toggleShowDrainNodeDialog={toggleShowDrainNodeDialog} />
+                <DrainNodeModal
+                    nodeData={nodeData}
+                    getNodeListData={getNodeListData}
+                    toggleShowDrainNodeDialog={toggleShowDrainNodeDialog}
+                />
             )}
             {showDeleteNodeDialog && (
-                <DeleteNodeModal nodeData={nodeData} toggleShowDeleteNodeDialog={toggleShowDeleteNodeDialog} />
+                <DeleteNodeModal
+                    nodeData={nodeData}
+                    getNodeListData={getNodeListData}
+                    toggleShowDeleteNodeDialog={toggleShowDeleteNodeDialog}
+                />
             )}
         </>
     )

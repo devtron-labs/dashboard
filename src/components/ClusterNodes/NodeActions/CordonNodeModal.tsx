@@ -6,7 +6,11 @@ import { CordonNodeModalProps } from '../types'
 import { toast } from 'react-toastify'
 import { cordonNodeCapacity } from '../clusterNodes.service'
 
-export default function CordonNodeModal({ nodeData, toggleShowCordonNodeDialog }: CordonNodeModalProps) {
+export default function CordonNodeModal({
+    nodeData,
+    toggleShowCordonNodeDialog,
+    getNodeListData,
+}: CordonNodeModalProps) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
@@ -18,11 +22,12 @@ export default function CordonNodeModal({ nodeData, toggleShowCordonNodeDialog }
                 version: nodeData.version,
                 kind: nodeData.kind,
                 nodeCordonHelper: {
-                    unschedulableDesired: false,
+                    unschedulableDesired: !nodeData.unschedulable,
                 },
             }
-            // await cordonNodeCapacity(payload)
-            toast.success('Cordoning node')
+            await cordonNodeCapacity(payload)
+            toast.success(nodeData.unschedulable ? 'Uncordoning node' : 'Cordoning node')
+            getNodeListData()
             toggleShowCordonNodeDialog()
         } catch (err) {
             showError(err)
@@ -50,7 +55,7 @@ export default function CordonNodeModal({ nodeData, toggleShowCordonNodeDialog }
                     Cancel
                 </button>
                 <button type="button" className="flex cta delete h-36" disabled={apiCallInProgress} onClick={cordonAPI}>
-                    {apiCallInProgress ? <Progressing /> : 'Cordon node'}
+                    {apiCallInProgress ? <Progressing /> : nodeData.unschedulable ? 'Uncordon node' : 'Cordon node'}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>

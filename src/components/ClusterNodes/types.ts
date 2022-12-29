@@ -149,38 +149,41 @@ export const TEXT_COLOR_CLASS = {
     'Not ready': 'cr-5',
 }
 
-export interface NodeActionsMenuProps {
+interface NodeDataPropType {
     nodeData: NodeDetail
+    getNodeListData: () => void
+}
+
+export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
 }
 
-export interface CordonNodeModalProps {
-    nodeData: NodeDetail
+export interface CordonNodeModalProps extends NodeDataPropType {
     toggleShowCordonNodeDialog: () => void
 }
 
-export interface DrainNodeModalProps {
-    nodeData: NodeDetail
+export interface DrainNodeModalProps extends NodeDataPropType {
     toggleShowDrainNodeDialog: () => void
 }
 
-export interface DeleteNodeModalProps {
-    nodeData: NodeDetail
+export interface DeleteNodeModalProps extends NodeDataPropType {
     toggleShowDeleteNodeDialog: () => void
 }
 
-export interface NodeDeleteRequest {
+interface NodeActionRequest {
     clusterId: number
     name: string
     version: string
     kind: string
 }
 
+export interface NodeDeleteRequest extends NodeActionRequest {}
+
 interface NodeCordonHelper {
     unschedulableDesired: boolean
 }
 
-export interface NodeCordonRequest extends NodeDeleteRequest {
+export interface NodeCordonRequest extends NodeActionRequest {
     nodeCordonHelper: NodeCordonHelper
 }
 
@@ -192,6 +195,6 @@ interface NodeDrainHelper {
     ignoreAllDaemonSets: boolean
 }
 
-export interface NodeDrainRequest extends NodeDeleteRequest {
+export interface NodeDrainRequest extends NodeActionRequest {
     nodeDrainHelper: NodeDrainHelper
 }

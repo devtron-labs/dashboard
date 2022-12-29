@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { drainNodeCapacity } from '../clusterNodes.service'
 
-export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog }: DrainNodeModalProps) {
+export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, getNodeListData }: DrainNodeModalProps) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [gracePeriod, setGracePeriod] = useState('-1')
     const [deleteEmptyDirData, setDeleteEmptyDirData] = useState(false)
@@ -88,8 +88,9 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog }: 
                     ignoreAllDaemonSets: ignoreDaemonSets,
                 },
             }
-            // await drainNodeCapacity(payload)
+            await drainNodeCapacity(payload)
             toast.success('Draining node')
+            getNodeListData()
             toggleShowDrainNodeDialog()
         } catch (err) {
             showError(err)
