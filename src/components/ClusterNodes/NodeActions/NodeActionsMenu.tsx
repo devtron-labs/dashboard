@@ -94,7 +94,7 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                         <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showCordonNodeModal}>
                             {nodeData.unschedulable ? (
                                 <>
-                                    <UncordonIcon className="icon-dim-16 mr-8" />
+                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7 dc__stroke-width-4" />
                                     {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
                                 </>
                             ) : (

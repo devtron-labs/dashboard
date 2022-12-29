@@ -2385,3 +2385,9 @@ textarea::placeholder {
 .dc__user-select-none {
     user-select: none;
 }
+
+.dc__stroke-width-4 {
+    path {
+        stroke-width: 4px;
+    }
+}
