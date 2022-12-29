@@ -173,6 +173,7 @@ export const Routes = {
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
+    TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
@@ -192,7 +193,6 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events',
-    TAINTS: ''
 }
 
 export const ViewType = {

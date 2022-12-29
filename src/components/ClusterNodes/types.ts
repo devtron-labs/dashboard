@@ -7,6 +7,12 @@ export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
     OTHER = 'OTHER',
 }
+
+export enum EFFECT_TYPE {
+    NoSchedule = 'NoSchedule',
+    PreferNoSchedule = 'PreferNoSchedule',
+    NoExecute = 'NoExecute',
+}
 export interface NodeListSearchFliterType {
     defaultVersion: OptionType
     nodeK8sVersions: string[]
@@ -81,6 +87,10 @@ export interface PodType {
     memory: ResourceDetail
     age: string
 }
+
+export interface TaintType extends LabelTag {
+    effect: EFFECT_TYPE
+}
 export interface NodeDetail {
     name: string
     clusterName: string
@@ -96,7 +106,7 @@ export interface NodeDetail {
     createdAt: string
     labels: LabelTag[]
     annotations: LabelTag[]
-    taints: LabelTag[]
+    taints: TaintType[]
     resources: ResourceDetail[]
     pods: PodType[]
     manifest: object

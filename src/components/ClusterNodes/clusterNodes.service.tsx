@@ -45,11 +45,11 @@ export const clusterTerminalDisconnect = (terminalAccessId): Promise<ResponseTyp
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT}?terminalAccessId=${terminalAccessId}`, null)
 }
 
-export const clusterDisconnectAndRetry = (data):  Promise<ResponseType> => {
+export const clusterDisconnectAndRetry = (data): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT_RETRY}`, data)
 }
 
-export const clusterTerminalStop = (terminalAccessId):  Promise<ResponseType> => {
+export const clusterTerminalStop = (terminalAccessId): Promise<ResponseType> => {
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
 }
 
@@ -61,22 +61,14 @@ export const clusterNamespaceList = (): Promise<ResponseType> => {
     return get(Routes.CLUSTER_NAMESPACE)
 }
 
-export const getClusterManifest = (terminalAccessId: number):  Promise<ResponseType> => {
+export const getClusterManifest = (terminalAccessId: number): Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_MANIFEST}?terminalAccessId=${terminalAccessId}`)
 }
 
-export const getClusterEvents = (terminalAccessId: number):  Promise<ResponseType> => {
+export const getClusterEvents = (terminalAccessId: number): Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
 }
 
-export const getNodeTaints = (clusterId: string, nodeName: string): Promise<any> => {
-  return get(`${Routes.TAINTS}?clusterId=${clusterId}&name=${nodeName}`)
-}
-
-export const updateTaints = (
-    clusterId: string,
-    nodeName: string,
-    taintData: any,
-): Promise<ResponseType> => {
-    return put(`${Routes.TAINTS}?clusterId=${clusterId}&name=${nodeName}`, taintData)
+export const updateTaints = (taintData: any): Promise<ResponseType> => {
+    return put(Routes.TAINTS_EDIT, taintData)
 }

@@ -736,7 +736,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                             <span className="cn-2">|</span>
                             <span className="fw-6 cb-5 ml-16 fs-13 pointer">Cordon</span>
                             <span className="fw-6 cb-5 ml-16 fs-13 pointer">Drain</span>
-                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={toggleTaints}>
+                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showEditTaintsModal}>
                                 <Edit className="icon-dim-16 mt-2 mr-5 scb-5" />
                                 Edit taints
                             </span>
@@ -946,8 +946,15 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
-    const toggleTaints = (): void => {
+    const showEditTaintsModal = (): void => {
         setShowEditTaints(not)
+    }
+
+    const hideEditTaintsModal = (refreshData?: boolean): void => {
+        setShowEditTaints(not)
+        if (refreshData) {
+            getData([])
+        }
     }
 
     if (loader) {
@@ -964,7 +971,14 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             />
             {renderTabs()}
             {showEditTaints && (
-                <EditTaintsModal clusterId={clusterId} nodeName={nodeName} closeTaintsModal={toggleTaints} />
+                <EditTaintsModal
+                    clusterId={clusterId}
+                    nodeName={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    taints={nodeDetail.taints || []}
+                    closePopup={hideEditTaintsModal}
+                />
             )}
         </div>
     )

@@ -6,12 +6,12 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { getNodeTaints, updateTaints } from './clusterNodes.service'
+import { updateTaints } from './clusterNodes.service'
 import ReactSelect from 'react-select'
 import { OptionType } from '../app/types'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { TaintErrorObj } from './types'
+import { EFFECT_TYPE, TaintErrorObj, TaintType } from './types'
 import { ValidationRules } from './validationRules'
 import { TAINT_OPTIONS } from './constants'
 import { toast } from 'react-toastify'
@@ -19,40 +19,21 @@ import { toast } from 'react-toastify'
 interface EditTaintsModalType {
     clusterId: string
     nodeName: string
-    closeTaintsModal: () => void
+    version: string
+    kind: string
+    taints: TaintType[]
+    closePopup: (refreshData?: boolean) => void
 }
 
-export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal }: EditTaintsModalType) {
+export default function EditTaintsModal({ clusterId, nodeName, version, kind, taints, closePopup }: EditTaintsModalType) {
     const [loader, setLoader] = useState(false)
-    const [taintList, setTaintList] = useState<{ key: string; value: string; taintOption: string }[]>([])
+    const [taintList, setTaintList] = useState<TaintType[]>(taints)
     const [errorObj, setErrorObj] = useState<TaintErrorObj>({ isValid: true, taintErrorList: [] })
     const validationRules = new ValidationRules()
 
-    const getData = () => {
-        setLoader(true)
-        getNodeTaints(clusterId, nodeName)
-            .then((response) => {
-                if (response.result) {
-                    setTaintList(response.result)
-                    const _errorObj = { isValid: true, taintErrorList: [] }
-                    response.result.forEach((element) => {
-                        _errorObj.taintErrorList.push({
-                            key: validationRules.taintKey(element.key),
-                            value: validationRules.taintValue(element.value),
-                        })
-                    })
-                }
-                setLoader(false)
-            })
-            .catch((error) => {
-                showError(error)
-                setLoader(false)
-            })
+    const onClose = (): void => {
+        closePopup()
     }
-
-    useEffect(() => {
-        getData()
-    }, [])
 
     const deleteTaint = (e): void => {
         const index = e.currentTarget.dataset.index
@@ -65,7 +46,7 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
     }
 
     const addNewTaint = (): void => {
-        const _taintList = [...taintList, { key: '', value: '', taintOption: 'Prevent Scheduling' }]
+        const _taintList = [...taintList, { key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule}]
         setTaintList(_taintList)
 
         const _errorObj = { ...errorObj }
@@ -91,15 +72,15 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
         setErrorObj(_errorObj)
     }
 
-    const onTaintOptionChange = (selectedValue: OptionType, index: number): void => {
+    const onEffectChange = (selectedValue: OptionType, index: number): void => {
         const _taintList = [...taintList]
-        _taintList[index].taintOption = selectedValue.label
+        _taintList[index].effect = EFFECT_TYPE[selectedValue.label]
         setTaintList(_taintList)
     }
 
     const validateTaintList = (): TaintErrorObj => {
         const _taintList = [...taintList]
-        const _errorObj = { isValid: true, taintErrorList: []}
+        const _errorObj = { isValid: true, taintErrorList: [] }
         for (let index = 0; index < _taintList.length; index++) {
             const element = _taintList[index]
             const validateTaintKey = validationRules.taintKey(element.key)
@@ -120,13 +101,19 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
         }
 
         setLoader(true)
-        updateTaints(clusterId, nodeName, taintList)
+        const payload = {
+            clusterId: Number(clusterId),
+            name: nodeName,
+            version: version,
+            kind: kind,
+        }
+        updateTaints(payload)
             .then((response) => {
                 if (response.result) {
                     toast.success('Successfully saved')
                 }
                 setLoader(false)
-                closeTaintsModal()
+                closePopup(true)
             })
             .catch((error) => {
                 showError(error)
@@ -139,7 +126,7 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
             <div className="bcn-0 h-100">
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Edit taints for node ‘{nodeName}’</h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={closeTaintsModal}>
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -197,7 +184,7 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
                                     <ReactSelect
                                         options={TAINT_OPTIONS}
                                         onChange={(selectedValue) => {
-                                            onTaintOptionChange(selectedValue, index)
+                                            onEffectChange(selectedValue, index)
                                         }}
                                         data-index={index}
                                         components={{
@@ -214,8 +201,8 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
                                             ),
                                         }}
                                         value={{
-                                            label: taintDetails.taintOption,
-                                            value: taintDetails.taintOption,
+                                            label: taintDetails.effect,
+                                            value: taintDetails.effect,
                                         }}
                                         styles={{
                                             ...containerImageSelectStyles,
@@ -238,7 +225,7 @@ export default function EditTaintsModal({ clusterId, nodeName, closeTaintsModal 
                     })}
                 </div>
                 <div className="dc__border-top flex right p-16">
-                    <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={closeTaintsModal}>
+                    <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={onClose}>
                         Cancel
                     </button>
                     <button className="cta h-36 lh-36" onClick={onSave}>

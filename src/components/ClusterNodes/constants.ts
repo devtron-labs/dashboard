@@ -1,5 +1,5 @@
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { ColumnMetadataType } from './types'
+import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
 export const clusterImages = {
     'quay.io/devtron/ubuntu-k8s-utils:latest': {
@@ -180,18 +180,18 @@ export const TAINT_OPTIONS: {
     description: string
 }[] = [
     {
-        label: 'Prevent Scheduling',
-        value: 'Prevent Scheduling',
+        label: EFFECT_TYPE.NoSchedule,
+        value:EFFECT_TYPE.NoSchedule,
         description: 'Prevents all pods from being scheduled to the node.',
     },
     {
-        label: 'Prevent Scheduling if possible',
-        value: 'Prevent Scheduling if possible',
+        label: EFFECT_TYPE.PreferNoSchedule,
+        value: EFFECT_TYPE.PreferNoSchedule,
         description: 'Prevents all pods from being scheduled to the node if possible.',
     },
     {
-        label: 'Prevent Scheduling and evict existing pods',
-        value: 'Prevent Scheduling and evict existing pods',
+        label: EFFECT_TYPE.NoExecute,
+        value: EFFECT_TYPE.NoExecute,
         description: 'Prevents all pods from being scheduled to the node and evict all existing pods on the node.',
     },
 ]
