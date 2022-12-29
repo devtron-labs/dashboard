@@ -1,5 +1,5 @@
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { ColumnMetadataType } from './types'
+import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
 export const clusterImages = {
     'quay.io/devtron/ubuntu-k8s-utils:latest': {
@@ -167,6 +167,34 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
 
+export const NODE_DETAILS_TABS = {
+  summary: 'Summary',
+  yaml: 'YAML',
+  nodeConditions: 'Node conditions',
+  debug: 'Debug'
+}
+
+export const TAINT_OPTIONS: {
+    label: EFFECT_TYPE
+    value: EFFECT_TYPE
+    description: string
+}[] = [
+    {
+        label: EFFECT_TYPE.NoSchedule,
+        value:EFFECT_TYPE.NoSchedule,
+        description: 'Prevents all pods from being scheduled to the node.',
+    },
+    {
+        label: EFFECT_TYPE.PreferNoSchedule,
+        value: EFFECT_TYPE.PreferNoSchedule,
+        description: 'Prevents all pods from being scheduled to the node if possible.',
+    },
+    {
+        label: EFFECT_TYPE.NoExecute,
+        value: EFFECT_TYPE.NoExecute,
+        description: 'Prevents all pods from being scheduled to the node and evict all existing pods on the node.',
+    },
+]
 export const CLUSTER_NODE_ACTIONS_LABELS = {
     terminal: 'Terminal',
     cordon: 'Cordon',
@@ -232,4 +260,15 @@ export const DELETE_NODE_MODAL_MESSAGING = {
     deletePostfix: ' Node',
     description: 'Are you sure you want to delete this node?',
     initiated: 'Node deletion initiated',
+}
+
+export const EDIT_TAINTS_MODAL_MESSAGING = {
+  titlePrefix: 'Edit taints for node ',
+  infoText: 'Add taints to nodes so that pods are not scheduled to the nodes or not scheduled to the nodes if possible. After you add taints to nodes, you can set tolerations on a pod to allow the pod to be scheduled to nodes with certain taints.Drain the node before deleting it as it may cause disruption because of pod deletion.',
+  addTaint: 'Add taint',
+  Actions: {
+    cancel: 'Cancel',
+    save: 'Save',
+    saving: 'Taints updated successfully'
+  }
 }

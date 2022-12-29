@@ -10,6 +10,7 @@ import {
     NodeDrainRequest,
     NodeListResponse,
     UpdateNodeRequestBody,
+    EditTaintsRequest,
 } from './types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -82,4 +83,8 @@ export const getClusterManifest = (terminalAccessId: number): Promise<ResponseTy
 
 export const getClusterEvents = (terminalAccessId: number): Promise<ResponseType> => {
     return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
+}
+
+export const updateTaints = (taintData: EditTaintsRequest): Promise<ResponseType> => {
+    return put(Routes.TAINTS_EDIT, taintData)
 }

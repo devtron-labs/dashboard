@@ -127,6 +127,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         if (data['errors']) {
                             _flattenNodeData['errorCount'] = Object.keys(data['errors']).length
                         }
+                        if (data['taints']) {
+                            _flattenNodeData['taintCount'] = Object.keys(data['taints']).length
+                        }
                         return _flattenNodeData
                     })
                     setFlattenNodeList(_flattenNodeList)

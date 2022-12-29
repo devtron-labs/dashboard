@@ -6,12 +6,12 @@ import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
 import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 import { DRAIN_NODE_MODAL_MESSAGING } from '../constants'
-import { DrainNodeModalProps } from '../types'
+import { NodeActionModalPropType } from '../types'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { drainNodeCapacity } from '../clusterNodes.service'
 
-export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, getNodeListData }: DrainNodeModalProps) {
+export default function DrainNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [gracePeriod, setGracePeriod] = useState('-1')
     const [deleteEmptyDirData, setDeleteEmptyDirData] = useState(false)
@@ -54,6 +54,10 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
         },
     ]
 
+    const onClose = (): void => {
+        closePopup()
+    }
+
     const handleInputValue = (e) => {
         const inputValue = e.target.value
         setGracePeriod(Number(inputValue) < -1 ? '-1' : inputValue)
@@ -77,9 +81,9 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
         try {
             const payload = {
                 clusterId: Number(clusterId),
-                name: nodeData.name,
-                version: nodeData.version,
-                kind: nodeData.kind,
+                name: name,
+                version: version,
+                kind: kind,
                 nodeDrainHelper: {
                     gracePeriodSeconds: Number(gracePeriod),
                     deleteEmptyDirData: deleteEmptyDirData,
@@ -90,8 +94,7 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
             }
             await drainNodeCapacity(payload)
             toast.success(DRAIN_NODE_MODAL_MESSAGING.Actions.draining)
-            getNodeListData()
-            toggleShowDrainNodeDialog()
+            closePopup(true)
         } catch (err) {
             showError(err)
         } finally {
@@ -102,7 +105,7 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400 dc__user-select-none">
             <ConfirmationDialog.Icon src={DrainIcon} />
-            <ConfirmationDialog.Body title={`${DRAIN_NODE_MODAL_MESSAGING.Actions.drain} ‘${nodeData.name}’ ?`} />
+            <ConfirmationDialog.Body title={`${DRAIN_NODE_MODAL_MESSAGING.Actions.drain} ‘${name}’ ?`} />
             <p className="fs-14 fw-4 lh-20 mb-18">{DRAIN_NODE_MODAL_MESSAGING.Actions.infoText}</p>
             <div className="drain-node-options-container fs-14">
                 <div className="flex left mb-8">
@@ -177,7 +180,7 @@ export default function DrainNodeModal({ nodeData, toggleShowDrainNodeDialog, ge
                     type="button"
                     className="flex cta cancel h-36"
                     disabled={apiCallInProgress}
-                    onClick={toggleShowDrainNodeDialog}
+                    onClick={onClose}
                 >
                     {DRAIN_NODE_MODAL_MESSAGING.Actions.cancel}
                 </button>
