@@ -58,6 +58,12 @@
         z-index: 1;
         background-color: var(--N0);
     }
+
+    .node-actions-menu-icon {
+        path:nth-child(2) {
+            fill: var(--N600);
+        }
+    }
 }
 
 .node-details-container {

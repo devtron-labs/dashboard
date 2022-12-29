@@ -4,7 +4,7 @@ import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-termina
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-file.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
-import MenuDots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { PopupMenu } from '../../common'
 import { NodeActionsMenuProps } from '../types'
 import CordonNodeModal from './CordonNodeModal'
@@ -41,8 +41,8 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button isKebab={true}>
-                    <img src={MenuDots} className="icon-dim-16" />
+                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                    <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
