@@ -16,6 +16,8 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
+import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
+import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import {
@@ -151,23 +153,22 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }
 
                     return (
-                            (_gitCommit.WebhookData?.Data ||
-                              _gitCommit.Author ||
-                              _gitCommit.Message ||
-                              _gitCommit.Date ||
-                              _gitCommit.Commit
-                          ) && (
-                                <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                                    <GitCommitInfoGeneric
-                                        materialUrl={mat.url}
-                                        showMaterialInfo={false}
-                                        commitInfo={_gitCommit}
-                                        materialSourceType={''}
-                                        selectedCommitInfo={''}
-                                        materialSourceValue={''}
-                                    />
-                                </div>
-                            )
+                        (_gitCommit.WebhookData?.Data ||
+                            _gitCommit.Author ||
+                            _gitCommit.Message ||
+                            _gitCommit.Date ||
+                            _gitCommit.Commit) && (
+                            <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
+                                <GitCommitInfoGeneric
+                                    materialUrl={mat.url}
+                                    showMaterialInfo={false}
+                                    commitInfo={_gitCommit}
+                                    materialSourceType={''}
+                                    selectedCommitInfo={''}
+                                    materialSourceValue={''}
+                                />
+                            </div>
+                        )
                     )
                 })}
             </>
@@ -209,38 +210,60 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
     }
 
+    renderActiveCD = (mat) => {
+        return (
+            <>
+                {mat.latest && (
+                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                        <div className="fw-4 fs-11 lh-16 flex">
+                            <World className="icon-dim-16 mr-4 scg-5" />
+                            Active on <span className="fw-6 ml-4">{this.props.envName} </span>
+                        </div>
+                    </span>
+                )}
+                {mat.runningOnParentCd && (
+                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                        <div className="fw-4 fs-11 lh-16 flex">
+                            <World className="icon-dim-16 mr-4 scg-5" />
+                            Active on <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
+                        </div>
+                    </span>
+                )}
+            </>
+        )
+    }
+
+    renderProgressingCD = (mat) => {
+        return (
+            <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                <div className="fw-4 fs-11 lh-16 flex">
+                    <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`}></div>
+                    Deploying on <span className="fw-6 ml-4">{this.props.envName} </span>
+                </div>
+            </span>
+        )
+    }
+
+    renderFailedCD = (mat) => {
+        return (
+            <span className="bcr-1 br-4 er-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                <div className="fw-4 fs-11 lh-16 flex">
+                    <Failed className="icon-dim-16 mr-4" />
+                    Last deployment failed on <span className="fw-6 ml-4">{this.props.envName} </span>
+                </div>
+            </span>
+        )
+    }
+
     renderSequentialCDCardTitle = (mat) => {
         if (this.props.stageType !== STAGE_TYPE.CD) return
 
-        if (mat.latest && mat.runningOnParentCd) {
+        if (mat.latest || mat.runningOnParentCd || mat.artifactStatus) {
             return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on</span>&nbsp;
-                    <span className="cv-5 fw-6">
-                        {this.props.parentEnvironmentName}
-                        {this.props.parentEnvironmentName ? (
-                            <>
-                                <span className="cn-9 fw-4 dc__italic-font-style">&nbsp;and&nbsp;</span>
-                                {this.props.envName}
-                            </>
-                        ) : (
-                            ''
-                        )}
-                    </span>
-                </div>
-            )
-        } else if (mat.latest) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.envName} </span>
-                </div>
-            )
-        } else if (mat.runningOnParentCd) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
+                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
+                    {this.renderActiveCD(mat)}
+                    {mat.artifactStatus === 'Progressing' && this.renderProgressingCD(mat)}
+                    {mat.artifactStatus === 'Degraded' || (mat.artifactStatus === 'Failed' && this.renderFailedCD(mat))}
                 </div>
             )
         }
@@ -358,100 +381,100 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.state.isRollbackTrigger && this.state.showOlderImages ? [this.props.material[0]] : this.props.material
 
         return materialList.map((mat, index) => {
-          let isMaterialInfoAvailable = true
-          for (const materialInfo of mat.materialInfo) {
-              isMaterialInfoAvailable =
-                  isMaterialInfoAvailable &&
-                  !!(
-                      materialInfo.webhookData ||
-                      materialInfo.author ||
-                      materialInfo.message ||
-                      materialInfo.modifiedTime ||
-                      materialInfo.revision
-                  )
-              if (!isMaterialInfoAvailable) break
-          }
-          return (
-              <div
-                  key={`material-history-${index}`}
-                  className={`material-history material-history--cd ${
-                      mat.isSelected ? 'material-history-selected' : ''
-                  }`}
-              >
-                  {this.renderSequentialCDCardTitle(mat)}
-                  <div
-                      className={`material-history__top mh-66 ${
-                          !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-                      }`}
-                      style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
-                      onClick={(event) => {
-                          event.stopPropagation()
-                          if (!mat.vulnerable) {
-                              this.handleImageSelection(index, mat)
-                          }
-                      }}
-                  >
-                      {this.renderMaterialInfo(mat)}
-                  </div>
-                  {mat.showSourceInfo && (
-                      <>
-                          {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
-                              <ul className="tab-list tab-list--vulnerability">
-                                  <li className="tab-list__tab">
-                                      <button
-                                          type="button"
-                                          onClick={(e) => {
-                                              e.stopPropagation()
-                                              this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
-                                          }}
-                                          className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                              mat.tab === CDModalTab.Changes ? 'active' : ''
-                                          }`}
-                                      >
-                                          Changes
-                                      </button>
-                                  </li>
-                                  <li className="tab-list__tab">
-                                      <button
-                                          type="button"
-                                          onClick={(e) => {
-                                              e.stopPropagation()
-                                              this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
-                                          }}
-                                          className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                              mat.tab === CDModalTab.Security ? 'active' : ''
-                                          }`}
-                                      >
-                                          Security
-                                          {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
-                                      </button>
-                                  </li>
-                              </ul>
-                          )}
-                          {mat.tab === CDModalTab.Changes
-                              ? this.renderGitMaterialInfo(mat.materialInfo)
-                              : this.renderVulnerabilities(mat)}
-                      </>
-                  )}
-                  {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
-                      <button
-                          type="button"
-                          className="material-history__changes-btn"
-                          onClick={(event) => {
-                              event.stopPropagation()
-                              this.props.toggleSourceInfo(index)
-                          }}
-                      >
-                          {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                          <img
-                              src={arrow}
-                              alt=""
-                              style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                          />
-                      </button>
-                  )}
-              </div>
-          )
+            let isMaterialInfoAvailable = true
+            for (const materialInfo of mat.materialInfo) {
+                isMaterialInfoAvailable =
+                    isMaterialInfoAvailable &&
+                    !!(
+                        materialInfo.webhookData ||
+                        materialInfo.author ||
+                        materialInfo.message ||
+                        materialInfo.modifiedTime ||
+                        materialInfo.revision
+                    )
+                if (!isMaterialInfoAvailable) break
+            }
+            return (
+                <div
+                    key={`material-history-${index}`}
+                    className={`material-history material-history--cd ${
+                        mat.isSelected ? 'material-history-selected' : ''
+                    }`}
+                >
+                    {this.renderSequentialCDCardTitle(mat)}
+                    <div
+                        className={`material-history__top mh-66 ${
+                            !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
+                        }`}
+                        style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            if (!mat.vulnerable) {
+                                this.handleImageSelection(index, mat)
+                            }
+                        }}
+                    >
+                        {this.renderMaterialInfo(mat)}
+                    </div>
+                    {mat.showSourceInfo && (
+                        <>
+                            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
+                                <ul className="tab-list tab-list--vulnerability">
+                                    <li className="tab-list__tab">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
+                                            }}
+                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                mat.tab === CDModalTab.Changes ? 'active' : ''
+                                            }`}
+                                        >
+                                            Changes
+                                        </button>
+                                    </li>
+                                    <li className="tab-list__tab">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
+                                            }}
+                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                mat.tab === CDModalTab.Security ? 'active' : ''
+                                            }`}
+                                        >
+                                            Security
+                                            {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
+                                        </button>
+                                    </li>
+                                </ul>
+                            )}
+                            {mat.tab === CDModalTab.Changes
+                                ? this.renderGitMaterialInfo(mat.materialInfo)
+                                : this.renderVulnerabilities(mat)}
+                        </>
+                    )}
+                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
+                        <button
+                            type="button"
+                            className="material-history__changes-btn"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                this.props.toggleSourceInfo(index)
+                            }}
+                        >
+                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                            <img
+                                src={arrow}
+                                alt=""
+                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                            />
+                        </button>
+                    )}
+                </div>
+            )
         })
     }
 

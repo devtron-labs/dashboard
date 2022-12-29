@@ -25,7 +25,7 @@ import { convertToOptionsList, showError } from '../common'
 import { ServerErrors } from '../../modals/commonTypes'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
@@ -420,7 +420,8 @@ export default function ClusterTerminal({
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
                     <div className="cn-6 ml-8 mr-4">Image</div>
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         heading="Image"
                         placement="top"
                         interactive={true}
@@ -432,7 +433,7 @@ export default function ClusterTerminal({
                         additionalContent={imageTippyInfo()}
                     >
                         <HelpIcon className="icon-dim-16 mr-8 cursor" />
-                    </TippyWhite>
+                    </TippyCustomized>
                     <div>
                         <CreatableSelect
                             placeholder="Select Image"

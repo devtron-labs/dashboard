@@ -34,7 +34,8 @@ export const statusIcon = {
     missing: 'missing',
     progressing: 'progressing',
     deploymentinitiated: 'progressing',
-    hibernating: 'hibernating'
+    hibernating: 'hibernating',
+    succeeded: 'healthy'
 }
 
 export const AppListViewType = {
