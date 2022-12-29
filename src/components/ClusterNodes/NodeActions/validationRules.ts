@@ -15,7 +15,7 @@ export class ValidationRules {
                 if (keyArr.length > 2) {
                     return { message: 'Maximum 1 ( / ) allowed', isValid: false }
                 } else if (!keyPrefixRegex.test(keyArr[0])) {
-                    return { message: `Invalid prefix in key`, isValid: false }
+                    return { message: 'Invalid prefix in key', isValid: false }
                 } else if (!keyNameRegex.test(keyArr[1])) {
                     return { message: 'Invalid name in key', isValid: false }
                 }
