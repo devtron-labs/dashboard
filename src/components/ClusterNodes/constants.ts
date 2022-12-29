@@ -168,15 +168,15 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
 ]
 
 export const NODE_DETAILS_TABS = {
-  SUMMARY: 'Summary',
-  YAML: 'YAML',
-  Node_CONDITIONS: 'Node conditions',
-  DEBUG: 'Debug'
+  summary: 'Summary',
+  yaml: 'YAML',
+  nodeConditions: 'Node conditions',
+  debug: 'Debug'
 }
 
 export const TAINT_OPTIONS: {
-    label: string
-    value: string
+    label: EFFECT_TYPE
+    value: EFFECT_TYPE
     description: string
 }[] = [
     {
@@ -260,4 +260,15 @@ export const DELETE_NODE_MODAL_MESSAGING = {
     deletePostfix: ' Node',
     description: 'Are you sure you want to delete this node?',
     initiated: 'Node deletion initiated',
+}
+
+export const EDIT_TAINTS_MODAL_MESSAGING = {
+  titlePrefix: 'Edit taints for node ',
+  infoText: 'Add taints to nodes so that pods are not scheduled to the nodes or not scheduled to the nodes if possible. After you add taints to nodes, you can set tolerations on a pod to allow the pod to be scheduled to nodes with certain taints.Drain the node before deleting it as it may cause disruption because of pod deletion.',
+  addTaint: 'Add taint',
+  Actions: {
+    cancel: 'Cancel',
+    save: 'Save',
+    saving: 'Taints updated successfully'
+  }
 }

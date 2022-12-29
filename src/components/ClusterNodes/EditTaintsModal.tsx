@@ -13,7 +13,7 @@ import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import { EFFECT_TYPE, TaintErrorObj, TaintType } from './types'
 import { ValidationRules } from './validationRules'
-import { TAINT_OPTIONS } from './constants'
+import { DRAIN_NODE_MODAL_MESSAGING, EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from './constants'
 import { toast } from 'react-toastify'
 
 interface EditTaintsModalType {
@@ -25,8 +25,15 @@ interface EditTaintsModalType {
     closePopup: (refreshData?: boolean) => void
 }
 
-export default function EditTaintsModal({ clusterId, nodeName, version, kind, taints, closePopup }: EditTaintsModalType) {
-    const [loader, setLoader] = useState(false)
+export default function EditTaintsModal({
+    clusterId,
+    nodeName,
+    version,
+    kind,
+    taints,
+    closePopup,
+}: EditTaintsModalType) {
+    const [apiCallInProgress, setAPICallInProgress] = useState(false)
     const [taintList, setTaintList] = useState<TaintType[]>(taints)
     const [errorObj, setErrorObj] = useState<TaintErrorObj>({ isValid: true, taintErrorList: [] })
     const validationRules = new ValidationRules()
@@ -46,7 +53,7 @@ export default function EditTaintsModal({ clusterId, nodeName, version, kind, ta
     }
 
     const addNewTaint = (): void => {
-        const _taintList = [...taintList, { key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule}]
+        const _taintList = [...taintList, { key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }]
         setTaintList(_taintList)
 
         const _errorObj = { ...errorObj }
@@ -95,44 +102,43 @@ export default function EditTaintsModal({ clusterId, nodeName, version, kind, ta
         return _errorObj
     }
 
-    const onSave = () => {
+    const onSave = async (): Promise<void> => {
         if (!validateTaintList().isValid) {
             return
         }
-
-        setLoader(true)
-        const payload = {
-            clusterId: Number(clusterId),
-            name: nodeName,
-            version: version,
-            kind: kind,
+        try {
+            setAPICallInProgress(true)
+            const payload = {
+                clusterId: Number(clusterId),
+                name: nodeName,
+                version: version,
+                kind: kind,
+                taintList,
+            }
+            await updateTaints(payload)
+            toast.success(EDIT_TAINTS_MODAL_MESSAGING.Actions.saving)
+            closePopup(true)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setAPICallInProgress(false)
         }
-        updateTaints(payload)
-            .then((response) => {
-                if (response.result) {
-                    toast.success('Successfully saved')
-                }
-                setLoader(false)
-                closePopup(true)
-            })
-            .catch((error) => {
-                showError(error)
-                setLoader(false)
-            })
     }
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bcn-0 h-100">
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Edit taints for node ‘{nodeName}’</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                        {`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${nodeName}'`}
+                    </h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
                 <div className="pt-16 pr-20 pb-16 pl-20" style={{ height: 'calc(100vh - 125px)' }}>
                     <InfoColourBar
-                        message="Add taints to nodes so that pods are not scheduled to the nodes or not scheduled to the nodes if possible. After you add taints to nodes, you can set tolerations on a pod to allow the pod to be scheduled to nodes with certain taints."
+                        message={EDIT_TAINTS_MODAL_MESSAGING.infoText}
                         classname="info_bar mb-16"
                         Icon={InfoIcon}
                         iconClass="icon-dim-20"
@@ -141,7 +147,7 @@ export default function EditTaintsModal({ clusterId, nodeName, version, kind, ta
                         className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20 mb-12"
                         onClick={addNewTaint}
                     >
-                        <Add className="icon-dim-20 fcb-5" /> Add taint
+                        <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
                     </div>
                     {taintList?.map((taintDetails, index) => {
                         const _errorObj = errorObj.taintErrorList[index]
@@ -226,10 +232,10 @@ export default function EditTaintsModal({ clusterId, nodeName, version, kind, ta
                 </div>
                 <div className="dc__border-top flex right p-16">
                     <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={onClose}>
-                        Cancel
+                        {EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
                     </button>
                     <button className="cta h-36 lh-36" onClick={onSave}>
-                        {loader ? <Progressing /> : 'Save'}
+                        {apiCallInProgress ? <Progressing /> : EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
                     </button>
                 </div>
             </div>

@@ -49,7 +49,7 @@ import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-f
 import ClusterTerminal from './ClusterTerminal'
 import { OptionType } from '../app/types'
 import EditTaintsModal from './EditTaintsModal'
-import { NODE_DETAILS_TABS } from './constants'
+import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
@@ -136,13 +136,13 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     useEffect(() => {
         if (queryParams.has('tab')) {
             const tab = queryParams.get('tab').replace('-', ' ')
-            if (tab === NODE_DETAILS_TABS.SUMMARY.toLowerCase()) {
+            if (tab === NODE_DETAILS_TABS.summary.toLowerCase()) {
                 setSelectedTabIndex(0)
-            } else if (tab === NODE_DETAILS_TABS.YAML.toLowerCase()) {
+            } else if (tab === NODE_DETAILS_TABS.yaml.toLowerCase()) {
                 setSelectedTabIndex(1)
-            } else if (tab === NODE_DETAILS_TABS.Node_CONDITIONS.toLowerCase()) {
+            } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
                 setSelectedTabIndex(2)
-            } else if (tab === NODE_DETAILS_TABS.DEBUG.toLowerCase()) {
+            } else if (tab === NODE_DETAILS_TABS.debug.toLowerCase()) {
                 setSelectedTabIndex(3)
             }
         }
@@ -152,13 +152,13 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
         let _searchParam = '?tab='
         if (_tabIndex === 0) {
-            _searchParam += NODE_DETAILS_TABS.SUMMARY.toLowerCase()
+            _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
         } else if (_tabIndex === 1) {
-            _searchParam += NODE_DETAILS_TABS.YAML.toLowerCase()
+            _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
         } else if (_tabIndex === 2) {
-            _searchParam += NODE_DETAILS_TABS.Node_CONDITIONS.toLowerCase().replace(' ', '-')
+            _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
         } else if (_tabIndex === 3) {
-            _searchParam += NODE_DETAILS_TABS.DEBUG.toLowerCase()
+            _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
         }
         push({
             pathname: location.pathname,
@@ -171,20 +171,20 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                        {NODE_DETAILS_TABS.SUMMARY}
+                        {NODE_DETAILS_TABS.summary}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
                 <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
-                        {NODE_DETAILS_TABS.YAML}
+                        {NODE_DETAILS_TABS.yaml}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
                 <li className="tab-list__tab pointer" data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                        {NODE_DETAILS_TABS.Node_CONDITIONS}
+                        {NODE_DETAILS_TABS.nodeConditions}
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
@@ -196,7 +196,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                             }`}
                         >
                             <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
-                            {NODE_DETAILS_TABS.DEBUG}
+                            {NODE_DETAILS_TABS.debug}
                         </div>
                         {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
                     </li>
@@ -734,15 +734,15 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                 {nodeDetail.status}
                             </span>
                             <span className="cn-2">|</span>
-                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">Cordon</span>
-                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">Drain</span>
+                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">{CLUSTER_NODE_ACTIONS_LABELS.cordon}</span>
+                            <span className="fw-6 cb-5 ml-16 fs-13 pointer">{CLUSTER_NODE_ACTIONS_LABELS.drain}</span>
                             <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showEditTaintsModal}>
                                 <Edit className="icon-dim-16 mt-2 mr-5 scb-5" />
-                                Edit taints
+                                {CLUSTER_NODE_ACTIONS_LABELS.taints}
                             </span>
                             <span className="flexbox fw-6 cr-5 ml-16 fs-13 pointer">
                                 <Delete className="icon-dim-16 mt-2 mr-5" />
-                                Delete
+                                {CLUSTER_NODE_ACTIONS_LABELS.delete}
                             </span>
                         </div>
                     </div>
