@@ -144,6 +144,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                         value={taintDetails.key}
                                         className="form__input h-32"
                                         onChange={handleInputChange}
+                                        placeholder="Key"
                                     />
                                     {_errorObj && !_errorObj['key'].isValid && (
                                         <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
@@ -160,6 +161,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                         value={taintDetails.value}
                                         className="form__input h-32"
                                         onChange={handleInputChange}
+                                        placeholder="Value"
                                     />
                                     {_errorObj && !_errorObj['value'].isValid && (
                                         <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
