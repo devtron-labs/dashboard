@@ -63,24 +63,26 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
 
     const filteredFlattendNodes = () => {
         if (filterRemoveHealth) {
-            return flattenedNodes.filter((node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY)
+            return flattenedNodes?.filter((node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY) || []
         } else {
-            return flattenedNodes
+            return flattenedNodes || []
         }
     }
 
     return (
-        <>
-            <div className="pt-16 pl-20 pb-8">
-                <div className="flexbox pr-20 w-100">
-                    <div>
-                        <StatusFilterButtonComponent
-                            nodes={filteredFlattendNodes()}
-                            handleFilterClick={onFilterClick}
-                        />
+        <div className="pb-12">
+            {filteredFlattendNodes().length > 0 && (
+                <div className="pt-16 pl-20 pb-8">
+                    <div className="flexbox pr-20 w-100">
+                        <div>
+                            <StatusFilterButtonComponent
+                                nodes={filteredFlattendNodes()}
+                                handleFilterClick={onFilterClick}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
             <div>
                 <div className="app-status-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
                     {APP_STATUS_HEADERS.map((headerKey, index) => (
@@ -90,7 +92,7 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                     ))}
                 </div>
                 <div className={`resource-list fs-13 ${showFooter ? 'with-footer' : ''}`}>
-                    {flattenedNodes.length > 0 ? (
+                    {filteredFlattendNodes().length > 0 ? (
                         filteredFlattendNodes()
                             .filter(
                                 (nodeDetails) =>
@@ -115,7 +117,7 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                                 </div>
                             ))
                     ) : (
-                        <div className="flex dc__height-inherit">
+                        <div className="flex dc__height-inherit mh-300">
                             <div className="dc__align-center">
                                 <InfoIcon className="icon-dim-20" />
                                 <div>No resources available</div>
@@ -137,6 +139,6 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                     </div>
                 )}
             </div>
-        </>
+        </div>
     )
 }

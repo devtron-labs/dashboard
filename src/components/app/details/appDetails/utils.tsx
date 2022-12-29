@@ -421,7 +421,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
       },
   }
-
+  
   const lastFetchedTime = handleUTCTime(data?.statusLastFetchedAt,true)
   const deploymentPhases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
   let tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
@@ -436,7 +436,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               deploymentData.deploymentStatus = DEPLOYMENT_STATUS.SUCCEEDED
               deploymentData.deploymentStatusText = 'Succeeded'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText =
-                  element['status'] === TIMELINE_STATUS.HEALTHY ? 'Healthy' : 'Degraded'
+                  element['status'] === TIMELINE_STATUS.HEALTHY ? '' : 'Degraded'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
               deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'

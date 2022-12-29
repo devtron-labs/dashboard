@@ -138,7 +138,7 @@ export function DeploymentStatusDetailRow({
                             )}
                         </div>
                     )}
-                    <div className="pb-12">
+                    <div>
                         <AppStatusDetailsChart appStreamData={streamData} filterRemoveHealth={true} showFooter={false} />
                     </div>
                 </div>
@@ -172,6 +172,7 @@ export function DeploymentStatusDetailRow({
                 return <Timer className="icon-dim-20 timer-icon" />
         }
     }
+
 
     return (
         <>
