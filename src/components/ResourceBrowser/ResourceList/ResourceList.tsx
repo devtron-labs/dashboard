@@ -58,7 +58,12 @@ export default function ResourceList() {
     }, [lastDataSync])
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = resourceList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+        const _filteredData = resourceList.filter(
+            (resource) =>
+                resource.name.indexOf(_searchText) >= 0 ||
+                resource.namespace.indexOf(_searchText) >= 0 ||
+                resource.status.indexOf(_searchText) >= 0,
+        )
         setFilteredResourceList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }
@@ -83,6 +88,10 @@ export default function ResourceList() {
         }
     }
 
+    const handleOnChangeSearchText=(event): void => {
+      setSearchText(event.target.value)
+  }
+
     const renderSearch = (): JSX.Element => {
         return (
             <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
@@ -92,9 +101,7 @@ export default function ResourceList() {
                     placeholder="Search clusters"
                     value={searchText}
                     className="search__input"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
-                    }}
+                    onChange={handleOnChangeSearchText}
                     onKeyDown={handleFilterKeyPress}
                 />
                 {searchApplied && (

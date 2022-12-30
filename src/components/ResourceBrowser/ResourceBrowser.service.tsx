@@ -7,7 +7,7 @@ export const getClusterList = (): Promise<ResourceListListResponse> => {
 }
 
 export const getResourceList = (clusterId: string): Promise<ResourceListListResponse> => {
-    //return get(`${Routes.API_RESOURCE}/1`)
+    //return get(`${Routes.API_RESOURCE}/${clusterId}`)
     return Promise.resolve({
         code: 200,
         status: 'true',
@@ -22,5 +22,4 @@ export const getResourceList = (clusterId: string): Promise<ResourceListListResp
             },
         ],
     })
-    return get(`${Routes.API_RESOURCE}/${clusterId}`)
 }
