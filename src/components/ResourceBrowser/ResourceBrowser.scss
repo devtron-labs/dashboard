@@ -1,0 +1,20 @@
+.resource-list-container {
+    &.no-result-container {
+        height: calc(100vh - 48px);
+        overflow: hidden;
+    }
+    .resource-list-row {
+        display: grid;
+        grid-template-columns: minmax(300px, auto) repeat(2, 150px) repeat(2, 60px) 100px 30px;
+        column-gap: 16px;
+        .menu-icon {
+          path:nth-child(2) {
+              fill: var(--N600);
+          }
+      }
+        .resource-status {
+            height: 12px;
+            width: 12px;
+        }
+    }
+}
