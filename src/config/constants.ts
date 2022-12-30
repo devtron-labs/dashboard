@@ -192,7 +192,7 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events',
-
+    API_RESOURCE: 'k8s/api-resource',
 }
 
 export const ViewType = {

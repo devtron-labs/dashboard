@@ -15,6 +15,7 @@ import ResourceListEmptyState from './ResourceListEmptyState'
 import '../ResourceBrowser.scss'
 import { ResourceDetail } from '../Types'
 import { getResourceList } from '../ResourceBrowser.service'
+import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 
 export default function ResourceList() {
     const match = useRouteMatch()
@@ -123,7 +124,7 @@ export default function ResourceList() {
                 <div>{resourceData.age}</div>
                 <div>{resourceData.ready}</div>
                 <div>{resourceData.restarts}</div>
-                <MenuDots className="menu-icon icon-dim-16" />
+                <ResourceBrowserActionMenu resourceData={resourceData} />
             </div>
         )
     }
