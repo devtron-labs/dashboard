@@ -270,7 +270,7 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
-                                        <Route path={URLS.RESOURCE_BROWSER}>
+                                        <Route path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:kind?/:node?`}>
                                         <ResourceBrowserContainer />
                                         </Route>
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />

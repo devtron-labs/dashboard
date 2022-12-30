@@ -1,6 +1,6 @@
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
-export const clusterSelectStyle = {
+export const CLUSTER_SELECT_STYLE = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,
@@ -42,3 +42,5 @@ export const RESOURCE_ACTION_MENU = {
     terminal: 'Terminal',
     delete: 'Delete',
 }
+
+export const ALL_NAMESPACE_OPTION = {value: 'all', label: 'All namespaces'}
