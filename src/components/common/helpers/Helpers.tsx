@@ -1022,7 +1022,7 @@ export const filterImageList = (imageList,serverVersion): ClusterImageList[] => 
         return regex.test(serverVersion)
     })
     
-    return nodeImageList.imageList
+    return nodeImageList?.imageList || []
 }
 
 export const convertToOptionsList = (
