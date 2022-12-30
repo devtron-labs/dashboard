@@ -18,6 +18,7 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
 
     const deleteAPI = async () => {
         try {
+            setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
                 name: name,

@@ -570,7 +570,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
-                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-20 pt-12 pb-12 ${
+                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >

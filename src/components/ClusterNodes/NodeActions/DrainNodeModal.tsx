@@ -79,6 +79,7 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
 
     const drainAPI = async () => {
         try {
+            setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
                 name: name,
@@ -122,6 +123,7 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                             onChange={handleInputValue}
                             onBlur={handleInputOnBlur}
                             onKeyDown={handleKeyDown}
+                            disabled={apiCallInProgress}
                         />
                         <span className="grace-period-input-unit flex fs-13 fw-4 cn-9 h-28 en-2 bw-1 dc__right-radius-4">
                             sec

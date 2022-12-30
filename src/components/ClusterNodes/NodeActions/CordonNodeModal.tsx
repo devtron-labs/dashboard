@@ -18,6 +18,7 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
 
     const cordonAPI = async () => {
         try {
+            setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
                 name: name,
