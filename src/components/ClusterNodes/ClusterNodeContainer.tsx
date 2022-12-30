@@ -16,20 +16,24 @@ export default function ClusterNodeContainer() {
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     
     useEffect(() => {
-        Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),getUserRole(),clusterNamespaceList()]).then(([hostUrlConfig, userRole, namespaceList]) => {
-            if(hostUrlConfig.result) {
-                const imageValue: string = hostUrlConfig.result.value
-                setImageList(JSON.parse(imageValue))
-            }
-            if(userRole.result) {
-                setSuperAdmin(userRole.result?.superAdmin)
-            }
-            if(namespaceList.result) {
-                setNameSpaceList(namespaceList.result)
-            }
-        }).catch((error) => {
+        try {
+            Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),getUserRole(),clusterNamespaceList()]).then(([hostUrlConfig, userRole, namespaceList]) => {
+                if(hostUrlConfig.result) {
+                    const imageValue: string = hostUrlConfig.result.value
+                    setImageList(JSON.parse(imageValue))
+                }
+                if(userRole.result) {
+                    setSuperAdmin(userRole.result?.superAdmin)
+                }
+                if(namespaceList.result) {
+                    setNameSpaceList(namespaceList.result)
+                }
+            }).catch((error) => {
+                showError(error)
+            })
+        } catch (error) {
             showError(error)
-        })
+        }
     },[])
 
     return (

@@ -1015,13 +1015,18 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
     }, {})
 }
 
-export const filterImageList = (imageList,serverVersion): ClusterImageList[] => {
-
+export const filterImageList = (imageList, serverVersion): ClusterImageList[] => {
     let nodeImageList = imageList.find((imageObj) => {
         let regex = new RegExp(imageObj.groupRegex)
         return regex.test(serverVersion)
     })
-    
+
+    if (!nodeImageList) {
+        nodeImageList = imageList.find((imageObj) => {
+            return imageObj.groupId === 'latest'
+        })
+    }
+
     return nodeImageList?.imageList || []
 }
 
