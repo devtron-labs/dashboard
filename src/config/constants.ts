@@ -610,6 +610,8 @@ export const TERMINAL_STATUS_MAP = {
     STARTING: 'starting',
     FAILED: 'failed',
     ERROR: 'error',
+    UNABLE_TO_FETCH: 'unabletofetch',
+    TIMED_OUT: 'timedout'
 }
 
 export const POD_STATUS = {

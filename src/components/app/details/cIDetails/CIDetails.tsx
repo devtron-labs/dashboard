@@ -683,6 +683,8 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         ),
                         [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
                         [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.UNABLE_TO_FETCH]: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.TIMED_OUT]: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[status.toLowerCase()]
                 }
                 {!Object.values(TERMINAL_STATUS_MAP).includes(

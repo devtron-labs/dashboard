@@ -31,12 +31,18 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
             return <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
                 <span>{statusText}</span>
             </div>
-        else return <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
-            <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`}></span>
-            <span>{statusText}</span>
-            <span className="mr-5 ml-5">/</span>
-            <Link to={url} className="workflow-node__details-link">Details</Link>
-        </div>
+        else return (
+            <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <span>
+                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`}></span>
+                </span>
+                <span>{statusText}</span>
+                <span className="mr-5 ml-5">/</span>
+                <Link to={url} className="workflow-node__details-link">
+                    Details
+                </Link>
+            </div>
+        )
     }
 
     renderCardContent() {

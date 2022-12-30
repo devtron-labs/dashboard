@@ -258,7 +258,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderSequentialCDCardTitle = (mat) => {
         if (this.props.stageType !== STAGE_TYPE.CD) return
 
-        if (mat.latest || mat.runningOnParentCd || mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') {
+        if (mat.latest || mat.runningOnParentCd || mat.artifactStatus === 'Progressing' || mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {this.renderActiveCD(mat)}
