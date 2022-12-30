@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { useRouteMatch } from 'react-router'
+import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { handleUTCTime, Progressing, showError } from '../../common'
+import { convertToOptionsList, handleUTCTime, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import '../ResourceBrowser.scss'
 import { ResourceDetail } from '../Types'
-import { getResourceList } from '../ResourceBrowser.service'
+import { getResourceList, NamespaceListByClusterId } from '../ResourceBrowser.service'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
+import ReactSelect from 'react-select'
+import { Option } from '../../v2/common/ReactSelectCustomization'
+import { getClusterListMinWithoutAuth } from '../../../services/service'
+import { OptionType } from '../../app/types'
+import { clusterSelectStyle } from '../Constants'
+import { URLS } from '../../../config'
 
 export default function ResourceList() {
     const match = useRouteMatch()
@@ -27,6 +33,13 @@ export default function ResourceList() {
     const [searchApplied, setSearchApplied] = useState(false)
     const [resourceList, setResourceList] = useState<ResourceDetail[]>([])
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetail[]>([])
+    const [namespaceList, setNameSpaceList] = useState<Record<string, string[]>>()
+    const [clusterList, setClusterList] = useState<OptionType[]>()
+    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
+    const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
+    const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
+    const { push } = useHistory()
+    const location = useLocation()
 
     const getData = async (): Promise<void> => {
         try {
@@ -43,8 +56,27 @@ export default function ResourceList() {
         }
     }
 
+    const getClusterList = async () => {
+        try {
+            const { result } = await getClusterListMinWithoutAuth()
+            setClusterList(convertToOptionsList(result, null, 'cluster_name', 'id'))
+        } catch (err) {
+            showError(err)
+        }
+    }
+
+    const getNamespaceList = async (clusterId: string) => {
+        try {
+            const { result } = await NamespaceListByClusterId(clusterId)
+            setNamespaceOptions(convertToOptionsList(result))
+        } catch (err) {
+            showError(err)
+        }
+    }
+
     useEffect(() => {
         getData()
+        getClusterList()
     }, [])
 
     useEffect(() => {
@@ -57,6 +89,10 @@ export default function ResourceList() {
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    useEffect(() => {
+      console.log(location)
+  }, [location.search])
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = resourceList.filter(
@@ -92,23 +128,65 @@ export default function ResourceList() {
         setSearchText(event.target.value)
     }
 
+    const onChangeCluster = (selected): void => {
+        setSelectedCluster(selected)
+        getNamespaceList(selected.value)
+        push({
+          pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}`,
+      })
+    }
+
+    const onChangeNamespace = (selected): void => {
+        setSelectedNamespace(selected)
+        push({
+          pathname: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selected.value}`,
+      })
+    }
+
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    type="text"
-                    placeholder="Search clusters"
-                    value={searchText}
-                    className="search__input"
-                    onChange={handleOnChangeSearchText}
-                    onKeyDown={handleFilterKeyPress}
-                />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
+            <div className="flexbox dc__content-space pt-16 pr-20 pb-16 pl-20">
+                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
+                    <Search className="search__icon icon-dim-18" />
+                    <input
+                        type="text"
+                        placeholder="Search clusters"
+                        value={searchText}
+                        className="search__input"
+                        onChange={handleOnChangeSearchText}
+                        onKeyDown={handleFilterKeyPress}
+                    />
+                    {searchApplied && (
+                        <button className="search__clear-button" type="button" onClick={clearSearch}>
+                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
+                        </button>
+                    )}
+                </div>
+                <div className="flex">
+                    <ReactSelect
+                        placeholder="Select Containers"
+                        options={clusterList}
+                        value={selectedCluster}
+                        onChange={onChangeCluster}
+                        styles={clusterSelectStyle}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option,
+                        }}
+                    />
+                    <ReactSelect
+                        placeholder="Select Containers"
+                        className="ml-8"
+                        options={namespaceOptions}
+                        value={selectedNamespace}
+                        onChange={onChangeNamespace}
+                        styles={clusterSelectStyle}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option,
+                        }}
+                    />
+                </div>
             </div>
         )
     }
@@ -162,20 +240,22 @@ export default function ResourceList() {
             <div>
                 <div>Sidebar</div>
 
-                <div className={`resource-list-container bcn-0 ${filteredResourceList.length === 0 ? 'no-result-container' : ''}`}>
-                    <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
-                        {renderSearch()}
-                        <div className="fs-13">
-                            {lastDataSyncTimeString && (
-                                <span>
-                                    {lastDataSyncTimeString}{' '}
-                                    <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
-                                        Refresh
-                                    </button>
-                                </span>
-                            )}
-                        </div>
+                <div
+                    className={`resource-list-container bcn-0 ${
+                        filteredResourceList.length === 0 ? 'no-result-container' : ''
+                    }`}
+                >
+                    <div className="fs-13">
+                        {lastDataSyncTimeString && (
+                            <span>
+                                {lastDataSyncTimeString}{' '}
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
+                                    Refresh
+                                </button>
+                            </span>
+                        )}
                     </div>
+                    {renderSearch()}
                     {filteredResourceList.length === 0 ? (
                         renderEmptyPage()
                     ) : (

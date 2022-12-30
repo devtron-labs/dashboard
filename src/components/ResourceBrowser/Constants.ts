@@ -11,7 +11,6 @@ export const clusterSelectStyle = {
     }),
     control: (base, state) => ({
         ...base,
-        borderColor: 'transparent',
         backgroundColor: 'transparent',
         cursor: 'pointer',
         height: '28px',
