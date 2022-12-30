@@ -54,7 +54,7 @@ export default function ChartGroupUpdate({}) {
     const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
-    const [isGrid, setIsGrid] = useState<boolean>(false)
+    const [isGrid, setIsGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
         {

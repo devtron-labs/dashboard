@@ -9,7 +9,7 @@ import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.s
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { CIAdvancedConfigProps } from './types'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 export default function CIAdvancedConfig({
     configOverrideView,
@@ -134,7 +134,8 @@ export default function CIAdvancedConfig({
             <div>
                 <div className="flex left fs-13 fw-6 mb-8">
                     {isDockerArgsSection ? 'Docker Build Arguments' : 'Build Env Arguments'}
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         className="w-300"
                         placement="top"
                         Icon={HelpIcon}
@@ -151,7 +152,7 @@ export default function CIAdvancedConfig({
                         interactive={true}
                     >
                         <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </TippyWhite>
+                    </TippyCustomized>
                 </div>
                 {!updateNotAllowed && (
                     <div className="add-parameter fs-14 mb-8 cb-5 cursor" onClick={addArg}>
