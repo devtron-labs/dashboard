@@ -12,14 +12,6 @@ export const getResourceList = (clusterId: string): Promise<ResourceListListResp
         code: 200,
         status: 'true',
         result: [
-            {
-                name: 'string',
-                status: 'string',
-                namespace: 'string',
-                age: 'string',
-                ready: 'string',
-                restarts: 'string',
-            },
         ],
     })
 }

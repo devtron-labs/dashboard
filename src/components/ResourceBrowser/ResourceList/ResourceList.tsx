@@ -34,6 +34,7 @@ export default function ResourceList() {
             const { result } = await getResourceList('1')
             setResourceList(result)
             setFilteredResourceList(result)
+            setNoResults(result.length === 0)
             setLastDataSync(!lastDataSync)
         } catch (err) {
             showError(err)
@@ -65,7 +66,6 @@ export default function ResourceList() {
                 resource.status.indexOf(_searchText) >= 0,
         )
         setFilteredResourceList(_filteredData)
-        setNoResults(_filteredData.length === 0)
     }
 
     const handleResourceClick = (ev, resourceData: ResourceDetail): void => {}
@@ -88,9 +88,9 @@ export default function ResourceList() {
         }
     }
 
-    const handleOnChangeSearchText=(event): void => {
-      setSearchText(event.target.value)
-  }
+    const handleOnChangeSearchText = (event): void => {
+        setSearchText(event.target.value)
+    }
 
     const renderSearch = (): JSX.Element => {
         return (
@@ -136,6 +136,22 @@ export default function ResourceList() {
         )
     }
 
+    const renderEmptyPage = (): JSX.Element => {
+        if (noResults) {
+            return (
+                <ResourceListEmptyState subTitle="We could not find any DaemonSets. Try selecting a different cluster or namespace." />
+            )
+        } else {
+            return (
+                <ResourceListEmptyState
+                    title="No matching results"
+                    subTitle="We could not find any matching Deployments."
+                    actionHandler={clearSearch}
+                />
+            )
+        }
+    }
+
     if (loader) {
         return <Progressing pageLoader />
     }
@@ -146,7 +162,7 @@ export default function ResourceList() {
             <div>
                 <div>Sidebar</div>
 
-                <div className={`resource-list-container bcn-0 ${noResults ? 'no-result-container' : ''}`}>
+                <div className={`resource-list-container bcn-0 ${filteredResourceList.length === 0 ? 'no-result-container' : ''}`}>
                     <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                         {renderSearch()}
                         <div className="fs-13">
@@ -160,8 +176,8 @@ export default function ResourceList() {
                             )}
                         </div>
                     </div>
-                    {noResults ? (
-                        <ResourceListEmptyState subTitle="hello" actionHandler={clearSearch} />
+                    {filteredResourceList.length === 0 ? (
+                        renderEmptyPage()
                     ) : (
                         <div className="dc__overflow-scroll" style={{ height: `calc('100vh'} - 125px)` }}>
                             <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">

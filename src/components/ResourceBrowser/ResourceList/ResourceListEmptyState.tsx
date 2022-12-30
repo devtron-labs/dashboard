@@ -20,11 +20,11 @@ export default function ResourceListEmptyState({
                 <h4 className="title">{title || 'No resources found'}</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
-            <EmptyState.Button>
+            {actionHandler && <EmptyState.Button>
                 <button onClick={actionHandler} className="add-link cta flex">
                     Clear filters
                 </button>
-            </EmptyState.Button>
+            </EmptyState.Button>}
         </EmptyState>
     )
 }
