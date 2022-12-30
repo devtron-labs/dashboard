@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
-import { APP_STATUS_HEADERS, DEPLOYMENT_STATUS, Moment12HourFormat, TIMELINE_STATUS } from '../../../../config'
+import { DEPLOYMENT_STATUS, MANIFEST_STATUS_HEADERS, Moment12HourFormat, TERMINAL_STATUS_MAP, TIMELINE_STATUS } from '../../../../config'
 import { showError } from '../../../common'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { getManualSync } from '../../service'
@@ -16,6 +16,7 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { ReactComponent as TimeOut } from '../../../../assets/icons/ic-timeout-red.svg'
 import AppStatusDetailsChart from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailsChart'
+import { CLUSTER_STATUS } from '../../../ClusterNodes/constants'
 
 export function DeploymentStatusDetailRow({
     type,
@@ -80,7 +81,7 @@ export function DeploymentStatusDetailRow({
                         {deploymentDetailedData.deploymentStatusBreakdown[type].resourceDetails?.length ? (
                             <div className="pl-32">
                                 <div className="app-status-row dc__border-bottom pt-8 pb-8">
-                                    {APP_STATUS_HEADERS.map((headerKey, index) => (
+                                    {MANIFEST_STATUS_HEADERS.map((headerKey, index) => (
                                         <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
                                             {headerKey}
                                         </div>
@@ -98,7 +99,10 @@ export function DeploymentStatusDetailRow({
                                                 <div
                                                     className={`app-summary__status-name f-${
                                                         nodeDetails.resourceStatus
-                                                            ? nodeDetails.resourceStatus.toLowerCase()
+                                                            ? nodeDetails.resourceStatus.toLowerCase() ===
+                                                              TERMINAL_STATUS_MAP.RUNNING
+                                                                ? TERMINAL_STATUS_MAP.PROGRESSING
+                                                                : nodeDetails.resourceStatus.toLowerCase()
                                                             : ''
                                                     }`}
                                                 >
@@ -163,7 +167,7 @@ export function DeploymentStatusDetailRow({
             case 'unreachable':
                 return <Close className="icon-dim-20" />
             case 'loading':
-                return <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`}></div>
+                return <div className={`dc__app-summary__icon icon-dim-20 mr-6 progressing progressing--node`}></div>
             case 'disconnect':
                 return <Disconnect className="icon-dim-20" />
             case 'time_out':
