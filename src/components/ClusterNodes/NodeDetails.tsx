@@ -9,6 +9,7 @@ import {
     showError,
     useBreadcrumb,
     ToastBodyWithButton,
+    regexImageList,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -67,6 +68,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
+    const [nodeImageList, setNodeImageList] = useState([])
     const toastId = useRef(null)
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
@@ -78,6 +80,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
+                    setNodeImageList(regexImageList(imageList,response.result.k8sVersion))
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
@@ -893,7 +896,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             <ClusterTerminal
                 clusterId={Number(clusterId)}
                 nodeList={nodeListRef.current}
-                clusterImageList={imageList}
+                clusterImageList={nodeImageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}
             />

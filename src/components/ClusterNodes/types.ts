@@ -127,7 +127,7 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType {
-    imageList: string[]
+    imageList: any[]
     isSuperAdmin: boolean
     namespaceList: string[]
 }
@@ -137,7 +137,7 @@ export interface ClusterTerminalType {
     clusterName?: string
     nodeList: string[]
     closeTerminal?: () => void
-    clusterImageList: string[]
+    clusterImageList: any[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
     node?: string

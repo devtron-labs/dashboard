@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, showError } from '../common'
+import { handleUTCTime, Progressing, regexImageList, showError } from '../common'
 import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
@@ -24,6 +24,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const [searchText, setSearchText] = useState('')
     const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
+    const [nodeImageList, setNodeImageList] = useState([])
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
@@ -119,6 +120,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
 
     const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData)
+        setNodeImageList(regexImageList(imageList,clusterData.serverVersion))
         setShowTerminal(true)
     }
 
@@ -227,7 +229,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     clusterName={terminalclusterData.name}
                     nodeList={terminalclusterData.nodeNames}
                     closeTerminal={closeTerminal}
-                    clusterImageList={imageList}
+                    clusterImageList={nodeImageList}
                     namespaceList={namespaceList[terminalclusterData.name]}
                 />
             )}

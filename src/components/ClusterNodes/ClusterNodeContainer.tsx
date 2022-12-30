@@ -18,7 +18,7 @@ export default function ClusterNodeContainer() {
         Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),getUserRole(),clusterNamespaceList()]).then(([hostUrlConfig, userRole, namespaceList]) => {
             if(hostUrlConfig.result) {
                 const imageValue: string = hostUrlConfig.result.value || ''
-                setImageList(imageValue.split(','))
+                setImageList(JSON.parse(imageValue))
             }
             if(userRole.result) {
                 setSuperAdmin(userRole.result?.superAdmin)

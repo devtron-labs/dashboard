@@ -1014,16 +1014,33 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
     }, {})
 }
 
+export const regexImageList = (imageList,serverVersion) => {
+
+    let nodeImageList = imageList.find((imageObj) => {
+        let regex = new RegExp(imageObj.groupRegex)
+        return regex.test(serverVersion)
+    })
+    
+    return nodeImageList.imageList
+}
+
 export const convertToOptionsList = (
     arr: any[],
-    customObjToPickLabel?: Record<string, any>,
-    labelKey?: string,
-    valueKey?: string,
+    customObjToPickLabel?: boolean,
 ): OptionType[] => {
+    
     return arr.map((ele) => {
         return {
-            label: customObjToPickLabel ? customObjToPickLabel[ele]?.label : labelKey ? ele[labelKey] : ele,
-            value: valueKey ? ele[valueKey] : ele,
+            label: customObjToPickLabel ? ele.name : ele,
+            value: customObjToPickLabel ? ele.image : ele,
         }
     })
+}
+
+export const clusterImageTippy = (nodeImageList,selectedImage): string => {
+    let nodeImageObj = nodeImageList.find((obj) => {
+        return obj.image === selectedImage
+    })
+    return nodeImageObj.description || ''
+    
 }
