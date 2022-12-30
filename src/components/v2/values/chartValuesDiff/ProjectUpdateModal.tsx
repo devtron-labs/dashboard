@@ -38,7 +38,7 @@ export default function ProjectUpdateModal({
     const renderAboutModalInfoHeader = (): JSX.Element => {
         return (
             <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
-                <h2 className="fs-16 cn-9 fw-6 m-0"> Change Project </h2>
+                <h2 className="fs-16 cn-9 fw-6 m-0"> Change project </h2>
                 <Close className="icon-dim-20 cursor" onClick={onClose} />
             </div>
         )

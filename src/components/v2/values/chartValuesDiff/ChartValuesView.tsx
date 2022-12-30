@@ -76,6 +76,7 @@ import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifes
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
+import '../../../../components/app/details/appOverview/AppOverview.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import { AppMetaInfo } from '../../../app/types'
@@ -1265,14 +1266,16 @@ function ChartValuesView({
                         )}
 
                         {!isDeployChartView && showUpdateAppModal && (
-                            <ProjectUpdateModal
-                                appId={appId}
-                                appMetaInfo={appMetaInfo}
-                                installedAppId={commonState.installedConfig?.installedAppId}
-                                onClose={toggleChangeProjectModal}
-                                projectList={commonState.projects}
-                                getAppMetaInfoRes={getHelmAppMetaInfoRes}
-                            />
+                            <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
+                                <ProjectUpdateModal
+                                    appId={appId}
+                                    appMetaInfo={appMetaInfo}
+                                    installedAppId={commonState.installedConfig?.installedAppId}
+                                    onClose={toggleChangeProjectModal}
+                                    projectList={commonState.projects}
+                                    getAppMetaInfoRes={getHelmAppMetaInfoRes}
+                                />
+                            </div>
                         )}
 
                         {isDeployChartView && (
