@@ -711,10 +711,10 @@ const HistoryLogs: React.FC<{
                         )}
                         <Redirect
                             to={
-                                triggerDetails.status.toLowerCase() === 'succeeded'
-                                    ? `${path}/artifacts`
-                                    : triggerDetails.stage === 'DEPLOY'
+                                triggerDetails.stage === 'DEPLOY'
                                     ? `${path}/deployment-steps`
+                                    : triggerDetails.status.toLowerCase() === 'succeeded'
+                                    ? `${path}/artifacts`
                                     : `${path}/logs`
                             }
                         />
