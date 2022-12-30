@@ -120,7 +120,7 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                         <div className="flex dc__height-inherit mh-300">
                             <div className="dc__align-center">
                                 <InfoIcon className="icon-dim-20" />
-                                <div>No resources available</div>
+                                <div>Checking resource status</div>
                             </div>
                         </div>
                     )}
