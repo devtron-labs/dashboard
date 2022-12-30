@@ -8,7 +8,7 @@ import {
     handleUTCTime,
     Pagination,
     Progressing,
-    regexImageList,
+    filterImageList,
     showError,
     useBreadcrumb,
 } from '../common'
@@ -636,7 +636,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const openTerminal = (clusterData): void => {
         setSelectedNode(clusterData.name)
-        setNodeImageList(regexImageList(imageList,clusterData.k8sVersion))
+        setNodeImageList(filterImageList(imageList,clusterData.k8sVersion))
         setTerminal(true)
     }
 

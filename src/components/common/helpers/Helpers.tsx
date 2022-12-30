@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
 import { toastAccessDenied } from '../ToastBody';
 import { OptionType } from '../../app/types';
+import { ClusterImageList } from '../../ClusterNodes/types';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -1014,7 +1015,7 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
     }, {})
 }
 
-export const regexImageList = (imageList,serverVersion) => {
+export const filterImageList = (imageList,serverVersion): ClusterImageList[] => {
 
     let nodeImageList = imageList.find((imageObj) => {
         let regex = new RegExp(imageObj.groupRegex)
@@ -1026,21 +1027,21 @@ export const regexImageList = (imageList,serverVersion) => {
 
 export const convertToOptionsList = (
     arr: any[],
-    customObjToPickLabel?: boolean,
+    customLabel?: string,
+    customValue?: string
 ): OptionType[] => {
     
     return arr.map((ele) => {
         return {
-            label: customObjToPickLabel ? ele.name : ele,
-            value: customObjToPickLabel ? ele.image : ele,
+            label: customLabel ? ele[customLabel] : ele,
+            value: customValue ? ele[customValue] : ele,
         }
     })
 }
 
-export const clusterImageTippy = (nodeImageList,selectedImage): string => {
+export const clusterImageDescription = (nodeImageList,selectedImage): string => {
     let nodeImageObj = nodeImageList.find((obj) => {
         return obj.image === selectedImage
     })
-    return nodeImageObj.description || ''
-    
+    return nodeImageObj?.description || ''
 }

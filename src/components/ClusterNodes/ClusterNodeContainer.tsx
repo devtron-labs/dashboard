@@ -8,16 +8,17 @@ import { getHostURLConfiguration } from '../../services/service'
 import { getUserRole } from '../userGroups/userGroup.service'
 import { showError } from '../common'
 import { clusterNamespaceList } from './clusterNodes.service'
+import { ClusterImageList } from './types'
 
 export default function ClusterNodeContainer() {
-    const [imageList,setImageList] = useState<string[]>(null)
+    const [imageList,setImageList] = useState<ClusterImageList[]>(null)
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>()
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     
     useEffect(() => {
         Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),getUserRole(),clusterNamespaceList()]).then(([hostUrlConfig, userRole, namespaceList]) => {
             if(hostUrlConfig.result) {
-                const imageValue: string = hostUrlConfig.result.value || ''
+                const imageValue: string = hostUrlConfig.result.value
                 setImageList(JSON.parse(imageValue))
             }
             if(userRole.result) {

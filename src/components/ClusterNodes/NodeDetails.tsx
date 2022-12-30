@@ -9,7 +9,7 @@ import {
     showError,
     useBreadcrumb,
     ToastBodyWithButton,
-    regexImageList,
+    filterImageList,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -80,7 +80,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
-                    setNodeImageList(regexImageList(imageList,response.result.k8sVersion))
+                    setNodeImageList(filterImageList(imageList,response.result.k8sVersion))
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources

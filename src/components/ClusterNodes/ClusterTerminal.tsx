@@ -21,7 +21,7 @@ import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2
 import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
-import { clusterImageTippy, convertToOptionsList, showError } from '../common'
+import { clusterImageDescription, convertToOptionsList, showError } from '../common'
 import { ServerErrors } from '../../modals/commonTypes'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
@@ -29,7 +29,7 @@ import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
-import { clusterSelectStyle, CLUSTER_STATUS } from './constants'
+import { clusterSelectStyle, CLUSTER_STATUS, IMAGE_LIST } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
 
 export default function ClusterTerminal({
@@ -46,7 +46,7 @@ export default function ClusterTerminal({
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const clusterNodeList = convertToOptionsList(nodeList)
-    const imageList = convertToOptionsList(clusterImageList, true)
+    const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
     const [selectedNodeName, setSelectedNodeName] = useState(node ? { label: node, value: node } : clusterNodeList[0])
@@ -350,7 +350,7 @@ export default function ClusterTerminal({
     }
 
     const imageOptionComponent = (props) => {
-        let tippyText = clusterImageTippy(clusterImageList, props.data.value)
+        let tippyText = clusterImageDescription(clusterImageList, props.data.value)
 
         return (
             <Option

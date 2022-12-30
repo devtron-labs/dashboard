@@ -147,3 +147,9 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
 ]
+
+export const IMAGE_LIST = {
+    NAME: 'name',
+    IMAGE: 'image',
+    DESCRIPTION: 'description'
+}
