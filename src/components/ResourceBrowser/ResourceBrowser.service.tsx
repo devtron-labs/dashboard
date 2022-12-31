@@ -1,31 +1,20 @@
 import { Routes } from '../../config'
-import { get } from '../../services/api'
+import { get, post } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
-import { ResourceListListResponse } from './Types'
+import { APIResourceResponse, resourceListPayloadType, ResourceListResponse } from './Types'
 
-export const getClusterList = (): Promise<ResourceListListResponse> => {
+export const getClusterList = (): Promise<ResourceListResponse> => {
     return get(Routes.MANIFEST)
 }
 
-export const NamespaceListByClusterId = (clusterId: string): Promise<ResponseType> => {
-  return get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
+export const namespaceListByClusterId = (clusterId: string): Promise<ResponseType> => {
+    return get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
 }
 
-export const getResourceList = (clusterId: string): Promise<ResourceListListResponse> => {
+export const getResourceList = (resourceListPayload: resourceListPayloadType): Promise<ResourceListResponse> => {
+    return post(Routes.K8S_RESOURCE_LIST, resourceListPayload)
+}
+
+export const getResourceGroupList = (clusterId: string): Promise<APIResourceResponse> => {
     return get(`${Routes.API_RESOURCE}/${clusterId}`)
-    return Promise.resolve({
-        code: 200,
-        status: 'true',
-        result: [
-            {
-                name: 'name',
-                status: 'status',
-                namespace: 'namespace',
-                age: 'age',
-                ready: 'ready',
-                restarts: 'restarts',
-            },
-        ],
-    })
 }
-

@@ -9,8 +9,15 @@ import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-m
 import { PopupMenu } from '../../common'
 import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceDetail } from '../Types'
+import { Nodes } from '../../app/types'
 
-export default function ResourceBrowserActionMenu({ resourceData }: { resourceData: ResourceDetail }) {
+export default function ResourceBrowserActionMenu({
+    resourceData,
+    kind,
+}: {
+    resourceData: ResourceDetail
+    kind: Nodes
+}) {
     const history = useHistory()
     const { url } = useRouteMatch()
 
@@ -34,16 +41,18 @@ export default function ResourceBrowserActionMenu({ resourceData }: { resourceDa
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             {RESOURCE_ACTION_MENU.Events}
                         </span>
-                        <>
-                            <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
-                                <LogAnalyzerIcon className="icon-dim-16 mr-8" />
-                                {RESOURCE_ACTION_MENU.logs}
-                            </span>
-                            <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
-                                <TerminalIcon className="icon-dim-16 mr-8" />
-                                {RESOURCE_ACTION_MENU.terminal}
-                            </span>
-                        </>
+                        {kind === Nodes.Pod.toLowerCase() && (
+                            <>
+                                <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
+                                    <LogAnalyzerIcon className="icon-dim-16 mr-8" />
+                                    {RESOURCE_ACTION_MENU.logs}
+                                </span>
+                                <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
+                                    <TerminalIcon className="icon-dim-16 mr-8" />
+                                    {RESOURCE_ACTION_MENU.terminal}
+                                </span>
+                            </>
+                        )}
                         <span className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50" onClick={() => {}}>
                             <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
                             {RESOURCE_ACTION_MENU.delete}

@@ -1,54 +1,92 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
-import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { convertToOptionsList, handleUTCTime, Progressing, showError } from '../../common'
+import { useHistory, useParams } from 'react-router'
+import { Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
-import ResourceListEmptyState from './ResourceListEmptyState'
-import '../ResourceBrowser.scss'
-import { ResourceDetail } from '../Types'
-import { getResourceList, NamespaceListByClusterId } from '../ResourceBrowser.service'
-import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import ReactSelect from 'react-select'
-import { Option } from '../../v2/common/ReactSelectCustomization'
-import { getClusterListMinWithoutAuth } from '../../../services/service'
+import { GVKType, K8SObjectType, ResourceDetail, resourceListPayloadType } from '../Types'
+import { getResourceGroupList, getResourceList } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
-import { clusterSelectStyle } from '../Constants'
+import { ALL_NAMESPACE_OPTION } from '../Constants'
 import { URLS } from '../../../config'
+import { getAggregator } from '../../app/details/appDetails/utils'
+import { Sidebar } from './Sidebar'
+import { K8SResourceList } from './K8SResourceList'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
-    const match = useRouteMatch()
+    const { clusterId, namespace, kind, node } = useParams<{
+        clusterId: string
+        namespace: string
+        kind: string
+        node: string
+    }>()
+    const { replace } = useHistory()
     const [loader, setLoader] = useState(false)
+    const [resourceListLoader, setResourceListLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
-    const [searchText, setSearchText] = useState('')
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
-    const [searchApplied, setSearchApplied] = useState(false)
+    const [k8SObjectList, setK8SObjectList] = useState<K8SObjectType[]>([])
+    const [k8SObjectListIndexMap, setK8SObjectListIndexMap] = useState<Map<string, number>>()
     const [resourceList, setResourceList] = useState<ResourceDetail[]>([])
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetail[]>([])
-    const [namespaceList, setNameSpaceList] = useState<Record<string, string[]>>()
-    const [clusterList, setClusterList] = useState<OptionType[]>()
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const { push } = useHistory()
-    const location = useLocation()
+    const [selectedResource, setSelectedResource] = useState(kind || '')
+    const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
 
-    const getData = async (): Promise<void> => {
+    useEffect(() => {
+        getSidebarData()
+    }, [])
+
+    useEffect(() => {
+        if (selectedGVK) {
+            getResourceListData()
+        }
+    }, [selectedGVK])
+
+    const getSidebarData = async (): Promise<void> => {
         try {
             setLoader(true)
-            const { result } = await getResourceList('1')
-            setResourceList(result)
-            setFilteredResourceList(result)
-            setNoResults(result.length === 0)
-            setLastDataSync(!lastDataSync)
+            const { result: result1 } = await getResourceGroupList('1')
+            const _k8SObjectListIndexMap = new Map<string, number>()
+            const _k8SObjectList = []
+            let _selectedGVK
+            for (let index = 0; index < result1.length; index++) {
+                const element = result1[index]
+                const groupParent = element.gvk.Group.endsWith('.k8s.io') ? 'Others' : getAggregator(element.gvk.Kind)
+                const k8SObjectIndex = _k8SObjectListIndexMap.get(groupParent)
+                if (element.gvk.Kind.toLowerCase() === selectedResource) {
+                    _selectedGVK = element.gvk
+                }
+                if (k8SObjectIndex === undefined) {
+                    _k8SObjectList.push({
+                        name: groupParent,
+                        isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
+                        child: [element.gvk],
+                    })
+                    _k8SObjectListIndexMap.set(groupParent, _k8SObjectList.length - 1)
+                } else {
+                    if (
+                        !_k8SObjectList[k8SObjectIndex].isExpanded &&
+                        element.gvk.Kind.toLowerCase() === selectedResource
+                    ) {
+                        _k8SObjectList[k8SObjectIndex].isExpanded = true
+                    }
+                    _k8SObjectList[k8SObjectIndex].child.push(element.gvk)
+                }
+            }
+            if (!selectedResource) {
+                _k8SObjectList[0].isExpanded = true
+                const _selectedResource = _k8SObjectList[0].child[0].Kind.toLowerCase()
+                setSelectedResource(_selectedResource)
+                _selectedGVK = _k8SObjectList[0].child[0]
+                replace({
+                    pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+                        namespace || ALL_NAMESPACE_OPTION.value
+                    }/${_selectedResource}`,
+                })
+            }
+            setK8SObjectList(_k8SObjectList)
+            setK8SObjectListIndexMap(_k8SObjectListIndexMap)
+            setSelectedGVK(_selectedGVK)
         } catch (err) {
             showError(err)
         } finally {
@@ -56,178 +94,36 @@ export default function ResourceList() {
         }
     }
 
-    const getClusterList = async () => {
+    const getResourceListData = async (): Promise<void> => {
         try {
-            const { result } = await getClusterListMinWithoutAuth()
-            setClusterList(convertToOptionsList(result, null, 'cluster_name', 'id'))
+            setResourceListLoader(true)
+            const resourceListPayload: resourceListPayloadType = {
+                clusterId: Number(clusterId),
+                k8sRequest: {
+                    resourceIdentifier: {
+                        groupVersionKind: selectedGVK,
+                    },
+                },
+            }
+            if (namespace && namespace !== ALL_NAMESPACE_OPTION.value) {
+                resourceListPayload.k8sRequest.resourceIdentifier.namespace = namespace
+            }
+            const { result } = await getResourceList(resourceListPayload)
+            setResourceList(result)
+            setFilteredResourceList(result)
+            setNoResults(result.length === 0)
         } catch (err) {
             showError(err)
+        } finally {
+            setResourceListLoader(false)
         }
     }
 
-    const getNamespaceList = async (clusterId: string) => {
-        try {
-            const { result } = await NamespaceListByClusterId(clusterId)
-            setNamespaceOptions(convertToOptionsList(result))
-        } catch (err) {
-            showError(err)
-        }
-    }
-
-    useEffect(() => {
-        getData()
-        getClusterList()
-    }, [])
-
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
-
-    useEffect(() => {
-      console.log(location)
-  }, [location.search])
-
-    const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = resourceList.filter(
-            (resource) =>
-                resource.name.indexOf(_searchText) >= 0 ||
-                resource.namespace.indexOf(_searchText) >= 0 ||
-                resource.status.indexOf(_searchText) >= 0,
-        )
-        setFilteredResourceList(_filteredData)
-    }
-
-    const handleResourceClick = (ev, resourceData: ResourceDetail): void => {}
-
-    const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('')
-            setSearchApplied(false)
-        }
-        setSearchText('')
-    }
-
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        }
-    }
-
-    const handleOnChangeSearchText = (event): void => {
-        setSearchText(event.target.value)
-    }
-
-    const onChangeCluster = (selected): void => {
-        setSelectedCluster(selected)
-        getNamespaceList(selected.value)
-        push({
-          pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}`,
-      })
-    }
-
-    const onChangeNamespace = (selected): void => {
-        setSelectedNamespace(selected)
-        push({
-          pathname: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selected.value}`,
-      })
-    }
-
-    const renderSearch = (): JSX.Element => {
-        return (
-            <div className="flexbox dc__content-space pt-16 pr-20 pb-16 pl-20">
-                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                    <Search className="search__icon icon-dim-18" />
-                    <input
-                        type="text"
-                        placeholder="Search clusters"
-                        value={searchText}
-                        className="search__input"
-                        onChange={handleOnChangeSearchText}
-                        onKeyDown={handleFilterKeyPress}
-                    />
-                    {searchApplied && (
-                        <button className="search__clear-button" type="button" onClick={clearSearch}>
-                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                        </button>
-                    )}
-                </div>
-                <div className="flex">
-                    <ReactSelect
-                        placeholder="Select Containers"
-                        options={clusterList}
-                        value={selectedCluster}
-                        onChange={onChangeCluster}
-                        styles={clusterSelectStyle}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                    />
-                    <ReactSelect
-                        placeholder="Select Containers"
-                        className="ml-8"
-                        options={namespaceOptions}
-                        value={selectedNamespace}
-                        onChange={onChangeNamespace}
-                        styles={clusterSelectStyle}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                    />
-                </div>
-            </div>
-        )
-    }
-
-    const renderResourceRow = (resourceData: ResourceDetail): JSX.Element => {
-        return (
-            <div className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
-                <div className="cb-5 dc__ellipsis-right">
-                    <NavLink
-                        to={`${match.url}/${resourceData.name}`}
-                        onClick={(e) => {
-                            handleResourceClick(e, resourceData)
-                        }}
-                    >
-                        {resourceData.name}
-                    </NavLink>
-                </div>
-                <div>{resourceData.status}</div>
-                <div>{resourceData.namespace}</div>
-                <div>{resourceData.age}</div>
-                <div>{resourceData.ready}</div>
-                <div>{resourceData.restarts}</div>
-                <ResourceBrowserActionMenu resourceData={resourceData} />
-            </div>
-        )
-    }
-
-    const renderEmptyPage = (): JSX.Element => {
-        if (noResults) {
-            return (
-                <ResourceListEmptyState subTitle="We could not find any DaemonSets. Try selecting a different cluster or namespace." />
-            )
-        } else {
-            return (
-                <ResourceListEmptyState
-                    title="No matching results"
-                    subTitle="We could not find any matching Deployments."
-                    actionHandler={clearSearch}
-                />
-            )
-        }
+    const handleGroupHeadingClick = (e): void => {
+        const _k8SObjectList = [...k8SObjectList]
+        const groupIndex = k8SObjectListIndexMap.get(e.currentTarget.dataset.groupName)
+        _k8SObjectList[groupIndex].isExpanded = !_k8SObjectList[groupIndex].isExpanded
+        setK8SObjectList(_k8SObjectList)
     }
 
     if (loader) {
@@ -235,44 +131,29 @@ export default function ResourceList() {
     }
 
     return (
-        <div>
+        <div className="bcn-0">
             <PageHeader headerName="Kubernetes object browser" />
-            <div>
-                <div>Sidebar</div>
-
-                <div
-                    className={`resource-list-container bcn-0 ${
-                        filteredResourceList.length === 0 ? 'no-result-container' : ''
-                    }`}
-                >
-                    <div className="fs-13">
-                        {lastDataSyncTimeString && (
-                            <span>
-                                {lastDataSyncTimeString}{' '}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
-                                    Refresh
-                                </button>
-                            </span>
-                        )}
-                    </div>
-                    {renderSearch()}
-                    {filteredResourceList.length === 0 ? (
-                        renderEmptyPage()
-                    ) : (
-                        <div className="dc__overflow-scroll" style={{ height: `calc('100vh'} - 125px)` }}>
-                            <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                                <div>Name</div>
-                                <div>STATUS</div>
-                                <div>NAMESPACE</div>
-                                <div>Ready</div>
-                                <div>RESTARTS</div>
-                                <div>AGE</div>
-                                <div></div>
-                            </div>
-                            {filteredResourceList?.map((clusterData) => renderResourceRow(clusterData))}
-                        </div>
-                    )}
-                </div>
+            <div className="resource-browser-container">
+                <Sidebar
+                    k8SObjectList={k8SObjectList}
+                    clusterId={clusterId}
+                    namespace={selectedNamespace?.value}
+                    selectedResource={selectedResource}
+                    setSelectedResource={setSelectedResource}
+                    handleGroupHeadingClick={handleGroupHeadingClick}
+                    setSelectedGVK={setSelectedGVK}
+                />
+                <K8SResourceList
+                    resourceList={resourceList}
+                    filteredResourceList={filteredResourceList}
+                    setFilteredResourceList={setFilteredResourceList}
+                    noResults={noResults}
+                    selectedCluster={selectedCluster}
+                    setSelectedCluster={setSelectedCluster}
+                    selectedNamespace={selectedNamespace}
+                    setSelectedNamespace={setSelectedNamespace}
+                    resourceListLoader={resourceListLoader}
+                />
             </div>
         </div>
     )

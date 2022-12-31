@@ -1,4 +1,16 @@
-.resource-list-container {
+.resource-browser-container{
+  display: grid;
+  grid-template-columns: 220px auto;
+  column-gap: 16px;
+  .k8s-object-container{
+    height: calc(100vh - 48px);
+    overflow: auto;
+    .resource-tree-object:hover {
+      background-color: var(--N50);
+      color: var(--N900);
+  }
+  }
+  .resource-list-container {
     &.no-result-container {
         height: calc(100vh - 48px);
         overflow: hidden;
@@ -17,4 +29,5 @@
             width: 12px;
         }
     }
+}
 }
