@@ -619,7 +619,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     {column.value === 'status' && nodeData['unschedulable'] ? (
                                         <span className="flex left">
                                             <span>{nodeData[column.value]}</span>
-                                            <span className="dc__bullet mr-4 ml-4 mw-4"></span>
+                                            <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
                                             <span className="cr-5"> SchedulingDisabled</span>
                                         </span>
                                     ) : (
