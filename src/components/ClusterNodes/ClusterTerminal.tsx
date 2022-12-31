@@ -350,7 +350,7 @@ export default function ClusterTerminal({
     }
 
     const imageOptionComponent = (props) => {
-        let tippyText = clusterImageDescription(clusterImageList, props.data.value)
+        const tippyText = clusterImageDescription(clusterImageList, props.data.value)
 
         return (
             <Option

@@ -29,6 +29,7 @@ import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
+    ImageList,
     NodeDetail,
     NodeDetailResponse,
     PodType,
@@ -68,7 +69,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
-    const [nodeImageList, setNodeImageList] = useState([])
+    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const toastId = useRef(null)
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)

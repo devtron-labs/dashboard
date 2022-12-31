@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
 import { toastAccessDenied } from '../ToastBody';
 import { OptionType } from '../../app/types';
-import { ClusterImageList } from '../../ClusterNodes/types';
+import { ClusterImageList, ImageList } from '../../ClusterNodes/types';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -1015,9 +1015,9 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
     }, {})
 }
 
-export const filterImageList = (imageList, serverVersion): ClusterImageList[] => {
+export const filterImageList = (imageList: ClusterImageList[], serverVersion: string): ImageList[] => {
     let nodeImageList = imageList.find((imageObj) => {
-        let regex = new RegExp(imageObj.groupRegex)
+        const regex = new RegExp(imageObj.groupRegex)
         return regex.test(serverVersion)
     })
 
@@ -1044,7 +1044,7 @@ export const convertToOptionsList = (
     })
 }
 
-export const clusterImageDescription = (nodeImageList,selectedImage): string => {
+export const clusterImageDescription = (nodeImageList: ImageList[],selectedImage: string): string => {
     const nodeImageObj = nodeImageList.find((obj) => {
         return obj.image === selectedImage
     })
