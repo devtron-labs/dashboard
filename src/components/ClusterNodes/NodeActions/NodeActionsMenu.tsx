@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
+import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
@@ -32,35 +33,35 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     }
 
     const showCordonNodeModal = (): void => {
-      setCordonNodeDialog(true)
+        setCordonNodeDialog(true)
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
-      setCordonNodeDialog(false)
+        setCordonNodeDialog(false)
         if (refreshData) {
-          getNodeListData()
+            getNodeListData()
         }
     }
 
     const showDrainNodeModal = (): void => {
-      setDrainNodeDialog(true)
+        setDrainNodeDialog(true)
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
-      setDrainNodeDialog(false)
+        setDrainNodeDialog(false)
         if (refreshData) {
-          getNodeListData()
+            getNodeListData()
         }
     }
 
     const showDeleteNodeModal = (): void => {
-      setDeleteNodeDialog(true)
+        setDeleteNodeDialog(true)
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
-      setDeleteNodeDialog(false)
+        setDeleteNodeDialog(false)
         if (refreshData) {
-          getNodeListData()
+            getNodeListData()
         }
     }
 
@@ -90,19 +91,20 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
                             <TerminalIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.terminal}
                         </span>
-                        <span
-                            className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
-                            onClick={showCordonNodeModal}
-                        >
-                            <CordonIcon className="icon-dim-16 mr-8" />
-                            {nodeData.unschedulable
-                                ? CLUSTER_NODE_ACTIONS_LABELS.uncordon
-                                : CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showCordonNodeModal}>
+                            {nodeData.unschedulable ? (
+                                <>
+                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7 dc__stroke-width-4" />
+                                    {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                                </>
+                            ) : (
+                                <>
+                                    <CordonIcon className="icon-dim-16 mr-8" />
+                                    {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                                </>
+                            )}
                         </span>
-                        <span
-                            className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50"
-                            onClick={showDrainNodeModal}
-                        >
+                        <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={showDrainNodeModal}>
                             <DrainIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.drain}
                         </span>

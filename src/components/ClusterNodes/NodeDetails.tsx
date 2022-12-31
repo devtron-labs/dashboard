@@ -20,7 +20,7 @@ import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
-import {ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -738,27 +738,34 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
                     <div className="fw-6">
                         <div className="fs-16 cn-9">{nodeDetail.name}</div>
-                        <div className="flexbox">
-                            <span className={`fs-13 mr-16 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
+                        <div className="flex left mt-4">
+                            <span className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
                                 {nodeDetail.status}
                             </span>
-                            <span className="cn-2">|</span>
-                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showCordonNodeModal}>
-
-                                {nodeDetail.unschedulable
-                                ? <><UncordonIcon className="icon-dim-14 mt-3 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.uncordon}</>
-                                : <><CordonIcon className="icon-dim-14 mt-3 mr-5 scb-5" />{CLUSTER_NODE_ACTIONS_LABELS.cordon}</>}
+                            <span className="cn-2 mr-16 ml-16">|</span>
+                            <span className="flex left fw-6 cb-5 fs-13 cursor" onClick={showCordonNodeModal}>
+                                {nodeDetail.unschedulable ? (
+                                    <>
+                                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                                    </>
+                                ) : (
+                                    <>
+                                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
+                                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                                    </>
+                                )}
                             </span>
-                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showDrainNodeModal}>
-                                <DrainIcon className="icon-dim-14 mt-3 mr-5 scb-5" />
+                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showDrainNodeModal}>
+                                <DrainIcon className="icon-dim-16 mr-5 scb-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.drain}
                             </span>
-                            <span className="flexbox fw-6 cb-5 ml-16 fs-13 pointer" onClick={showEditTaintsModal}>
-                                <EditTaintsIcon className="icon-dim-14 mt-3 mr-5 scb-5" />
+                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showEditTaintsModal}>
+                                <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.taints}
                             </span>
-                            <span className="flexbox fw-6 cr-5 ml-16 fs-13 pointer" onClick={showDeleteNodeModal}>
-                                <DeleteIcon className="icon-dim-14 mt-3 mr-5 scr-5" />
+                            <span className="flex left fw-6 cr-5 ml-16 fs-13 cursor" onClick={showDeleteNodeModal}>
+                                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.delete}
                             </span>
                         </div>
