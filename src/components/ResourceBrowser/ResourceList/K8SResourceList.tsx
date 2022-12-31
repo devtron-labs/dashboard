@@ -8,7 +8,7 @@ import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ALL_NAMESPACE_OPTION, CLUSTER_SELECT_STYLE } from '../Constants'
-import { OptionType } from '../../app/types'
+import { Nodes, OptionType } from '../../app/types'
 import { ResourceDetail } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
@@ -29,7 +29,7 @@ export function K8SResourceList({
     const { push } = useHistory()
 
     const match = useRouteMatch()
-    const { clusterId, namespace } = useParams<{
+    const { clusterId, namespace, kind } = useParams<{
         clusterId: string
         namespace: string
         kind: string
@@ -186,7 +186,7 @@ export function K8SResourceList({
                 <div>{resourceData.ready}</div>
                 <div>{resourceData.restarts}</div>
                 <div>{getElapsedTime(new Date(resourceData.age))}</div>
-                <ResourceBrowserActionMenu resourceData={resourceData} />
+                <ResourceBrowserActionMenu resourceData={resourceData} kind={kind as Nodes} />
             </div>
         )
     }
