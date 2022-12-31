@@ -56,6 +56,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         const _taintList = [...taintList]
         _taintList[index].effect = EFFECT_TYPE[selectedValue.label]
         setTaintList(_taintList)
+        validateTaintList(_taintList)
     }
 
     const validateTaintList = (_taintList: TaintType[], ignoreNewlyAdded?: boolean): TaintErrorObj => {
@@ -65,21 +66,19 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
             const element = _taintList[index]
             const uniqueKey = `${element.key}-${element.effect}`
             const validateTaintValue = validationRules.taintValue(element.value)
+            let validateTaintKey = validationRules.taintKey(element.key)
             if (uniqueTaintMap.get(uniqueKey)) {
-                _errorObj.taintErrorList.push({
-                    key: { isValid: false, message: 'Duplicate taint key' },
-                    value: validateTaintValue,
-                })
-                _errorObj.isValid = false
+                if (validateTaintKey.isValid) {
+                    validateTaintKey = { isValid: false, message: 'Duplicate taint key' }
+                }
             } else {
                 uniqueTaintMap.set(uniqueKey, true)
-                const validateTaintKey = validationRules.taintKey(element.key)
-                _errorObj.taintErrorList.push({
-                    key: validateTaintKey,
-                    value: validateTaintValue,
-                })
-                _errorObj.isValid = _errorObj.isValid && validateTaintKey.isValid && validateTaintValue.isValid
             }
+            _errorObj.taintErrorList.push({
+                key: validateTaintKey,
+                value: validateTaintValue,
+            })
+            _errorObj.isValid = _errorObj.isValid && validateTaintKey.isValid && validateTaintValue.isValid
         }
         if (ignoreNewlyAdded) {
             _errorObj.taintErrorList.splice(-1, 1, {

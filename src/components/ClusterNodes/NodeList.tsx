@@ -75,6 +75,13 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
+            /*
+          65 is width of left nav
+          180 is the diff of node column
+          80 is the diff of status column
+          116 is standard with of every column for calculations
+          */
+
             const appliedColumnDerivedWidth = appliedColumns.length * 116 + 180 + 65
             const windowWidth = window.innerWidth
             let clientWidth = 0
@@ -520,7 +527,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
-                }`}
+                } ${column.value === 'status' && 'w-180'}`}
                 onClick={() => {
                     column.isSortingAllowed && handleSortClick(column)
                 }}
@@ -589,8 +596,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         </div>
                     ) : (
                         <div
-                            className={`w-100-px dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
-                                column.value === 'status' ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7' : ''
+                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
+                                column.value === 'status'
+                                    ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
+                                    : 'w-100-px'
                             }`}
                         >
                             {column.value === 'errorCount' ? (
@@ -607,7 +616,15 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     condition={column.value.indexOf('.usagePercentage') > 0}
                                     wrap={(children) => renderPercentageTippy(nodeData, column, children)}
                                 >
-                                    {nodeData[column.value]}
+                                    {column.value === 'status' && nodeData['unschedulable'] ? (
+                                        <span className="flex left">
+                                            <span>{nodeData[column.value]}</span>
+                                            <span className="dc__bullet mr-4 ml-4 mw-4"></span>
+                                            <span className="cr-5"> SchedulingDisabled</span>
+                                        </span>
+                                    ) : (
+                                        nodeData[column.value]
+                                    )}
                                 </ConditionalWrap>
                             ) : (
                                 '-'
