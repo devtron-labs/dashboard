@@ -352,6 +352,10 @@ export interface LogSearchTermType {
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>
 }
 
+export interface NodeDetailPropsType extends LogSearchTermType{
+    isResourceBrowserView?: boolean
+}
+
 export interface AppStatusDetailType {
     close: () => void
     appStreamData: any
@@ -370,4 +374,21 @@ export interface StatusFilterButtonType {
 export interface SyncErrorType {
     appStreamData: AppStreamData
     showApplicationDetailedModal?: () => void
+}
+
+export interface SelectedResourceType {
+    clusterId: number
+    group: string
+    version: string
+    kind: string
+    namespace: string
+    name: string
+    updatedManifest?: string
+}
+
+export interface EventsPropsType {
+    selectedTab: (_tabName: string, _url: string) => void
+    isDeleted: boolean
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
 }

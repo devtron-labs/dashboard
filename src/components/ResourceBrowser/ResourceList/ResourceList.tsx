@@ -10,6 +10,8 @@ import { URLS } from '../../../config'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
+import ResourceDetails from '../ResourceDetails/ResourceDetails'
+import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -31,6 +33,7 @@ export default function ResourceList() {
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
     const [selectedResource, setSelectedResource] = useState(kind || '')
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
+    const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
 
     useEffect(() => {
         getSidebarData()
@@ -133,6 +136,20 @@ export default function ResourceList() {
     return (
         <div className="bcn-0">
             <PageHeader headerName="Kubernetes object browser" />
+            <ResourceDetails
+                selectedResource={
+                    {
+                        clusterId: Number(clusterId),
+                        group: selectedGVK.Group,
+                        version: selectedGVK.Version,
+                        kind: kind,
+                        namespace: namespace === 'all' ? '' : namespace,
+                        name: node,
+                    } as SelectedResourceType
+                }
+                logSearchTerms={logSearchTerms}
+                setLogSearchTerms={setLogSearchTerms}
+            />
             <div className="resource-browser-container">
                 <Sidebar
                     k8SObjectList={k8SObjectList}

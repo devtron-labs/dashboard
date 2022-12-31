@@ -1,7 +1,7 @@
 import React from 'react'
-import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
-import { LabelTag, Nodes, OptionType } from '../app/types'
+import { Nodes } from '../app/types'
+import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 
 export interface ResourceDetail {
     name: string
@@ -30,18 +30,22 @@ export interface APIResourceResponse extends ResponseType {
     result?: ApiResourceType[]
 }
 
-export interface K8SObjectType{
-  name: string
-  isExpanded: boolean
-  child: GVKType[]
+export interface K8SObjectType {
+    name: string
+    isExpanded: boolean
+    child: GVKType[]
 }
 
-export interface resourceListPayloadType{
-  clusterId: number,
-  k8sRequest: {
-      resourceIdentifier: {
-          groupVersionKind: GVKType,
-          namespace?: string
-      },
-  },
+export interface resourceListPayloadType {
+    clusterId: number
+    k8sRequest: {
+        resourceIdentifier: {
+            groupVersionKind: GVKType
+            namespace?: string
+        }
+    }
+}
+
+export interface ResourceDetailsPropType extends LogSearchTermType {
+    selectedResource: SelectedResourceType
 }

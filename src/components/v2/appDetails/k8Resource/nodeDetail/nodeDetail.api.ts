@@ -1,6 +1,6 @@
 import { Routes } from '../../../../../config';
 import { get, post, put } from '../../../../../services/api';
-import { AppDetails, AppType, DeploymentAppType } from '../../appDetails.type';
+import { AppDetails, AppType, DeploymentAppType, SelectedResourceType } from '../../appDetails.type';
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`;
@@ -36,17 +36,47 @@ export const getDesiredManifestResource = (appDetails: AppDetails, podName: stri
     return post(Routes.DESIRED_MANIFEST, requestData);
 };
 
-export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
-    if (ad.appType === AppType.EXTERNAL_HELM_CHART || ad.deploymentAppType === DeploymentAppType.helm) {
-        return getEventHelmApps(ad, nodeName, nodeType)
+export const getEvent = (
+    ad: AppDetails,
+    nodeName: string,
+    nodeType: string,
+    isResourceBrowserView?: boolean,
+    selectedResource?: SelectedResourceType,
+) => {
+    if (
+        ad.appType === AppType.EXTERNAL_HELM_CHART ||
+        ad.deploymentAppType === DeploymentAppType.helm ||
+        isResourceBrowserView
+    ) {
+        return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
     }
-    const cn = ad.resourceTree.nodes.filter(
-        (node) => node.name === nodeName && node.kind.toLowerCase() === nodeType,
-    )[0];
+    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
     return get(
         `api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
-    );
-};
+    )
+}
+
+function createResourceRequestBody(selectedResource: SelectedResourceType) {
+    const requestBody = {
+        appId: '',
+        clusterId: 1,
+        k8sRequest: {
+            resourceIdentifier: {
+                groupVersionKind: {
+                    Group: selectedResource.group || '',
+                    Version: selectedResource.version || 'v1',
+                    Kind: selectedResource.kind,
+                },
+                namespace: selectedResource.namespace,
+                name: selectedResource.name,
+            },
+        },
+    }
+    if (selectedResource.updatedManifest) {
+        requestBody.k8sRequest['patch'] = selectedResource.updatedManifest
+    }
+    return requestBody
+}
 
 function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
     const selectedResource = appDetails.resourceTree.nodes.filter(
@@ -93,9 +123,17 @@ export const updateManifestResourceHelmApps = (
     return put(Routes.MANIFEST, requestData);
 };
 
-function getEventHelmApps(ad: AppDetails, nodeName: string, nodeType: string) {
-    const requestData = createBody(ad, nodeName, nodeType);
-    return post(Routes.EVENTS, requestData);
+function getEventHelmApps(
+    ad: AppDetails,
+    nodeName: string,
+    nodeType: string,
+    isResourceBrowserView?: boolean,
+    selectedResource?: SelectedResourceType,
+) {
+    const requestData = isResourceBrowserView
+        ? createResourceRequestBody(selectedResource)
+        : createBody(ad, nodeName, nodeType)
+    return post(Routes.EVENTS, requestData)
 }
 
 export const getLogsURL = (ad, nodeName, Host, container) => {
