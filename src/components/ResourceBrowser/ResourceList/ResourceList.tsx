@@ -33,8 +33,10 @@ export default function ResourceList() {
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
 
     useEffect(() => {
-        getSidebarData()
-    }, [])
+        if (clusterId) {
+            getSidebarData()
+        }
+    }, [clusterId])
 
     useEffect(() => {
         if (selectedGVK) {
@@ -128,6 +130,8 @@ export default function ResourceList() {
 
     if (loader) {
         return <Progressing pageLoader />
+    } else if (!clusterId) {
+        return null
     }
 
     return (
