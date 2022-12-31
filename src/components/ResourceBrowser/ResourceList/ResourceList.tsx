@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useParams, useLocation } from 'react-router'
-import { convertToOptionsList, Progressing, showError } from '../../common'
+import { convertToOptionsList, handleUTCTime, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { GVKType, K8SObjectType, ResourceDetail, resourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
@@ -10,9 +10,13 @@ import { URLS } from '../../../config'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
-import '../ResourceBrowser.scss'
 import { ClusterSelectionComponent } from './ClusterSelectionComponent'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
+import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
     const { clusterId, namespace, kind, node } = useParams<{
@@ -35,6 +39,8 @@ export default function ResourceList() {
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
     const [selectedResource, setSelectedResource] = useState(kind || '')
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
+    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
+    const [lastDataSync, setLastDataSync] = useState(false)
 
     useEffect(() => {
         getClusterList()
@@ -51,6 +57,17 @@ export default function ResourceList() {
             getResourceListData()
         }
     }, [selectedGVK, namespace])
+
+    useEffect(() => {
+        const _lastDataSyncTime = Date()
+        setLastDataSyncTimeString('Synced ' + handleUTCTime(_lastDataSyncTime, true))
+        const interval = setInterval(() => {
+            setLastDataSyncTimeString('Synced ' + handleUTCTime(_lastDataSyncTime, true))
+        }, 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }, [lastDataSync])
 
     const getClusterList = async () => {
         try {
@@ -74,7 +91,7 @@ export default function ResourceList() {
         try {
             const { result } = await namespaceListByClusterId(clusterId)
             const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result)]
-            setNamespaceOptions(convertToOptionsList(result))
+            setNamespaceOptions(_namespaceOptions)
             setSelectedNamespace(_namespaceOptions[0])
         } catch (err) {
             showError(err)
@@ -148,6 +165,7 @@ export default function ResourceList() {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace = namespace
             }
             const { result } = await getResourceList(resourceListPayload)
+            setLastDataSync(!lastDataSync)
             setResourceList(result)
             setFilteredResourceList(result)
             setNoResults(result.length === 0)
@@ -180,39 +198,74 @@ export default function ResourceList() {
         }
     }
 
+    const refreshData=():void=>{
+      setSelectedGVK(null)
+      getSidebarData()
+    }
+
     if (loader) {
         return <Progressing pageLoader />
     }
 
     return (
-        <div>
+        <div className="resource-browser-container">
             <PageHeader headerName="Kubernetes object browser" />
             {!selectedCluster?.value ? (
                 <ClusterSelectionComponent clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
             ) : (
-                <div className="resource-browser-container bcn-0">
-                    <Sidebar
-                        k8SObjectList={k8SObjectList}
-                        clusterId={clusterId}
-                        namespace={selectedNamespace?.value || namespace}
-                        selectedResource={selectedResource}
-                        setSelectedResource={setSelectedResource}
-                        handleGroupHeadingClick={handleGroupHeadingClick}
-                        setSelectedGVK={setSelectedGVK}
-                    />
-                    <K8SResourceList
-                        resourceList={resourceList}
-                        filteredResourceList={filteredResourceList}
-                        setFilteredResourceList={setFilteredResourceList}
-                        noResults={noResults}
-                        clusterOptions={clusterOptions}
-                        selectedCluster={selectedCluster}
-                        onChangeCluster={onChangeCluster}
-                        namespaceOptions={namespaceOptions}
-                        selectedNamespace={selectedNamespace}
-                        setSelectedNamespace={setSelectedNamespace}
-                        resourceListLoader={resourceListLoader}
-                    />
+                <div>
+                    <div className="h-44 flexbox dc__content-space pr-20 pl-20">
+                        <div className="resource-browser-tab flex left pt-10">
+                            <div className="flex fw-6 fs-12 h-32 pt-7 pr-12 pb-7 pl-12 active bcn-0">
+                                <CubeIcon className="icon-dim-16 scn-9 mr-8" />
+                                K8s Objects
+                            </div>
+                            <div className="flex fw-6 fs-12 h-32 pt-7 pr-12 pb-7 pl-12">
+                                Pod/...-qff78
+                                <CloseIcon className="icon-dim-16 ml-8" />
+                            </div>
+                        </div>
+                        <div className="fs-13 flex pt-12 pb-12">
+                            <div
+                                className="pointer cb-5 fw-6 fs-13 flexbox pr-12 dc__border-right"
+                                onClick={() => {}}
+                            >
+                                <Add className="icon-dim-16 scb-5 mr-5 mt-3" /> Create
+                            </div>
+                            {lastDataSyncTimeString && (
+                                <div className="ml-12 flex">
+                                    <span>
+                                        {lastDataSyncTimeString}
+                                    </span>
+                                    <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="resource-browser bcn-0">
+                        <Sidebar
+                            k8SObjectList={k8SObjectList}
+                            clusterId={clusterId}
+                            namespace={selectedNamespace?.value || namespace}
+                            selectedResource={selectedResource}
+                            setSelectedResource={setSelectedResource}
+                            handleGroupHeadingClick={handleGroupHeadingClick}
+                            setSelectedGVK={setSelectedGVK}
+                        />
+                        <K8SResourceList
+                            resourceList={resourceList}
+                            filteredResourceList={filteredResourceList}
+                            setFilteredResourceList={setFilteredResourceList}
+                            noResults={noResults}
+                            clusterOptions={clusterOptions}
+                            selectedCluster={selectedCluster}
+                            onChangeCluster={onChangeCluster}
+                            namespaceOptions={namespaceOptions}
+                            selectedNamespace={selectedNamespace}
+                            setSelectedNamespace={setSelectedNamespace}
+                            resourceListLoader={resourceListLoader}
+                        />
+                    </div>
                 </div>
             )}
         </div>

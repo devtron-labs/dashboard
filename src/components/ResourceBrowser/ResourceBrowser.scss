@@ -1,35 +1,45 @@
-.resource-browser-container{
-  display: grid;
-  grid-template-columns: 220px auto;
-  column-gap: 16px;
-  .k8s-object-container{
-    height: calc(100vh - 48px);
-    overflow: auto;
-    .resource-tree-object:hover {
-      background-color: var(--N50);
-      color: var(--N900);
-  }
-  }
-  .resource-list-container {
-    &.no-result-container {
-        height: calc(100vh - 48px);
-        overflow: hidden;
+.resource-browser-container {
+  .resource-browser-tab{
+    .active{
+      border: 1px solid var(--N200);
+      border-bottom: 1px solid #fff;
+      border-top-right-radius: 8px;
+      border-top-left-radius: 8px;
     }
-    .resource-list-row {
+  }
+    .resource-browser {
         display: grid;
-        grid-template-columns: minmax(300px, auto) repeat(2, 150px) repeat(2, 60px) 100px 30px;
+        grid-template-columns: 220px auto;
         column-gap: 16px;
-        .menu-icon {
-          path:nth-child(2) {
-              fill: var(--N600);
-          }
-      }
-        .resource-status {
-            height: 12px;
-            width: 12px;
+        .k8s-object-container {
+            height: calc(100vh - 48px);
+            overflow: auto;
+            .resource-tree-object:hover {
+                background-color: var(--N50);
+                color: var(--N900);
+            }
+        }
+        .resource-list-container {
+            &.no-result-container {
+                height: calc(100vh - 48px);
+                overflow: hidden;
+            }
+            .resource-list-row {
+                display: grid;
+                grid-template-columns: minmax(300px, auto) repeat(2, 150px) repeat(2, 60px) 100px 30px;
+                column-gap: 16px;
+                .menu-icon {
+                    path:nth-child(2) {
+                        fill: var(--N600);
+                    }
+                }
+                .resource-status {
+                    height: 12px;
+                    width: 12px;
+                }
+            }
+        }
+        .cluster-selection-container {
         }
     }
-}
-.cluster-selection-container{
-}
 }
