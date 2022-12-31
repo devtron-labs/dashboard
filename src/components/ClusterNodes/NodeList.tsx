@@ -76,13 +76,13 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     useEffect(() => {
         if (appliedColumns.length > 0) {
             /*
+          116 is standard with of every column for calculations
           65 is width of left nav
           180 is the diff of node column
           80 is the diff of status column
-          116 is standard with of every column for calculations
           */
 
-            const appliedColumnDerivedWidth = appliedColumns.length * 116 + 180 + 65
+            const appliedColumnDerivedWidth = appliedColumns.length * 116 + 65 + 180 + 80
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
