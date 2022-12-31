@@ -1045,7 +1045,7 @@ export const convertToOptionsList = (
 }
 
 export const clusterImageDescription = (nodeImageList,selectedImage): string => {
-    let nodeImageObj = nodeImageList.find((obj) => {
+    const nodeImageObj = nodeImageList.find((obj) => {
         return obj.image === selectedImage
     })
     return nodeImageObj?.description || ''
