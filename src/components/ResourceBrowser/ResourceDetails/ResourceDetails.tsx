@@ -28,10 +28,14 @@ export default function ResourceDetails({
     useEffect(() => {
         const _tabs = getNodeDetailTabs(NodeType.Pod) // (kind as NodeType);
         setTabs(_tabs)
-    }, [kind])
+    }, [selectedResource.kind])
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(podName, kind, _url)
+        const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(
+            selectedResource.name,
+            selectedResource.kind,
+            _url,
+        )
 
         if (!isTabFound) {
             setTimeout(() => {
@@ -43,7 +47,7 @@ export default function ResourceDetails({
                     _urlToCreate = _urlToCreate + '?container=' + query.get('container')
                 }
 
-                AppDetailsStore.addAppDetailsTab(kind, podName, _urlToCreate)
+                AppDetailsStore.addAppDetailsTab(selectedResource.kind, selectedResource.name, _urlToCreate)
 
                 setSelectedTabName(_tabName)
             }, 500)
@@ -53,7 +57,7 @@ export default function ResourceDetails({
     }
 
     const currentTab = applicationObjectTabs.filter((tab) => {
-        return tab.name.toLowerCase() === kind + '/...' + podName.slice(-6)
+        return tab.name.toLowerCase() === selectedResource.kind + '/...' + selectedResource.name.slice(-6)
     })
     const isDeleted = currentTab && currentTab[0] ? currentTab[0].isDeleted : false
 
