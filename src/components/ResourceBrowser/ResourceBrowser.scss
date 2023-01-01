@@ -1,12 +1,12 @@
 .resource-browser-container {
-  .resource-browser-tab{
-    .active{
-      border: 1px solid var(--N200);
-      border-bottom: 1px solid #fff;
-      border-top-right-radius: 8px;
-      border-top-left-radius: 8px;
+    .resource-browser-tab {
+        .active {
+            border: 1px solid var(--N200);
+            border-bottom: 1px solid #fff;
+            border-top-right-radius: 8px;
+            border-top-left-radius: 8px;
+        }
     }
-  }
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;
@@ -40,6 +40,23 @@
             }
         }
         .cluster-selection-container {
+        }
+    }
+}
+.create-resource-container {
+    .created-resource-row {
+        display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+    }
+    .created-resource-list {
+        height: calc(100vh - 202px);
+        min-height: 220px;
+        overflow-y: auto;
+        .created-resource-row {
+            &:hover {
+                background-color: var(--N50);
+            }
         }
     }
 }

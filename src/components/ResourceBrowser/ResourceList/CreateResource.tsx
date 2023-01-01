@@ -1,96 +1,145 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { URLS } from '../../../config'
-import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import emptyCustomChart from '../../../assets/img/terminal@2x.png'
+import { APP_STATUS_HEADERS, MODES } from '../../../config'
+import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
+import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
+import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { Drawer, Progressing, showError } from '../../common'
+import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import CodeEditor from '../../CodeEditor/CodeEditor'
 import '../ResourceBrowser.scss'
-import { OptionType } from '../../app/types'
-import { Drawer } from '../../common'
+import { CreateResourceStatus, ResourceListPayloadType, ResourceType } from '../Types'
+import { createNewResource } from '../ResourceBrowser.service'
 
-export function CreateResource({ clusterOptions, onChangeCluster }) {
-    const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
-    const [filteredClusterList, setFilteredClusterList] = useState<OptionType[]>(clusterOptions)
+export function CreateResource({ closePopup, clusterId, selectedGVK }) {
+    const [showCodeEditorView, toggleCodeEditorView] = useState(true)
+    const [loader, setLoader] = useState(false)
+    const [resourceYAML, setResourceYAML] = useState('')
+    const [resourceResponse, setResourceResponse] = useState<ResourceType[]>(null)
 
-    const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = clusterOptions.filter((resource) => resource.label.indexOf(_searchText) >= 0)
-        setFilteredClusterList(_filteredData)
+    const onClose = (): void => {
+        !loader && closePopup()
     }
 
-    const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('')
-            setSearchApplied(false)
+    const handleEditorValueChange = (codeEditorData: string): void => {
+        setResourceYAML(codeEditorData)
+    }
+
+    const showCodeEditor = (): void => {
+        toggleCodeEditorView(true)
+    }
+
+    const onSave = async (): Promise<void> => {
+        try {
+            setLoader(true)
+            const resourceListPayload: ResourceListPayloadType = {
+                clusterId: Number(clusterId),
+                k8sRequest: {
+                    resourceIdentifier: {
+                        groupVersionKind: selectedGVK,
+                    },
+                    patch: resourceYAML,
+                },
+            }
+            const { result } = await createNewResource(resourceListPayload)
+            setResourceResponse(result)
+            toggleCodeEditorView(false)
+            //closePopup(true)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoader(false)
         }
-        setSearchText('')
     }
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        }
-    }
-
-    const handleOnChangeSearchText = (event): void => {
-        setSearchText(event.target.value)
-    }
-    const selectCluster = (e): void => {
-        const data = e.currentTarget.dataset
-        onChangeCluster({ label: data.label, value: data.value }, true)
-    }
-
-    const renderSearch = (): JSX.Element => {
-        return (
-            <div className="pt-12 pr-16 pb-12 pl-16">
-                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 w-100">
-                    <Search className="search__icon icon-dim-18" />
-                    <input
-                        type="text"
-                        placeholder="Search clusters"
-                        value={searchText}
-                        className="search__input"
-                        onChange={handleOnChangeSearchText}
-                        onKeyDown={handleFilterKeyPress}
-                    />
-                    {searchApplied && (
-                        <button className="search__clear-button" type="button" onClick={clearSearch}>
-                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                        </button>
-                    )}
+    const renderFooter = (): JSX.Element => {
+        if (showCodeEditorView) {
+            return (
+                <div className="dc__border-top flex right p-16">
+                    <button className="cta cancel h-36 lh-36 mr-12" type="button" disabled={loader} onClick={onClose}>
+                        Cancel
+                    </button>
+                    <button className="cta h-36 lh-36" disabled={loader} onClick={onSave}>
+                        {loader ? <Progressing /> : 'Save'}
+                    </button>
                 </div>
-            </div>
-        )
+            )
+        } else {
+            return (
+                <div className="dc__border-top flexbox dc__content-space right p-16">
+                    <button className="flex cta h-36 lh-36" onClick={showCodeEditor}>
+                        <Edit className="icon-dim-16 mr-5" />
+                        Edit YAML
+                    </button>
+                    <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={onClose}>
+                        Close
+                    </button>
+                </div>
+            )
+        }
     }
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="create-resource-container p-20">
-                <div className="w-600">
-                    <div className="pb-16 dc__align-center">
-                        <img className="w-250" src={emptyCustomChart} alt="No cluster selected" />
-                        <div className="fw-6 fs-16 cn-9 mt-16">Select a cluster to view Kubernetes resources</div>
-                    </div>
-                    <div className="en-2 bw-1 bcn-0">
-                        {renderSearch()}
-                        {filteredClusterList?.map((cluster) => (
-                            <div
-                                className="flex left dc__border-bottom pt-12 pr-16 pb-12 pl-16 pointer"
-                                data-label={cluster.label}
-                                data-value={cluster.value}
-                                onClick={selectCluster}
-                            >
-                                <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
-                                <div className="fw-4 fs-13 cn-5">{cluster.label}</div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="create-resource-container bcn-0 h-100">
+                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Create Kubernetes object</h2>
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
+                        <CloseIcon className="icon-dim-24" />
+                    </button>
                 </div>
+
+                <div style={{ height: 'calc(100vh - 125px)' }}>
+                    {showCodeEditorView ? (
+                        <>
+                            <InfoColourBar
+                                message="Multi YAML supported. You can create/update multiple K8s objects at once. Make sure you separate the object YAMLs by ‘---’."
+                                classname="info_bar dc__no-border-radius dc__no-top-border"
+                                Icon={InfoIcon}
+                            />
+                            <CodeEditor
+                                value={resourceYAML}
+                                mode={MODES.YAML}
+                                noParsing
+                                height={'calc(100vh - 165px)'}
+                                onChange={handleEditorValueChange}
+                                loading={loader}
+                            />
+                        </>
+                    ) : (
+                        <div>
+                            <div className="created-resource-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
+                                {APP_STATUS_HEADERS.map((headerKey, index) => (
+                                    <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
+                                        {headerKey}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="created-resource-list fs-13">
+                                {resourceResponse.map((resource) => (
+                                    <div
+                                        className="created-resource-row pt-8 pr-20 pb-8 pl-20"
+                                        key={`${resource.kind}/${resource.name}`}
+                                    >
+                                        <div>{resource.kind}</div>
+                                        <div>{resource.name}</div>
+                                        <div className="flex left">
+                                            {resource.status === CreateResourceStatus.failed ? (
+                                                <Error className="icon-dim-16 mr-8" />
+                                            ) : (
+                                                <Success className="icon-dim-16 mr-8" />
+                                            )}
+                                            {resource.status}
+                                        </div>
+                                        <div>{resource.message}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {renderFooter()}
             </div>
         </Drawer>
     )

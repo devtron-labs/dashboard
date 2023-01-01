@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useParams, useLocation } from 'react-router'
-import { convertToOptionsList, handleUTCTime, Progressing, showError } from '../../common'
+import { convertToOptionsList, handleUTCTime, not, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { GVKType, K8SObjectType, ResourceDetail, resourceListPayloadType } from '../Types'
+import { GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION } from '../Constants'
@@ -17,6 +17,7 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import '../ResourceBrowser.scss'
+import { CreateResource } from './CreateResource'
 
 export default function ResourceList() {
     const { clusterId, namespace, kind, node } = useParams<{
@@ -41,6 +42,7 @@ export default function ResourceList() {
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
+    const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
 
     useEffect(() => {
         getClusterList()
@@ -153,7 +155,7 @@ export default function ResourceList() {
     const getResourceListData = async (): Promise<void> => {
         try {
             setResourceListLoader(true)
-            const resourceListPayload: resourceListPayloadType = {
+            const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(clusterId),
                 k8sRequest: {
                     resourceIdentifier: {
@@ -198,9 +200,20 @@ export default function ResourceList() {
         }
     }
 
-    const refreshData=():void=>{
-      setSelectedGVK(null)
-      getSidebarData()
+    const refreshData = (): void => {
+        setSelectedGVK(null)
+        getSidebarData()
+    }
+
+    const showResourceModal = ():void=>{
+      setShowCreateResourceModal(false)
+    }
+
+    const closeResourceModal = (_refreshData: boolean):void=>{
+      if(_refreshData){
+        refreshData()
+      }
+      setShowCreateResourceModal(false)
     }
 
     if (loader) {
@@ -228,15 +241,13 @@ export default function ResourceList() {
                         <div className="fs-13 flex pt-12 pb-12">
                             <div
                                 className="pointer cb-5 fw-6 fs-13 flexbox pr-12 dc__border-right"
-                                onClick={() => {}}
+                                onClick={showResourceModal}
                             >
                                 <Add className="icon-dim-16 scb-5 mr-5 mt-3" /> Create
                             </div>
                             {lastDataSyncTimeString && (
                                 <div className="ml-12 flex">
-                                    <span>
-                                        {lastDataSyncTimeString}
-                                    </span>
+                                    <span>{lastDataSyncTimeString}</span>
                                     <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
                                 </div>
                             )}
@@ -268,6 +279,8 @@ export default function ResourceList() {
                     </div>
                 </div>
             )}
+            {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />}
+            <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />
         </div>
     )
 }
