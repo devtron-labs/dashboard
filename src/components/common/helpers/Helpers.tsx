@@ -11,7 +11,7 @@ import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
-import { ApiResourceType, GVKType, K8SObjectType } from '../../ResourceBrowser/Types'
+import { ApiResourceType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 const commandLineParser = require('command-line-parser')
 
@@ -1091,32 +1091,32 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
 
 export const processK8SObjects = (
     k8sObjects: ApiResourceType[],
-    selectedResource?: string,
-): { k8SObjectMap: Map<string, K8SObjectType>; selectedGVK: GVKType } => {
+    selectedResourceKind?: string,
+): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
-    let _selectedGVK
+    let _selectedResource: ApiResourceType
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = element.gvk.Group.endsWith('.k8s.io')
             ? AggregationKeys.Other
             : getAggregator(element.gvk.Kind)
-        if (element.gvk.Kind.toLowerCase() === selectedResource) {
-            _selectedGVK = element.gvk
+        if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
+            _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
         }
         const currentData = _k8SObjectMap.get(groupParent)
         if (!currentData) {
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
-                isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
+                isExpanded: element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 namespaced: element.namespaced,
                 child: [element.gvk],
             })
         } else {
             currentData.child = [...currentData.child, element.gvk]
-            if (element.gvk.Kind.toLowerCase() === selectedResource) {
-                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResource
+            if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
+                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
     }
-    return { k8SObjectMap: _k8SObjectMap, selectedGVK: _selectedGVK }
+    return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }

@@ -93,11 +93,11 @@ export interface SidebarType {
     namespace: string
     handleGroupHeadingClick: (e) => void
     nodeType: string
-    setSelectedGVK: React.Dispatch<React.SetStateAction<GVKType>>
+    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceType>>
 }
 
 export interface K8SResourceListType {
-    selectedGVK: GVKType
+    selectedResource: ApiResourceType
     resourceList: ResourceDetail[]
     filteredResourceList: ResourceDetail[]
     setFilteredResourceList: React.Dispatch<React.SetStateAction<ResourceDetail[]>>
@@ -116,8 +116,7 @@ export interface ResourceBrowserActionMenuType {
     clusterId: string
     namespace: string
     resourceData: ResourceDetail
-    nodeType: Nodes
-    selectedGVK: GVKType
+    selectedResource: ApiResourceType
     getResourceListData: () => Promise<void>
 }
 

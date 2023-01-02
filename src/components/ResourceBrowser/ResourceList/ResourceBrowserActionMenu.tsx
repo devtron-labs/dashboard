@@ -13,7 +13,13 @@ import { Nodes } from '../../app/types'
 import { deleteResource } from '../ResourceBrowser.service'
 import { toast } from 'react-toastify'
 
-export default function ResourceBrowserActionMenu({ clusterId, namespace, resourceData, nodeType, selectedGVK, getResourceListData }: ResourceBrowserActionMenuType) {
+export default function ResourceBrowserActionMenu({
+    clusterId,
+    namespace,
+    resourceData,
+    selectedResource,
+    getResourceListData,
+}: ResourceBrowserActionMenuType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const [loader, setLoader] = useState(false)
@@ -26,15 +32,19 @@ export default function ResourceBrowserActionMenu({ clusterId, namespace, resour
         try {
             setLoader(true)
             const resourceDeletePayload: ResourceListPayloadType = {
-              clusterId: Number(clusterId),
-              k8sRequest: {
-                  resourceIdentifier: {
-                      groupVersionKind: selectedGVK,
-                      namespace: namespace,
-                      name: resourceData.name,
-                  },
-              },
-          }
+                clusterId: Number(clusterId),
+                k8sRequest: {
+                    resourceIdentifier: {
+                        groupVersionKind: selectedResource.gvk,
+                        namespace: namespace,
+                        name: resourceData.name,
+                    },
+                },
+            }
+
+            if (selectedResource.namespaced) {
+                resourceDeletePayload.k8sRequest.resourceIdentifier.namespace = namespace
+            }
             const { result } = await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
             getResourceListData()
@@ -61,7 +71,7 @@ export default function ResourceBrowserActionMenu({ clusterId, namespace, resour
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             {RESOURCE_ACTION_MENU.Events}
                         </span>
-                        {nodeType === Nodes.Pod && (
+                        {selectedResource?.gvk.Kind === Nodes.Pod && (
                             <>
                                 <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
                                     <LogAnalyzerIcon className="icon-dim-16 mr-8" />

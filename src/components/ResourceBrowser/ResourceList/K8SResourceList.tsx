@@ -13,7 +13,7 @@ import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import '../ResourceBrowser.scss'
 
 export function K8SResourceList({
-    selectedGVK,
+  selectedResource,
     resourceList,
     filteredResourceList,
     setFilteredResourceList,
@@ -90,7 +90,7 @@ export function K8SResourceList({
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
-                        placeholder="Search clusters"
+                        placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
                         value={searchText}
                         className="search__input"
                         onChange={handleOnChangeSearchText}
@@ -155,8 +155,7 @@ export function K8SResourceList({
                     clusterId={clusterId}
                     namespace={namespace}
                     resourceData={resourceData}
-                    nodeType={selectedGVK?.Kind}
-                    selectedGVK={selectedGVK}
+                    selectedResource={selectedResource}
                     getResourceListData={getResourceListData}
                 />
             </div>
@@ -167,14 +166,14 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${selectedGVK?.Kind}. Try selecting a different cluster or namespace.`}
+                    subTitle={`We could not find any ${selectedResource?.gvk?.Kind}. Try selecting a different cluster or namespace.`}
                 />
             )
         } else {
             return (
                 <ResourceListEmptyState
                     title="No matching results"
-                    subTitle={`We could not find any matching ${selectedGVK?.Kind}.`}
+                    subTitle={`We could not find any matching ${selectedResource?.gvk?.Kind}.`}
                     actionHandler={clearSearch}
                 />
             )

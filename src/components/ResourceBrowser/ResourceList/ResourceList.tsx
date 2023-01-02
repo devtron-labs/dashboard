@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
+import { ApiResourceType, GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
@@ -39,7 +39,7 @@ export default function ResourceList() {
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
+    const [selectedResource, setSelectedResource] = useState<ApiResourceType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
@@ -56,10 +56,10 @@ export default function ResourceList() {
     }, [clusterId])
 
     useEffect(() => {
-        if (selectedGVK) {
+        if (selectedResource) {
             getResourceListData()
         }
-    }, [selectedGVK, namespace])
+    }, [selectedResource, namespace])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -108,7 +108,7 @@ export default function ResourceList() {
             if (resourceGroupList) {
                 const processedData = processK8SObjects(resourceGroupList, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
-                let _selectedGVK = processedData.selectedGVK
+                let _selectedResource = processedData.selectedResource
                 const _k8SObjectList: K8SObjectType[] = []
                 const _k8SObjectListIndexMap: Map<string, number> = new Map()
                 for (let index = 0; index < ORDERED_AGGREGATORS.length; index++) {
@@ -120,17 +120,18 @@ export default function ResourceList() {
                 }
                 if (!nodeType) {
                     _k8SObjectList[0].isExpanded = true
-                    const _selectedResource = _k8SObjectList[0].child[0].Kind.toLowerCase()
-                    _selectedGVK = _k8SObjectList[0].child[0]
+                    const _selectedResourceParam = _k8SObjectList[0].child[0].Kind.toLowerCase()
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
-                        }/${_selectedResource}`,
+                        }/${_selectedResourceParam}`,
                     })
                 }
                 setK8SObjectList(_k8SObjectList)
                 setK8SObjectListIndexMap(_k8SObjectListIndexMap)
-                setSelectedGVK(_selectedGVK)
+                setSelectedResource(
+                    _selectedResource || { namespaced: _k8SObjectList[0].namespaced, gvk: _k8SObjectList[0].child[0] },
+                )
             }
         } catch (err) {
             showError(err)
@@ -146,10 +147,13 @@ export default function ResourceList() {
                 clusterId: Number(clusterId),
                 k8sRequest: {
                     resourceIdentifier: {
-                        groupVersionKind: selectedGVK,
-                        namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
+                        groupVersionKind: selectedResource.gvk,
                     },
                 },
+            }
+            if (selectedResource.namespaced) {
+                resourceListPayload.k8sRequest.resourceIdentifier.namespace =
+                    namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
             const { result } = await getResourceList(resourceListPayload)
             setLastDataSync(!lastDataSync)
@@ -186,7 +190,7 @@ export default function ResourceList() {
     }
 
     const refreshData = (): void => {
-        setSelectedGVK(null)
+        setSelectedResource(null)
         getSidebarData()
     }
 
@@ -217,9 +221,9 @@ export default function ResourceList() {
                     selectedResource={
                         {
                             clusterId: Number(clusterId),
-                            group: selectedGVK?.Group || '',
-                            version: selectedGVK?.Version || '',
-                            kind: selectedGVK?.Kind || '',
+                            group: selectedResource.gvk?.Group || '',
+                            version: selectedResource.gvk?.Version || '',
+                            kind: selectedResource.gvk?.Kind || '',
                             namespace: selectedNode?.namespace || '',
                             name: selectedNode?.name || '',
                             status: selectedNode?.status || '',
@@ -267,10 +271,10 @@ export default function ResourceList() {
                             namespace={selectedNamespace?.value || namespace}
                             handleGroupHeadingClick={handleGroupHeadingClick}
                             nodeType={nodeType}
-                            setSelectedGVK={setSelectedGVK}
+                            setSelectedResource={setSelectedResource}
                         />
                         <K8SResourceList
-                            selectedGVK={selectedGVK}
+                            selectedResource={selectedResource}
                             resourceList={resourceList}
                             filteredResourceList={filteredResourceList}
                             setFilteredResourceList={setFilteredResourceList}
@@ -287,9 +291,7 @@ export default function ResourceList() {
                     </div>
                 </div>
             )}
-            {showCreateResourceModal && (
-                <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />
-            )}
+            {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
         </div>
     )
 }

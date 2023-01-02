@@ -11,16 +11,19 @@ export function Sidebar({
     namespace,
     handleGroupHeadingClick,
     nodeType,
-    setSelectedGVK,
+    setSelectedResource,
 }: SidebarType) {
     const { push } = useHistory()
     const selectNode = (e): void => {
         const _selectedResource = e.currentTarget.dataset.kind.toLowerCase()
         push(`${URLS.RESOURCE_BROWSER}/${clusterId}${namespace ? `/${namespace}` : ``}/${_selectedResource}`)
-        setSelectedGVK({
-            Group: e.currentTarget.dataset.group,
-            Version: e.currentTarget.dataset.version,
-            Kind: e.currentTarget.dataset.kind,
+        setSelectedResource({
+            namespaced: _selectedResource.namespaced,
+            gvk: {
+                Group: e.currentTarget.dataset.group,
+                Version: e.currentTarget.dataset.version,
+                Kind: e.currentTarget.dataset.kind,
+            },
         })
     }
     return (
@@ -44,6 +47,7 @@ export function Sidebar({
                                     data-group={gvk.Group}
                                     data-version={gvk.Version}
                                     data-kind={gvk.Kind}
+                                    data-namespaced={k8sObject.namespaced}
                                     onClick={selectNode}
                                 >
                                     {gvk.Kind}
