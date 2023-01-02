@@ -42,7 +42,7 @@ export default function ChartRepo() {
             <h2 className="form__title">Chart Repository</h2>
             <p className="form__subtitle">Manage your organization’s chart repositories.
             <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
-            <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
+            <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"} allow_insecure_connection={false}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
             <div className="chartRepo_form__subtitle dc__float-left dc__bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
             <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                 <div className="chartRepo_form__subtitle dc__float-right">
@@ -62,7 +62,7 @@ export default function ChartRepo() {
     );
 }
 
-function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
+function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", allow_insecure_connection = false, reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
@@ -72,6 +72,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         async function update() {
             let payload = {
                 id: id || 0, name, url, authMode, active: enabled,
+                ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? {allow_insecure_connection} : {allow_insecure_connection}),
                 ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? { username: userName, password } : {}),
                 ...(authMode === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken } : {})
             }
@@ -113,18 +114,18 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
+            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, allow_insecure_connection, reload, toggleCollapse, collapsed }} />}
         </article>
     )
 }
 
-function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, collapsed, ...props }) {
+function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", allow_insecure_connection = false, reload, toggleCollapse, collapsed, ...props }) {
 
     const [validationError, setValidationError] = useState({ errtitle: "", errMessage: "" });
     const [validationStatus, setValidationStatus] = useState(VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS)
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
-    const [secureWithTls, setSecureWithTls] = useState(false)
+    const [secureWithTls, setSecureWithTls] = useState(!allow_insecure_connection)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
