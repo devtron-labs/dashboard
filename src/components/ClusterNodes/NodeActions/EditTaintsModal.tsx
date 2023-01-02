@@ -69,7 +69,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
             let validateTaintKey = validationRules.taintKey(element.key)
             if (uniqueTaintMap.get(uniqueKey)) {
                 if (validateTaintKey.isValid) {
-                    validateTaintKey = { isValid: false, message: 'Duplicate taint key' }
+                    validateTaintKey = { isValid: false, message: 'Key and effect must be a unique combination.' }
                 }
             } else {
                 uniqueTaintMap.set(uniqueKey, true)
