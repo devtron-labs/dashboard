@@ -23,8 +23,9 @@ export interface ResourceListResponse extends ResponseType {
     result?: ResourceDetail[]
 }
 
-interface ApiResourceType {
+export interface ApiResourceType {
     gvk: GVKType
+    namespaced: boolean
 }
 
 export interface APIResourceResponse extends ResponseType {
@@ -34,6 +35,7 @@ export interface APIResourceResponse extends ResponseType {
 export interface K8SObjectType {
     name: string
     isExpanded: boolean
+    namespaced: boolean
     child: GVKType[]
 }
 

@@ -9,8 +9,10 @@ import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
-import { OptionType } from '../../app/types'
+import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
+import { ApiResourceType, GVKType, K8SObjectType } from '../../ResourceBrowser/Types'
+import { getAggregator } from '../../app/details/appDetails/utils'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1085,4 +1087,105 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
         return obj.image === selectedImage
     })
     return nodeImageObj?.description || ''
+}
+
+const k8sObjectMapDefaultData = () => {
+    const _k8SObjectListMap = new Map<string, K8SObjectType>([
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+        [
+            AggregationKeys.Workloads,
+            {
+                name: AggregationKeys.Workloads,
+                isExpanded: false,
+                namespaced: false,
+                child: [],
+            },
+        ],
+    ])
+}
+
+export const processK8SObjectList = (
+    k8sObjects: ApiResourceType[],
+    selectedResource?: string,
+): { k8SObjectList: K8SObjectType[]; k8SObjectListIndexMap: Map<string, number>; selectedGVK: GVKType } => {
+    const _k8SObjectListIndexMap = new Map<string, number>()
+    const _k8SObjectList = []
+    const _k8SObjectListMap = new Map<string, number>()
+    let _selectedGVK
+    for (let index = 0; index < k8sObjects.length; index++) {
+        const element = k8sObjects[index]
+        const groupParent = element.gvk.Group.endsWith('.k8s.io') ? 'Others' : getAggregator(element.gvk.Kind)
+        const k8SObjectIndex = _k8SObjectListIndexMap.get(groupParent)
+        if (element.gvk.Kind.toLowerCase() === selectedResource) {
+            _selectedGVK = element.gvk
+        }
+        if (k8SObjectIndex === undefined) {
+            _k8SObjectList.push({
+                name: groupParent,
+                isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
+                namespaced: element.namespaced,
+                child: [element.gvk],
+            })
+            _k8SObjectListIndexMap.set(groupParent, _k8SObjectList.length - 1)
+        } else {
+            if (!_k8SObjectList[k8SObjectIndex].isExpanded && element.gvk.Kind.toLowerCase() === selectedResource) {
+                _k8SObjectList[k8SObjectIndex].isExpanded = true
+            }
+            _k8SObjectList[k8SObjectIndex].child.push(element.gvk)
+        }
+    }
+    return { k8SObjectList: _k8SObjectList, k8SObjectListIndexMap: _k8SObjectListIndexMap, selectedGVK: _selectedGVK }
 }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useParams, useLocation } from 'react-router'
-import { convertToOptionsList, handleUTCTime, not, Progressing, showError } from '../../common'
+import { convertToOptionsList, handleUTCTime, not, processK8SObjectList, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
+import { ApiResourceType, GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION } from '../Constants'
@@ -106,34 +106,36 @@ export default function ResourceList() {
     const getSidebarData = async (): Promise<void> => {
         try {
             setLoader(true)
-            const { result: result1 } = await getResourceGroupList(clusterId)
-            const _k8SObjectListIndexMap = new Map<string, number>()
-            const _k8SObjectList = []
-            let _selectedGVK
-            for (let index = 0; index < result1.length; index++) {
-                const element = result1[index]
-                const groupParent = element.gvk.Group.endsWith('.k8s.io') ? 'Others' : getAggregator(element.gvk.Kind)
-                const k8SObjectIndex = _k8SObjectListIndexMap.get(groupParent)
-                if (element.gvk.Kind.toLowerCase() === selectedResource) {
-                    _selectedGVK = element.gvk
-                }
-                if (k8SObjectIndex === undefined) {
-                    _k8SObjectList.push({
-                        name: groupParent,
-                        isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
-                        child: [element.gvk],
-                    })
-                    _k8SObjectListIndexMap.set(groupParent, _k8SObjectList.length - 1)
-                } else {
-                    if (
-                        !_k8SObjectList[k8SObjectIndex].isExpanded &&
-                        element.gvk.Kind.toLowerCase() === selectedResource
-                    ) {
-                        _k8SObjectList[k8SObjectIndex].isExpanded = true
-                    }
-                    _k8SObjectList[k8SObjectIndex].child.push(element.gvk)
-                }
-            }
+            const { result: resourceGroupList } = await getResourceGroupList(clusterId)
+            const processedData = processK8SObjectList(resourceGroupList)
+            const _k8SObjectList = processedData.k8SObjectList
+            const _k8SObjectListIndexMap =  processedData.k8SObjectListIndexMap
+            let _selectedGVK = processedData.selectedGVK
+            // for (let index = 0; index < result1.length; index++) {
+            //     const element = result1[index]
+            //     const groupParent = element.gvk.Group.endsWith('.k8s.io') ? 'Others' : getAggregator(element.gvk.Kind)
+            //     const k8SObjectIndex = _k8SObjectListIndexMap.get(groupParent)
+            //     if (element.gvk.Kind.toLowerCase() === selectedResource) {
+            //         _selectedGVK = element.gvk
+            //     }
+            //     if (k8SObjectIndex === undefined) {
+            //         _k8SObjectList.push({
+            //             name: groupParent,
+            //             isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
+            //             child: [element.gvk],
+            //         })
+            //         _k8SObjectListIndexMap.set(groupParent, _k8SObjectList.length - 1)
+            //     } else {
+            //         if (
+            //             !_k8SObjectList[k8SObjectIndex].isExpanded &&
+            //             element.gvk.Kind.toLowerCase() === selectedResource
+            //         ) {
+            //             _k8SObjectList[k8SObjectIndex].isExpanded = true
+            //         }
+            //         _k8SObjectList[k8SObjectIndex].child.push(element.gvk)
+            //     }
+            // }
+            //processK8SObjectList(resourceGroupList)
             if (!selectedResource) {
                 _k8SObjectList[0].isExpanded = true
                 const _selectedResource = _k8SObjectList[0].child[0].Kind.toLowerCase()
@@ -163,11 +165,9 @@ export default function ResourceList() {
                 k8sRequest: {
                     resourceIdentifier: {
                         groupVersionKind: selectedGVK,
+                        namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
                     },
                 },
-            }
-            if (namespace && namespace !== ALL_NAMESPACE_OPTION.value) {
-                resourceListPayload.k8sRequest.resourceIdentifier.namespace = namespace
             }
             const { result } = await getResourceList(resourceListPayload)
             setLastDataSync(!lastDataSync)
@@ -229,7 +229,7 @@ export default function ResourceList() {
         <div className="resource-browser-container">
             <PageHeader headerName="Kubernetes object browser" />
             {/* Temp location for NodeDetailComponent, it'll be put under tabs */}
-            <div className="resource-details-container">
+            {/* <div className="resource-details-container">
                 <NodeDetailComponent
                     isResourceBrowserView={true}
                     selectedResource={
@@ -247,7 +247,7 @@ export default function ResourceList() {
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                 />
-            </div>
+            </div> */}
             {!selectedCluster?.value ? (
                 <ClusterSelectionComponent clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
             ) : (
