@@ -353,7 +353,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                         />
                         <Checkbox
                             rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
-                            isChecked={secureWithTls}
+                            isChecked={!secureWithTls}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={toggleSkipTLSVerification}
                         >
