@@ -67,7 +67,7 @@ function NodeDetailComponent({
     const currentTab = applicationObjectTabs.filter((tab) => {
         return (
             tab.name.toLowerCase() ===
-            params.nodeType + '/...' + (isResourceBrowserView ? params.node : params.podName).slice(-6)
+            params.nodeType + '/...' + (isResourceBrowserView ? params.node : params.podName)?.slice(-6)
         )
     })
     const isDeleted =

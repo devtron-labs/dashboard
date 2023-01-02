@@ -27,7 +27,7 @@ function TerminalComponent({
     const { url } = useRouteMatch()
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const containers = isResourceBrowserView ? selectedResource.containers : flatContainers(podMetaData).sort()
-    const [selectedContainerName, setSelectedContainerName] = useState(containers ? containers[0] : '')
+    const [selectedContainerName, setSelectedContainerName] = useState(containers?.[0] || '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
