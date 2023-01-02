@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
@@ -8,16 +8,10 @@ import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-in
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { PopupMenu } from '../../common'
 import { RESOURCE_ACTION_MENU } from '../Constants'
-import { ResourceDetail } from '../Types'
+import { ResourceBrowserActionMenuType } from '../Types'
 import { Nodes } from '../../app/types'
 
-export default function ResourceBrowserActionMenu({
-    resourceData,
-    nodeType,
-}: {
-    resourceData: ResourceDetail
-    nodeType: Nodes
-}) {
+export default function ResourceBrowserActionMenu({ resourceData, nodeType }: ResourceBrowserActionMenuType) {
     const history = useHistory()
     const { url } = useRouteMatch()
 

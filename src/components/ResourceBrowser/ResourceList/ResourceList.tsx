@@ -9,7 +9,7 @@ import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
 import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
-import { ClusterSelectionComponent } from './ClusterSelectionComponent'
+import { ClusterSelection } from './ClusterSelection'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
@@ -37,7 +37,6 @@ export default function ResourceList() {
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const [selectedResource, setSelectedResource] = useState('')
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
@@ -230,7 +229,7 @@ export default function ResourceList() {
                 />
             </div> */}
             {!selectedCluster?.value ? (
-                <ClusterSelectionComponent clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
+                <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
             ) : (
                 <div>
                     <div className="h-44 flexbox dc__content-space pr-20 pl-20">
@@ -286,7 +285,7 @@ export default function ResourceList() {
                 </div>
             )}
             {showCreateResourceModal && (
-                <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />
+                <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />
             )}
         </div>
     )

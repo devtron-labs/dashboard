@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { URLS } from '../../../config'
-import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import emptyCustomChart from '../../../assets/img/terminal@2x.png'
 import '../ResourceBrowser.scss'
 import { OptionType } from '../../app/types'
+import { ClusterSelectionType } from '../Types'
 
-export function ClusterSelectionComponent({ clusterOptions, onChangeCluster }) {
+export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSelectionType) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [filteredClusterList, setFilteredClusterList] = useState<OptionType[]>(clusterOptions)

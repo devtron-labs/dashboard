@@ -3,16 +3,24 @@ import { useHistory } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import '../ResourceBrowser.scss'
+import { SidebarType } from '../Types'
 
-export function Sidebar({ k8SObjectList, clusterId, namespace, handleGroupHeadingClick, nodeType, setSelectedGVK }) {
+export function Sidebar({
+    k8SObjectList,
+    clusterId,
+    namespace,
+    handleGroupHeadingClick,
+    nodeType,
+    setSelectedGVK,
+}: SidebarType) {
     const { push } = useHistory()
     const selectNode = (e): void => {
         const _selectedResource = e.currentTarget.dataset.kind.toLowerCase()
         push(`${URLS.RESOURCE_BROWSER}/${clusterId}${namespace ? `/${namespace}` : ``}/${_selectedResource}`)
         setSelectedGVK({
-            group: e.currentTarget.dataset.group,
-            version: e.currentTarget.dataset.version,
-            kind: e.currentTarget.dataset.kind,
+            Group: e.currentTarget.dataset.group,
+            Version: e.currentTarget.dataset.version,
+            Kind: e.currentTarget.dataset.kind,
         })
     }
     return (
@@ -31,7 +39,7 @@ export function Sidebar({ k8SObjectList, clusterId, namespace, handleGroupHeadin
                             {k8sObject.child.map((gvk) => (
                                 <span
                                     className={`dc__no-decor fs-14 pointer flex left w-100 fw-4 pt-6 pr-8 pb-6 pl-8 ${
-                                      nodeType === gvk.Kind ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
+                                        nodeType === gvk.Kind ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
                                     }`}
                                     data-group={gvk.Group}
                                     data-version={gvk.Version}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ResponseType } from '../../services/service.types'
-import { Nodes } from '../app/types'
+import { Nodes, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 
 export interface ResourceDetail {
@@ -74,4 +74,49 @@ export interface CreateResourceResponse extends ResponseType {
 
 export interface ResourceDetailsPropType extends LogSearchTermType {
     selectedResource: SelectedResourceType
+}
+
+export interface ClusterSelectionType {
+    clusterOptions: OptionType[]
+    onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
+}
+
+export interface CreateResourceType {
+    closePopup: (refreshData?: boolean) => void
+    clusterId: string
+}
+
+export interface SidebarType {
+    k8SObjectList: K8SObjectType[]
+    clusterId: string
+    namespace: string
+    handleGroupHeadingClick:  (e)=> void
+    nodeType: string
+    setSelectedGVK: React.Dispatch<React.SetStateAction<GVKType>>
+}
+
+export interface K8SResourceListType {
+    selectedGVK: GVKType
+    resourceList: ResourceDetail[]
+    filteredResourceList: ResourceDetail[]
+    setFilteredResourceList: React.Dispatch<React.SetStateAction<ResourceDetail[]>>
+    noResults: boolean
+    clusterOptions: OptionType[]
+    selectedCluster: OptionType
+    onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
+    namespaceOptions: OptionType[]
+    selectedNamespace: OptionType
+    setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
+    resourceListLoader: boolean
+}
+
+export interface ResourceBrowserActionMenuType {
+    resourceData: ResourceDetail
+    nodeType: Nodes
+}
+
+export interface ResourceListEmptyStateType {
+    title?: string
+    subTitle: string
+    actionHandler?: () => void
 }

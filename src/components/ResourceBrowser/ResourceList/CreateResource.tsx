@@ -8,11 +8,11 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { Drawer, Progressing, showError } from '../../common'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import '../ResourceBrowser.scss'
-import { CreateResourcePayload, CreateResourceStatus, ResourceListPayloadType, ResourceType } from '../Types'
+import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
+import '../ResourceBrowser.scss'
 
-export function CreateResource({ closePopup, clusterId, selectedGVK }) {
+export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
     const [showCodeEditorView, toggleCodeEditorView] = useState(true)
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')

@@ -1,16 +1,13 @@
 import React from 'react'
 import EmptyState from '../../EmptyState/EmptyState'
 import emptyCustomChart from '../../../assets/img/empty-noresult@2x.png'
+import { ResourceListEmptyStateType } from '../Types'
 
 export default function ResourceListEmptyState({
     title,
     subTitle,
     actionHandler,
-}: {
-    title?: string
-    subTitle: string
-    actionHandler?: () => void
-}) {
+}: ResourceListEmptyStateType) {
     return (
         <EmptyState>
             <EmptyState.Image>

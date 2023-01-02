@@ -6,14 +6,14 @@ import { getElapsedTime, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { CLUSTER_SELECT_STYLE } from '../Constants'
 import { Nodes } from '../../app/types'
-import { ResourceDetail } from '../Types'
+import { K8SResourceListType, ResourceDetail } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import '../ResourceBrowser.scss'
 
 export function K8SResourceList({
-  selectedGVK,
+    selectedGVK,
     resourceList,
     filteredResourceList,
     setFilteredResourceList,
@@ -25,7 +25,7 @@ export function K8SResourceList({
     selectedNamespace,
     setSelectedNamespace,
     resourceListLoader,
-}) {
+}: K8SResourceListType) {
     const { push } = useHistory()
 
     const location = useLocation()
@@ -71,7 +71,11 @@ export function K8SResourceList({
         setSearchText(event.target.value)
     }
 
-    const onChangeNamespace = (selected): void => {
+    const handleClusterChange = (selected): void => {
+        onChangeCluster(selected)
+    }
+
+    const handleNamespaceChange = (selected): void => {
         setSelectedNamespace(selected)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
@@ -103,7 +107,7 @@ export function K8SResourceList({
                         placeholder="Select Containers"
                         options={clusterOptions}
                         value={selectedCluster}
-                        onChange={onChangeCluster}
+                        onChange={handleClusterChange}
                         styles={CLUSTER_SELECT_STYLE}
                         components={{
                             IndicatorSeparator: null,
@@ -115,7 +119,7 @@ export function K8SResourceList({
                         className="w-200 ml-8"
                         options={namespaceOptions}
                         value={selectedNamespace}
-                        onChange={onChangeNamespace}
+                        onChange={handleNamespaceChange}
                         styles={CLUSTER_SELECT_STYLE}
                         components={{
                             IndicatorSeparator: null,
@@ -146,7 +150,7 @@ export function K8SResourceList({
                 <div>{resourceData.ready}</div>
                 <div>{resourceData.restarts}</div>
                 <div>{getElapsedTime(new Date(resourceData.age))}</div>
-                <ResourceBrowserActionMenu resourceData={resourceData} nodeType={selectedGVK?.kind as Nodes} />
+                <ResourceBrowserActionMenu resourceData={resourceData} nodeType={selectedGVK?.Kind} />
             </div>
         )
     }
@@ -155,14 +159,14 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${selectedGVK?.kind}. Try selecting a different cluster or namespace.`}
+                    subTitle={`We could not find any ${selectedGVK?.Kind}. Try selecting a different cluster or namespace.`}
                 />
             )
         } else {
             return (
                 <ResourceListEmptyState
                     title="No matching results"
-                    subTitle={`We could not find any matching ${selectedGVK?.kind}.`}
+                    subTitle={`We could not find any matching ${selectedGVK?.Kind}.`}
                     actionHandler={clearSearch}
                 />
             )
