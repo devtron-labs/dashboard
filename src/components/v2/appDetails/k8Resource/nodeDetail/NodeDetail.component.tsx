@@ -36,9 +36,14 @@ function NodeDetailComponent({
     }, [params.nodeType, selectedResource?.kind])
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = isResourceBrowserView
-            ? AppDetailsStore.markAppDetailsTabActiveByIdentifier(selectedResource.name, selectedResource.kind, _url)
-            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+        const isTabFound =
+            isResourceBrowserView && selectedResource
+                ? AppDetailsStore.markAppDetailsTabActiveByIdentifier(
+                      selectedResource.name,
+                      selectedResource.kind,
+                      _url,
+                  )
+                : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
 
         if (!isTabFound) {
             setTimeout(() => {
@@ -50,7 +55,7 @@ function NodeDetailComponent({
                     _urlToCreate = _urlToCreate + '?container=' + query.get('container')
                 }
 
-                if (isResourceBrowserView) {
+                if (isResourceBrowserView && selectedResource) {
                     AppDetailsStore.addAppDetailsTab(selectedResource.kind, selectedResource.name, _urlToCreate)
                 } else {
                     AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
@@ -66,7 +71,7 @@ function NodeDetailComponent({
     const currentTab = applicationObjectTabs.filter((tab) => {
         return (
             tab.name.toLowerCase() ===
-            (isResourceBrowserView
+            (isResourceBrowserView && selectedResource
                 ? selectedResource.kind + '/...' + selectedResource.name.slice(-6)
                 : params.nodeType + '/...' + params.podName.slice(-6))
         )
