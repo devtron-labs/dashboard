@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
@@ -6,17 +6,45 @@ import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { PopupMenu } from '../../common'
+import { PopupMenu, showError } from '../../common'
 import { RESOURCE_ACTION_MENU } from '../Constants'
-import { ResourceBrowserActionMenuType } from '../Types'
+import { ResourceBrowserActionMenuType, ResourceListPayloadType } from '../Types'
 import { Nodes } from '../../app/types'
+import { deleteResource } from '../ResourceBrowser.service'
+import { toast } from 'react-toastify'
 
-export default function ResourceBrowserActionMenu({ resourceData, nodeType }: ResourceBrowserActionMenuType) {
+export default function ResourceBrowserActionMenu({ clusterId, namespace, resourceData, nodeType, selectedGVK, refreshData }: ResourceBrowserActionMenuType) {
     const history = useHistory()
     const { url } = useRouteMatch()
+    const [loader, setLoader] = useState(false)
 
     const handleEditYamlAction = () => {
         history.push(`${url}/${resourceData.name}?tab=yaml`)
+    }
+
+    const handleDelete = async (): Promise<void> => {
+        try {
+            setLoader(true)
+            const resourceDeletePayload: ResourceListPayloadType = {
+              clusterId: Number(clusterId),
+              k8sRequest: {
+                  resourceIdentifier: {
+                      groupVersionKind: selectedGVK,
+                      namespace: namespace,
+                      name: resourceData.name,
+                  },
+              },
+          }
+            const { result } = await deleteResource(resourceDeletePayload)
+            toast.success('Resource deleted successfully')
+            refreshData()
+            //toggleCodeEditorView(false)
+            //closePopup(true)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoader(false)
+        }
     }
 
     return (
@@ -47,7 +75,7 @@ export default function ResourceBrowserActionMenu({ resourceData, nodeType }: Re
                                 </span>
                             </>
                         )}
-                        <span className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50" onClick={() => {}}>
+                        <span className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50" onClick={handleDelete}>
                             <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
                             {RESOURCE_ACTION_MENU.delete}
                         </span>

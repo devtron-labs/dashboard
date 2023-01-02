@@ -45,6 +45,7 @@ export interface ResourceListPayloadType {
         resourceIdentifier: {
             groupVersionKind: GVKType
             namespace?: string
+            name?: string
         }
         patch?: string
     }
@@ -90,7 +91,7 @@ export interface SidebarType {
     k8SObjectList: K8SObjectType[]
     clusterId: string
     namespace: string
-    handleGroupHeadingClick:  (e)=> void
+    handleGroupHeadingClick: (e) => void
     nodeType: string
     setSelectedGVK: React.Dispatch<React.SetStateAction<GVKType>>
 }
@@ -108,11 +109,16 @@ export interface K8SResourceListType {
     selectedNamespace: OptionType
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
     resourceListLoader: boolean
+    refreshData: () => void
 }
 
 export interface ResourceBrowserActionMenuType {
+    clusterId: string
+    namespace: string
     resourceData: ResourceDetail
     nodeType: Nodes
+    selectedGVK: GVKType
+    refreshData: () => void
 }
 
 export interface ResourceListEmptyStateType {

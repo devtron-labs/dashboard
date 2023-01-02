@@ -282,6 +282,7 @@ export default function ResourceList() {
                             selectedNamespace={selectedNamespace}
                             setSelectedNamespace={setSelectedNamespace}
                             resourceListLoader={resourceListLoader}
+                            refreshData={refreshData}
                         />
                     </div>
                 </div>

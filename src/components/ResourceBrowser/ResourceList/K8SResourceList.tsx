@@ -25,6 +25,7 @@ export function K8SResourceList({
     selectedNamespace,
     setSelectedNamespace,
     resourceListLoader,
+    refreshData
 }: K8SResourceListType) {
     const { push } = useHistory()
 
@@ -150,7 +151,14 @@ export function K8SResourceList({
                 <div>{resourceData.ready}</div>
                 <div>{resourceData.restarts}</div>
                 <div>{getElapsedTime(new Date(resourceData.age))}</div>
-                <ResourceBrowserActionMenu resourceData={resourceData} nodeType={selectedGVK?.Kind} />
+                <ResourceBrowserActionMenu
+                    clusterId={clusterId}
+                    namespace={namespace}
+                    resourceData={resourceData}
+                    nodeType={selectedGVK?.Kind}
+                    selectedGVK={selectedGVK}
+                    refreshData={refreshData}
+                />
             </div>
         )
     }
@@ -189,7 +197,7 @@ export function K8SResourceList({
                         <div></div>
                     </div>
                     <div className="scrollable-resource-list">
-                    {filteredResourceList?.map((clusterData) => renderResourceRow(clusterData))}
+                        {filteredResourceList?.map((clusterData) => renderResourceRow(clusterData))}
                     </div>
                 </div>
             )

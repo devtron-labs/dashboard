@@ -22,3 +22,7 @@ export const getResourceGroupList = (clusterId: string): Promise<APIResourceResp
 export const createNewResource = (resourceListPayload: CreateResourcePayload): Promise<CreateResourceResponse> => {
     return post(Routes.K8S_RESOURCE_CREATE, resourceListPayload)
 }
+
+export const deleteResource = (resourceListPayload: ResourceListPayloadType): Promise<CreateResourceResponse> => {
+    return post(Routes.DELETE_RESOURCE, resourceListPayload)
+}
