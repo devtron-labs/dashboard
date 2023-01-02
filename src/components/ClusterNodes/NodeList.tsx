@@ -8,6 +8,7 @@ import {
     handleUTCTime,
     Pagination,
     Progressing,
+    filterImageList,
     showError,
     useBreadcrumb,
 } from '../common'
@@ -19,6 +20,7 @@ import {
     ERROR_TYPE,
     ClusterListType,
     NodeDetail,
+    ImageList,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -70,6 +72,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [showTerminal, setTerminal] = useState<boolean>(false)
     const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
+    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
     const pageSize = 15
 
@@ -656,6 +659,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const openTerminal = (clusterData): void => {
         setSelectedNode(clusterData.name)
+        setNodeImageList(filterImageList(imageList,clusterData.k8sVersion))
         setTerminal(true)
     }
 
@@ -717,7 +721,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     clusterId={Number(clusterId)}
                     nodeList={nodeList}
                     closeTerminal={closeTerminal}
-                    clusterImageList={imageList}
+                    clusterImageList={nodeImageList}
                     namespaceList={namespaceList[clusterName]}
                     node={selectedNode}
                     setSelectedNode={setSelectedNode}
