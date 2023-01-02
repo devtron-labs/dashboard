@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useHistory, useParams, useLocation } from 'react-router'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceType, GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
+import { ApiResourceType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
@@ -44,6 +44,7 @@ export default function ResourceList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
+    const location = useLocation()
 
     useEffect(() => {
         getClusterList()
@@ -59,7 +60,13 @@ export default function ResourceList() {
         if (selectedResource) {
             getResourceListData()
         }
-    }, [selectedResource, namespace])
+    }, [selectedResource])
+
+    useEffect(() => {
+        if (selectedResource.namespaced) {
+            getResourceListData()
+        }
+    }, [namespace])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -177,14 +184,18 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean): void => {
         setSelectedCluster(selected)
         getNamespaceList(selected.value)
-        const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
+        let path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
         if (fromClusterSelect) {
             replace({
-                pathname: path,
+                pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`,
             })
         } else {
+            if (namespace !== ALL_NAMESPACE_OPTION.value) {
+                path = location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`)
+            }
+            const splittedPath = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
             push({
-                pathname: path,
+                pathname:  location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`),
             })
         }
     }
