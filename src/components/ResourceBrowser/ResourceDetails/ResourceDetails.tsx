@@ -91,12 +91,18 @@ export default function ResourceDetails({
             </div>
             <Switch>
                 <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
-                    <ManifestComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />
+                    <ManifestComponent
+                        selectedTab={handleSelectedTab}
+                        isDeleted={isDeleted}
+                        isResourceBrowserView={true}
+                        selectedResource={selectedResource}
+                    />
                 </Route>
                 <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
                     <EventsComponent
                         selectedTab={handleSelectedTab}
                         isDeleted={isDeleted}
+                        isResourceBrowserView={true}
                         selectedResource={selectedResource}
                     />
                 </Route>

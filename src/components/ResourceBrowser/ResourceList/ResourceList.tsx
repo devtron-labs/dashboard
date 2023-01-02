@@ -133,6 +133,8 @@ export default function ResourceList() {
         return <Progressing pageLoader />
     }
 
+    const selectedNode = resourceList.find((_resource) => _resource.name === node)
+
     return (
         <div className="bcn-0">
             <PageHeader headerName="Kubernetes object browser" />
@@ -140,11 +142,12 @@ export default function ResourceList() {
                 selectedResource={
                     {
                         clusterId: Number(clusterId),
-                        group: selectedGVK.Group,
-                        version: selectedGVK.Version,
-                        kind: kind,
-                        namespace: namespace === 'all' ? '' : namespace,
-                        name: node,
+                        group: selectedGVK?.Group,
+                        version: selectedGVK?.Version,
+                        kind: selectedGVK?.Kind,
+                        namespace: selectedNode?.namespace,
+                        name: selectedNode?.name,
+                        status: selectedNode?.status
                     } as SelectedResourceType
                 }
                 logSearchTerms={logSearchTerms}

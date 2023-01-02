@@ -383,10 +383,10 @@ export interface SelectedResourceType {
     kind: string
     namespace: string
     name: string
-    updatedManifest?: string
+    status?: string
 }
 
-export interface EventsPropsType {
+export interface ResourceInfoActionPropsType {
     selectedTab: (_tabName: string, _url: string) => void
     isDeleted: boolean
     isResourceBrowserView?: boolean

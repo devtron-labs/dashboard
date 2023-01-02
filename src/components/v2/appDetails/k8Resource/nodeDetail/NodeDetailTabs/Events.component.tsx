@@ -3,13 +3,18 @@ import { useParams, useRouteMatch } from 'react-router'
 import IndexStore from '../../../index.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { getEvent } from '../nodeDetail.api'
-import { EventsPropsType, NodeType, SelectedResourceType } from '../../../appDetails.type'
+import { ResourceInfoActionPropsType, NodeType } from '../../../appDetails.type'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { showError } from '../../../../../common'
 import { EventsTable } from './EventsTable'
 import { MESSAGING_UI } from '../../../../../../config/constants'
 
-function EventsComponent({ selectedTab, isDeleted, isResourceBrowserView, selectedResource }: EventsPropsType) {
+function EventsComponent({
+    selectedTab,
+    isDeleted,
+    isResourceBrowserView,
+    selectedResource,
+}: ResourceInfoActionPropsType) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>()
     const { url } = useRouteMatch()
     const [events, setEvents] = useState([])
