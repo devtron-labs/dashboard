@@ -46,7 +46,7 @@ export function Sidebar({
                             {k8sObject.child.map((gvk) => (
                                 <span
                                     key={gvk.Kind}
-                                    className={`dc__no-decor fs-14 pointer flex left w-100 fw-4 pt-6 pr-8 pb-6 pl-8 ${
+                                    className={`dc__no-decor fs-14 pointer flex left w-100 fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                                         nodeType === gvk.Kind.toLowerCase() ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
                                     }`}
                                     data-group={gvk.Group}

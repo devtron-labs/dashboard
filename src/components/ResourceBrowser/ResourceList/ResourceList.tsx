@@ -29,8 +29,8 @@ export default function ResourceList() {
     }>()
     const { replace, push } = useHistory()
     const { path, url } = useRouteMatch()
-    const [loader, setLoader] = useState(false)
-    const [resourceListLoader, setResourceListLoader] = useState(false)
+    const [loader, setLoader] = useState(true)
+    const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
     const [k8SObjectList, setK8SObjectList] = useState<K8SObjectType[]>([])
     const [k8SObjectListIndexMap, setK8SObjectListIndexMap] = useState<Map<string, number>>()
@@ -94,6 +94,8 @@ export default function ResourceList() {
             if (_selectedCluster) {
                 setSelectedCluster(_selectedCluster || _clusterOptions[0])
                 getNamespaceList(_selectedCluster.value)
+            } else if (_clusterOptions.length === 1) {
+                onChangeCluster(_clusterOptions[0], true)
             }
         } catch (err) {
             showError(err)

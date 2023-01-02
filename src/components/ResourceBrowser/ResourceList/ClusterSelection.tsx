@@ -72,17 +72,19 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                     <img className="w-250" src={emptyCustomChart} alt="No cluster selected" />
                     <div className="fw-6 fs-16 cn-9 mt-16">Select a cluster to view Kubernetes resources</div>
                 </div>
-                <div className="en-2 bw-1 bcn-0">
+                <div className="en-2 bw-1 bcn-0 br-4">
                     {renderSearch()}
-                    {filteredClusterList?.map((cluster) => (
+                    {filteredClusterList?.map((cluster, index) => (
                         <div
-                            className="flex left dc__border-bottom pt-12 pr-16 pb-12 pl-16 pointer"
+                            className={`flex left pt-12 pr-16 pb-12 pl-16 pointer dc__hover-n50 ${
+                                index === filteredClusterList.length - 1 ? 'dc__bottom-radius-4' : ' dc__border-bottom'
+                            }`}
                             data-label={cluster.label}
                             data-value={cluster.value}
                             onClick={selectCluster}
                         >
-                          <ClusterIcon className="icon-dim-16 scb-5 mr-8"/>
-                            <div className="fw-4 fs-13 cn-5">{cluster.label}</div>
+                            <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
+                            <div className="fw-4 fs-13 cb-5">{cluster.label}</div>
                         </div>
                     ))}
                 </div>

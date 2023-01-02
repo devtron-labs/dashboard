@@ -81,7 +81,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="create-resource-container bcn-0 h-100">
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Create Kubernetes object</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Create Kubernetes Resource</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <CloseIcon className="icon-dim-24" />
                     </button>
@@ -91,7 +91,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                     {showCodeEditorView ? (
                         <>
                             <InfoColourBar
-                                message="Multi YAML supported. You can create/update multiple K8s objects at once. Make sure you separate the object YAMLs by ‘---’."
+                                message="Multi YAML supported. You can create/update multiple K8s resources at once. Make sure you separate the resource YAMLs by ‘---’."
                                 classname="info_bar dc__no-border-radius dc__no-top-border"
                                 Icon={InfoIcon}
                             />

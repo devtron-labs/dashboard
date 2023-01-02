@@ -50,8 +50,8 @@ export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
     AggregationKeys.Workloads,
     AggregationKeys['Config & Storage'],
     AggregationKeys.Networking,
-    AggregationKeys['Custom Resource'],
     AggregationKeys.RBAC,
     AggregationKeys.Administration,
     AggregationKeys.Other,
+    AggregationKeys['Custom Resource'],
 ]
