@@ -38,14 +38,11 @@ function NodeTreeDetailTab({
         <>
             {appDetails.resourceTree?.nodes?.length > 0 && (
                 <>
-                    <div
-                        className="resource-tree-wrapper flexbox pl-20 pr-20"
-                        style={{ outline: 'none' }}
-                        tabIndex={0}
-                        ref={tabRef}
-                    >
-                        <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
-                    </div>
+                    <NodeTreeTabList
+                        logSearchTerms={logSearchTerms}
+                        setLogSearchTerms={setLogSearchTerms}
+                        tabRef={tabRef}
+                    />
                     <Switch>
                         <Route
                             path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}

@@ -304,7 +304,7 @@ export default function ResourceList() {
                                 />
                             </div>
                         </Route>
-                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}/`} />
+                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </div>
             )}
