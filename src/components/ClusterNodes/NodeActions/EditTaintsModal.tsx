@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Drawer, Progressing, showError } from '../../common'
+import { Drawer, Progressing, showError, stopPropagation } from '../../common'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
 import ReactSelect from 'react-select'
@@ -16,6 +17,7 @@ import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
+import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()
@@ -69,7 +71,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
             let validateTaintKey = validationRules.taintKey(element.key)
             if (uniqueTaintMap.get(uniqueKey)) {
                 if (validateTaintKey.isValid) {
-                    validateTaintKey = { isValid: false, message: 'Duplicate taint key' }
+                    validateTaintKey = { isValid: false, message: 'Key and effect must be a unique combination.' }
                 }
             } else {
                 uniqueTaintMap.set(uniqueKey, true)
@@ -113,6 +115,44 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         }
     }
 
+    const tippyContent = () => {
+        return (
+            <div className="p-12 fs-13">
+                <div>{EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.message}</div>
+                <ul className="p-0" style={{ listStyleType: 'none' }}>
+                    {EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.messageList.map((message, index) => (
+                        <li key={`msg-${index}`}>{message}</li>
+                    ))}
+                </ul>
+            </div>
+        )
+    }
+
+    const RenderInfoMessage = () => {
+        return (
+            <div className="fs-13 fw-4 lh-20">
+                <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-400"
+                    placement="top"
+                    Icon={HelpIcon}
+                    iconClass="fcv-5"
+                    heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
+                    infoText=""
+                    showCloseButton={true}
+                    trigger="click"
+                    interactive={true}
+                    additionalContent={tippyContent()}
+                >
+                    <span className="cb-5 cursor" onClick={stopPropagation}>
+                        {EDIT_TAINTS_MODAL_MESSAGING.infoLinkText}
+                    </span>
+                </TippyCustomized>
+            </div>
+        )
+    }
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bcn-0 h-100">
@@ -126,7 +166,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                 </div>
                 <div className="pt-16 pr-20 pb-16 pl-20" style={{ height: 'calc(100vh - 125px)' }}>
                     <InfoColourBar
-                        message={EDIT_TAINTS_MODAL_MESSAGING.infoText}
+                        message={<RenderInfoMessage />}
                         classname="info_bar mb-16"
                         Icon={InfoIcon}
                         iconClass="icon-dim-20"

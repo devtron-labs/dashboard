@@ -13,7 +13,7 @@ export class ValidationRules {
             } else if (key.indexOf('/') !== -1) {
                 const keyArr = key.split('/')
                 if (keyArr.length > 2) {
-                    return { message: 'Maximum 1 ( / ) allowed', isValid: false }
+                    return { message: 'Maximum one ( / ) allowed', isValid: false }
                 } else if (!keyPrefixRegex.test(keyArr[0])) {
                     return { message: 'Invalid prefix in key', isValid: false }
                 } else if (!keyNameRegex.test(keyArr[1])) {
