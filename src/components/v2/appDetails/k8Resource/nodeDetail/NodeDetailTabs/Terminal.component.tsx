@@ -23,7 +23,7 @@ function TerminalComponent({
     isResourceBrowserView,
     selectedResource,
 }: TerminalComponentProps) {
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const containers = isResourceBrowserView ? selectedResource.containers : flatContainers(podMetaData).sort()
@@ -35,7 +35,7 @@ function TerminalComponent({
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url)
-    }, [params.podName, selectedResource?.name])
+    }, [params.podName, params.node, selectedResource?.name])
 
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
@@ -130,7 +130,7 @@ function TerminalComponent({
             </div>
             <div className="terminal-view-wrapper">
                 <TerminalView
-                    nodeName={isResourceBrowserView ? selectedResource.name : params.podName}
+                    nodeName={isResourceBrowserView ? params.node : params.podName}
                     containerName={selectedContainerName}
                     socketConnection={socketConnection}
                     isTerminalCleared={terminalCleared}

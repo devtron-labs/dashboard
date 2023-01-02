@@ -13,10 +13,10 @@ import { Nodes } from '../../app/types'
 
 export default function ResourceBrowserActionMenu({
     resourceData,
-    kind,
+    nodeType,
 }: {
     resourceData: ResourceDetail
-    kind: Nodes
+    nodeType: Nodes
 }) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -41,7 +41,7 @@ export default function ResourceBrowserActionMenu({
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             {RESOURCE_ACTION_MENU.Events}
                         </span>
-                        {kind === Nodes.Pod.toLowerCase() && (
+                        {nodeType === Nodes.Pod.toLowerCase() && (
                             <>
                                 <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
                                     <LogAnalyzerIcon className="icon-dim-16 mr-8" />

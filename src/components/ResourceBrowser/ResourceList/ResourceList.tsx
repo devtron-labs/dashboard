@@ -22,10 +22,10 @@ import { CreateResource } from './CreateResource'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
-    const { clusterId, namespace, kind, node } = useParams<{
+    const { clusterId, namespace, nodeType, node } = useParams<{
         clusterId: string
         namespace: string
-        kind: string
+        nodeType: string
         node: string
     }>()
     const { replace, push } = useHistory()
@@ -40,7 +40,7 @@ export default function ResourceList() {
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const [selectedResource, setSelectedResource] = useState(kind || '')
+    const [selectedResource, setSelectedResource] = useState(nodeType || '')
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
@@ -235,13 +235,13 @@ export default function ResourceList() {
                     selectedResource={
                         {
                             clusterId: Number(clusterId),
-                            group: selectedGVK?.Group,
-                            version: selectedGVK?.Version,
-                            kind: selectedGVK?.Kind,
-                            namespace: selectedNode?.namespace,
-                            name: selectedNode?.name,
-                            status: selectedNode?.status,
-                            containers: selectedNode?.containers,
+                            group: selectedGVK?.Group || '',
+                            version: selectedGVK?.Version || '',
+                            kind: selectedGVK?.Kind || '',
+                            namespace: selectedNode?.namespace || '',
+                            name: selectedNode?.name || '',
+                            status: selectedNode?.status || '',
+                            containers: selectedNode?.containers || [],
                         } as SelectedResourceType
                     }
                     logSearchTerms={logSearchTerms}

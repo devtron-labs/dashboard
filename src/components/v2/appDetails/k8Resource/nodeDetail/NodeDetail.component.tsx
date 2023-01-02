@@ -25,25 +25,22 @@ function NodeDetailComponent({
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
     const { path, url } = useRouteMatch()
 
     useEffect(() => {
-        const _tabs = getNodeDetailTabs(NodeType.Pod) // (kind as NodeType);
+        const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
         setTabs(_tabs)
-    }, [params.nodeType, selectedResource?.kind])
+    }, [params.nodeType])
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound =
-            isResourceBrowserView && selectedResource
-                ? AppDetailsStore.markAppDetailsTabActiveByIdentifier(
-                      selectedResource.name,
-                      selectedResource.kind,
-                      _url,
-                  )
-                : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+        const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(
+            isResourceBrowserView ? params.node : params.podName,
+            params.nodeType,
+            _url,
+        )
 
         if (!isTabFound) {
             setTimeout(() => {
@@ -55,12 +52,11 @@ function NodeDetailComponent({
                     _urlToCreate = _urlToCreate + '?container=' + query.get('container')
                 }
 
-                if (isResourceBrowserView && selectedResource) {
-                    AppDetailsStore.addAppDetailsTab(selectedResource.kind, selectedResource.name, _urlToCreate)
-                } else {
-                    AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-                }
-
+                AppDetailsStore.addAppDetailsTab(
+                    params.nodeType,
+                    isResourceBrowserView ? params.node : params.podName,
+                    _urlToCreate,
+                )
                 setSelectedTabName(_tabName)
             }, 500)
         } else if (selectedTabName !== _tabName) {
@@ -71,9 +67,7 @@ function NodeDetailComponent({
     const currentTab = applicationObjectTabs.filter((tab) => {
         return (
             tab.name.toLowerCase() ===
-            (isResourceBrowserView && selectedResource
-                ? selectedResource.kind + '/...' + selectedResource.name.slice(-6)
-                : params.nodeType + '/...' + params.podName.slice(-6))
+            params.nodeType + '/...' + (isResourceBrowserView ? params.node : params.podName).slice(-6)
         )
     })
     const isDeleted =

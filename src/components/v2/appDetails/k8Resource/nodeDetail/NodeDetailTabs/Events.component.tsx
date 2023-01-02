@@ -15,7 +15,7 @@ function EventsComponent({
     isResourceBrowserView,
     selectedResource,
 }: ResourceInfoActionPropsType) {
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
@@ -28,7 +28,7 @@ function EventsComponent({
         if (!appDetails) {
             //Refresh case -- need to sent to k8 , histrory push
         }
-    }, [params.podName])
+    }, [params.podName, params.node])
 
     useEffect(() => {
         try {
@@ -46,7 +46,7 @@ function EventsComponent({
             setEvents([])
             setLoading(false)
         }
-    }, [params.podName, params.nodeType])
+    }, [params.podName, params.node, params.nodeType])
 
     return (
         <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>

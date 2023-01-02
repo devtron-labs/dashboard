@@ -32,10 +32,10 @@ export function K8SResourceList({
 
     const location = useLocation()
     const match = useRouteMatch()
-    const { clusterId, namespace, kind } = useParams<{
+    const { clusterId, namespace, nodeType } = useParams<{
         clusterId: string
         namespace: string
-        kind: string
+        nodeType: string
         node: string
     }>()
     const [searchText, setSearchText] = useState('')
@@ -101,7 +101,7 @@ export function K8SResourceList({
                 </div>
                 <div className="flex">
                     <ReactSelect
-                    className="w-200"
+                        className="w-200"
                         placeholder="Select Containers"
                         options={clusterOptions}
                         value={selectedCluster}
@@ -148,7 +148,7 @@ export function K8SResourceList({
                 <div>{resourceData.ready}</div>
                 <div>{resourceData.restarts}</div>
                 <div>{getElapsedTime(new Date(resourceData.age))}</div>
-                <ResourceBrowserActionMenu resourceData={resourceData} kind={kind as Nodes} />
+                <ResourceBrowserActionMenu resourceData={resourceData} nodeType={nodeType as Nodes} />
             </div>
         )
     }
@@ -157,14 +157,14 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${kind}. Try selecting a different cluster or namespace.`}
+                    subTitle={`We could not find any ${nodeType}. Try selecting a different cluster or namespace.`}
                 />
             )
         } else {
             return (
                 <ResourceListEmptyState
                     title="No matching results"
-                    subTitle={`We could not find any matching ${kind}.`}
+                    subTitle={`We could not find any matching ${nodeType}.`}
                     actionHandler={clearSearch}
                 />
             )
