@@ -9,6 +9,7 @@ export function Sidebar({
     k8SObjectList,
     handleGroupHeadingClick,
     setSelectedResource,
+    updateSelectionData,
 }: SidebarType) {
     const { push } = useHistory()
 
@@ -19,20 +20,22 @@ export function Sidebar({
       node: string
   }>()
     const selectNode = (e): void => {
-        const _selectedResource = e.currentTarget.dataset.kind.toLowerCase()
+        const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         push(
             `${URLS.RESOURCE_BROWSER}/${clusterId}${namespace ? `/${namespace}` : ''}${
-                _selectedResource ? `/${URLS.APP_DETAILS_K8}/${_selectedResource}` : ''
+                _selectedKind ? `/${_selectedKind}` : ''
             }`,
         )
-        setSelectedResource({
-            namespaced: _selectedResource.namespaced,
+        const _selectedResource = {
+            namespaced: e.currentTarget.dataset.namespaced === 'true',
             gvk: {
                 Group: e.currentTarget.dataset.group,
                 Version: e.currentTarget.dataset.version,
                 Kind: e.currentTarget.dataset.kind,
             },
-        })
+        }
+        setSelectedResource(_selectedResource)
+        updateSelectionData(_selectedResource)
     }
     return (
         <div className="k8s-object-container">

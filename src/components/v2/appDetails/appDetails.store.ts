@@ -44,7 +44,7 @@ const AppDetailsStore = {
         aots.push(
             addAOT(
                 AppDetailsTabs.k8s_Resources,
-                `${url}${URLS.APP_DETAILS_K8}${isResourceBrowserView && nodeType ? `/${nodeType}` : ''}`,
+                `${url}${isResourceBrowserView ? nodeType : URLS.APP_DETAILS_K8}`,
                 !isLogAnalyserURL,
                 AppDetailsTabs.k8s_Resources,
             ),

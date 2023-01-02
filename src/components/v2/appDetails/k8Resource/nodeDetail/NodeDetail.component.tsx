@@ -4,7 +4,7 @@ import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
-import { NavLink, Route, Switch } from 'react-router-dom'
+import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from './nodeDetail.type'
 import { getNodeDetailTabs } from './nodeDetail.util'
@@ -149,6 +149,7 @@ function NodeDetailComponent({
                         selectedResource={selectedResource}
                     />
                 </Route>
+                <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
             </Switch>
         </React.Fragment>
     )

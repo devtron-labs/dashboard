@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
@@ -28,7 +28,7 @@ export default function ResourceList() {
         node: string
     }>()
     const { replace, push } = useHistory()
-    const { path, url } = useRouteMatch()
+    const location = useLocation()
     const [loader, setLoader] = useState(true)
     const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
@@ -45,7 +45,7 @@ export default function ResourceList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
-    const location = useLocation()
+    const [selectionData, setSelectionData] = useState<Record<string, ApiResourceType>>()
 
     useEffect(() => {
         getClusterList()
@@ -70,7 +70,15 @@ export default function ResourceList() {
     }, [namespace])
 
     useEffect(() => {
-        AppDetailsStore.initAppDetailsTabs(url, false, false)
+        if (clusterId && namespace) {
+            AppDetailsStore.initAppDetailsTabs(
+                `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
+                false,
+                false,
+                true,
+                nodeType,
+            )
+        }
     }, [clusterId, namespace])
 
     useEffect(() => {
@@ -136,16 +144,20 @@ export default function ResourceList() {
                     _k8SObjectList[0].isExpanded = true
                     const _selectedResourceParam = _k8SObjectList[0].child[0].Kind.toLowerCase()
                     replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace || ALL_NAMESPACE_OPTION.value}/${
-                            URLS.APP_DETAILS_K8
+                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+                            namespace || ALL_NAMESPACE_OPTION.value
                         }/${_selectedResourceParam}`,
                     })
                 }
                 setK8SObjectList(_k8SObjectList)
                 setK8SObjectListIndexMap(_k8SObjectListIndexMap)
-                setSelectedResource(
-                    _selectedResource || { namespaced: _k8SObjectList[0].namespaced, gvk: _k8SObjectList[0].child[0] },
-                )
+
+                const defaultSelected = _selectedResource || {
+                    namespaced: _k8SObjectList[0].namespaced,
+                    gvk: _k8SObjectList[0].child[0],
+                }
+                setSelectedResource(defaultSelected)
+                updateSelectionData(defaultSelected)
             }
         } catch (err) {
             showError(err)
@@ -193,7 +205,7 @@ export default function ResourceList() {
         getNamespaceList(selected.value)
         if (fromClusterSelect) {
             replace({
-                pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}/${URLS.APP_DETAILS_K8}`,
+                pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`,
             })
         } else {
             push({
@@ -204,7 +216,18 @@ export default function ResourceList() {
 
     const refreshData = (): void => {
         setSelectedResource(null)
+        setSelectionData(null)
         getSidebarData()
+    }
+
+    const updateSelectionData = (_selected: ApiResourceType) => {
+        setSelectionData((prevData) => ({
+            ...prevData,
+            [_selected.gvk.Kind.toLowerCase()]: {
+                namespaced: _selected.namespaced,
+                gvk: _selected.gvk,
+            },
+        }))
     }
 
     const showResourceModal = (): void => {
@@ -222,7 +245,21 @@ export default function ResourceList() {
         return <Progressing pageLoader />
     }
 
-    const selectedNode = resourceList.find((_resource) => _resource.name === node)
+    const getSelectedResourceData = () => {
+        const selectedNode = resourceList.find((_resource) => _resource.name === node)
+        const _selectedResource = selectionData?.[nodeType]?.gvk || selectedResource?.gvk
+
+        return {
+            clusterId: Number(clusterId),
+            group: _selectedResource?.Group || '',
+            version: _selectedResource?.Version || '',
+            kind: _selectedResource?.Kind || '',
+            namespace: selectedNode?.namespace || '',
+            name: selectedNode?.name || '',
+            status: selectedNode?.status || '',
+            containers: selectedNode?.containers || [],
+        } as SelectedResourceType
+    }
 
     return (
         <div className="resource-browser-container">
@@ -255,54 +292,40 @@ export default function ResourceList() {
                             )}
                         </div>
                     </div>
-                    <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:node`}>
-                            <div className="resource-details-container">
-                                <NodeDetailComponent
-                                    isResourceBrowserView={true}
-                                    selectedResource={
-                                        {
-                                            clusterId: Number(clusterId),
-                                            group: selectedResource?.gvk?.Group || '',
-                                            version: selectedResource?.gvk?.Version || '',
-                                            kind: selectedResource?.gvk?.Kind || '',
-                                            namespace: selectedNode?.namespace || '',
-                                            name: selectedNode?.name || '',
-                                            status: selectedNode?.status || '',
-                                            containers: selectedNode?.containers || [],
-                                        } as SelectedResourceType
-                                    }
-                                    logSearchTerms={logSearchTerms}
-                                    setLogSearchTerms={setLogSearchTerms}
-                                />
-                            </div>
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType?`}>
-                            <div className="resource-browser bcn-0 pl-8">
-                                <Sidebar
-                                    k8SObjectList={k8SObjectList}
-                                    handleGroupHeadingClick={handleGroupHeadingClick}
-                                    setSelectedResource={setSelectedResource}
-                                />
-                                <K8SResourceList
-                                    selectedResource={selectedResource}
-                                    resourceList={resourceList}
-                                    filteredResourceList={filteredResourceList}
-                                    setFilteredResourceList={setFilteredResourceList}
-                                    noResults={noResults}
-                                    clusterOptions={clusterOptions}
-                                    selectedCluster={selectedCluster}
-                                    onChangeCluster={onChangeCluster}
-                                    namespaceOptions={namespaceOptions}
-                                    selectedNamespace={selectedNamespace}
-                                    setSelectedNamespace={setSelectedNamespace}
-                                    resourceListLoader={resourceListLoader}
-                                    getResourceListData={getResourceListData}
-                                />
-                            </div>
-                        </Route>
-                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
-                    </Switch>
+                    {node ? (
+                        <div className="resource-details-container">
+                            <NodeDetailComponent
+                                isResourceBrowserView={true}
+                                selectedResource={getSelectedResourceData()}
+                                logSearchTerms={logSearchTerms}
+                                setLogSearchTerms={setLogSearchTerms}
+                            />
+                        </div>
+                    ) : (
+                        <div className="resource-browser bcn-0 pl-8">
+                            <Sidebar
+                                k8SObjectList={k8SObjectList}
+                                handleGroupHeadingClick={handleGroupHeadingClick}
+                                setSelectedResource={setSelectedResource}
+                                updateSelectionData={updateSelectionData}
+                            />
+                            <K8SResourceList
+                                selectedResource={selectedResource}
+                                resourceList={resourceList}
+                                filteredResourceList={filteredResourceList}
+                                setFilteredResourceList={setFilteredResourceList}
+                                noResults={noResults}
+                                clusterOptions={clusterOptions}
+                                selectedCluster={selectedCluster}
+                                onChangeCluster={onChangeCluster}
+                                namespaceOptions={namespaceOptions}
+                                selectedNamespace={selectedNamespace}
+                                setSelectedNamespace={setSelectedNamespace}
+                                resourceListLoader={resourceListLoader}
+                                getResourceListData={getResourceListData}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
             {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}

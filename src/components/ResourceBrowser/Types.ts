@@ -91,6 +91,7 @@ export interface SidebarType {
     k8SObjectList: K8SObjectType[]
     handleGroupHeadingClick: (e) => void
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceType>>
+    updateSelectionData: (_selected: ApiResourceType) => void
 }
 
 export interface K8SResourceListType {
