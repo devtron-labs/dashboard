@@ -63,7 +63,7 @@ export default function ResourceBrowserActionMenu({ clusterId, namespace, resour
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             {RESOURCE_ACTION_MENU.Events}
                         </span>
-                        {nodeType === Nodes.Pod.toLowerCase() && (
+                        {nodeType === Nodes.Pod && (
                             <>
                                 <span className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50" onClick={() => {}}>
                                     <LogAnalyzerIcon className="icon-dim-16 mr-8" />
