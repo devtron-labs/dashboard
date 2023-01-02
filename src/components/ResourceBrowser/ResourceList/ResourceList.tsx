@@ -14,7 +14,7 @@ import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { CreateResource } from './CreateResource'
-import AppDetailsStore from '../../v2/appDetails/appDetails.store'
+import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
@@ -69,17 +69,30 @@ export default function ResourceList() {
         }
     }, [namespace])
 
+    // Revisit
     useEffect(() => {
         if (clusterId && namespace) {
-            AppDetailsStore.initAppDetailsTabs(
-                `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
-                false,
-                false,
-                true,
-                nodeType,
-            )
+            if (!nodeType || !selectedResource) {
+                AppDetailsStore.initAppDetailsTabs(
+                    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
+                    false,
+                    false,
+                    true,
+                    nodeType,
+                )
+            } else if (selectedResource?.gvk?.Kind) {
+                AppDetailsStore.updateK8sResourcesTabUrl(
+                    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${selectedResource.gvk.Kind.toLowerCase()}`,
+                )
+            }
         }
-    }, [clusterId, namespace])
+    }, [clusterId, namespace, selectedResource?.gvk?.Kind])
+
+    useEffect(() => {
+        if (selectedResource && !node) {
+            AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        }
+    }, [location.pathname])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -277,20 +290,22 @@ export default function ResourceList() {
                         <div className="resource-browser-tab flex left pt-10">
                             <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                         </div>
-                        <div className="fs-13 flex pt-12 pb-12">
-                            <div
-                                className="pointer cb-5 fw-6 fs-13 flexbox pr-12 dc__border-right"
-                                onClick={showResourceModal}
-                            >
-                                <Add className="icon-dim-16 scb-5 mr-5 mt-3" /> Create
-                            </div>
-                            {lastDataSyncTimeString && (
-                                <div className="ml-12 flex">
-                                    <span>{lastDataSyncTimeString}</span>
-                                    <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
+                        {!node && (
+                            <div className="fs-13 flex pt-12 pb-12">
+                                <div
+                                    className="pointer cb-5 fw-6 fs-13 flexbox pr-12 dc__border-right"
+                                    onClick={showResourceModal}
+                                >
+                                    <Add className="icon-dim-16 scb-5 mr-5 mt-3" /> Create
                                 </div>
-                            )}
-                        </div>
+                                {lastDataSyncTimeString && (
+                                    <div className="ml-12 flex">
+                                        <span>{lastDataSyncTimeString}</span>
+                                        <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                     {node ? (
                         <div className="resource-details-container">

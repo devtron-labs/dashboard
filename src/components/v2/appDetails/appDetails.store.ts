@@ -161,6 +161,15 @@ const AppDetailsStore = {
         }
         applicationObjectTabsSubject.next([...applicationObjectTabs]);
     },
+    updateK8sResourcesTabUrl: (url: string) => {
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        for (const tab of applicationObjectTabs) {
+            if (tab.name === AppDetailsTabs.k8s_Resources) {
+                tab.url = url
+            }
+        }
+        applicationObjectTabsSubject.next([...applicationObjectTabs]);
+    },
     setNodeTreeActiveParentNode: (_n: iNode) => {
         _nodeTreeActiveParentNode = _n;
     },
