@@ -178,7 +178,7 @@ export function K8SResourceList({
             return renderEmptyPage()
         } else {
             return (
-                <div className="dc__overflow-scroll" style={{ height: `calc('100vh'} - 125px)` }}>
+                <div>
                     <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                         <div>Name</div>
                         <div>STATUS</div>
@@ -188,7 +188,9 @@ export function K8SResourceList({
                         <div>AGE</div>
                         <div></div>
                     </div>
+                    <div className="scrollable-resource-list">
                     {filteredResourceList?.map((clusterData) => renderResourceRow(clusterData))}
+                    </div>
                 </div>
             )
         }

@@ -12,7 +12,7 @@
         grid-template-columns: 220px auto;
         column-gap: 16px;
         .k8s-object-container {
-            height: calc(100vh - 48px);
+            height: calc(100vh - 92px);
             overflow: auto;
             .resource-tree-object:hover {
                 background-color: var(--N50);
@@ -21,8 +21,12 @@
         }
         .resource-list-container {
             &.no-result-container {
-                height: calc(100vh - 48px);
+                height: calc(100vh - 155px);
                 overflow: hidden;
+            }
+            .scrollable-resource-list {
+                height: calc(100vh - 192px);
+                overflow: auto;
             }
             .resource-list-row {
                 display: grid;
