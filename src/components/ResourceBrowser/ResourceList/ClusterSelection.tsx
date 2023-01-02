@@ -46,7 +46,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
     const renderSearch = (): JSX.Element => {
         return (
             <div className="pt-12 pr-16 pb-12 pl-16">
-                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 w-100">
+                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 w-100-imp">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"

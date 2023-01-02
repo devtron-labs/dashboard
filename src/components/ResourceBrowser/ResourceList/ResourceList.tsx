@@ -17,6 +17,8 @@ import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_c
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { CreateResource } from './CreateResource'
 import '../ResourceBrowser.scss'
+import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
+import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{

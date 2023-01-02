@@ -1,3 +1,5 @@
+@import '../v2/appDetails/k8Resource/k8resources.scss';
+
 .resource-browser-container {
     .resource-browser-tab {
         .active {
@@ -7,56 +9,67 @@
             border-top-left-radius: 8px;
         }
     }
+
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;
         column-gap: 16px;
+
         .k8s-object-container {
             height: calc(100vh - 92px);
             overflow: auto;
+
             .resource-tree-object:hover {
                 background-color: var(--N50);
                 color: var(--N900);
             }
         }
+
         .resource-list-container {
             &.no-result-container {
                 height: calc(100vh - 155px);
                 overflow: hidden;
             }
+
             .scrollable-resource-list {
                 height: calc(100vh - 192px);
                 overflow: auto;
             }
+
             .resource-list-row {
                 display: grid;
                 grid-template-columns: minmax(300px, auto) repeat(2, 150px) repeat(2, 60px) 100px 30px;
                 column-gap: 16px;
+
                 .menu-icon {
                     path:nth-child(2) {
                         fill: var(--N600);
                     }
                 }
+
                 .resource-status {
                     height: 12px;
                     width: 12px;
                 }
             }
         }
-        .cluster-selection-container {
-        }
+
+        .cluster-selection-container {}
     }
 }
+
 .create-resource-container {
     .created-resource-row {
         display: grid;
         grid-template-columns: 150px 200px 150px auto;
         grid-column-gap: 16px;
     }
+
     .created-resource-list {
         height: calc(100vh - 202px);
         min-height: 220px;
         overflow-y: auto;
+
         .created-resource-row {
             &:hover {
                 background-color: var(--N50);
