@@ -137,7 +137,7 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType {
-    imageList: string[]
+    imageList: ClusterImageList[]
     isSuperAdmin: boolean
     namespaceList: string[]
 }
@@ -147,7 +147,7 @@ export interface ClusterTerminalType {
     clusterName?: string
     nodeList: string[]
     closeTerminal?: () => void
-    clusterImageList: string[]
+    clusterImageList: ImageList[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
     node?: string
@@ -221,3 +221,15 @@ export interface NodeDrainRequest extends NodeActionRequest {
 export interface EditTaintsRequest extends NodeActionRequest {
   taints: TaintType[]
 }
+export interface ImageList {
+    name: string,
+    image: string,
+    description: string
+}
+
+export interface ClusterImageList {
+    groupId: string,
+    groupRegex: string,
+    imageList: ImageList[],
+}
+
