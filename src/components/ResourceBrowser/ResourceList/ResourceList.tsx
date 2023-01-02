@@ -63,7 +63,7 @@ export default function ResourceList() {
     }, [selectedResource])
 
     useEffect(() => {
-        if (selectedResource.namespaced) {
+        if (selectedResource?.namespaced) {
             getResourceListData()
         }
     }, [namespace])
