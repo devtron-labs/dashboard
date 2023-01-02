@@ -20,35 +20,35 @@ export const getResourceGroupList = (clusterId: string): Promise<APIResourceResp
 }
 
 export const createNewResource = (resourceListPayload: ResourceListPayloadType): Promise<CreateResourceResponse> => {
-    //return post(Routes.CREATE_RESOURCE, resourceListPayload)
-    return Promise.resolve({
-        code: 200,
-        status: 'trt',
-        result: [
-            {
-                kind: 'Service',
-                name: 'cd-central-api-devtron-prod-preview-service',
-                status: CreateResourceStatus.created,
-                message: 'Resource created',
-            },
-            {
-                kind: 'Service Monitor',
-                name: 'cd-central-api-devtron-prod-preview-service',
-                status: CreateResourceStatus.failed,
-                message: 'Resource with the name ‘cd-central-api-devtron-prod-preview-service’ already exists.',
-            },
-            {
-                kind: 'Service',
-                name: 'cd-central-api-devtron-prod-preview-service',
-                status: CreateResourceStatus.created,
-                message: 'Resource created',
-            },
-            {
-                kind: 'Service Monitor',
-                name: 'cd-central-api-devtron-prod-preview-service',
-                status: CreateResourceStatus.failed,
-                message: 'Resource with the name ‘cd-central-api-devtron-prod-preview-service’ already exists.',
-            },
-        ],
-    })
+    return post(Routes.CREATE_RESOURCE, resourceListPayload)
+    // return Promise.resolve({
+    //     code: 200,
+    //     status: 'trt',
+    //     result: [
+    //         {
+    //             kind: 'Service',
+    //             name: 'cd-central-api-devtron-prod-preview-service',
+    //             status: CreateResourceStatus.created,
+    //             message: 'Resource created',
+    //         },
+    //         {
+    //             kind: 'Service Monitor',
+    //             name: 'cd-central-api-devtron-prod-preview-service',
+    //             status: CreateResourceStatus.failed,
+    //             message: 'Resource with the name ‘cd-central-api-devtron-prod-preview-service’ already exists.',
+    //         },
+    //         {
+    //             kind: 'Service',
+    //             name: 'cd-central-api-devtron-prod-preview-service',
+    //             status: CreateResourceStatus.created,
+    //             message: 'Resource created',
+    //         },
+    //         {
+    //             kind: 'Service Monitor',
+    //             name: 'cd-central-api-devtron-prod-preview-service',
+    //             status: CreateResourceStatus.failed,
+    //             message: 'Resource with the name ‘cd-central-api-devtron-prod-preview-service’ already exists.',
+    //         },
+    //     ],
+    // })
 }

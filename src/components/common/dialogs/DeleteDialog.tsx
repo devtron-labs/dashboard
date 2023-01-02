@@ -2,15 +2,7 @@ import React from 'react';
 import warn from '../../../assets/img/warning-medium.svg';
 import { Progressing } from '../icons/Progressing';
 import ConfirmationDialog from './ConfirmationDialog';
-
-export interface DeleteDialogProps {
-    title: string;
-    description?: string;
-    closeDelete: () => void;
-    delete: () => any;
-    deletePrefix?: string
-    apiCallInProgress?: boolean
-}
+import { DeleteDialogProps } from './Types';
 
 export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.FC<any> } = function (props) {
 
@@ -26,7 +18,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
             <div className="flex right">
                 <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={props.closeDelete} disabled={props.apiCallInProgress}>Cancel</button>
                 <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={() => props.delete()} disabled={props.apiCallInProgress}>
-                    {props.apiCallInProgress ? <Progressing /> :  `${props.deletePrefix || ''}Delete`}
+                    {props.apiCallInProgress ? <Progressing /> :  `${props.deletePrefix || ''}Delete${props.deletePostfix || ''}`}
                 </button>
             </div>
         </ConfirmationDialog.ButtonGroup>

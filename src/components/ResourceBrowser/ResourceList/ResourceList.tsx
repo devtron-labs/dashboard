@@ -78,7 +78,7 @@ export default function ResourceList() {
         try {
             setLoader(true)
             const { result } = await getClusterListMinWithoutAuth()
-            const _clusterOptions = convertToOptionsList(result, null, 'cluster_name', 'id')
+            const _clusterOptions = convertToOptionsList(result, 'cluster_name', 'id')
             setClusterOptions(_clusterOptions)
             const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
             if (_selectedCluster) {
@@ -209,7 +209,7 @@ export default function ResourceList() {
     }
 
     const showResourceModal = (): void => {
-        setShowCreateResourceModal(false)
+        setShowCreateResourceModal(true)
     }
 
     const closeResourceModal = (_refreshData: boolean): void => {

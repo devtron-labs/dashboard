@@ -62,7 +62,7 @@ export interface ResourceType {
 }
 
 export interface CreateResourceResponse extends ResponseType {
-    result: ResourceType[]
+    result?: ResourceType[]
 }
 
 export interface ResourceDetailsPropType extends LogSearchTermType {
