@@ -1,3 +1,4 @@
+import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
 import { LabelTag, OptionType } from '../app/types'
@@ -5,6 +6,12 @@ import { LabelTag, OptionType } from '../app/types'
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
     OTHER = 'OTHER',
+}
+
+export enum EFFECT_TYPE {
+    NoSchedule = 'NoSchedule',
+    PreferNoSchedule = 'PreferNoSchedule',
+    NoExecute = 'NoExecute',
 }
 export interface NodeListSearchFliterType {
     defaultVersion: OptionType
@@ -47,6 +54,7 @@ export interface ClusterDetail {
     cpu: ResourceDetail
     memory: ResourceDetail
     serverVersion: string
+    nodeNames: string[]
 }
 
 export interface NodeRowDetail {
@@ -79,6 +87,10 @@ export interface PodType {
     memory: ResourceDetail
     age: string
 }
+
+export interface TaintType extends LabelTag {
+    effect: EFFECT_TYPE
+}
 export interface NodeDetail {
     name: string
     clusterName: string
@@ -94,7 +106,7 @@ export interface NodeDetail {
     createdAt: string
     labels: LabelTag[]
     annotations: LabelTag[]
-    taints: LabelTag[]
+    taints: TaintType[]
     resources: ResourceDetail[]
     pods: PodType[]
     manifest: object
@@ -124,111 +136,100 @@ export interface ColumnMetadataType {
     isDisabled?: boolean
 }
 
+export interface ClusterListType {
+    imageList: ClusterImageList[]
+    isSuperAdmin: boolean
+    namespaceList: string[]
+}
+
+export interface ClusterTerminalType {
+    clusterId: number
+    clusterName?: string
+    nodeList: string[]
+    closeTerminal?: () => void
+    clusterImageList: ImageList[]
+    isNodeDetailsPage?: boolean
+    namespaceList: string[]
+    node?: string
+    setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
+}
+
 export const TEXT_COLOR_CLASS = {
     Ready: 'cg-5',
     'Not ready': 'cr-5',
 }
 
-export const COLUMN_METADATA: ColumnMetadataType[] = [
-    {
-        sortType: 'string',
-        columnIndex: 0,
-        label: 'Node',
-        value: 'name',
-        isDefault: true,
-        isSortingAllowed: true,
-        isDisabled: true,
-        sortingFieldName: 'name',
-    },
-    { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isDisabled: true },
-    { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true },
-    {
-        sortType: 'number',
-        columnIndex: 3,
-        label: 'Errors',
-        value: 'errorCount',
-        isDefault: true,
-        isDisabled: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'errorCount',
-    },
-    { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
-    {
-        sortType: 'number',
-        columnIndex: 5,
-        label: 'No.of pods',
-        value: 'podCount',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'podCount',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 6,
-        label: 'Taints',
-        value: 'taintCount',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'taintCount',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 7,
-        label: 'CPU Usage (%)',
-        value: 'cpu.usagePercentage',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'cpu.usagePercentage',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 8,
-        label: 'CPU Usage (Absolute)',
-        value: 'cpu.usage',
-        isSortingAllowed: true,
-        sortingFieldName: 'cpu.usageInBytes',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 9,
-        label: 'CPU Allocatable',
-        value: 'cpu.allocatable',
-        isSortingAllowed: true,
-        sortingFieldName: 'cpu.allocatableInBytes',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 10,
-        label: 'Mem Usage (%)',
-        value: 'memory.usagePercentage',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'memory.usagePercentage',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 11,
-        label: 'Mem Usage (Absolute)',
-        value: 'memory.usage',
-        isSortingAllowed: true,
-        sortingFieldName: 'memory.usageInBytes',
-    },
-    {
-        sortType: 'number',
-        columnIndex: 12,
-        label: 'Mem Allocatable',
-        value: 'memory.allocatable',
-        isSortingAllowed: true,
-        sortingFieldName: 'memory.allocatableInBytes',
-    },
-    {
-        sortType: 'string',
-        columnIndex: 13,
-        label: 'Age',
-        value: 'age',
-        isDefault: true,
-        isSortingAllowed: true,
-        sortingFieldName: 'createdAt',
-    },
-    { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
-]
+interface ErrorObj {
+    isValid: boolean
+    message: string | null
+}
+
+export interface TaintErrorObj {
+    isValid: boolean
+    taintErrorList: {
+        key: ErrorObj
+        value: ErrorObj
+    }[]
+}
+interface NodeDataPropType {
+  nodeData: NodeDetail
+  getNodeListData: () => void
+}
+
+export interface NodeActionsMenuProps extends NodeDataPropType {
+  openTerminal: (clusterData: NodeDetail) => void
+}
+
+export interface NodeActionRequest {
+    clusterId?: number
+    name: string
+    version: string
+    kind: string
+}
+export interface NodeActionModalPropType extends NodeActionRequest {
+    closePopup: (refreshData?: boolean) => void
+}
+
+export interface CordonNodeModalType extends NodeActionModalPropType {
+    unschedulable: boolean
+}
+
+export interface EditTaintsModalType extends NodeActionModalPropType {
+    taints: TaintType[]
+}
+
+interface NodeCordonOptions {
+    unschedulableDesired: boolean
+}
+
+export interface NodeCordonRequest extends NodeActionRequest {
+    nodeCordonOptions: NodeCordonOptions
+}
+
+interface NodeDrainOptions {
+    gracePeriodSeconds: number
+    deleteEmptyDirData: boolean
+    disableEviction: boolean
+    force: boolean
+    ignoreAllDaemonSets: boolean
+}
+
+export interface NodeDrainRequest extends NodeActionRequest {
+  nodeDrainOptions: NodeDrainOptions
+}
+
+export interface EditTaintsRequest extends NodeActionRequest {
+  taints: TaintType[]
+}
+export interface ImageList {
+    name: string,
+    image: string,
+    description: string
+}
+
+export interface ClusterImageList {
+    groupId: string,
+    groupRegex: string,
+    imageList: ImageList[],
+}
+

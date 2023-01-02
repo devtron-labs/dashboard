@@ -9,6 +9,8 @@ import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom';
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
 import { toastAccessDenied } from '../ToastBody';
+import { OptionType } from '../../app/types';
+import { ClusterImageList, ImageList } from '../../ClusterNodes/types';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -1011,4 +1013,40 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
             [currentObj[key]]: (prevObj[currentObj[key]] || []).concat(currentObj),
         }
     }, {})
+}
+
+export const filterImageList = (imageList: ClusterImageList[], serverVersion: string): ImageList[] => {
+    let nodeImageList = imageList.find((imageObj) => {
+        const regex = new RegExp(imageObj.groupRegex)
+        return regex.test(serverVersion)
+    })
+
+    if (!nodeImageList) {
+        nodeImageList = imageList.find((imageObj) => {
+            return imageObj.groupId === 'latest'
+        })
+    }
+
+    return nodeImageList?.imageList || []
+}
+
+export const convertToOptionsList = (
+    arr: any[],
+    customLabel?: string,
+    customValue?: string
+): OptionType[] => {
+    
+    return arr.map((ele) => {
+        return {
+            label: customLabel ? ele[customLabel] : ele,
+            value: customValue ? ele[customValue] : ele,
+        }
+    })
+}
+
+export const clusterImageDescription = (nodeImageList: ImageList[],selectedImage: string): string => {
+    const nodeImageObj = nodeImageList.find((obj) => {
+        return obj.image === selectedImage
+    })
+    return nodeImageObj?.description || ''
 }
