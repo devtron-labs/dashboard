@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ViewType, DOCUMENTATION } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsConfigPayload, GitOpsFieldKeyType, GitOpsOrganisationIdType } from './gitops.type'
+import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsConfigPayload, GitOpsFieldKeyType, GitOpsOrganisationIdType, GitProviderType } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
@@ -441,8 +441,36 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         })
     }
 
+    getInputFormSpec(): Map<string, Map<GitProviderType, string>> {
+        const inputFormSpec = new Map()
+        const linkSpec = new Map()
+        const linkTextSpec = new Map()
+        const labelSpec = new Map()
+
+        linkSpec.set(GitProvider.GITHUB, GitLink.GITHUB)
+        linkSpec.set(GitProvider.GITLAB, GitLink.GITLAB)
+        linkSpec.set(GitProvider.AZURE_DEVOPS, GitLink.AZURE_DEVOPS)
+        linkSpec.set(GitProvider.BITBUCKET_CLOUD, GitLink.BITBUCKET_PROJECT)
+
+        linkTextSpec.set(GitProvider.GITHUB, '(How to create organization in GitHub?)')
+        linkTextSpec.set(GitProvider.GITLAB, '(How to create group in GitLab?)')
+        linkTextSpec.set(GitProvider.AZURE_DEVOPS, '(How to create project in Azure?)')
+        linkSpec.set(GitProvider.BITBUCKET_CLOUD, '(How to create project in bitbucket?)')
+
+        labelSpec.set(GitProvider.GITHUB, 'GitHub Organisation Name*')
+        labelSpec.set(GitProvider.GITLAB, 'GitLab Group ID*')
+        labelSpec.set(GitProvider.AZURE_DEVOPS, 'Azure DevOps Project Name*')
+        labelSpec.set(GitProvider.BITBUCKET_CLOUD, 'Bitbucket Project Key')
+
+        inputFormSpec.set('link', linkSpec)
+        inputFormSpec.set('linkText', linkTextSpec)
+        inputFormSpec.set('label', labelSpec)
+
+        return inputFormSpec
+    }
+
     render() {
-        // let inputFormSpecs: Map<string, { result: { id: number; name: string }[] }>
+        const inputFormSpec = this.getInputFormSpec()
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
         let warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
@@ -611,34 +639,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={2}
                             error={this.state.isError[key]}
                             showLink={true}
-                            //Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-                            link={
-                                this.state.providerTab === GitProvider.GITLAB
-                                    ? GitLink.GITLAB
-                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                    ? GitLink.AZURE_DEVOPS
-                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? GitLink.BITBUCKET_PROJECT
-                                    : GitLink.GITHUB
-                            }
-                            linkText={
-                                this.state.providerTab === GitProvider.GITLAB
-                                    ? '(How to create group in GitLab?)'
-                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                    ? '(How to create project in Azure?)'
-                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? '(How to create project in bitbucket?)'
-                                    : '(How to create organization in GitHub?)'
-                            }
-                            label={
-                                this.state.providerTab === GitProvider.GITLAB
-                                    ? 'GitLab Group ID*'
-                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                    ? 'Azure DevOps Project Name*'
-                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? 'Bitbucket Project Key'
-                                    : 'GitHub Organisation Name*'
-                            }
+                            link={inputFormSpec.get('link').get(this.state.providerTab)}
+                            linkText={inputFormSpec.get('linkText').get(this.state.providerTab)}
+                            label={inputFormSpec.get('label').get(this.state.providerTab)}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
