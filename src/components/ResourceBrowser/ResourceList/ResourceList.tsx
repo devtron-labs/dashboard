@@ -205,15 +205,15 @@ export default function ResourceList() {
         getSidebarData()
     }
 
-    const showResourceModal = ():void=>{
-      setShowCreateResourceModal(false)
+    const showResourceModal = (): void => {
+        setShowCreateResourceModal(true)
     }
 
-    const closeResourceModal = (_refreshData: boolean):void=>{
-      if(_refreshData){
-        refreshData()
-      }
-      setShowCreateResourceModal(false)
+    const closeResourceModal = (_refreshData: boolean): void => {
+        if (_refreshData) {
+            refreshData()
+        }
+        setShowCreateResourceModal(false)
     }
 
     if (loader) {
@@ -279,7 +279,9 @@ export default function ResourceList() {
                     </div>
                 </div>
             )}
-            {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />}
+            {showCreateResourceModal && (
+                <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />
+            )}
         </div>
     )
 }
