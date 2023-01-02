@@ -37,14 +37,32 @@ export interface K8SObjectType {
     child: GVKType[]
 }
 
-export interface resourceListPayloadType {
+export interface ResourceListPayloadType {
     clusterId: number
     k8sRequest: {
         resourceIdentifier: {
             groupVersionKind: GVKType
             namespace?: string
         }
+        patch?: string
     }
+}
+
+export enum CreateResourceStatus {
+    failed = 'Failed',
+    created = 'Created',
+    updated = 'Updated',
+}
+
+export interface ResourceType {
+    kind: string
+    name: string
+    status: CreateResourceStatus
+    message: string
+}
+
+export interface CreateResourceResponse extends ResponseType {
+    result: ResourceType[]
 }
 
 export interface ResourceDetailsPropType extends LogSearchTermType {

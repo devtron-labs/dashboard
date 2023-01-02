@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { NavLink, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -12,7 +12,7 @@ import { Nodes, OptionType } from '../../app/types'
 import { ResourceDetail } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
-import { Option } from '../../v2/common/ReactSelectCustomization'
+import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import '../ResourceBrowser.scss'
 
 export function K8SResourceList({
@@ -20,14 +20,17 @@ export function K8SResourceList({
     filteredResourceList,
     setFilteredResourceList,
     noResults,
+    clusterOptions,
     selectedCluster,
-    setSelectedCluster,
+    onChangeCluster,
+    namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
     resourceListLoader,
 }) {
     const { push } = useHistory()
 
+    const location = useLocation()
     const match = useRouteMatch()
     const { clusterId, namespace, kind } = useParams<{
         clusterId: string
@@ -37,40 +40,6 @@ export function K8SResourceList({
     }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
-
-    useEffect(() => {
-        getClusterList()
-    }, [])
-    const getClusterList = async () => {
-        try {
-            const { result } = await getClusterListMinWithoutAuth()
-            const _clusterOptions = convertToOptionsList(result, null, 'cluster_name', 'id')
-            setClusterOptions(_clusterOptions)
-            const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
-            if (_selectedCluster) {
-                setSelectedCluster(_selectedCluster || _clusterOptions[0])
-                getNamespaceList(_selectedCluster.value)
-            }
-        } catch (err) {
-            showError(err)
-        }
-    }
-
-    const getNamespaceList = async (clusterId: string) => {
-        try {
-            const { result } = await namespaceListByClusterId(clusterId)
-            const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result)]
-            setNamespaceOptions(convertToOptionsList(result))
-            if (namespace) {
-                const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
-                setSelectedNamespace(_selectedNamespace || _namespaceOptions[0])
-            }
-        } catch (err) {
-            showError(err)
-        }
-    }
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = resourceList.filter(
@@ -104,18 +73,10 @@ export function K8SResourceList({
         setSearchText(event.target.value)
     }
 
-    const onChangeCluster = (selected): void => {
-        setSelectedCluster(selected)
-        getNamespaceList(selected.value)
-        push({
-            pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}`,
-        })
-    }
-
     const onChangeNamespace = (selected): void => {
         setSelectedNamespace(selected)
         push({
-            pathname: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selected.value}`,
+            pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
         })
     }
 
@@ -140,6 +101,7 @@ export function K8SResourceList({
                 </div>
                 <div className="flex">
                     <ReactSelect
+                    className="w-200"
                         placeholder="Select Containers"
                         options={clusterOptions}
                         value={selectedCluster}
@@ -152,7 +114,7 @@ export function K8SResourceList({
                     />
                     <ReactSelect
                         placeholder="Select Containers"
-                        className="ml-8"
+                        className="w-200 ml-8"
                         options={namespaceOptions}
                         value={selectedNamespace}
                         onChange={onChangeNamespace}
@@ -194,13 +156,15 @@ export function K8SResourceList({
     const renderEmptyPage = (): JSX.Element => {
         if (noResults) {
             return (
-                <ResourceListEmptyState subTitle="We could not find any DaemonSets. Try selecting a different cluster or namespace." />
+                <ResourceListEmptyState
+                    subTitle={`We could not find any ${kind}. Try selecting a different cluster or namespace.`}
+                />
             )
         } else {
             return (
                 <ResourceListEmptyState
                     title="No matching results"
-                    subTitle="We could not find any matching Deployments."
+                    subTitle={`We could not find any matching ${kind}.`}
                     actionHandler={clearSearch}
                 />
             )
@@ -235,7 +199,7 @@ export function K8SResourceList({
             }`}
         >
             {renderSearch()}
-            {resourceListLoader? <Progressing pageLoader /> : renderList()}
+            {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>
     )
 }

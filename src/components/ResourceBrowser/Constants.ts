@@ -6,7 +6,7 @@ export const CLUSTER_SELECT_STYLE = {
         ...base,
         zIndex: 9999,
         textAlign: 'left',
-        minWidth: '150px',
+        minWidth: '250px',
         maxWidth: '380px',
     }),
     control: (base, state) => ({
