@@ -57,6 +57,20 @@ export interface GitOpsState {
     isUrlValidationError: boolean;
 }
 
+export interface GitOpsConfigPayload {
+    id: number,
+    provider: string;
+    host: string,
+    token: string,
+    username?: string,
+    active: boolean,
+    gitLabGroupId: string,
+    gitHubOrgId: string,
+    azureProjectName: string;
+    bitBucketWorkspaceId: string;
+    bitBucketProjectKey: string;
+}
+
 export interface GitOpsProps extends RouteComponentProps<{}> { 
     handleChecklistUpdate: (string) => void
 }

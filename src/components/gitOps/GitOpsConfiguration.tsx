@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ViewType, DOCUMENTATION } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsFieldKeyType, GitOpsOrganisationIdType } from './gitops.type'
+import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsConfigPayload, GitOpsFieldKeyType, GitOpsOrganisationIdType } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
@@ -55,6 +55,17 @@ const DefaultGitOpsConfig = {
     active: true,
     bitBucketWorkspaceId: "",
     bitBucketProjectKey: ""
+}
+
+const DefaultFormConfig = {
+    host: '',
+    username: '',
+    token: '',
+    gitHubOrgId: '',
+    gitLabGroupId: '',
+    azureProjectName: '',
+    bitBucketWorkspaceId: '',
+    bitBucketProjectKey: '',
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -141,21 +152,17 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList()
             .then((response) => {
-                let lastActiveGitOp = response.result?.find((item) => item.active)
-                let form = lastActiveGitOp
-                if (!lastActiveGitOp) {
-                    form = {
-                        ...DefaultGitOpsConfig,
-                        host: GitHost[this.state.providerTab],
-                        provider: GitProvider.GITHUB,
-                    }
+                let form = response.result?.find((item) => item.active) ?? {
+                    ...DefaultGitOpsConfig,
+                    host: GitHost[this.state.providerTab],
+                    provider: GitProvider.GITHUB,
                 }
                 let isError = this.getFormErrors(false, form)
                 this.setState({
                     gitList: response.result || [],
                     saveLoading: false,
                     view: ViewType.FORM,
-                    lastActiveGitOp: lastActiveGitOp,
+                    lastActiveGitOp: form,
                     providerTab: form.provider,
                     form: form,
                     isError: isError,
@@ -174,13 +181,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         let newGitOps = event.target.value
-        let form = this.state.gitList.find((item) => item.provider === newGitOps)
-        if (!form) {
-            form = {
-                ...DefaultGitOpsConfig,
-                host: GitHost[newGitOps],
-                provider: newGitOps,
-            }
+        let form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
+            ...DefaultGitOpsConfig,
+            host: GitHost[newGitOps],
+            provider: newGitOps,
         }
         let isError = this.getFormErrors(false, form)
         this.setState({
@@ -209,27 +213,21 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         })
     }
 
+    requiredFieldCheck(formValueType: string): string {
+        return formValueType.length ? '' : 'This is a required field'
+    }
+
     getFormErrors(isFormEdited, form: GitOpsConfig): any {
-        if (!isFormEdited)
-            return {
-                host: '',
-                username: '',
-                token: '',
-                gitHubOrgId: '',
-                gitLabGroupId: '',
-                azureProjectName: '',
-                bitBucketWorkspaceId: '',
-                bitBucketProjectKey: '',
-            }
+        if (!isFormEdited) return DefaultFormConfig
 
         return {
-            host: form.host.length ? '' : 'This is a required field',
-            username: form.username.length ? '' : 'This is a required field',
-            token: form.token.length ? '' : 'This is a required field',
-            gitHubOrgId: form.gitHubOrgId.length ? '' : 'This is a required field',
-            gitLabGroupId: form.gitLabGroupId.length ? '' : 'This is a required field',
-            azureProjectName: form.azureProjectName.length ? '' : 'This is a required field',
-            bitBucketWorkspaceId: form.bitBucketWorkspaceId.length ? '' : 'This is a required field',
+            host: this.requiredFieldCheck(form.host),
+            username: this.requiredFieldCheck(form.username),
+            token: this.requiredFieldCheck(form.token),
+            gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
+            gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
+            azureProjectName: this.requiredFieldCheck(form.azureProjectName),
+            bitBucketWorkspaceId: this.requiredFieldCheck(form.bitBucketWorkspaceId),
             bitBucketProjectKey: '',
         }
     }
@@ -275,16 +273,39 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         let isUrlAccepted: boolean = true
+        let url: string
+        try {
+            url = new URL(this.state.form.host).protocol
+        } catch (error) {
+            return false
+        }
         ShortGitHosts.forEach((shortGitHost) => {
             if (this.state.form.host.indexOf(shortGitHost) >= 0) {
                 isUrlAccepted =
                     (this.state.form.host.endsWith(shortGitHost + '/') ||
                         this.state.form.host.endsWith(shortGitHost)) &&
-                    this.state.form.host.startsWith('https')
+                    url === 'https:'
             }
         })
 
         return isUrlAccepted
+    }
+
+    getPayload = () => {
+        const payload: GitOpsConfigPayload = {
+            id: this.state.form.id,
+            provider: this.state.form.provider,
+            username: this.state.form.username,
+            host: this.state.form.host,
+            token: this.state.form.token,
+            gitLabGroupId: this.state.form.gitLabGroupId,
+            gitHubOrgId: this.state.form.gitHubOrgId,
+            azureProjectName: this.state.form.azureProjectName,
+            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
+            bitBucketProjectKey: this.state.form.bitBucketProjectKey,
+            active: true,
+        }
+        return payload
     }
 
     saveGitOps() {
@@ -307,20 +328,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 validationStatus: VALIDATION_STATUS.LOADER,
                 saveLoading: true,
             })
-            const payload = {
-                id: this.state.form.id,
-                provider: this.state.form.provider,
-                username: this.state.form.username,
-                host: this.state.form.host,
-                token: this.state.form.token,
-                gitLabGroupId: this.state.form.gitLabGroupId,
-                gitHubOrgId: this.state.form.gitHubOrgId,
-                azureProjectName: this.state.form.azureProjectName,
-                bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
-                bitBucketProjectKey: this.state.form.bitBucketProjectKey,
-                active: true,
-            }
-
+            const payload: GitOpsConfigPayload = this.getPayload()
             const promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload)
             promise
                 .then((response) => {
@@ -376,20 +384,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 saveLoading: true,
                 validateLoading: true,
             })
-            const payload = {
-                id: this.state.form.id,
-                provider: this.state.form.provider,
-                username: this.state.form.username,
-                host: this.state.form.host,
-                token: this.state.form.token,
-                gitLabGroupId: this.state.form.gitLabGroupId,
-                gitHubOrgId: this.state.form.gitHubOrgId,
-                azureProjectName: this.state.form.azureProjectName,
-                bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
-                bitBucketProjectKey: this.state.form.bitBucketProjectKey,
-                active: true,
-            }
-
+            const payload: GitOpsConfigPayload = this.getPayload()
             validateGitOpsConfiguration(payload)
                 .then((response) => {
                     let resp = response.result
@@ -447,6 +442,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     render() {
+        // let inputFormSpecs: Map<string, { result: { id: number; name: string }[] }>
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
         let warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
@@ -615,6 +611,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={2}
                             error={this.state.isError[key]}
                             showLink={true}
+                            //Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
                             link={
                                 this.state.providerTab === GitProvider.GITLAB
                                     ? GitLink.GITLAB
