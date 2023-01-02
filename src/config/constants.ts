@@ -195,6 +195,8 @@ export const Routes = {
     POD_EVENTS: 'pod/events',
     API_RESOURCE: 'k8s/api-resources',
     K8S_RESOURCE_LIST: 'k8s/resource/list',
+    K8S_RESOURCE_CREATE: 'k8s/resources/apply',
+
 }
 
 export const ViewType = {
