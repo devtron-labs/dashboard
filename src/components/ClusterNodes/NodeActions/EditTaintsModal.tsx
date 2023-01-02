@@ -121,7 +121,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                 <div>{EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.message}</div>
                 <ul className="p-0" style={{ listStyleType: 'none' }}>
                     {EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.messageList.map((message, index) => (
-                        <li key={`${'msg'}-${index}`}>{message}</li>
+                        <li key={`msg-${index}`}>{message}</li>
                     ))}
                 </ul>
             </div>
