@@ -7,6 +7,12 @@ export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
     OTHER = 'OTHER',
 }
+
+export enum EFFECT_TYPE {
+    NoSchedule = 'NoSchedule',
+    PreferNoSchedule = 'PreferNoSchedule',
+    NoExecute = 'NoExecute',
+}
 export interface NodeListSearchFliterType {
     defaultVersion: OptionType
     nodeK8sVersions: string[]
@@ -81,6 +87,10 @@ export interface PodType {
     memory: ResourceDetail
     age: string
 }
+
+export interface TaintType extends LabelTag {
+    effect: EFFECT_TYPE
+}
 export interface NodeDetail {
     name: string
     clusterName: string
@@ -96,7 +106,7 @@ export interface NodeDetail {
     createdAt: string
     labels: LabelTag[]
     annotations: LabelTag[]
-    taints: LabelTag[]
+    taints: TaintType[]
     resources: ResourceDetail[]
     pods: PodType[]
     manifest: object
@@ -149,6 +159,68 @@ export const TEXT_COLOR_CLASS = {
     'Not ready': 'cr-5',
 }
 
+interface ErrorObj {
+    isValid: boolean
+    message: string | null
+}
+
+export interface TaintErrorObj {
+    isValid: boolean
+    taintErrorList: {
+        key: ErrorObj
+        value: ErrorObj
+    }[]
+}
+interface NodeDataPropType {
+  nodeData: NodeDetail
+  getNodeListData: () => void
+}
+
+export interface NodeActionsMenuProps extends NodeDataPropType {
+  openTerminal: (clusterData: NodeDetail) => void
+}
+
+export interface NodeActionRequest {
+    clusterId?: number
+    name: string
+    version: string
+    kind: string
+}
+export interface NodeActionModalPropType extends NodeActionRequest {
+    closePopup: (refreshData?: boolean) => void
+}
+
+export interface CordonNodeModalType extends NodeActionModalPropType {
+    unschedulable: boolean
+}
+
+export interface EditTaintsModalType extends NodeActionModalPropType {
+    taints: TaintType[]
+}
+
+interface NodeCordonOptions {
+    unschedulableDesired: boolean
+}
+
+export interface NodeCordonRequest extends NodeActionRequest {
+    nodeCordonOptions: NodeCordonOptions
+}
+
+interface NodeDrainOptions {
+    gracePeriodSeconds: number
+    deleteEmptyDirData: boolean
+    disableEviction: boolean
+    force: boolean
+    ignoreAllDaemonSets: boolean
+}
+
+export interface NodeDrainRequest extends NodeActionRequest {
+  nodeDrainOptions: NodeDrainOptions
+}
+
+export interface EditTaintsRequest extends NodeActionRequest {
+  taints: TaintType[]
+}
 export interface ImageList {
     name: string,
     image: string,
