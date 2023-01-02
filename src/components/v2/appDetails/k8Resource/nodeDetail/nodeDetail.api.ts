@@ -158,7 +158,15 @@ function getEventHelmApps(
     return post(Routes.EVENTS, requestData)
 }
 
-export const getLogsURL = (ad, nodeName, Host, container) => {
+export const getLogsURL = (
+    ad: AppDetails,
+    nodeName: string,
+    Host: string,
+    container: string,
+    isResourceBrowserView?: boolean,
+    clusterId?: number,
+    namespace?: string,
+) => {
     //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
     let prefix = ''
     if (process.env.NODE_ENV === 'production') {
@@ -166,14 +174,26 @@ export const getLogsURL = (ad, nodeName, Host, container) => {
     } else {
         prefix = `${location.protocol}//${location.host}` // eslint-disable-line
     }
-    if (ad.appType === AppType.EXTERNAL_HELM_CHART || ad.deploymentAppType === DeploymentAppType.helm) {
-        return `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&appId=${getAppId(
-            ad.clusterId,
-            ad.namespace,
-            ad.deploymentAppType === DeploymentAppType.helm && ad.appType === AppType.DEVTRON_APP
-                ? `${ad.appName}-${ad.environmentName}`
-                : ad.appName,
-        )}&follow=true&tailLines=500`
+
+    if (
+        ad.appType === AppType.EXTERNAL_HELM_CHART ||
+        ad.deploymentAppType === DeploymentAppType.helm ||
+        isResourceBrowserView
+    ) {
+        let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
+
+        if (isResourceBrowserView) {
+            logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
+        } else {
+            logsURL += `&appId=${getAppId(
+                ad.clusterId,
+                ad.namespace,
+                ad.deploymentAppType === DeploymentAppType.helm && ad.appType === AppType.DEVTRON_APP
+                    ? `${ad.appName}-${ad.environmentName}`
+                    : ad.appName,
+            )}`
+        }
+        return `${logsURL}&follow=true&tailLines=500`
     }
     return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`
 }

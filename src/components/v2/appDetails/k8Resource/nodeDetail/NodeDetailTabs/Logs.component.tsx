@@ -45,7 +45,13 @@ function LogsComponent({
 }: LogsComponentProps) {
     const location = useLocation()
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>()
+    const params = useParams<{
+        actionName: string
+        podName: string
+        clusterId: string
+        nodeType: string
+        node: string
+    }>()
     const key = useKeyDown()
     const [logsPaused, setLogsPaused] = useState(false)
     const [tempSearch, setTempSearch] = useState<string>('')
@@ -55,13 +61,17 @@ function LogsComponent({
     const logsPausedRef = useRef(false)
     const workerRef = useRef(null)
     const appDetails = IndexStore.getAppDetails()
-    const isLogAnalyzer = !params.podName
-    const [logState, setLogState] = useState(() => getInitialPodContainerSelection(isLogAnalyzer, params, location))
+    const isLogAnalyzer = !params.podName && !params.node
+    const [logState, setLogState] = useState(() =>
+        getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+    )
 
     const handlePodSelection = (selectedOption: string) => {
-        let pods = getSelectedPodList(selectedOption)
-        let containers = new Set(pods[0].containers ?? [])
-        let selectedContainer = containers.has(logState.selectedContainerOption) ? logState.selectedContainerOption : ''
+        const pods = getSelectedPodList(selectedOption)
+        const containers = new Set(pods[0].containers ?? [])
+        const selectedContainer = containers.has(logState.selectedContainerOption)
+            ? logState.selectedContainerOption
+            : ''
 
         setLogState({
             selectedPodOption: selectedOption,
@@ -157,22 +167,41 @@ function LogsComponent({
         workerRef.current = new WebWorker(sseWorker)
         workerRef.current['addEventListener' as any]('message', handleMessage)
 
-        let pods = podContainerOptions.podOptions
-            .filter((_pod) => _pod.selected)
-            .flatMap((_pod) => getSelectedPodList(_pod.name))
+        let urls = []
+        let podsWithContainers = []
 
-        let containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name)
+        if (isResourceBrowserView) {
+            urls = podContainerOptions.containerOptions
+                .filter((_co) => _co.selected)
+                .map((_co) =>
+                    getLogsURL(
+                        appDetails,
+                        podContainerOptions.podOptions[0].name,
+                        Host,
+                        _co.name,
+                        isResourceBrowserView,
+                        selectedResource.clusterId,
+                        selectedResource.namespace,
+                    ),
+                )
+        } else {
+            const pods = podContainerOptions.podOptions
+                .filter((_pod) => _pod.selected)
+                .flatMap((_pod) => getSelectedPodList(_pod.name))
 
-        let podsWithContainers = pods
-            .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
-            .filter((_pwc) => containers.includes(_pwc[1]))
+            const containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name)
 
-        let urls = podsWithContainers.map((_pwc) => {
-            return getLogsURL(appDetails, _pwc[0], Host, _pwc[1])
-        })
+            podsWithContainers = pods
+                .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
+                .filter((_pwc) => containers.includes(_pwc[1]))
 
-        if (urls.length == 0) {
-            return
+            urls = podsWithContainers.map((_pwc) => {
+                return getLogsURL(appDetails, _pwc[0], Host, _pwc[1])
+            })
+
+            if (urls.length == 0) {
+                return
+            }
         }
 
         workerRef.current['postMessage' as any]({
@@ -181,7 +210,9 @@ function LogsComponent({
                 urls: urls,
                 grepTokens: logState.grepTokens,
                 timeout: 300,
-                pods: podsWithContainers.map((_pwc) => _pwc[0]),
+                pods: isResourceBrowserView
+                    ? podContainerOptions.podOptions.map((_pwc) => _pwc.name)
+                    : podsWithContainers.map((_pwc) => _pwc[0]),
             },
         })
     }
@@ -189,7 +220,9 @@ function LogsComponent({
     const handleCurrentSearchTerm = (searchTerm: string): void => {
         setLogSearchTerms({
             ...logSearchTerms,
-            [isLogAnalyzer ? AppDetailsTabs.log_analyzer : `${params.nodeType}/${params.podName}`]: searchTerm,
+            [isLogAnalyzer
+                ? AppDetailsTabs.log_analyzer
+                : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`]: searchTerm,
         })
     }
 
@@ -223,11 +256,17 @@ function LogsComponent({
         if (selectedTab) {
             selectedTab(NodeDetailTab.LOGS, url)
         }
-        setLogState(getInitialPodContainerSelection(isLogAnalyzer, params, location))
+        setLogState(
+            getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+        )
 
         if (logSearchTerms) {
             const currentSearchTerm =
-                logSearchTerms[isLogAnalyzer ? AppDetailsTabs.log_analyzer : `${params.nodeType}/${params.podName}`]
+                logSearchTerms[
+                    isLogAnalyzer
+                        ? AppDetailsTabs.log_analyzer
+                        : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`
+                ]
 
             if (currentSearchTerm) {
                 setTempSearch(currentSearchTerm)
@@ -237,7 +276,7 @@ function LogsComponent({
             }
         }
         //TODO: reset pauseLog and grepToken
-    }, [params.podName])
+    }, [params.podName, params.node])
 
     useEffect(() => {
         //Values are already set once we reach here
@@ -249,7 +288,14 @@ function LogsComponent({
         return () => stopWorker()
     }, [logState])
 
-    let podContainerOptions = getPodContainerOptions(isLogAnalyzer, params, location, logState)
+    const podContainerOptions = getPodContainerOptions(
+        isLogAnalyzer,
+        params,
+        location,
+        logState,
+        isResourceBrowserView,
+        selectedResource,
+    )
 
     const getPodGroups = () => {
         const allGroupPods = [],

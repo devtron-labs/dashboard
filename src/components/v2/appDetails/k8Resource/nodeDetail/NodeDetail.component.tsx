@@ -131,12 +131,16 @@ function NodeDetailComponent({
                             isDeleted={isDeleted}
                             logSearchTerms={logSearchTerms}
                             setLogSearchTerms={setLogSearchTerms}
+                            isResourceBrowserView={isResourceBrowserView}
+                            selectedResource={selectedResource}
                         />
                     </div>
                 </Route>
-                <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
-                    <SummaryComponent selectedTab={handleSelectedTab} />
-                </Route>
+                {!isResourceBrowserView && (
+                    <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
+                        <SummaryComponent selectedTab={handleSelectedTab} />
+                    </Route>
+                )}
                 <Route path={`${path}/${NodeDetailTab.TERMINAL}`}>
                     <TerminalComponent
                         selectedTab={handleSelectedTab}

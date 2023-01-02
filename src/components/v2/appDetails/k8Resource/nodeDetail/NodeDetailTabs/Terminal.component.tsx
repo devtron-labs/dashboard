@@ -5,7 +5,6 @@ import { ReactComponent as Connect } from '../../../../assets/icons/ic-connect.s
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
-import './nodeDetailTab.scss'
 import IndexStore from '../../../index.store'
 import Select from 'react-select'
 import { SocketConnectionType } from './node.type'
@@ -16,6 +15,7 @@ import { flatContainers, getContainerOptions, getContainerSelectStyles, getShell
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
 import { TerminalComponentProps } from '../../../appDetails.type'
+import './nodeDetailTab.scss'
 
 function TerminalComponent({
     selectedTab,

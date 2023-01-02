@@ -1,4 +1,11 @@
-import { EnvType, LogState, NodeType, PodContainerOptions, PodMetaData } from '../../appDetails.type'
+import {
+    EnvType,
+    LogState,
+    NodeType,
+    PodContainerOptions,
+    PodMetaData,
+    SelectedResourceType,
+} from '../../appDetails.type'
 import IndexStore from '../../index.store'
 import { NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
@@ -51,16 +58,20 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
 
 export function getPodContainerOptions(
     isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string },
+    params: { actionName: string; podName: string; nodeType: string; node: string },
     location: any,
     logState: LogState,
+    isResourceBrowserView?: boolean,
+    selectedResource?: SelectedResourceType,
 ): PodContainerOptions {
     if (!isLogAnalyzer) {
         let _selectedContainerName: string = new URLSearchParams(location.search).get('container')
-        const containers = IndexStore.getAllPods()
-            .filter((_pod) => _pod.name == params.podName)
-            .flatMap((_pod) => flatContainers(_pod))
-            .sort()
+        const containers = isResourceBrowserView
+            ? selectedResource.containers
+            : IndexStore.getAllPods()
+                  .filter((_pod) => _pod.name == params.podName)
+                  .flatMap((_pod) => flatContainers(_pod))
+                  .sort()
 
         if (containers.length == 0 || (containers.length === 1 && !containers[0])) {
             return {
@@ -77,7 +88,7 @@ export function getPodContainerOptions(
 
         return {
             containerOptions: containerOptions,
-            podOptions: [{ name: params.podName, selected: true }],
+            podOptions: [{ name: isResourceBrowserView ? params.node : params.podName, selected: true }],
         }
     } else {
         //build pod options
@@ -132,15 +143,19 @@ export function getPodContainerOptions(
 
 export function getInitialPodContainerSelection(
     isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string },
+    params: { actionName: string; podName: string; nodeType: string; node: string },
     location: any,
+    isResourceBrowserView?: boolean,
+    selectedResource?: SelectedResourceType,
 ): LogState {
     if (!isLogAnalyzer) {
         let _selectedContainerName: string = new URLSearchParams(location.search).get('container')
-        const containers = IndexStore.getAllPods()
-            .filter((_pod) => _pod.name == params.podName)
-            .flatMap((_pod) => flatContainers(_pod))
-            .sort()
+        const containers = isResourceBrowserView
+            ? selectedResource.containers
+            : IndexStore.getAllPods()
+                  .filter((_pod) => _pod.name == params.podName)
+                  .flatMap((_pod) => flatContainers(_pod))
+                  .sort()
 
         if (containers.length == 0) {
             return {
@@ -149,13 +164,11 @@ export function getInitialPodContainerSelection(
             }
         }
 
-        _selectedContainerName = _selectedContainerName ?? (containers[0] as string)
-
-        _selectedContainerName = containers.find((_co) => _co == _selectedContainerName) ?? ''
-
+        _selectedContainerName =
+            (_selectedContainerName && containers.find((_co) => _co == _selectedContainerName)) ?? containers[0]
         return {
             selectedContainerOption: _selectedContainerName,
-            selectedPodOption: params.podName,
+            selectedPodOption: isResourceBrowserView ? params.node : params.podName,
         }
     } else {
         const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
