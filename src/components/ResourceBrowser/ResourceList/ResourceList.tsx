@@ -280,7 +280,6 @@ export default function ResourceList() {
                 </div>
             )}
             {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />}
-            <CreateResource closePopup={closeResourceModal} clusterId={clusterId} selectedGVK={selectedGVK} />
         </div>
     )
 }
