@@ -10,8 +10,8 @@ import { URLS } from '../../../config'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
-import ResourceDetails from '../ResourceDetails/ResourceDetails'
 import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
+import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -138,21 +138,25 @@ export default function ResourceList() {
     return (
         <div className="bcn-0">
             <PageHeader headerName="Kubernetes object browser" />
-            <ResourceDetails
-                selectedResource={
-                    {
-                        clusterId: Number(clusterId),
-                        group: selectedGVK?.Group,
-                        version: selectedGVK?.Version,
-                        kind: selectedGVK?.Kind,
-                        namespace: selectedNode?.namespace,
-                        name: selectedNode?.name,
-                        status: selectedNode?.status
-                    } as SelectedResourceType
-                }
-                logSearchTerms={logSearchTerms}
-                setLogSearchTerms={setLogSearchTerms}
-            />
+            <div className="resource-details-container">
+                <NodeDetailComponent
+                    isResourceBrowserView={true}
+                    selectedResource={
+                        {
+                            clusterId: Number(clusterId),
+                            group: selectedGVK?.Group,
+                            version: selectedGVK?.Version,
+                            kind: selectedGVK?.Kind,
+                            namespace: selectedNode?.namespace,
+                            name: selectedNode?.name,
+                            status: selectedNode?.status,
+                            containers: selectedNode?.containers
+                        } as SelectedResourceType
+                    }
+                    logSearchTerms={logSearchTerms}
+                    setLogSearchTerms={setLogSearchTerms}
+                />
+            </div>
             <div className="resource-browser-container">
                 <Sidebar
                     k8SObjectList={k8SObjectList}

@@ -352,8 +352,36 @@ export interface LogSearchTermType {
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>
 }
 
-export interface NodeDetailPropsType extends LogSearchTermType{
+export interface NodeDetailPropsType extends LogSearchTermType {
     isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+}
+
+export interface LogsComponentProps extends NodeDetailPropsType {
+    selectedTab: (_tabName: string, _url?: string) => void;
+    isDeleted: boolean;
+}
+
+export interface TerminalComponentProps {
+    selectedTab: (_tabName: string, _url?: string) => void;
+    isDeleted: boolean;
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+} 
+
+export interface Options {
+    name: string;
+    selected: boolean;
+}
+export interface PodContainerOptions {
+    podOptions: Options[];
+    containerOptions: Options[];
+}
+
+export interface LogState {
+    selectedPodOption: string;
+    selectedContainerOption: string;
+    grepTokens?: any;
 }
 
 export interface AppStatusDetailType {
@@ -383,7 +411,8 @@ export interface SelectedResourceType {
     kind: string
     namespace: string
     name: string
-    status?: string
+    containers: string[]
+    status: string
 }
 
 export interface ResourceInfoActionPropsType {

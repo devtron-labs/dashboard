@@ -8,7 +8,6 @@ import SockJS from 'sockjs-client'
 import { ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
 import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
-import './terminal.css'
 import IndexStore from '../../../../index.store'
 import { AppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline, showError } from '../../../../../../common'
@@ -16,6 +15,7 @@ import { ServerErrors } from '../../../../../../../modals/commonTypes'
 import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
+import './terminal.css'
 
 let socket = undefined
 let terminal = undefined
@@ -63,8 +63,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const webFontAddon = new XtermWebfont()
         terminal.loadAddon(fitAddon)
         terminal.loadAddon(webFontAddon)
-        var regex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
-        terminal.registerLinkMatcher(regex, (_event, text) => {
+        const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
+        terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
             if (text === POD_LINKS.POD_EVENTS) {
                 terminalViewProps.setTerminalTab(1)
             } else if (text === POD_LINKS.POD_MANIFEST) {
@@ -83,9 +83,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         })
     }
 
-    const postInitialize = (sessionId: string) => {
+    const generateSocketURL = () => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
         if (
+            terminalViewProps.isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
             (terminalViewProps.isClusterTerminal && serverMode === SERVER_MODE.EA_ONLY)
         ) {
@@ -94,8 +95,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             socketURL += '/api/vi/pod/exec/ws/'
         }
 
-        socket?.close()
+        return socketURL
+    }
 
+    const postInitialize = (sessionId: string) => {
+        const socketURL = generateSocketURL()
+
+        socket?.close()
         setFirstMessageReceived(false)
 
         socket = new SockJS(socketURL)
@@ -185,8 +191,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const preFetchData = (status = '', firstMessageReceived = false) => {
         const _terminal = terminal
 
-        if(!_terminal) return
-        
+        if (!_terminal) return
+
         _terminal?.reset()
 
         _terminal.write('Creating pod.')
@@ -375,6 +381,23 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             })
     }
 
+    const generateSessionURL = () => {
+        let url
+        if (terminalViewProps.isResourceBrowserView) {
+            url = `k8s/pod/exec/session/${terminalViewProps.selectedResource.clusterId}`
+        } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+            url = `k8s/pod/exec/session/${appDetails.appId}`
+        } else {
+            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
+        }
+        url += `/${
+            terminalViewProps.isResourceBrowserView
+                ? terminalViewProps.selectedResource.namespace
+                : appDetails.namespace
+        }/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
+        return url
+    }
+
     const getNewSession = () => {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
@@ -385,21 +408,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 !terminalViewProps.nodeName ||
                 !terminalViewProps.containerName ||
                 !terminalViewProps.shell.value ||
-                !appDetails
+                (!terminalViewProps.isResourceBrowserView && !appDetails)
             ) {
                 return
             }
-            let url
-            if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-                url = `k8s/pod/exec/session/${appDetails.appId}`
-            } else {
-                url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
-            }
-            url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
-            get(url)
-                .then((response: any) => {
-                    let sessionId = response?.result.SessionID
 
+            get(generateSessionURL())
+                .then((response: any) => {
+                    const sessionId = response?.result.SessionID
                     if (!terminal) {
                         elementDidMount('#terminal-id').then(() => {
                             createNewTerminal()

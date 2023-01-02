@@ -10,6 +10,7 @@ export interface ResourceDetail {
     age: string
     ready: string
     restarts: string
+    containers: string[]
 }
 
 export interface GVKType {

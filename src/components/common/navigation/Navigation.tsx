@@ -40,7 +40,7 @@ const NavigationList = [
         iconClass: 'nav-short-apps',
         icon: CubeIcon,
         href: URLS.RESOURCE_BROWSER,
-        isAvailableInEA: false,
+        isAvailableInEA: true,
     },
     {
         title: 'Chart Store',
