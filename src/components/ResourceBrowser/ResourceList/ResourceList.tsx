@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory, useParams, useLocation } from 'react-router'
-import { convertToOptionsList, handleUTCTime, not, processK8SObjectList, Progressing, showError } from '../../common'
+import { useHistory, useParams } from 'react-router'
+import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceType, GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
+import { GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
-import { OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION } from '../Constants'
+import { AggregationKeys, OptionType } from '../../app/types'
+import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
 import { URLS } from '../../../config'
-import { getAggregator } from '../../app/details/appDetails/utils'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
-import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
-import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { ClusterSelectionComponent } from './ClusterSelectionComponent'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
@@ -107,49 +104,34 @@ export default function ResourceList() {
         try {
             setLoader(true)
             const { result: resourceGroupList } = await getResourceGroupList(clusterId)
-            const processedData = processK8SObjectList(resourceGroupList)
-            const _k8SObjectList = processedData.k8SObjectList
-            const _k8SObjectListIndexMap =  processedData.k8SObjectListIndexMap
-            let _selectedGVK = processedData.selectedGVK
-            // for (let index = 0; index < result1.length; index++) {
-            //     const element = result1[index]
-            //     const groupParent = element.gvk.Group.endsWith('.k8s.io') ? 'Others' : getAggregator(element.gvk.Kind)
-            //     const k8SObjectIndex = _k8SObjectListIndexMap.get(groupParent)
-            //     if (element.gvk.Kind.toLowerCase() === selectedResource) {
-            //         _selectedGVK = element.gvk
-            //     }
-            //     if (k8SObjectIndex === undefined) {
-            //         _k8SObjectList.push({
-            //             name: groupParent,
-            //             isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
-            //             child: [element.gvk],
-            //         })
-            //         _k8SObjectListIndexMap.set(groupParent, _k8SObjectList.length - 1)
-            //     } else {
-            //         if (
-            //             !_k8SObjectList[k8SObjectIndex].isExpanded &&
-            //             element.gvk.Kind.toLowerCase() === selectedResource
-            //         ) {
-            //             _k8SObjectList[k8SObjectIndex].isExpanded = true
-            //         }
-            //         _k8SObjectList[k8SObjectIndex].child.push(element.gvk)
-            //     }
-            // }
-            //processK8SObjectList(resourceGroupList)
-            if (!selectedResource) {
-                _k8SObjectList[0].isExpanded = true
-                const _selectedResource = _k8SObjectList[0].child[0].Kind.toLowerCase()
-                setSelectedResource(_selectedResource)
-                _selectedGVK = _k8SObjectList[0].child[0]
-                replace({
-                    pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
-                        namespace || ALL_NAMESPACE_OPTION.value
-                    }/${_selectedResource}`,
-                })
+            if (resourceGroupList) {
+                const processedData = processK8SObjects(resourceGroupList, selectedResource)
+                const _k8SObjectMap = processedData.k8SObjectMap
+                let _selectedGVK = processedData.selectedGVK
+                const _k8SObjectList: K8SObjectType[] = []
+                const _k8SObjectListIndexMap: Map<string, number> = new Map()
+                for (let index = 0; index < ORDERED_AGGREGATORS.length; index++) {
+                    const element = ORDERED_AGGREGATORS[index]
+                    if (_k8SObjectMap.get(element)) {
+                        _k8SObjectList.push(_k8SObjectMap.get(element))
+                        _k8SObjectListIndexMap.set(element, _k8SObjectList.length - 1)
+                    }
+                }
+                if (!selectedResource) {
+                    _k8SObjectList[0].isExpanded = true
+                    const _selectedResource = _k8SObjectList[0].child[0].Kind.toLowerCase()
+                    setSelectedResource(_selectedResource)
+                    _selectedGVK = _k8SObjectList[0].child[0]
+                    replace({
+                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+                            namespace || ALL_NAMESPACE_OPTION.value
+                        }/${_selectedResource}`,
+                    })
+                }
+                setK8SObjectList(_k8SObjectList)
+                setK8SObjectListIndexMap(_k8SObjectListIndexMap)
+                setSelectedGVK(_selectedGVK)
             }
-            setK8SObjectList(_k8SObjectList)
-            setK8SObjectListIndexMap(_k8SObjectListIndexMap)
-            setSelectedGVK(_selectedGVK)
         } catch (err) {
             showError(err)
         } finally {

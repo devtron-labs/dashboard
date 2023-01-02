@@ -1089,103 +1089,34 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
     return nodeImageObj?.description || ''
 }
 
-const k8sObjectMapDefaultData = () => {
-    const _k8SObjectListMap = new Map<string, K8SObjectType>([
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-        [
-            AggregationKeys.Workloads,
-            {
-                name: AggregationKeys.Workloads,
-                isExpanded: false,
-                namespaced: false,
-                child: [],
-            },
-        ],
-    ])
-}
-
-export const processK8SObjectList = (
+export const processK8SObjects = (
     k8sObjects: ApiResourceType[],
     selectedResource?: string,
-): { k8SObjectList: K8SObjectType[]; k8SObjectListIndexMap: Map<string, number>; selectedGVK: GVKType } => {
-    const _k8SObjectListIndexMap = new Map<string, number>()
-    const _k8SObjectList = []
-    const _k8SObjectListMap = new Map<string, number>()
+): { k8SObjectMap: Map<string, K8SObjectType>; selectedGVK: GVKType } => {
+    const _k8SObjectMap = new Map<string, K8SObjectType>()
     let _selectedGVK
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
-        const groupParent = element.gvk.Group.endsWith('.k8s.io') ? 'Others' : getAggregator(element.gvk.Kind)
-        const k8SObjectIndex = _k8SObjectListIndexMap.get(groupParent)
+        const groupParent = element.gvk.Group.endsWith('.k8s.io')
+            ? AggregationKeys.Other
+            : getAggregator(element.gvk.Kind)
         if (element.gvk.Kind.toLowerCase() === selectedResource) {
             _selectedGVK = element.gvk
         }
-        if (k8SObjectIndex === undefined) {
-            _k8SObjectList.push({
+        const currentData = _k8SObjectMap.get(groupParent)
+        if (!currentData) {
+            _k8SObjectMap.set(groupParent, {
                 name: groupParent,
                 isExpanded: element.gvk.Kind.toLowerCase() === selectedResource,
                 namespaced: element.namespaced,
                 child: [element.gvk],
             })
-            _k8SObjectListIndexMap.set(groupParent, _k8SObjectList.length - 1)
         } else {
-            if (!_k8SObjectList[k8SObjectIndex].isExpanded && element.gvk.Kind.toLowerCase() === selectedResource) {
-                _k8SObjectList[k8SObjectIndex].isExpanded = true
+            currentData.child = [...currentData.child, element.gvk]
+            if (element.gvk.Kind.toLowerCase() === selectedResource) {
+                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResource
             }
-            _k8SObjectList[k8SObjectIndex].child.push(element.gvk)
         }
     }
-    return { k8SObjectList: _k8SObjectList, k8SObjectListIndexMap: _k8SObjectListIndexMap, selectedGVK: _selectedGVK }
+    return { k8SObjectMap: _k8SObjectMap, selectedGVK: _selectedGVK }
 }

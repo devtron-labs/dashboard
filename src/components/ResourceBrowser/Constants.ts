@@ -1,3 +1,4 @@
+import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
 export const CLUSTER_SELECT_STYLE = {
@@ -43,4 +44,14 @@ export const RESOURCE_ACTION_MENU = {
     delete: 'Delete',
 }
 
-export const ALL_NAMESPACE_OPTION = {value: 'all', label: 'All namespaces'}
+export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
+
+export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
+    AggregationKeys.Workloads,
+    AggregationKeys['Config & Storage'],
+    AggregationKeys.Networking,
+    AggregationKeys['Custom Resource'],
+    AggregationKeys.RBAC,
+    AggregationKeys.Administration,
+    AggregationKeys.Other,
+]
