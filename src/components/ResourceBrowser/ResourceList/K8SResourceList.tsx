@@ -5,7 +5,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { getElapsedTime, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { CLUSTER_SELECT_STYLE } from '../Constants'
-import { K8SResourceListType, ResourceDetail } from '../Types'
+import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
@@ -41,7 +41,7 @@ export function K8SResourceList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = resourceList.filter(
+        const _filteredData = resourceList.rows.filter(
             (resource) =>
                 resource.name.indexOf(_searchText) >= 0 ||
                 resource.namespace.indexOf(_searchText) >= 0 ||
@@ -148,31 +148,40 @@ export function K8SResourceList({
             </div>
         )
     }
-    const handleResourceClick = (ev, resourceData: ResourceDetail): void => {
-        handleActionTabClick(resourceData.name)
+    const handleResourceClick = (ev, resourceData: Record<string, any>): void => {
+        handleActionTabClick(resourceData.Name)
     }
 
-    const renderResourceRow = (resourceData: ResourceDetail): JSX.Element => {
+    const renderResourceRow = (resourceData: Record<string, any>): JSX.Element => {
         return (
             <div
-                key={resourceData.name}
+                key={resourceData.Name}
                 className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
             >
-                <div className="cb-5 dc__ellipsis-right">
-                    <NavLink
-                        to={`${url}/${resourceData.name}`}
-                        onClick={(e) => {
-                            handleResourceClick(e, resourceData)
-                        }}
-                    >
-                        {resourceData.name}
-                    </NavLink>
-                </div>
-                <div>{resourceData.status}</div>
-                <div>{resourceData.namespace}</div>
-                <div>{resourceData.ready}</div>
-                <div>{resourceData.restarts}</div>
-                <div>{getElapsedTime(new Date(resourceData.age))}</div>
+                {resourceList.column.map((columnName) =>
+                    columnName === 'Name' ? (
+                        <div className="cb-5 dc__ellipsis-right">
+                            <NavLink
+                                to={`${url}/${resourceData.Name}`}
+                                onClick={(e) => {
+                                    handleResourceClick(e, resourceData)
+                                }}
+                            >
+                                {resourceData.Name}
+                            </NavLink>
+                        </div>
+                    ) : (
+                        <div
+                            className={`${
+                                columnName === 'Status'
+                                    ? `app-summary__status-name f-${resourceData[columnName].toLowerCase()}`
+                                    : ''
+                            }`}
+                        >
+                            {resourceData[columnName]}
+                        </div>
+                    ),
+                )}
                 <ResourceBrowserActionMenu
                     clusterId={clusterId}
                     namespace={namespace}
@@ -188,9 +197,9 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${
-                        selectedResource?.gvk?.Kind
-                    }. Try selecting a different cluster${selectedResource.namespaced ? ' or namespace.' : '.'}`}
+                    subTitle={`We could not find any ${selectedResource?.gvk?.Kind}. Try selecting a different cluster${
+                        selectedResource.namespaced ? ' or namespace.' : '.'
+                    }`}
                 />
             )
         } else {
@@ -211,12 +220,9 @@ export function K8SResourceList({
             return (
                 <div>
                     <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                        <div>Name</div>
-                        <div>STATUS</div>
-                        <div>NAMESPACE</div>
-                        <div>Ready</div>
-                        <div>RESTARTS</div>
-                        <div>AGE</div>
+                        {resourceList.column.map((columnName) => (
+                            <div>{columnName}</div>
+                        ))}
                         <div></div>
                     </div>
                     <div className="scrollable-resource-list">

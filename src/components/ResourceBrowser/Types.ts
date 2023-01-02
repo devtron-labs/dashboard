@@ -3,14 +3,21 @@ import { ResponseType } from '../../services/service.types'
 import { Nodes, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 
-export interface ResourceDetail {
-    name: string
-    status: string
-    namespace: string
-    age: string
-    ready: string
-    restarts: string
-    containers: string[]
+// export interface ResourceDetail {
+//     name: string
+//     status: string
+//     namespace: string
+//     age: string
+//     ready: string
+//     restarts: string
+//     containers: string[]
+// }
+
+export interface ResourceDataType {}
+
+export interface ResourceDetailType {
+    column: string[]
+    rows: Record<string, any>[]
 }
 
 export interface GVKType {
@@ -20,7 +27,7 @@ export interface GVKType {
 }
 
 export interface ResourceListResponse extends ResponseType {
-    result?: ResourceDetail[]
+    result?: ResourceDetailType
 }
 
 export interface ApiResourceType {
@@ -96,9 +103,9 @@ export interface SidebarType {
 
 export interface K8SResourceListType {
     selectedResource: ApiResourceType
-    resourceList: ResourceDetail[]
-    filteredResourceList: ResourceDetail[]
-    setFilteredResourceList: React.Dispatch<React.SetStateAction<ResourceDetail[]>>
+    resourceList: ResourceDetailType
+    filteredResourceList: Record<string, any>[]
+    setFilteredResourceList: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
     noResults: boolean
     clusterOptions: OptionType[]
     selectedCluster: OptionType
@@ -113,7 +120,7 @@ export interface K8SResourceListType {
 export interface ResourceBrowserActionMenuType {
     clusterId: string
     namespace: string
-    resourceData: ResourceDetail
+    resourceData: Record<string, any>
     selectedResource: ApiResourceType
     getResourceListData: () => Promise<void>
 }

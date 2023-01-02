@@ -43,7 +43,7 @@
 
             .resource-list-row {
                 display: grid;
-                grid-template-columns: minmax(300px, auto) repeat(2, 150px) repeat(2, 60px) 100px 30px;
+                grid-template-columns: minmax(300px, auto) repeat(auto-fit, 100px);
                 column-gap: 16px;
 
                 .menu-icon {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
+import { ApiResourceType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
@@ -34,8 +34,8 @@ export default function ResourceList() {
     const [noResults, setNoResults] = useState(false)
     const [k8SObjectList, setK8SObjectList] = useState<K8SObjectType[]>([])
     const [k8SObjectListIndexMap, setK8SObjectListIndexMap] = useState<Map<string, number>>()
-    const [resourceList, setResourceList] = useState<ResourceDetail[]>([])
-    const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetail[]>([])
+    const [resourceList, setResourceList] = useState<ResourceDetailType>()
+    const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
@@ -197,8 +197,8 @@ export default function ResourceList() {
             const { result } = await getResourceList(resourceListPayload)
             setLastDataSync(!lastDataSync)
             setResourceList(result)
-            setFilteredResourceList(result)
-            setNoResults(result.length === 0)
+            setFilteredResourceList(result.rows)
+            setNoResults(result.rows.length === 0)
         } catch (err) {
             showError(err)
         } finally {
@@ -259,7 +259,7 @@ export default function ResourceList() {
     }
 
     const getSelectedResourceData = () => {
-        const selectedNode = resourceList.find((_resource) => _resource.name === node)
+        const selectedNode = resourceList.rows.find((_resource) => _resource.Name === node)
         const _selectedResource = selectionData?.[nodeType]?.gvk || selectedResource?.gvk
 
         return {
@@ -268,8 +268,8 @@ export default function ResourceList() {
             version: _selectedResource?.Version || '',
             kind: _selectedResource?.Kind || '',
             namespace: selectedNode?.namespace || '',
-            name: selectedNode?.name || '',
-            status: selectedNode?.status || '',
+            name: selectedNode?.Name || '',
+            status: selectedNode?.Status || '',
             containers: selectedNode?.containers || [],
         } as SelectedResourceType
     }
