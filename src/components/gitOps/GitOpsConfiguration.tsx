@@ -222,7 +222,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 bitBucketProjectKey: '',
             }
 
-        let isError = {
+        return {
             host: form.host.length ? '' : 'This is a required field',
             username: form.username.length ? '' : 'This is a required field',
             token: form.token.length ? '' : 'This is a required field',
@@ -232,7 +232,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             bitBucketWorkspaceId: form.bitBucketWorkspaceId.length ? '' : 'This is a required field',
             bitBucketProjectKey: '',
         }
-        return isError
     }
 
     isInvalid() {
