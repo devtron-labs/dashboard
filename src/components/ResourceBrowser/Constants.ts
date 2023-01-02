@@ -15,7 +15,7 @@ export const CLUSTER_SELECT_STYLE = {
         backgroundColor: 'transparent',
         cursor: 'pointer',
         height: '28px',
-        minHeight: '28px',
+        minHeight: '30px',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -27,11 +27,11 @@ export const CLUSTER_SELECT_STYLE = {
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        height: '28px',
+        height: '30px',
     }),
     valueContainer: (base, state) => ({
         ...base,
-        height: '28px',
+        height: '30px',
         padding: '0 6px',
     }),
 }

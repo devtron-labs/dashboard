@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -17,6 +17,32 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')
     const [resourceResponse, setResourceResponse] = useState<ResourceType[]>(null)
+
+    const appStatusDetailRef = useRef<HTMLDivElement>(null)
+    const escKeyPressHandler = (evt): void => {
+        if (evt && evt.key === 'Escape') {
+            evt.preventDefault()
+            onClose()
+        }
+    }
+    const outsideClickHandler = (evt): void => {
+        if (appStatusDetailRef.current && !appStatusDetailRef.current.contains(evt.target)) {
+            onClose()
+        }
+    }
+    useEffect(() => {
+        document.addEventListener('keydown', escKeyPressHandler)
+        return (): void => {
+            document.removeEventListener('keydown', escKeyPressHandler)
+        }
+    }, [escKeyPressHandler])
+
+    useEffect(() => {
+        document.addEventListener('click', outsideClickHandler)
+        return (): void => {
+            document.removeEventListener('click', outsideClickHandler)
+        }
+    }, [outsideClickHandler])
 
     const onClose = (): void => {
         !loader && closePopup()
@@ -57,8 +83,8 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                     <button className="cta cancel h-36 lh-36 mr-12" type="button" disabled={loader} onClick={onClose}>
                         Cancel
                     </button>
-                    <button className="cta h-36 lh-36" disabled={loader} onClick={onSave}>
-                        {loader ? <Progressing /> : 'Save'}
+                    <button className="cta h-36 lh-36" disabled={loader || !resourceYAML} onClick={onSave}>
+                        {loader ? <Progressing /> : 'Apply'}
                     </button>
                 </div>
             )
@@ -79,7 +105,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="create-resource-container bcn-0 h-100">
+            <div className="create-resource-container bcn-0 h-100" ref={appStatusDetailRef}>
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Create Kubernetes Resource</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>

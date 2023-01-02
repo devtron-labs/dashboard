@@ -188,7 +188,9 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${selectedResource?.gvk?.Kind}. Try selecting a different cluster or namespace.`}
+                    subTitle={`We could not find any ${
+                        selectedResource?.gvk?.Kind
+                    }. Try selecting a different cluster${selectedResource.namespaced ? ' or namespace.' : '.'}`}
                 />
             )
         } else {

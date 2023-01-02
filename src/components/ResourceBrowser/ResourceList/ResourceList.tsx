@@ -278,7 +278,7 @@ export default function ResourceList() {
                             </div>
                         </Route>
                         <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType?`}>
-                            <div className="resource-browser bcn-0">
+                            <div className="resource-browser bcn-0 pl-8">
                                 <Sidebar
                                     k8SObjectList={k8SObjectList}
                                     clusterId={clusterId}

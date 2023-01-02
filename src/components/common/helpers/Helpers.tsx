@@ -1118,5 +1118,8 @@ export const processK8SObjects = (
             }
         }
     }
+    for (const [, _k8sObject] of _k8SObjectMap.entries()) {
+        _k8sObject.child.sort((a, b) => a['Kind'].localeCompare(b['Kind']))
+    }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
