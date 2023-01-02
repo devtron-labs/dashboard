@@ -127,7 +127,7 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType {
-    imageList: string[]
+    imageList: ClusterImageList[]
     isSuperAdmin: boolean
     namespaceList: string[]
 }
@@ -137,7 +137,7 @@ export interface ClusterTerminalType {
     clusterName?: string
     nodeList: string[]
     closeTerminal?: () => void
-    clusterImageList: string[]
+    clusterImageList: ImageList[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
     node?: string
@@ -147,5 +147,17 @@ export interface ClusterTerminalType {
 export const TEXT_COLOR_CLASS = {
     Ready: 'cg-5',
     'Not ready': 'cr-5',
+}
+
+export interface ImageList {
+    name: string,
+    image: string,
+    description: string
+}
+
+export interface ClusterImageList {
+    groupId: string,
+    groupRegex: string,
+    imageList: ImageList[],
 }
 

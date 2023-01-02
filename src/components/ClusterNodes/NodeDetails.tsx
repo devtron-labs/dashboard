@@ -9,6 +9,7 @@ import {
     showError,
     useBreadcrumb,
     ToastBodyWithButton,
+    filterImageList,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -28,6 +29,7 @@ import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
+    ImageList,
     NodeDetail,
     NodeDetailResponse,
     PodType,
@@ -67,6 +69,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
+    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const toastId = useRef(null)
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
@@ -78,6 +81,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
+                    setNodeImageList(filterImageList(imageList,response.result.k8sVersion))
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
@@ -893,7 +897,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             <ClusterTerminal
                 clusterId={Number(clusterId)}
                 nodeList={nodeListRef.current}
-                clusterImageList={imageList}
+                clusterImageList={nodeImageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}
             />
