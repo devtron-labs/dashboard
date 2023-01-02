@@ -48,6 +48,11 @@ export interface ResourceListPayloadType {
     }
 }
 
+export interface CreateResourcePayload {
+    clusterId: number
+    manifest: string
+}
+
 export enum CreateResourceStatus {
     failed = 'Failed',
     created = 'Created',
@@ -57,8 +62,8 @@ export enum CreateResourceStatus {
 export interface ResourceType {
     kind: string
     name: string
-    status: CreateResourceStatus
-    message: string
+    isUpdate: boolean
+    error: string
 }
 
 export interface CreateResourceResponse extends ResponseType {

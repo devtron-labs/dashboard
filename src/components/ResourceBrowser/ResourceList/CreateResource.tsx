@@ -9,7 +9,7 @@ import { Drawer, Progressing, showError } from '../../common'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import '../ResourceBrowser.scss'
-import { CreateResourceStatus, ResourceListPayloadType, ResourceType } from '../Types'
+import { CreateResourcePayload, CreateResourceStatus, ResourceListPayloadType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
 
 export function CreateResource({ closePopup, clusterId, selectedGVK }) {
@@ -33,17 +33,14 @@ export function CreateResource({ closePopup, clusterId, selectedGVK }) {
     const onSave = async (): Promise<void> => {
         try {
             setLoader(true)
-            const resourceListPayload: ResourceListPayloadType = {
+            const resourceListPayload: CreateResourcePayload = {
                 clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedGVK,
-                    },
-                    patch: resourceYAML,
-                },
+                manifest: resourceYAML,
             }
             const { result } = await createNewResource(resourceListPayload)
-            setResourceResponse(result)
+            if (result) {
+                setResourceResponse(result)
+            }
             toggleCodeEditorView(false)
             //closePopup(true)
         } catch (err) {
@@ -125,14 +122,21 @@ export function CreateResource({ closePopup, clusterId, selectedGVK }) {
                                         <div>{resource.kind}</div>
                                         <div>{resource.name}</div>
                                         <div className="flex left">
-                                            {resource.status === CreateResourceStatus.failed ? (
-                                                <Error className="icon-dim-16 mr-8" />
+                                            {resource.error ? (
+                                                <>
+                                                    <Error className="icon-dim-16 mr-8" />
+                                                    {CreateResourceStatus.failed}
+                                                </>
                                             ) : (
-                                                <Success className="icon-dim-16 mr-8" />
+                                                <>
+                                                    <Success className="icon-dim-16 mr-8" />
+                                                    {resource.isUpdate
+                                                        ? CreateResourceStatus.updated
+                                                        : CreateResourceStatus.created}
+                                                </>
                                             )}
-                                            {resource.status}
                                         </div>
-                                        <div>{resource.message}</div>
+                                        <div>{resource.error}</div>
                                     </div>
                                 ))}
                             </div>
