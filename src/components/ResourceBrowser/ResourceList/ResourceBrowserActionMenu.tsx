@@ -13,7 +13,7 @@ import { Nodes } from '../../app/types'
 import { deleteResource } from '../ResourceBrowser.service'
 import { toast } from 'react-toastify'
 
-export default function ResourceBrowserActionMenu({ clusterId, namespace, resourceData, nodeType, selectedGVK, refreshData }: ResourceBrowserActionMenuType) {
+export default function ResourceBrowserActionMenu({ clusterId, namespace, resourceData, nodeType, selectedGVK, getResourceListData }: ResourceBrowserActionMenuType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const [loader, setLoader] = useState(false)
@@ -37,9 +37,7 @@ export default function ResourceBrowserActionMenu({ clusterId, namespace, resour
           }
             const { result } = await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
-            refreshData()
-            //toggleCodeEditorView(false)
-            //closePopup(true)
+            getResourceListData()
         } catch (err) {
             showError(err)
         } finally {

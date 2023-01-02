@@ -25,7 +25,7 @@ export function K8SResourceList({
     selectedNamespace,
     setSelectedNamespace,
     resourceListLoader,
-    refreshData
+    getResourceListData,
 }: K8SResourceListType) {
     const { push } = useHistory()
 
@@ -157,7 +157,7 @@ export function K8SResourceList({
                     resourceData={resourceData}
                     nodeType={selectedGVK?.Kind}
                     selectedGVK={selectedGVK}
-                    refreshData={refreshData}
+                    getResourceListData={getResourceListData}
                 />
             </div>
         )

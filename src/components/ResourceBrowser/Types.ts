@@ -109,7 +109,7 @@ export interface K8SResourceListType {
     selectedNamespace: OptionType
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
     resourceListLoader: boolean
-    refreshData: () => void
+    getResourceListData: () => Promise<void>
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -118,7 +118,7 @@ export interface ResourceBrowserActionMenuType {
     resourceData: ResourceDetail
     nodeType: Nodes
     selectedGVK: GVKType
-    refreshData: () => void
+    getResourceListData: () => Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
