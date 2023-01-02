@@ -5,15 +5,16 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { getElapsedTime, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { CLUSTER_SELECT_STYLE } from '../Constants'
-import { Nodes } from '../../app/types'
 import { K8SResourceListType, ResourceDetail } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import '../ResourceBrowser.scss'
+import AppDetailsStore from '../../v2/appDetails/appDetails.store'
+import { toast } from 'react-toastify'
 
 export function K8SResourceList({
-  selectedResource,
+    selectedResource,
     resourceList,
     filteredResourceList,
     setFilteredResourceList,
@@ -28,10 +29,9 @@ export function K8SResourceList({
     getResourceListData,
 }: K8SResourceListType) {
     const { push } = useHistory()
-
+    const { url } = useRouteMatch()
     const location = useLocation()
-    const match = useRouteMatch()
-    const { clusterId, namespace } = useParams<{
+    const { clusterId, namespace, nodeType, node } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
@@ -83,6 +83,23 @@ export function K8SResourceList({
         })
     }
 
+    const handleActionTabClick = (_tabName: string) => {
+        const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${_tabName.toLowerCase()}`
+
+        const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, _tabName.toLowerCase(), _url)
+
+        if (isAdded) {
+            push(_url)
+        } else {
+            toast.error(
+                <div>
+                    <div>Max 5 tabs allowed</div>
+                    <p>Please close an open tab and try again.</p>
+                </div>,
+            )
+        }
+    }
+
     const renderSearch = (): JSX.Element => {
         return (
             <div className="flexbox dc__content-space pt-16 pr-20 pb-16 pl-20">
@@ -131,14 +148,19 @@ export function K8SResourceList({
             </div>
         )
     }
-    const handleResourceClick = (ev, resourceData: ResourceDetail): void => {}
+    const handleResourceClick = (ev, resourceData: ResourceDetail): void => {
+        handleActionTabClick(resourceData.name)
+    }
 
     const renderResourceRow = (resourceData: ResourceDetail): JSX.Element => {
         return (
-            <div className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+            <div
+                key={resourceData.name}
+                className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
+            >
                 <div className="cb-5 dc__ellipsis-right">
                     <NavLink
-                        to={`${match.url}/${resourceData.name}`}
+                        to={`${url}/${resourceData.name}`}
                         onClick={(e) => {
                             handleResourceClick(e, resourceData)
                         }}

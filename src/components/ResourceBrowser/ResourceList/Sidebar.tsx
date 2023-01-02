@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { useHistory } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -16,7 +16,11 @@ export function Sidebar({
     const { push } = useHistory()
     const selectNode = (e): void => {
         const _selectedResource = e.currentTarget.dataset.kind.toLowerCase()
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}${namespace ? `/${namespace}` : ``}/${_selectedResource}`)
+        push(
+            `${URLS.RESOURCE_BROWSER}/${clusterId}${namespace ? `/${namespace}` : ''}${
+                _selectedResource ? `/${URLS.APP_DETAILS_K8}/${_selectedResource}` : ''
+            }`,
+        )
         setSelectedResource({
             namespaced: _selectedResource.namespaced,
             gvk: {
@@ -29,7 +33,7 @@ export function Sidebar({
     return (
         <div className="k8s-object-container">
             {k8SObjectList.map((k8sObject) => (
-                <>
+                <Fragment key={k8sObject.name}>
                     <div className="flex pointer" data-group-name={k8sObject.name} onClick={handleGroupHeadingClick}>
                         <DropDown
                             className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
@@ -41,6 +45,7 @@ export function Sidebar({
                         <div className="pl-20">
                             {k8sObject.child.map((gvk) => (
                                 <span
+                                    key={gvk.Kind}
                                     className={`dc__no-decor fs-14 pointer flex left w-100 fw-4 pt-6 pr-8 pb-6 pl-8 ${
                                         nodeType === gvk.Kind.toLowerCase() ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
                                     }`}
@@ -55,7 +60,7 @@ export function Sidebar({
                             ))}
                         </div>
                     )}
-                </>
+                </Fragment>
             ))}
         </div>
     )

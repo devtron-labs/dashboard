@@ -6,7 +6,7 @@ import { copyToClipboard, getElapsedTime } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
-import { NodeType, Node, iNode, AppType } from '../../appDetails.type';
+import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type';
 import './nodeType.scss';
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
@@ -24,13 +24,8 @@ function NodeComponent({
     externalLinks,
     monitoringTools,
     isDevtronApp
-}: {
-    handleFocusTabs: () => void,
-    externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
-    isDevtronApp?:boolean
-}) {
-    const { path, url } = useRouteMatch();
+}: NodeComponentProps) {
+    const { url } = useRouteMatch();
     const history = useHistory();
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -39,7 +34,6 @@ function NodeComponent({
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState('');
     const [podType, setPodType] = useState(false);
-    const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
     const params = useParams<{ nodeType: NodeType, resourceName: string }>();
     const podMetaData = IndexStore.getPodMetaData();
@@ -168,10 +162,6 @@ function NodeComponent({
         })
 
         setSelectedNodes(updatedNodes)
-    };
-
-    const describeNode = (name: string, containerName: string) => {
-        setDetailedNode({ name, containerName });
     };
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {

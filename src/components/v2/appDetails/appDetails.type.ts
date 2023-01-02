@@ -1,3 +1,5 @@
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 
 export interface ApplicationObject extends iLink {
@@ -385,7 +387,11 @@ export interface TerminalComponentProps {
     isDeleted: boolean;
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
-} 
+}
+
+export interface NodeTreeTabListProps extends LogSearchTermType {
+    tabRef?: MutableRefObject<HTMLDivElement>
+}
 
 export interface Options {
     name: string;
@@ -438,4 +444,27 @@ export interface ResourceInfoActionPropsType {
     isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+}
+
+export interface NodeTreeDetailTabProps {
+    appDetails: AppDetails
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?: boolean
+}
+
+export interface K8ResourceComponentProps {
+    clickedNodes: Map<string, string>;
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
+    handleFocusTabs: () => void;
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?: boolean
+}
+
+export interface NodeComponentProps {
+    handleFocusTabs: () => void,
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?:boolean
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory, useParams, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
@@ -11,14 +11,14 @@ import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
-import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { CreateResource } from './CreateResource'
-import '../ResourceBrowser.scss'
+import AppDetailsStore from '../../v2/appDetails/appDetails.store'
+import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -28,6 +28,7 @@ export default function ResourceList() {
         node: string
     }>()
     const { replace, push } = useHistory()
+    const { path, url } = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [resourceListLoader, setResourceListLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
@@ -67,6 +68,10 @@ export default function ResourceList() {
             getResourceListData()
         }
     }, [namespace])
+
+    useEffect(() => {
+        AppDetailsStore.initAppDetailsTabs(url, false, false)
+    }, [clusterId, namespace])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -129,8 +134,8 @@ export default function ResourceList() {
                     _k8SObjectList[0].isExpanded = true
                     const _selectedResourceParam = _k8SObjectList[0].child[0].Kind.toLowerCase()
                     replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
-                            namespace || ALL_NAMESPACE_OPTION.value
+                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace || ALL_NAMESPACE_OPTION.value}/${
+                            URLS.APP_DETAILS_K8
                         }/${_selectedResourceParam}`,
                     })
                 }
@@ -184,18 +189,13 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean): void => {
         setSelectedCluster(selected)
         getNamespaceList(selected.value)
-        let path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
         if (fromClusterSelect) {
             replace({
-                pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`,
+                pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}/${URLS.APP_DETAILS_K8}`,
             })
         } else {
-            if (namespace !== ALL_NAMESPACE_OPTION.value) {
-                path = location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`)
-            }
-            const splittedPath = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
             push({
-                pathname:  location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`),
+                pathname: location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`),
             })
         }
     }
@@ -225,40 +225,18 @@ export default function ResourceList() {
     return (
         <div className="resource-browser-container">
             <PageHeader headerName="Kubernetes object browser" />
-            {/* Temp location for NodeDetailComponent, it'll be put under tabs */}
-            {/* <div className="resource-details-container">
-                <NodeDetailComponent
-                    isResourceBrowserView={true}
-                    selectedResource={
-                        {
-                            clusterId: Number(clusterId),
-                            group: selectedResource.gvk?.Group || '',
-                            version: selectedResource.gvk?.Version || '',
-                            kind: selectedResource.gvk?.Kind || '',
-                            namespace: selectedNode?.namespace || '',
-                            name: selectedNode?.name || '',
-                            status: selectedNode?.status || '',
-                            containers: selectedNode?.containers || [],
-                        } as SelectedResourceType
-                    }
-                    logSearchTerms={logSearchTerms}
-                    setLogSearchTerms={setLogSearchTerms}
-                />
-            </div> */}
             {!selectedCluster?.value ? (
                 <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
             ) : (
                 <div>
-                    <div className="h-44 flexbox dc__content-space pr-20 pl-20">
+                    <div
+                        className="h-44 flexbox dc__content-space pr-20 pl-20"
+                        style={{
+                            boxShadow: 'inset 0 -1px 0 0 var(--N200)',
+                        }}
+                    >
                         <div className="resource-browser-tab flex left pt-10">
-                            <div className="flex fw-6 fs-12 h-32 pt-7 pr-12 pb-7 pl-12 active bcn-0">
-                                <CubeIcon className="icon-dim-16 scn-9 mr-8" />
-                                K8s Objects
-                            </div>
-                            <div className="flex fw-6 fs-12 h-32 pt-7 pr-12 pb-7 pl-12">
-                                Pod/...-qff78
-                                <CloseIcon className="icon-dim-16 ml-8" />
-                            </div>
+                            <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                         </div>
                         <div className="fs-13 flex pt-12 pb-12">
                             <div
@@ -275,31 +253,57 @@ export default function ResourceList() {
                             )}
                         </div>
                     </div>
-                    <div className="resource-browser bcn-0">
-                        <Sidebar
-                            k8SObjectList={k8SObjectList}
-                            clusterId={clusterId}
-                            namespace={selectedNamespace?.value || namespace}
-                            handleGroupHeadingClick={handleGroupHeadingClick}
-                            nodeType={nodeType}
-                            setSelectedResource={setSelectedResource}
-                        />
-                        <K8SResourceList
-                            selectedResource={selectedResource}
-                            resourceList={resourceList}
-                            filteredResourceList={filteredResourceList}
-                            setFilteredResourceList={setFilteredResourceList}
-                            noResults={noResults}
-                            clusterOptions={clusterOptions}
-                            selectedCluster={selectedCluster}
-                            onChangeCluster={onChangeCluster}
-                            namespaceOptions={namespaceOptions}
-                            selectedNamespace={selectedNamespace}
-                            setSelectedNamespace={setSelectedNamespace}
-                            resourceListLoader={resourceListLoader}
-                            getResourceListData={getResourceListData}
-                        />
-                    </div>
+                    <Switch>
+                        <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:node`}>
+                            <div className="resource-details-container">
+                                <NodeDetailComponent
+                                    isResourceBrowserView={true}
+                                    selectedResource={
+                                        {
+                                            clusterId: Number(clusterId),
+                                            group: selectedResource?.gvk?.Group || '',
+                                            version: selectedResource?.gvk?.Version || '',
+                                            kind: selectedResource?.gvk?.Kind || '',
+                                            namespace: selectedNode?.namespace || '',
+                                            name: selectedNode?.name || '',
+                                            status: selectedNode?.status || '',
+                                            containers: selectedNode?.containers || [],
+                                        } as SelectedResourceType
+                                    }
+                                    logSearchTerms={logSearchTerms}
+                                    setLogSearchTerms={setLogSearchTerms}
+                                />
+                            </div>
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType?`}>
+                            <div className="resource-browser bcn-0">
+                                <Sidebar
+                                    k8SObjectList={k8SObjectList}
+                                    clusterId={clusterId}
+                                    namespace={selectedNamespace?.value || namespace}
+                                    handleGroupHeadingClick={handleGroupHeadingClick}
+                                    nodeType={nodeType}
+                                    setSelectedResource={setSelectedResource}
+                                />
+                                <K8SResourceList
+                                    selectedResource={selectedResource}
+                                    resourceList={resourceList}
+                                    filteredResourceList={filteredResourceList}
+                                    setFilteredResourceList={setFilteredResourceList}
+                                    noResults={noResults}
+                                    clusterOptions={clusterOptions}
+                                    selectedCluster={selectedCluster}
+                                    onChangeCluster={onChangeCluster}
+                                    namespaceOptions={namespaceOptions}
+                                    selectedNamespace={selectedNamespace}
+                                    setSelectedNamespace={setSelectedNamespace}
+                                    resourceListLoader={resourceListLoader}
+                                    getResourceListData={getResourceListData}
+                                />
+                            </div>
+                        </Route>
+                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}/`} />
+                    </Switch>
                 </div>
             )}
             {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
