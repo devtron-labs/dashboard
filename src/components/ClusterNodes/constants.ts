@@ -149,10 +149,10 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
 ]
 
 export const NODE_DETAILS_TABS = {
-  summary: 'Summary',
-  yaml: 'YAML',
-  nodeConditions: 'Node conditions',
-  debug: 'Debug'
+    summary: 'Summary',
+    yaml: 'YAML',
+    nodeConditions: 'Node conditions',
+    debug: 'Debug',
 }
 
 export const TAINT_OPTIONS: {
@@ -162,7 +162,7 @@ export const TAINT_OPTIONS: {
 }[] = [
     {
         label: EFFECT_TYPE.NoSchedule,
-        value:EFFECT_TYPE.NoSchedule,
+        value: EFFECT_TYPE.NoSchedule,
         description: 'Prevents all pods from being scheduled to the node.',
     },
     {
@@ -244,17 +244,29 @@ export const DELETE_NODE_MODAL_MESSAGING = {
 }
 
 export const EDIT_TAINTS_MODAL_MESSAGING = {
-  titlePrefix: 'Edit taints for node ',
-  infoText: 'Add taints to nodes so that pods are not scheduled to the nodes or not scheduled to the nodes if possible. After you add taints to nodes, you can set tolerations on a pod to allow the pod to be scheduled to nodes with certain taints.Drain the node before deleting it as it may cause disruption because of pod deletion.',
-  addTaint: 'Add taint',
-  Actions: {
-    cancel: 'Cancel',
-    save: 'Save',
-    saving: 'Taints updated successfully'
-  }
+    titlePrefix: 'Edit taints for node ',
+    infoText:
+        'Add taints to nodes so that pods are not scheduled to the nodes or not scheduled to the nodes if possible. After you add taints to nodes, you can set tolerations on a pod to allow the pod to be scheduled to nodes with certain taints.',
+    infoLinkText: 'Check taint validations.',
+    tippyTitle: 'Taint validations',
+    tippyDescription: {
+        message: 'A taint consists of a key, value, and effect.',
+        messageList: [
+            `1. Key: The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 253 characters.`,
+            `Optionally, the key can begin with a DNS subdomain prefix and a single '/', like example.com/my-app.`,
+            `2. Value(Optional) :If given, it must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters.`,
+            `3. Combination of <key, effect> must be unique.`,
+        ],
+    },
+    addTaint: 'Add taint',
+    Actions: {
+        cancel: 'Cancel',
+        save: 'Save',
+        saving: 'Taints updated successfully',
+    },
 }
 export const IMAGE_LIST = {
     NAME: 'name',
     IMAGE: 'image',
-    DESCRIPTION: 'description'
+    DESCRIPTION: 'description',
 }
