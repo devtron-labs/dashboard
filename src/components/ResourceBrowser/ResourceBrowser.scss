@@ -19,7 +19,6 @@
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;
-        column-gap: 16px;
 
         .k8s-object-container {
             height: calc(100vh - 92px);

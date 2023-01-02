@@ -281,10 +281,7 @@ export default function ResourceList() {
                             <div className="resource-browser bcn-0 pl-8">
                                 <Sidebar
                                     k8SObjectList={k8SObjectList}
-                                    clusterId={clusterId}
-                                    namespace={selectedNamespace?.value || namespace}
                                     handleGroupHeadingClick={handleGroupHeadingClick}
-                                    nodeType={nodeType}
                                     setSelectedResource={setSelectedResource}
                                 />
                                 <K8SResourceList

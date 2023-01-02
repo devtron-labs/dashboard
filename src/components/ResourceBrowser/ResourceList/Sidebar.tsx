@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import '../ResourceBrowser.scss'
@@ -7,13 +7,17 @@ import { SidebarType } from '../Types'
 
 export function Sidebar({
     k8SObjectList,
-    clusterId,
-    namespace,
     handleGroupHeadingClick,
-    nodeType,
     setSelectedResource,
 }: SidebarType) {
     const { push } = useHistory()
+
+    const { clusterId, namespace, nodeType } = useParams<{
+      clusterId: string
+      namespace: string
+      nodeType: string
+      node: string
+  }>()
     const selectNode = (e): void => {
         const _selectedResource = e.currentTarget.dataset.kind.toLowerCase()
         push(
@@ -44,9 +48,9 @@ export function Sidebar({
                     {k8sObject.isExpanded && (
                         <div className="pl-20">
                             {k8sObject.child.map((gvk) => (
-                                <span
+                                <div
                                     key={gvk.Kind}
-                                    className={`dc__no-decor fs-14 pointer flex left w-100 fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                                    className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                                         nodeType === gvk.Kind.toLowerCase() ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
                                     }`}
                                     data-group={gvk.Group}
@@ -56,7 +60,7 @@ export function Sidebar({
                                     onClick={selectNode}
                                 >
                                     {gvk.Kind}
-                                </span>
+                                </div>
                             ))}
                         </div>
                     )}

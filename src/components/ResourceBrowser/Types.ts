@@ -89,10 +89,7 @@ export interface CreateResourceType {
 
 export interface SidebarType {
     k8SObjectList: K8SObjectType[]
-    clusterId: string
-    namespace: string
     handleGroupHeadingClick: (e) => void
-    nodeType: string
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceType>>
 }
 
