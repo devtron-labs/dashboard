@@ -167,37 +167,42 @@ function LogsComponent({
         workerRef.current = new WebWorker(sseWorker)
         workerRef.current['addEventListener' as any]('message', handleMessage)
 
-        let urls = []
-        let podsWithContainers = []
+        const pods = [],
+            urls = []
 
         if (isResourceBrowserView) {
-            urls = podContainerOptions.containerOptions
-                .filter((_co) => _co.selected)
-                .map((_co) =>
-                    getLogsURL(
-                        appDetails,
-                        podContainerOptions.podOptions[0].name,
-                        Host,
-                        _co.name,
-                        isResourceBrowserView,
-                        selectedResource.clusterId,
-                        selectedResource.namespace,
-                    ),
-                )
+            pods.concat(podContainerOptions.podOptions.map((_pwc) => _pwc.name))
+
+            const nodeName = podContainerOptions.podOptions[0].name
+            for (const _co of podContainerOptions.containerOptions) {
+                if (_co.selected) {
+                    urls.push(
+                        getLogsURL(
+                            appDetails,
+                            nodeName,
+                            Host,
+                            _co.name,
+                            isResourceBrowserView,
+                            selectedResource.clusterId,
+                            selectedResource.namespace,
+                        ),
+                    )
+                }
+            }
         } else {
-            const pods = podContainerOptions.podOptions
+            const selectedPods = podContainerOptions.podOptions
                 .filter((_pod) => _pod.selected)
                 .flatMap((_pod) => getSelectedPodList(_pod.name))
 
             const containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name)
-
-            podsWithContainers = pods
+            const podsWithContainers = selectedPods
                 .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
                 .filter((_pwc) => containers.includes(_pwc[1]))
 
-            urls = podsWithContainers.map((_pwc) => {
-                return getLogsURL(appDetails, _pwc[0], Host, _pwc[1])
-            })
+            for (const _pwc of podsWithContainers) {
+                pods.push(_pwc[0])
+                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1]))
+            }
 
             if (urls.length == 0) {
                 return
@@ -210,9 +215,7 @@ function LogsComponent({
                 urls: urls,
                 grepTokens: logState.grepTokens,
                 timeout: 300,
-                pods: isResourceBrowserView
-                    ? podContainerOptions.podOptions.map((_pwc) => _pwc.name)
-                    : podsWithContainers.map((_pwc) => _pwc[0]),
+                pods: pods,
             },
         })
     }
