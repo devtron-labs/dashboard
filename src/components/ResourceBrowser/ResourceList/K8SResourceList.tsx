@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import { URLS } from '../../../config'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { convertToOptionsList, getElapsedTime, Progressing, showError } from '../../common'
+import { getElapsedTime, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { getClusterListMinWithoutAuth } from '../../../services/service'
-import { namespaceListByClusterId } from '../ResourceBrowser.service'
-import { ALL_NAMESPACE_OPTION, CLUSTER_SELECT_STYLE } from '../Constants'
-import { Nodes, OptionType } from '../../app/types'
+import { CLUSTER_SELECT_STYLE } from '../Constants'
+import { Nodes } from '../../app/types'
 import { ResourceDetail } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
@@ -16,6 +13,7 @@ import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import '../ResourceBrowser.scss'
 
 export function K8SResourceList({
+  selectedGVK,
     resourceList,
     filteredResourceList,
     setFilteredResourceList,
@@ -32,7 +30,7 @@ export function K8SResourceList({
 
     const location = useLocation()
     const match = useRouteMatch()
-    const { clusterId, namespace, nodeType } = useParams<{
+    const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
@@ -148,7 +146,7 @@ export function K8SResourceList({
                 <div>{resourceData.ready}</div>
                 <div>{resourceData.restarts}</div>
                 <div>{getElapsedTime(new Date(resourceData.age))}</div>
-                <ResourceBrowserActionMenu resourceData={resourceData} nodeType={nodeType as Nodes} />
+                <ResourceBrowserActionMenu resourceData={resourceData} nodeType={selectedGVK?.kind as Nodes} />
             </div>
         )
     }
@@ -157,14 +155,14 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${nodeType}. Try selecting a different cluster or namespace.`}
+                    subTitle={`We could not find any ${selectedGVK?.kind}. Try selecting a different cluster or namespace.`}
                 />
             )
         } else {
             return (
                 <ResourceListEmptyState
                     title="No matching results"
-                    subTitle={`We could not find any matching ${nodeType}.`}
+                    subTitle={`We could not find any matching ${selectedGVK?.kind}.`}
                     actionHandler={clearSearch}
                 />
             )

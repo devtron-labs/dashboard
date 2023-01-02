@@ -4,7 +4,7 @@ import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, sh
 import PageHeader from '../../common/header/PageHeader'
 import { GVKType, K8SObjectType, ResourceDetail, ResourceListPayloadType } from '../Types'
 import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
-import { AggregationKeys, OptionType } from '../../app/types'
+import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
 import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
@@ -37,7 +37,7 @@ export default function ResourceList() {
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const [selectedResource, setSelectedResource] = useState(nodeType || '')
+    const [selectedResource, setSelectedResource] = useState('')
     const [selectedGVK, setSelectedGVK] = useState<GVKType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
@@ -105,7 +105,7 @@ export default function ResourceList() {
             setLoader(true)
             const { result: resourceGroupList } = await getResourceGroupList(clusterId)
             if (resourceGroupList) {
-                const processedData = processK8SObjects(resourceGroupList, selectedResource)
+                const processedData = processK8SObjects(resourceGroupList, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
                 let _selectedGVK = processedData.selectedGVK
                 const _k8SObjectList: K8SObjectType[] = []
@@ -117,10 +117,9 @@ export default function ResourceList() {
                         _k8SObjectListIndexMap.set(element, _k8SObjectList.length - 1)
                     }
                 }
-                if (!selectedResource) {
+                if (!nodeType) {
                     _k8SObjectList[0].isExpanded = true
                     const _selectedResource = _k8SObjectList[0].child[0].Kind.toLowerCase()
-                    setSelectedResource(_selectedResource)
                     _selectedGVK = _k8SObjectList[0].child[0]
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
@@ -265,12 +264,12 @@ export default function ResourceList() {
                             k8SObjectList={k8SObjectList}
                             clusterId={clusterId}
                             namespace={selectedNamespace?.value || namespace}
-                            selectedResource={selectedResource}
-                            setSelectedResource={setSelectedResource}
                             handleGroupHeadingClick={handleGroupHeadingClick}
+                            nodeType={nodeType}
                             setSelectedGVK={setSelectedGVK}
                         />
                         <K8SResourceList
+                            selectedGVK={selectedGVK}
                             resourceList={resourceList}
                             filteredResourceList={filteredResourceList}
                             setFilteredResourceList={setFilteredResourceList}
