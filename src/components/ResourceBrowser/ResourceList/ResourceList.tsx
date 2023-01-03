@@ -259,7 +259,7 @@ export default function ResourceList() {
     }
 
     const getSelectedResourceData = () => {
-        const selectedNode = resourceList.data.find((_resource) => _resource.Name === node)
+        const selectedNode = resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = selectionData?.[nodeType]?.gvk || selectedResource?.gvk
 
         return {
@@ -268,8 +268,8 @@ export default function ResourceList() {
             version: _selectedResource?.Version || '',
             kind: _selectedResource?.Kind || '',
             namespace: selectedNode?.namespace || '',
-            name: selectedNode?.Name || '',
-            status: selectedNode?.Status || '',
+            name: selectedNode?.name || '',
+            status: selectedNode?.status || '',
             containers: selectedNode?.containers || [],
         } as SelectedResourceType
     }

@@ -176,7 +176,7 @@ export function K8SResourceList({
                         <div
                             className={`${
                                 columnName === 'status'
-                                    ? `app-summary__status-name f-${resourceData[columnName].toLowerCase()}`
+                                    ? `app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
                                     : ''
                             }`}
                         >
