@@ -258,7 +258,7 @@ export default function ResourceList() {
         if (_selected) {
             setNodeSelectionData((prevData) => ({
                 ...prevData,
-                [_selected.name]: _selected,
+                [`${nodeType}_${_selected.name}`]: _selected,
             }))
         }
     }
@@ -280,8 +280,13 @@ export default function ResourceList() {
 
     const getSelectedResourceData = () => {
         const selectedNode =
-            nodeSelectionData?.[node] ?? resourceList?.data?.find((_resource) => _resource.name === node)
+            nodeSelectionData?.[`${nodeType}_${node}`] ??
+            resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = resourceSelectionData?.[nodeType]?.gvk ?? selectedResource?.gvk
+
+        if (!nodeSelectionData?.[`${nodeType}_${node}`]) {
+            updateNodeSelectionData(selectedNode)
+        }
 
         return {
             clusterId: Number(clusterId),
@@ -312,13 +317,13 @@ export default function ResourceList() {
                             <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                         </div>
                         <div className="fs-13 flex pt-12 pb-12">
-                            <div className="pointer cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                            <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
                                 <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                             </div>
                             {!node && lastDataSyncTimeString && (
                                 <div className="ml-12 flex pl-12 dc__border-left">
                                     <span>{lastDataSyncTimeString}</span>
-                                    <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
+                                    <RefreshIcon className="icon-dim-16 scb-5 ml-8 cursor" onClick={refreshData} />
                                 </div>
                             )}
                         </div>
@@ -326,6 +331,7 @@ export default function ResourceList() {
                     {node ? (
                         <div className="resource-details-container">
                             <NodeDetailComponent
+                                loadingResources={resourceListLoader}
                                 isResourceBrowserView={true}
                                 selectedResource={getSelectedResourceData()}
                                 logSearchTerms={logSearchTerms}

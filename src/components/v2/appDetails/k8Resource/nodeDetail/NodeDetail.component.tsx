@@ -18,6 +18,7 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './nodeDetail.css'
 
 function NodeDetailComponent({
+    loadingResources,
     isResourceBrowserView,
     selectedResource,
     logSearchTerms,
@@ -42,10 +43,10 @@ function NodeDetailComponent({
     }, [params.nodeType])
 
     useEffect(() => {
-        if (isResourceBrowserView && selectedResource && params.node) {
+        if (isResourceBrowserView && !loadingResources && selectedResource && params.node) {
             getContainersFromManifest()
         }
-    }, [params.node])
+    }, [loadingResources, params.node])
 
     const getContainersFromManifest = async () => {
         try {
@@ -163,7 +164,7 @@ function NodeDetailComponent({
                         )
                     })}
             </div>
-            {fetchingResource ? (
+            {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI msg={''} icon={MsgUIType.LOADING} size={24} />
             ) : (
                 <Switch>

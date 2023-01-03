@@ -50,6 +50,9 @@ function ManifestComponent({
     const [showInfoText, setShowInfoText] = useState(false)
 
     useEffect(() => {
+        selectedTab(NodeDetailTab.MANIFEST, url)
+        if (isDeleted) return
+
         const _selectedResource = isResourceBrowserView
             ? selectedResource
             : appDetails.resourceTree.nodes.filter(
@@ -71,9 +74,7 @@ function ManifestComponent({
             appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
             !_selectedResource?.['parentRefs']?.length
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
-
         setLoading(true)
-        selectedTab(NodeDetailTab.MANIFEST, url)
 
         if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
             markActiveTab('Live manifest')
@@ -126,7 +127,7 @@ function ManifestComponent({
     }, [params.podName, params.node, params.nodeType])
 
     useEffect(() => {
-        if (!isEditmode && activeManifestEditorData !== modifiedManifest) {
+        if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
     }, [isEditmode])

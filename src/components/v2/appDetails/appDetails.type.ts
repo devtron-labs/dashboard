@@ -373,6 +373,7 @@ export interface LogSearchTermType {
 }
 
 export interface NodeDetailPropsType extends LogSearchTermType {
+    loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
 }
