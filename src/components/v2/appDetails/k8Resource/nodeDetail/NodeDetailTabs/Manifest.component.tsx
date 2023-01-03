@@ -109,6 +109,11 @@ function ManifestComponent({
                         setModifiedManifest(_manifest)
                     }
                     setLoading(false)
+
+                    // Clear out error on pod/node change
+                    if (error) {
+                        setError(false)
+                    }
                 })
                 .catch((err) => {
                     setError(true)

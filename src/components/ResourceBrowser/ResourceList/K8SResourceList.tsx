@@ -28,6 +28,7 @@ export function K8SResourceList({
     setSelectedNamespace,
     resourceListLoader,
     getResourceListData,
+    updateNodeSelectionData,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -109,12 +110,15 @@ export function K8SResourceList({
     }
 
     const handleResourceClick = (e) => {
-        const _tabName = e.target.dataset.name
-        const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${_tabName.toLowerCase()}`
+        const { name, tab } = e.target.dataset
+        const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${name}${tab ? `/${tab.toLowerCase()}` : ''}`
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, _tabName.toLowerCase(), _url)
+        const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, name, _url)
 
         if (isAdded) {
+            updateNodeSelectionData(
+                resourceList.data.find((resource) => resource.name === name || resource.name === node),
+            )
             push(_url)
         } else {
             toast.error(

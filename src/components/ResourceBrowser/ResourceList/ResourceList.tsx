@@ -49,7 +49,8 @@ export default function ResourceList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
-    const [selectionData, setSelectionData] = useState<Record<string, ApiResourceType>>()
+    const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceType>>()
+    const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
 
     useEffect(() => {
         getClusterData()
@@ -177,7 +178,7 @@ export default function ResourceList() {
                     gvk: childNode.gvk,
                 }
                 setSelectedResource(defaultSelected)
-                updateSelectionData(defaultSelected)
+                updateResourceSelectionData(defaultSelected)
             }
         } catch (err) {
             showError(err)
@@ -236,18 +237,30 @@ export default function ResourceList() {
 
     const refreshData = (): void => {
         setSelectedResource(null)
-        setSelectionData(null)
+        setResourceSelectionData(null)
+        setNodeSelectionData(null)
         getSidebarData()
     }
 
-    const updateSelectionData = (_selected: ApiResourceType) => {
-        setSelectionData((prevData) => ({
-            ...prevData,
-            [_selected.gvk.Kind.toLowerCase()]: {
-                namespaced: _selected.namespaced,
-                gvk: _selected.gvk,
-            },
-        }))
+    const updateResourceSelectionData = (_selected: ApiResourceType) => {
+        if (_selected) {
+            setResourceSelectionData((prevData) => ({
+                ...prevData,
+                [_selected.gvk.Kind.toLowerCase()]: {
+                    namespaced: _selected.namespaced,
+                    gvk: _selected.gvk,
+                },
+            }))
+        }
+    }
+
+    const updateNodeSelectionData = (_selected: Record<string, any>) => {
+        if (_selected) {
+            setNodeSelectionData((prevData) => ({
+                ...prevData,
+                [_selected.name]: _selected,
+            }))
+        }
     }
 
     const showResourceModal = (): void => {
@@ -266,8 +279,9 @@ export default function ResourceList() {
     }
 
     const getSelectedResourceData = () => {
-        const selectedNode = resourceList?.data?.find((_resource) => _resource.name === node)
-        const _selectedResource = selectionData?.[nodeType]?.gvk || selectedResource?.gvk
+        const selectedNode =
+            nodeSelectionData?.[node] ?? resourceList?.data?.find((_resource) => _resource.name === node)
+        const _selectedResource = resourceSelectionData?.[nodeType]?.gvk ?? selectedResource?.gvk
 
         return {
             clusterId: Number(clusterId),
@@ -329,7 +343,7 @@ export default function ResourceList() {
                                 k8SObjectList={k8SObjectList}
                                 handleGroupHeadingClick={handleGroupHeadingClick}
                                 setSelectedResource={setSelectedResource}
-                                updateSelectionData={updateSelectionData}
+                                updateResourceSelectionData={updateResourceSelectionData}
                             />
                             <K8SResourceList
                                 selectedResource={selectedResource}
@@ -345,6 +359,7 @@ export default function ResourceList() {
                                 setSelectedNamespace={setSelectedNamespace}
                                 resourceListLoader={resourceListLoader}
                                 getResourceListData={getResourceListData}
+                                updateNodeSelectionData={updateNodeSelectionData}
                             />
                         </div>
                     )}

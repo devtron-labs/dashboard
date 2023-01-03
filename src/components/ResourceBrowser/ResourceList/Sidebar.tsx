@@ -10,7 +10,7 @@ export function Sidebar({
     k8SObjectList,
     handleGroupHeadingClick,
     setSelectedResource,
-    updateSelectionData,
+    updateResourceSelectionData,
 }: SidebarType) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType } = useParams<{
@@ -35,7 +35,7 @@ export function Sidebar({
             },
         }
         setSelectedResource(_selectedResource)
-        updateSelectionData(_selectedResource)
+        updateResourceSelectionData(_selectedResource)
     }
     return (
         <div className="k8s-object-container">

@@ -65,7 +65,8 @@ export default function ResourceBrowserActionMenu({
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">
                     <div className="fs-13 fw-4 lh-20">
                         <span
-                            data-name={RESOURCE_ACTION_MENU.manifest}
+                            data-name={resourceData.name}
+                            data-tab={RESOURCE_ACTION_MENU.manifest}
                             className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                         >
@@ -73,7 +74,8 @@ export default function ResourceBrowserActionMenu({
                             <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
                         </span>
                         <span
-                            data-name={RESOURCE_ACTION_MENU.Events}
+                            data-name={resourceData.name}
+                            data-tab={RESOURCE_ACTION_MENU.Events}
                             className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                         >
@@ -83,7 +85,8 @@ export default function ResourceBrowserActionMenu({
                         {selectedResource?.gvk.Kind === Nodes.Pod && (
                             <>
                                 <span
-                                    data-name={RESOURCE_ACTION_MENU.logs}
+                                    data-name={resourceData.name}
+                                    data-tab={RESOURCE_ACTION_MENU.logs}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                 >
@@ -91,7 +94,8 @@ export default function ResourceBrowserActionMenu({
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
                                 </span>
                                 <span
-                                    data-name={RESOURCE_ACTION_MENU.terminal}
+                                    data-name={resourceData.name}
+                                    data-tab={RESOURCE_ACTION_MENU.terminal}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                 >
