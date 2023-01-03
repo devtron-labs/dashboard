@@ -3,14 +3,18 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
-import { getClusterList, getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
-import { OptionType } from '../../app/types'
+import {
+    getClusterList,
+    getResourceGroupList,
+    getResourceList,
+    namespaceListByClusterId,
+} from '../ResourceBrowser.service'
+import { Nodes, OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
 import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
-import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { CreateResource } from './CreateResource'
@@ -153,9 +157,12 @@ export default function ResourceList() {
                         _k8SObjectListIndexMap.set(element, _k8SObjectList.length - 1)
                     }
                 }
+
+                const parentNode = _k8SObjectList[0]
+                const childNode = parentNode.child.find((_ch) => _ch.Kind === Nodes.Pod) ?? parentNode.child[0]
                 if (!nodeType) {
-                    _k8SObjectList[0].isExpanded = true
-                    const _selectedResourceParam = _k8SObjectList[0].child[0].Kind.toLowerCase()
+                    parentNode.isExpanded = true
+                    const _selectedResourceParam = childNode.Kind.toLowerCase()
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
@@ -166,8 +173,8 @@ export default function ResourceList() {
                 setK8SObjectListIndexMap(_k8SObjectListIndexMap)
 
                 const defaultSelected = _selectedResource || {
-                    namespaced: _k8SObjectList[0].namespaced,
-                    gvk: _k8SObjectList[0].child[0],
+                    namespaced: parentNode.namespaced,
+                    gvk: childNode,
                 }
                 setSelectedResource(defaultSelected)
                 updateSelectionData(defaultSelected)
@@ -197,8 +204,8 @@ export default function ResourceList() {
             const { result } = await getResourceList(resourceListPayload)
             setLastDataSync(!lastDataSync)
             setResourceList(result)
-            setFilteredResourceList(result.rows)
-            setNoResults(result.rows.length === 0)
+            setFilteredResourceList(result.data)
+            setNoResults(result.data.length === 0)
         } catch (err) {
             showError(err)
         } finally {
@@ -259,7 +266,7 @@ export default function ResourceList() {
     }
 
     const getSelectedResourceData = () => {
-        const selectedNode = resourceList.rows.find((_resource) => _resource.Name === node)
+        const selectedNode = resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = selectionData?.[nodeType]?.gvk || selectedResource?.gvk
 
         return {
@@ -268,8 +275,8 @@ export default function ResourceList() {
             version: _selectedResource?.Version || '',
             kind: _selectedResource?.Kind || '',
             namespace: selectedNode?.namespace || '',
-            name: selectedNode?.Name || '',
-            status: selectedNode?.Status || '',
+            name: selectedNode?.name || '',
+            status: selectedNode?.status || '',
             containers: selectedNode?.containers || [],
         } as SelectedResourceType
     }

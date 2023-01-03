@@ -41,7 +41,7 @@ export function K8SResourceList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = resourceList.rows.filter(
+        const _filteredData = resourceList.data.filter(
             (resource) =>
                 resource.name.indexOf(_searchText) >= 0 ||
                 resource.namespace.indexOf(_searchText) >= 0 ||
@@ -83,7 +83,8 @@ export function K8SResourceList({
         })
     }
 
-    const handleActionTabClick = (_tabName: string) => {
+    const handleResourceClick = (e) => {
+        const _tabName = e.target.dataset.name
         const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${_tabName.toLowerCase()}`
 
         const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, _tabName.toLowerCase(), _url)
@@ -150,33 +151,25 @@ export function K8SResourceList({
             </div>
         )
     }
-    const handleResourceClick = (ev, resourceData: Record<string, any>): void => {
-        handleActionTabClick(resourceData.Name)
-    }
 
     const renderResourceRow = (resourceData: Record<string, any>): JSX.Element => {
         return (
             <div
-                key={resourceData.Name}
+                key={resourceData.name}
                 className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
             >
-                {resourceList.column.map((columnName) =>
-                    columnName === 'Name' ? (
+                {resourceList.headers.map((columnName) =>
+                    columnName === 'name' ? (
                         <div className="cb-5 dc__ellipsis-right">
-                            <NavLink
-                                to={`${url}/${resourceData.Name}`}
-                                onClick={(e) => {
-                                    handleResourceClick(e, resourceData)
-                                }}
-                            >
-                                {resourceData.Name}
-                            </NavLink>
+                            <a className="dc__link cursor" data-name={resourceData.name} onClick={handleResourceClick}>
+                                {resourceData.name}
+                            </a>
                         </div>
                     ) : (
                         <div
                             className={`${
-                                columnName === 'Status'
-                                    ? `app-summary__status-name f-${resourceData[columnName].toLowerCase()}`
+                                columnName === 'status'
+                                    ? `app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
                                     : ''
                             }`}
                         >
@@ -184,13 +177,16 @@ export function K8SResourceList({
                         </div>
                     ),
                 )}
-                <div className="dc__align-right"><ResourceBrowserActionMenu
-                    clusterId={clusterId}
-                    namespace={namespace}
-                    resourceData={resourceData}
-                    selectedResource={selectedResource}
-                    getResourceListData={getResourceListData}
-                /></div>
+                <div className="dc__align-right">
+                    <ResourceBrowserActionMenu
+                        clusterId={clusterId}
+                        namespace={namespace}
+                        resourceData={resourceData}
+                        selectedResource={selectedResource}
+                        getResourceListData={getResourceListData}
+                        handleResourceClick={handleResourceClick}
+                    />
+                </div>
             </div>
         )
     }
@@ -222,8 +218,8 @@ export function K8SResourceList({
             return (
                 <div>
                     <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                        {resourceList.column.map((columnName) => (
-                            <div>{columnName}</div>
+                        {resourceList.headers.map((columnName) => (
+                            <div key={columnName}>{columnName}</div>
                         ))}
                         <div></div>
                     </div>

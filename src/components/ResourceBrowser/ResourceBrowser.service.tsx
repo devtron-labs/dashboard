@@ -18,33 +18,7 @@ export const namespaceListByClusterId = (clusterId: string): Promise<ResponseTyp
 }
 
 export const getResourceList = (resourceListPayload: ResourceListPayloadType): Promise<ResourceListResponse> => {
-    //return post(Routes.K8S_RESOURCE_LIST, resourceListPayload)
-    return Promise.resolve({
-        code: 200,
-        status: 'OK',
-        result:  {
-          "column": [
-              "Name",
-              "Status",
-              "Restarts",
-              "Age"
-          ],
-          "rows": [
-              {
-                  "Age": "53d",
-                  "Name": "devtron-grafana-test",
-                  "Restarts": "4",
-                  "Status": "Completed"
-              },
-              {
-                  "Age": "53d",
-                  "Name": "devtron-nats-test-request-reply",
-                  "Restarts": "0",
-                  "Status": "Completed"
-              }
-          ]
-      },
-    })
+    return post(Routes.K8S_RESOURCE_LIST, resourceListPayload)
 }
 
 export const getResourceGroupList = (clusterId: string): Promise<APIResourceResponse> => {
