@@ -92,8 +92,9 @@ export default function KubernetesObjects({ k8sPermission, setK8sPermission }) {
     )
 }
 
-function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close }) {
-    const permissionObject = {
+const getEmptyPermissionObject = (idx = 0) => {
+    return {
+        key: `perm-obj-${idx}`,
         cluster: null,
         namespace: null,
         group: null,
@@ -101,12 +102,16 @@ function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close
         resource: null,
         action: null,
     }
-    const [k8PermissionList, setPermissionList] = useState([k8sPermission || permissionObject])
+}
 
-    const handleK8sPermission = (action, key, permission) => {
+function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close }) {
+    const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject()])
+    const [namespaceMapping, setNamespaceMapping] = useState<Record<number, OptionType[]>>()
+
+    const handleK8sPermission = (action: string, key?: number, data?: any) => {
         switch (action) {
             case 'add':
-                k8PermissionList.splice(0, 0, permissionObject)
+                k8PermissionList.splice(0, 0, getEmptyPermissionObject(k8PermissionList.length))
                 break
             case 'delete':
                 k8PermissionList.splice(key, 1)
@@ -114,13 +119,13 @@ function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close
             case 'clone':
                 k8PermissionList.splice(0, 0, k8PermissionList[key])
                 break
-            case 'edit':
-                k8PermissionList[key] = permission
+            case 'onClusterChange':
+                k8PermissionList[key].cluster = data
                 break
             default:
                 break
         }
-        
+
         setPermissionList([...k8PermissionList])
     }
 
@@ -133,7 +138,7 @@ function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close
     }
 
     const addNewPermissionCard = () => {
-        handleK8sPermission('add',0,permissionObject)
+        handleK8sPermission('add')
     }
 
     const savePermission = () => {
@@ -159,6 +164,8 @@ function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close
                                 k8sPermission={_k8sPermission}
                                 handleK8sPermission={handleK8sPermission}
                                 index={index}
+                                namespaceMapping={namespaceMapping}
+                                setNamespaceMapping={setNamespaceMapping}
                             />
                         )
                     })}
@@ -181,7 +188,7 @@ function KubernetesObjectSelectionModal({ k8sPermission, setK8sPermission, close
     )
 }
 
-function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
+function K8sListItemCard({ k8sPermission, handleK8sPermission, index, namespaceMapping, setNamespaceMapping }) {
     const possibleRoles = convertToOptionsList(possibleRole)
     const apiGroupAll = (permission, label = false) => {
         if (permission === '') {
@@ -191,16 +198,11 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
         } else return permission
     }
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [apiGroupList, setApiGroupList] = useState<OptionType[]>()
     const [kindList, setKindList] = useState<OptionType[]>()
     const [objectList, setObjectList] = useState<OptionType[]>()
 
     const [processedData, setProcessedData] = useState<any>()
-
-    const [selectedCluster, setClusterSelection] = useState<OptionType>(
-        k8sPermission?.cluster && { label: k8sPermission.cluster, value: k8sPermission.cluster },
-    )
     const [selectedApiGroup, setApiGroupSelection] = useState<OptionType>(
         k8sPermission && { label: apiGroupAll(k8sPermission.group, true), value: apiGroupAll(k8sPermission.group) },
     )
@@ -245,7 +247,7 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
                 { label: 'All Namespaces / Cluster', value: '*' },
                 ...convertToOptionsList(result),
             ]
-            setNamespaceOptions(_namespaceOptions)
+            setNamespaceMapping((prevMapping) => ({ ...prevMapping, [k8sPermission.key]: _namespaceOptions }))
         } catch (err) {
             showError(err)
         }
@@ -294,7 +296,7 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
                 ?.get?.(selectedApiGroup.value === 'k8sempty' ? '' : selectedApiGroup.value)
                 .child?.find((ele) => ele['Kind'] === selected.value)
             const resourceListPayload: ResourceListPayloadType = {
-                clusterId: Number(selectedCluster.value),
+                clusterId: Number(k8sPermission?.cluster?.value),
                 k8sRequest: {
                     resourceIdentifier: {
                         groupVersionKind: gvk,
@@ -314,8 +316,8 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
     }
 
     const onClusterChange = (selected) => {
-        if (selected.value !== selectedCluster?.value) {
-            setClusterSelection(selected)
+        if (selected.value !== k8sPermission?.cluster?.value) {
+            handleK8sPermission('onClusterChange', index, selected)
             getNamespaceList(selected.value)
             setApiGroupSelection(null)
             setNameSpaceSelection(null)
@@ -327,7 +329,7 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
     const onNameSpaceSelection = (selected) => {
         if (selected.value !== selectedNameSpace?.value) {
             setNameSpaceSelection(selected)
-            getGroupKindData(selectedCluster.value, selected.value)
+            getGroupKindData(k8sPermission?.cluster?.value, selected.value)
         }
     }
 
@@ -360,7 +362,7 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
                 <ReactSelect
                     placeholder="Select cluster"
                     options={clusterOptions}
-                    value={selectedCluster}
+                    value={k8sPermission?.cluster}
                     onChange={onClusterChange}
                     name="cluster"
                     components={{
@@ -383,13 +385,13 @@ function K8sListItemCard({ k8sPermission, handleK8sPermission, index}) {
                     }}
                 />
             </div>
-            {selectedCluster && (
+            {k8sPermission?.cluster && (
                 <>
                     <div className="cn-6 mb-6">Namespace</div>
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select namespace"
-                            options={namespaceOptions}
+                            options={namespaceMapping?.[k8sPermission.key]}
                             value={selectedNameSpace}
                             name="namespace"
                             onChange={onNameSpaceSelection}
