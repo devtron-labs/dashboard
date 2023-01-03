@@ -132,7 +132,7 @@ export function K8SResourceList({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="flexbox dc__content-space pt-16 pr-20 pb-16 pl-20">
+            <div className="flexbox dc__content-space pt-16 pr-20 pb-12 pl-20">
                 <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
                     <Search className="search__icon icon-dim-18" />
                     <input
@@ -258,7 +258,7 @@ export function K8SResourceList({
                 return <EventList filteredData={filteredResourceList} />
             }
             return (
-                <div className="mt-16" style={{ width: 'calc(100vw - 293px)', overflow: 'auto hidden' }}>
+                <div style={{ width: 'calc(100vw - 293px)', overflow: 'auto hidden' }}>
                     <div
                         className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
                         style={{ width: 'max-content', minWidth: 'calc(100vw - 292px)' }}

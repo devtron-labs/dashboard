@@ -338,7 +338,7 @@ export default function ResourceList() {
                             />
                         </div>
                     ) : (
-                        <div className="resource-browser bcn-0 pl-8">
+                        <div className="resource-browser bcn-0">
                             <Sidebar
                                 k8SObjectList={k8SObjectList}
                                 handleGroupHeadingClick={handleGroupHeadingClick}

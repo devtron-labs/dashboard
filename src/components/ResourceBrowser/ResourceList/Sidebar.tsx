@@ -38,7 +38,7 @@ export function Sidebar({
         updateResourceSelectionData(_selectedResource)
     }
     return (
-        <div className="k8s-object-container">
+        <div className="k8s-object-container p-8">
             {k8SObjectList.map((k8sObject) =>
                 k8sObject.name === AggregationKeys.Events ? null : (
                     <Fragment key={k8sObject.name}>
