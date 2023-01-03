@@ -10,21 +10,7 @@ import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import EmptyState from '../EmptyState/EmptyState'
-
-function NoMatchingResults() {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={NoResults} width="250" height="200" alt="No matching results" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn't find any matching token</EmptyState.Subtitle>
-        </EmptyState>
-    )
-}
+import GenericEmptyState from '../EmptyState/GenericEmptyState'
 
 function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
@@ -39,6 +25,16 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         setSelectedToken(tokenList)
         setDeleteConfirmation(true)
     }
+
+    const noMatchingResults = () => {
+      return (
+          <GenericEmptyState
+              image={NoResults}
+              title="No matching results"
+              subTitle="We couldn't find any matching token"
+          />
+      )
+  }
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
@@ -59,7 +55,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div></div>
                 </div>
                 {!tokenList || tokenList.length === 0 ? (
-                    <NoMatchingResults />
+                    noMatchingResults()
                 ) : (
                     tokenList.map((list, index) => (
                         <div
@@ -106,7 +102,11 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 >
                                     <Edit className="icon-dim-20" />
                                 </button>
-                                <button type="button" className="dc__transparent" onClick={() => handleDeleteButton(list)}>
+                                <button
+                                    type="button"
+                                    className="dc__transparent"
+                                    onClick={() => handleDeleteButton(list)}
+                                >
                                     <Trash className="scn-6 icon-dim-20" />
                                 </button>
                             </div>
