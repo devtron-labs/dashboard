@@ -101,6 +101,8 @@ function GroupPermission({
                 chartPermission={chartPermission}
                 setChartPermission={setChartPermission}
                 hideInfoLegend={true}
+                k8sPermission={[]}
+                setK8sPermission={() => {}}
             />
         </>
     )

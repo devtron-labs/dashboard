@@ -58,12 +58,17 @@ export interface ChartGroupPermissionsFilter extends RoleFilter {
 }
 
 export interface APIRoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER;
     team?: string;
     entityName?: string;
     environment?: string;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
+    cluster?: string,
+    namespace?: string,
+    group?: string,
+    kind?: string,
+    resource?: string
 }
 
 export interface OptionType {
@@ -93,6 +98,16 @@ export interface CreateGroup {
     roleFilters: APIRoleFilter[];
 }
 
+export interface K8sPermissionFilter {
+    entity: string,
+    cluster: string,
+    namespace: string,
+    group: string,
+    action: string,
+    kind: string,
+    resource: OptionType[]
+}
+
 export enum UserRoleType {
     SuperAdmin = 'SuperAdmin',
     Admin = 'Admin',
@@ -100,3 +115,4 @@ export enum UserRoleType {
     Trigger = 'Trigger',
     View = 'View,',
 }
+ 

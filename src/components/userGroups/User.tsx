@@ -22,6 +22,7 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
+    K8sPermissionFilter,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext, GroupRow } from './UserGroup';
@@ -80,6 +81,7 @@ export default function UserForm({
         action: ActionTypes.VIEW,
         entityName: [],
     });
+    const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([]);
     const [userGroups, setUserGroups] = useState<OptionType[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
@@ -424,6 +426,8 @@ export default function UserForm({
                         setDirectPermission={setDirectPermission}
                         chartPermission={chartPermission}
                         setChartPermission={setChartPermission}
+                        k8sPermission={k8sPermission}
+                        setK8sPermission={setK8sPermission}
                     />
                 </>
             )}

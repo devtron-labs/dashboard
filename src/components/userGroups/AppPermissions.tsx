@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -12,9 +12,12 @@ import {
     CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
+    K8sPermissionFilter,
 } from './userGroups.types'
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import KubernetesObjects from './KubernetesObject'
+import { group } from 'console'
 interface AppPermissionsType {
     data: CreateGroup | CreateUser
     directPermission: DirectPermissionsRoleFilter[]
@@ -22,6 +25,8 @@ interface AppPermissionsType {
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
     hideInfoLegend?: boolean
+    k8sPermission?: K8sPermissionFilter[]
+    setK8sPermission?: (...rest) => void
 }
 interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
@@ -39,6 +44,8 @@ export default function AppPermissions({
     chartPermission,
     setChartPermission,
     hideInfoLegend,
+    k8sPermission,
+    setK8sPermission,
 }: AppPermissionsType) {
     const { serverMode } = useContext(mainContext)
     const {
@@ -223,6 +230,25 @@ export default function AppPermissions({
 
             setChartPermission(chartPermission)
         }
+        const tempK8sPermission: APIRoleFilter[] = roleFilters?.filter(
+            (roleFilter) => roleFilter.entity === EntityTypes.CLUSTER,
+        )
+        
+        if (tempK8sPermission) {
+            const k8sPermission: K8sPermissionFilter[] = tempK8sPermission.map((k8s) => {
+                return {
+                    entity: EntityTypes.CLUSTER,
+                    cluster: k8s.cluster,
+                    namespace: k8s.namespace,
+                    group: k8s.group,
+                    action: k8s.action,
+                    kind: k8s.kind,
+                    resource: k8s.resource.split(',')?.map((entity) => ({ value: entity, label: entity })) || [],
+                }
+            })
+            
+            setK8sPermission(k8sPermission)
+        }
     }
 
     function setClusterValues(startsWithHash, clusterName) {
@@ -385,6 +411,7 @@ export default function AppPermissions({
             setDirectPermission((permission) => [...permission, emptyDirectPermissionHelmApps])
         }
     }
+    
 
     return (
         <>
@@ -399,6 +426,11 @@ export default function AppPermissions({
                 <li className="tab-list__tab">
                     <NavLink to={`${url}/helm-apps`} className="tab-list__tab-link" activeClassName="active">
                         Helm Apps
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink to={`${url}/kubernetes-objects`} className="tab-list__tab-link" activeClassName="active">
+                        Kubernetes objects
                     </NavLink>
                 </li>
                 {serverMode !== SERVER_MODE.EA_ONLY && (
@@ -431,6 +463,12 @@ export default function AppPermissions({
                             AddNewPermissionRow={AddNewPermissionRowLocal}
                             directPermission={directPermission}
                             hideInfoLegend={hideInfoLegend}
+                        />
+                    </Route>
+                    <Route path={`${path}/kubernetes-objects`}>
+                        <KubernetesObjects
+                        k8sPermission={k8sPermission}
+                        setK8sPermission={setK8sPermission}
                         />
                     </Route>
                     {serverMode !== SERVER_MODE.EA_ONLY && (
