@@ -196,6 +196,7 @@ export const Routes = {
     API_RESOURCE: 'k8s/api-resources',
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
+    CLUSTER_LIST_PERMISSION: 'cluster/permission/list'
 }
 
 export const ViewType = {

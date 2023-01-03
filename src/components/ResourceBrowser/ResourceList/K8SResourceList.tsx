@@ -121,8 +121,8 @@ export function K8SResourceList({
                 </div>
                 <div className="flex">
                     <ReactSelect
-                        className="w-200"
-                        placeholder="Select Containers"
+                        className="w-220"
+                        placeholder="Select Cluster"
                         options={clusterOptions}
                         value={selectedCluster}
                         onChange={handleClusterChange}
@@ -132,18 +132,20 @@ export function K8SResourceList({
                             Option,
                         }}
                     />
-                    <ReactSelect
-                        placeholder="Select Containers"
-                        className="w-200 ml-8"
-                        options={namespaceOptions}
-                        value={selectedNamespace}
-                        onChange={handleNamespaceChange}
-                        styles={CLUSTER_SELECT_STYLE}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                    />
+                    {selectedResource?.namespaced && (
+                        <ReactSelect
+                            placeholder="Select Namespace"
+                            className="w-220 ml-8"
+                            options={namespaceOptions}
+                            value={selectedNamespace}
+                            onChange={handleNamespaceChange}
+                            styles={CLUSTER_SELECT_STYLE}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option,
+                            }}
+                        />
+                    )}
                 </div>
             </div>
         )
@@ -182,13 +184,13 @@ export function K8SResourceList({
                         </div>
                     ),
                 )}
-                <ResourceBrowserActionMenu
+                <div className="dc__align-right"><ResourceBrowserActionMenu
                     clusterId={clusterId}
                     namespace={namespace}
                     resourceData={resourceData}
                     selectedResource={selectedResource}
                     getResourceListData={getResourceListData}
-                />
+                /></div>
             </div>
         )
     }

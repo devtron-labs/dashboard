@@ -7,8 +7,6 @@ export const CLUSTER_SELECT_STYLE = {
         ...base,
         zIndex: 9999,
         textAlign: 'left',
-        minWidth: '250px',
-        maxWidth: '380px',
     }),
     control: (base, state) => ({
         ...base,
@@ -19,7 +17,6 @@ export const CLUSTER_SELECT_STYLE = {
     }),
     singleValue: (base, state) => ({
         ...base,
-        fontWeight: 600,
         color: 'var(--N900)',
         direction: 'rtl',
         textAlign: 'left',

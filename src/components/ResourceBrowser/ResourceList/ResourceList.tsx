@@ -3,7 +3,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
-import { getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
+import { getClusterList, getResourceGroupList, getResourceList, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
 import { URLS } from '../../../config'
@@ -48,7 +48,7 @@ export default function ResourceList() {
     const [selectionData, setSelectionData] = useState<Record<string, ApiResourceType>>()
 
     useEffect(() => {
-        getClusterList()
+        getClusterData()
     }, [])
 
     useEffect(() => {
@@ -105,10 +105,10 @@ export default function ResourceList() {
         }
     }, [lastDataSync])
 
-    const getClusterList = async () => {
+    const getClusterData = async () => {
         try {
             setLoader(true)
-            const { result } = await getClusterListMinWithoutAuth()
+            const { result } = await getClusterList()
             const _clusterOptions = convertToOptionsList(result, 'cluster_name', 'id')
             setClusterOptions(_clusterOptions)
             const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
@@ -276,13 +276,13 @@ export default function ResourceList() {
 
     return (
         <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes object browser" />
+            <PageHeader headerName="Kubernetes Resource Browser" />
             {!selectedCluster?.value ? (
                 <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
             ) : (
                 <div>
                     <div
-                        className="h-44 flexbox dc__content-space pr-20 pl-20"
+                        className="h-44 flexbox dc__content-space pr-20"
                         style={{
                             boxShadow: 'inset 0 -1px 0 0 var(--N200)',
                         }}
