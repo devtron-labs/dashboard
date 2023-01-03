@@ -49,7 +49,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         return (
             <NavLink
                 to={tab.url}
-                className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor"
+                className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp"
             >
                 <div
                     className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
@@ -108,7 +108,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                     <div
                                         className={`${
                                             tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
-                                        } flex left pl-12 pt-8 pb-8 pr-12 `}
+                                        } flex left pl-12 pt-8 pb-8 pr-12`}
                                     >
                                         {getTabNavLink(tab)}
                                         {tab.name !== AppDetailsTabs.log_analyzer &&

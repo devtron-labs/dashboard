@@ -1110,18 +1110,17 @@ export const processK8SObjects = (
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
                 isExpanded: element.gvk.Kind.toLowerCase() === selectedResourceKind,
-                namespaced: element.namespaced,
-                child: [element.gvk],
+                child: [{ namespaced: element.namespaced, gvk: element.gvk }],
             })
         } else {
-            currentData.child = [...currentData.child, element.gvk]
+            currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
                 currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
     }
     for (const [, _k8sObject] of _k8SObjectMap.entries()) {
-        _k8sObject.child.sort((a, b) => a['Kind'].localeCompare(b['Kind']))
+        _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
