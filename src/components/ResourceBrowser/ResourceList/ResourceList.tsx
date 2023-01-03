@@ -159,10 +159,10 @@ export default function ResourceList() {
                 }
 
                 const parentNode = _k8SObjectList[0]
-                const childNode = parentNode.child.find((_ch) => _ch.Kind === Nodes.Pod) ?? parentNode.child[0]
+                const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
                 if (!nodeType) {
                     parentNode.isExpanded = true
-                    const _selectedResourceParam = childNode.Kind.toLowerCase()
+                    const _selectedResourceParam = childNode.gvk.Kind.toLowerCase()
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
@@ -173,8 +173,8 @@ export default function ResourceList() {
                 setK8SObjectListIndexMap(_k8SObjectListIndexMap)
 
                 const defaultSelected = _selectedResource || {
-                    namespaced: parentNode.namespaced,
-                    gvk: childNode,
+                    namespaced: childNode.namespaced,
+                    gvk: childNode.gvk,
                 }
                 setSelectedResource(defaultSelected)
                 updateSelectionData(defaultSelected)

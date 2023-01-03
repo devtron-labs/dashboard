@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { NavLink, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { getElapsedTime, Progressing } from '../../common'
+import {Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { CLUSTER_SELECT_STYLE } from '../Constants'
 import { K8SResourceListType } from '../Types'
@@ -12,6 +12,7 @@ import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import '../ResourceBrowser.scss'
 import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
+import { EventList } from './EventList'
 
 export function K8SResourceList({
     selectedResource,
@@ -43,9 +44,13 @@ export function K8SResourceList({
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = resourceList.data.filter(
             (resource) =>
-                resource.name.indexOf(_searchText) >= 0 ||
-                resource.namespace.indexOf(_searchText) >= 0 ||
-                resource.status.indexOf(_searchText) >= 0,
+                resource.name?.indexOf(_searchText) >= 0 ||
+                resource.namespace?.indexOf(_searchText) >= 0 ||
+                resource.status?.indexOf(_searchText) >= 0 ||
+                resource.message?.indexOf(_searchText) >= 0 ||
+                resource['involved object']?.indexOf(_searchText) >= 0 ||
+                resource.source?.indexOf(_searchText) >= 0 ||
+                resource.reason?.indexOf(_searchText) >= 0,
         )
         setFilteredResourceList(_filteredData)
     }
@@ -215,6 +220,9 @@ export function K8SResourceList({
         if (filteredResourceList.length === 0) {
             return renderEmptyPage()
         } else {
+            if (selectedResource?.gvk.Kind === 'Event') {
+                return <EventList filteredData={filteredResourceList} />
+            }
             return (
                 <div>
                     <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">

@@ -42,8 +42,7 @@ export interface APIResourceResponse extends ResponseType {
 export interface K8SObjectType {
     name: string
     isExpanded: boolean
-    namespaced: boolean
-    child: GVKType[]
+    child: ApiResourceType[]
 }
 
 export interface ResourceListPayloadType {
@@ -130,4 +129,8 @@ export interface ResourceListEmptyStateType {
     title?: string
     subTitle: string
     actionHandler?: () => void
+}
+
+export interface EventListType {
+    filteredData: Record<string, any>[]
 }
