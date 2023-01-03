@@ -29,11 +29,16 @@ export interface CollapsedUserOrGroupProps {
     createCallback: (payload: any) => void;
 }
 interface RoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER;
     team?: OptionType;
     entityName?: OptionType[];
     environment?: OptionType[];
     action?: any;
+    cluster?: OptionType,
+    namespace?: OptionType,
+    group?: OptionType,
+    kind?: OptionType,
+    resource?: any
 }
 
 export interface DirectPermissionsRoleFilter extends RoleFilter {
@@ -64,11 +69,11 @@ export interface APIRoleFilter {
     environment?: string;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
-    cluster?: string,
-    namespace?: string,
-    group?: string,
-    kind?: string,
-    resource?: string
+    cluster?: OptionType,
+    namespace?: any,
+    group?: OptionType,
+    kind?: OptionType,
+    resource?: any
 }
 
 export interface OptionType {
@@ -98,14 +103,14 @@ export interface CreateGroup {
     roleFilters: APIRoleFilter[];
 }
 
-export interface K8sPermissionFilter {
-    entity: string,
-    cluster: string,
-    namespace: string,
-    group: string,
-    action: string,
-    kind: string,
-    resource: OptionType[]
+export interface K8sPermissionFilter extends RoleFilter {
+    entity: EntityTypes.CLUSTER,
+    cluster: OptionType,
+    namespace: OptionType,
+    group: OptionType,
+    action: OptionType,
+    kind: OptionType,
+    resource: any
 }
 
 export enum UserRoleType {

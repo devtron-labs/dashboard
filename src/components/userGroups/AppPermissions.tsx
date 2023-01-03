@@ -16,8 +16,7 @@ import {
 } from './userGroups.types'
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import KubernetesObjects from './KubernetesObject'
-import { group } from 'console'
+import K8sPermissons from './K8sPermissons'
 interface AppPermissionsType {
     data: CreateGroup | CreateUser
     directPermission: DirectPermissionsRoleFilter[]
@@ -235,14 +234,14 @@ export default function AppPermissions({
         )
         
         if (tempK8sPermission) {
-            const k8sPermission: K8sPermissionFilter[] = tempK8sPermission.map((k8s) => {
+            const k8sPermission = tempK8sPermission.map((k8s) => {
                 return {
                     entity: EntityTypes.CLUSTER,
-                    cluster: k8s.cluster,
-                    namespace: k8s.namespace,
-                    group: k8s.group,
-                    action: k8s.action,
-                    kind: k8s.kind,
+                    cluster: {label: k8s.cluster , value: k8s.cluster},
+                    namespace: {label: k8s.namespace, value: k8s.namespace},
+                    group: {label: k8s.group, value:  k8s.group},
+                    action: {label: k8s.action, value: k8s.action},
+                    kind: {label: k8s.kind, value: k8s.kind},
                     resource: k8s.resource.split(',')?.map((entity) => ({ value: entity, label: entity })) || [],
                 }
             })
@@ -466,7 +465,7 @@ export default function AppPermissions({
                         />
                     </Route>
                     <Route path={`${path}/kubernetes-objects`}>
-                        <KubernetesObjects
+                        <K8sPermissons
                         k8sPermission={k8sPermission}
                         setK8sPermission={setK8sPermission}
                         />

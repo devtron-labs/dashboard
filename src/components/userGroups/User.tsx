@@ -81,12 +81,13 @@ export default function UserForm({
         action: ActionTypes.VIEW,
         entityName: [],
     });
-    const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([]);
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [userGroups, setUserGroups] = useState<OptionType[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
     const creatableRef = useRef(null);
     const groupPermissionsRef = useRef(null);
+console.log(k8sPermission);
 
     useEffect(() => {
         if (creatableRef.current) {
@@ -187,6 +188,16 @@ export default function UserForm({
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
+                    ...k8sPermission.map((permission) => ({
+                        ...permission,
+                        entity: EntityTypes.CLUSTER,
+                        action: permission.action,
+                        cluster: permission.cluster.label,
+                        group: permission.group.label,
+                        kind: permission.kind.label,
+                        namespace: permission.namespace.label,
+                        resource: permission.resource.map((entity) => entity.value).join(',')
+                    }))
             ],
             superAdmin: localSuperAdmin === 'SUPERADMIN',
         };
