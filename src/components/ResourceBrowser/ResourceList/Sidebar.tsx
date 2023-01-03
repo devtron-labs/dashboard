@@ -12,13 +12,12 @@ export function Sidebar({
     updateSelectionData,
 }: SidebarType) {
     const { push } = useHistory()
-
     const { clusterId, namespace, nodeType } = useParams<{
-      clusterId: string
-      namespace: string
-      nodeType: string
-      node: string
-  }>()
+        clusterId: string
+        namespace: string
+        nodeType: string
+        node: string
+    }>()
     const selectNode = (e): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         push(
