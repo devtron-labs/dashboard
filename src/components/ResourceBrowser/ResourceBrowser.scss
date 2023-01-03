@@ -41,31 +41,17 @@
                 overflow: auto;
             }
 
-            .resource-list-row {
-                display: grid;
-                grid-template-columns: minmax(300px, auto) repeat(auto-fit, 100px);
-                column-gap: 16px;
-
-                .menu-icon {
-                    path:nth-child(2) {
-                        fill: var(--N600);
-                    }
-                }
-
-                .resource-status {
-                    height: 12px;
-                    width: 12px;
-                }
+            .sticky-column {
+                left: 0;
+                z-index: 1;
+                background-color: var(--N0);
             }
-
             .event-list-row {
                 display: grid;
                 grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
                 column-gap: 16px;
             }
         }
-
-        .cluster-selection-container {}
     }
 }
 

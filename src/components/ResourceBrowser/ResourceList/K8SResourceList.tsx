@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import {Progressing } from '../../common'
+import { Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { CLUSTER_SELECT_STYLE } from '../Constants'
 import { K8SResourceListType } from '../Types'
@@ -40,11 +40,26 @@ export function K8SResourceList({
     }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
+    const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
 
     useEffect(() => {
-      setSearchText('')
+        setSearchText('')
     }, [selectedResource?.gvk.Kind])
 
+    useEffect(() => {
+        if (resourceList?.headers.length) {
+            /*
+          116 is standard with of every column for calculations
+          295 is width of left nav + sidebar
+          200 is the diff of name column
+          */
+
+            const appliedColumnDerivedWidth = resourceList.headers.length * 116 + 295 + 200
+            const windowWidth = window.innerWidth
+            let clientWidth = 0
+            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
+        }
+    }, [resourceList?.headers])
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = resourceList.data.filter(
@@ -166,20 +181,40 @@ export function K8SResourceList({
         return (
             <div
                 key={`${resourceData.name}-${index}`}
-                className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
+                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover"
             >
                 {resourceList.headers.map((columnName) =>
                     columnName === 'name' ? (
-                        <div className="cb-5 dc__ellipsis-right">
-                            <a className="dc__link cursor" data-name={resourceData.name} onClick={handleResourceClick}>
-                                {resourceData.name}
-                            </a>
+                        <div
+                            className={`w-300 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
+                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
+                            }`}
+                        >
+                            <div className="w-100 flex left">
+                                <div className="w-280 pr-4 dc__ellipsis-right">
+                                    <a
+                                        className="dc__link cursor"
+                                        data-name={resourceData.name}
+                                        onClick={handleResourceClick}
+                                    >
+                                        {resourceData.name}
+                                    </a>
+                                </div>
+                                <ResourceBrowserActionMenu
+                                    clusterId={clusterId}
+                                    namespace={namespace}
+                                    resourceData={resourceData}
+                                    selectedResource={selectedResource}
+                                    getResourceListData={getResourceListData}
+                                    handleResourceClick={handleResourceClick}
+                                />
+                            </div>
                         </div>
                     ) : (
                         <div
-                            className={`${
+                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-100-px ${
                                 columnName === 'status'
-                                    ? `app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
+                                    ? ` app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
                                     : ''
                             }`}
                         >
@@ -187,16 +222,6 @@ export function K8SResourceList({
                         </div>
                     ),
                 )}
-                <div className="dc__align-right">
-                    <ResourceBrowserActionMenu
-                        clusterId={clusterId}
-                        namespace={namespace}
-                        resourceData={resourceData}
-                        selectedResource={selectedResource}
-                        getResourceListData={getResourceListData}
-                        handleResourceClick={handleResourceClick}
-                    />
-                </div>
             </div>
         )
     }
@@ -229,16 +254,28 @@ export function K8SResourceList({
                 return <EventList filteredData={filteredResourceList} />
             }
             return (
-                <div>
-                    <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                <div className="mt-16" style={{ width: 'calc(100vw - 293px)', overflow: 'auto hidden' }}>
+                    <div
+                        className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
+                        style={{ width: 'max-content', minWidth: 'calc(100vw - 292px)' }}
+                    >
                         {resourceList.headers.map((columnName) => (
-                            <div key={columnName}>{columnName}</div>
+                            <div
+                                className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                                    columnName === 'name'
+                                        ? `${
+                                              fixedNodeNameColumn
+                                                  ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+                                                  : ''
+                                          } w-300 pl-20`
+                                        : 'w-100-px'
+                                }`}
+                            >
+                                {columnName}
+                            </div>
                         ))}
-                        <div></div>
                     </div>
-                    <div className="scrollable-resource-list">
-                        {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
-                    </div>
+                    {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
                 </div>
             )
         }
