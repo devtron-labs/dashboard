@@ -308,12 +308,13 @@ export const triggerCINode = (request) => {
 }
 
 // stageType: 'PRECD' | 'CD' | 'POSTCD'
-export const triggerCDNode = (pipelineId: any, ciArtifactId: any, appId: string, stageType: string, deploymentWithConfig?: string, wfrId?: number) => {
+export const triggerCDNode = (pipelineId: any, ciArtifactId: any, appId: string, stageType: string, deploymentWithConfig?: string, wfrId?: number, isRollback?: boolean) => {
     const request = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
+        isRollback: isRollback
     }
 
     if (deploymentWithConfig) {

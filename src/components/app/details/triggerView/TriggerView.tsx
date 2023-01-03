@@ -543,12 +543,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let pipelineId = node.id
         let key = this.state.materialType
         ciArtifact = node[key].find((artifact) => artifact.isSelected == true)
+        let isRollBack = key == MATERIAL_TYPE.rollbackMaterialList
         if (appId && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType, deploymentWithConfig, wfrId)
+            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType, deploymentWithConfig, wfrId, isRollBack)
                 .then((response: any) => {
                     if (response.result) {
                         let msg =
-                            key == MATERIAL_TYPE.rollbackMaterialList ? 'Rollback Initiated' : 'Deployment Initiated'
+                            isRollBack ? 'Rollback Initiated' : 'Deployment Initiated'
                         toast.success(msg)
                         this.setState(
                             {
