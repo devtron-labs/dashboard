@@ -83,7 +83,8 @@ export function K8SResourceList({
         })
     }
 
-    const handleActionTabClick = (_tabName: string) => {
+    const handleResourceClick = (e) => {
+        const _tabName = e.target.dataset.name
         const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${_tabName.toLowerCase()}`
 
         const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, _tabName.toLowerCase(), _url)
@@ -150,9 +151,6 @@ export function K8SResourceList({
             </div>
         )
     }
-    const handleResourceClick = (ev, resourceData: Record<string, any>): void => {
-        handleActionTabClick(resourceData.name)
-    }
 
     const renderResourceRow = (resourceData: Record<string, any>): JSX.Element => {
         return (
@@ -163,14 +161,9 @@ export function K8SResourceList({
                 {resourceList.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div className="cb-5 dc__ellipsis-right">
-                            <NavLink
-                                to={`${url}/${resourceData.name}`}
-                                onClick={(e) => {
-                                    handleResourceClick(e, resourceData)
-                                }}
-                            >
+                            <a className="dc__link cursor" data-name={resourceData.name} onClick={handleResourceClick}>
                                 {resourceData.name}
-                            </NavLink>
+                            </a>
                         </div>
                     ) : (
                         <div
@@ -184,13 +177,16 @@ export function K8SResourceList({
                         </div>
                     ),
                 )}
-                <div className="dc__align-right"><ResourceBrowserActionMenu
-                    clusterId={clusterId}
-                    namespace={namespace}
-                    resourceData={resourceData}
-                    selectedResource={selectedResource}
-                    getResourceListData={getResourceListData}
-                /></div>
+                <div className="dc__align-right">
+                    <ResourceBrowserActionMenu
+                        clusterId={clusterId}
+                        namespace={namespace}
+                        resourceData={resourceData}
+                        selectedResource={selectedResource}
+                        getResourceListData={getResourceListData}
+                        handleResourceClick={handleResourceClick}
+                    />
+                </div>
             </div>
         )
     }
@@ -223,7 +219,7 @@ export function K8SResourceList({
                 <div>
                     <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                         {resourceList.headers.map((columnName) => (
-                            <div>{columnName}</div>
+                            <div key={columnName}>{columnName}</div>
                         ))}
                         <div></div>
                     </div>

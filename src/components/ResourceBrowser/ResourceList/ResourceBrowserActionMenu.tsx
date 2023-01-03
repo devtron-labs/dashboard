@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
@@ -12,7 +11,6 @@ import { ResourceBrowserActionMenuType, ResourceListPayloadType } from '../Types
 import { Nodes } from '../../app/types'
 import { deleteResource } from '../ResourceBrowser.service'
 import { toast } from 'react-toastify'
-import { NodeDetailTab } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.type'
 
 export default function ResourceBrowserActionMenu({
     clusterId,
@@ -20,8 +18,8 @@ export default function ResourceBrowserActionMenu({
     resourceData,
     selectedResource,
     getResourceListData,
+    handleResourceClick,
 }: ResourceBrowserActionMenuType) {
-    const { url } = useRouteMatch()
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
@@ -66,36 +64,40 @@ export default function ResourceBrowserActionMenu({
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
-                        <Link
-                            to={`${url}/${resourceData.name}/${NodeDetailTab.MANIFEST.toLowerCase()}`}
+                        <span
+                            data-name={RESOURCE_ACTION_MENU.manifest}
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                            onClick={handleResourceClick}
                         >
                             <ManifestIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
-                        </Link>
-                        <Link
-                            to={`${url}/${resourceData.name}/${NodeDetailTab.EVENTS.toLowerCase()}`}
+                        </span>
+                        <span
+                            data-name={RESOURCE_ACTION_MENU.Events}
                             className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                            onClick={handleResourceClick}
                         >
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
-                        </Link>
+                        </span>
                         {selectedResource?.gvk.Kind === Nodes.Pod && (
                             <>
-                                <Link
-                                    to={`${url}/${resourceData.name}/${NodeDetailTab.LOGS.toLowerCase()}`}
+                                <span
+                                    data-name={RESOURCE_ACTION_MENU.logs}
                                     className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                    onClick={handleResourceClick}
                                 >
                                     <LogAnalyzerIcon className="icon-dim-16 mr-8" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
-                                </Link>
-                                <Link
-                                    to={`${url}/${resourceData.name}/${NodeDetailTab.TERMINAL.toLowerCase()}`}
+                                </span>
+                                <span
+                                    data-name={RESOURCE_ACTION_MENU.terminal}
                                     className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                    onClick={handleResourceClick}
                                 >
                                     <TerminalIcon className="icon-dim-16 mr-8" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
-                                </Link>
+                                </span>
                             </>
                         )}
                         <span

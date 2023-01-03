@@ -123,6 +123,7 @@ export interface ResourceBrowserActionMenuType {
     resourceData: Record<string, any>
     selectedResource: ApiResourceType
     getResourceListData: () => Promise<void>
+    handleResourceClick: (e: any) => void
 }
 
 export interface ResourceListEmptyStateType {
