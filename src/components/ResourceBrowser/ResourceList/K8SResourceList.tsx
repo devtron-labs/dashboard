@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -40,6 +40,11 @@ export function K8SResourceList({
     }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
+
+    useEffect(() => {
+      setSearchText('')
+    }, [selectedResource?.gvk.Kind])
+
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = resourceList.data.filter(
@@ -157,10 +162,10 @@ export function K8SResourceList({
         )
     }
 
-    const renderResourceRow = (resourceData: Record<string, any>): JSX.Element => {
+    const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
         return (
             <div
-                key={resourceData.name}
+                key={`${resourceData.name}-${index}`}
                 className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
             >
                 {resourceList.headers.map((columnName) =>
@@ -232,7 +237,7 @@ export function K8SResourceList({
                         <div></div>
                     </div>
                     <div className="scrollable-resource-list">
-                        {filteredResourceList?.map((clusterData) => renderResourceRow(clusterData))}
+                        {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
                     </div>
                 </div>
             )

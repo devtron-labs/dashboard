@@ -62,11 +62,11 @@ export default function ResourceBrowserActionMenu({
                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
-                <PopupMenu.Body>
-                    <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
+                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">
+                    <div className="fs-13 fw-4 lh-20">
                         <span
                             data-name={RESOURCE_ACTION_MENU.manifest}
-                            className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                            className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                         >
                             <ManifestIcon className="icon-dim-16 mr-8" />
@@ -74,7 +74,7 @@ export default function ResourceBrowserActionMenu({
                         </span>
                         <span
                             data-name={RESOURCE_ACTION_MENU.Events}
-                            className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                            className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                         >
                             <CalendarIcon className="icon-dim-16 mr-8" />
@@ -84,7 +84,7 @@ export default function ResourceBrowserActionMenu({
                             <>
                                 <span
                                     data-name={RESOURCE_ACTION_MENU.logs}
-                                    className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                    className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                 >
                                     <LogAnalyzerIcon className="icon-dim-16 mr-8" />
@@ -92,7 +92,7 @@ export default function ResourceBrowserActionMenu({
                                 </span>
                                 <span
                                     data-name={RESOURCE_ACTION_MENU.terminal}
-                                    className="flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                    className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                 >
                                     <TerminalIcon className="icon-dim-16 mr-8" />
@@ -101,7 +101,7 @@ export default function ResourceBrowserActionMenu({
                             </>
                         )}
                         <span
-                            className="flex left h-36 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                            className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
                             onClick={toggleDeleteDialog}
                         >
                             <DeleteIcon className="icon-dim-16 mr-8 scr-5" />

@@ -1098,7 +1098,7 @@ export const processK8SObjects = (
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = element.gvk.Group.endsWith('.k8s.io')
-            ? AggregationKeys.Other
+            ? AggregationKeys['Other Resources']
             : getAggregator(element.gvk.Kind)
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }

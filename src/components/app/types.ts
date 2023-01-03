@@ -337,7 +337,7 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     'Custom Resource' = 'Custom Resource',
-    Other = 'Other',
+    'Other Resources' = 'Other Resources',
     Events = 'Events',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys;

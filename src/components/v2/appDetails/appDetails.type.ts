@@ -36,7 +36,7 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     CustomResource = 'Custom Resource',
-    Other = 'Other',
+    OtherResources = 'Other Resources',
     Events = 'Events'
 }
 
