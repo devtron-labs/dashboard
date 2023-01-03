@@ -311,22 +311,17 @@ export default function ResourceList() {
                         <div className="resource-browser-tab flex left pt-10">
                             <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                         </div>
-                        {!node && (
-                            <div className="fs-13 flex pt-12 pb-12">
-                                <div
-                                    className="pointer cb-5 fw-6 fs-13 flexbox pr-12 dc__border-right"
-                                    onClick={showResourceModal}
-                                >
-                                    <Add className="icon-dim-16 scb-5 mr-5 mt-3" /> Create
-                                </div>
-                                {lastDataSyncTimeString && (
-                                    <div className="ml-12 flex">
-                                        <span>{lastDataSyncTimeString}</span>
-                                        <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
-                                    </div>
-                                )}
+                        <div className="fs-13 flex pt-12 pb-12">
+                            <div className="pointer cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                             </div>
-                        )}
+                            {!node && lastDataSyncTimeString && (
+                                <div className="ml-12 flex pl-12 dc__border-left">
+                                    <span>{lastDataSyncTimeString}</span>
+                                    <RefreshIcon className="icon-dim-16 scb-5 ml-8 pointer" onClick={refreshData} />
+                                </div>
+                            )}
+                        </div>
                     </div>
                     {node ? (
                         <div className="resource-details-container">
