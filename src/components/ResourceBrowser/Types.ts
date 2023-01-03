@@ -16,8 +16,8 @@ import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDet
 export interface ResourceDataType {}
 
 export interface ResourceDetailType {
-    column: string[]
-    rows: Record<string, any>[]
+    headers: string[]
+    data: Record<string, any>[]
 }
 
 export interface GVKType {

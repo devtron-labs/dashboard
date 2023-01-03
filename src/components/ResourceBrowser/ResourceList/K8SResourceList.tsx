@@ -41,7 +41,7 @@ export function K8SResourceList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = resourceList.rows.filter(
+        const _filteredData = resourceList.data.filter(
             (resource) =>
                 resource.name.indexOf(_searchText) >= 0 ||
                 resource.namespace.indexOf(_searchText) >= 0 ||
@@ -151,31 +151,31 @@ export function K8SResourceList({
         )
     }
     const handleResourceClick = (ev, resourceData: Record<string, any>): void => {
-        handleActionTabClick(resourceData.Name)
+        handleActionTabClick(resourceData.name)
     }
 
     const renderResourceRow = (resourceData: Record<string, any>): JSX.Element => {
         return (
             <div
-                key={resourceData.Name}
+                key={resourceData.name}
                 className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
             >
-                {resourceList.column.map((columnName) =>
+                {resourceList.headers.map((columnName) =>
                     columnName === 'Name' ? (
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
-                                to={`${url}/${resourceData.Name}`}
+                                to={`${url}/${resourceData.name}`}
                                 onClick={(e) => {
                                     handleResourceClick(e, resourceData)
                                 }}
                             >
-                                {resourceData.Name}
+                                {resourceData.name}
                             </NavLink>
                         </div>
                     ) : (
                         <div
                             className={`${
-                                columnName === 'Status'
+                                columnName === 'status'
                                     ? `app-summary__status-name f-${resourceData[columnName].toLowerCase()}`
                                     : ''
                             }`}
@@ -222,7 +222,7 @@ export function K8SResourceList({
             return (
                 <div>
                     <div className="resource-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                        {resourceList.column.map((columnName) => (
+                        {resourceList.headers.map((columnName) => (
                             <div>{columnName}</div>
                         ))}
                         <div></div>

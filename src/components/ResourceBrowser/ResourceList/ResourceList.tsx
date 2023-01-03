@@ -197,8 +197,8 @@ export default function ResourceList() {
             const { result } = await getResourceList(resourceListPayload)
             setLastDataSync(!lastDataSync)
             setResourceList(result)
-            setFilteredResourceList(result.rows)
-            setNoResults(result.rows.length === 0)
+            setFilteredResourceList(result.data)
+            setNoResults(result.data.length === 0)
         } catch (err) {
             showError(err)
         } finally {
@@ -259,7 +259,7 @@ export default function ResourceList() {
     }
 
     const getSelectedResourceData = () => {
-        const selectedNode = resourceList.rows.find((_resource) => _resource.Name === node)
+        const selectedNode = resourceList.data.find((_resource) => _resource.Name === node)
         const _selectedResource = selectionData?.[nodeType]?.gvk || selectedResource?.gvk
 
         return {
