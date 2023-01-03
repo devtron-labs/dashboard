@@ -161,7 +161,7 @@ export function K8SResourceList({
                 className="resource-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
             >
                 {resourceList.headers.map((columnName) =>
-                    columnName === 'Name' ? (
+                    columnName === 'name' ? (
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
                                 to={`${url}/${resourceData.name}`}
