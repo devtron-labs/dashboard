@@ -39,6 +39,13 @@
             .scrollable-resource-list {
                 height: calc(100vh - 192px);
                 overflow: auto;
+                width: calc(100vw - 293px);
+                .list-header {
+                    width: max-content;
+                    min-width: calc(100vw - 292px);
+                    top: 0;
+                    z-index: 3;
+                }
             }
 
             .sticky-column {
