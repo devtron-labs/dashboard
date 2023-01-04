@@ -97,7 +97,7 @@ export interface SidebarType {
     k8SObjectList: K8SObjectType[]
     handleGroupHeadingClick: (e) => void
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceType>>
-    updateSelectionData: (_selected: ApiResourceType) => void
+    updateResourceSelectionData: (_selected: ApiResourceType) => void
 }
 
 export interface K8SResourceListType {
@@ -114,6 +114,7 @@ export interface K8SResourceListType {
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
+    updateNodeSelectionData: (_selected: Record<string, any>) => void
 }
 
 export interface ResourceBrowserActionMenuType {

@@ -12,9 +12,13 @@ import { NodeDetailPropsType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
+import { getManifestResource } from './nodeDetail.api'
+import { showError } from '../../../../common'
+import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './nodeDetail.css'
 
 function NodeDetailComponent({
+    loadingResources,
     isResourceBrowserView,
     selectedResource,
     logSearchTerms,
@@ -28,12 +32,59 @@ function NodeDetailComponent({
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
+    const [resourceContainers, setResourceContainers] = useState([])
+    const [isResourceDeleted, setResourceDeleted] = useState(false)
+    const [fetchingResource, setFetchingResource] = useState(false)
     const { path, url } = useRouteMatch()
 
     useEffect(() => {
         const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
         setTabs(_tabs)
     }, [params.nodeType])
+
+    useEffect(() => {
+        if (isResourceBrowserView && !loadingResources && selectedResource && params.node) {
+            getContainersFromManifest()
+        }
+    }, [loadingResources, params.node])
+
+    const getContainersFromManifest = async () => {
+        try {
+            setFetchingResource(true)
+            const { result } = await getManifestResource(
+                appDetails,
+                params.podName,
+                params.nodeType,
+                isResourceBrowserView,
+                selectedResource,
+            )
+
+            const _resourceContainers = []
+            if (result?.manifest?.spec) {
+                if (Array.isArray(result.manifest.spec.containers)) {
+                    _resourceContainers.push(...result.manifest.spec.containers.map((_container) => _container.name))
+                }
+
+                if (Array.isArray(result.manifest.spec.initContainers)) {
+                    _resourceContainers.push(...result.manifest.spec.containers.map((_container) => _container.name))
+                }
+            }
+            setResourceContainers(_resourceContainers)
+
+            // Clear out error on node change
+            if (isResourceDeleted) {
+                setResourceDeleted(false)
+            }
+        } catch (err) {
+            if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
+                setResourceDeleted(true)
+            } else {
+                showError(err)
+            }
+        } finally {
+            setFetchingResource(false)
+        }
+    }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(
@@ -72,12 +123,18 @@ function NodeDetailComponent({
     })
     const isDeleted =
         (currentTab && currentTab[0] ? currentTab[0].isDeleted : false) ||
+        (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             (appDetails.resourceTree.nodes?.findIndex(
                 (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
             ) >= 0
                 ? false
                 : true))
+
+    // Assign extracted containers to selected resource before passing further
+    if (selectedResource) {
+        selectedResource.containers = resourceContainers
+    }
 
     return (
         <React.Fragment>
@@ -107,50 +164,54 @@ function NodeDetailComponent({
                         )
                     })}
             </div>
-            <Switch>
-                <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
-                    <ManifestComponent
-                        selectedTab={handleSelectedTab}
-                        isDeleted={isDeleted}
-                        isResourceBrowserView={isResourceBrowserView}
-                        selectedResource={selectedResource}
-                    />
-                </Route>
-                <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
-                    <EventsComponent
-                        selectedTab={handleSelectedTab}
-                        isDeleted={isDeleted}
-                        isResourceBrowserView={isResourceBrowserView}
-                        selectedResource={selectedResource}
-                    />
-                </Route>
-                <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                    <div className="resource-node-wrapper">
-                        <LogsComponent
+            {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
+                <MessageUI msg={''} icon={MsgUIType.LOADING} size={24} />
+            ) : (
+                <Switch>
+                    <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
+                        <ManifestComponent
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
-                            logSearchTerms={logSearchTerms}
-                            setLogSearchTerms={setLogSearchTerms}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                         />
-                    </div>
-                </Route>
-                {!isResourceBrowserView && (
-                    <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
-                        <SummaryComponent selectedTab={handleSelectedTab} />
                     </Route>
-                )}
-                <Route path={`${path}/${NodeDetailTab.TERMINAL}`}>
-                    <TerminalComponent
-                        selectedTab={handleSelectedTab}
-                        isDeleted={isDeleted}
-                        isResourceBrowserView={isResourceBrowserView}
-                        selectedResource={selectedResource}
-                    />
-                </Route>
-                <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
-            </Switch>
+                    <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
+                        <EventsComponent
+                            selectedTab={handleSelectedTab}
+                            isDeleted={isDeleted}
+                            isResourceBrowserView={isResourceBrowserView}
+                            selectedResource={selectedResource}
+                        />
+                    </Route>
+                    <Route path={`${path}/${NodeDetailTab.LOGS}`}>
+                        <div className="resource-node-wrapper">
+                            <LogsComponent
+                                selectedTab={handleSelectedTab}
+                                isDeleted={isDeleted}
+                                logSearchTerms={logSearchTerms}
+                                setLogSearchTerms={setLogSearchTerms}
+                                isResourceBrowserView={isResourceBrowserView}
+                                selectedResource={selectedResource}
+                            />
+                        </div>
+                    </Route>
+                    {!isResourceBrowserView && (
+                        <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
+                            <SummaryComponent selectedTab={handleSelectedTab} />
+                        </Route>
+                    )}
+                    <Route path={`${path}/${NodeDetailTab.TERMINAL}`}>
+                        <TerminalComponent
+                            selectedTab={handleSelectedTab}
+                            isDeleted={isDeleted}
+                            isResourceBrowserView={isResourceBrowserView}
+                            selectedResource={selectedResource}
+                        />
+                    </Route>
+                    <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
+                </Switch>
+            )}
         </React.Fragment>
     )
 }

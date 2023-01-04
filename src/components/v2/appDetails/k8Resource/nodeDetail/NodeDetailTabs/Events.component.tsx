@@ -31,6 +31,8 @@ function EventsComponent({
     }, [params.podName, params.node])
 
     useEffect(() => {
+        if (isDeleted) return
+
         try {
             getEvent(appDetails, params.podName, params.nodeType, isResourceBrowserView, selectedResource)
                 .then((response) => {

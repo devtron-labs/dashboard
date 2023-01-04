@@ -171,9 +171,9 @@ function LogsComponent({
             urls = []
 
         if (isResourceBrowserView) {
-            pods.concat(podContainerOptions.podOptions.map((_pwc) => _pwc.name))
-
             const nodeName = podContainerOptions.podOptions[0].name
+            pods.push(nodeName)
+
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
                     urls.push(

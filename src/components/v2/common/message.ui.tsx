@@ -51,7 +51,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                         case MsgUIType.LOADING:
                             return (
                                 <div className={`fcn-0 ${iconClassName || ''}`}>
-                                    <Progressing />
+                                    <Progressing size={size} />
                                 </div>
                             );
                         case MsgUIType.POD:

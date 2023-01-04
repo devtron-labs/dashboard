@@ -36,7 +36,7 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     CustomResource = 'Custom Resource',
-    Other = 'Other',
+    OtherResources = 'Other Resources',
     Events = 'Events'
 }
 
@@ -373,6 +373,7 @@ export interface LogSearchTermType {
 }
 
 export interface NodeDetailPropsType extends LogSearchTermType {
+    loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
 }
