@@ -257,7 +257,7 @@ export function K8SResourceList({
             return renderEmptyPage()
         } else {
             if (selectedResource?.gvk.Kind === 'Event') {
-                return <EventList filteredData={filteredResourceList} />
+                return <EventList filteredData={filteredResourceList} updateNodeSelectionData={updateNodeSelectionData}/>
             }
             return (
                 <div className="scrollable-resource-list">
