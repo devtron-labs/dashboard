@@ -196,8 +196,7 @@ export default function AdvancedConfigOptions({
                         _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
                         return { label: platformValue, value: platformValue }
                     })
-        }
-        if (_selectedPlatforms.length == 0){
+        } else if (parentState.ciConfig?.ciBuildConfig){
             if (parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
                 _selectedPlatforms =
                     parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
