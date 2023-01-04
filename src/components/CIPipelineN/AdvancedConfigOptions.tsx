@@ -188,25 +188,19 @@ export default function AdvancedConfigOptions({
     useEffect(() => {
         let _customTargetPlatform = false
         let _selectedPlatforms = []
+        let targetPlatform = ''
         if (parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            _selectedPlatforms =
-                parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-                    .split(',')
-                    .map((platformValue) => {
-                        _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
-                        return { label: platformValue, value: platformValue }
-                    })
+            targetPlatform = parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
+
         } else if (parentState.ciConfig?.ciBuildConfig){
-            if (parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-                _selectedPlatforms =
-                    parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-                        .split(',')
-                        .map((platformValue) => {
-                            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
-                            return { label: platformValue, value: platformValue }
-                        })
+            if (parentState.ciConfig.ciBuildConfig.dockerBuildConfig?.targetPlatform) {
+                targetPlatform = parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform
             }
         }
+        _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
+                    _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+                    return { label: platformValue, value: platformValue }
+                })
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
     }, [parentState])
