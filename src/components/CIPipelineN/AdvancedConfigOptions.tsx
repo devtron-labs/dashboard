@@ -187,8 +187,8 @@ export default function AdvancedConfigOptions({
     useEffect(() => {
         let _customTargetPlatform = false
         let _selectedPlatforms = []
-        if (parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            _selectedPlatforms = parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform
+        if (parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+            _selectedPlatforms = parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
                 .split(',')
                 .map((platformValue) => {
                     _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
