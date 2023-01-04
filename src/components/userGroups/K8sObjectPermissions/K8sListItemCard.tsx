@@ -186,7 +186,7 @@ export default function K8sListItemCard({
     const onKindSelect = (selected) => {
         if (selected.value !== k8sPermission.kind?.value) {
             handleK8sPermission('onKindChange', index, selected)
-            if (selected.value !== '*' && k8sPermission.group.value !== '*' && k8sPermission.group.value !== 'event') {
+            if (selected.value !== '*' && k8sPermission.group.value !== '*' && selected.value !== 'Event') {
                 getResourceListData(selected)
             } else {
                 setObjectMapping((prevMapping) => ({

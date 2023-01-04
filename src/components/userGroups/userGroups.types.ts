@@ -103,7 +103,7 @@ export interface CreateGroup {
     roleFilters: APIRoleFilter[];
 }
 
-export interface K8sPermissionFilter extends RoleFilter {
+export interface K8sPermissionFilter {
     entity: EntityTypes.CLUSTER,
     cluster: OptionType,
     namespace: OptionType,
