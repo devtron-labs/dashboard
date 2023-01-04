@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { ButtonWithLoader, VisibleModal } from '../common'
-import { ActionTypes, OptionType } from './userGroups.types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
+import { ButtonWithLoader, VisibleModal } from '../../common'
+import { ActionTypes, OptionType } from '../userGroups.types'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
 
 const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {

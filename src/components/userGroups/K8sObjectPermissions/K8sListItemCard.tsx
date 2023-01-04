@@ -9,21 +9,21 @@ import {
     processK8SObjects,
     selectAllfunction,
     showError,
-} from '../common'
+} from '../../common'
 import {
     getClusterList,
     getResourceGroupList,
     getResourceList,
     namespaceListByClusterId,
-} from '../ResourceBrowser/ResourceBrowser.service'
-import { ResourceListPayloadType } from '../ResourceBrowser/Types'
-import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { customValueContainer, formatOptionLabel, menuComponent, Option as SingleSelectOption } from '../v2/common/ReactSelect.utils'
-import { ActionTypes, OptionType } from './userGroups.types'
-import { ReactComponent as Clone } from '../../assets/icons/ic-copy.svg'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
+} from '../../ResourceBrowser/ResourceBrowser.service'
+import { ResourceListPayloadType } from '../../ResourceBrowser/Types'
+import { multiSelectStyles } from '../../v2/common/ReactSelectCustomization'
+import { customValueContainer, formatOptionLabel, menuComponent, Option as SingleSelectOption } from '../../v2/common/ReactSelect.utils'
+import { OptionType } from '../userGroups.types'
+import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
+import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import CreatableSelect from 'react-select/creatable'
-import { k8sPermissionRoles } from './PermissionsUtils'
+import { k8sPermissionRoles } from './K8sPermissions.utils'
 
 export default function K8sListItemCard({
     k8sPermission,
