@@ -1308,7 +1308,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp &&(
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && (
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}
@@ -1317,18 +1317,27 @@ function ChartValuesView({
                             />
                         )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
-                        {!isDeployChartView && commonState.showRepoSelector && (
-                            <ChartRepoSelector
-                                isExternal={isExternalApp}
-                                isUpdate={!!isUpdate}
-                                installedAppInfo={commonState.installedAppInfo}
-                                handleRepoChartValueChange={handleRepoChartValueChange}
-                                repoChartValue={commonState.repoChartValue}
-                                chartDetails={commonState.repoChartValue}
-                                showConnectToChartTippy={commonState.showConnectToChartTippy}
-                                hideConnectToChartTippy={hideConnectToChartTippy}
-                            />
-                        )}
+                        {/**
+                         * ChartRepoSelector will be displayed only when,
+                         * - It's not a deploy chart view
+                         * - It's not an external app values view
+                         * - It's an external app which is,
+                         *   i. Already linked to a chart repo
+                         *  ii. Not already linked but connect to repo action is performed (showRepoSelector is set to true)
+                         */}
+                        {!isDeployChartView &&
+                            (!isExternalApp || commonState.installedAppInfo || commonState.showRepoSelector) && (
+                                <ChartRepoSelector
+                                    isExternal={isExternalApp}
+                                    isUpdate={!!isUpdate}
+                                    installedAppInfo={commonState.installedAppInfo}
+                                    handleRepoChartValueChange={handleRepoChartValueChange}
+                                    repoChartValue={commonState.repoChartValue}
+                                    chartDetails={commonState.repoChartValue}
+                                    showConnectToChartTippy={commonState.showConnectToChartTippy}
+                                    hideConnectToChartTippy={hideConnectToChartTippy}
+                                />
+                            )}
                         {!isDeployChartView &&
                             isExternalApp &&
                             !commonState.installedAppInfo &&
@@ -1375,7 +1384,11 @@ function ChartValuesView({
                             chartValueId !== '0' &&
                             !(
                                 deployedAppDetail &&
-                                checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
+                                checkIfDevtronOperatorHelmRelease(
+                                    deployedAppDetail[2],
+                                    deployedAppDetail[1],
+                                    deployedAppDetail[0],
+                                )
                             ) && (
                                 <DeleteApplicationButton
                                     type={isCreateValueView ? 'preset value' : 'Application'}
