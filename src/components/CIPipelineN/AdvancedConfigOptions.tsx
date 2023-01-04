@@ -184,16 +184,18 @@ export default function AdvancedConfigOptions({
     const targetPlatformMap = getTargetPlatformMap()
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
+
     useEffect(() => {
         let _customTargetPlatform = false
         let _selectedPlatforms = []
         if (parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            _selectedPlatforms = parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-                .split(',')
-                .map((platformValue) => {
-                    _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
-                    return { label: platformValue, value: platformValue }
-                })
+            _selectedPlatforms =
+                parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+                    .split(',')
+                    .map((platformValue) => {
+                        _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+                        return { label: platformValue, value: platformValue }
+                    })
         }
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
@@ -202,14 +204,15 @@ export default function AdvancedConfigOptions({
     const handleChangeInTargetPlatforms = () => {
         const _form = { ...formData }
         let platformsArray = []
-        selectedTargetPlatforms.forEach(function(o) {
+        selectedTargetPlatforms.forEach(function (o) {
             platformsArray.push(o.label)
         })
         if (_form.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig) {
-            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join() 
+            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join()
         }
         setFormData(_form)
     }
+    
     useEffect(() => {
         handleChangeInTargetPlatforms()
     }, [selectedTargetPlatforms])
