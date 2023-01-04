@@ -297,7 +297,6 @@ export default function ResourceList() {
             kind: _selectedResource?.Kind || '',
             namespace: selectedNode?.namespace || '',
             name: selectedNode?.name || '',
-            status: selectedNode?.status || '',
             containers: selectedNode?.containers || [],
         } as SelectedResourceType
     }

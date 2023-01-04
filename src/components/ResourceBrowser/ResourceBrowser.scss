@@ -51,7 +51,25 @@
                 grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
                 column-gap: 16px;
             }
+            .node-actions-menu-icon {
+                path:nth-child(2) {
+                    fill: var(--N600);
+                }
+            }
         }
+    }
+
+    .manifest-container,
+    .events-table-container {
+        height: calc(100vh - 126px);
+    }
+
+    .log-viewer-container {
+        height: calc(100vh - 169px);
+    }
+
+    .terminal-container {
+        height: calc(100vh - 193px);
     }
 }
 

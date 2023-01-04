@@ -110,7 +110,7 @@ export function K8SResourceList({
     }
 
     const handleResourceClick = (e) => {
-        const { name, tab } = e.target.dataset
+        const { name, tab } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${name}${tab ? `/${tab.toLowerCase()}` : ''}`
 
         const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, name, _url)

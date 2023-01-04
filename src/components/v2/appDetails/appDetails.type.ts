@@ -437,7 +437,6 @@ export interface SelectedResourceType {
     namespace: string
     name: string
     containers: string[]
-    status: string
 }
 
 export interface ResourceInfoActionPropsType {
