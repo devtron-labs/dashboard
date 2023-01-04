@@ -185,7 +185,7 @@ export default function AdvancedConfigOptions({
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
-    useEffect(() => {
+    const updateSelectedPlatformsCustomTargetPlatform = ()=>{
         let _customTargetPlatform = false
         let _selectedPlatforms = []
         let targetPlatform = ''
@@ -198,12 +198,12 @@ export default function AdvancedConfigOptions({
             }
         }
         _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
-                    _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
-                    return { label: platformValue, value: platformValue }
-                })
+            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+            return { label: platformValue, value: platformValue }
+        })
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
-    }, [parentState])
+    }
 
     const handleChangeInTargetPlatforms = () => {
         const _form = { ...formData }
@@ -216,7 +216,11 @@ export default function AdvancedConfigOptions({
         }
         setFormData(_form)
     }
-    
+
+    useEffect(() => {
+        updateSelectedPlatformsCustomTargetPlatform()
+    }, [parentState])
+
     useEffect(() => {
         handleChangeInTargetPlatforms()
     }, [selectedTargetPlatforms])
