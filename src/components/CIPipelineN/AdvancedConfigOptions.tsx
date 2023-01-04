@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
@@ -32,7 +32,6 @@ export default function AdvancedConfigOptions({
         defaultDockerConfigs: null,
         currentCIBuildType: null,
     })
-    const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
     const addDockerArg = (): void => {
         const _form = { ...formData }
 
@@ -183,17 +182,38 @@ export default function AdvancedConfigOptions({
     }
 
     const targetPlatformMap = getTargetPlatformMap()
-    let _customTargetPlatform = false
-    let _selectedPlatforms = []
-    if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-        _selectedPlatforms = ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
-            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
-            return { label: platformValue, value: platformValue }
-        })
-    }
+    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
+    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
+    useEffect(() => {
+        let _customTargetPlatform = false
+        let _selectedPlatforms = []
+        if (parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+            _selectedPlatforms = parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform
+                .split(',')
+                .map((platformValue) => {
+                    _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+                    return { label: platformValue, value: platformValue }
+                })
+        }
+        setSelectedTargetPlatforms(_selectedPlatforms)
+        setShowCustomPlatformWarning(_customTargetPlatform)
+    }, [parentState])
 
-    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
-    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatform)
+    const handleChangeInTargetPlatforms = () => {
+        const _form = { ...formData }
+        let platformsArray = []
+        selectedTargetPlatforms.forEach(function(o) {
+            platformsArray.push(o.label)
+        })
+        if (_form.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig) {
+            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join() 
+        }
+        setFormData(_form)
+    }
+    useEffect(() => {
+        handleChangeInTargetPlatforms()
+    }, [selectedTargetPlatforms])
+
 
     return (
         <div className="ci-advanced-options__container mb-20">
