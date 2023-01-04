@@ -157,7 +157,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                                         </>
                                     ) : (
                                         <>
-                                            <Success className="icon-dim-16 mr-8" />
+                                            <Success className="icon-dim-16 mt-3 mr-8" />
                                             {resource.isUpdate
                                                 ? CreateResourceStatus.updated
                                                 : CreateResourceStatus.created}
