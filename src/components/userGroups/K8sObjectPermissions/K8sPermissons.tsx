@@ -60,7 +60,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
                                 <span className="dc__truncate-text">{element.namespace.label}</span>
                                 <span className="dc__truncate-text">
                                     {element.resource.length > 1
-                                        ? element.resource.length + 'objects'
+                                        ? element.resource.length + ' objects'
                                         : element.resource[0].label}
                                 </span>
                                 <span className="dc__truncate-text">{element.action.label}</span>

@@ -82,10 +82,6 @@ export const MultiValueChipContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data
     const isValidEmail = validator ? validator(value) : true
-
-    if(data.value === '*') {
-        return null
-    }
     
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>

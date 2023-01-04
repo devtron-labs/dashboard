@@ -4,11 +4,11 @@ import {
     ClearIndicator,
     convertToOptionsList,
     Option,
-    MultiValueChipContainer,
     MultiValueRemove,
     processK8SObjects,
     selectAllfunction,
     showError,
+    MultiValueChipContainer,
 } from '../../common'
 import {
     getClusterList,
@@ -202,7 +202,7 @@ export default function K8sListItemCard({
             selected,
             actionMeta,
             (options) => handleK8sPermission('onObjectChange', index, options),
-            objectMapping,
+            objectMapping?.[k8sPermission.key],
         )
     }
 
