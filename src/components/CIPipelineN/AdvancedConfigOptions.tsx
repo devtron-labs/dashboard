@@ -9,9 +9,9 @@ import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.typ
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
-import CreatableSelect from 'react-select/creatable'
-import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
+import {getTargetPlatformMap} from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
+import {OptionType} from "../app/types";
 
 
 export default function AdvancedConfigOptions({
@@ -32,7 +32,7 @@ export default function AdvancedConfigOptions({
         defaultDockerConfigs: null,
         currentCIBuildType: null,
     })
-
+    const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
     const addDockerArg = (): void => {
         const _form = { ...formData }
 
@@ -182,6 +182,19 @@ export default function AdvancedConfigOptions({
         }
     }
 
+    const targetPlatformMap = getTargetPlatformMap()
+    let _customTargetPlatform = false
+    let _selectedPlatforms = []
+    if (ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+        _selectedPlatforms = ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
+            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+            return { label: platformValue, value: platformValue }
+        })
+    }
+
+    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
+    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatform)
+
     return (
         <div className="ci-advanced-options__container mb-20">
             <hr />
@@ -210,12 +223,16 @@ export default function AdvancedConfigOptions({
                     setLoadingData={setLoadingData}
                 />
 
-                {/* To do Target platform changes */}
+                <div className="white-card white-card__docker-config dc__position-rel mb-15">
                 <TargetPlatformSelector
-                allowOverride={allowOverride}
-                 selectedTargetPlatforms={undefined} setSelectedTargetPlatforms={undefined} showCustomPlatformWarning={false} setShowCustomPlatformWarning={function (value: boolean): void {
-            throw new Error('Function not implemented.')
-          } } targetPlatformMap={undefined} />
+                    allowOverride={allowOverride}
+                    selectedTargetPlatforms={selectedTargetPlatforms}
+                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                    showCustomPlatformWarning={showCustomPlatformWarning}
+                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                    targetPlatformMap={targetPlatformMap}
+                />
+                </div>
 
                 {parentState?.loadingState === ComponentStates.loaded &&
                     parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
