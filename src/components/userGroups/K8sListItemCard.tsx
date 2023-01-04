@@ -18,7 +18,7 @@ import {
 } from '../ResourceBrowser/ResourceBrowser.service'
 import { ResourceListPayloadType } from '../ResourceBrowser/Types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { customValueContainer, formatOptionLabel, Option as SingleSelectOption } from '../v2/common/ReactSelect.utils'
+import { customValueContainer, formatOptionLabel, menuComponent, Option as SingleSelectOption } from '../v2/common/ReactSelect.utils'
 import { ActionTypes, OptionType } from './userGroups.types'
 import { ReactComponent as Clone } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
@@ -50,6 +50,12 @@ export default function K8sListItemCard({
             const { result } = await getClusterList()
             const _clusterOptions = convertToOptionsList(result, 'cluster_name', 'id')
             setClusterOptions(_clusterOptions)
+            if(k8sPermission.cluster) {
+                const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
+                handleK8sPermission('edit',index,selectedCluster)
+                getNamespaceList(selectedCluster.value)
+                getGroupKindData(selectedCluster.value)
+            }
         } catch (err) {
             showError(err)
         }
@@ -68,7 +74,7 @@ export default function K8sListItemCard({
         }
     }
 
-    const getGroupKindData = async (clusterId, namespace): Promise<void> => {
+    const getGroupKindData = async (clusterId): Promise<void> => {
         try {
             const { result: resourceGroupList } = await getResourceGroupList(clusterId)
             if (resourceGroupList) {
@@ -89,13 +95,16 @@ export default function K8sListItemCard({
                         ..._k8SObjectList,
                     ],
                 }))
+                if(k8sPermission.kind){
+                    createKindData(k8sPermission.group,_k8SObjectMap)
+                }
             }
         } catch (err) {
             showError(err)
         }
     }
 
-    const createKindData = (selected) => {
+    const createKindData = (selected,_k8SObjectMap = null) => {
         const kind: OptionType[] = []
         if (selected.value === '*') {
             for (const [key, value] of processedData.entries()) {
@@ -104,7 +113,7 @@ export default function K8sListItemCard({
                 })
             }
         } else {
-            const data = processedData.get(selected.value === 'k8sempty' ? '' : selected.value)
+            const data = (_k8SObjectMap || processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
             data?.child?.map((ele) => {
                 if (ele.namespaced) {
                     kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'] })
@@ -115,11 +124,14 @@ export default function K8sListItemCard({
             ...prevMapping,
             [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind],
         }))
+        if(k8sPermission.resource){
+            getResourceListData(k8sPermission.kind,_k8SObjectMap)
+        }
     }
 
-    const getResourceListData = async (selected): Promise<void> => {
+    const getResourceListData = async (selected,_k8SObjectMap = null): Promise<void> => {
         try {
-            const resource = processedData
+            const resource = (_k8SObjectMap || processedData)
                 ?.get?.(k8sPermission.group.value === 'k8sempty' ? '' : k8sPermission.group.value)
                 .child?.find((ele) => ele.gvk['Kind'] === selected.value)
             const resourceListPayload: ResourceListPayloadType = {
@@ -155,7 +167,7 @@ export default function K8sListItemCard({
     const onNameSpaceSelection = (selected) => {
         if (selected.value !== k8sPermission.namespace?.value) {
             handleK8sPermission('onNamespaceChange', index, selected)
-            getGroupKindData(k8sPermission?.cluster?.value, selected.value)
+            getGroupKindData(k8sPermission?.cluster?.value)
         }
     }
 
@@ -169,7 +181,7 @@ export default function K8sListItemCard({
     const onKindSelect = (selected) => {
         if (selected.value !== k8sPermission.kind?.value) {
             handleK8sPermission('onKindChange', index, selected)
-            if (selected.value !== '*' && k8sPermission.group.value !== '*') {
+            if (selected.value !== '*' && k8sPermission.group.value !== '*' && k8sPermission.group.value !== 'event') {
                 getResourceListData(selected)
             } else {
                 setObjectMapping((prevMapping) => ({
@@ -229,7 +241,7 @@ export default function K8sListItemCard({
                             ...base,
                             minHeight: '36px',
                             fontWeight: '400',
-                            backgroundColor: 'var(--N50)',
+                            backgroundColor: 'var(--N00)',
                             cursor: 'pointer',
                         }),
                         dropdownIndicator: (base) => ({
@@ -248,10 +260,12 @@ export default function K8sListItemCard({
                             options={namespaceMapping?.[k8sPermission.key]}
                             value={k8sPermission.namespace}
                             name="namespace"
+                            isDisabled={!k8sPermission.cluster}
                             onChange={onNameSpaceSelection}
                             components={{
                                 IndicatorSeparator: null,
                                 Option: SingleSelectOption,
+                                MenuList: (props) => menuComponent(props,'namespaces')
                             }}
                             styles={{
                                 ...multiSelectStyles,
@@ -277,11 +291,13 @@ export default function K8sListItemCard({
                                     placeholder="Select API group"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
+                                    isDisabled={!k8sPermission.namespace}
                                     value={k8sPermission.group}
                                     onChange={onApiGroupSelect}
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
+                                        MenuList: (props) => menuComponent(props,'API Group')
                                     }}
                                     styles={{
                                         ...multiSelectStyles,
@@ -306,12 +322,14 @@ export default function K8sListItemCard({
                                 <ReactSelect
                                     placeholder="Select kind"
                                     options={kindMapping?.[k8sPermission.key]}
+                                    isDisabled={!k8sPermission.group}
                                     value={k8sPermission.kind}
                                     onChange={onKindSelect}
                                     name="kind"
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
+                                        MenuList: (props) => menuComponent(props,'kinds')
                                     }}
                                     styles={{
                                         ...multiSelectStyles,
@@ -336,6 +354,7 @@ export default function K8sListItemCard({
                         <CreatableSelect
                             placeholder="Select object"
                             options={objectMapping?.[k8sPermission.key]}
+                            isDisabled={!k8sPermission.kind}
                             value={k8sPermission.resource}
                             name="Object name"
                             onChange={onObjectChange}
@@ -347,6 +366,7 @@ export default function K8sListItemCard({
                                 ClearIndicator,
                                 MultiValueRemove,
                                 Option,
+                                MenuList: (props) => menuComponent(props,'object name')
                             }}
                             closeMenuOnSelect={false}
                             isMulti

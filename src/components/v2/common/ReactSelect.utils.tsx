@@ -182,3 +182,14 @@ export const customValueContainer = (props): JSX.Element => {
         </components.ValueContainer>
     )
 }
+
+export const menuComponent = (props,text) => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                {`Type to enter custom ${text}`}
+            </div>
+            {props.children}
+        </components.MenuList>
+    )
+}

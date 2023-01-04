@@ -23,6 +23,12 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
+    const [isDataFilled, setIsDataFilled] = useState<boolean>(true)
+
+    useEffect(() => { 
+        const disbale = k8PermissionList ? k8PermissionList.find((item) => item.resource === null || item.resource?.length === 0) : true
+        setIsDataFilled(!!disbale)
+    },[k8PermissionList])
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
         switch (action) {
@@ -35,17 +41,30 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
             case 'clone':
                 k8PermissionList.splice(0, 0, {...k8PermissionList[key],key: k8PermissionList.length})
                 break
+            case 'edit':
+                k8PermissionList[key].cluster = data
+                break
             case 'onClusterChange':
                 k8PermissionList[key].cluster = data
+                k8PermissionList[key].namespace = null
+                k8PermissionList[key].group = null
+                k8PermissionList[key].kind = null
+                k8PermissionList[key].resource = null
                 break
             case 'onNamespaceChange':
                 k8PermissionList[key].namespace = data
+                k8PermissionList[key].group = null
+                k8PermissionList[key].kind = null
+                k8PermissionList[key].resource = null
                 break
             case 'onApiGroupChange':
                 k8PermissionList[key].group = data
+                k8PermissionList[key].kind = null
+                k8PermissionList[key].resource = null
                 break
             case 'onKindChange':
                 k8PermissionList[key].kind = data
+                k8PermissionList[key].resource = null
                 break
             case 'onObjectChange':
                 k8PermissionList[key].resource = data
@@ -115,6 +134,7 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
                     <ButtonWithLoader
                         rootClassName="cta cta--workflow"
                         onClick={savePermission}
+                        disabled={isDataFilled}
                         isLoading={false}
                         loaderColor="white"
                     >
