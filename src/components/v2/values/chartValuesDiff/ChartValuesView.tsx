@@ -1302,6 +1302,14 @@ function ChartValuesView({
                             />
                         )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
+                        {/**
+                         * ChartRepoSelector will be displayed only when,
+                         * - It's not a deploy chart view
+                         * - It's not an external app values view
+                         * - It's an external app which is,
+                         *   i. Already linked to a chart repo
+                         *  ii. Not already linked but connect to repo action is performed (showRepoSelector is set to true)
+                         */}
                         {!isDeployChartView &&
                             (!isExternalApp || commonState.installedAppInfo || commonState.showRepoSelector) && (
                                 <ChartRepoSelector
