@@ -21,7 +21,7 @@ import { CreateResource } from './CreateResource'
 import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
+import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -259,10 +259,18 @@ export default function ResourceList() {
 
     const updateNodeSelectionData = (_selected: Record<string, any>) => {
         if (_selected) {
-            setNodeSelectionData((prevData) => ({
-                ...prevData,
-                [`${!_selected.isFromEvent ? `${nodeType}` : ''}${_selected.name}`]: _selected,
-            }))
+            if (_selected.isFromEvent) {
+              const _resourceName =  _selected.name.split('_')[1]
+                setNodeSelectionData((prevData) => ({
+                    ...prevData,
+                    [`${_selected.name}`]: { ..._selected, name:_resourceName },
+                }))
+            } else {
+                setNodeSelectionData((prevData) => ({
+                    ...prevData,
+                    [`${nodeType}_${_selected.name}`]: _selected,
+                }))
+            }
         }
     }
 
@@ -281,11 +289,24 @@ export default function ResourceList() {
         return <Progressing pageLoader />
     }
 
+    const getEventObjectTypeGVK = () => {
+        const resourceGroup = getAggregator(nodeType as NodeType)
+        const groupIndex = k8SObjectListIndexMap.get(resourceGroup)
+        for (let index = 0; index < k8SObjectList[groupIndex].child.length; index++) {
+            const element = k8SObjectList[groupIndex].child[index]
+            if (element.gvk.Kind.toLowerCase() === nodeType) {
+                return element.gvk
+            }
+        }
+    }
+
     const getSelectedResourceData = () => {
         const selectedNode =
             nodeSelectionData?.[`${nodeType}_${node}`] ??
             resourceList?.data?.find((_resource) => _resource.name === node)
-        const _selectedResource = resourceSelectionData?.[nodeType]?.gvk ?? selectedResource?.gvk
+        const _selectedResource = selectedNode?.isFromEvent
+            ? getEventObjectTypeGVK()
+            : resourceSelectionData?.[nodeType]?.gvk ?? selectedResource?.gvk
 
         if (!nodeSelectionData?.[`${nodeType}_${node}`]) {
             updateNodeSelectionData(selectedNode)
