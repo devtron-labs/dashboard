@@ -4,7 +4,7 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { CLUSTER_SELECT_STYLE, EVENT_LIST_KEYS } from '../Constants'
+import { CLUSTER_SELECT_STYLE, EVENT_LIST, K8S_RESOURCE_LIST } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
@@ -71,7 +71,7 @@ export function K8SResourceList({
                 resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource[EVENT_LIST_KEYS.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
         )
@@ -138,8 +138,8 @@ export function K8SResourceList({
         } else {
             toast.error(
                 <div>
-                    <div>Max 5 tabs allowed</div>
-                    <p>Please close an open tab and try again.</p>
+                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
+                    <p>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</p>
                 </div>,
             )
         }
@@ -270,13 +270,7 @@ export function K8SResourceList({
             return renderEmptyPage()
         } else {
             if (selectedResource?.gvk.Kind === 'Event') {
-                return (
-                    <EventList
-                        filteredData={filteredResourceList}
-                        updateNodeSelectionData={updateNodeSelectionData}
-                        handleResourceClick={handleResourceClick}
-                    />
-                )
+                return <EventList filteredData={filteredResourceList} handleResourceClick={handleResourceClick} />
             }
             return (
                 <div className="scrollable-resource-list">

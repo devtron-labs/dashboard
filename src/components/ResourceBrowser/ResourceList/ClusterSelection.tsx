@@ -7,6 +7,7 @@ import emptyCustomChart from '../../../assets/img/terminal@2x.png'
 import '../ResourceBrowser.scss'
 import { OptionType } from '../../app/types'
 import { ClusterSelectionType } from '../Types'
+import { CLUSTER_SELECTION_MESSAGING } from '../Constants'
 
 export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSelectionType) {
     const [searchText, setSearchText] = useState('')
@@ -72,7 +73,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
             <div className="flex" style={{ height: '200px' }}>
                 <div className="dc__align-center">
                     <Error className="icon-dim-16 mt-3 mr-8" />
-                    <div>No matching clusters</div>
+                    <div>{CLUSTER_SELECTION_MESSAGING.noResultText}</div>
                 </div>
             </div>
         )
@@ -102,7 +103,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
             <div className="w-600">
                 <div className="pb-16 dc__align-center">
                     <img className="w-250" src={emptyCustomChart} alt="No cluster selected" />
-                    <div className="fw-6 fs-16 cn-9 mt-16">Select a cluster to view Kubernetes resources</div>
+                    <div className="fw-6 fs-16 cn-9 mt-16">{CLUSTER_SELECTION_MESSAGING.title}</div>
                 </div>
                 <div className="en-2 bw-1 bcn-0 br-4">
                     {renderSearch()}

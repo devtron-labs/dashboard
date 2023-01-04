@@ -136,6 +136,5 @@ export interface ResourceListEmptyStateType {
 
 export interface EventListType {
     filteredData: Record<string, any>[]
-    updateNodeSelectionData: (_selected: Record<string, any>) => void
     handleResourceClick: (e: any) => void
 }

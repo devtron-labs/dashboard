@@ -13,6 +13,7 @@ import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, Resour
 import { createNewResource } from '../ResourceBrowser.service'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import '../ResourceBrowser.scss'
+import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
 export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
     const [showCodeEditorView, toggleCodeEditorView] = useState(true)
@@ -82,10 +83,10 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
             return (
                 <div className="dc__border-top flex right p-16">
                     <button className="cta cancel h-36 lh-36 mr-12" type="button" disabled={loader} onClick={onClose}>
-                        Cancel
+                        {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.cancel}
                     </button>
                     <button className="cta h-36 lh-36" disabled={loader || !resourceYAML} onClick={onSave}>
-                        {loader ? <Progressing /> : 'Apply'}
+                        {loader ? <Progressing /> : CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.apply}
                     </button>
                 </div>
             )
@@ -93,11 +94,11 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
             return (
                 <div className="dc__border-top flexbox dc__content-space right p-16">
                     <button className="flex cta h-36 lh-36" onClick={showCodeEditor}>
-                        <Edit className="icon-dim-16 mr-5" />
-                        Edit YAML
+                        <Edit className="icon-dim-16 mr-4" />
+                        {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
                     </button>
                     <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={onClose}>
-                        Close
+                        {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.close}
                     </button>
                 </div>
             )
@@ -109,15 +110,15 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
             return (
                 <ResourceListEmptyState
                     imgSource={mechanicalOperation}
-                    title="Creating object(s)"
-                    subTitle="Please wait while the object(s) are created."
+                    title={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.title}
+                    subTitle={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.subTitle}
                 />
             )
         } else if (showCodeEditorView) {
             return (
                 <>
                     <InfoColourBar
-                        message="Multi YAML supported. You can create/update multiple K8s resources at once. Make sure you separate the resource YAMLs by ‘---’."
+                        message={CREATE_RESOURCE_MODAL_MESSAGING.infoMessage}
                         classname="info_bar dc__no-border-radius dc__no-top-border"
                         Icon={InfoIcon}
                     />
@@ -177,7 +178,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="create-resource-container bcn-0 h-100" ref={appStatusDetailRef}>
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Create Kubernetes Resource</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{CREATE_RESOURCE_MODAL_MESSAGING.title}</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <CloseIcon className="icon-dim-24" />
                     </button>
