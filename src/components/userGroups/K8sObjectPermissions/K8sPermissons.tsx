@@ -9,10 +9,18 @@ import { headerOptions } from './K8sPermissions.utils'
 export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
     const [toggleModal, setToggleModal] = useState<boolean>()
     const [tempPermission, setTempPermission] = useState()
+    const [selectedPermissionAction, setSelectedPermissionAction] = useState<{
+        action: string
+        index: number
+    }>()
 
-    const editPermission = (permissions) => {
+    const editPermission = (permissions, action, index) => {
         setToggleModal(true)
         setTempPermission(permissions)
+        setSelectedPermissionAction({
+            action,
+            index,
+        })
     }
 
     const creatPermission = () => {
@@ -24,6 +32,11 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
         const _k8sPermission = [...k8sPermission]
         _k8sPermission.splice(index, 1)
         setK8sPermission(_k8sPermission)
+    }
+
+    const closeModal = () => {
+        setToggleModal(false)
+        setSelectedPermissionAction(null)
     }
 
     return (
@@ -54,9 +67,12 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
                                 <span>
                                     <Clone
                                         className="icon-dim-16 cursor mr-8"
-                                        onClick={() => editPermission(element)}
+                                        onClick={() => editPermission(element, 'clone', index)}
                                     />
-                                    <Edit className="icon-dim-16 cursor mr-8" onClick={() => editPermission(element)} />
+                                    <Edit
+                                        className="icon-dim-16 cursor mr-8"
+                                        onClick={() => editPermission(element, 'edit', index)}
+                                    />
                                     <Delete className="icon-dim-16 cursor" onClick={() => deletePermission(index)} />
                                 </span>
                             </div>
@@ -66,9 +82,10 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
             ) : null}
             {toggleModal && (
                 <K8sPermissionModal
+                    selectedPermissionAction={selectedPermissionAction}
                     k8sPermission={tempPermission}
                     setK8sPermission={setK8sPermission}
-                    close={setToggleModal}
+                    close={closeModal}
                 />
             )}
         </>

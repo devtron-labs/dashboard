@@ -13,22 +13,24 @@ const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
         group: k8sPermission?.group,
         kind: k8sPermission?.kind,
         resource: k8sPermission?.resource,
-        action: k8sPermission?.action || {value: ActionTypes.VIEW, label: ActionTypes.VIEW},
+        action: k8sPermission?.action || { value: ActionTypes.VIEW, label: ActionTypes.VIEW },
     }
 }
 
-export default function K8sPermissionModal({ k8sPermission, setK8sPermission, close }) {
-    const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0,k8sPermission)])
+export default function K8sPermissionModal({ selectedPermissionAction, k8sPermission, setK8sPermission, close }) {
+    const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0, k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<Record<number, OptionType[]>>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
     const [isDataFilled, setIsDataFilled] = useState<boolean>(true)
 
-    useEffect(() => { 
-        const disbale = k8PermissionList ? k8PermissionList.find((item) => item.resource === null || item.resource?.length === 0) : true
+    useEffect(() => {
+        const disbale = k8PermissionList
+            ? k8PermissionList.find((item) => item.resource === null || item.resource?.length === 0)
+            : true
         setIsDataFilled(!!disbale)
-    },[k8PermissionList])
+    }, [k8PermissionList])
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
         switch (action) {
@@ -39,7 +41,7 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
                 k8PermissionList.splice(key, 1)
                 break
             case 'clone':
-                k8PermissionList.splice(0, 0, {...k8PermissionList[key],key: k8PermissionList.length})
+                k8PermissionList.splice(0, 0, { ...k8PermissionList[key], key: k8PermissionList.length })
                 break
             case 'edit':
                 k8PermissionList[key].cluster = data
@@ -83,32 +85,36 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
         e.stopPropagation()
     }
 
-    const closeModal = () => {
-        close(false)
-    }
-
     const addNewPermissionCard = () => {
         handleK8sPermission('add')
     }
 
     const savePermission = () => {
-        setK8sPermission((prev) => [...prev,...k8PermissionList])
+        setK8sPermission((prev) => {
+            if (selectedPermissionAction?.action === 'edit') {
+                prev[selectedPermissionAction.index] = k8PermissionList[0]
+                return [...prev]
+            }
+            return [...prev, ...k8PermissionList]
+        })
         close(false)
     }
 
     return (
-        <VisibleModal className="" close={closeModal}>
+        <VisibleModal className="" close={close}>
             <div onClick={stopPropogation} className="modal-body--ci-material h-100 dc__overflow-hidden">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes object permission</span>
-                    <span className="icon-dim-20 cursor" onClick={closeModal}>
+                    <span className="icon-dim-20 cursor" onClick={close}>
                         <Close />
                     </span>
                 </div>
                 <div className="p-20 fs-13 dc__overflow-scroll dc__cluster-modal">
-                    <div className="anchor pointer flex left fs-13 fw-6" onClick={addNewPermissionCard}>
-                        <AddIcon className="add-svg mr-12" /> Add another
-                    </div>
+                    {!selectedPermissionAction && (
+                        <div className="anchor pointer flex left fs-13 fw-6" onClick={addNewPermissionCard}>
+                            <AddIcon className="add-svg mr-12" /> Add another
+                        </div>
+                    )}
                     {k8PermissionList?.map((_k8sPermission, index) => {
                         return (
                             <K8sListItemCard
@@ -128,7 +134,7 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
                     })}
                 </div>
                 <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right dc__border-top">
-                    <button type="button" className="cta cancel h-36 flex mr-16" disabled={false} onClick={closeModal}>
+                    <button type="button" className="cta cancel h-36 flex mr-16" disabled={false} onClick={close}>
                         Cancel
                     </button>
                     <ButtonWithLoader
@@ -145,4 +151,3 @@ export default function K8sPermissionModal({ k8sPermission, setK8sPermission, cl
         </VisibleModal>
     )
 }
-
