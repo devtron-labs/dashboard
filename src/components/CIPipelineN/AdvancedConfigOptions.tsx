@@ -197,6 +197,17 @@ export default function AdvancedConfigOptions({
                         return { label: platformValue, value: platformValue }
                     })
         }
+        if (_selectedPlatforms.length == 0){
+            if (parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+                _selectedPlatforms =
+                    parentState.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+                        .split(',')
+                        .map((platformValue) => {
+                            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+                            return { label: platformValue, value: platformValue }
+                        })
+            }
+        }
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
     }, [parentState])
