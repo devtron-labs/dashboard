@@ -52,3 +52,8 @@ export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
     AggregationKeys['Other Resources'],
     AggregationKeys['Custom Resource'],
 ]
+
+export const EVENT_LIST_KEYS = {
+    involvedObject: 'involved object',
+    lastSeen: 'last seen',
+}

@@ -23,6 +23,7 @@ import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
 import '../ResourceBrowser.scss'
+import ResourceListEmptyState from './ResourceListEmptyState'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -34,6 +35,7 @@ export default function ResourceList() {
     const { replace, push } = useHistory()
     const location = useLocation()
     const [loader, setLoader] = useState(true)
+    const [showErrorState, setShowErrorState] = useState(true)
     const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
     const [k8SObjectList, setK8SObjectList] = useState<K8SObjectType[]>([])
@@ -102,6 +104,9 @@ export default function ResourceList() {
         if (selectedResource && !node) {
             AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
         }
+        if (location.pathname === URLS.RESOURCE_BROWSER) {
+            setSelectedCluster(null)
+        }
     }, [location.pathname])
 
     useEffect(() => {
@@ -138,11 +143,13 @@ export default function ResourceList() {
     const getNamespaceList = async (clusterId: string) => {
         try {
             const { result } = await namespaceListByClusterId(clusterId)
-            const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result)]
-            setNamespaceOptions(_namespaceOptions)
+            if(result){
+              const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result.sort())]
+              setNamespaceOptions(_namespaceOptions)
 
-            const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
-            setSelectedNamespace(_selectedNamespace ?? _namespaceOptions[0])
+              const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
+              setSelectedNamespace(_selectedNamespace ?? _namespaceOptions[0])
+            }
         } catch (err) {
             showError(err)
         }
@@ -186,9 +193,11 @@ export default function ResourceList() {
                 }
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected)
+                setShowErrorState(false)
             }
         } catch (err) {
             showError(err)
+            setShowErrorState(true)
         } finally {
             setLoader(false)
         }
@@ -218,10 +227,12 @@ export default function ResourceList() {
             setFilteredResourceList(result.data)
             setNoResults(result.data.length === 0)
             setResourceListLoader(false)
+            setShowErrorState(false)
         } catch (err) {
             if (!abortController.signal.aborted) {
                 showError(err)
                 setResourceListLoader(false)
+                setShowErrorState(true)
             }
         }
     }
@@ -333,6 +344,56 @@ export default function ResourceList() {
         } as SelectedResourceType
     }
 
+    const goToClusterList = (): void => {
+        replace({
+            pathname: URLS.RESOURCE_BROWSER,
+        })
+    }
+
+    const renderError = (): JSX.Element => {
+        return (
+            <div style={{ height: 'calc(100vh - 92px)' }}>
+                <ResourceListEmptyState
+                    title="Some error occured"
+                    subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
+                    actionButtonText="Change cluster"
+                    actionHandler={goToClusterList}
+                />
+            </div>
+        )
+    }
+
+    const renderResourceBrowser = (): JSX.Element => {
+        return showErrorState ? (
+            renderError()
+        ) : (
+            <div className="resource-browser bcn-0">
+                <Sidebar
+                    k8SObjectList={k8SObjectList}
+                    handleGroupHeadingClick={handleGroupHeadingClick}
+                    setSelectedResource={setSelectedResource}
+                    updateResourceSelectionData={updateResourceSelectionData}
+                />
+                <K8SResourceList
+                    selectedResource={selectedResource}
+                    resourceList={resourceList}
+                    filteredResourceList={filteredResourceList}
+                    setFilteredResourceList={setFilteredResourceList}
+                    noResults={noResults}
+                    clusterOptions={clusterOptions}
+                    selectedCluster={selectedCluster}
+                    onChangeCluster={onChangeCluster}
+                    namespaceOptions={namespaceOptions}
+                    selectedNamespace={selectedNamespace}
+                    setSelectedNamespace={setSelectedNamespace}
+                    resourceListLoader={resourceListLoader}
+                    getResourceListData={getResourceListData}
+                    updateNodeSelectionData={updateNodeSelectionData}
+                />
+            </div>
+        )
+    }
+
     return (
         <div className="resource-browser-container">
             <PageHeader headerName="Kubernetes Resource Browser" />
@@ -350,9 +411,11 @@ export default function ResourceList() {
                             <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                         </div>
                         <div className="fs-13 flex pt-12 pb-12">
-                            <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
-                                <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
-                            </div>
+                            {!showErrorState && (
+                                <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                    <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
+                                </div>
+                            )}
                             {!node && lastDataSyncTimeString && (
                                 <div className="ml-12 flex pl-12 dc__border-left">
                                     <span>{lastDataSyncTimeString}</span>
@@ -372,30 +435,7 @@ export default function ResourceList() {
                             />
                         </div>
                     ) : (
-                        <div className="resource-browser bcn-0">
-                            <Sidebar
-                                k8SObjectList={k8SObjectList}
-                                handleGroupHeadingClick={handleGroupHeadingClick}
-                                setSelectedResource={setSelectedResource}
-                                updateResourceSelectionData={updateResourceSelectionData}
-                            />
-                            <K8SResourceList
-                                selectedResource={selectedResource}
-                                resourceList={resourceList}
-                                filteredResourceList={filteredResourceList}
-                                setFilteredResourceList={setFilteredResourceList}
-                                noResults={noResults}
-                                clusterOptions={clusterOptions}
-                                selectedCluster={selectedCluster}
-                                onChangeCluster={onChangeCluster}
-                                namespaceOptions={namespaceOptions}
-                                selectedNamespace={selectedNamespace}
-                                setSelectedNamespace={setSelectedNamespace}
-                                resourceListLoader={resourceListLoader}
-                                getResourceListData={getResourceListData}
-                                updateNodeSelectionData={updateNodeSelectionData}
-                            />
-                        </div>
+                        renderResourceBrowser()
                     )}
                 </div>
             )}

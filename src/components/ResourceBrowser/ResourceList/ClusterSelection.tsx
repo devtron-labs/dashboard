@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import emptyCustomChart from '../../../assets/img/terminal@2x.png'
 import '../ResourceBrowser.scss'
 import { OptionType } from '../../app/types'
@@ -27,11 +28,11 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
 
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
+        if (theKeyCode === 'Backspace' && searchText.length === 1) {
+            clearSearch()
+        } else {
             handleFilterChanges(event.target.value)
             setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
         }
     }
 
@@ -65,6 +66,37 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
             </div>
         )
     }
+
+    const renderNoResults = (): JSX.Element => {
+        return (
+            <div className="flex" style={{ height: '200px' }}>
+                <div className="dc__align-center">
+                    <Error className="icon-dim-16 mt-3 mr-8" />
+                    <div>No matching clusters</div>
+                </div>
+            </div>
+        )
+    }
+
+    const renderClusterList = (): JSX.Element => {
+        return (
+            <>
+                {filteredClusterList?.map((cluster, index) => (
+                    <div
+                        className={`flex left pt-12 pr-16 pb-12 pl-16 pointer dc__hover-n50 ${
+                            index === filteredClusterList.length - 1 ? 'dc__bottom-radius-4' : ' dc__border-bottom-n1'
+                        }`}
+                        data-label={cluster.label}
+                        data-value={cluster.value}
+                        onClick={selectCluster}
+                    >
+                        <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
+                        <div className="fw-4 fs-13 cb-5">{cluster.label}</div>
+                    </div>
+                ))}
+            </>
+        )
+    }
     return (
         <div className="cluster-selection-container flex p-20">
             <div className="w-600">
@@ -74,19 +106,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                 </div>
                 <div className="en-2 bw-1 bcn-0 br-4">
                     {renderSearch()}
-                    {filteredClusterList?.map((cluster, index) => (
-                        <div
-                            className={`flex left pt-12 pr-16 pb-12 pl-16 pointer dc__hover-n50 ${
-                                index === filteredClusterList.length - 1 ? 'dc__bottom-radius-4' : ' dc__border-bottom'
-                            }`}
-                            data-label={cluster.label}
-                            data-value={cluster.value}
-                            onClick={selectCluster}
-                        >
-                            <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
-                            <div className="fw-4 fs-13 cb-5">{cluster.label}</div>
-                        </div>
-                    ))}
+                    {filteredClusterList.length === 0 ? renderNoResults() : renderClusterList()}
                 </div>
             </div>
         </div>

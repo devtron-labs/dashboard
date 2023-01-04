@@ -130,10 +130,12 @@ export interface ResourceListEmptyStateType {
     imgSource?: string
     title?: string
     subTitle: string
+    actionButtonText?: string
     actionHandler?: () => void
 }
 
 export interface EventListType {
     filteredData: Record<string, any>[]
     updateNodeSelectionData: (_selected: Record<string, any>) => void
+    handleResourceClick: (e: any) => void
 }
