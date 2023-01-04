@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import K8sPermissionModal from './K8sPermissionModal'
 import { ActionTypes, OptionType } from './userGroups.types'
+import { ReactComponent as Clone } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 
 
 const headerOptions = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'OBJECT', 'ROLE']
@@ -27,6 +30,12 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
         setTempPermission(null)
     }
 
+    const deletePermission = (index) => {
+        k8sPermission.splice(index, 1)
+        setK8sPermission([...k8sPermission]);
+    }
+    
+
     return (
         <>
             <div className="anchor pointer flex left mt-16 fs-13 fw-6" onClick={creatPermission}>
@@ -39,20 +48,24 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
                             <span>{header}</span>
                         ))}
                     </div>
-                    {k8sPermission?.map((element) => {
+                    {k8sPermission?.map((element,index) => {
                         return (
-                            <div className="kubernetes-header pt-12 pb-12 dc__border-bottom-n1">
-                                <span>{element.cluster.label}</span>
-                                <span>{element.group.label}</span>
-                                <span>{element.kind.label}</span>
-                                <span>{element.namespace.label}</span>
-                                <span>
+                            <div className="kubernetes-header pt-12 pb-12 cn-9 dc__border-bottom-n1">
+                                <span className='dc__truncate-text'>{element.cluster.label}</span>
+                                <span className='dc__truncate-text'>{element.group.label}</span>
+                                <span className='dc__truncate-text'>{element.kind.label}</span>
+                                <span className='dc__truncate-text'>{element.namespace.label}</span>
+                                <span className='dc__truncate-text'>
                                     {element.resource.length > 1
                                         ? element.resource.length + 'objects'
-                                        : element.resource.label}
+                                        : element.resource[0].label}
                                 </span>
-                                <span>{element.action.label}</span>
-                                <span onClick={() => editPermission(element)}>edit</span>
+                                <span className='dc__truncate-text'>{element.action.label}</span>
+                                <span>
+                                    <Clone className='icon-dim-16 cursor mr-8' onClick={() => editPermission(element)}/>
+                                    <Edit className='icon-dim-16 cursor mr-8' onClick={() => editPermission(element)} />
+                                    <Delete className='icon-dim-16 cursor' onClick={() => deletePermission(index)}/>
+                                </span>
                             </div>
                         )
                     })}

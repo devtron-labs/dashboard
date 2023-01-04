@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { ButtonWithLoader, VisibleModal } from '../common'
-import { OptionType } from './userGroups.types'
+import { ActionTypes, OptionType } from './userGroups.types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
 
-const getEmptyPermissionObject = (idx = 0) => {
+const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
     return {
         key: idx,
-        cluster: null,
-        namespace: null,
-        group: null,
-        kind: null,
-        resource: null,
-        action: 'view',
+        cluster: k8sPermission?.cluster,
+        namespace: k8sPermission?.namespace,
+        group: k8sPermission?.group,
+        kind: k8sPermission?.kind,
+        resource: k8sPermission?.resource,
+        action: k8sPermission?.action || {value: ActionTypes.VIEW, label: ActionTypes.VIEW},
     }
 }
 
 export default function K8sPermissionModal({ k8sPermission, setK8sPermission, close }) {
-    const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject()])
+    const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0,k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<Record<number, OptionType[]>>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
-    const [roleMapping, setRoleMapping] = useState<Record<number, OptionType[]>>()
-console.log(k8PermissionList,namespaceMapping);
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
         switch (action) {
@@ -35,7 +33,7 @@ console.log(k8PermissionList,namespaceMapping);
                 k8PermissionList.splice(key, 1)
                 break
             case 'clone':
-                k8PermissionList.splice(0, 0, k8PermissionList[key])
+                k8PermissionList.splice(0, 0, {...k8PermissionList[key],key: k8PermissionList.length})
                 break
             case 'onClusterChange':
                 k8PermissionList[key].cluster = data
@@ -75,7 +73,7 @@ console.log(k8PermissionList,namespaceMapping);
     }
 
     const savePermission = () => {
-        setK8sPermission(k8PermissionList)
+        setK8sPermission((prev) => [...prev,...k8PermissionList])
         close(false)
     }
 
@@ -106,8 +104,6 @@ console.log(k8PermissionList,namespaceMapping);
                                 setKindMapping={setKindMapping}
                                 objectMapping={objectMapping}
                                 setObjectMapping={setObjectMapping}
-                                roleMapping={roleMapping}
-                                setRoleMapping={setRoleMapping}
                             />
                         )
                     })}

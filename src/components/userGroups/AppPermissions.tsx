@@ -17,6 +17,7 @@ import {
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import K8sPermissons from './K8sPermissons'
+import { apiGroupAll, k8sPermissionMapping } from './PermissionsUtils'
 interface AppPermissionsType {
     data: CreateGroup | CreateUser
     directPermission: DirectPermissionsRoleFilter[]
@@ -238,11 +239,11 @@ export default function AppPermissions({
                 return {
                     entity: EntityTypes.CLUSTER,
                     cluster: {label: k8s.cluster , value: k8s.cluster},
-                    namespace: {label: k8s.namespace, value: k8s.namespace},
-                    group: {label: k8s.group, value:  k8s.group},
-                    action: {label: k8s.action, value: k8s.action},
-                    kind: {label: k8s.kind, value: k8s.kind},
-                    resource: k8s.resource.split(',')?.map((entity) => ({ value: entity, label: entity })) || [],
+                    namespace: {label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace, value:  k8s.namespace === '' ? '*' : k8s.namespace},
+                    group: {label: apiGroupAll(k8s.group,true), value: apiGroupAll(k8s.group)},
+                    action: k8sPermissionMapping(k8s.action),
+                    kind: {label: k8s.kind === '' ? 'All Kinds' : k8s.kind , value: k8s.kind  === '' ? '*' : k8s.kind},
+                    resource: k8s.resource.split(',')?.map((entity) => ({ value: entity, label: entity })) || ['*'],
                 }
             })
             

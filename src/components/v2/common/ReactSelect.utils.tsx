@@ -160,3 +160,25 @@ export function ValueContainerWithIcon(props) {
 }
 
 export const noMatchingOptions = () => 'No matching results'
+
+export const formatOptionLabel = (option): JSX.Element => {
+    return (
+        <div className="flex left column">
+            <span className="w-100 dc__ellipsis-right">
+                {option.label}
+            </span>
+            {option.infoText && <small className="cn-6">{option.infoText}</small>}
+        </div>
+    )
+}
+
+export const customValueContainer = (props): JSX.Element => {
+    return (
+        <components.ValueContainer {...props}>
+            {props.selectProps.value?.label}
+            {React.cloneElement(props.children[1], {
+                style: { position: 'absolute' },
+            })}
+        </components.ValueContainer>
+    )
+}

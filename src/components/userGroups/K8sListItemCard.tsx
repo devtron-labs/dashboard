@@ -18,11 +18,12 @@ import {
 } from '../ResourceBrowser/ResourceBrowser.service'
 import { ResourceListPayloadType } from '../ResourceBrowser/Types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { Option as SingleSelectOption } from '../v2/common/ReactSelect.utils'
+import { customValueContainer, formatOptionLabel, Option as SingleSelectOption } from '../v2/common/ReactSelect.utils'
 import { ActionTypes, OptionType } from './userGroups.types'
+import { ReactComponent as Clone } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import CreatableSelect from 'react-select/creatable'
-
-const possibleRole = [ActionTypes.VIEW, ActionTypes.ADMIN, ActionTypes.MANAGER]
+import { k8sPermissionRoles } from './PermissionsUtils'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -36,35 +37,9 @@ export default function K8sListItemCard({
     setKindMapping,
     objectMapping,
     setObjectMapping,
-    roleMapping,
-    setRoleMapping,
 }) {
-    const possibleRoles = convertToOptionsList(possibleRole)
-    const apiGroupAll = (permission, label = false) => {
-        if (permission === '') {
-            return label ? 'All API groups' : '*'
-        } else if (permission === 'k8sempty') {
-            return label ? 'K8s core groups (eg. service, pod, etc.)' : ''
-        } else return permission
-    }
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
     const [processedData, setProcessedData] = useState<any>()
-    const [selectedApiGroup, setApiGroupSelection] = useState<OptionType>(
-        k8sPermission && { label: apiGroupAll(k8sPermission.group, true), value: apiGroupAll(k8sPermission.group) },
-    )
-    const [selectedNameSpace, setNameSpaceSelection] = useState<OptionType>(
-        k8sPermission && {
-            label: k8sPermission.namespace === '' ? 'All Namespaces / Cluster' : k8sPermission.namespace,
-            value: k8sPermission.namespace || '*',
-        },
-    )
-    const [selectedKind, setKindSelection] = useState<OptionType>(
-        k8sPermission && { label: k8sPermission.kind, value: k8sPermission.kind },
-    )
-    const [selectedObject, setObjectSelection] = useState<OptionType[]>()
-    const [selectedRole, setRoleSelection] = useState<OptionType>(
-        k8sPermission && { label: k8sPermission.action, value: k8sPermission.action },
-    )
 
     useEffect(() => {
         getClusterListData()
@@ -101,16 +76,19 @@ export default function K8sListItemCard({
                 const _k8SObjectMap = _processedData.k8SObjectMap
                 const _k8SObjectList: OptionType[] = []
                 for (const [key, value] of _k8SObjectMap.entries()) {
-                    if (key && (namespace === '*' || value.namespaced)) {
+                    if (key) {
                         _k8SObjectList.push({ label: key, value: key })
                     }
                 }
                 setProcessedData(_k8SObjectMap)
-                setApiGroupMapping((prevMapping) => ({ ...prevMapping, [k8sPermission.key]: [
-                    { label: 'All API groups', value: '*' },
-                    { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
-                    ..._k8SObjectList,
-                ] }))
+                setApiGroupMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [k8sPermission.key]: [
+                        { label: 'All API groups', value: '*' },
+                        { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
+                        ..._k8SObjectList,
+                    ],
+                }))
             }
         } catch (err) {
             showError(err)
@@ -121,37 +99,47 @@ export default function K8sListItemCard({
         const kind: OptionType[] = []
         if (selected.value === '*') {
             for (const [key, value] of processedData.entries()) {
-                value.child?.map((ele) => kind.push({ label: ele['Kind'], value: ele['Kind'] }))
+                value.child.map((ele) => {
+                    kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'] })
+                })
             }
         } else {
             const data = processedData.get(selected.value === 'k8sempty' ? '' : selected.value)
-            data?.child?.map((ele) => kind.push({ label: ele['Kind'], value: ele['Kind'] }))
+            data?.child?.map((ele) => {
+                if (ele.namespaced) {
+                    kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'] })
+                }
+            })
         }
-        setKindMapping((prevMapping) => ({ ...prevMapping, [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind]}))
+        setKindMapping((prevMapping) => ({
+            ...prevMapping,
+            [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind],
+        }))
     }
 
     const getResourceListData = async (selected): Promise<void> => {
         try {
-            const gvk = processedData
-                ?.get?.(selectedApiGroup.value === 'k8sempty' ? '' : selectedApiGroup.value)
-                .child?.find((ele) => ele['Kind'] === selected.value)
+            const resource = processedData
+                ?.get?.(k8sPermission.group.value === 'k8sempty' ? '' : k8sPermission.group.value)
+                .child?.find((ele) => ele.gvk['Kind'] === selected.value)
             const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(k8sPermission?.cluster?.value),
                 k8sRequest: {
                     resourceIdentifier: {
-                        groupVersionKind: gvk,
+                        groupVersionKind: resource.gvk,
                     },
                 },
             }
             const { result } = await getResourceList(resourceListPayload)
-            console.log(result);
-            
-            setObjectMapping((prevMapping) => ({ ...prevMapping, [k8sPermission.key]: [
-                { label: 'All object', value: '*' },
-                ...result.data.map((ele) => {
-                    return { label: ele['name'], value: ele['name'] }
-                }),
-            ]}))
+            setObjectMapping((prevMapping) => ({
+                ...prevMapping,
+                [k8sPermission.key]: [
+                    { label: 'All object', value: '*' },
+                    ...result.data.map((ele) => {
+                        return { label: ele['name'], value: ele['name'] }
+                    }),
+                ],
+            }))
         } catch (err) {
             showError(err)
         }
@@ -161,50 +149,69 @@ export default function K8sListItemCard({
         if (selected.value !== k8sPermission?.cluster?.value) {
             handleK8sPermission('onClusterChange', index, selected)
             getNamespaceList(selected.value)
-            setApiGroupSelection(null)
-            setNameSpaceSelection(null)
-            setKindSelection(null)
-            setObjectSelection(null)
         }
     }
 
     const onNameSpaceSelection = (selected) => {
-        if (selected.value !== selectedNameSpace?.value) {
+        if (selected.value !== k8sPermission.namespace?.value) {
             handleK8sPermission('onNamespaceChange', index, selected)
-            setNameSpaceSelection(selected)
             getGroupKindData(k8sPermission?.cluster?.value, selected.value)
         }
     }
 
     const onApiGroupSelect = (selected) => {
-        if (selected.value !== selectedApiGroup?.value) {
-            setApiGroupSelection(selected)
+        if (selected.value !== k8sPermission.group?.value) {
             handleK8sPermission('onApiGroupChange', index, selected)
             createKindData(selected)
         }
     }
 
     const onKindSelect = (selected) => {
-        if (selected.value !== selectedKind?.value) {
-            setKindSelection(selected)
+        if (selected.value !== k8sPermission.kind?.value) {
             handleK8sPermission('onKindChange', index, selected)
-            if (selected.value !== '*' && selectedApiGroup.value !== '*') {
+            if (selected.value !== '*' && k8sPermission.group.value !== '*') {
                 getResourceListData(selected)
             } else {
-                setObjectMapping((prevMapping) => ({ ...prevMapping,[k8sPermission.key]: [{ label: 'All object', value: '*' }]}))
+                setObjectMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [k8sPermission.key]: [{ label: 'All object', value: '*' }],
+                }))
             }
         }
     }
 
     const onObjectChange = (selected, actionMeta) => {
-        selectAllfunction(selected, actionMeta, setObjectSelection, objectMapping)
-        selectAllfunction(selected, actionMeta, setObjectSelection, objectMapping)
-        handleK8sPermission('onObjectChange', index, selected)
+        selectAllfunction(
+            selected,
+            actionMeta,
+            (options) => handleK8sPermission('onObjectChange', index, options),
+            objectMapping,
+        )
+    }
+
+    const setRoleSelection = (selected) => {
+        if (selected.value !== k8sPermission.action?.value) {
+            handleK8sPermission('onRoleChange', index, selected)
+        }
+    }
+
+    const clonePermission = () => {
+        handleK8sPermission('clone',index)
+    }
+
+    const deletePermission = () => {
+        handleK8sPermission('delete',index)
     }
 
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
-            <div className="cn-6 mb-6">Cluster</div>
+            <div className="cn-6 mb-6 flex dc__content-space">
+                <span>Cluster</span>
+                <span className="flex">
+                    <Clone className="icon-dim-16 mr-4 cursor" onClick={clonePermission} />
+                    <Delete className="icon-dim-16 cursor"onClick={deletePermission} />
+                </span>
+            </div>
             <div className="mb-16">
                 <ReactSelect
                     placeholder="Select cluster"
@@ -239,7 +246,7 @@ export default function K8sListItemCard({
                         <CreatableSelect
                             placeholder="Select namespace"
                             options={namespaceMapping?.[k8sPermission.key]}
-                            value={selectedNameSpace}
+                            value={k8sPermission.namespace}
                             name="namespace"
                             onChange={onNameSpaceSelection}
                             components={{
@@ -270,7 +277,7 @@ export default function K8sListItemCard({
                                     placeholder="Select API group"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
-                                    value={selectedApiGroup}
+                                    value={k8sPermission.group}
                                     onChange={onApiGroupSelect}
                                     components={{
                                         IndicatorSeparator: null,
@@ -299,7 +306,7 @@ export default function K8sListItemCard({
                                 <ReactSelect
                                     placeholder="Select kind"
                                     options={kindMapping?.[k8sPermission.key]}
-                                    value={selectedKind}
+                                    value={k8sPermission.kind}
                                     onChange={onKindSelect}
                                     name="kind"
                                     components={{
@@ -329,7 +336,7 @@ export default function K8sListItemCard({
                         <CreatableSelect
                             placeholder="Select object"
                             options={objectMapping?.[k8sPermission.key]}
-                            value={selectedObject}
+                            value={k8sPermission.resource}
                             name="Object name"
                             onChange={onObjectChange}
                             components={{
@@ -365,16 +372,17 @@ export default function K8sListItemCard({
                     </div>
                     <div className="cn-6 mb-6">Role</div>
                     <div className="mb-16 w-300">
-                        <CreatableSelect
+                        <ReactSelect
                             placeholder="Select role"
-                            options={possibleRoles}
-                            value={selectedRole}
-                            defaultValue={possibleRoles[0]}
+                            options={k8sPermissionRoles}
+                            value={k8sPermission.action}
+                            defaultValue={k8sPermissionRoles[0]}
                             onChange={setRoleSelection}
+                            formatOptionLabel={formatOptionLabel}
                             components={{
                                 ClearIndicator: null,
                                 IndicatorSeparator: null,
-                                Option: SingleSelectOption,
+                                ValueContainer: customValueContainer
                             }}
                             styles={{
                                 ...multiSelectStyles,

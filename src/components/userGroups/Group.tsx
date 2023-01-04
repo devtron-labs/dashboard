@@ -34,6 +34,7 @@ export default function GroupForm({
         entityName: [],
     });
     const [submitting, setSubmitting] = useState(false);
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [name, setName] = useState({ value: '', error: '' });
     const [description, setDescription] = useState('');
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
@@ -109,6 +110,18 @@ export default function GroupForm({
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
+                    ...k8sPermission.map((permission) => ({
+                        ...permission,
+                        entity: EntityTypes.CLUSTER,
+                        action: permission.action.value,
+                        cluster: permission.cluster.value,
+                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                        resource: permission.resource.find((entity) => entity.value === '*')
+                        ? ''
+                        : permission.resource.map((entity) => entity.value).join(',')
+                    }))
             ],
         };
         if (serverMode !== SERVER_MODE.EA_ONLY) {
@@ -184,6 +197,8 @@ export default function GroupForm({
                 setDirectPermission={setDirectPermission}
                 chartPermission={chartPermission}
                 setChartPermission={setChartPermission}
+                k8sPermission={k8sPermission}
+                setK8sPermission={setK8sPermission}
             />
             <div className="flex right mt-32">
                 {id && (

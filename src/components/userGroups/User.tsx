@@ -87,7 +87,6 @@ export default function UserForm({
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
     const creatableRef = useRef(null);
     const groupPermissionsRef = useRef(null);
-console.log(k8sPermission);
 
     useEffect(() => {
         if (creatableRef.current) {
@@ -191,12 +190,14 @@ console.log(k8sPermission);
                     ...k8sPermission.map((permission) => ({
                         ...permission,
                         entity: EntityTypes.CLUSTER,
-                        action: permission.action,
+                        action: permission.action.value,
                         cluster: permission.cluster.label,
-                        group: permission.group.label,
-                        kind: permission.kind.label,
-                        namespace: permission.namespace.label,
-                        resource: permission.resource.map((entity) => entity.value).join(',')
+                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                        resource: permission.resource.find((entity) => entity.value === '*')
+                        ? ''
+                        : permission.resource.map((entity) => entity.value).join(',')
                     }))
             ],
             superAdmin: localSuperAdmin === 'SUPERADMIN',

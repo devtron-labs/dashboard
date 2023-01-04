@@ -71,8 +71,8 @@ export interface APIRoleFilter {
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
     cluster?: OptionType,
     namespace?: any,
-    group?: OptionType,
-    kind?: OptionType,
+    group?: any,
+    kind?: any,
     resource?: any
 }
 
@@ -119,5 +119,20 @@ export enum UserRoleType {
     Manager = 'Manager',
     Trigger = 'Trigger',
     View = 'View,',
+}
+
+const possibleRolesMeta = {
+    [ActionTypes.VIEW]: {
+        value: 'View',
+        description: 'View allowed K8s resources.',
+    },
+    [ActionTypes.ADMIN]: {
+        value: 'Admin',
+        description: 'Create, view, edit & delete allowed K8s resources.',
+    },
+    [ActionTypes.EDIT]: {
+        value: 'Manager',
+        description: 'Can perform all actions and provide access to allowed K8s resources to other users.',
+    },
 }
  
