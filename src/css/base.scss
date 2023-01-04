@@ -557,11 +557,15 @@ button.anchor {
     &.f-synced,
     &.f-sync.ok,
     &.f-running,
+    &.f-completed,
+    &.f-bound,
+    &.f-Active,
     &.f-scalingreplicasetdown {
         color: var(--green);
     }
 
     &.f-suspended,
+    &.f-warning,
     &.f-switchedtoactiveservice {
         color: var(--orange);
     }
@@ -2020,6 +2024,10 @@ textarea,
 
 .w-120 {
     width: 120px;
+}
+
+.w-150 {
+    width: 150px;
 }
 
 .w-160 {

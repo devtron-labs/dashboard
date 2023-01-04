@@ -4,7 +4,7 @@ import { EventListType } from '../Types'
 export function EventList({ filteredData }: EventListType) {
     return (
         <div>
-            <div className="event-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+            <div className="event-list-row fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-12 pb-12 dc__uppercase">
                 <div>Type</div>
                 <div>Message</div>
                 <div>Namespace</div>
@@ -16,9 +16,9 @@ export function EventList({ filteredData }: EventListType) {
             </div>
             <div className="scrollable-event-list">
                 {filteredData?.map((eventData) => (
-                    <div className="event-list-row cn-9 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20">
-                        <div>{eventData.type}</div>
-                        <div className="dc__ellipsis-right">{eventData.message}</div>
+                    <div className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12">
+                        <div className={ ` app-summary__status-name f-${eventData.type?.toLowerCase()}`}>{eventData.type}</div>
+                        <div>{eventData.message}</div>
                         <div className="dc__ellipsis-right">{eventData.namespace}</div>
                         <div className="dc__ellipsis-right">{eventData['involved object']}</div>
                         <div className="dc__ellipsis-right">{eventData.source}</div>

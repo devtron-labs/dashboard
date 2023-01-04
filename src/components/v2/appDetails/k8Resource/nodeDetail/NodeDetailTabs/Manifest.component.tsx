@@ -66,8 +66,7 @@ function ManifestComponent({
         )
 
         const _isResourceMissing =
-            (isResourceBrowserView && _selectedResource?.['status'] === 'Missing') ||
-            (appDetails.appType === AppType.EXTERNAL_HELM_CHART && _selectedResource?.['health']?.status === 'Missing')
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && _selectedResource?.['health']?.status === 'Missing'
         setIsResourceMissing(_isResourceMissing)
         const _showDesiredAndCompareManifest =
             !isResourceBrowserView &&
@@ -271,7 +270,7 @@ function ManifestComponent({
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ background: '#0B0F22', flex: 1, minHeight: '600px' }}>
+        <div className="manifest-container" style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '552px' : '600px' }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
@@ -337,7 +336,7 @@ function ManifestComponent({
                                 cleanData={activeTab === 'Compare'}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
-                                height={'100vh'}
+                                height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
                                 value={activeManifestEditorData}
                                 mode="yaml"
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}

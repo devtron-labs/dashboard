@@ -45,17 +45,18 @@ export function K8SResourceList({
 
     useEffect(() => {
         setSearchText('')
+        setSearchApplied(false)
     }, [selectedResource?.gvk.Kind])
 
     useEffect(() => {
         if (resourceList?.headers.length) {
             /*
-          116 is standard with of every column for calculations
+          166 is standard with of every column for calculations
           295 is width of left nav + sidebar
           200 is the diff of name column
           */
 
-            const appliedColumnDerivedWidth = resourceList.headers.length * 116 + 295 + 200
+            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 150
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
@@ -63,15 +64,16 @@ export function K8SResourceList({
     }, [resourceList?.headers])
 
     const handleFilterChanges = (_searchText: string): void => {
+        const lowerCaseSearchText = _searchText.toLowerCase()
         const _filteredData = resourceList.data.filter(
             (resource) =>
-                resource.name?.indexOf(_searchText) >= 0 ||
-                resource.namespace?.indexOf(_searchText) >= 0 ||
-                resource.status?.indexOf(_searchText) >= 0 ||
-                resource.message?.indexOf(_searchText) >= 0 ||
-                resource['involved object']?.indexOf(_searchText) >= 0 ||
-                resource.source?.indexOf(_searchText) >= 0 ||
-                resource.reason?.indexOf(_searchText) >= 0,
+                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource['involved object']?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
         )
         setFilteredResourceList(_filteredData)
     }
@@ -86,11 +88,11 @@ export function K8SResourceList({
 
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+        if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
+        } else{
+          handleFilterChanges(event.target.value)
+          setSearchApplied(true)
         }
     }
 
@@ -110,7 +112,7 @@ export function K8SResourceList({
     }
 
     const handleResourceClick = (e) => {
-        const { name, tab } = e.target.dataset
+        const { name, tab } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${name}${tab ? `/${tab.toLowerCase()}` : ''}`
 
         const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, name, _url)
@@ -141,7 +143,7 @@ export function K8SResourceList({
                         value={searchText}
                         className="search__input"
                         onChange={handleOnChangeSearchText}
-                        onKeyDown={handleFilterKeyPress}
+                        onKeyUp={handleFilterKeyPress}
                     />
                     {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearSearch}>
@@ -216,7 +218,7 @@ export function K8SResourceList({
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-100-px ${
+                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
                                     : ''
@@ -258,10 +260,9 @@ export function K8SResourceList({
                 return <EventList filteredData={filteredResourceList} />
             }
             return (
-                <div style={{ width: 'calc(100vw - 293px)', overflow: 'auto hidden' }}>
+                <div className="scrollable-resource-list">
                     <div
-                        className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
-                        style={{ width: 'max-content', minWidth: 'calc(100vw - 292px)' }}
+                        className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky "
                     >
                         {resourceList.headers.map((columnName) => (
                             <div
@@ -272,14 +273,14 @@ export function K8SResourceList({
                                                   ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
                                                   : ''
                                           } w-300 pl-20`
-                                        : 'w-100-px'
+                                        : 'w-150'
                                 }`}
                             >
                                 {columnName}
                             </div>
                         ))}
                     </div>
-                    {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
+                        {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
                 </div>
             )
         }

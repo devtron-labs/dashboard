@@ -4,7 +4,7 @@ import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { EventTableType } from './node.type'
 
-export function EventsTable({ loading, eventsList }: EventTableType) {
+export function EventsTable({ loading, eventsList, isResourceBrowserView }: EventTableType) {
     const renderEventsTable = () => {
         if (loading) {
             return <MessageUI msg={MESSAGING_UI.FETCHING_EVENTS} icon={MsgUIType.LOADING} size={24} />
@@ -13,7 +13,7 @@ export function EventsTable({ loading, eventsList }: EventTableType) {
                 return (
                     <div className="cn-0 ">
                         <table className="table pl-20">
-                            <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
+                            <thead style={{ minHeight: isResourceBrowserView ? '552px' : '600px', background: '#0B0F22' }}>
                                 <tr className="no-events-border pl-20 event-row">
                                     {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                         return (

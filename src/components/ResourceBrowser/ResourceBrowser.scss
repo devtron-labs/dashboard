@@ -37,8 +37,20 @@
             }
 
             .scrollable-resource-list {
-                height: calc(100vh - 192px);
+                height: calc(100vh - 152px);
                 overflow: auto;
+                width: calc(100vw - 293px);
+                .list-header {
+                    width: max-content;
+                    min-width: calc(100vw - 292px);
+                    top: 0;
+                    z-index: 3;
+                }
+            }
+
+            .scrollable-event-list {
+                height: calc(100vh - 192px);
+                overflow: hidden auto;
             }
 
             .sticky-column {
@@ -51,7 +63,25 @@
                 grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
                 column-gap: 16px;
             }
+            .node-actions-menu-icon {
+                path:nth-child(2) {
+                    fill: var(--N600);
+                }
+            }
         }
+    }
+
+    .manifest-container,
+    .events-table-container {
+        height: calc(100vh - 126px);
+    }
+
+    .log-viewer-container {
+        height: calc(100vh - 169px);
+    }
+
+    .terminal-container {
+        height: calc(100vh - 193px);
     }
 }
 

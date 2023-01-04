@@ -5,11 +5,13 @@ import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.sv
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import mechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg'
 import { Drawer, Progressing, showError } from '../../common'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
+import ResourceListEmptyState from './ResourceListEmptyState'
 import '../ResourceBrowser.scss'
 
 export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
@@ -66,9 +68,8 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
             const { result } = await createNewResource(resourceListPayload)
             if (result) {
                 setResourceResponse(result)
+                toggleCodeEditorView(false)
             }
-            toggleCodeEditorView(false)
-            //closePopup(true)
         } catch (err) {
             showError(err)
         } finally {
@@ -103,6 +104,75 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
         }
     }
 
+    const renderPageContent = (): JSX.Element => {
+        if (loader) {
+            return (
+                <ResourceListEmptyState
+                    imgSource={mechanicalOperation}
+                    title="Creating object(s)"
+                    subTitle="Please wait while the object(s) are created."
+                />
+            )
+        } else if (showCodeEditorView) {
+            return (
+                <>
+                    <InfoColourBar
+                        message="Multi YAML supported. You can create/update multiple K8s resources at once. Make sure you separate the resource YAMLs by ‘---’."
+                        classname="info_bar dc__no-border-radius dc__no-top-border"
+                        Icon={InfoIcon}
+                    />
+                    <CodeEditor
+                        value={resourceYAML}
+                        mode={MODES.YAML}
+                        noParsing
+                        height={'calc(100vh - 165px)'}
+                        onChange={handleEditorValueChange}
+                        loading={loader}
+                    />
+                </>
+            )
+        } else {
+            return (
+                <div>
+                    <div className="created-resource-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
+                        {APP_STATUS_HEADERS.map((headerKey, index) => (
+                            <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
+                                {headerKey}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="created-resource-list fs-13">
+                        {resourceResponse?.map((resource) => (
+                            <div
+                                className="created-resource-row pt-8 pr-20 pb-8 pl-20"
+                                key={`${resource.kind}/${resource.name}`}
+                            >
+                                <div>{resource.kind}</div>
+                                <div>{resource.name}</div>
+                                <div className="flexbox">
+                                    {resource.error ? (
+                                        <>
+                                            <Error className="icon-dim-16 mt-3 mr-8" />
+                                            {CreateResourceStatus.failed}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Success className="icon-dim-16 mt-3 mr-8" />
+                                            {resource.isUpdate
+                                                ? CreateResourceStatus.updated
+                                                : CreateResourceStatus.created}
+                                        </>
+                                    )}
+                                </div>
+                                <div>{resource.error}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )
+        }
+    }
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="create-resource-container bcn-0 h-100" ref={appStatusDetailRef}>
@@ -112,63 +182,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                         <CloseIcon className="icon-dim-24" />
                     </button>
                 </div>
-
-                <div style={{ height: 'calc(100vh - 125px)' }}>
-                    {showCodeEditorView ? (
-                        <>
-                            <InfoColourBar
-                                message="Multi YAML supported. You can create/update multiple K8s resources at once. Make sure you separate the resource YAMLs by ‘---’."
-                                classname="info_bar dc__no-border-radius dc__no-top-border"
-                                Icon={InfoIcon}
-                            />
-                            <CodeEditor
-                                value={resourceYAML}
-                                mode={MODES.YAML}
-                                noParsing
-                                height={'calc(100vh - 165px)'}
-                                onChange={handleEditorValueChange}
-                                loading={loader}
-                            />
-                        </>
-                    ) : (
-                        <div>
-                            <div className="created-resource-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
-                                {APP_STATUS_HEADERS.map((headerKey, index) => (
-                                    <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
-                                        {headerKey}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="created-resource-list fs-13">
-                                {resourceResponse.map((resource) => (
-                                    <div
-                                        className="created-resource-row pt-8 pr-20 pb-8 pl-20"
-                                        key={`${resource.kind}/${resource.name}`}
-                                    >
-                                        <div>{resource.kind}</div>
-                                        <div>{resource.name}</div>
-                                        <div className="flex left">
-                                            {resource.error ? (
-                                                <>
-                                                    <Error className="icon-dim-16 mr-8" />
-                                                    {CreateResourceStatus.failed}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Success className="icon-dim-16 mr-8" />
-                                                    {resource.isUpdate
-                                                        ? CreateResourceStatus.updated
-                                                        : CreateResourceStatus.created}
-                                                </>
-                                            )}
-                                        </div>
-                                        <div>{resource.error}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                <div style={{ height: 'calc(100vh - 125px)' }}>{renderPageContent()}</div>
                 {renderFooter()}
             </div>
         </Drawer>

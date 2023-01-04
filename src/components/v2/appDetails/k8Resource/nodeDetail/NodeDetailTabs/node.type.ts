@@ -25,6 +25,7 @@ export interface TerminalViewProps {
 export interface EventTableType {
     loading: boolean
     eventsList: any[]
+    isResourceBrowserView?: boolean
 }
 
 export enum SocketConnectionType {
