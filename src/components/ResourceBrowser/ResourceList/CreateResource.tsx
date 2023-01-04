@@ -149,10 +149,10 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                             >
                                 <div>{resource.kind}</div>
                                 <div>{resource.name}</div>
-                                <div className="flex left">
+                                <div className="flexbox">
                                     {resource.error ? (
                                         <>
-                                            <Error className="icon-dim-16 mr-8" />
+                                            <Error className="icon-dim-16 mt-3 mr-8" />
                                             {CreateResourceStatus.failed}
                                         </>
                                     ) : (
