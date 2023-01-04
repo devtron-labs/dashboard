@@ -14,7 +14,7 @@ export function EventList({ filteredData }: EventListType) {
                 <div>Age</div>
                 <div>Last Seen</div>
             </div>
-            <div className="scrollable-resource-list">
+            <div className="scrollable-event-list">
                 {filteredData?.map((eventData) => (
                     <div className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12">
                         <div className={ ` app-summary__status-name f-${eventData.type?.toLowerCase()}`}>{eventData.type}</div>

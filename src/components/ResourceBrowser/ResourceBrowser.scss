@@ -37,7 +37,7 @@
             }
 
             .scrollable-resource-list {
-                height: calc(100vh - 192px);
+                height: calc(100vh - 152px);
                 overflow: auto;
                 width: calc(100vw - 293px);
                 .list-header {
@@ -46,6 +46,11 @@
                     top: 0;
                     z-index: 3;
                 }
+            }
+
+            .scrollable-event-list {
+                height: calc(100vh - 192px);
+                overflow: hidden auto;
             }
 
             .sticky-column {
