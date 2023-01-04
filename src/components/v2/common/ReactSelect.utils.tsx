@@ -176,9 +176,7 @@ export const customValueContainer = (props): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
             {props.selectProps.value?.label}
-            {React.cloneElement(props.children[1], {
-                style: { position: 'absolute' },
-            })}
+            {React.cloneElement(props.children[1])}
         </components.ValueContainer>
     )
 }
