@@ -328,7 +328,11 @@ function LogsComponent({
 
     return isDeleted ? (
         <div>
-            <MessageUI msg="This resource no longer exists" size={32} />
+            <MessageUI
+                msg="This resource no longer exists"
+                size={32}
+                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+            />
         </div>
     ) : (
         <React.Fragment>
@@ -524,7 +528,11 @@ function LogsComponent({
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
                 podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                     <div
-                        style={{ gridColumn: '1 / span 2', background: '#0b0f22', minHeight: '600px' }}
+                        style={{
+                            gridColumn: '1 / span 2',
+                            background: '#0b0f22',
+                            minHeight: isResourceBrowserView ? '200px' : '600px',
+                        }}
                         className="flex column log-viewer-container"
                     >
                         <div

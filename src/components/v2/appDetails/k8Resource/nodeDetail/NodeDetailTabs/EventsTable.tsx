@@ -7,13 +7,22 @@ import { EventTableType } from './node.type'
 export function EventsTable({ loading, eventsList, isResourceBrowserView }: EventTableType) {
     const renderEventsTable = () => {
         if (loading) {
-            return <MessageUI msg={MESSAGING_UI.FETCHING_EVENTS} icon={MsgUIType.LOADING} size={24} />
+            return (
+                <MessageUI
+                    msg={MESSAGING_UI.FETCHING_EVENTS}
+                    icon={MsgUIType.LOADING}
+                    size={24}
+                    minHeight={isResourceBrowserView ? '200px' : ''}
+                />
+            )
         } else {
             if (eventsList && eventsList.length > 0) {
                 return (
                     <div className="cn-0 ">
                         <table className="table pl-20">
-                            <thead style={{ minHeight: isResourceBrowserView ? '552px' : '600px', background: '#0B0F22' }}>
+                            <thead
+                                style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: '#0B0F22' }}
+                            >
                                 <tr className="no-events-border pl-20 event-row">
                                     {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                         return (
@@ -57,7 +66,13 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView }: Even
                     </div>
                 )
             } else {
-                return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
+                return (
+                    <MessageUI
+                        msg={MESSAGING_UI.NO_EVENTS}
+                        size={24}
+                        minHeight={isResourceBrowserView ? '200px' : ''}
+                    />
+                )
             }
         }
     }

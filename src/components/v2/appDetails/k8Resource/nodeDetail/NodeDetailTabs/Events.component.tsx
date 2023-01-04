@@ -51,10 +51,17 @@ function EventsComponent({
     }, [params.podName, params.node, params.nodeType])
 
     return (
-        <div className="events-table-container" style={{ minHeight: isResourceBrowserView ? '552px' : '600px', background: '#0B0F22', flex: 1 }}>
+        <div
+            className="events-table-container"
+            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: '#0B0F22', flex: 1 }}
+        >
             {isDeleted ? (
                 <div>
-                    <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} />
+                    <MessageUI
+                        msg={MESSAGING_UI.NO_RESOURCE}
+                        size={32}
+                        minHeight={isResourceBrowserView ? '200px' : ''}
+                    />
                 </div>
             ) : (
                 (isResourceBrowserView || (pods && pods.length > 0)) && (

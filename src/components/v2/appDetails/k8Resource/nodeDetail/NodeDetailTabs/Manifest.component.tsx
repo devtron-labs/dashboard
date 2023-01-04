@@ -267,11 +267,24 @@ function ManifestComponent({
 
     return isDeleted ? (
         <div>
-            <MessageUI msg="This resource no longer exists" size={32} />
+            <MessageUI
+                msg="This resource no longer exists"
+                size={32}
+                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+            />
         </div>
     ) : (
-        <div className="manifest-container" style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '552px' : '600px' }}>
-            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
+        <div
+            className="manifest-container"
+            style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
+        >
+            {error && !loading && (
+                <MessageUI
+                    msg="Manifest not available"
+                    size={24}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+                />
+            )}
             {!error && (
                 <>
                     <div className="bcn-0">
@@ -342,7 +355,14 @@ function ManifestComponent({
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
                                 loading={loading}
-                                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
+                                customLoader={
+                                    <MessageUI
+                                        msg={loadingMsg}
+                                        icon={MsgUIType.LOADING}
+                                        size={24}
+                                        minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                                    />
+                                }
                                 focus={isEditmode}
                             >
                                 {showInfoText && (
