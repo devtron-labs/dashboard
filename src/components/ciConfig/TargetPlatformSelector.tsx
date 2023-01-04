@@ -89,19 +89,29 @@ function TargetPlatformSelector({
     }
 
     const getOverridenValue = () => {
+        // let targetPlatform =
+        //     parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
         let targetPlatform =
-            parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-        if (!targetPlatform?.includes(',')) {
-          return <div className="en-2 bw-1 br-4">{targetPlatform}</div>
-        } else {
-          return (
-            <div className="flex left ">
-                {targetPlatform.split(',').map((val) => {
-                    return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
-                })}
+            parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+            if(!targetPlatform){
+             return <div className='bcn-1 br-4 flex cn-7 pt-8 pb-8'>
+                Target platform is not set
+              </div>
+            }else{
+              if (targetPlatform && !targetPlatform?.includes(',')) {
+                return <div className="en-2 bw-1 br-4">{targetPlatform}</div>
+              } else {
+                return (
+                  <div className="flex left ">
+                      {targetPlatform?.split(',').map((val) => {
+                          return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
+                      })}
             </div>
-        )
-        }
+
+                )}
+            }
+
+
     }
 
     return (
