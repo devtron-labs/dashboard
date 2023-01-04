@@ -224,14 +224,14 @@ export default function AdvancedConfigOptions({
                 />
 
                 <div className="white-card white-card__docker-config dc__position-rel mb-15">
-                <TargetPlatformSelector
-                    allowOverride={allowOverride}
-                    selectedTargetPlatforms={selectedTargetPlatforms}
-                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                    showCustomPlatformWarning={showCustomPlatformWarning}
-                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                    targetPlatformMap={targetPlatformMap}
-                />
+                    <TargetPlatformSelector
+                        allowOverride={allowOverride}
+                        selectedTargetPlatforms={selectedTargetPlatforms}
+                        setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                        showCustomPlatformWarning={showCustomPlatformWarning}
+                        setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                        targetPlatformMap={targetPlatformMap}
+                    />
                 </div>
 
                 {parentState?.loadingState === ComponentStates.loaded &&
