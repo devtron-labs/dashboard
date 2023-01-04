@@ -165,7 +165,12 @@ function NodeDetailComponent({
                     })}
             </div>
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
-                <MessageUI msg={''} icon={MsgUIType.LOADING} size={24} />
+                <MessageUI
+                    msg={''}
+                    icon={MsgUIType.LOADING}
+                    size={24}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                />
             ) : (
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
@@ -185,7 +190,12 @@ function NodeDetailComponent({
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                        <div className="resource-node-wrapper">
+                        <div
+                            className="resource-node-wrapper"
+                            style={{
+                                minHeight: isResourceBrowserView ? '200px' : '',
+                            }}
+                        >
                             <LogsComponent
                                 selectedTab={handleSelectedTab}
                                 isDeleted={isDeleted}

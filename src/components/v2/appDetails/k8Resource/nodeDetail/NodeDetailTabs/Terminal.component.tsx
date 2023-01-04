@@ -63,7 +63,11 @@ function TerminalComponent({
     if (isDeleted || !selectedContainerName.length) {
         return (
             <div>
-                <MessageUI msg="This resource no longer exists" size={32} />
+                <MessageUI
+                    msg="This resource no longer exists"
+                    size={32}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+                />
             </div>
         )
     }
@@ -128,7 +132,12 @@ function TerminalComponent({
                     />
                 </div>
             </div>
-            <div className="terminal-view-wrapper">
+            <div
+                className="terminal-view-wrapper"
+                style={{
+                    minHeight: isResourceBrowserView ? '200px' : '',
+                }}
+            >
                 <TerminalView
                     nodeName={isResourceBrowserView ? params.node : params.podName}
                     containerName={selectedContainerName}
