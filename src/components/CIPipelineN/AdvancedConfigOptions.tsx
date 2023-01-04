@@ -9,6 +9,9 @@ import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.typ
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import CreatableSelect from 'react-select/creatable'
+import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
+import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 
 
 export default function AdvancedConfigOptions({
@@ -206,6 +209,14 @@ export default function AdvancedConfigOptions({
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     setLoadingData={setLoadingData}
                 />
+
+                {/* To do Target platform changes */}
+                <TargetPlatformSelector
+                allowOverride={allowOverride}
+                 selectedTargetPlatforms={undefined} setSelectedTargetPlatforms={undefined} showCustomPlatformWarning={false} setShowCustomPlatformWarning={function (value: boolean): void {
+            throw new Error('Function not implemented.')
+          } } targetPlatformMap={undefined} />
+
                 {parentState?.loadingState === ComponentStates.loaded &&
                     parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
                     renderDockerArgs()}
