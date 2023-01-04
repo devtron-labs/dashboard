@@ -206,7 +206,7 @@ export default function AdvancedConfigOptions({
             platformsArray.push(o.label)
         })
         if (_form.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig) {
-            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join() 
+            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join()
         }
         setFormData(_form)
     }
@@ -251,6 +251,7 @@ export default function AdvancedConfigOptions({
                         showCustomPlatformWarning={showCustomPlatformWarning}
                         setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                         targetPlatformMap={targetPlatformMap}
+                        parentState={parentState}
                     />
                 </div>
 

@@ -11,6 +11,7 @@ export interface TargetPlatformSelector {
     showCustomPlatformWarning: boolean
     setShowCustomPlatformWarning: (value: boolean) => void
     targetPlatformMap: any
+    parentState?
 }
 
 function TargetPlatformSelector({
@@ -20,6 +21,7 @@ function TargetPlatformSelector({
     showCustomPlatformWarning,
     setShowCustomPlatformWarning,
     targetPlatformMap,
+    parentState,
 }: TargetPlatformSelector) {
     const platformMenuList = (props): JSX.Element => {
         return (
@@ -85,37 +87,58 @@ function TargetPlatformSelector({
             event.target.blur()
         }
     }
+
+    const getOverridenValue = () => {
+        let targetPlatform =
+            parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+        if (!targetPlatform?.includes(',')) {
+          return <div className="en-2 bw-1 br-4">{targetPlatform}</div>
+        } else {
+          return (
+            <div className="flex left ">
+                {targetPlatform.split(',').map((val) => {
+                    return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
+                })}
+            </div>
+        )
+        }
+    }
+
     return (
         <div className="mb-20">
-            <div className="fs-13 fw-6">{allowOverride ? 'Target' : 'Set target'} platform for the build</div>
+            <div className="fs-13 fw-6">{!allowOverride ? 'Target' : 'Set target'} platform for the build</div>
             <div className="fs-13 fw-4 cn-7 mb-12">
                 If target platform is not set, Devtron will build image for architecture and operating system of the k8s
                 node on which CI is running
             </div>
-            <CreatableSelect
-                value={selectedTargetPlatforms}
-                isMulti={true}
-                components={{
-                    ClearIndicator: null,
-                    IndicatorSeparator: null,
-                    Option: platformOption,
-                    MenuList: platformMenuList,
-                }}
-                styles={tempMultiSelectStyles}
-                closeMenuOnSelect={false}
-                name="targetPlatform"
-                placeholder="Type to select or create"
-                options={TARGET_PLATFORM_LIST}
-                className="basic-multi-select mb-4"
-                classNamePrefix="target-platform__select"
-                onChange={handlePlatformChange}
-                hideSelectedOptions={false}
-                noOptionsMessage={noMatchingPlatformOptions}
-                onBlur={handleCreatableBlur}
-                isValidNewOption={() => false}
-                onKeyDown={handleKeyDown}
-                captureMenuScroll={false}
-            />
+            {!allowOverride ? (
+                getOverridenValue()
+            ) : (
+                <CreatableSelect
+                    value={selectedTargetPlatforms}
+                    isMulti={true}
+                    components={{
+                        ClearIndicator: null,
+                        IndicatorSeparator: null,
+                        Option: platformOption,
+                        MenuList: platformMenuList,
+                    }}
+                    styles={tempMultiSelectStyles}
+                    closeMenuOnSelect={false}
+                    name="targetPlatform"
+                    placeholder="Type to select or create"
+                    options={TARGET_PLATFORM_LIST}
+                    className="basic-multi-select mb-4"
+                    classNamePrefix="target-platform__select"
+                    onChange={handlePlatformChange}
+                    hideSelectedOptions={false}
+                    noOptionsMessage={noMatchingPlatformOptions}
+                    onBlur={handleCreatableBlur}
+                    isValidNewOption={() => false}
+                    onKeyDown={handleKeyDown}
+                    captureMenuScroll={false}
+                />
+            )}
             {showCustomPlatformWarning && (
                 <span className="flexbox cy-7">
                     <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />

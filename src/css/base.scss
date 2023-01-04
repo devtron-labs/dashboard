@@ -2104,6 +2104,12 @@ textarea,
     min-width: 100%;
 }
 
+// width fix content
+
+.dc__w-fit-content{
+  width: fit-content;
+}
+
 // Height in pixels
 
 .dc__height-inherit {
