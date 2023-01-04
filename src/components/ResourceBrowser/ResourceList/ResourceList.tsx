@@ -51,6 +51,7 @@ export default function ResourceList() {
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
+    const abortController = new AbortController()
 
     useEffect(() => {
         getClusterData()
@@ -65,6 +66,10 @@ export default function ResourceList() {
     useEffect(() => {
         if (selectedResource) {
             getResourceListData()
+
+            return (): void => {
+                abortController.abort()
+            }
         }
     }, [selectedResource])
 
@@ -192,6 +197,9 @@ export default function ResourceList() {
     const getResourceListData = async (): Promise<void> => {
         try {
             setResourceListLoader(true)
+            setResourceList(null)
+            setFilteredResourceList([])
+
             const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(clusterId),
                 k8sRequest: {
@@ -204,15 +212,17 @@ export default function ResourceList() {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace =
                     namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
-            const { result } = await getResourceList(resourceListPayload)
+            const { result } = await getResourceList(resourceListPayload, abortController.signal)
             setLastDataSync(!lastDataSync)
             setResourceList(result)
             setFilteredResourceList(result.data)
             setNoResults(result.data.length === 0)
-        } catch (err) {
-            showError(err)
-        } finally {
             setResourceListLoader(false)
+        } catch (err) {
+            if (!abortController.signal.aborted) {
+                showError(err)
+                setResourceListLoader(false)
+            }
         }
     }
 
@@ -260,10 +270,10 @@ export default function ResourceList() {
     const updateNodeSelectionData = (_selected: Record<string, any>) => {
         if (_selected) {
             if (_selected.isFromEvent) {
-              const _resourceName =  _selected.name.split('_')[1]
+                const _resourceName = _selected.name.split('_')[1]
                 setNodeSelectionData((prevData) => ({
                     ...prevData,
-                    [`${_selected.name}`]: { ..._selected, name:_resourceName },
+                    [`${_selected.name}`]: { ..._selected, name: _resourceName },
                 }))
             } else {
                 setNodeSelectionData((prevData) => ({

@@ -17,8 +17,13 @@ export const namespaceListByClusterId = (clusterId: string): Promise<ResponseTyp
     return get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
 }
 
-export const getResourceList = (resourceListPayload: ResourceListPayloadType): Promise<ResourceListResponse> => {
-    return post(Routes.K8S_RESOURCE_LIST, resourceListPayload)
+export const getResourceList = (
+    resourceListPayload: ResourceListPayloadType,
+    signal: AbortSignal,
+): Promise<ResourceListResponse> => {
+    return post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
+        signal,
+    })
 }
 
 export const getResourceGroupList = (clusterId: string): Promise<APIResourceResponse> => {
