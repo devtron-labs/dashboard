@@ -185,14 +185,14 @@ export default function AdvancedConfigOptions({
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
-    const updateSelectedPlatformsCustomTargetPlatform = ()=>{
+    const updateSelectedPlatformsCustomTargetPlatform = () => {
         let _customTargetPlatform = false
         let _selectedPlatforms = []
         let targetPlatform = ''
         if (parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            targetPlatform = parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
-
-        } else if (parentState.ciConfig?.ciBuildConfig){
+            targetPlatform =
+                parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
+        } else if (parentState.ciConfig?.ciBuildConfig) {
             if (parentState.ciConfig.ciBuildConfig.dockerBuildConfig?.targetPlatform) {
                 targetPlatform = parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform
             }
