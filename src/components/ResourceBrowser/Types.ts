@@ -3,18 +3,6 @@ import { ResponseType } from '../../services/service.types'
 import { Nodes, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 
-// export interface ResourceDetail {
-//     name: string
-//     status: string
-//     namespace: string
-//     age: string
-//     ready: string
-//     restarts: string
-//     containers: string[]
-// }
-
-export interface ResourceDataType {}
-
 export interface ResourceDetailType {
     headers: string[]
     data: Record<string, any>[]
@@ -130,10 +118,11 @@ export interface ResourceListEmptyStateType {
     imgSource?: string
     title?: string
     subTitle: string
+    actionButtonText?: string
     actionHandler?: () => void
 }
 
 export interface EventListType {
     filteredData: Record<string, any>[]
-    updateNodeSelectionData: (_selected: Record<string, any>) => void
+    handleResourceClick: (e: any) => void
 }

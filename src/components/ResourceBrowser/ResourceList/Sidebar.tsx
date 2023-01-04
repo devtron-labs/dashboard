@@ -5,6 +5,7 @@ import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-fi
 import '../ResourceBrowser.scss'
 import { SidebarType } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
+import { SIDEBAR_KEYS } from '../Constants'
 
 export function Sidebar({
     k8SObjectList,
@@ -60,8 +61,8 @@ export function Sidebar({
                             <div className="pl-20">
                                 {k8sObject.child.map((childData) =>
                                     childData.gvk.Kind.toLowerCase() === 'node' ||
-                                    childData.gvk.Kind.toLowerCase() === 'namespace' ||
-                                    childData.gvk.Kind.toLowerCase() === 'event' ? null : (
+                                    childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+                                    childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ? null : (
                                         <div
                                             key={childData.gvk.Kind}
                                             className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
@@ -86,30 +87,34 @@ export function Sidebar({
             )}
             <div className="dc__border-top-n1 pt-8 mr-4">
                 <div
-                    key={'Event'}
+                    key={SIDEBAR_KEYS.eventGVK.Kind}
                     className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                        nodeType === 'event' ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
+                        nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                            ? 'bcb-1 cb-5'
+                            : 'cn-7 resource-tree-object'
                     }`}
-                    data-group="events.k8s.io"
-                    data-version="v1"
-                    data-kind="Event"
+                    data-group={SIDEBAR_KEYS.eventGVK.Group}
+                    data-version={SIDEBAR_KEYS.eventGVK.Version}
+                    data-kind={SIDEBAR_KEYS.eventGVK.Kind}
                     data-namespaced={true}
                     onClick={selectNode}
                 >
-                    Events
+                    {SIDEBAR_KEYS.events}
                 </div>
                 <div
-                    key={'Namespace'}
+                    key={SIDEBAR_KEYS.namespaceGVK.Kind}
                     className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                        nodeType === 'namespace' ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'
+                        nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                            ? 'bcb-1 cb-5'
+                            : 'cn-7 resource-tree-object'
                     }`}
-                    data-group=""
-                    data-version="v1"
-                    data-kind="Namespace"
+                    data-group={SIDEBAR_KEYS.namespaceGVK.Group}
+                    data-version={SIDEBAR_KEYS.namespaceGVK.Version}
+                    data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
                     data-namespaced={false}
                     onClick={selectNode}
                 >
-                    Namespaces
+                    {SIDEBAR_KEYS.namespaces}
                 </div>
             </div>
         </div>

@@ -6,7 +6,7 @@ import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calenda
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { Checkbox, CHECKBOX_VALUE, DeleteDialog, PopupMenu, showError } from '../../common'
-import { RESOURCE_ACTION_MENU } from '../Constants'
+import { DELETE_MODAL_MESSAGING, RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType, ResourceListPayloadType } from '../Types'
 import { Nodes } from '../../app/types'
 import { deleteResource } from '../ResourceBrowser.service'
@@ -122,7 +122,7 @@ export default function ResourceBrowserActionMenu({
                     apiCallInProgress={apiCallInProgress}
                 >
                     <DeleteDialog.Description>
-                        <p className="mb-12">Are you sure, you want to delete this resource?</p>
+                        <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
                         <Checkbox
                             rootClassName="resource-force-delete"
                             isChecked={forceDelete}
@@ -130,7 +130,7 @@ export default function ResourceBrowserActionMenu({
                             disabled={apiCallInProgress}
                             onChange={forceDeleteHandler}
                         >
-                            Force delete resource
+                            {DELETE_MODAL_MESSAGING.checkboxText}
                         </Checkbox>
                     </DeleteDialog.Description>
                 </DeleteDialog>
