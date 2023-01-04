@@ -61,8 +61,8 @@ export function Sidebar({
                             <div className="pl-20">
                                 {k8sObject.child.map((childData) =>
                                     childData.gvk.Kind.toLowerCase() === 'node' ||
-                                    childData.gvk.Kind.toLowerCase() === 'namespace' ||
-                                    childData.gvk.Kind.toLowerCase() === 'event' ? null : (
+                                    childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+                                    childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ? null : (
                                         <div
                                             key={childData.gvk.Kind}
                                             className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
