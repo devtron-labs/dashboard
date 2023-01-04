@@ -226,13 +226,14 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean): void => {
         setSelectedCluster(selected)
         getNamespaceList(selected.value)
+        const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
         if (fromClusterSelect) {
             replace({
-                pathname: `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`,
+                pathname: path,
             })
         } else {
             push({
-                pathname: location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`),
+                pathname: path,
             })
         }
     }
@@ -260,7 +261,7 @@ export default function ResourceList() {
         if (_selected) {
             setNodeSelectionData((prevData) => ({
                 ...prevData,
-                [`${nodeType}_${_selected.name}`]: _selected,
+                [`${!_selected.isFromEvent ? `${nodeType}` : ''}${_selected.name}`]: _selected,
             }))
         }
     }
