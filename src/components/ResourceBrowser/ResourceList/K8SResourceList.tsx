@@ -279,7 +279,9 @@ export function K8SResourceList({
                             </div>
                         ))}
                     </div>
-                    {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
+                    <div className="scrollable-resource-list">
+                        {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
+                    </div>
                 </div>
             )
         }

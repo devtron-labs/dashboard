@@ -557,11 +557,15 @@ button.anchor {
     &.f-synced,
     &.f-sync.ok,
     &.f-running,
+    &.f-completed,
+    &.f-bound,
+    &.f-Active,
     &.f-scalingreplicasetdown {
         color: var(--green);
     }
 
     &.f-suspended,
+    &.f-warning
     &.f-switchedtoactiveservice {
         color: var(--orange);
     }

@@ -27,7 +27,7 @@ export function Sidebar({
             }`,
         )
         const _selectedResource = {
-            namespaced: e.currentTarget.dataset.namespaced === "true",
+            namespaced: e.currentTarget.dataset.namespaced === 'true',
             gvk: {
                 Group: e.currentTarget.dataset.group,
                 Version: e.currentTarget.dataset.version,
@@ -36,6 +36,9 @@ export function Sidebar({
         }
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
+    }
+    if (!k8SObjectList.length) {
+        return null
     }
     return (
         <div className="k8s-object-container p-8">
@@ -57,7 +60,8 @@ export function Sidebar({
                             <div className="pl-20">
                                 {k8sObject.child.map((childData) =>
                                     childData.gvk.Kind.toLowerCase() === 'node' ||
-                                    childData.gvk.Kind.toLowerCase() === 'namespace' ? null : (
+                                    childData.gvk.Kind.toLowerCase() === 'namespace' ||
+                                    childData.gvk.Kind.toLowerCase() === 'event' ? null : (
                                         <div
                                             key={childData.gvk.Kind}
                                             className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
