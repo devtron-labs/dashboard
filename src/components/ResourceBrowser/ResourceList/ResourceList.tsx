@@ -135,7 +135,9 @@ export default function ResourceList() {
             const { result } = await namespaceListByClusterId(clusterId)
             const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result)]
             setNamespaceOptions(_namespaceOptions)
-            setSelectedNamespace(_namespaceOptions[0])
+
+            const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
+            setSelectedNamespace(_selectedNamespace ?? _namespaceOptions[0])
         } catch (err) {
             showError(err)
         }
