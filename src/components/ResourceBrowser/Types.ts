@@ -127,6 +127,7 @@ export interface ResourceBrowserActionMenuType {
 }
 
 export interface ResourceListEmptyStateType {
+    imgSource?: string
     title?: string
     subTitle: string
     actionHandler?: () => void
