@@ -68,11 +68,11 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
             const { result } = await createNewResource(resourceListPayload)
             if (result) {
                 setResourceResponse(result)
+                toggleCodeEditorView(false)
             }
         } catch (err) {
             showError(err)
         } finally {
-            toggleCodeEditorView(false)
             setLoader(false)
         }
     }
@@ -142,7 +142,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                         ))}
                     </div>
                     <div className="created-resource-list fs-13">
-                        {resourceResponse.map((resource) => (
+                        {resourceResponse?.map((resource) => (
                             <div
                                 className="created-resource-row pt-8 pr-20 pb-8 pl-20"
                                 key={`${resource.kind}/${resource.name}`}
