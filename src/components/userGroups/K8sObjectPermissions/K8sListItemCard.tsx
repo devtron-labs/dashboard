@@ -226,8 +226,8 @@ export default function K8sListItemCard({
             <div className="cn-6 mb-6 flex dc__content-space">
                 <span>Cluster</span>
                 <span className="flex">
-                    <Clone className="icon-dim-16 mr-8 cursor" onClick={() => editPermission('clone')} />
-                    <Delete className="icon-dim-16 cursor" onClick={() => editPermission('delete')} />
+                    <Clone className="icon-dim-16 mr-8 fcn-6 cursor" onClick={() => editPermission('clone')} />
+                    <Delete className="icon-dim-16 scn-6 cursor" onClick={() => editPermission('delete')} />
                 </span>
             </div>
             <div className="mb-16">

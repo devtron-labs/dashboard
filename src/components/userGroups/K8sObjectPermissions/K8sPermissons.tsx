@@ -65,16 +65,16 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                         : element.resource[0].label}
                                 </span>
                                 <span className="dc__truncate-text">{element.action.label}</span>
-                                <span className='flex right fcn-6'>
+                                <span className='flex right'>
                                     <Clone
-                                        className="icon-dim-16 cursor mr-8"
+                                        className="icon-dim-16 cursor fcn-6 mr-8"
                                         onClick={() => editPermission(element, 'clone', index)}
                                     />
                                     <Edit
-                                        className="icon-dim-16 cursor mr-8"
+                                        className="icon-dim-16 cursor scn-6 mr-8"
                                         onClick={() => editPermission(element, 'edit', index)}
                                     />
-                                    <Delete className="icon-dim-16 cursor" onClick={() => deletePermission(index)} />
+                                    <Delete className="icon-dim-16 fcn-6 cursor" onClick={() => deletePermission(index)} />
                                 </span>
                             </div>
                         )
