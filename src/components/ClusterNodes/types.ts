@@ -172,12 +172,13 @@ export interface TaintErrorObj {
     }[]
 }
 interface NodeDataPropType {
-  nodeData: NodeDetail
-  getNodeListData: () => void
+    nodeData: NodeDetail
+    getNodeListData: () => void
 }
 
 export interface NodeActionsMenuProps extends NodeDataPropType {
-  openTerminal: (clusterData: NodeDetail) => void
+    openTerminal: (clusterData: NodeDetail) => void
+    isSuperAdmin: boolean
 }
 
 export interface NodeActionRequest {
@@ -215,21 +216,20 @@ interface NodeDrainOptions {
 }
 
 export interface NodeDrainRequest extends NodeActionRequest {
-  nodeDrainOptions: NodeDrainOptions
+    nodeDrainOptions: NodeDrainOptions
 }
 
 export interface EditTaintsRequest extends NodeActionRequest {
-  taints: TaintType[]
+    taints: TaintType[]
 }
 export interface ImageList {
-    name: string,
-    image: string,
+    name: string
+    image: string
     description: string
 }
 
 export interface ClusterImageList {
-    groupId: string,
-    groupRegex: string,
-    imageList: ImageList[],
+    groupId: string
+    groupRegex: string
+    imageList: ImageList[]
 }
-
