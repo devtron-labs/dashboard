@@ -3,17 +3,9 @@ import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
-
-export interface TargetPlatformSelector {
-    allowOverride: boolean
-    selectedTargetPlatforms: any
-    setSelectedTargetPlatforms: any
-    showCustomPlatformWarning: boolean
-    setShowCustomPlatformWarning: (value: boolean) => void
-    targetPlatformMap: any
-    targetPlatform?: string
-    configOverrideView?: boolean
-}
+import { SelectorMessaging } from './ciConfigConstant'
+import { platformMenuList } from './TargetPlatformSelector.utils'
+import { TargetPlatformSelectorType } from './types'
 
 function TargetPlatformSelector({
     allowOverride,
@@ -24,17 +16,7 @@ function TargetPlatformSelector({
     targetPlatformMap,
     targetPlatform,
     configOverrideView,
-}: TargetPlatformSelector) {
-    const platformMenuList = (props): JSX.Element => {
-        return (
-            <components.MenuList {...props}>
-                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                    Type to enter a target platform. Press Enter to accept.
-                </div>
-                {props.children}
-            </components.MenuList>
-        )
-    }
+}: TargetPlatformSelectorType) {
 
     const noMatchingPlatformOptions = (): string => {
         return 'No matching options'
@@ -91,35 +73,32 @@ function TargetPlatformSelector({
     }
 
     const getOverridenValue = () => {
-        // let targetPlatform =
-        //     parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-            if(!targetPlatform){
-             return <div className='bcn-1 br-4 flex cn-7 pt-8 pb-8'>
-                Target platform is not set
-              </div>
-            }else{
-              if (targetPlatform && !targetPlatform?.includes(',')) {
+        if (!targetPlatform) {
+            return <div className="bcn-1 br-4 flex cn-7 pt-8 pb-8">{SelectorMessaging.PALTFORM_DESCRIPTION_WITH_NO_TARGET}</div>
+        } else {
+            if ( !targetPlatform?.includes(',')) {
                 return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{targetPlatform}</div>
-              } else {
+            } else {
                 return (
-                  <div className="flex left ">
-                      {targetPlatform?.split(',').map((val) => {
-                          return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
-                      })}
-            </div>
-
-                )}
+                    <div className="flex left ">
+                        {targetPlatform?.split(',').map((val) => {
+                            return (
+                                <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
+                            )
+                        })}
+                    </div>
+                )
             }
-
-
+        }
     }
 
     return (
         <div className="mb-20">
-            <div className="fs-13 fw-6">{!allowOverride ? 'Target' : 'Set target'} platform for the build</div>
+            <div className="fs-13 fw-6">
+                {!allowOverride && !configOverrideView ? 'Target' : 'Set target'} platform for the build
+            </div>
             <div className="fs-13 fw-4 cn-7 mb-12">
-                If target platform is not set, Devtron will build image for architecture and operating system of the k8s
-                node on which CI is running
+                {SelectorMessaging.PALTFORM_DESCRIPTION}
             </div>
             {!allowOverride && !configOverrideView ? (
                 getOverridenValue()
@@ -152,7 +131,7 @@ function TargetPlatformSelector({
             {showCustomPlatformWarning && (
                 <span className="flexbox cy-7">
                     <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
-                    You have entered a custom target platform, please ensure it is valid.
+                    {SelectorMessaging.WARNING_WITH_NO_TARGET}
                 </span>
             )}
         </div>

@@ -295,3 +295,14 @@ export interface CIBuildConfigDiffProps {
     materials: Material[]
     globalCIConfig: DockerConfigOverrideType
 }
+
+export interface TargetPlatformSelectorType {
+  allowOverride?: boolean
+  selectedTargetPlatforms: any
+  setSelectedTargetPlatforms: any
+  showCustomPlatformWarning: boolean
+  setShowCustomPlatformWarning: (value: boolean) => void
+  targetPlatformMap: any
+  targetPlatform?: string
+  configOverrideView?: boolean
+}
