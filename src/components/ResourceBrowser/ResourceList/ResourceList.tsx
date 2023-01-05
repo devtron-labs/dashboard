@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
-import { convertToOptionsList, handleUTCTime, processK8SObjects, Progressing, showError } from '../../common'
+import {
+    convertToOptionsList,
+    ErrorScreenManager,
+    handleUTCTime,
+    processK8SObjects,
+    Progressing,
+    showError,
+} from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
 import {
@@ -35,7 +42,7 @@ export default function ResourceList() {
     const { replace, push } = useHistory()
     const location = useLocation()
     const [loader, setLoader] = useState(true)
-    const [showErrorState, setShowErrorState] = useState(true)
+    const [showErrorState, setShowErrorState] = useState(false)
     const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
     const [k8SObjectList, setK8SObjectList] = useState<K8SObjectType[]>([])
@@ -53,6 +60,7 @@ export default function ResourceList() {
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
+    const [errorStatusCode, setErrorStatusCode] = useState(0)
     const abortController = new AbortController()
 
     useEffect(() => {
@@ -143,12 +151,12 @@ export default function ResourceList() {
     const getNamespaceList = async (clusterId: string) => {
         try {
             const { result } = await namespaceListByClusterId(clusterId)
-            if(result){
-              const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result.sort())]
-              setNamespaceOptions(_namespaceOptions)
+            if (result) {
+                const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result.sort())]
+                setNamespaceOptions(_namespaceOptions)
 
-              const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
-              setSelectedNamespace(_selectedNamespace ?? _namespaceOptions[0])
+                const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
+                setSelectedNamespace(_selectedNamespace ?? _namespaceOptions[0])
             }
         } catch (err) {
             showError(err)
@@ -194,9 +202,13 @@ export default function ResourceList() {
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected)
                 setShowErrorState(false)
+                setErrorStatusCode(0)
             }
         } catch (err) {
             showError(err)
+            if (err['code'] === 403) {
+                setErrorStatusCode(err['code'])
+            }
             setShowErrorState(true)
         } finally {
             setLoader(false)
@@ -351,16 +363,27 @@ export default function ResourceList() {
     }
 
     const renderError = (): JSX.Element => {
-        return (
-            <div style={{ height: 'calc(100vh - 92px)' }}>
-                <ResourceListEmptyState
-                    title="Some error occured"
-                    subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
-                    actionButtonText="Change cluster"
-                    actionHandler={goToClusterList}
-                />
-            </div>
-        )
+        if (errorStatusCode > 0) {
+            return (
+                <div className="error-screen-wrapper flex column h-100" style={{ height: 'calc(100vh - 92px)' }}>
+                    <ErrorScreenManager
+                        code={errorStatusCode}
+                        subtitle="Information on this page is available only to superadmin users."
+                    />
+                </div>
+            )
+        } else {
+            return (
+                <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
+                    <ResourceListEmptyState
+                        title="Some error occured"
+                        subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
+                        actionButtonText="Change cluster"
+                        actionHandler={goToClusterList}
+                    />
+                </div>
+            )
+        }
     }
 
     const renderResourceBrowser = (): JSX.Element => {
