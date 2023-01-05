@@ -7,6 +7,7 @@ import {
     processK8SObjects,
     Progressing,
     showError,
+    sortObjectArrayAlphabetically,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
@@ -17,7 +18,7 @@ import {
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS } from '../Constants'
+import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
@@ -42,7 +43,8 @@ export default function ResourceList() {
     }>()
     const { replace, push } = useHistory()
     const location = useLocation()
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
+    const [clusterLoader, setClusterLoader] = useState(false)
     const [showErrorState, setShowErrorState] = useState(false)
     const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
@@ -69,13 +71,7 @@ export default function ResourceList() {
     }, [])
 
     useEffect(() => {
-        if (clusterId) {
-            getSidebarData()
-        }
-    }, [clusterId])
-
-    useEffect(() => {
-        if (selectedResource) {
+        if (clusterId && selectedResource) {
             getResourceListData()
 
             return (): void => {
@@ -85,7 +81,7 @@ export default function ResourceList() {
     }, [selectedResource])
 
     useEffect(() => {
-        if (selectedResource?.namespaced) {
+        if (clusterId && selectedResource?.namespaced) {
             getResourceListData()
         }
     }, [namespace])
@@ -131,20 +127,30 @@ export default function ResourceList() {
 
     const getClusterData = async () => {
         try {
-            setLoader(true)
+            setClusterLoader(true)
             const { result } = await getClusterList()
-            const _clusterOptions = convertToOptionsList(result, 'cluster_name', 'id')
-            setClusterOptions(_clusterOptions)
-            const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
-            if (_selectedCluster) {
-                onChangeCluster(_selectedCluster, false, true)
-            } else if (_clusterOptions.length === 1) {
-                onChangeCluster(_clusterOptions[0], true)
+            if (result) {
+                const _clusterOptions = convertToOptionsList(
+                    sortObjectArrayAlphabetically(result, 'cluster_name'),
+                    'cluster_name',
+                    'id',
+                )
+                setClusterOptions(_clusterOptions)
+                const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
+                if (_selectedCluster) {
+                    onChangeCluster(_selectedCluster, false, true)
+                } else if (_clusterOptions.length === 1) {
+                    onChangeCluster(_clusterOptions[0], true)
+                }
             }
         } catch (err) {
-            showError(err)
+            if (err['code'] === 403) {
+                setErrorStatusCode(err['code'])
+            } else {
+                showError(err)
+            }
         } finally {
-            setLoader(false)
+            setClusterLoader(false)
         }
     }
 
@@ -163,10 +169,11 @@ export default function ResourceList() {
         }
     }
 
-    const getSidebarData = async (): Promise<void> => {
+    const getSidebarData = async (_clusterId): Promise<void> => {
+        if (!_clusterId) return
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(clusterId)
+            const { result } = await getResourceGroupList(_clusterId)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -187,7 +194,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     const _selectedResourceParam = childNode.gvk.Kind.toLowerCase()
                     replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
                         }/${_selectedResourceParam}`,
                     })
@@ -208,11 +215,30 @@ export default function ResourceList() {
             showError(err)
             if (err['code'] === 403) {
                 setErrorStatusCode(err['code'])
+            } else if (err['code'] === 404) {
+                setSelectedCluster(null)
+                replace({
+                    pathname: URLS.RESOURCE_BROWSER,
+                })
             }
             setShowErrorState(true)
         } finally {
             setLoader(false)
         }
+    }
+
+    const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
+        const warningEvents: Record<string, any>[] = [],
+            otherEvents: Record<string, any>[] = []
+        for (const iterator of eventList) {
+            console.log(iterator)
+            if (iterator.type === 'WARNING') {
+                warningEvents.push(iterator)
+            } else {
+                otherEvents.push(iterator)
+            }
+        }
+        return [...warningEvents, ...otherEvents].reverse()
     }
 
     const getResourceListData = async (): Promise<void> => {
@@ -236,7 +262,11 @@ export default function ResourceList() {
             const { result } = await getResourceList(resourceListPayload, abortController.signal)
             setLastDataSync(!lastDataSync)
             setResourceList(result)
-            setFilteredResourceList(result.data)
+            setFilteredResourceList(
+                selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
+                    ? sortEventListData(result.data)
+                    : result.data,
+            )
             setNoResults(result.data.length === 0)
             setResourceListLoader(false)
             setShowErrorState(false)
@@ -258,6 +288,7 @@ export default function ResourceList() {
 
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         setSelectedCluster(selected)
+        getSidebarData(selected.value)
         getNamespaceList(selected.value)
 
         if (!skipRedirection) {
@@ -278,7 +309,7 @@ export default function ResourceList() {
         setSelectedResource(null)
         setResourceSelectionData(null)
         setNodeSelectionData(null)
-        getSidebarData()
+        getSidebarData(selectedCluster.value)
     }
 
     const updateResourceSelectionData = (_selected: ApiResourceGroupType) => {
@@ -321,8 +352,17 @@ export default function ResourceList() {
         setShowCreateResourceModal(false)
     }
 
-    if (loader) {
+    if (loader || clusterLoader) {
         return <Progressing pageLoader />
+    } else if (errorStatusCode > 0) {
+        return (
+            <div className="error-screen-wrapper flex column h-100" style={{ height: 'calc(100vh - 92px)' }}>
+                <ErrorScreenManager
+                    code={errorStatusCode}
+                    subtitle="Information on this page is available only to superadmin users."
+                />
+            </div>
+        )
     }
 
     const getEventObjectTypeGVK = () => {
@@ -366,27 +406,16 @@ export default function ResourceList() {
     }
 
     const renderError = (): JSX.Element => {
-        if (errorStatusCode > 0) {
-            return (
-                <div className="error-screen-wrapper flex column h-100" style={{ height: 'calc(100vh - 92px)' }}>
-                    <ErrorScreenManager
-                        code={errorStatusCode}
-                        subtitle="Information on this page is available only to superadmin users."
-                    />
-                </div>
-            )
-        } else {
-            return (
-                <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
-                    <ResourceListEmptyState
-                        title="Some error occured"
-                        subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
-                        actionButtonText="Change cluster"
-                        actionHandler={goToClusterList}
-                    />
-                </div>
-            )
-        }
+        return (
+            <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
+                <ResourceListEmptyState
+                    title="Some error occured"
+                    subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
+                    actionButtonText="Change cluster"
+                    actionHandler={goToClusterList}
+                />
+            </div>
+        )
     }
 
     const renderResourceBrowser = (): JSX.Element => {

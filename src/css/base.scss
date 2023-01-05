@@ -565,7 +565,6 @@ button.anchor {
     }
 
     &.f-suspended,
-    &.f-warning,
     &.f-switchedtoactiveservice {
         color: var(--orange);
     }
@@ -575,6 +574,7 @@ button.anchor {
     &.f-failed,
     &.f-imagepullbackoff,
     &.f-errimagepull,
+    &.f-warning,
     &.f-outofsync {
         color: var(--R500);
     }

@@ -73,7 +73,7 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
             valid = valid && !!permission.resource?.length
             return valid;
         }, true);
-        
+
         if(isPermissionValid){
             setK8sPermission((prev) => {
                 if (selectedPermissionAction?.action === 'edit') {
@@ -94,7 +94,7 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
         }else{
             toast.info("Some required inputs are not selected")
         }
-        
+
     }
 
     return (

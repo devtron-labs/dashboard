@@ -1,6 +1,7 @@
 import { Routes } from '../../config'
 import { get, post } from '../../services/api'
 import { ClusterListResponse, ResponseType } from '../../services/service.types'
+import { Nodes } from '../app/types'
 import {
     APIResourceResponse,
     CreateResourcePayload,
@@ -27,6 +28,14 @@ export const getResourceList = (
 }
 
 export const getResourceGroupList = (clusterId: string): Promise<APIResourceResponse> => {
+    return Promise.resolve({
+        code: 200,
+        status: 'OK',
+        result: {
+            apiResources: [{ gvk: { Group: 'apps', Version: 'v1', Kind:Nodes.DaemonSet }, namespaced: true }],
+            allowedAll: false,
+        },
+    })
     return get(`${Routes.API_RESOURCE}/${clusterId}`)
 }
 

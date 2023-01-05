@@ -52,10 +52,13 @@ export default function K8sListItemCard({
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
-    const [allowedAllInApigroup, setAllowedAllInApigroup] = useState<boolean>()
+    const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>()
 
     useEffect(() => {
         getClusterListData()
+        setApiGroupMapping({
+            [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
+        })
     }, [])
 
     const getClusterListData = async () => {
@@ -100,16 +103,19 @@ export default function K8sListItemCard({
                     }
                 }
                 setProcessedData(_k8SObjectMap)
-                setAllowedAllInApigroup(resourceGroupList.allowedAll)
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
                 setProcessedGvkData(_processedNamespacedGvk.k8SObjectMap)
-                setApiGroupMapping({
-                    [k8sPermission.key]: [
-                        ...[resourceGroupList.allowedAll && { label: 'All API groups', value: '*' }],
+                const _allApiGroupMapping = []
+                if (resourceGroupList.allowedAll) {
+                    _allApiGroupMapping.push(
+                        { label: 'All API groups', value: '*' },
                         { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
-                        ..._k8SObjectList,
-                    ],
+                    )
+                }
+                setAllInApiGroupMapping(_allApiGroupMapping)
+                setApiGroupMapping({
+                    [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList],
                 })
                 if (k8sPermission?.kind) {
                     createKindData(
@@ -125,20 +131,23 @@ export default function K8sListItemCard({
 
     const createKindData = (selected, _k8SObjectMap = null) => {
         const kind: OptionType[] = []
-        if (selected.value === '*') {
-            for (const [key, value] of (_k8SObjectMap || processedData).entries()) {
-                value?.child.forEach((ele) => {
-                    kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'] })
+        if (_k8SObjectMap || processedData) {
+            if (selected.value === '*') {
+                for (const [key, value] of (_k8SObjectMap || processedData).entries()) {
+                    value?.child.forEach((ele) => {
+                        kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'] })
+                    })
+                }
+            } else {
+                const data = (_k8SObjectMap || processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
+                data?.child?.forEach((ele) => {
+                    if (ele.namespaced) {
+                        kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'] })
+                    }
                 })
             }
-        } else {
-            const data = (_k8SObjectMap || processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
-            data?.child?.forEach((ele) => {
-                if (ele.namespaced) {
-                    kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'] })
-                }
-            })
         }
+
         setKindMapping({
             [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind],
         })
@@ -187,6 +196,8 @@ export default function K8sListItemCard({
     const onClusterChange = (selected) => {
         if (selected.value !== k8sPermission?.cluster?.value) {
             handleK8sPermission('onClusterChange', index, selected)
+            setProcessedData(null)
+            setProcessedGvkData(null)
             getNamespaceList(selected.value)
             getGroupKindData(selected.value)
         }
@@ -196,18 +207,19 @@ export default function K8sListItemCard({
         if (selected.value !== k8sPermission?.namespace?.value) {
             handleK8sPermission('onNamespaceChange', index, selected)
             const _GvkObjectList: OptionType[] = []
-            for (const [key, value] of processedGvkData.entries()) {
-                if (key) {
-                    _GvkObjectList.push({ label: key, value: key })
+            if (processedGvkData) {
+                for (const [key] of processedGvkData.entries()) {
+                    if (key) {
+                        _GvkObjectList.push({ label: key, value: key })
+                    }
                 }
+                setApiGroupMapping({
+                    [k8sPermission.key]: [
+                        ...allInApiGroupMapping,
+                        ..._GvkObjectList,
+                    ],
+                })
             }
-            setApiGroupMapping({
-                [k8sPermission.key]: [
-                    ...[allowedAllInApigroup && { label: 'All API groups', value: '*' }],
-                    { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
-                    ..._GvkObjectList,
-                ],
-            })
         }
     }
 
