@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ButtonWithLoader, Drawer, VisibleModal } from '../../common'
+import { ButtonWithLoader, Drawer, stopPropagation, VisibleModal } from '../../common'
 import { ActionTypes, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -64,10 +64,6 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
         setPermissionList(tempK8sPermission)
     }
 
-    const stopPropogation = (e) => {
-        e.stopPropagation()
-    }
-
     const addNewPermissionCard = () => {
         handleK8sPermission('add')
     }
@@ -103,7 +99,7 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
 
     return (
         <Drawer onClose={close} position={'right'} width="800px">
-            <div onClick={stopPropogation} className="h-100 dc__overflow-hidden">
+            <div onClick={stopPropagation} className="h-100 dc__overflow-hidden">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bcn-0 dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>
                     <span className="icon-dim-20 cursor" onClick={close}>
