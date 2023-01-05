@@ -1,4 +1,5 @@
 import { ACCESS_TYPE_MAP } from '../../config';
+import { Nodes } from '../app/types';
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
@@ -132,3 +133,15 @@ export enum UserRoleType {
     Trigger = 'Trigger',
     View = 'View,',
 }
+
+export const K8S_PERMISSION_INFO_MESSAGE = {
+    [Nodes.CronJob]: 'Specified role will be provided for child Job(s), Pod(s) of selected CronJob(s).',
+    [Nodes.Job]: 'Specified role will be provided for child Pod(s) of selected Job(s).',
+    [Nodes.Deployment]: 'Specified role will be provided for child ReplicaSet(s) and Pod(s) of selected Deployment(s).',
+    [Nodes.ReplicaSet]: 'Specified role will be provided for child Pod(s) of selected ReplicaSet(s).',
+    [Nodes.Rollout]: 'Specified role will be provided for child ReplicaSet(s) and Pod(s) of selected Rollout(s).',
+    [Nodes.StatefulSet]: 'Specified role will be provided for child Pod(s) of selected StatefulSet(s).',
+    [Nodes.DaemonSet]: 'Specified role will be provided for child Pod(s) of selected DaemonSet(s).',
+}
+
+export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: '*' }

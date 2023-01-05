@@ -8,6 +8,8 @@ import {
     processK8SObjects,
     showError,
     MultiValueChipContainer,
+    sortObjectArrayAlphabetically,
+    sortOptionsByLabel,
 } from '../../common'
 import {
     getClusterList,
@@ -15,17 +17,17 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../../ResourceBrowser/ResourceBrowser.service'
-import { ApiResourceType, K8SObjectType, ResourceListPayloadType } from '../../ResourceBrowser/Types'
-import { multiSelectStyles } from '../../v2/common/ReactSelectCustomization'
+import { K8SObjectType, ResourceListPayloadType } from '../../ResourceBrowser/Types'
 import {
     customValueContainer,
     formatOptionLabel,
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { OptionType } from '../userGroups.types'
+import { ALL_NAMESPACE, K8S_PERMISSION_INFO_MESSAGE, OptionType } from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import CreatableSelect from 'react-select/creatable'
 import {
     k8sPermissionRoles,
@@ -34,6 +36,7 @@ import {
     multiSelectAllState,
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
+import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -64,13 +67,19 @@ export default function K8sListItemCard({
     const getClusterListData = async () => {
         try {
             const { result } = await getClusterList()
-            const _clusterOptions = convertToOptionsList(result, 'cluster_name', 'id')
-            setClusterOptions(_clusterOptions)
-            if (k8sPermission?.cluster) {
-                const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
-                handleK8sPermission('edit', index, selectedCluster)
-                getNamespaceList(selectedCluster.value)
-                getGroupKindData(selectedCluster.value)
+            if (result) {
+                const _clusterOptions = convertToOptionsList(
+                    sortObjectArrayAlphabetically(result, 'cluster_name'),
+                    'cluster_name',
+                    'id',
+                )
+                setClusterOptions(_clusterOptions)
+                if (k8sPermission?.cluster) {
+                    const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
+                    handleK8sPermission('edit', index, selectedCluster)
+                    getNamespaceList(selectedCluster.value)
+                    getGroupKindData(selectedCluster.value)
+                }
             }
         } catch (err) {
             showError(err)
@@ -80,11 +89,11 @@ export default function K8sListItemCard({
     const getNamespaceList = async (clusterId: string) => {
         try {
             const { result } = await namespaceListByClusterId(clusterId)
-            const _namespaceOptions = [
-                { label: 'All Namespaces / Cluster scoped', value: '*' },
-                ...convertToOptionsList?.(result),
-            ]
-            setNamespaceMapping(_namespaceOptions)
+            if (result) {
+                setNamespaceMapping([ALL_NAMESPACE, ...convertToOptionsList(result.sort())])
+            } else {
+                setNamespaceMapping([ALL_NAMESPACE])
+            }
         } catch (err) {
             showError(err)
         }
@@ -115,7 +124,7 @@ export default function K8sListItemCard({
                 }
                 setAllInApiGroupMapping(_allApiGroupMapping)
                 setApiGroupMapping({
-                    [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList],
+                    [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList.sort(sortOptionsByLabel)],
                 })
                 if (k8sPermission?.kind) {
                     createKindData(
@@ -149,7 +158,7 @@ export default function K8sListItemCard({
         }
 
         setKindMapping({
-            [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind],
+            [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind.sort(sortOptionsByLabel)],
         })
         if (k8sPermission?.resource) {
             if (
@@ -180,14 +189,18 @@ export default function K8sListItemCard({
                 },
             }
             const { result } = await getResourceList(resourceListPayload)
-            setObjectMapping({
-                [k8sPermission.key]: [
-                    { label: 'All resources', value: '*' },
-                    ...result?.data?.map((ele) => {
-                        return { label: ele['name'], value: ele['name'] }
-                    }),
-                ],
-            })
+            if (result) {
+                setObjectMapping({
+                    [k8sPermission.key]: [
+                        { label: 'All resources', value: '*' },
+                        ...result?.data
+                            ?.map((ele) => {
+                                return { label: ele['name'], value: ele['name'] }
+                            })
+                            .sort(sortOptionsByLabel),
+                    ],
+                })
+            }
         } catch (err) {
             showError(err)
         }
@@ -195,9 +208,12 @@ export default function K8sListItemCard({
 
     const onClusterChange = (selected) => {
         if (selected.value !== k8sPermission?.cluster?.value) {
-            handleK8sPermission('onClusterChange', index, selected)
             setProcessedData(null)
             setProcessedGvkData(null)
+            setApiGroupMapping({
+                [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
+            })
+            handleK8sPermission('onClusterChange', index, selected)
             getNamespaceList(selected.value)
             getGroupKindData(selected.value)
         }
@@ -214,10 +230,7 @@ export default function K8sListItemCard({
                     }
                 }
                 setApiGroupMapping({
-                    [k8sPermission.key]: [
-                        ...allInApiGroupMapping,
-                        ..._GvkObjectList,
-                    ],
+                    [k8sPermission.key]: [...allInApiGroupMapping, ..._GvkObjectList.sort(sortOptionsByLabel)],
                 })
             }
         }
@@ -369,6 +382,14 @@ export default function K8sListItemCard({
                             styles={resourceMultiSelectstyles}
                         />
                     </div>
+                    {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
+                        <InfoColourBar
+                            message={K8S_PERMISSION_INFO_MESSAGE[k8sPermission.kind.label]}
+                            classname="info_bar mb-12"
+                            Icon={InfoIcon}
+                            iconClass="icon-dim-20"
+                        />
+                    )}
                     <div className="cn-6 mb-6">Role</div>
                     <div className="mb-16 w-300">
                         <ReactSelect
