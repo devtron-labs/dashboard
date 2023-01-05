@@ -16,52 +16,52 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
 
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
+        const tempK8sPermission = [...k8PermissionList]
         switch (action) {
             case 'add':
-                k8PermissionList.splice(0, 0, getEmptyPermissionObject(k8PermissionList.length))
+                tempK8sPermission.splice(0, 0, getEmptyPermissionObject(tempK8sPermission.length))
                 break
             case 'delete':
-                k8PermissionList.splice(key, 1)
+                tempK8sPermission.splice(key, 1)
                 break
             case 'clone':
-                k8PermissionList.splice(0, 0, { ...k8PermissionList[key], key: k8PermissionList.length })
+                tempK8sPermission.splice(0, 0, { ...tempK8sPermission[key], key: tempK8sPermission.length })
                 break
             case 'edit':
-                k8PermissionList[key].cluster = data
+                tempK8sPermission[key].cluster = data
                 break
             case 'onClusterChange':
-                k8PermissionList[key].cluster = data
-                k8PermissionList[key].namespace = null
-                k8PermissionList[key].group = null
-                k8PermissionList[key].kind = null
-                k8PermissionList[key].resource = null
+                tempK8sPermission[key].cluster = data
+                tempK8sPermission[key].namespace = null
+                tempK8sPermission[key].group = null
+                tempK8sPermission[key].kind = null
+                tempK8sPermission[key].resource = null
                 break
             case 'onNamespaceChange':
-                k8PermissionList[key].namespace = data
-                k8PermissionList[key].group = null
-                k8PermissionList[key].kind = null
-                k8PermissionList[key].resource = null
+                tempK8sPermission[key].namespace = data
+                tempK8sPermission[key].group = null
+                tempK8sPermission[key].kind = null
+                tempK8sPermission[key].resource = null
                 break
             case 'onApiGroupChange':
-                k8PermissionList[key].group = data
-                k8PermissionList[key].kind = null
-                k8PermissionList[key].resource = null
+                tempK8sPermission[key].group = data
+                tempK8sPermission[key].kind = null
+                tempK8sPermission[key].resource = null
                 break
             case 'onKindChange':
-                k8PermissionList[key].kind = data
-                k8PermissionList[key].resource = null
+                tempK8sPermission[key].kind = data
+                tempK8sPermission[key].resource = null
                 break
             case 'onObjectChange':
-                k8PermissionList[key].resource = data
+                tempK8sPermission[key].resource = data
                 break
             case 'onRoleChange':
-                k8PermissionList[key].action = data
+                tempK8sPermission[key].action = data
                 break
             default:
                 break
         }
-
-        setPermissionList([...k8PermissionList])
+        setPermissionList(tempK8sPermission)
     }
 
     const stopPropogation = (e) => {
@@ -81,7 +81,15 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
         if(isPermissionValid){
             setK8sPermission((prev) => {
                 if (selectedPermissionAction?.action === 'edit') {
-                    prev[selectedPermissionAction.index] = k8PermissionList[0]
+                    if(k8PermissionList?.length){
+                        prev[selectedPermissionAction.index] = k8PermissionList[k8PermissionList.length - 1]
+                        return [...prev]
+                    }else {
+                        const list = [...prev]
+                        list.splice(selectedPermissionAction.index,1)
+                        return list
+                    }
+                }else if(selectedPermissionAction?.action === 'clone' && !k8PermissionList?.length){
                     return [...prev]
                 }
                 return [...prev, ...k8PermissionList]

@@ -44,14 +44,14 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }) {
             <div className="anchor pointer flex left mt-16 fs-13 fw-6" onClick={creatPermission}>
                 <AddIcon className="add-svg mr-12" /> Add permission
             </div>
-            {k8sPermission.length ? (
+            {k8sPermission?.length ? (
                 <div className="mt-16">
                     <div className="kubernetes-header dc__border-bottom fw-6 pt-8 pb-8">
                         {headerOptions.map((header) => (
                             <span>{header}</span>
                         ))}
                     </div>
-                    {k8sPermission?.map((element, index) => {
+                    {k8sPermission.map((element, index) => {
                         return (
                             <div className="kubernetes-header pt-12 pb-12 cn-9 dc__border-bottom-n1">
                                 <span className="dc__truncate-text">{element.cluster.label}</span>
