@@ -21,7 +21,7 @@ import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2
 import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
-import { convertToOptionsList, showError } from '../common'
+import { clusterImageDescription, convertToOptionsList, showError } from '../common'
 import { ServerErrors } from '../../modals/commonTypes'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
@@ -29,7 +29,8 @@ import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
-import { clusterImages, clusterSelectStyle, CLUSTER_STATUS } from './constants'
+import { clusterSelectStyle, CLUSTER_STATUS, IMAGE_LIST } from './constants'
+import { OptionType } from '../userGroups/userGroups.types'
 
 export default function ClusterTerminal({
     clusterId,
@@ -45,7 +46,7 @@ export default function ClusterTerminal({
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const clusterNodeList = convertToOptionsList(nodeList)
-    const imageList = convertToOptionsList(clusterImageList, clusterImages)
+    const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
     const [selectedNodeName, setSelectedNodeName] = useState(node ? { label: node, value: node } : clusterNodeList[0])
@@ -53,7 +54,7 @@ export default function ClusterTerminal({
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
-    const [selectedImage, setImage] = useState<string>(clusterImageList[0])
+    const [selectedImage, setImage] = useState<OptionType>(imageList[0])
     const [selectedNamespace, setNamespace] = useState(defaultNameSpace)
     const [update, setUpdate] = useState<boolean>(false)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
@@ -64,7 +65,7 @@ export default function ClusterTerminal({
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const payload = {
         clusterId: clusterId,
-        baseImage: selectedImage,
+        baseImage: selectedImage.value,
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
         namespace: selectedNamespace.value,
@@ -129,7 +130,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedNodeName.value, selectedImage, isReconnect, selectedNamespace.value])
+    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -169,6 +170,7 @@ export default function ClusterTerminal({
             }
         } else {
             setNamespace(defaultNameSpace)
+            setImage(imageList[0])
             setSelectedNodeName(clusterNodeList[0])
         }
     }
@@ -265,7 +267,7 @@ export default function ClusterTerminal({
     }
 
     const onChangeImages = (selected): void => {
-        setImage(selected.value)
+        setImage(selected)
     }
 
     const onChangeNamespace = (selected): void => {
@@ -344,6 +346,20 @@ export default function ClusterTerminal({
                 <br />
                 You can use publicly available custom images as well.
             </div>
+        )
+    }
+
+    const imageOptionComponent = (props) => {
+        const tippyText = clusterImageDescription(clusterImageList, props.data.value)
+
+        return (
+            <Option
+                {...props}
+                tippyClass="default-tt w-200"
+                showTippy={!!tippyText}
+                placement="left"
+                tippyContent={tippyText}
+            />
         )
     }
 
@@ -438,7 +454,8 @@ export default function ClusterTerminal({
                         <CreatableSelect
                             placeholder="Select Image"
                             options={imageList}
-                            defaultValue={imageList[0]}
+                            defaultValue={selectedImage}
+                            value={selectedImage}
                             onChange={onChangeImages}
                             styles={{
                                 ...clusterSelectStyle,
@@ -456,15 +473,7 @@ export default function ClusterTerminal({
                             }}
                             components={{
                                 IndicatorSeparator: null,
-                                Option: (props) => (
-                                    <Option
-                                        {...props}
-                                        tippyClass="default-tt w-200"
-                                        showTippy={!!clusterImages[props.data.value]?.info}
-                                        placement="left"
-                                        tippyContent={clusterImages[props.data.value]?.info || ''}
-                                    />
-                                ),
+                                Option: imageOptionComponent,
                                 MenuList: menuComponent,
                             }}
                         />
