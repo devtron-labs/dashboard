@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ButtonWithLoader, VisibleModal } from '../../common'
+import { ButtonWithLoader, Drawer, VisibleModal } from '../../common'
 import { ActionTypes, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -102,9 +102,9 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
     }
 
     return (
-        <VisibleModal className="" close={close}>
-            <div onClick={stopPropogation} className="modal-body--ci-material h-100 dc__overflow-hidden">
-                <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space dc__border-bottom">
+        <Drawer onClose={close} position={'right'} width="800px">
+            <div onClick={stopPropogation} className="h-100 dc__overflow-hidden">
+                <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bcn-0 dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes object permission</span>
                     <span className="icon-dim-20 cursor" onClick={close}>
                         <Close />
@@ -134,7 +134,7 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
                         )
                     })}
                 </div>
-                <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right dc__border-top">
+                <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right bcn-0 dc__border-top">
                     <button type="button" className="cta cancel h-36 flex mr-16" onClick={close}>
                         Cancel
                     </button>
@@ -143,6 +143,6 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
                     </button>
                 </div>
             </div>
-        </VisibleModal>
+        </Drawer>
     )
 }

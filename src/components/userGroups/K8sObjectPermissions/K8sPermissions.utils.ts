@@ -1,10 +1,10 @@
 import { ActionTypes, ACTION_LABEL } from '../userGroups.types'
 
-export const apiGroupAll = (permission, label = false) => {
+export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
-        return label ? 'All API groups' : '*'
+        return isLabel ? 'All API groups' : '*'
     } else if (permission === 'k8sempty') {
-        return label ? 'K8s core groups (eg. service, pod, etc.)' : 'k8sempty'
+        return isLabel ? 'K8s core groups (eg. service, pod, etc.)' : 'k8sempty'
     } else return permission
 }
 
@@ -22,7 +22,7 @@ export const k8sPermissionRoles = [
     },
 ]
 
-export const headerOptions = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'OBJECT', 'ROLE']
+export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'OBJECT', 'ROLE']
 
 export const multiSelectAllState = (selected,actionMeta, setState, options) => {
     if (actionMeta.action === 'select-option' && actionMeta.option.value === "*") {

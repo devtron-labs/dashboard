@@ -54,7 +54,7 @@ export default function K8sListItemCard({
             const { result } = await getClusterList()
             const _clusterOptions = convertToOptionsList(result, 'cluster_name', 'id')
             setClusterOptions(_clusterOptions)
-            if (k8sPermission.cluster) {
+            if (k8sPermission?.cluster) {
                 const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
                 handleK8sPermission('edit', index, selectedCluster)
                 getNamespaceList(selectedCluster.value)
@@ -92,15 +92,14 @@ export default function K8sListItemCard({
                     }
                 }
                 setProcessedData(_k8SObjectMap)
-                setApiGroupMapping((prevMapping) => ({
-                    ...prevMapping,
+                setApiGroupMapping({
                     [k8sPermission.key]: [
                         { label: 'All API groups', value: '*' },
                         { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
                         ..._k8SObjectList,
                     ],
-                }))
-                if (k8sPermission.kind) {
+            })
+                if (k8sPermission?.kind) {
                     createKindData(k8sPermission.group, _k8SObjectMap)
                 }
             }
@@ -125,25 +124,23 @@ export default function K8sListItemCard({
                 }
             })
         }
-        setKindMapping((prevMapping) => ({
-            ...prevMapping,
+        setKindMapping({
             [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind],
-        }))
-        if (k8sPermission.resource) {
+        })
+        if (k8sPermission?.resource) {
             if (k8sPermission.kind.value !== '*' && k8sPermission.group.value !== '*' && k8sPermission.kind.value !== 'Event') {
                 getResourceListData(k8sPermission.kind, _k8SObjectMap)
             } else {
-                setObjectMapping((prevMapping) => ({
-                    ...prevMapping,
+                setObjectMapping({
                     [k8sPermission.key]: [{ label: 'All object', value: '*' }],
-                }))
+                })
             }
         }
     }
 
     const getResourceListData = async (selected, _k8SObjectMap = null): Promise<void> => {
         try {
-            const resource = (_k8SObjectMap || processedData)
+            const resource = (_k8SObjectMap ?? processedData)
                 .get(k8sPermission.group.value === 'k8sempty' ? '' : k8sPermission.group.value)
                 .child.find((ele) => ele.gvk['Kind'] === selected.value)
             const resourceListPayload: ResourceListPayloadType = {
@@ -155,15 +152,14 @@ export default function K8sListItemCard({
                 },
             }
             const { result } = await getResourceList(resourceListPayload)
-            setObjectMapping((prevMapping) => ({
-                ...prevMapping,
+            setObjectMapping({
                 [k8sPermission.key]: [
                     { label: 'All object', value: '*' },
-                    ...result.data.map((ele) => {
+                    ...result?.data?.map((ele) => {
                         return { label: ele['name'], value: ele['name'] }
                     }),
                 ],
-            }))
+            })
         } catch (err) {
             showError(err)
         }
@@ -177,38 +173,40 @@ export default function K8sListItemCard({
     }
 
     const onNameSpaceSelection = (selected) => {
-        if (selected.value !== k8sPermission.namespace?.value) {
+        if (selected.value !== k8sPermission?.namespace?.value) {
             handleK8sPermission('onNamespaceChange', index, selected)
-            getGroupKindData(k8sPermission?.cluster?.value)
+            getGroupKindData(k8sPermission?.cluster.value)
         }
     }
 
     const onApiGroupSelect = (selected) => {
-        if (selected.value !== k8sPermission.group?.value) {
+        if (selected.value !== k8sPermission?.group?.value) {
             handleK8sPermission('onApiGroupChange', index, selected)
             createKindData(selected)
         }
     }
 
     const onKindSelect = (selected) => {
-        if (selected.value !== k8sPermission.kind?.value) {
+        if (selected.value !== k8sPermission?.kind?.value) {
             handleK8sPermission('onKindChange', index, selected)
             if (selected.value !== '*' && k8sPermission.group.value !== '*' && selected.value !== 'Event') {
                 getResourceListData(selected)
             } else {
-                setObjectMapping((prevMapping) => ({
-                    ...prevMapping,
+                setObjectMapping({
                     [k8sPermission.key]: [{ label: 'All object', value: '*' }],
-                }))
+                })
             }
         }
     }
+    const setK8sPermission = (options): void => {
+        handleK8sPermission('onObjectChange', index, options)
+    }
 
-    const onObjectChange = (selected, actionMeta) => {
+    const onResourceObjectChange = (selected, actionMeta) => {
         multiSelectAllState(
             selected,
             actionMeta,
-            (options) => handleK8sPermission('onObjectChange', index, options),
+            setK8sPermission,
             objectMapping?.[k8sPermission.key],
         )
     }
@@ -219,12 +217,8 @@ export default function K8sListItemCard({
         }
     }
 
-    const clonePermission = () => {
-        handleK8sPermission('clone', index)
-    }
-
-    const deletePermission = () => {
-        handleK8sPermission('delete', index)
+    const editPermission = (action) => {
+        handleK8sPermission(action, index)
     }
 
     return (
@@ -232,8 +226,8 @@ export default function K8sListItemCard({
             <div className="cn-6 mb-6 flex dc__content-space">
                 <span>Cluster</span>
                 <span className="flex">
-                    <Clone className="icon-dim-16 mr-8 cursor" onClick={clonePermission} />
-                    <Delete className="icon-dim-16 cursor" onClick={deletePermission} />
+                    <Clone className="icon-dim-16 mr-8 cursor" onClick={() => editPermission('clone')} />
+                    <Delete className="icon-dim-16 cursor" onClick={() => editPermission('delete')} />
                 </span>
             </div>
             <div className="mb-16">
@@ -369,7 +363,7 @@ export default function K8sListItemCard({
                             isDisabled={!k8sPermission.kind}
                             value={k8sPermission.resource}
                             name="Object name"
-                            onChange={onObjectChange}
+                            onChange={onResourceObjectChange}
                             components={{
                                 IndicatorSeparator: () => null,
                                 MultiValueContainer: ({ ...props }) => (

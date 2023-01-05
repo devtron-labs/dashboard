@@ -120,6 +120,11 @@ export interface K8sPermissionFilter {
     resource: any
 }
 
+export interface K8sPermission {
+    k8sPermission: any[],
+    setK8sPermission: (any) => void
+}
+
 export enum UserRoleType {
     SuperAdmin = 'SuperAdmin',
     Admin = 'Admin',
@@ -127,19 +132,3 @@ export enum UserRoleType {
     Trigger = 'Trigger',
     View = 'View,',
 }
-
-const possibleRolesMeta = {
-    [ActionTypes.VIEW]: {
-        value: 'View',
-        description: 'View allowed K8s resources.',
-    },
-    [ActionTypes.ADMIN]: {
-        value: 'Admin',
-        description: 'Create, view, edit & delete allowed K8s resources.',
-    },
-    [ActionTypes.EDIT]: {
-        value: 'Manager',
-        description: 'Can perform all actions and provide access to allowed K8s resources to other users.',
-    },
-}
- 
