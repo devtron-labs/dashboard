@@ -15,6 +15,7 @@ import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import { showError } from '../../../../common'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
+import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
 
 function NodeDetailComponent({
@@ -34,7 +35,9 @@ function NodeDetailComponent({
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
-    const [fetchingResource, setFetchingResource] = useState(false)
+    const [fetchingResource, setFetchingResource] = useState(
+        isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
+    )
     const { path, url } = useRouteMatch()
 
     useEffect(() => {
@@ -43,14 +46,19 @@ function NodeDetailComponent({
     }, [params.nodeType])
 
     useEffect(() => {
-        if (isResourceBrowserView && !loadingResources && selectedResource && params.node) {
+        if (
+            isResourceBrowserView &&
+            !loadingResources &&
+            selectedResource &&
+            params.node &&
+            params.nodeType === Nodes.Pod.toLowerCase()
+        ) {
             getContainersFromManifest()
         }
     }, [loadingResources, params.node])
 
     const getContainersFromManifest = async () => {
         try {
-            setFetchingResource(true)
             const { result } = await getManifestResource(
                 appDetails,
                 params.podName,
@@ -166,7 +174,7 @@ function NodeDetailComponent({
             </div>
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI
-                    msg={''}
+                    msg=""
                     icon={MsgUIType.LOADING}
                     size={24}
                     minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}

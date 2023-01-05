@@ -23,6 +23,7 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
+import { MODES } from '../../../../../../config'
 
 function ManifestComponent({
     selectedTab,
@@ -351,7 +352,7 @@ function ManifestComponent({
                                 theme="vs-dark--dt"
                                 height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
                                 value={activeManifestEditorData}
-                                mode="yaml"
+                                mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
                                 loading={loading}
