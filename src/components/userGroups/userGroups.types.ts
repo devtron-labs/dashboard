@@ -17,6 +17,13 @@ export enum ActionTypes {
     UPDATE = 'update',
     EDIT = 'edit',
 }
+
+export const ACTION_LABEL = {
+    [ActionTypes.ADMIN]: 'Admin',
+    [ActionTypes.VIEW]: 'View',
+    [ActionTypes.MANAGER]: 'Manager',
+}
+
 export interface CollapsedUserOrGroupProps {
     index: number;
     email_id?: string;

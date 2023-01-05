@@ -114,7 +114,7 @@ export default function GroupForm({
                         ...permission,
                         entity: EntityTypes.CLUSTER,
                         action: permission.action.value,
-                        cluster: permission.cluster.value,
+                        cluster: permission.cluster.label,
                         group: permission.group.value === '*' ? '' : permission.group.value, 
                         kind: permission.kind.value === '*' ? '' : permission.kind.label,
                         namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,

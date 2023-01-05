@@ -1092,13 +1092,13 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
 export const processK8SObjects = (
     k8sObjects: ApiResourceType[],
     selectedResourceKind?: string,
-    nofilter?: boolean
+    disableGroupFilter?: boolean
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
     let _selectedResource: ApiResourceType
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
-        const groupParent = nofilter ? element.gvk.Group :
+        const groupParent = disableGroupFilter ? element.gvk.Group :
         element.gvk.Group.endsWith('.k8s.io')
         ? AggregationKeys['Other Resources']
         : getAggregator(element.gvk.Kind)
@@ -1125,16 +1125,3 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export const selectAllfunction = (selected,actionMeta, setState, options) => {
-    if (actionMeta.action === 'select-option' && actionMeta.option.value === "*") {
-        setState(options)
-    } else if ((actionMeta.action === 'deselect-option' && actionMeta.option.value === '*') || (actionMeta.action === 'remove-value' &&  actionMeta.removedValue.value === '*')) {
-        setState([])
-    } else if (actionMeta.action === 'deselect-option' || actionMeta.action === 'remove-value') {
-        setState(selected.filter((o) => o.value !== '*'))
-    } else if (selected.length === selected.length - 1) {
-        setState(options)
-    } else {
-        setState(selected)
-    }
-}

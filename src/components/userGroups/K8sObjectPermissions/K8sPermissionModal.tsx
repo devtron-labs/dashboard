@@ -4,33 +4,16 @@ import { ActionTypes, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
-
-const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
-    return {
-        key: idx,
-        cluster: k8sPermission?.cluster,
-        namespace: k8sPermission?.namespace,
-        group: k8sPermission?.group,
-        kind: k8sPermission?.kind,
-        resource: k8sPermission?.resource,
-        action: k8sPermission?.action || { value: ActionTypes.VIEW, label: ActionTypes.VIEW },
-    }
-}
+import { getEmptyPermissionObject } from './K8sPermissions.utils'
+import { toast } from 'react-toastify'
 
 export default function K8sPermissionModal({ selectedPermissionAction, k8sPermission, setK8sPermission, close }) {
     const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0, k8sPermission)])
-    const [namespaceMapping, setNamespaceMapping] = useState<Record<number, OptionType[]>>()
+    const [namespaceMapping, setNamespaceMapping] = useState<OptionType[]>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
-    const [isDataFilled, setIsDataFilled] = useState<boolean>(true)
 
-    useEffect(() => {
-        const disbale = k8PermissionList
-            ? k8PermissionList.find((item) => item.resource === null || item.resource?.length === 0)
-            : true
-        setIsDataFilled(!!disbale)
-    }, [k8PermissionList])
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
         switch (action) {
@@ -90,14 +73,24 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
     }
 
     const savePermission = () => {
-        setK8sPermission((prev) => {
-            if (selectedPermissionAction?.action === 'edit') {
-                prev[selectedPermissionAction.index] = k8PermissionList[0]
-                return [...prev]
-            }
-            return [...prev, ...k8PermissionList]
-        })
-        close(false)
+        let isPermissionValid = k8PermissionList.reduce((valid,permission) => {
+            valid = valid && !!permission.resource?.length
+            return valid;
+        }, true);
+        
+        if(isPermissionValid){
+            setK8sPermission((prev) => {
+                if (selectedPermissionAction?.action === 'edit') {
+                    prev[selectedPermissionAction.index] = k8PermissionList[0]
+                    return [...prev]
+                }
+                return [...prev, ...k8PermissionList]
+            })
+            close(false)
+        }else{
+            toast.info("Some required inputs are not selected")
+        }
+        
     }
 
     return (
@@ -134,18 +127,12 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
                     })}
                 </div>
                 <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right dc__border-top">
-                    <button type="button" className="cta cancel h-36 flex mr-16" disabled={false} onClick={close}>
+                    <button type="button" className="cta cancel h-36 flex mr-16" onClick={close}>
                         Cancel
                     </button>
-                    <ButtonWithLoader
-                        rootClassName="cta cta--workflow"
-                        onClick={savePermission}
-                        disabled={isDataFilled}
-                        isLoading={false}
-                        loaderColor="white"
-                    >
-                        Save
-                    </ButtonWithLoader>
+                    <button type="button" className="cta h-36 flex" onClick={savePermission}>
+                        Done
+                    </button>
                 </div>
             </div>
         </VisibleModal>
