@@ -1,4 +1,4 @@
-import { components } from "react-select"
+import React, { components } from "react-select"
 import { SelectorMessaging } from "./ciConfigConstant"
 
 export const platformMenuList = (props): JSX.Element => {

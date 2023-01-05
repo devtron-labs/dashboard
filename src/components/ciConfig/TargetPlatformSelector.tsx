@@ -4,7 +4,6 @@ import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
-import { platformMenuList } from './TargetPlatformSelector.utils'
 import { TargetPlatformSelectorType } from './types'
 
 function TargetPlatformSelector({
@@ -17,6 +16,17 @@ function TargetPlatformSelector({
     targetPlatform,
     configOverrideView,
 }: TargetPlatformSelectorType) {
+
+   const platformMenuList = (props): JSX.Element => {
+    return (
+        <components.MenuList {...props}>
+            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+               {SelectorMessaging.TARGET_SELECTOR_MENU}
+            </div>
+            {props.children}
+        </components.MenuList>
+    )
+  }
 
     const noMatchingPlatformOptions = (): string => {
         return 'No matching options'
