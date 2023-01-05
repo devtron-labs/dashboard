@@ -6,6 +6,15 @@ import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
 
+const platformMenuList = (props): JSX.Element => {
+    return (
+        <components.MenuList {...props}>
+            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">{SelectorMessaging.TARGET_SELECTOR_MENU}</div>
+            {props.children}
+        </components.MenuList>
+    )
+}
+
 function TargetPlatformSelector({
     allowOverride,
     selectedTargetPlatforms,
@@ -16,18 +25,6 @@ function TargetPlatformSelector({
     targetPlatform,
     configOverrideView,
 }: TargetPlatformSelectorType) {
-
-   const platformMenuList = (props): JSX.Element => {
-    return (
-        <components.MenuList {...props}>
-            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-               {SelectorMessaging.TARGET_SELECTOR_MENU}
-            </div>
-            {props.children}
-        </components.MenuList>
-    )
-  }
-
     const noMatchingPlatformOptions = (): string => {
         return 'No matching options'
     }
@@ -84,9 +81,13 @@ function TargetPlatformSelector({
 
     const getOverridenValue = () => {
         if (!targetPlatform) {
-            return <div className="bcn-1 br-4 flex cn-7 pt-8 pb-8">{SelectorMessaging.PALTFORM_DESCRIPTION_WITH_NO_TARGET}</div>
+            return (
+                <div className="bcn-1 br-4 flex cn-7 pt-8 pb-8">
+                    {SelectorMessaging.PALTFORM_DESCRIPTION_WITH_NO_TARGET}
+                </div>
+            )
         } else {
-            if ( !targetPlatform?.includes(',')) {
+            if (!targetPlatform?.includes(',')) {
                 return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{targetPlatform}</div>
             } else {
                 return (
@@ -107,9 +108,7 @@ function TargetPlatformSelector({
             <div className="fs-13 fw-6">
                 {!allowOverride && !configOverrideView ? 'Target' : 'Set target'} platform for the build
             </div>
-            <div className="fs-13 fw-4 cn-7 mb-12">
-                {SelectorMessaging.PALTFORM_DESCRIPTION}
-            </div>
+            <div className="fs-13 fw-4 cn-7 mb-12">{SelectorMessaging.PALTFORM_DESCRIPTION}</div>
             {!allowOverride && !configOverrideView ? (
                 getOverridenValue()
             ) : (
