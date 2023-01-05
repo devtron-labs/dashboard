@@ -4,7 +4,7 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { CLUSTER_SELECT_STYLE } from '../Constants'
+import { CLUSTER_SELECT_STYLE, EVENT_LIST, K8S_RESOURCE_LIST } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
@@ -71,7 +71,7 @@ export function K8SResourceList({
                 resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource['involved object']?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
         )
@@ -90,9 +90,9 @@ export function K8SResourceList({
         const theKeyCode = event.key
         if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
-        } else{
-          handleFilterChanges(event.target.value)
-          setSearchApplied(true)
+        } else {
+            handleFilterChanges(event.target.value)
+            setSearchApplied(true)
         }
     }
 
@@ -112,21 +112,34 @@ export function K8SResourceList({
     }
 
     const handleResourceClick = (e) => {
-        const { name, tab } = e.currentTarget.dataset
-        const _url = `${url.split('/').slice(0, -1).join('/')}/${nodeType}/${name}${tab ? `/${tab.toLowerCase()}` : ''}`
+        const { name, tab, namespace, origin } = e.currentTarget.dataset
+        let resourceParam, kind, resourceName, _nodeSelectionData
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(nodeType, name, _url)
+        if (origin === 'event') {
+            resourceParam = name
+            const [_kind, _resourceName] = name.split('/')
+            kind = _kind
+            resourceName = _resourceName
+            _nodeSelectionData = { name: kind + '_' + resourceName, namespace, isFromEvent: true }
+        } else {
+            resourceParam = `${nodeType}/${name}`
+            kind = nodeType
+            resourceName = name
+            _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
+        }
+
+        const _url = `${url.split('/').slice(0, -1).join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
+
+        const isAdded = AppDetailsStore.addAppDetailsTab(kind, resourceName, _url)
 
         if (isAdded) {
-            updateNodeSelectionData(
-                resourceList.data.find((resource) => resource.name === name || resource.name === node),
-            )
+            updateNodeSelectionData(_nodeSelectionData)
             push(_url)
         } else {
             toast.error(
                 <div>
-                    <div>Max 5 tabs allowed</div>
-                    <p>Please close an open tab and try again.</p>
+                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
+                    <p>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</p>
                 </div>,
             )
         }
@@ -257,13 +270,11 @@ export function K8SResourceList({
             return renderEmptyPage()
         } else {
             if (selectedResource?.gvk.Kind === 'Event') {
-                return <EventList filteredData={filteredResourceList} updateNodeSelectionData={updateNodeSelectionData}/>
+                return <EventList filteredData={filteredResourceList} handleResourceClick={handleResourceClick} />
             }
             return (
                 <div className="scrollable-resource-list">
-                    <div
-                        className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky "
-                    >
+                    <div className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky ">
                         {resourceList.headers.map((columnName) => (
                             <div
                                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
@@ -280,7 +291,7 @@ export function K8SResourceList({
                             </div>
                         ))}
                     </div>
-                        {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
+                    {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
                 </div>
             )
         }
