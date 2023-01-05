@@ -364,7 +364,7 @@ export default function K8sListItemCard({
                             options={objectMapping?.[k8sPermission.key]}
                             isDisabled={!k8sPermission.kind}
                             value={k8sPermission.resource}
-                            name="Object name"
+                            name="Resource name"
                             onChange={onResourceObjectChange}
                             components={{
                                 IndicatorSeparator: () => null,
