@@ -6,6 +6,7 @@ import '../ResourceBrowser.scss'
 import { SidebarType } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { SIDEBAR_KEYS } from '../Constants'
+import { Progressing } from '../../common'
 
 export function Sidebar({
     k8SObjectList,
@@ -39,7 +40,7 @@ export function Sidebar({
         updateResourceSelectionData(_selectedResource)
     }
     if (!k8SObjectList.length) {
-        return null
+        return <Progressing pageLoader />
     }
     return (
         <div className="k8s-object-container p-8">
