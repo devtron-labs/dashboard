@@ -37,6 +37,7 @@ import {
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import Tippy from '@tippyjs/react'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -279,8 +280,12 @@ export default function K8sListItemCard({
                 <span>Cluster</span>
                 {!selectedPermissionAction && (
                     <span className="flex">
-                        <Clone className="icon-dim-16 mr-8 fcn-6 cursor" onClick={() => editPermission('clone')} />
-                        <Delete className="icon-dim-16 scn-6 cursor" onClick={() => editPermission('delete')} />
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Duplicate">
+                            <Clone className="icon-dim-16 mr-8 fcn-6 cursor" onClick={() => editPermission('clone')} />
+                        </Tippy>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Delete">
+                            <Delete className="icon-dim-16 scn-6 cursor" onClick={() => editPermission('delete')} />
+                        </Tippy>
                     </span>
                 )}
             </div>
