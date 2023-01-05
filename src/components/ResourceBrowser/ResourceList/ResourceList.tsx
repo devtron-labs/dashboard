@@ -69,6 +69,12 @@ export default function ResourceList() {
     }, [])
 
     useEffect(() => {
+        if (clusterId) {
+            getSidebarData()
+        }
+    }, [clusterId])
+
+    useEffect(() => {
         if (selectedResource) {
             getResourceListData()
 
@@ -157,10 +163,10 @@ export default function ResourceList() {
         }
     }
 
-    const getSidebarData = async (_clusterId?: string): Promise<void> => {
+    const getSidebarData = async (): Promise<void> => {
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(_clusterId ?? clusterId)
+            const { result } = await getResourceGroupList(clusterId)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -181,7 +187,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     const _selectedResourceParam = childNode.gvk.Kind.toLowerCase()
                     replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId ?? clusterId}/${
+                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
                         }/${_selectedResourceParam}`,
                     })
@@ -252,7 +258,6 @@ export default function ResourceList() {
 
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         setSelectedCluster(selected)
-        getSidebarData(selected.value)
         getNamespaceList(selected.value)
 
         if (!skipRedirection) {
