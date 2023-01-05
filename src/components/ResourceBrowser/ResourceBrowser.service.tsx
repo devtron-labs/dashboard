@@ -28,14 +28,6 @@ export const getResourceList = (
 }
 
 export const getResourceGroupList = (clusterId: string): Promise<APIResourceResponse> => {
-    return Promise.resolve({
-        code: 200,
-        status: 'OK',
-        result: {
-            apiResources: [{ gvk: { Group: 'apps', Version: 'v1', Kind:Nodes.DaemonSet }, namespaced: true }],
-            allowedAll: false,
-        },
-    })
     return get(`${Routes.API_RESOURCE}/${clusterId}`)
 }
 
