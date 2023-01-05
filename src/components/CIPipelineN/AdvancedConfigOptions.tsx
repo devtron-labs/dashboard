@@ -187,20 +187,20 @@ export default function AdvancedConfigOptions({
 
     const updateSelectedPlatformsCustomTargetPlatform = () => {
         let _customTargetPlatform = false
-        let _selectedPlatforms = []
         let targetPlatform = ''
-        if (parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+
+        if (parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
             targetPlatform =
                 parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
-        } else if (parentState.ciConfig?.ciBuildConfig) {
-            if (parentState.ciConfig.ciBuildConfig.dockerBuildConfig?.targetPlatform) {
+        } else if (parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
                 targetPlatform = parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform
-            }
         }
-        _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
+
+        let _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
             _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
             return { label: platformValue, value: platformValue }
         })
+        
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
     }
@@ -208,7 +208,7 @@ export default function AdvancedConfigOptions({
     const handleChangeInTargetPlatforms = () => {
         const _form = { ...formData }
         let platformsArray = []
-        selectedTargetPlatforms.forEach(function (o) {
+        selectedTargetPlatforms?.forEach(function (o) {
             platformsArray.push(o.label)
         })
         if (_form.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig) {
