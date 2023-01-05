@@ -181,6 +181,7 @@ export default function AdvancedConfigOptions({
         }
     }
 
+    const [targetPlatforms, setTargetPlatforms] = useState<string>('')
     const targetPlatformMap = getTargetPlatformMap()
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
@@ -188,7 +189,6 @@ export default function AdvancedConfigOptions({
     const updateSelectedPlatformsCustomTargetPlatform = () => {
         let _customTargetPlatform = false
         let targetPlatform = ''
-
         if (parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
             targetPlatform =
                 parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
@@ -200,7 +200,7 @@ export default function AdvancedConfigOptions({
             _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
             return { label: platformValue, value: platformValue }
         })
-        
+        setTargetPlatforms(targetPlatform)
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
     }
@@ -262,7 +262,8 @@ export default function AdvancedConfigOptions({
                         showCustomPlatformWarning={showCustomPlatformWarning}
                         setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                         targetPlatformMap={targetPlatformMap}
-                        parentState={parentState}
+                        targetPlatform={targetPlatforms}
+                        configOverrideView={false}
                     />
                 </div>
 

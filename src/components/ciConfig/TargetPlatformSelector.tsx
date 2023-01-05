@@ -11,7 +11,8 @@ export interface TargetPlatformSelector {
     showCustomPlatformWarning: boolean
     setShowCustomPlatformWarning: (value: boolean) => void
     targetPlatformMap: any
-    parentState?
+    targetPlatform?: string
+    configOverrideView?: boolean
 }
 
 function TargetPlatformSelector({
@@ -21,7 +22,8 @@ function TargetPlatformSelector({
     showCustomPlatformWarning,
     setShowCustomPlatformWarning,
     targetPlatformMap,
-    parentState,
+    targetPlatform,
+    configOverrideView,
 }: TargetPlatformSelector) {
     const platformMenuList = (props): JSX.Element => {
         return (
@@ -91,15 +93,13 @@ function TargetPlatformSelector({
     const getOverridenValue = () => {
         // let targetPlatform =
         //     parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-        let targetPlatform =
-            parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
             if(!targetPlatform){
              return <div className='bcn-1 br-4 flex cn-7 pt-8 pb-8'>
                 Target platform is not set
               </div>
             }else{
               if (targetPlatform && !targetPlatform?.includes(',')) {
-                return <div className="en-2 bw-1 br-4">{targetPlatform}</div>
+                return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{targetPlatform}</div>
               } else {
                 return (
                   <div className="flex left ">
@@ -121,7 +121,7 @@ function TargetPlatformSelector({
                 If target platform is not set, Devtron will build image for architecture and operating system of the k8s
                 node on which CI is running
             </div>
-            {!allowOverride ? (
+            {!allowOverride && !configOverrideView ? (
                 getOverridenValue()
             ) : (
                 <CreatableSelect
