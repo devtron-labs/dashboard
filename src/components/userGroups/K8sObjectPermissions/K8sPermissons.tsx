@@ -65,7 +65,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                         : element.resource[0].label}
                                 </span>
                                 <span className="dc__truncate-text">{element.action.label}</span>
-                                <span>
+                                <span className='flex right fcn-6'>
                                     <Clone
                                         className="icon-dim-16 cursor mr-8"
                                         onClick={() => editPermission(element, 'clone', index)}
