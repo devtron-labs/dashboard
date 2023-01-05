@@ -134,7 +134,7 @@ export default function CIAdvancedConfig({
     const renderTargetPlatform = () => {
         return (
             <TargetPlatformSelector
-                allowOverride={true}
+                allowOverride={allowOverride}
                 selectedTargetPlatforms={selectedTargetPlatforms}
                 setSelectedTargetPlatforms={setSelectedTargetPlatforms}
                 showCustomPlatformWarning={showCustomPlatformWarning}
