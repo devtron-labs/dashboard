@@ -21,7 +21,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView }: Even
                     <div className="cn-0 ">
                         <table className="table pl-20">
                             <thead
-                                style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: '#0B0F22' }}
+                                style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)' }}
                             >
                                 <tr className="no-events-border pl-20 event-row">
                                     {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {

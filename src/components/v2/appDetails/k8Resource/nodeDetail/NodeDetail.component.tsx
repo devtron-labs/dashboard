@@ -41,8 +41,10 @@ function NodeDetailComponent({
     const { path, url } = useRouteMatch()
 
     useEffect(() => {
-        const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
-        setTabs(_tabs)
+        if (params.nodeType) {
+            const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
+            setTabs(_tabs)
+        }
     }, [params.nodeType])
 
     useEffect(() => {
@@ -88,6 +90,11 @@ function NodeDetailComponent({
                 setResourceDeleted(true)
             } else {
                 showError(err)
+
+                // Clear out error on node change
+                if (isResourceDeleted) {
+                    setResourceDeleted(false)
+                }
             }
         } finally {
             setFetchingResource(false)

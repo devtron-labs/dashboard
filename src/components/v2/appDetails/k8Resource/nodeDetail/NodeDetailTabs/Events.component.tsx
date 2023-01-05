@@ -53,7 +53,7 @@ function EventsComponent({
     return (
         <div
             className="events-table-container"
-            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: '#0B0F22', flex: 1 }}
+            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)', flex: 1 }}
         >
             {isDeleted ? (
                 <div>
