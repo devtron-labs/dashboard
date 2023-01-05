@@ -112,7 +112,7 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
                 <div className="p-20 fs-13 dc__overflow-scroll dc__cluster-modal">
                     {!selectedPermissionAction && (
                         <div className="anchor pointer flex left fs-13 fw-6" onClick={addNewPermissionCard}>
-                            <AddIcon className="add-svg mr-12" /> Add another
+                            <AddIcon className="add-svg fcb-5 mr-12" /> Add another
                         </div>
                     )}
                     {k8PermissionList?.map((_k8sPermission, index) => {
