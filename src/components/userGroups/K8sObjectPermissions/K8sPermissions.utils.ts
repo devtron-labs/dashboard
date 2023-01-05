@@ -18,7 +18,7 @@ export const k8sPermissionRoles = [
     {
         value: ActionTypes.ADMIN,
         label: ACTION_LABEL[ActionTypes.MANAGER],
-        infoText: 'Can perform all actions and provide access to allowed K8s resources to other users.',
+        infoText: 'Can perform all actions and provide access to permitted K8s resources to other users.',
     },
 ]
 

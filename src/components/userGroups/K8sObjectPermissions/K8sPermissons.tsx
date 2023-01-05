@@ -42,13 +42,16 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
 
     return (
         <>
-            <div className="anchor pointer flex left mt-16 fs-13 fw-6" onClick={creatPermission}>
-                <AddIcon className="add-svg mr-12" /> Add permission
+            <div className="flex left mt-16 fs-13 fw-6">
+                <span className="flex cb-5 cursor" onClick={creatPermission}>
+                    <AddIcon className="fcb-5 mr-12" />
+                    Add permission
+                </span>
             </div>
             {k8sPermission?.length ? (
                 <div className="mt-16">
                     <div className="kubernetes-header dc__border-bottom fw-6 pt-8 pb-8">
-                        {HEADER_OPTIONS.map((header,key) => (
+                        {HEADER_OPTIONS.map((header, key) => (
                             <span key={key}>{header}</span>
                         ))}
                     </div>
@@ -65,7 +68,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                         : element.resource[0].label}
                                 </span>
                                 <span className="dc__truncate-text">{element.action.label}</span>
-                                <span className='flex right'>
+                                <span className="flex right">
                                     <Clone
                                         className="icon-dim-16 cursor fcn-6 mr-8"
                                         onClick={() => editPermission(element, 'clone', index)}
@@ -74,7 +77,10 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                         className="icon-dim-16 cursor scn-6 mr-8"
                                         onClick={() => editPermission(element, 'edit', index)}
                                     />
-                                    <Delete className="icon-dim-16 fcn-6 cursor" onClick={() => deletePermission(index)} />
+                                    <Delete
+                                        className="icon-dim-16 fcn-6 cursor"
+                                        onClick={() => deletePermission(index)}
+                                    />
                                 </span>
                             </div>
                         )
