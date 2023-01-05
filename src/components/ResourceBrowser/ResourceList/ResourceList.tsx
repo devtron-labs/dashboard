@@ -230,15 +230,16 @@ export default function ResourceList() {
     const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
         const warningEvents: Record<string, any>[] = [],
             otherEvents: Record<string, any>[] = []
+            eventList = eventList.reverse()
         for (const iterator of eventList) {
             console.log(iterator)
-            if (iterator.type === 'WARNING') {
-                warningEvents.push(iterator)
-            } else {
-                otherEvents.push(iterator)
+            if(iterator.type === 'Warning'){
+              warningEvents.push(iterator)
+            } else{
+              otherEvents.push(iterator)
             }
         }
-        return [...warningEvents, ...otherEvents].reverse()
+        return [...warningEvents, ...otherEvents]
     }
 
     const getResourceListData = async (): Promise<void> => {
