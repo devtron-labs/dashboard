@@ -22,7 +22,7 @@ export const k8sPermissionRoles = [
     },
 ]
 
-export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'OBJECT', 'ROLE']
+export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RESOURCE', 'ROLE']
 
 export const multiSelectAllState = (selected,actionMeta, setState, options) => {
     if (actionMeta.action === 'select-option' && actionMeta.option.value === "*") {
