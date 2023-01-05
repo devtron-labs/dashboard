@@ -86,7 +86,7 @@ export function Sidebar({
                     </Fragment>
                 ),
             )}
-            <div className="dc__border-top-n1 pt-8 mr-4">
+            <div className="dc__border-top-n1 pt-8">
                 <div
                     key={SIDEBAR_KEYS.eventGVK.Kind}
                     className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${

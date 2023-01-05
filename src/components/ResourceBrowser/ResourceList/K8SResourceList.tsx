@@ -50,12 +50,11 @@ export function K8SResourceList({
 
     useEffect(() => {
         if (resourceList?.headers.length) {
-            /*
-          166 is standard with of every column for calculations
-          295 is width of left nav + sidebar
-          200 is the diff of name column
-          */
-
+            /**
+             * 166 is standard with of every column for calculations
+             * 295 is width of left nav + sidebar
+             * 200 is the diff of name column
+             */
             const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 150
             const windowWidth = window.innerWidth
             let clientWidth = 0
@@ -139,7 +138,7 @@ export function K8SResourceList({
             toast.error(
                 <div>
                     <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                    <p>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</p>
+                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
                 </div>,
             )
         }

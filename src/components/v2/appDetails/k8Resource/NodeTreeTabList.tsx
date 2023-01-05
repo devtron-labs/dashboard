@@ -80,6 +80,10 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         )
     }
 
+    const handleTabCloseAction = (e) => {
+        handleCloseTab(e, e.currentTarget.dataset.title)
+    }
+
     return (
         <div
             className="resource-tree-wrapper flexbox pl-20 pr-20"
@@ -98,7 +102,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                 }
                                 wrap={(children) => {
                                     return (
-                                        <Tippy className="default-tt" arrow={false} placement="top" content={tab.title}>
+                                        <Tippy className="default-tt dc_max-width__max-content" arrow={false} placement="top" content={tab.title}>
                                             {children}
                                         </Tippy>
                                     )
@@ -115,7 +119,8 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                             tab.name !== AppDetailsTabs.k8s_Resources && (
                                                 <div className="resource-tab__close-wrapper flex br-5">
                                                     <Cross
-                                                        onClick={(e) => handleCloseTab(e, tab.title)}
+                                                        data-title={tab.title}
+                                                        onClick={handleTabCloseAction}
                                                         className="icon-dim-16 cursor"
                                                     />
                                                 </div>

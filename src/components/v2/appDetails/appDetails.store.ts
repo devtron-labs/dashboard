@@ -74,7 +74,7 @@ const AppDetailsStore = {
 
         let alreadyAdded = false;
         let title = objectKind + '/' + objectName;
-        objectName = objectKind + '/...' + objectName.slice(-6);
+        objectName = `${objectKind.length <= 7 ? objectKind : `${objectKind.slice(0, 7)}...`}/...${objectName.slice(-6)}`
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];

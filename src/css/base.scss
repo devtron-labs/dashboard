@@ -2111,6 +2111,10 @@ textarea,
     width: max-content;
 }
 
+.dc_max-width__max-content {
+    max-width: max-content !important;
+}
+
 //min width
 .min-w-200 {
     min-width: 200px;
