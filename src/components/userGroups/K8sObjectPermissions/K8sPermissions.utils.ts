@@ -1,3 +1,5 @@
+import React from 'react'
+import { multiSelectStyles } from '../../v2/common/ReactSelectCustomization'
 import { ActionTypes, ACTION_LABEL } from '../userGroups.types'
 
 export const apiGroupAll = (permission, isLabel = false) => {
@@ -48,4 +50,19 @@ export const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
         resource: k8sPermission?.resource,
         action: k8sPermission?.action || { value: ActionTypes.VIEW, label: ActionTypes.VIEW },
     }
+}
+
+export const k8sPermissionStyle = {
+        ...multiSelectStyles,
+        control: (base) => ({
+            ...base,
+            minHeight: '36px',
+            fontWeight: '400',
+            backgroundColor: 'var(--N00)',
+            cursor: 'pointer',
+        }),
+        dropdownIndicator: (base) => ({
+            ...base,
+            padding: '0 8px',
+        }),
 }

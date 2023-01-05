@@ -11,7 +11,7 @@ import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
-import { ApiResourceType, K8SObjectType } from '../../ResourceBrowser/Types'
+import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 const commandLineParser = require('command-line-parser')
 
@@ -1090,12 +1090,12 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
 }
 
 export const processK8SObjects = (
-    k8sObjects: ApiResourceType[],
+    k8sObjects: ApiResourceGroupType[],
     selectedResourceKind?: string,
     disableGroupFilter?: boolean
-): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceType } => {
+): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
-    let _selectedResource: ApiResourceType
+    let _selectedResource: ApiResourceGroupType
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter ? element.gvk.Group :

@@ -27,7 +27,7 @@ import { OptionType } from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import CreatableSelect from 'react-select/creatable'
-import { k8sPermissionRoles, multiSelectAllState } from './K8sPermissions.utils'
+import { k8sPermissionRoles, k8sPermissionStyle, multiSelectAllState } from './K8sPermissions.utils'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -41,6 +41,7 @@ export default function K8sListItemCard({
     setKindMapping,
     objectMapping,
     setObjectMapping,
+    selectedPermissionAction,
 }) {
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
     const [processedData, setProcessedData] = useState<any>()
@@ -58,7 +59,6 @@ export default function K8sListItemCard({
                 const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
                 handleK8sPermission('edit', index, selectedCluster)
                 getNamespaceList(selectedCluster.value)
-                getGroupKindData(selectedCluster.value)
             }
         } catch (err) {
             showError(err)
@@ -68,12 +68,9 @@ export default function K8sListItemCard({
     const getNamespaceList = async (clusterId: string) => {
         try {
             const { result } = await namespaceListByClusterId(clusterId)
-            const _namespaceOptions = convertToOptionsList(result).map((option) => {
-                if(option.label === '*'){
-                    return { label: 'All Namespaces / Cluster scoped', value: '*' }
-                }else return option
-            })
+            const _namespaceOptions = [{ label: 'All Namespaces / Cluster scoped', value: '*' },...convertToOptionsList?.(result)]
             setNamespaceMapping(_namespaceOptions)
+            getGroupKindData(clusterId)
         } catch (err) {
             showError(err)
         }
@@ -82,8 +79,8 @@ export default function K8sListItemCard({
     const getGroupKindData = async (clusterId): Promise<void> => {
         try {
             const { result: resourceGroupList } = await getResourceGroupList(clusterId)
-            if (resourceGroupList) {
-                const _processedData = processK8SObjects(resourceGroupList, '', true)
+            if (resourceGroupList.apiResources) {
+                const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
                 const _k8SObjectList: OptionType[] = []
                 for (const [key, value] of _k8SObjectMap.entries()) {
@@ -94,7 +91,7 @@ export default function K8sListItemCard({
                 setProcessedData(_k8SObjectMap)
                 setApiGroupMapping({
                     [k8sPermission.key]: [
-                        { label: 'All API groups', value: '*' },
+                        ...[resourceGroupList.allowedAll && { label: 'All API groups', value: '*' }],
                         { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
                         ..._k8SObjectList,
                     ],
@@ -175,7 +172,6 @@ export default function K8sListItemCard({
     const onNameSpaceSelection = (selected) => {
         if (selected.value !== k8sPermission?.namespace?.value) {
             handleK8sPermission('onNamespaceChange', index, selected)
-            getGroupKindData(k8sPermission?.cluster.value)
         }
     }
 
@@ -225,10 +221,10 @@ export default function K8sListItemCard({
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-6 mb-6 flex dc__content-space">
                 <span>Cluster</span>
-                <span className="flex">
+                {!selectedPermissionAction && <span className="flex">
                     <Clone className="icon-dim-16 mr-8 fcn-6 cursor" onClick={() => editPermission('clone')} />
                     <Delete className="icon-dim-16 scn-6 cursor" onClick={() => editPermission('delete')} />
-                </span>
+                </span>}
             </div>
             <div className="mb-16">
                 <ReactSelect
@@ -241,20 +237,7 @@ export default function K8sListItemCard({
                         IndicatorSeparator: null,
                         Option: SingleSelectOption,
                     }}
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base) => ({
-                            ...base,
-                            minHeight: '36px',
-                            fontWeight: '400',
-                            backgroundColor: 'var(--N00)',
-                            cursor: 'pointer',
-                        }),
-                        dropdownIndicator: (base) => ({
-                            ...base,
-                            padding: '0 8px',
-                        }),
-                    }}
+                    styles={k8sPermissionStyle}
                 />
             </div>
             {k8sPermission?.cluster && (
@@ -273,20 +256,7 @@ export default function K8sListItemCard({
                                 Option: SingleSelectOption,
                                 MenuList: (props) => menuComponent(props, 'namespaces'),
                             }}
-                            styles={{
-                                ...multiSelectStyles,
-                                control: (base) => ({
-                                    ...base,
-                                    minHeight: '36px',
-                                    fontWeight: '400',
-                                    backgroundColor: 'var(--N00)',
-                                    cursor: 'pointer',
-                                }),
-                                dropdownIndicator: (base) => ({
-                                    ...base,
-                                    padding: '0 8px',
-                                }),
-                            }}
+                            styles={k8sPermissionStyle}
                         />
                     </div>
                     <div className="flexbox w-100">
@@ -305,20 +275,7 @@ export default function K8sListItemCard({
                                         Option: SingleSelectOption,
                                         MenuList: (props) => menuComponent(props, 'API Group'),
                                     }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        control: (base) => ({
-                                            ...base,
-                                            minHeight: '36px',
-                                            fontWeight: '400',
-                                            backgroundColor: 'var(--N00)',
-                                            cursor: 'pointer',
-                                        }),
-                                        dropdownIndicator: (base) => ({
-                                            ...base,
-                                            padding: '0 8px',
-                                        }),
-                                    }}
+                                    styles={k8sPermissionStyle}
                                 />
                             </div>
                         </div>
@@ -337,20 +294,7 @@ export default function K8sListItemCard({
                                         Option: SingleSelectOption,
                                         MenuList: (props) => menuComponent(props, 'kinds'),
                                     }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        control: (base) => ({
-                                            ...base,
-                                            minHeight: '36px',
-                                            fontWeight: '400',
-                                            backgroundColor: 'var(--N00)',
-                                            cursor: 'pointer',
-                                        }),
-                                        dropdownIndicator: (base) => ({
-                                            ...base,
-                                            padding: '0 8px',
-                                        }),
-                                    }}
+                                    styles={k8sPermissionStyle}
                                 />
                             </div>
                         </div>
@@ -378,25 +322,14 @@ export default function K8sListItemCard({
                             isMulti
                             hideSelectedOptions={false}
                             styles={{
-                                ...multiSelectStyles,
-                                control: (base) => ({
-                                    ...base,
-                                    fontWeight: '400',
-                                    backgroundColor: 'var(--N00)',
-                                    cursor: 'pointer',
-                                }),
-                                dropdownIndicator: (base, state) => ({
-                                    ...base,
-                                    transition: 'all .2s ease',
-                                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                }),
+                                ...k8sPermissionStyle,
                                 multiValue: (base) => ({
                                     ...base,
                                     border: `1px solid var(--N200)`,
                                     borderRadius: `4px`,
                                     background: 'white',
                                     height: '30px',
-                                    margin: '0 8px 0 0',
+                                    margin: '4px 8px 4px 0',
                                     padding: '1px',
                                 }),
                             }}
@@ -421,30 +354,7 @@ export default function K8sListItemCard({
                                 ValueContainer: customValueContainer,
                             }}
                             styles={{
-                                ...multiSelectStyles,
-                                option: (base, state) => ({
-                                    ...base,
-                                    borderRadius: '4px',
-                                    color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-                                    backgroundColor: state.isSelected
-                                        ? 'var(--B100)'
-                                        : state.isFocused
-                                        ? 'var(--N100)'
-                                        : 'white',
-                                    fontWeight: state.isSelected ? 600 : 'normal',
-                                    marginRight: '8px',
-                                }),
-                                control: (base) => ({
-                                    ...base,
-                                    minHeight: '36px',
-                                    fontWeight: '400',
-                                    backgroundColor: 'var(--N00)',
-                                    cursor: 'pointer',
-                                }),
-                                dropdownIndicator: (base) => ({
-                                    ...base,
-                                    padding: '0 8px',
-                                }),
+                                ...k8sPermissionStyle,
                                 valueContainer: (base, state) => ({
                                     ...base,
                                     display: 'flex',

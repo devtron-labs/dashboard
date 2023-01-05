@@ -18,19 +18,24 @@ export interface ResourceListResponse extends ResponseType {
     result?: ResourceDetailType
 }
 
-export interface ApiResourceType {
+export interface ApiResourceGroupType {
     gvk: GVKType
     namespaced: boolean
 }
 
+export interface ApiResourceType {
+    apiResources: ApiResourceGroupType[]
+    allowedAll: boolean
+}
+
 export interface APIResourceResponse extends ResponseType {
-    result?: ApiResourceType[]
+    result?: ApiResourceType
 }
 
 export interface K8SObjectType {
     name: string
     isExpanded: boolean
-    child: ApiResourceType[]
+    child: ApiResourceGroupType[]
 }
 
 export interface ResourceListPayloadType {
@@ -84,12 +89,12 @@ export interface CreateResourceType {
 export interface SidebarType {
     k8SObjectList: K8SObjectType[]
     handleGroupHeadingClick: (e) => void
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceType>>
-    updateResourceSelectionData: (_selected: ApiResourceType) => void
+    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
+    updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
 }
 
 export interface K8SResourceListType {
-    selectedResource: ApiResourceType
+    selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
     filteredResourceList: Record<string, any>[]
     setFilteredResourceList: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
@@ -109,7 +114,7 @@ export interface ResourceBrowserActionMenuType {
     clusterId: string
     namespace: string
     resourceData: Record<string, any>
-    selectedResource: ApiResourceType
+    selectedResource: ApiResourceGroupType
     getResourceListData: () => Promise<void>
     handleResourceClick: (e: any) => void
 }
