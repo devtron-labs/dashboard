@@ -9,7 +9,7 @@ import {
     showError,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
+import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
 import {
     getClusterList,
     getResourceGroupList,
@@ -53,12 +53,12 @@ export default function ResourceList() {
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const [selectedResource, setSelectedResource] = useState<ApiResourceType>(null)
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
-    const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceType>>()
+    const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const abortController = new AbortController()
@@ -166,9 +166,9 @@ export default function ResourceList() {
     const getSidebarData = async (): Promise<void> => {
         try {
             setLoader(true)
-            const { result: resourceGroupList } = await getResourceGroupList(clusterId)
-            if (resourceGroupList) {
-                const processedData = processK8SObjects(resourceGroupList, nodeType)
+            const { result } = await getResourceGroupList(clusterId)
+            if (result) {
+                const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
                 let _selectedResource = processedData.selectedResource
                 const _k8SObjectList: K8SObjectType[] = []
@@ -278,7 +278,7 @@ export default function ResourceList() {
         getSidebarData()
     }
 
-    const updateResourceSelectionData = (_selected: ApiResourceType) => {
+    const updateResourceSelectionData = (_selected: ApiResourceGroupType) => {
         if (_selected) {
             setResourceSelectionData((prevData) => ({
                 ...prevData,
