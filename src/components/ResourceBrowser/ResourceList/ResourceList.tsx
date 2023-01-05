@@ -17,7 +17,7 @@ import {
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, ORDERED_AGGREGATORS } from '../Constants'
+import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS } from '../Constants'
 import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
@@ -29,8 +29,9 @@ import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
-import '../ResourceBrowser.scss'
 import ResourceListEmptyState from './ResourceListEmptyState'
+import Tippy from '@tippyjs/react'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -66,12 +67,6 @@ export default function ResourceList() {
     useEffect(() => {
         getClusterData()
     }, [])
-
-    useEffect(() => {
-        if (clusterId) {
-            getSidebarData()
-        }
-    }, [clusterId])
 
     useEffect(() => {
         if (selectedResource) {
@@ -136,8 +131,7 @@ export default function ResourceList() {
             setClusterOptions(_clusterOptions)
             const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
             if (_selectedCluster) {
-                setSelectedCluster(_selectedCluster || _clusterOptions[0])
-                getNamespaceList(_selectedCluster.value)
+                onChangeCluster(_selectedCluster, false, true)
             } else if (_clusterOptions.length === 1) {
                 onChangeCluster(_clusterOptions[0], true)
             }
@@ -148,10 +142,10 @@ export default function ResourceList() {
         }
     }
 
-    const getNamespaceList = async (clusterId: string) => {
+    const getNamespaceList = async (_clusterId: string) => {
         try {
-            const { result } = await namespaceListByClusterId(clusterId)
-            if (result) {
+            const { result } = await namespaceListByClusterId(_clusterId)
+            if (Array.isArray(result)) {
                 const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result.sort())]
                 setNamespaceOptions(_namespaceOptions)
 
@@ -163,10 +157,10 @@ export default function ResourceList() {
         }
     }
 
-    const getSidebarData = async (): Promise<void> => {
+    const getSidebarData = async (_clusterId?: string): Promise<void> => {
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(clusterId)
+            const { result } = await getResourceGroupList(_clusterId ?? clusterId)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -187,7 +181,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     const _selectedResourceParam = childNode.gvk.Kind.toLowerCase()
                     replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId ?? clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
                         }/${_selectedResourceParam}`,
                     })
@@ -256,18 +250,22 @@ export default function ResourceList() {
         setK8SObjectList(_k8SObjectList)
     }
 
-    const onChangeCluster = (selected, fromClusterSelect?: boolean): void => {
+    const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         setSelectedCluster(selected)
+        getSidebarData(selected.value)
         getNamespaceList(selected.value)
-        const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
-        if (fromClusterSelect) {
-            replace({
-                pathname: path,
-            })
-        } else {
-            push({
-                pathname: path,
-            })
+
+        if (!skipRedirection) {
+            const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}`
+            if (fromClusterSelect) {
+                replace({
+                    pathname: path,
+                })
+            } else {
+                push({
+                    pathname: path,
+                })
+            }
         }
     }
 
@@ -435,9 +433,16 @@ export default function ResourceList() {
                         </div>
                         <div className="fs-13 flex pt-12 pb-12">
                             {!showErrorState && (
-                                <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
-                                    <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
-                                </div>
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={K8S_RESOURCE_LIST.createResource}
+                                >
+                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                        <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
+                                    </div>
+                                </Tippy>
                             )}
                             {!node && lastDataSyncTimeString && (
                                 <div className="ml-12 flex pl-12 dc__border-left">

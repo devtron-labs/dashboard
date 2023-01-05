@@ -98,7 +98,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                 }
                                 wrap={(children) => {
                                     return (
-                                        <Tippy className="default-tt" arrow={false} placement="top" content={tab.title}>
+                                        <Tippy className="default-tt dc_max-width__max-content" arrow={false} placement="top" content={tab.title}>
                                             {children}
                                         </Tippy>
                                     )
