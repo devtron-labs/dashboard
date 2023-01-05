@@ -105,7 +105,7 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
         <Drawer onClose={close} position={'right'} width="800px">
             <div onClick={stopPropogation} className="h-100 dc__overflow-hidden">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bcn-0 dc__border-bottom">
-                    <span className="flex left fw-6 lh-24 fs-16">Kubernetes object permission</span>
+                    <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>
                     <span className="icon-dim-20 cursor" onClick={close}>
                         <Close />
                     </span>

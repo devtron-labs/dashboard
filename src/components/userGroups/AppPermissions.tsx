@@ -246,7 +246,7 @@ export default function AppPermissions({
                     group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
                     action: k8sPermissionRoles.find((_role) => _role.value === k8s.action),
                     kind: { label: k8s.kind === '' ? 'All Kinds' : k8s.kind, value: k8s.kind === '' ? '*' : k8s.kind },
-                    resource: k8s.resource.split(',')?.map((entity) => ({ value: entity || '*', label: entity || 'All object' })),
+                    resource: k8s.resource.split(',')?.map((entity) => ({ value: entity || '*', label: entity || 'All resources' })),
                 }
             })
 
@@ -432,7 +432,7 @@ export default function AppPermissions({
                 </li>
                 <li className="tab-list__tab">
                     <NavLink to={`${url}/kubernetes-objects`} className="tab-list__tab-link" activeClassName="active">
-                        Kubernetes objects
+                        Kubernetes Resources
                     </NavLink>
                 </li>
                 {serverMode !== SERVER_MODE.EA_ONLY && (

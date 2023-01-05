@@ -112,13 +112,13 @@ export default function K8sListItemCard({
         const kind: OptionType[] = []
         if (selected.value === '*') {
             for (const [key, value] of (_k8SObjectMap || processedData).entries()) {
-                value?.child.map((ele) => {
+                value?.child.forEach((ele) => {
                     kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'] })
                 })
             }
         } else {
             const data = (_k8SObjectMap || processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
-            data?.child?.map((ele) => {
+            data?.child?.forEach((ele) => {
                 if (ele.namespaced) {
                     kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'] })
                 }
@@ -154,7 +154,7 @@ export default function K8sListItemCard({
             const { result } = await getResourceList(resourceListPayload)
             setObjectMapping({
                 [k8sPermission.key]: [
-                    { label: 'All object', value: '*' },
+                    { label: 'All resources', value: '*' },
                     ...result?.data?.map((ele) => {
                         return { label: ele['name'], value: ele['name'] }
                     }),
@@ -193,7 +193,7 @@ export default function K8sListItemCard({
                 getResourceListData(selected)
             } else {
                 setObjectMapping({
-                    [k8sPermission.key]: [{ label: 'All object', value: '*' }],
+                    [k8sPermission.key]: [{ label: 'All resources', value: '*' }],
                 })
             }
         }
@@ -355,7 +355,7 @@ export default function K8sListItemCard({
                             </div>
                         </div>
                     </div>
-                    <div className="cn-6 mb-6">Object name</div>
+                    <div className="cn-6 mb-6">Resource name</div>
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select object"
@@ -372,7 +372,7 @@ export default function K8sListItemCard({
                                 ClearIndicator,
                                 MultiValueRemove,
                                 Option,
-                                MenuList: (props) => menuComponent(props, 'object name'),
+                                MenuList: (props) => menuComponent(props, 'resource name'),
                             }}
                             closeMenuOnSelect={false}
                             isMulti
