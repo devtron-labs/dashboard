@@ -113,7 +113,7 @@ export interface CreateGroup {
 }
 
 export interface K8sPermissionFilter  {
-    entity?: EntityTypes.CLUSTER
+    entity: EntityTypes
     cluster: OptionType
     namespace: OptionType
     group: OptionType
@@ -172,8 +172,8 @@ export interface AppPermissionsType {
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
     hideInfoLegend?: boolean
     k8sPermission?: K8sPermissionFilter[]
-    setK8sPermission?: React.Dispatch<React.SetStateAction<any[]>>
-    setCurrentK8sPermission?: React.Dispatch<React.SetStateAction<any[]>>
+    setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
+    currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
 }
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS

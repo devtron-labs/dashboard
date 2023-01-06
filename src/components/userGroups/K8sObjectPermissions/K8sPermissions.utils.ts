@@ -1,6 +1,6 @@
 import React from 'react'
 import { multiSelectStyles } from '../../v2/common/ReactSelectCustomization'
-import { ActionTypes, ACTION_LABEL } from '../userGroups.types'
+import { ActionTypes, ACTION_LABEL, EntityTypes, K8sPermissionFilter } from '../userGroups.types'
 
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
@@ -44,7 +44,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
     }
 }
 
-export const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
+export const getEmptyPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter) => {
     if (k8sPermission) {
         return {
             key: idx,
@@ -54,6 +54,7 @@ export const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
             kind: k8sPermission.kind,
             resource: k8sPermission.resource,
             action: k8sPermission.action,
+            entity: k8sPermission.entity,
         }
     }
     return {
@@ -64,6 +65,7 @@ export const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
         kind: null,
         resource: null,
         action: { value: ActionTypes.VIEW, label: ACTION_LABEL[ActionTypes.VIEW] },
+        entity: EntityTypes.CLUSTER,
     }
 }
 
@@ -135,4 +137,11 @@ export const resourceMultiSelectstyles = {
         margin: '4px 8px 4px 0',
         padding: '1px',
     }),
+}
+
+export const excludeKeyAndClusterValue = ({ key, cluster, ...rest }) => {
+    return {
+        cluster: { label: cluster.label, value: cluster.label },
+        ...rest
+    }
 }
