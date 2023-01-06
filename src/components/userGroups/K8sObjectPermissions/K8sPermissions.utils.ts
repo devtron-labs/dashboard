@@ -96,12 +96,13 @@ export const k8sRoleSelectionStyle = {
         fontWeight: state.isSelected ? 600 : 'normal',
         marginRight: '8px',
     }),
-    control: (base) => ({
+    control: (base,state) => ({
         ...base,
         minHeight: '36px',
         fontWeight: '400',
-        backgroundColor: 'var(--N00)',
-        cursor: 'pointer',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
+        pointerEvents: 'auto',
+        cursor: state.isDisabled ? 'not-allowed' : 'cursor',
     }),
     dropdownIndicator: (base) => ({
         ...base,
