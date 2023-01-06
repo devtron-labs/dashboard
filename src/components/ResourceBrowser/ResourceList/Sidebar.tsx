@@ -63,7 +63,8 @@ export function Sidebar({
                                 {k8sObject.child.map((childData) =>
                                     childData.gvk.Kind.toLowerCase() === 'node' ||
                                     childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-                                    childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ? null : (
+                                    childData.gvk.Kind.toLowerCase() ===
+                                        SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ? null : (
                                         <div
                                             key={childData.gvk.Kind}
                                             className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
@@ -87,36 +88,40 @@ export function Sidebar({
                 ),
             )}
             <div className="dc__border-top-n1 pt-8">
-                <div
-                    key={SIDEBAR_KEYS.eventGVK.Kind}
-                    className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                        nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                            ? 'bcb-1 cb-5'
-                            : 'cn-7 resource-tree-object'
-                    }`}
-                    data-group={SIDEBAR_KEYS.eventGVK.Group}
-                    data-version={SIDEBAR_KEYS.eventGVK.Version}
-                    data-kind={SIDEBAR_KEYS.eventGVK.Kind}
-                    data-namespaced={true}
-                    onClick={selectNode}
-                >
-                    {SIDEBAR_KEYS.events}
-                </div>
-                <div
-                    key={SIDEBAR_KEYS.namespaceGVK.Kind}
-                    className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                        nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
-                            ? 'bcb-1 cb-5'
-                            : 'cn-7 resource-tree-object'
-                    }`}
-                    data-group={SIDEBAR_KEYS.namespaceGVK.Group}
-                    data-version={SIDEBAR_KEYS.namespaceGVK.Version}
-                    data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
-                    data-namespaced={false}
-                    onClick={selectNode}
-                >
-                    {SIDEBAR_KEYS.namespaces}
-                </div>
+                {SIDEBAR_KEYS.eventGVK.Version && (
+                    <div
+                        key={SIDEBAR_KEYS.eventGVK.Kind}
+                        className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                            nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                                ? 'bcb-1 cb-5'
+                                : 'cn-7 resource-tree-object'
+                        }`}
+                        data-group={SIDEBAR_KEYS.eventGVK.Group}
+                        data-version={SIDEBAR_KEYS.eventGVK.Version}
+                        data-kind={SIDEBAR_KEYS.eventGVK.Kind}
+                        data-namespaced={true}
+                        onClick={selectNode}
+                    >
+                        {SIDEBAR_KEYS.events}
+                    </div>
+                )}
+                {SIDEBAR_KEYS.namespaceGVK.Version && (
+                    <div
+                        key={SIDEBAR_KEYS.namespaceGVK.Kind}
+                        className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                            nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                                ? 'bcb-1 cb-5'
+                                : 'cn-7 resource-tree-object'
+                        }`}
+                        data-group={SIDEBAR_KEYS.namespaceGVK.Group}
+                        data-version={SIDEBAR_KEYS.namespaceGVK.Version}
+                        data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
+                        data-namespaced={false}
+                        onClick={selectNode}
+                    >
+                        {SIDEBAR_KEYS.namespaces}
+                    </div>
+                )}
             </div>
         </div>
     )

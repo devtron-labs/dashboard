@@ -107,7 +107,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                 </div>
                 <div className="en-2 bw-1 bcn-0 br-4">
                     {renderSearch()}
-                    {filteredClusterList.length === 0 ? renderNoResults() : renderClusterList()}
+                    {filteredClusterList?.length === 0 ? renderNoResults() : renderClusterList()}
                 </div>
             </div>
         </div>

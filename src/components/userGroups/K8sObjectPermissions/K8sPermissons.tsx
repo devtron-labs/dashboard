@@ -6,6 +6,7 @@ import { ReactComponent as Delete } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { K8sPermission } from '../userGroups.types'
+import Tippy from '@tippyjs/react'
 
 export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPermission) {
     const [togglePermissionModal, setPermissionToggleModal] = useState<boolean>()
@@ -67,20 +68,26 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                         ? element.resource.length + ' objects'
                                         : element.resource[0].label}
                                 </span>
-                                <span className="dc__truncate-text">{element.action.label}</span>
+                                <span className="dc__truncate-text">{element.action?.label}</span>
                                 <span className="flex right">
-                                    <Clone
-                                        className="icon-dim-16 cursor fcn-6 mr-8"
-                                        onClick={() => editPermission(element, 'clone', index)}
-                                    />
-                                    <Edit
-                                        className="icon-dim-16 cursor scn-6 mr-8"
-                                        onClick={() => editPermission(element, 'edit', index)}
-                                    />
-                                    <Delete
-                                        className="icon-dim-16 fcn-6 cursor"
-                                        onClick={() => deletePermission(index)}
-                                    />
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
+                                        <Clone
+                                            className="icon-dim-16 cursor fcn-6 mr-8"
+                                            onClick={() => editPermission(element, 'clone', index)}
+                                        />
+                                    </Tippy>
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                        <Edit
+                                            className="icon-dim-16 cursor scn-6 mr-8"
+                                            onClick={() => editPermission(element, 'edit', index)}
+                                        />
+                                    </Tippy>
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                        <Delete
+                                            className="icon-dim-16 fcn-6 cursor"
+                                            onClick={() => deletePermission(index)}
+                                        />
+                                    </Tippy>
                                 </span>
                             </div>
                         )

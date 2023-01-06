@@ -78,10 +78,12 @@ export const MultiValueRemove = (props) => {
     )
 }
 
-export const MultiValueChipContainer = ({ validator, ...props }) => {
+export const MultiValueChipContainer = ({ validator,  isAllSelected = false, ...props }) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data
     const isValidEmail = validator ? validator(value) : true
+
+    if(isAllSelected && value !== '*') return null
     
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>

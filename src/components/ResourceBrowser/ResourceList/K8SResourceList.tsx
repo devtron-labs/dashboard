@@ -4,7 +4,7 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { CLUSTER_SELECT_STYLE, EVENT_LIST, K8S_RESOURCE_LIST } from '../Constants'
+import { CLUSTER_SELECT_STYLE, EVENT_LIST, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
@@ -29,6 +29,10 @@ export function K8SResourceList({
     resourceListLoader,
     getResourceListData,
     updateNodeSelectionData,
+    searchText,
+    setSearchText,
+    searchApplied,
+    setSearchApplied,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -39,14 +43,7 @@ export function K8SResourceList({
         nodeType: string
         node: string
     }>()
-    const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
-
-    useEffect(() => {
-        setSearchText('')
-        setSearchApplied(false)
-    }, [selectedResource?.gvk.Kind])
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -72,7 +69,8 @@ export function K8SResourceList({
                 resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
                 resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
+                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
         )
         setFilteredResourceList(_filteredData)
     }
@@ -104,6 +102,9 @@ export function K8SResourceList({
     }
 
     const handleNamespaceChange = (selected): void => {
+        if (selected.value === selectedNamespace?.value) {
+            return
+        }
         setSelectedNamespace(selected)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
@@ -268,7 +269,7 @@ export function K8SResourceList({
         if (filteredResourceList.length === 0) {
             return renderEmptyPage()
         } else {
-            if (selectedResource?.gvk.Kind === 'Event') {
+            if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
                 return <EventList filteredData={filteredResourceList} handleResourceClick={handleResourceClick} />
             }
             return (

@@ -148,8 +148,8 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                                 className="created-resource-row pt-8 pr-20 pb-8 pl-20"
                                 key={`${resource.kind}/${resource.name}`}
                             >
-                                <div>{resource.kind}</div>
-                                <div>{resource.name}</div>
+                                <div className="dc__ellipsis-right">{resource.kind}</div>
+                                <div className="dc__word-break">{resource.name}</div>
                                 <div className="flexbox">
                                     {resource.error ? (
                                         <>
@@ -165,7 +165,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                                         </>
                                     )}
                                 </div>
-                                <div>{resource.error}</div>
+                                <div className="dc__word-break">{resource.error}</div>
                             </div>
                         ))}
                     </div>

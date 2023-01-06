@@ -13,6 +13,7 @@ import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
+import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1092,16 +1093,19 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
 export const processK8SObjects = (
     k8sObjects: ApiResourceGroupType[],
     selectedResourceKind?: string,
-    disableGroupFilter?: boolean
+    disableGroupFilter?: boolean,
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
-    let _selectedResource: ApiResourceGroupType
+    let _selectedResource: ApiResourceGroupType,
+        isShowNamespace = false,
+        isShowEvent = false
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
-        const groupParent = disableGroupFilter ? element.gvk.Group :
-        element.gvk.Group.endsWith('.k8s.io')
-        ? AggregationKeys['Other Resources']
-        : getAggregator(element.gvk.Kind)
+        const groupParent = disableGroupFilter
+            ? element.gvk.Group
+            : element.gvk.Group.endsWith('.k8s.io')
+            ? AggregationKeys['Other Resources']
+            : getAggregator(element.gvk.Kind)
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
         }
@@ -1118,10 +1122,15 @@ export const processK8SObjects = (
                 currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
+        if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
+            SIDEBAR_KEYS.eventGVK = { ...element.gvk }
+        }
+        if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
+            SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
+        }
     }
     for (const [, _k8sObject] of _k8SObjectMap.entries()) {
         _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
-
