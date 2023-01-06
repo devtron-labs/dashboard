@@ -1092,14 +1092,16 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
 export const processK8SObjects = (
     k8sObjects: ApiResourceGroupType[],
     selectedResourceKind?: string,
+    disableGroupFilter?: boolean
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
     let _selectedResource: ApiResourceGroupType
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
-        const groupParent = element.gvk.Group.endsWith('.k8s.io')
-            ? AggregationKeys['Other Resources']
-            : getAggregator(element.gvk.Kind)
+        const groupParent = disableGroupFilter ? element.gvk.Group :
+        element.gvk.Group.endsWith('.k8s.io')
+        ? AggregationKeys['Other Resources']
+        : getAggregator(element.gvk.Kind)
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
         }
@@ -1122,3 +1124,4 @@ export const processK8SObjects = (
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
+

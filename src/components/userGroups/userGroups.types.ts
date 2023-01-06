@@ -17,6 +17,13 @@ export enum ActionTypes {
     UPDATE = 'update',
     EDIT = 'edit',
 }
+
+export const ACTION_LABEL = {
+    [ActionTypes.ADMIN]: 'Admin',
+    [ActionTypes.VIEW]: 'View',
+    [ActionTypes.MANAGER]: 'Manager',
+}
+
 export interface CollapsedUserOrGroupProps {
     index: number;
     email_id?: string;
@@ -29,11 +36,16 @@ export interface CollapsedUserOrGroupProps {
     createCallback: (payload: any) => void;
 }
 interface RoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER;
     team?: OptionType;
     entityName?: OptionType[];
     environment?: OptionType[];
     action?: any;
+    cluster?: OptionType,
+    namespace?: OptionType,
+    group?: OptionType,
+    kind?: OptionType,
+    resource?: any
 }
 
 export interface DirectPermissionsRoleFilter extends RoleFilter {
@@ -58,12 +70,17 @@ export interface ChartGroupPermissionsFilter extends RoleFilter {
 }
 
 export interface APIRoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP;
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER;
     team?: string;
     entityName?: string;
     environment?: string;
     action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*';
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
+    cluster?: OptionType,
+    namespace?: any,
+    group?: any,
+    kind?: any,
+    resource?: any
 }
 
 export interface OptionType {
@@ -91,6 +108,21 @@ export interface CreateGroup {
     name: string;
     description: string;
     roleFilters: APIRoleFilter[];
+}
+
+export interface K8sPermissionFilter {
+    entity: EntityTypes.CLUSTER,
+    cluster: OptionType,
+    namespace: OptionType,
+    group: OptionType,
+    action: OptionType,
+    kind: OptionType,
+    resource: any
+}
+
+export interface K8sPermission {
+    k8sPermission: any[],
+    setK8sPermission: (any) => void
 }
 
 export enum UserRoleType {

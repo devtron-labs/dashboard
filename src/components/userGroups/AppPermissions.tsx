@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -12,9 +12,12 @@ import {
     CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
+    K8sPermissionFilter,
 } from './userGroups.types'
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
+import { apiGroupAll, k8sPermissionRoles } from './K8sObjectPermissions/K8sPermissions.utils'
 interface AppPermissionsType {
     data: CreateGroup | CreateUser
     directPermission: DirectPermissionsRoleFilter[]
@@ -22,6 +25,8 @@ interface AppPermissionsType {
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
     hideInfoLegend?: boolean
+    k8sPermission?: K8sPermissionFilter[]
+    setK8sPermission?: (...rest) => void
 }
 interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
@@ -39,6 +44,8 @@ export default function AppPermissions({
     chartPermission,
     setChartPermission,
     hideInfoLegend,
+    k8sPermission,
+    setK8sPermission,
 }: AppPermissionsType) {
     const { serverMode } = useContext(mainContext)
     const {
@@ -223,6 +230,28 @@ export default function AppPermissions({
 
             setChartPermission(chartPermission)
         }
+        const tempK8sPermission: APIRoleFilter[] = roleFilters?.filter(
+            (roleFilter) => roleFilter.entity === EntityTypes.CLUSTER,
+        )
+
+        if (tempK8sPermission) {
+            const k8sPermission = tempK8sPermission.map((k8s) => {
+                return {
+                    entity: EntityTypes.CLUSTER,
+                    cluster: { label: k8s.cluster, value: k8s.cluster },
+                    namespace: {
+                        label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
+                        value: k8s.namespace === '' ? '*' : k8s.namespace,
+                    },
+                    group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
+                    action: k8sPermissionRoles.find((_role) => _role.value === k8s.action),
+                    kind: { label: k8s.kind === '' ? 'All Kinds' : k8s.kind, value: k8s.kind === '' ? '*' : k8s.kind },
+                    resource: k8s.resource.split(',')?.map((entity) => ({ value: entity || '*', label: entity || 'All resources' })),
+                }
+            })
+
+            setK8sPermission(k8sPermission)
+        }
     }
 
     function setClusterValues(startsWithHash, clusterName) {
@@ -401,6 +430,11 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
+                <li className="tab-list__tab">
+                    <NavLink to={`${url}/kubernetes-objects`} className="tab-list__tab-link" activeClassName="active">
+                        Kubernetes Resources
+                    </NavLink>
+                </li>
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
@@ -432,6 +466,9 @@ export default function AppPermissions({
                             directPermission={directPermission}
                             hideInfoLegend={hideInfoLegend}
                         />
+                    </Route>
+                    <Route path={`${path}/kubernetes-objects`}>
+                        <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
                     </Route>
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <Route path={`${path}/chart-groups`}>

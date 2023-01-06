@@ -19,7 +19,7 @@ export const namespaceListByClusterId = (clusterId: string): Promise<ResponseTyp
 
 export const getResourceList = (
     resourceListPayload: ResourceListPayloadType,
-    signal: AbortSignal,
+    signal?: AbortSignal,
 ): Promise<ResourceListResponse> => {
     return post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
         signal,

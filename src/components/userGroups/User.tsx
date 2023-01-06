@@ -22,6 +22,7 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
+    K8sPermissionFilter,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext, GroupRow } from './UserGroup';
@@ -80,6 +81,7 @@ export default function UserForm({
         action: ActionTypes.VIEW,
         entityName: [],
     });
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [userGroups, setUserGroups] = useState<OptionType[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
@@ -185,6 +187,18 @@ export default function UserForm({
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
+                    ...k8sPermission.map((permission) => ({
+                        ...permission,
+                        entity: EntityTypes.CLUSTER,
+                        action: permission.action.value,
+                        cluster: permission.cluster.label,
+                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                        resource: permission.resource.find((entity) => entity.value === '*')
+                        ? ''
+                        : permission.resource.map((entity) => entity.value).join(',')
+                    }))
             ],
             superAdmin: localSuperAdmin === 'SUPERADMIN',
         };
@@ -424,6 +438,8 @@ export default function UserForm({
                         setDirectPermission={setDirectPermission}
                         chartPermission={chartPermission}
                         setChartPermission={setChartPermission}
+                        k8sPermission={k8sPermission}
+                        setK8sPermission={setK8sPermission}
                     />
                 </>
             )}

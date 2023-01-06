@@ -82,6 +82,7 @@ export const MultiValueChipContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data
     const isValidEmail = validator ? validator(value) : true
+    
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
             <div className={`flex fs-12 pl-4 pr-4`}>
