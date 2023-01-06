@@ -108,13 +108,13 @@ export const SIDEBAR_KEYS = {
     events: 'Events',
     namespaces: 'Namespaces',
     eventGVK: {
-        Group: 'events.k8s.io',
-        Version: 'v1',
+        Group: '',
+        Version: '',
         Kind: 'Event',
     },
     namespaceGVK: {
         Group: '',
-        Version: 'v1',
+        Version: '',
         Kind: 'Namespace',
     },
 }

@@ -232,7 +232,6 @@ export default function ResourceList() {
             otherEvents: Record<string, any>[] = []
         eventList = eventList.reverse()
         for (const iterator of eventList) {
-            console.log(iterator)
             if (iterator.type === 'Warning') {
                 warningEvents.push(iterator)
             } else {
