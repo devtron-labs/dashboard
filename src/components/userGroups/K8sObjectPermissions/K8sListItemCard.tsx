@@ -117,7 +117,8 @@ export default function K8sListItemCard({
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
                 setProcessedGvkData(_processedNamespacedGvk.k8SObjectMap)
-                const _allApiGroupMapping = [], _allKindMapping = []
+                const _allApiGroupMapping = [],
+                    _allKindMapping = []
                 if (resourceGroupList.allowedAll) {
                     _allApiGroupMapping.push(
                         { label: 'All API groups', value: '*' },
@@ -189,6 +190,7 @@ export default function K8sListItemCard({
                 k8sRequest: {
                     resourceIdentifier: {
                         groupVersionKind: resource?.gvk,
+                        namespace: k8sPermission?.namespace?.value === '*' ? '' : k8sPermission?.namespace.value,
                     },
                 },
             }
