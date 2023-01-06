@@ -59,6 +59,7 @@ export default function AdvancedConfigOptions({
 
     const handleChangeInTargetPlatforms = () => {
         const _form = { ...formData }
+        _form.dockerConfigOverride = parentState?.defaultDockerConfigs
         let platformsArray = []
         selectedTargetPlatforms?.forEach(function (o) {
             platformsArray.push(o.label)
