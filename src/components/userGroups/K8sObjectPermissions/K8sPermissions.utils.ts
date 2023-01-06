@@ -37,7 +37,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
         setState([])
     } else if (actionMeta.action === 'deselect-option' || actionMeta.action === 'remove-value') {
         setState(selected.filter((o) => o.value !== '*'))
-    } else if (selected.length === selected.length - 1) {
+    } else if (selected.length === options.length - 1) {
         setState(options)
     } else {
         setState(selected)

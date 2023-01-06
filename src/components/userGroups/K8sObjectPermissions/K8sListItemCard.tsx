@@ -290,6 +290,16 @@ export default function K8sListItemCard({
         handleK8sPermission(action, index)
     }
 
+    const k8sMultiValueContainer = (): boolean => {
+        let isAllSelected = false
+        k8sPermission.resource.forEach((item) => {
+            if (item.value === '*') {
+                isAllSelected =  true
+            }
+        })
+        return isAllSelected
+    }
+
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-6 mb-6 flex dc__content-space">
@@ -352,7 +362,6 @@ export default function K8sListItemCard({
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
-                                        MenuList: (props) => menuComponent(props, 'API Group'),
                                     }}
                                     styles={k8sPermissionStyle}
                                 />
@@ -371,7 +380,6 @@ export default function K8sListItemCard({
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
-                                        MenuList: (props) => menuComponent(props, 'kinds'),
                                     }}
                                     styles={k8sPermissionStyle}
                                 />
@@ -390,7 +398,7 @@ export default function K8sListItemCard({
                             components={{
                                 IndicatorSeparator: () => null,
                                 MultiValueContainer: ({ ...props }) => (
-                                    <MultiValueChipContainer {...props} validator={null} />
+                                    <MultiValueChipContainer {...props} validator={null} isAllSelected={k8sMultiValueContainer()} />
                                 ),
                                 ClearIndicator,
                                 MultiValueRemove,
