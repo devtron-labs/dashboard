@@ -205,17 +205,21 @@ export default function K8sListItemCard({
             }
             const { result } = await getResourceList(resourceListPayload)
             if (result) {
+                const _optionList = [
+                    { label: 'All resources', value: '*' },
+                    ...result?.data
+                        ?.map((ele) => {
+                            return { label: ele['name'], value: ele['name'] }
+                        })
+                        .sort(sortOptionsByLabel),
+                ]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
-                    [k8sPermission.key]: [
-                        { label: 'All resources', value: '*' },
-                        ...result?.data
-                            ?.map((ele) => {
-                                return { label: ele['name'], value: ele['name'] }
-                            })
-                            .sort(sortOptionsByLabel),
-                    ],
+                    [k8sPermission.key]: _optionList,
                 }))
+                if(k8sPermission.resource?.[0]?.value === "*"){
+                    handleK8sPermission('onObjectChange', index, _optionList)
+                }
             }
         } catch (err) {
             showError(err)
