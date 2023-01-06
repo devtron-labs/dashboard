@@ -10,11 +10,3 @@ export const resourceKindOptionLabel = (option): JSX.Element => {
     )
 }
 
-export const kindValueContainer = (props): JSX.Element => {
-    return (
-        <components.ValueContainer {...props}>
-            {props.selectProps.value?.label || <span className="cn-5">Select kind</span>}
-            {React.cloneElement(props.children[1])}
-        </components.ValueContainer>
-    )
-}

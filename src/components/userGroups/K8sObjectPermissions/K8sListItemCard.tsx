@@ -19,7 +19,7 @@ import {
 } from '../../ResourceBrowser/ResourceBrowser.service'
 import { GVKType, K8SObjectType, ResourceListPayloadType } from '../../ResourceBrowser/Types'
 import {
-    customValueContainer,
+    CustomValueContainer,
     formatOptionLabel,
     menuComponent,
     Option as SingleSelectOption,
@@ -38,7 +38,7 @@ import {
 } from './K8sPermissions.utils'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import Tippy from '@tippyjs/react'
-import { kindValueContainer, resourceKindOptionLabel } from './K8sPermission.component'
+import { resourceKindOptionLabel } from './K8sPermission.component'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -115,7 +115,7 @@ export default function K8sListItemCard({
                 const _k8SObjectList: any[] = []
                 for (const [key, value] of _k8SObjectMap.entries()) {
                     if (key) {
-                        _k8SObjectList.push({ label: key, value: key, gvk: value  })
+                        _k8SObjectList.push({ label: key, value: key, gvk: value })
                     }
                 }
                 setProcessedData(_k8SObjectMap)
@@ -140,6 +140,7 @@ export default function K8sListItemCard({
                 if (k8sPermission?.kind) {
                     createKindData(
                         k8sPermission.group,
+                        _allKindMapping,
                         k8sPermission?.namespace.value === '*' ? _k8SObjectMap : _processedNamespacedGvk.k8SObjectMap,
                     )
                 }
@@ -149,15 +150,15 @@ export default function K8sListItemCard({
         }
     }
 
-    const createKindData = (selected, _k8SObjectMap = null) => {
+    const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
         const kind: any[] = []
-        let selectedGvk: GVKType 
+        let selectedGvk: GVKType
         if (_k8SObjectMap || processedData) {
             if (selected.value === '*') {
                 for (const [key, value] of (_k8SObjectMap || processedData).entries()) {
                     value?.child.forEach((ele) => {
                         kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'], gvk: ele.gvk })
-                        if(!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value){
+                        if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                             selectedGvk = ele.gvk
                         }
                     })
@@ -168,7 +169,7 @@ export default function K8sListItemCard({
                     if (ele.namespaced) {
                         kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'], gvk: ele.gvk })
                     }
-                    if(!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value){
+                    if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                         selectedGvk = ele.gvk
                     }
                 })
@@ -177,14 +178,11 @@ export default function K8sListItemCard({
 
         setKindMapping((prevMapping) => ({
             ...prevMapping,
-            [k8sPermission.key]: [...allInKindMapping, ...kind.sort(sortOptionsByLabel)],
+            [k8sPermission.key]: [..._allKindMapping, ...kind.sort(sortOptionsByLabel)],
         }))
         if (k8sPermission?.resource) {
-            if (
-                k8sPermission.kind.value !== '*' &&
-                k8sPermission.kind.value !== 'Event'
-            ) {
-                getResourceListData({...k8sPermission.kind, gvk: selectedGvk}, _k8SObjectMap)
+            if (k8sPermission.kind.value !== '*' && k8sPermission.kind.value !== 'Event') {
+                getResourceListData({ ...k8sPermission.kind, gvk: selectedGvk }, _k8SObjectMap)
             } else {
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
@@ -259,7 +257,7 @@ export default function K8sListItemCard({
     const onApiGroupSelect = (selected) => {
         if (selected.value !== k8sPermission?.group?.value) {
             handleK8sPermission('onApiGroupChange', index, selected)
-            createKindData(selected)
+            createKindData(selected, allInKindMapping)
         }
     }
 
@@ -298,7 +296,7 @@ export default function K8sListItemCard({
         let isAllSelected = false
         k8sPermission.resource.forEach((item) => {
             if (item.value === '*') {
-                isAllSelected =  true
+                isAllSelected = true
             }
         })
         return isAllSelected
@@ -385,7 +383,7 @@ export default function K8sListItemCard({
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
-                                        ValueContainer: kindValueContainer,
+                                        ValueContainer: CustomValueContainer,
                                     }}
                                     styles={k8sRoleSelectionStyle}
                                 />
@@ -404,7 +402,11 @@ export default function K8sListItemCard({
                             components={{
                                 IndicatorSeparator: () => null,
                                 MultiValueContainer: ({ ...props }) => (
-                                    <MultiValueChipContainer {...props} validator={null} isAllSelected={k8sMultiValueContainer()} />
+                                    <MultiValueChipContainer
+                                        {...props}
+                                        validator={null}
+                                        isAllSelected={k8sMultiValueContainer()}
+                                    />
                                 ),
                                 ClearIndicator,
                                 MultiValueRemove,
@@ -441,7 +443,7 @@ export default function K8sListItemCard({
                             components={{
                                 ClearIndicator: null,
                                 IndicatorSeparator: null,
-                                ValueContainer: customValueContainer,
+                                ValueContainer: CustomValueContainer,
                             }}
                             styles={k8sRoleSelectionStyle}
                         />
