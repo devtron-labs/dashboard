@@ -57,12 +57,13 @@ export const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
 
 export const k8sPermissionStyle = {
     ...multiSelectStyles,
-    control: (base) => ({
+    control: (base, state) => ({
         ...base,
         minHeight: '36px',
         fontWeight: '400',
-        backgroundColor: 'var(--N00)',
-        cursor: 'pointer',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+        pointerEvents: 'auto',
     }),
     dropdownIndicator: (base) => ({
         ...base,
@@ -100,11 +101,12 @@ export const k8sRoleSelectionStyle = {
 
 export const resourceMultiSelectstyles = {
     ...multiSelectStyles,
-    control: (base) => ({
+    control: (base, state) => ({
         ...base,
         fontWeight: '400',
-        backgroundColor: 'var(--N00)',
-        cursor: 'pointer',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+        pointerEvents: 'auto',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,
@@ -113,8 +115,8 @@ export const resourceMultiSelectstyles = {
     }),
     multiValue: (base) => ({
         ...base,
-        border: `1px solid var(--N200)`,
-        borderRadius: `4px`,
+        border: '1px solid var(--N200)',
+        borderRadius: '4px',
         background: 'white',
         height: '30px',
         margin: '4px 8px 4px 0',
