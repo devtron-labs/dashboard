@@ -41,7 +41,7 @@ export default function GroupForm({
     const [name, setName] = useState({ value: '', error: '' });
     const [description, setDescription] = useState('');
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
-    const currentK8sPermissionRef = useRef<K8sPermissionFilter[]>([])
+    const currentK8sPermissionRef = useRef<any[]>([])
 
     function isFormComplete(): boolean {
         let isComplete: boolean = true;
@@ -140,6 +140,7 @@ export default function GroupForm({
         try {
             const { result } = await saveGroup(payload);
             if (id) {
+                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 updateCallback(index, result);
                 toast.success('Group updated');
             } else {
@@ -215,7 +216,7 @@ export default function GroupForm({
                         Delete
                     </button>
                 )}
-                {!deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
+                {id && !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                     <span className="flex cy-7 mr-12">
                         <Warning className="icon-dim-20 warning-icon-y7 mr-8" />
                         Unsaved changes
@@ -237,5 +238,5 @@ export default function GroupForm({
                 />
             )}
         </div>
-    );
+    )
 }

@@ -87,7 +87,7 @@ export default function UserForm({
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
     const creatableRef = useRef(null);
     const groupPermissionsRef = useRef(null);
-    const currentK8sPermissionRef = useRef<K8sPermissionFilter[]>([])
+    const currentK8sPermissionRef = useRef<any[]>([])
 
     useEffect(() => {
         if (creatableRef.current) {
@@ -214,6 +214,7 @@ export default function UserForm({
         try {
             const { result } = await saveUser(payload);
             if (id) {
+                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 updateCallback(index, result);
                 toast.success('User updated');
             } else {
@@ -455,7 +456,7 @@ export default function UserForm({
                         Delete
                     </button>
                 )}
-                {!deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
+                {id && !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                     <span className="flex cy-7 mr-12">
                         <Error className="icon-dim-20 warning-icon-y7 mr-8" />
                         Unsaved changes

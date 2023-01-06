@@ -182,7 +182,7 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
     uncordon: 'Uncordon',
     drain: 'Drain',
     taints: 'Edit taints',
-    yaml: 'Edit YAML',
+    yaml: 'Edit node',
     delete: 'Delete',
 }
 

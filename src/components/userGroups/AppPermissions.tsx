@@ -38,6 +38,7 @@ export default function AppPermissions({
         envClustersList,
         fetchAppListHelmApps,
         appsListHelmApps,
+        superAdmin,
     } = useUserGroupContext()
     const { url, path } = useRouteMatch()
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
@@ -234,8 +235,8 @@ export default function AppPermissions({
                 }
             })
 
-            if (Array.isArray(currentK8sPermissionRef?.current)) {
-                currentK8sPermissionRef.current.push(..._k8sPermission)
+            if (currentK8sPermissionRef?.current) {
+                currentK8sPermissionRef.current = [..._k8sPermission]
             }
             setK8sPermission(_k8sPermission)
         }
@@ -417,11 +418,17 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
-                    <NavLink to={`${url}/kubernetes-objects`} className="tab-list__tab-link" activeClassName="active">
-                        Kubernetes Resources
-                    </NavLink>
-                </li>
+                {superAdmin && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            to={`${url}/kubernetes-objects`}
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
+                            Kubernetes Resources
+                        </NavLink>
+                    </li>
+                )}
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
@@ -454,9 +461,11 @@ export default function AppPermissions({
                             hideInfoLegend={hideInfoLegend}
                         />
                     </Route>
-                    <Route path={`${path}/kubernetes-objects`}>
-                        <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
-                    </Route>
+                    {superAdmin && (
+                        <Route path={`${path}/kubernetes-objects`}>
+                            <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
+                        </Route>
+                    )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <Route path={`${path}/chart-groups`}>
                             <ChartPermission
