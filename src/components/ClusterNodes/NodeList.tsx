@@ -594,6 +594,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     nodeData={nodeData as NodeDetail}
                                     openTerminal={openTerminal}
                                     getNodeListData={getNodeListData}
+                                    isSuperAdmin={isSuperAdmin}
                                 />
                             </div>
                         </div>
@@ -659,7 +660,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const openTerminal = (clusterData): void => {
         setSelectedNode(clusterData.name)
-        setNodeImageList(filterImageList(imageList,clusterData.k8sVersion))
+        setNodeImageList(filterImageList(imageList, clusterData.k8sVersion))
         setTerminal(true)
     }
 
