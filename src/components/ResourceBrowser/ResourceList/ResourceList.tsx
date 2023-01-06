@@ -69,7 +69,17 @@ export default function ResourceList() {
     const abortController = new AbortController()
 
     useEffect(() => {
+        if (typeof window['crate']?.hide === 'function') {
+            window['crate'].hide()
+        }
+
         getClusterData()
+
+        return (): void => {
+            if (typeof window['crate']?.show === 'function') {
+                window['crate'].show()
+            }
+        }
     }, [])
 
     useEffect(() => {
