@@ -45,13 +45,16 @@ export default function AdvancedConfigOptions({
             targetPlatform =
                 parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
         } else if (parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-                targetPlatform = parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform
+                targetPlatform = formData?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
         }
 
-        let _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
-            _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
-            return { label: platformValue, value: platformValue }
-        })
+        let _selectedPlatforms = []
+        if(targetPlatform.length > 0){
+            _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
+                _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+                return { label: platformValue, value: platformValue }
+            })
+        }
         setTargetPlatforms(targetPlatform)
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
