@@ -230,13 +230,13 @@ export default function ResourceList() {
     const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
         const warningEvents: Record<string, any>[] = [],
             otherEvents: Record<string, any>[] = []
-            eventList = eventList.reverse()
+        eventList = eventList.reverse()
         for (const iterator of eventList) {
             console.log(iterator)
-            if(iterator.type === 'Warning'){
-              warningEvents.push(iterator)
-            } else{
-              otherEvents.push(iterator)
+            if (iterator.type === 'Warning') {
+                warningEvents.push(iterator)
+            } else {
+                otherEvents.push(iterator)
             }
         }
         return [...warningEvents, ...otherEvents]
@@ -262,12 +262,11 @@ export default function ResourceList() {
             }
             const { result } = await getResourceList(resourceListPayload, abortController.signal)
             setLastDataSync(!lastDataSync)
+            if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
+                result.data = sortEventListData(result.data)
+            }
             setResourceList(result)
-            setFilteredResourceList(
-                selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
-                    ? sortEventListData(result.data)
-                    : result.data,
-            )
+            setFilteredResourceList(result.data)
             setNoResults(result.data.length === 0)
             setResourceListLoader(false)
             setShowErrorState(false)
