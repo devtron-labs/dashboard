@@ -24,7 +24,7 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { ALL_NAMESPACE, K8S_PERMISSION_INFO_MESSAGE, OptionType } from '../userGroups.types'
+import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType } from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -52,7 +52,7 @@ export default function K8sListItemCard({
     objectMapping,
     setObjectMapping,
     selectedPermissionAction,
-}) {
+}: K8sListItemCardType) {
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()

@@ -7,6 +7,8 @@ import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../..
 import {
     ActionTypes,
     APIRoleFilter,
+    AppPermissionsDetailType,
+    AppPermissionsType,
     ChartGroupPermissionsFilter,
     CreateGroup,
     CreateUser,
@@ -18,24 +20,6 @@ import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
 import { apiGroupAll, k8sPermissionRoles } from './K8sObjectPermissions/K8sPermissions.utils'
-interface AppPermissionsType {
-    data: CreateGroup | CreateUser
-    directPermission: DirectPermissionsRoleFilter[]
-    setDirectPermission: (...rest) => void
-    chartPermission: ChartGroupPermissionsFilter
-    setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
-    hideInfoLegend?: boolean
-    k8sPermission?: K8sPermissionFilter[]
-    setK8sPermission?: (...rest) => void
-}
-interface AppPermissionsDetailType {
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
-    handleDirectPermissionChange: (...rest) => void
-    removeDirectPermissionRow: (index: number) => void
-    AddNewPermissionRow: (accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS) => void
-    directPermission: DirectPermissionsRoleFilter[]
-    hideInfoLegend?: boolean
-}
 
 export default function AppPermissions({
     data = null,

@@ -1,67 +1,69 @@
-import React, { useEffect, useState } from 'react'
-import { ButtonWithLoader, Drawer, stopPropagation, VisibleModal } from '../../common'
-import { ActionTypes, OptionType } from '../userGroups.types'
+import React, { useState } from 'react'
+import { Drawer, stopPropagation } from '../../common'
+import { K8sPermissionModalType, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
 import { getEmptyPermissionObject } from './K8sPermissions.utils'
 import { toast } from 'react-toastify'
 
-export default function K8sPermissionModal({ selectedPermissionAction, k8sPermission, setK8sPermission, close }) {
+export default function K8sPermissionModal({ selectedPermissionAction, k8sPermission, setK8sPermission, close }: K8sPermissionModalType) {
     const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0, k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<OptionType[]>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
 
-
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
-        const tempK8sPermission = [...k8PermissionList]
+        const _k8sPermissionList = [...k8PermissionList]
         switch (action) {
             case 'add':
-                tempK8sPermission.splice(0, 0, getEmptyPermissionObject(tempK8sPermission.length))
+                _k8sPermissionList.splice(0, 0, getEmptyPermissionObject(_k8sPermissionList.length))
                 break
             case 'delete':
-                tempK8sPermission.splice(key, 1)
+                _k8sPermissionList.splice(key, 1)
                 break
             case 'clone':
-                tempK8sPermission.splice(0, 0, { ...tempK8sPermission[key], key: tempK8sPermission.length })
+                _k8sPermissionList.splice(0, 0, { ..._k8sPermissionList[key], key: _k8sPermissionList.length })
+                setApiGroupMapping(prevMapping => ({ ...prevMapping, [key]:[...apiGroupMapping?.[key]] }))
+                setKindMapping(prevMapping => ({ ...prevMapping, [_k8sPermissionList.length]:[...kindMapping?.[key]]}))
+                setObjectMapping(prevMapping => ({ ...prevMapping, [_k8sPermissionList.length]:[...objectMapping?.[key]]}))
                 break
             case 'edit':
-                tempK8sPermission[key].cluster = data
+                _k8sPermissionList[key].cluster = data
                 break
             case 'onClusterChange':
-                tempK8sPermission[key].cluster = data
-                tempK8sPermission[key].namespace = null
-                tempK8sPermission[key].group = null
-                tempK8sPermission[key].kind = null
-                tempK8sPermission[key].resource = null
+                _k8sPermissionList[key].cluster = data
+                _k8sPermissionList[key].namespace = null
+                _k8sPermissionList[key].group = null
+                _k8sPermissionList[key].kind = null
+                _k8sPermissionList[key].resource = null
                 break
             case 'onNamespaceChange':
-                tempK8sPermission[key].namespace = data
-                tempK8sPermission[key].group = null
-                tempK8sPermission[key].kind = null
-                tempK8sPermission[key].resource = null
+                _k8sPermissionList[key].namespace = data
+                _k8sPermissionList[key].group = null
+                _k8sPermissionList[key].kind = null
+                _k8sPermissionList[key].resource = null
                 break
             case 'onApiGroupChange':
-                tempK8sPermission[key].group = data
-                tempK8sPermission[key].kind = null
-                tempK8sPermission[key].resource = null
+                _k8sPermissionList[key].group = data
+                _k8sPermissionList[key].kind = null
+                _k8sPermissionList[key].resource = null
                 break
             case 'onKindChange':
-                tempK8sPermission[key].kind = data
-                tempK8sPermission[key].resource = null
+                _k8sPermissionList[key].kind = data
+                _k8sPermissionList[key].resource = null
                 break
             case 'onObjectChange':
-                tempK8sPermission[key].resource = data
+                _k8sPermissionList[key].resource = data
                 break
             case 'onRoleChange':
-                tempK8sPermission[key].action = data
+                _k8sPermissionList[key].action = data
                 break
             default:
                 break
         }
-        setPermissionList(tempK8sPermission)
+        setPermissionList(_k8sPermissionList)
     }
 
     const addNewPermissionCard = () => {
@@ -90,9 +92,9 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
                 }
                 return [...prev, ...k8PermissionList]
             })
-            close(false)
+            close()
         }else{
-            toast.info("Some required inputs are not selected")
+            toast.error("Some required inputs are not selected")
         }
 
     }

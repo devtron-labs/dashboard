@@ -60,10 +60,11 @@ export const k8sPermissionStyle = {
     control: (base, state) => ({
         ...base,
         minHeight: '36px',
+        border: state.isDisabled ? (state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf') : '1px solid #d6dbdf',
         fontWeight: '400',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
         pointerEvents: 'auto',
+        cursor: state.isDisabled ? 'not-allowed' : 'cursor',
     }),
     dropdownIndicator: (base) => ({
         ...base,
@@ -105,8 +106,8 @@ export const resourceMultiSelectstyles = {
         ...base,
         fontWeight: '400',
         backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         pointerEvents: 'auto',
+        cursor: state.isDisabled ? 'not-allowed' : 'cursor',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,
