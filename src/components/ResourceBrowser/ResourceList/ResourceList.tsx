@@ -52,6 +52,8 @@ export default function ResourceList() {
     const [k8SObjectListIndexMap, setK8SObjectListIndexMap] = useState<Map<string, number>>()
     const [resourceList, setResourceList] = useState<ResourceDetailType>()
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
+    const [searchText, setSearchText] = useState('')
+    const [searchApplied, setSearchApplied] = useState(false)
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
     const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
@@ -73,7 +75,8 @@ export default function ResourceList() {
     useEffect(() => {
         if (clusterId && selectedResource) {
             getResourceListData()
-
+            setSearchText('')
+            setSearchApplied(false)
             return (): void => {
                 abortController.abort()
             }
@@ -286,6 +289,9 @@ export default function ResourceList() {
     }
 
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
+        if (selected.value === selectedCluster?.value) {
+            return
+        }
         setSelectedCluster(selected)
         getSidebarData(selected.value)
         getNamespaceList(selected.value)
@@ -443,6 +449,10 @@ export default function ResourceList() {
                     resourceListLoader={resourceListLoader}
                     getResourceListData={getResourceListData}
                     updateNodeSelectionData={updateNodeSelectionData}
+                    searchText={searchText}
+                    setSearchText={setSearchText}
+                    searchApplied={searchApplied}
+                    setSearchApplied={setSearchApplied}
                 />
             </div>
         )

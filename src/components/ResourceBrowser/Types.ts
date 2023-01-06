@@ -108,6 +108,10 @@ export interface K8SResourceListType {
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>) => void
+    searchText: string
+    setSearchText: React.Dispatch<React.SetStateAction<string>>
+    searchApplied: boolean
+    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ResourceBrowserActionMenuType {

@@ -29,6 +29,10 @@ export function K8SResourceList({
     resourceListLoader,
     getResourceListData,
     updateNodeSelectionData,
+    searchText,
+    setSearchText,
+    searchApplied,
+    setSearchApplied,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -39,14 +43,7 @@ export function K8SResourceList({
         nodeType: string
         node: string
     }>()
-    const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
-
-    useEffect(() => {
-        setSearchText('')
-        setSearchApplied(false)
-    }, [selectedResource?.gvk.Kind])
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -105,6 +102,9 @@ export function K8SResourceList({
     }
 
     const handleNamespaceChange = (selected): void => {
+        if (selected.value === selectedNamespace?.value) {
+            return
+        }
         setSelectedNamespace(selected)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
