@@ -1,3 +1,4 @@
+import React from 'react';
 import { ACCESS_TYPE_MAP } from '../../config';
 import { Nodes } from '../app/types';
 
@@ -139,14 +140,14 @@ export interface K8sListItemCardType {
     k8sPermission: K8sPermissionFilter
     handleK8sPermission: (action: string, key?: number, data?: any) => void
     index: number
-    namespaceMapping: OptionType[]
-    setNamespaceMapping: (setNamespaceMapping: OptionType[]) => void
+    namespaceMapping: Record<string, OptionType[]>
+    setNamespaceMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
     apiGroupMapping: Record<number, OptionType[]>
-    setApiGroupMapping: (setApiGroupMapping: Record<number, OptionType[]>) => void
+    setApiGroupMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
     kindMapping: Record<number, OptionType[]>
-    setKindMapping: (setKindMapping: Record<number, OptionType[]>) => void
+    setKindMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
     objectMapping: Record<number, OptionType[]>
-    setObjectMapping: (setObjectMapping: Record<number, OptionType[]>) => void
+    setObjectMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
     selectedPermissionAction: {
         action: string
         index: number
@@ -171,7 +172,8 @@ export interface AppPermissionsType {
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
     hideInfoLegend?: boolean
     k8sPermission?: K8sPermissionFilter[]
-    setK8sPermission?: (...rest) => void
+    setK8sPermission?: React.Dispatch<React.SetStateAction<any[]>>
+    setCurrentK8sPermission?: React.Dispatch<React.SetStateAction<any[]>>
 }
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS

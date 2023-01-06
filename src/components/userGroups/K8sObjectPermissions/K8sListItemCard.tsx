@@ -53,17 +53,18 @@ export default function K8sListItemCard({
     setObjectMapping,
     selectedPermissionAction,
 }: K8sListItemCardType) {
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
+    const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
-    const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>()
-    const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>()
+    const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>([])
+    const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
 
     useEffect(() => {
         getClusterListData()
-        setApiGroupMapping({
+        setApiGroupMapping((prevMapping) => ({
+            ...prevMapping,
             [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
-        })
+        }))
     }, [])
 
     const getClusterListData = async () => {
@@ -92,9 +93,12 @@ export default function K8sListItemCard({
         try {
             const { result } = await namespaceListByClusterId(clusterId)
             if (result) {
-                setNamespaceMapping([ALL_NAMESPACE, ...convertToOptionsList(result.sort())])
+                setNamespaceMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [clusterId]: [ALL_NAMESPACE, ...convertToOptionsList(result.sort())],
+                }))
             } else {
-                setNamespaceMapping([ALL_NAMESPACE])
+                setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: [ALL_NAMESPACE] }))
             }
         } catch (err) {
             showError(err)
@@ -128,9 +132,10 @@ export default function K8sListItemCard({
                 }
                 setAllInApiGroupMapping(_allApiGroupMapping)
                 setAllInKindMapping(_allKindMapping)
-                setApiGroupMapping({
+                setApiGroupMapping((prevMapping) => ({
+                    ...prevMapping,
                     [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList.sort(sortOptionsByLabel)],
-                })
+                }))
                 if (k8sPermission?.kind) {
                     createKindData(
                         k8sPermission.group,
@@ -162,9 +167,10 @@ export default function K8sListItemCard({
             }
         }
 
-        setKindMapping({
+        setKindMapping((prevMapping) => ({
+            ...prevMapping,
             [k8sPermission.key]: [...allInKindMapping, ...kind.sort(sortOptionsByLabel)],
-        })
+        }))
         if (k8sPermission?.resource) {
             if (
                 k8sPermission.kind.value !== '*' &&
@@ -173,9 +179,10 @@ export default function K8sListItemCard({
             ) {
                 getResourceListData(k8sPermission.kind, _k8SObjectMap)
             } else {
-                setObjectMapping({
+                setObjectMapping((prevMapping) => ({
+                    ...prevMapping,
                     [k8sPermission.key]: [{ label: 'All object', value: '*' }],
-                })
+                }))
             }
         }
     }
@@ -196,7 +203,8 @@ export default function K8sListItemCard({
             }
             const { result } = await getResourceList(resourceListPayload)
             if (result) {
-                setObjectMapping({
+                setObjectMapping((prevMapping) => ({
+                    ...prevMapping,
                     [k8sPermission.key]: [
                         { label: 'All resources', value: '*' },
                         ...result?.data
@@ -205,7 +213,7 @@ export default function K8sListItemCard({
                             })
                             .sort(sortOptionsByLabel),
                     ],
-                })
+                }))
             }
         } catch (err) {
             showError(err)
@@ -216,9 +224,10 @@ export default function K8sListItemCard({
         if (selected.value !== k8sPermission?.cluster?.value) {
             setProcessedData(null)
             setProcessedGvkData(null)
-            setApiGroupMapping({
+            setApiGroupMapping((prevMapping) => ({
+                ...prevMapping,
                 [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
-            })
+            }))
             handleK8sPermission('onClusterChange', index, selected)
             getNamespaceList(selected.value)
             getGroupKindData(selected.value)
@@ -235,9 +244,10 @@ export default function K8sListItemCard({
                         _GvkObjectList.push({ label: key, value: key })
                     }
                 }
-                setApiGroupMapping({
+                setApiGroupMapping((prevMapping) => ({
+                    ...prevMapping,
                     [k8sPermission.key]: [...allInApiGroupMapping, ..._GvkObjectList.sort(sortOptionsByLabel)],
-                })
+                }))
             }
         }
     }
@@ -255,9 +265,10 @@ export default function K8sListItemCard({
             if (selected.value !== '*' && k8sPermission.group.value !== '*' && selected.value !== 'Event') {
                 getResourceListData(selected)
             } else {
-                setObjectMapping({
+                setObjectMapping((prevMapping) => ({
+                    ...prevMapping,
                     [k8sPermission.key]: [{ label: 'All resources', value: '*' }],
-                })
+                }))
             }
         }
     }
@@ -314,7 +325,7 @@ export default function K8sListItemCard({
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select namespace"
-                            options={namespaceMapping}
+                            options={namespaceMapping?.[k8sPermission?.cluster?.value]}
                             value={k8sPermission.namespace}
                             name="namespace"
                             isDisabled={!k8sPermission.cluster}

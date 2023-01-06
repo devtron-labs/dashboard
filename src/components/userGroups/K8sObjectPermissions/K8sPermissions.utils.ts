@@ -45,14 +45,25 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
 }
 
 export const getEmptyPermissionObject = (idx = 0, k8sPermission = null) => {
+    if (k8sPermission) {
+        return {
+            key: idx,
+            cluster: k8sPermission.cluster,
+            namespace: k8sPermission.namespace,
+            group: k8sPermission.group,
+            kind: k8sPermission.kind,
+            resource: k8sPermission.resource,
+            action: k8sPermission.action,
+        }
+    }
     return {
         key: idx,
-        cluster: k8sPermission?.cluster,
-        namespace: k8sPermission?.namespace,
-        group: k8sPermission?.group,
-        kind: k8sPermission?.kind,
-        resource: k8sPermission?.resource,
-        action: k8sPermission?.action || { value: ActionTypes.VIEW, label: ActionTypes.VIEW },
+        cluster: null,
+        namespace: null,
+        group: null,
+        kind: null,
+        resource: null,
+        action: { value: ActionTypes.VIEW, label: ACTION_LABEL[ActionTypes.VIEW] },
     }
 }
 

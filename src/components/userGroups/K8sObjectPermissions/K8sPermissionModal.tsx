@@ -7,9 +7,14 @@ import K8sListItemCard from './K8sListItemCard'
 import { getEmptyPermissionObject } from './K8sPermissions.utils'
 import { toast } from 'react-toastify'
 
-export default function K8sPermissionModal({ selectedPermissionAction, k8sPermission, setK8sPermission, close }: K8sPermissionModalType) {
+export default function K8sPermissionModal({
+    selectedPermissionAction,
+    k8sPermission,
+    setK8sPermission,
+    close,
+}: K8sPermissionModalType) {
     const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0, k8sPermission)])
-    const [namespaceMapping, setNamespaceMapping] = useState<OptionType[]>()
+    const [namespaceMapping, setNamespaceMapping] = useState<Record<string, OptionType[]>>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
@@ -24,10 +29,20 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
                 _k8sPermissionList.splice(key, 1)
                 break
             case 'clone':
-                _k8sPermissionList.splice(0, 0, { ..._k8sPermissionList[key], key: _k8sPermissionList.length })
-                setApiGroupMapping(prevMapping => ({ ...prevMapping, [key]:[...apiGroupMapping?.[key]] }))
-                setKindMapping(prevMapping => ({ ...prevMapping, [_k8sPermissionList.length]:[...kindMapping?.[key]]}))
-                setObjectMapping(prevMapping => ({ ...prevMapping, [_k8sPermissionList.length]:[...objectMapping?.[key]]}))
+                _k8sPermissionList.splice(
+                    0,
+                    0,
+                    getEmptyPermissionObject(_k8sPermissionList.length, _k8sPermissionList[key]),
+                )
+                setApiGroupMapping((prevMapping) => ({ ...prevMapping, [key + 1]: apiGroupMapping?.[key] }))
+                setKindMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [key + 1]: kindMapping?.[key],
+                }))
+                setObjectMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [key + 1]: objectMapping?.[key],
+                }))
                 break
             case 'edit':
                 _k8sPermissionList[key].cluster = data
@@ -71,32 +86,31 @@ export default function K8sPermissionModal({ selectedPermissionAction, k8sPermis
     }
 
     const savePermission = () => {
-        let isPermissionValid = k8PermissionList.reduce((valid,permission) => {
+        let isPermissionValid = k8PermissionList.reduce((valid, permission) => {
             valid = valid && !!permission.resource?.length
-            return valid;
-        }, true);
+            return valid
+        }, true)
 
-        if(isPermissionValid){
+        if (isPermissionValid) {
             setK8sPermission((prev) => {
                 if (selectedPermissionAction?.action === 'edit') {
-                    if(k8PermissionList?.length){
+                    if (k8PermissionList?.length) {
                         prev[selectedPermissionAction.index] = k8PermissionList[k8PermissionList.length - 1]
                         return [...prev]
-                    }else {
+                    } else {
                         const list = [...prev]
-                        list.splice(selectedPermissionAction.index,1)
+                        list.splice(selectedPermissionAction.index, 1)
                         return list
                     }
-                }else if(selectedPermissionAction?.action === 'clone' && !k8PermissionList?.length){
+                } else if (selectedPermissionAction?.action === 'clone' && !k8PermissionList?.length) {
                     return [...prev]
                 }
                 return [...prev, ...k8PermissionList]
             })
             close()
-        }else{
-            toast.error("Some required inputs are not selected")
+        } else {
+            toast.error('Some required inputs are not selected')
         }
-
     }
 
     return (
