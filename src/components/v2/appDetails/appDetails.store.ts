@@ -31,22 +31,41 @@ const AppDetailsStore = {
     getAppDetailsTabsObservable: () => {
         return applicationObjectTabsSubject.asObservable();
     },
-    initAppDetailsTabs: (_url: string, displayLogAnalyzer: boolean, isLogAnalyserURL: boolean) => {
-        let aots = [] as Array<ApplicationObject>;
+    initAppDetailsTabs: (
+        _url: string,
+        displayLogAnalyzer: boolean,
+        isLogAnalyserURL: boolean,
+        isResourceBrowserView?: boolean,
+        nodeType?: string,
+    ) => {
+        const aots = [] as Array<ApplicationObject>
+        const url = `${_url}${_url.endsWith('/') ? '' : '/'}`
 
-        let url = `${_url}${_url.endsWith('/') ? '' : '/'}`;
-
-        aots.push(addAOT(AppDetailsTabs.k8s_Resources, url + URLS.APP_DETAILS_K8, !isLogAnalyserURL, AppDetailsTabs.k8s_Resources));
+        aots.push(
+            addAOT(
+                AppDetailsTabs.k8s_Resources,
+                `${url}${isResourceBrowserView ? nodeType : URLS.APP_DETAILS_K8}`,
+                !isLogAnalyserURL,
+                AppDetailsTabs.k8s_Resources,
+            ),
+        )
 
         if (displayLogAnalyzer) {
-            aots.push(addAOT(AppDetailsTabs.log_analyzer, _url + '/' + URLS.APP_DETAILS_LOG, isLogAnalyserURL, AppDetailsTabs.log_analyzer));
+            aots.push(
+                addAOT(
+                    AppDetailsTabs.log_analyzer,
+                    _url + '/' + URLS.APP_DETAILS_LOG,
+                    isLogAnalyserURL,
+                    AppDetailsTabs.log_analyzer,
+                ),
+            )
+            _maxTabAllowd = 7
         }
-        _maxTabAllowd = 7;
 
-        applicationObjectTabsSubject.next([...aots]);
+        applicationObjectTabsSubject.next([...aots])
 
-        _nodeTreeActiveParentNode = undefined;
-        _nodeTreeActiveNode = undefined;
+        _nodeTreeActiveParentNode = undefined
+        _nodeTreeActiveNode = undefined
     },
     addAppDetailsTab: (objectKind: string, objectName: string, tabURL: string) => {
         if (!objectName || !tabURL || !objectKind) return;
@@ -55,7 +74,7 @@ const AppDetailsStore = {
 
         let alreadyAdded = false;
         let title = objectKind + '/' + objectName;
-        objectName = objectKind + '/...' + objectName.slice(-6);
+        objectName = `${objectKind.length <= 7 ? objectKind : `${objectKind.slice(0, 7)}...`}/...${objectName.slice(-6)}`
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
@@ -138,6 +157,15 @@ const AppDetailsStore = {
             const tab = applicationObjectTabs[index];
             if (tab.title.toLowerCase() === title.toLowerCase()) {
                 tab.isDeleted = true;
+            }
+        }
+        applicationObjectTabsSubject.next([...applicationObjectTabs]);
+    },
+    updateK8sResourcesTabUrl: (url: string) => {
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        for (const tab of applicationObjectTabs) {
+            if (tab.name === AppDetailsTabs.k8s_Resources) {
+                tab.url = url
             }
         }
         applicationObjectTabsSubject.next([...applicationObjectTabs]);

@@ -211,20 +211,21 @@ export const DRAIN_NODE_MODAL_MESSAGING = {
     DeleteEmptyDirectoryData: {
         heading: 'Delete empty directory data',
         infoText:
-            'Continue even if there are pods using emptyDir (local data that will be deleted when the node is drained).',
+            'Enabling this field will delete the pods using empty directory data when the node is drained.',
     },
     DisableEviction: {
         heading: 'Disable eviction (use with caution)',
         infoText:
-            'Force drain to use delete, even if eviction is supported. This will bypass checking PodDisruptionBudgets, use with caution.',
+            `Enabling this field will force drain to use delete, even if eviction is supported. This will bypass checking PodDisruptionBudgets.
+            Note: Make sure to use with caution.`,
     },
     ForceDrain: {
         heading: 'Force drain',
-        infoText: 'Continue even if there are pods that do not declare a controller.',
+        infoText: 'Enabling this field will force drain a node even if there are pods that do not declare a controller.',
     },
     IgnoreDaemonSets: {
         heading: 'Ignore DaemonSets',
-        infoText: 'Ignore DaemonSet-managed pods.',
+        infoText: 'Enabling this field will ignore DaemonSet-managed pods.',
     },
     Actions: {
         infoText: 'Drain will cordon off the node and evict all pods of the node.',

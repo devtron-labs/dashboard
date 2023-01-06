@@ -24,32 +24,41 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
         case Nodes.CronJob:
         case Nodes.ReplicationController:
         case Nodes.StatefulSet:
-            return AggregationKeys.Workloads;
+            return AggregationKeys.Workloads
         case Nodes.Ingress:
         case Nodes.Service:
         case Nodes.Endpoints:
-            return AggregationKeys.Networking;
+        case Nodes.EndpointSlice:
+        case Nodes.NetworkPolicy:
+            return AggregationKeys.Networking
         case Nodes.ConfigMap:
         case Nodes.Secret:
         case Nodes.PersistentVolume:
         case Nodes.PersistentVolumeClaim:
-            return AggregationKeys["Config & Storage"];
+        case Nodes.StorageClass:
+        case Nodes.VolumeSnapshot:
+        case Nodes.VolumeSnapshotContent:
+        case Nodes.VolumeSnapshotClass:
+        case Nodes.PodDisruptionBudget:
+            return AggregationKeys['Config & Storage']
         case Nodes.ServiceAccount:
         case Nodes.ClusterRoleBinding:
         case Nodes.RoleBinding:
         case Nodes.ClusterRole:
         case Nodes.Role:
-            return AggregationKeys.RBAC;
-        case Nodes.MutatingWebhookConfiguration:
         case Nodes.PodSecurityPolicy:
+            return AggregationKeys.RBAC
+        case Nodes.MutatingWebhookConfiguration:
         case Nodes.ValidatingWebhookConfiguration:
-            return AggregationKeys.Administration;
+            return AggregationKeys.Administration
         case Nodes.Alertmanager:
         case Nodes.Prometheus:
         case Nodes.ServiceMonitor:
-            return AggregationKeys["Custom Resource"];
+            return AggregationKeys['Custom Resource']
+        case Nodes.Event:
+            return AggregationKeys.Events
         default:
-            return AggregationKeys['Custom Resource'];
+            return AggregationKeys['Custom Resource']
     }
 }
 export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): AggregatedNodes {

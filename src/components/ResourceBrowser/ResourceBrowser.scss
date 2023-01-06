@@ -1,0 +1,106 @@
+@import '../v2/appDetails/k8Resource/k8resources.scss';
+
+.resource-browser-container {
+    .resource-browser-tab {
+        :not(.resource-tree__tab-hover).active {
+            border: 1px solid var(--N200);
+            border-bottom: 1px solid #fff;
+            border-top-right-radius: 8px;
+            border-top-left-radius: 8px;
+        }
+
+        .resource-tree-wrapper {
+            .resource-tree-tab {
+                border-bottom: none;
+            }
+        }
+    }
+
+    .resource-browser {
+        display: grid;
+        grid-template-columns: 220px auto;
+
+        .k8s-object-container {
+            height: calc(100vh - 92px);
+            overflow: auto;
+
+            .resource-tree-object:hover {
+                background-color: var(--N50);
+                color: var(--N900);
+            }
+        }
+
+        .resource-list-container {
+            &.no-result-container {
+                height: calc(100vh - 92px);
+                overflow: hidden;
+            }
+
+            .scrollable-resource-list {
+                height: calc(100vh - 152px);
+                overflow: auto;
+                width: calc(100vw - 285px);
+                .list-header {
+                    width: max-content;
+                    min-width: calc(100vw - 283px);
+                    top: 0;
+                    z-index: 3;
+                }
+            }
+
+            .scrollable-event-list {
+                height: calc(100vh - 192px);
+                overflow: hidden auto;
+            }
+
+            .sticky-column {
+                left: 0;
+                z-index: 1;
+                background-color: var(--N0);
+            }
+            .event-list-row {
+                display: grid;
+                grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
+                column-gap: 16px;
+            }
+            .node-actions-menu-icon {
+                path:nth-child(2) {
+                    fill: var(--N600);
+                }
+            }
+        }
+    }
+
+    .manifest-container,
+    .events-table-container {
+        height: calc(100vh - 126px);
+    }
+
+    .log-viewer-container {
+        height: calc(100vh - 169px);
+    }
+
+    .terminal-container {
+        height: calc(100vh - 193px);
+    }
+}
+
+.create-resource-container {
+    .created-resource-row {
+        display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+    }
+
+    .created-resource-list {
+        height: calc(100vh - 202px);
+        min-height: 220px;
+        overflow-y: auto;
+
+        .created-resource-row {
+            &:hover {
+                background-color: var(--N50);
+            }
+        }
+    }
+}

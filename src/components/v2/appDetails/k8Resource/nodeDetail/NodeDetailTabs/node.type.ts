@@ -1,3 +1,5 @@
+import { SelectedResourceType } from "../../../appDetails.type"
+
 export interface TerminalViewProps {
     nodeName: string
     shell: any
@@ -16,11 +18,14 @@ export interface TerminalViewProps {
     setTerminalTab?: (selectedTabIndex: number) => void
     isPodConnected?: boolean
     sessionError?: (error: any) => void
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
 }
 
 export interface EventTableType {
     loading: boolean
     eventsList: any[]
+    isResourceBrowserView?: boolean
 }
 
 export enum SocketConnectionType {
