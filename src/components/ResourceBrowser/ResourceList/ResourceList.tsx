@@ -193,12 +193,19 @@ export default function ResourceList() {
 
                 const parentNode = _k8SObjectList[0]
                 const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
-                let resourceGroupMissingInSidebar = false
+                let isResourceGroupPresent = false
                 if (nodeType) {
-                    resourceGroupMissingInSidebar = !_k8SObjectMap.get(getAggregator(nodeType as NodeType))
+                    for (const _parentNode of _k8SObjectList) {
+                        for (const _childNode of _parentNode.child) {
+                            if (_childNode.gvk.Kind.toLowerCase() === nodeType) {
+                                isResourceGroupPresent = true
+                                break
+                            }
+                        }
+                    }
                 }
 
-                if (!nodeType || !resourceGroupMissingInSidebar) {
+                if (!isResourceGroupPresent) {
                     parentNode.isExpanded = true
                     const _selectedResourceParam = childNode.gvk.Kind.toLowerCase()
                     replace({
