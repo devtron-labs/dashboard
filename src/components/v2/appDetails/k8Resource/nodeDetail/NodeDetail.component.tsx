@@ -76,7 +76,7 @@ function NodeDetailComponent({
                 }
 
                 if (Array.isArray(result.manifest.spec.initContainers)) {
-                    _resourceContainers.push(...result.manifest.spec.containers.map((_container) => _container.name))
+                    _resourceContainers.push(...result.manifest.spec.initContainers.map((_container) => _container.name))
                 }
             }
             setResourceContainers(_resourceContainers)
