@@ -181,7 +181,7 @@ export default function K8sListItemCard({
             } else {
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
-                    [k8sPermission.key]: [{ label: 'All object', value: '*' }],
+                    [k8sPermission.key]: [{ label: 'All resources', value: '*' }],
                 }))
             }
         }

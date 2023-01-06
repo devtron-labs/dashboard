@@ -29,19 +29,16 @@ export default function K8sPermissionModal({
                 _k8sPermissionList.splice(key, 1)
                 break
             case 'clone':
-                _k8sPermissionList.splice(
-                    0,
-                    0,
-                    getEmptyPermissionObject(_k8sPermissionList.length, _k8sPermissionList[key]),
-                )
-                setApiGroupMapping((prevMapping) => ({ ...prevMapping, [key + 1]: apiGroupMapping?.[key] }))
+                const currentLen = _k8sPermissionList.length
+                _k8sPermissionList.splice(0, 0, getEmptyPermissionObject(currentLen, _k8sPermissionList[key]))
+                setApiGroupMapping((prevMapping) => ({ ...prevMapping, [currentLen]: apiGroupMapping?.[key] }))
                 setKindMapping((prevMapping) => ({
                     ...prevMapping,
-                    [key + 1]: kindMapping?.[key],
+                    [currentLen]: kindMapping?.[key],
                 }))
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
-                    [key + 1]: objectMapping?.[key],
+                    [currentLen]: objectMapping?.[key],
                 }))
                 break
             case 'edit':

@@ -68,7 +68,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                         ? element.resource.length + ' objects'
                                         : element.resource[0].label}
                                 </span>
-                                <span className="dc__truncate-text">{element.action.label}</span>
+                                <span className="dc__truncate-text">{element.action?.label}</span>
                                 <span className="flex right">
                                     <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
                                         <Clone
