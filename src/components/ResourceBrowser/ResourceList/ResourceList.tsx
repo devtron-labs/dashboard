@@ -89,12 +89,14 @@ export default function ResourceList() {
         }
     }, [namespace])
 
-    // Revisit
     useEffect(() => {
-        if (clusterId && namespace) {
+        if (selectedCluster?.value && selectedNamespace?.value) {
+            const _clusterId = selectedCluster.value
+            const _namespace = selectedNamespace.value
+
             if (!nodeType || !selectedResource) {
                 AppDetailsStore.initAppDetailsTabs(
-                    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
+                    `${URLS.RESOURCE_BROWSER}/${_clusterId}/${_namespace}`,
                     false,
                     false,
                     true,
@@ -102,11 +104,11 @@ export default function ResourceList() {
                 )
             } else if (selectedResource?.gvk?.Kind) {
                 AppDetailsStore.updateK8sResourcesTabUrl(
-                    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${selectedResource.gvk.Kind.toLowerCase()}`,
+                    `${URLS.RESOURCE_BROWSER}/${_clusterId}/${_namespace}/${selectedResource.gvk.Kind.toLowerCase()}`,
                 )
             }
         }
-    }, [clusterId, namespace, selectedResource?.gvk?.Kind])
+    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
 
     useEffect(() => {
         if (selectedResource && !node) {
