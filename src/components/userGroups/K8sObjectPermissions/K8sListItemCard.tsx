@@ -283,10 +283,10 @@ export default function K8sListItemCard({
                 <span>Cluster</span>
                 {!selectedPermissionAction && (
                     <span className="flex">
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Duplicate">
+                        <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
                             <Clone className="icon-dim-16 mr-8 fcn-6 cursor" onClick={() => editPermission('clone')} />
                         </Tippy>
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Delete">
+                        <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                             <Delete className="icon-dim-16 scn-6 cursor" onClick={() => editPermission('delete')} />
                         </Tippy>
                     </span>
