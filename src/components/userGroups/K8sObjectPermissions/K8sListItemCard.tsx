@@ -57,6 +57,7 @@ export default function K8sListItemCard({
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
     const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>()
+    const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>()
 
     useEffect(() => {
         getClusterListData()
@@ -116,14 +117,16 @@ export default function K8sListItemCard({
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
                 setProcessedGvkData(_processedNamespacedGvk.k8SObjectMap)
-                const _allApiGroupMapping = []
+                const _allApiGroupMapping = [], _allKindMapping = []
                 if (resourceGroupList.allowedAll) {
                     _allApiGroupMapping.push(
                         { label: 'All API groups', value: '*' },
                         { label: 'K8s core groups (eg. service, pod, etc.)', value: 'k8sempty' },
                     )
+                    _allKindMapping.push({ label: 'All kind', value: '*' })
                 }
                 setAllInApiGroupMapping(_allApiGroupMapping)
+                setAllInKindMapping(_allKindMapping)
                 setApiGroupMapping({
                     [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList.sort(sortOptionsByLabel)],
                 })
@@ -159,7 +162,7 @@ export default function K8sListItemCard({
         }
 
         setKindMapping({
-            [k8sPermission.key]: [{ label: 'All kind', value: '*' }, ...kind.sort(sortOptionsByLabel)],
+            [k8sPermission.key]: [...allInKindMapping, ...kind.sort(sortOptionsByLabel)],
         })
         if (k8sPermission?.resource) {
             if (
