@@ -44,7 +44,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
     }
 }
 
-export const getEmptyPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter) => {
+export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter) => {
     if (k8sPermission) {
         return {
             key: idx,
@@ -74,11 +74,11 @@ export const k8sPermissionStyle = {
     control: (base, state) => ({
         ...base,
         minHeight: '36px',
-        border: state.isDisabled ? (state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf') : '1px solid #d6dbdf',
+        border: state.isDisabled ? '1px solid #d6dbdf' : state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
         fontWeight: '400',
         backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
         pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'cursor',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
     dropdownIndicator: (base) => ({
         ...base,
@@ -96,13 +96,13 @@ export const k8sRoleSelectionStyle = {
         fontWeight: state.isSelected ? 600 : 'normal',
         marginRight: '8px',
     }),
-    control: (base,state) => ({
+    control: (base, state) => ({
         ...base,
         minHeight: '36px',
         fontWeight: '400',
         backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
         pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'cursor',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
     dropdownIndicator: (base) => ({
         ...base,
@@ -122,7 +122,7 @@ export const resourceMultiSelectstyles = {
         fontWeight: '400',
         backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
         pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'cursor',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,
@@ -143,6 +143,6 @@ export const resourceMultiSelectstyles = {
 export const excludeKeyAndClusterValue = ({ key, cluster, ...rest }) => {
     return {
         cluster: { label: cluster.label, value: cluster.label },
-        ...rest
+        ...rest,
     }
 }

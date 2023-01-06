@@ -4,7 +4,7 @@ import { K8sPermissionModalType, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
-import { getEmptyPermissionObject } from './K8sPermissions.utils'
+import { getPermissionObject } from './K8sPermissions.utils'
 import { toast } from 'react-toastify'
 
 export default function K8sPermissionModal({
@@ -13,7 +13,7 @@ export default function K8sPermissionModal({
     setK8sPermission,
     close,
 }: K8sPermissionModalType) {
-    const [k8PermissionList, setPermissionList] = useState([getEmptyPermissionObject(0, k8sPermission)])
+    const [k8PermissionList, setPermissionList] = useState([getPermissionObject(0, k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<Record<string, OptionType[]>>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
@@ -23,14 +23,14 @@ export default function K8sPermissionModal({
         const _k8sPermissionList = [...k8PermissionList]
         switch (action) {
             case 'add':
-                _k8sPermissionList.splice(0, 0, getEmptyPermissionObject(_k8sPermissionList.length))
+                _k8sPermissionList.splice(0, 0, getPermissionObject(_k8sPermissionList.length))
                 break
             case 'delete':
                 _k8sPermissionList.splice(key, 1)
                 break
             case 'clone':
                 const currentLen = _k8sPermissionList.length
-                _k8sPermissionList.splice(0, 0, getEmptyPermissionObject(currentLen, _k8sPermissionList[key]))
+                _k8sPermissionList.splice(0, 0, getPermissionObject(currentLen, _k8sPermissionList[key]))
                 setApiGroupMapping((prevMapping) => ({ ...prevMapping, [currentLen]: apiGroupMapping?.[key] }))
                 setKindMapping((prevMapping) => ({
                     ...prevMapping,

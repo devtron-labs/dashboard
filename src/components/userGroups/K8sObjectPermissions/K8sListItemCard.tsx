@@ -24,10 +24,9 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType } from '../userGroups.types'
+import { ALL_NAMESPACE, K8sListItemCardType, OptionType } from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import CreatableSelect from 'react-select/creatable'
 import {
     k8sPermissionRoles,
@@ -112,10 +111,10 @@ export default function K8sListItemCard({
             if (resourceGroupList.apiResources) {
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
-                const _k8SObjectList: any[] = []
+                const _k8SObjectList: OptionType[] = []
                 for (const [key, value] of _k8SObjectMap.entries()) {
                     if (key) {
-                        _k8SObjectList.push({ label: key, value: key, gvk: value })
+                        _k8SObjectList.push({ label: key, value: key })
                     }
                 }
                 setProcessedData(_k8SObjectMap)
@@ -153,9 +152,9 @@ export default function K8sListItemCard({
     const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
         const kind: any[] = []
         let selectedGvk: GVKType
-        if (_k8SObjectMap || processedData) {
+        if (_k8SObjectMap ?? processedData) {
             if (selected.value === '*') {
-                for (const [key, value] of (_k8SObjectMap || processedData).entries()) {
+                for (const value of (_k8SObjectMap ?? processedData).values()) {
                     value?.child.forEach((ele) => {
                         kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'], gvk: ele.gvk })
                         if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
@@ -164,7 +163,7 @@ export default function K8sListItemCard({
                     })
                 }
             } else {
-                const data = (_k8SObjectMap || processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
+                const data = (_k8SObjectMap ?? processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
                 data?.child?.forEach((ele) => {
                     if (ele.namespaced) {
                         kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'], gvk: ele.gvk })
@@ -205,19 +204,18 @@ export default function K8sListItemCard({
             }
             const { result } = await getResourceList(resourceListPayload)
             if (result) {
-                const _optionList = [
-                    { label: 'All resources', value: '*' },
-                    ...result?.data
+                const _data =
+                    result.data
                         ?.map((ele) => {
                             return { label: ele['name'], value: ele['name'] }
                         })
-                        .sort(sortOptionsByLabel),
-                ]
+                        .sort(sortOptionsByLabel) ?? []
+                const _optionList = [{ label: 'All resources', value: '*' }, ..._data]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
                     [k8sPermission.key]: _optionList,
                 }))
-                if(k8sPermission.resource?.[0]?.value === "*"){
+                if (k8sPermission.resource?.[0]?.value === '*') {
                     handleK8sPermission('onObjectChange', index, _optionList)
                 }
             }

@@ -40,7 +40,7 @@ export function Sidebar() {
     }, [activeStageName])
 
     return (
-        <div>
+        <div className="">
             {activeStageName !== BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
                     {configurationType === ConfigurationType.GUI && (

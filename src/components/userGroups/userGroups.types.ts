@@ -1,7 +1,6 @@
-import React from 'react';
-import { ACCESS_TYPE_MAP } from '../../config';
-import { Nodes } from '../app/types';
-import { ApiResourceGroupType } from '../ResourceBrowser/Types';
+import React from 'react'
+import { ACCESS_TYPE_MAP } from '../../config'
+import { Nodes } from '../app/types'
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
@@ -113,7 +112,7 @@ export interface CreateGroup {
     roleFilters: APIRoleFilter[]
 }
 
-export interface K8sPermissionFilter  {
+export interface K8sPermissionFilter {
     entity: EntityTypes
     cluster: OptionType
     namespace: OptionType
@@ -196,9 +195,3 @@ export const K8S_PERMISSION_INFO_MESSAGE = {
 }
 
 export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: '*' }
-
-export interface KindOptionType {
-    value: string
-    label: string
-    gvk: ApiResourceGroupType
-}
