@@ -1,6 +1,7 @@
 import React from 'react';
 import { ACCESS_TYPE_MAP } from '../../config';
 import { Nodes } from '../app/types';
+import { ApiResourceGroupType } from '../ResourceBrowser/Types';
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
@@ -195,3 +196,9 @@ export const K8S_PERMISSION_INFO_MESSAGE = {
 }
 
 export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: '*' }
+
+export interface KindOptionType {
+    value: string
+    label: string
+    gvk: ApiResourceGroupType
+}

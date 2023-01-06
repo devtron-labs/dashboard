@@ -17,7 +17,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../../ResourceBrowser/ResourceBrowser.service'
-import { K8SObjectType, ResourceListPayloadType } from '../../ResourceBrowser/Types'
+import { GVKType, K8SObjectType, ResourceListPayloadType } from '../../ResourceBrowser/Types'
 import {
     customValueContainer,
     formatOptionLabel,
@@ -38,6 +38,7 @@ import {
 } from './K8sPermissions.utils'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import Tippy from '@tippyjs/react'
+import { kindValueContainer, resourceKindOptionLabel } from './K8sPermission.component'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -111,10 +112,10 @@ export default function K8sListItemCard({
             if (resourceGroupList.apiResources) {
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
-                const _k8SObjectList: OptionType[] = []
+                const _k8SObjectList: any[] = []
                 for (const [key, value] of _k8SObjectMap.entries()) {
                     if (key) {
-                        _k8SObjectList.push({ label: key, value: key })
+                        _k8SObjectList.push({ label: key, value: key, gvk: value  })
                     }
                 }
                 setProcessedData(_k8SObjectMap)
@@ -149,19 +150,26 @@ export default function K8sListItemCard({
     }
 
     const createKindData = (selected, _k8SObjectMap = null) => {
-        const kind: OptionType[] = []
+        const kind: any[] = []
+        let selectedGvk: GVKType 
         if (_k8SObjectMap || processedData) {
             if (selected.value === '*') {
                 for (const [key, value] of (_k8SObjectMap || processedData).entries()) {
                     value?.child.forEach((ele) => {
-                        kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'] })
+                        kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'], gvk: ele.gvk })
+                        if(!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value){
+                            selectedGvk = ele.gvk
+                        }
                     })
                 }
             } else {
                 const data = (_k8SObjectMap || processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
                 data?.child?.forEach((ele) => {
                     if (ele.namespaced) {
-                        kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'] })
+                        kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'], gvk: ele.gvk })
+                    }
+                    if(!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value){
+                        selectedGvk = ele.gvk
                     }
                 })
             }
@@ -174,10 +182,9 @@ export default function K8sListItemCard({
         if (k8sPermission?.resource) {
             if (
                 k8sPermission.kind.value !== '*' &&
-                k8sPermission.group.value !== '*' &&
                 k8sPermission.kind.value !== 'Event'
             ) {
-                getResourceListData(k8sPermission.kind, _k8SObjectMap)
+                getResourceListData({...k8sPermission.kind, gvk: selectedGvk}, _k8SObjectMap)
             } else {
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
@@ -189,14 +196,11 @@ export default function K8sListItemCard({
 
     const getResourceListData = async (selected, _k8SObjectMap = null): Promise<void> => {
         try {
-            const resource = (_k8SObjectMap ?? processedData)
-                .get(k8sPermission.group.value === 'k8sempty' ? '' : k8sPermission.group.value)
-                .child.find((ele) => ele.gvk['Kind'] === selected.value)
             const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(k8sPermission?.cluster?.value),
                 k8sRequest: {
                     resourceIdentifier: {
-                        groupVersionKind: resource?.gvk,
+                        groupVersionKind: selected?.gvk,
                         namespace: k8sPermission?.namespace?.value === '*' ? '' : k8sPermission?.namespace.value,
                     },
                 },
@@ -262,7 +266,7 @@ export default function K8sListItemCard({
     const onKindSelect = (selected) => {
         if (selected.value !== k8sPermission?.kind?.value) {
             handleK8sPermission('onKindChange', index, selected)
-            if (selected.value !== '*' && k8sPermission.group.value !== '*' && selected.value !== 'Event') {
+            if (selected.value !== '*' && selected.value !== 'Event') {
                 getResourceListData(selected)
             } else {
                 setObjectMapping((prevMapping) => ({
@@ -376,12 +380,14 @@ export default function K8sListItemCard({
                                     isDisabled={!k8sPermission.group}
                                     value={k8sPermission.kind}
                                     onChange={onKindSelect}
+                                    formatOptionLabel={resourceKindOptionLabel}
                                     name="kind"
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
+                                        ValueContainer: kindValueContainer,
                                     }}
-                                    styles={k8sPermissionStyle}
+                                    styles={k8sRoleSelectionStyle}
                                 />
                             </div>
                         </div>
@@ -411,14 +417,14 @@ export default function K8sListItemCard({
                             styles={resourceMultiSelectstyles}
                         />
                     </div>
-                    {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
+                    {/* {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
                         <InfoColourBar
                             message={K8S_PERMISSION_INFO_MESSAGE[k8sPermission.kind.label]}
                             classname="info_bar mb-12"
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                    )}
+                    )} */}
                     <div className="cn-6 mb-6">Role</div>
                     <div className="mb-16 w-300">
                         <ReactSelect
