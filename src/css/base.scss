@@ -557,6 +557,9 @@ button.anchor {
     &.f-synced,
     &.f-sync.ok,
     &.f-running,
+    &.f-completed,
+    &.f-bound,
+    &.f-Active,
     &.f-scalingreplicasetdown {
         color: var(--green);
     }
@@ -571,6 +574,7 @@ button.anchor {
     &.f-failed,
     &.f-imagepullbackoff,
     &.f-errimagepull,
+    &.f-warning,
     &.f-outofsync {
         color: var(--R500);
     }
@@ -2010,6 +2014,10 @@ textarea,
     min-width: 48px;
 }
 
+.mw-4{
+  min-width: 4px !important;
+}
+
 .w-100-px {
     width: 100px;
 }
@@ -2018,12 +2026,24 @@ textarea,
     width: 120px;
 }
 
+.w-150 {
+    width: 150px;
+}
+
+.w-160 {
+    width: 160px;
+}
+
 .w-180 {
     width: 180px;
 }
 
 .w-200 {
     width: 200px;
+}
+
+.w-220 {
+    width: 220px;
 }
 
 .w-250 {
@@ -2059,6 +2079,10 @@ textarea,
     width: 50%;
 }
 
+.w-70 {
+    width: 70% !important;
+}
+
 .w-80 {
     width: 80%;
 }
@@ -2075,12 +2099,20 @@ textarea,
     width: 100%;
 }
 
+.w-100-imp {
+    width: 100% !important;
+}
+
 .w-auto {
     width: auto;
 }
 
 .dc_width-max-content {
     width: max-content;
+}
+
+.dc_max-width__max-content {
+    max-width: max-content !important;
 }
 
 //min width
@@ -2246,6 +2278,11 @@ textarea,
     padding-right: 20px;
 }
 
+.p-lr-12 {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
 // Margin in pixels
 .dc__m-auto {
     margin: auto;
@@ -2369,3 +2406,41 @@ textarea::placeholder {
     background-color: var(--N50);
 }
 
+.dc__user-select-none {
+    user-select: none;
+}
+
+.dc__stroke-width-4 {
+    path {
+        stroke-width: 4px;
+    }
+}
+
+.dc__beta-feat-nav {
+    &:not(.active-nav) {
+        .svg-container {
+            position: relative;
+
+            &::after {
+                content: '';
+                width: 12px;
+                height: 12px;
+                background: var(--Y500);
+                position: absolute;
+                border-radius: 50%;
+                top: 6px;
+                right: 6px;
+                border: 2px solid var(--B500);
+            }
+        }
+    }
+
+    .expandable-active-nav {
+        .title-container {
+            &::after {
+                content: '(Beta)';
+                margin-left: 4px;
+            }
+        }
+    }
+}

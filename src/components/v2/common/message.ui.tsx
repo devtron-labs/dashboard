@@ -25,6 +25,7 @@ export interface MsgUIProps {
     isShowActionButton?: boolean;
     actionButtonText?: string;
     onActionButtonClick?: () => void;
+    minHeight?: string;
 }
 
 const MessageUI: React.FC<MsgUIProps> = ({
@@ -39,11 +40,12 @@ const MessageUI: React.FC<MsgUIProps> = ({
     isShowActionButton,
     actionButtonText,
     onActionButtonClick,
+    minHeight
 }: MsgUIProps) => {
     return (
         <div
             className={`dc__text-center ${theme || 'dark'}-background w-100 `}
-            style={{ paddingTop: '200px', minHeight: '600px', flex: '1', ...bodyStyle }}
+            style={{ paddingTop: '200px', minHeight: minHeight || '600px', flex: '1', ...bodyStyle }}
         >
             <div>
                 {(() => {
@@ -51,7 +53,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                         case MsgUIType.LOADING:
                             return (
                                 <div className={`fcn-0 ${iconClassName || ''}`}>
-                                    <Progressing />
+                                    <Progressing size={size} />
                                 </div>
                             );
                         case MsgUIType.POD:
