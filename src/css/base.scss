@@ -557,6 +557,9 @@ button.anchor {
     &.f-synced,
     &.f-sync.ok,
     &.f-running,
+    &.f-completed,
+    &.f-bound,
+    &.f-Active,
     &.f-scalingreplicasetdown {
         color: var(--green);
     }
@@ -571,6 +574,7 @@ button.anchor {
     &.f-failed,
     &.f-imagepullbackoff,
     &.f-errimagepull,
+    &.f-warning,
     &.f-outofsync {
         color: var(--R500);
     }
@@ -2020,6 +2024,7 @@ textarea,
 
 .min-w-385 {
     min-width: 385px;
+}
 
 .mw-4{
   min-width: 4px !important;
@@ -2033,6 +2038,10 @@ textarea,
     width: 120px;
 }
 
+.w-150 {
+    width: 150px;
+}
+
 .w-160 {
     width: 160px;
 }
@@ -2043,6 +2052,10 @@ textarea,
 
 .w-200 {
     width: 200px;
+}
+
+.w-220 {
+    width: 220px;
 }
 
 .w-250 {
@@ -2098,12 +2111,20 @@ textarea,
     width: 100%;
 }
 
+.w-100-imp {
+    width: 100% !important;
+}
+
 .w-auto {
     width: auto;
 }
 
 .dc_width-max-content {
     width: max-content;
+}
+
+.dc_max-width__max-content {
+    max-width: max-content !important;
 }
 
 //min width
