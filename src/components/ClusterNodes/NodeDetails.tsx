@@ -10,6 +10,7 @@ import {
     useBreadcrumb,
     ToastBodyWithButton,
     filterImageList,
+    toastAccessDenied,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -97,7 +98,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
-                    setNodeImageList(filterImageList(imageList,response.result.k8sVersion))
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
@@ -133,6 +133,12 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     useEffect(() => {
         getData(patchData)
     }, [])
+
+    useEffect(() => {
+        if (imageList?.length && nodeDetail?.k8sVersion) {
+            setNodeImageList(filterImageList(imageList, nodeDetail.k8sVersion))
+        }
+    }, [imageList, nodeDetail?.k8sVersion])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -973,8 +979,18 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
+    const isAuthorized = (): boolean => {
+        if (!isSuperAdmin) {
+            toastAccessDenied()
+            return false
+        }
+        return true
+    }
+
     const showCordonNodeModal = (): void => {
-        setCordonNodeDialog(true)
+        if (isAuthorized()) {
+            setCordonNodeDialog(true)
+        }
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
@@ -985,7 +1001,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const showDrainNodeModal = (): void => {
-        setDrainNodeDialog(true)
+        if (isAuthorized()) {
+            setDrainNodeDialog(true)
+        }
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
@@ -996,7 +1014,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const showDeleteNodeModal = (): void => {
-        setDeleteNodeDialog(true)
+        if (isAuthorized()) {
+            setDeleteNodeDialog(true)
+        }
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
@@ -1007,7 +1027,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const showEditTaintsModal = (): void => {
-        setShowEditTaints(true)
+        if (isAuthorized()) {
+            setShowEditTaints(true)
+        }
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {

@@ -182,3 +182,14 @@
 .tab-list__tab-link {
     padding: 6px 0;
 }
+
+.kubernetes-header {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 1fr 1fr;
+    grid-column-gap: 16px;
+}
+
+.dc__cluster-modal {
+    background-color: var(--window-bg);
+    height: calc(100vh - 116px);
+}

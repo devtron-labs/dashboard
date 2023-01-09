@@ -1,80 +1,103 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router';
-import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
-import { iLink } from '../../../../utils/tabUtils/link.type';
-import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
-import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
-import { NodeDetailTab } from '../nodeDetail.type';
+import React, { useEffect, useState } from 'react'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
+import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
+import { iLink } from '../../../../utils/tabUtils/link.type'
+import { TabActions, useTab } from '../../../../utils/tabUtils/useTab'
+import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg'
+import { NodeDetailTab } from '../nodeDetail.type'
 import {
     createResource,
     getDesiredManifestResource,
     getManifestResource,
     updateManifestResourceHelmApps,
-} from '../nodeDetail.api';
-import CodeEditor from '../../../../../CodeEditor/CodeEditor';
-import IndexStore from '../../../index.store';
-import MessageUI, { MsgUIType } from '../../../../common/message.ui';
-import { AppType, DeploymentAppType, NodeType } from '../../../appDetails.type';
-import YAML from 'yaml';
-import { toast } from 'react-toastify';
-import { showError, ToastBody } from '../../../../../common';
-import { appendRefetchDataToUrl } from '../../../../../util/URLUtil';
-import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../../../config/constantMessaging';
+} from '../nodeDetail.api'
+import CodeEditor from '../../../../../CodeEditor/CodeEditor'
+import IndexStore from '../../../index.store'
+import MessageUI, { MsgUIType } from '../../../../common/message.ui'
+import { AppType, DeploymentAppType, NodeType, ResourceInfoActionPropsType } from '../../../appDetails.type'
+import YAML from 'yaml'
+import { toast } from 'react-toastify'
+import { showError, ToastBody } from '../../../../../common'
+import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
+import {
+    EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
+    EA_MANIFEST_SECRET_INFO_TEXT,
+} from '../../../../../../config/constantMessaging'
+import { MODES } from '../../../../../../config'
 
-function ManifestComponent({ selectedTab, isDeleted }) {
-    const location = useLocation();
-    const history = useHistory();
-    const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
-    const { url } = useRouteMatch();
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
-    const [manifest, setManifest] = useState('');
-    const [modifiedManifest, setModifiedManifest] = useState('');
-    const [activeManifestEditorData, setActiveManifestEditorData] = useState('');
-    const [desiredManifest, setDesiredManifest] = useState('');
-    const appDetails = IndexStore.getAppDetails();
-    const [loading, setLoading] = useState(true);
-    const [loadingMsg, setLoadingMsg] = useState('Fetching manifest');
-    const [error, setError] = useState(false);
-    const [errorText, setErrorText] = useState('');
-    const [isEditmode, setIsEditmode] = useState(false);
-    const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false);
-    const [isResourceMissing, setIsResourceMissing] = useState(false);
-    const [showInfoText, setShowInfoText] = useState(false);
+function ManifestComponent({
+    selectedTab,
+    isDeleted,
+    isResourceBrowserView,
+    selectedResource,
+}: ResourceInfoActionPropsType) {
+    const location = useLocation()
+    const history = useHistory()
+    const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
+    const { url } = useRouteMatch()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
+    const [manifest, setManifest] = useState('')
+    const [modifiedManifest, setModifiedManifest] = useState('')
+    const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
+    const [desiredManifest, setDesiredManifest] = useState('')
+    const appDetails = IndexStore.getAppDetails()
+    const [loading, setLoading] = useState(true)
+    const [loadingMsg, setLoadingMsg] = useState('Fetching manifest')
+    const [error, setError] = useState(false)
+    const [errorText, setErrorText] = useState('')
+    const [isEditmode, setIsEditmode] = useState(false)
+    const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false)
+    const [isResourceMissing, setIsResourceMissing] = useState(false)
+    const [showInfoText, setShowInfoText] = useState(false)
 
     useEffect(() => {
-        const selectedResource = appDetails.resourceTree.nodes.filter(
-            (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
-        )[0];
+        selectedTab(NodeDetailTab.MANIFEST, url)
+        if (isDeleted) return
+
+        const _selectedResource = isResourceBrowserView
+            ? selectedResource
+            : appDetails.resourceTree.nodes.filter(
+                  (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+              )[0]
         setShowInfoText(
-            selectedResource && !selectedResource.group &&
-                selectedResource.kind === NodeType.Secret &&
-                appDetails.appType === AppType.EXTERNAL_HELM_CHART,
-        );
+            _selectedResource &&
+                !_selectedResource.group &&
+                _selectedResource.kind === NodeType.Secret &&
+                (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART),
+        )
 
-        let _isResourceMissing =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource?.health?.status === 'Missing';
-        setIsResourceMissing(_isResourceMissing);
-        let _showDesiredAndCompareManifest =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource?.parentRefs?.length;
-        setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
+        const _isResourceMissing =
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && _selectedResource?.['health']?.status === 'Missing'
+        setIsResourceMissing(_isResourceMissing)
+        const _showDesiredAndCompareManifest =
+            !isResourceBrowserView &&
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+            !_selectedResource?.['parentRefs']?.length
+        setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
+        setLoading(true)
 
-        setLoading(true);
-        selectedTab(NodeDetailTab.MANIFEST, url);
-
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            markActiveTab('Live manifest');
+        if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+            markActiveTab('Live manifest')
         }
         try {
             Promise.all([
-                !_isResourceMissing && getManifestResource(appDetails, params.podName, params.nodeType),
+                !_isResourceMissing &&
+                    getManifestResource(
+                        appDetails,
+                        params.podName,
+                        params.nodeType,
+                        isResourceBrowserView,
+                        selectedResource,
+                    ),
                 _showDesiredAndCompareManifest &&
                     getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
-                    let _manifest;
+                    let _manifest
                     if (
                         appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-                        appDetails.deploymentAppType === DeploymentAppType.helm
+                        appDetails.deploymentAppType === DeploymentAppType.helm ||
+                        isResourceBrowserView
                     ) {
                         _manifest = JSON.stringify(response[0]?.result?.manifest)
                         setDesiredManifest(response[1]?.result?.manifest || '')
@@ -82,67 +105,79 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                         _manifest = response[0]?.result?.manifest
                     }
                     if (_manifest) {
-                        setManifest(_manifest);
-                        setActiveManifestEditorData(_manifest);
-                        setModifiedManifest(_manifest);
+                        setManifest(_manifest)
+                        setActiveManifestEditorData(_manifest)
+                        setModifiedManifest(_manifest)
                     }
-                    setLoading(false);
+                    setLoading(false)
+
+                    // Clear out error on pod/node change
+                    if (error) {
+                        setError(false)
+                    }
                 })
                 .catch((err) => {
-                    setError(true);
-                    showError(err);
-                    setLoading(false);
-                });
+                    setError(true)
+                    showError(err)
+                    setLoading(false)
+                })
         } catch (err) {
-            setLoading(false);
+            setLoading(false)
         }
-    }, [params.podName, params.nodeType]);
+    }, [params.podName, params.node, params.nodeType])
 
     useEffect(() => {
-        if (!isEditmode && activeManifestEditorData !== modifiedManifest) {
-            setActiveManifestEditorData(modifiedManifest);
+        if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
+            setActiveManifestEditorData(modifiedManifest)
         }
-    }, [isEditmode]);
+    }, [isEditmode])
 
     //For External
 
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {
-            setModifiedManifest(codeEditorData);
+            setModifiedManifest(codeEditorData)
         }
-    };
+    }
     const handleEditLiveManifest = () => {
-        setIsEditmode(true);
-        markActiveTab('Live manifest');
-        setActiveManifestEditorData(modifiedManifest);
-    };
+        setIsEditmode(true)
+        markActiveTab('Live manifest')
+        setActiveManifestEditorData(modifiedManifest)
+    }
 
     const handleApplyChanges = () => {
-        setLoading(true);
-        setLoadingMsg('Applying changes');
+        setLoading(true)
+        setLoadingMsg('Applying changes')
 
-        let manifestString;
+        let manifestString
         try {
-            manifestString = JSON.stringify(YAML.parse(modifiedManifest));
+            manifestString = JSON.stringify(YAML.parse(modifiedManifest))
         } catch (err2) {
-            setErrorText(`Encountered data validation error while saving. “${err2}”`);
+            setErrorText(`Encountered data validation error while saving. “${err2}”`)
         }
         if (!manifestString) {
-            setLoading(false);
+            setLoading(false)
         }
         manifestString &&
-            updateManifestResourceHelmApps(appDetails, params.podName, params.nodeType, manifestString)
+            updateManifestResourceHelmApps(
+                appDetails,
+                params.podName,
+                params.nodeType,
+                manifestString,
+                isResourceBrowserView,
+                selectedResource,
+            )
                 .then((response) => {
-                    setIsEditmode(false);
-                    const _manifest = JSON.stringify(response?.result?.manifest);
+                    setIsEditmode(false)
+                    const _manifest = JSON.stringify(response?.result?.manifest)
                     if (_manifest) {
-                        setManifest(_manifest);
-                        setErrorText(``);
+                        setManifest(_manifest)
+                        setErrorText(``)
                     }
-                    setLoading(false);
+                    setLoading(false)
                 })
                 .catch((err) => {
-                    setLoading(false);
+                    setLoading(false)
                     if (err.code === 403) {
                         toast.info(
                             <ToastBody
@@ -152,96 +187,109 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             {
                                 className: 'devtron-toast unauthorized',
                             },
-                        );
+                        )
                     } else if (err.code === 500) {
-                        const error = err['errors'] && err['errors'][0];
+                        const error = err['errors'] && err['errors'][0]
                         if (error && error.code && error.userMessage) {
-                            setErrorText(`ERROR ${error.code} > Message: “${error.userMessage}”`);
+                            setErrorText(`ERROR ${error.code} > Message: “${error.userMessage}”`)
                         } else {
-                            showError(err);
+                            showError(err)
                         }
                     } else {
-                        showError(err);
+                        showError(err)
                     }
-                });
-    };
+                })
+    }
 
     const recreateResource = () => {
-        setLoading(true);
-        setActiveManifestEditorData('');
-        createResource(appDetails, params.podName, params.nodeType)
+        setLoading(true)
+        setActiveManifestEditorData('')
+        createResource(appDetails, params.podName, params.nodeType, isResourceBrowserView, selectedResource)
             .then((response) => {
-                const _manifest = JSON.stringify(response?.result?.manifest);
+                const _manifest = JSON.stringify(response?.result?.manifest)
                 if (_manifest) {
-                    setManifest(_manifest);
-                    setActiveManifestEditorData(_manifest);
-                    setModifiedManifest(_manifest);
-                    setIsResourceMissing(false);
+                    setManifest(_manifest)
+                    setActiveManifestEditorData(_manifest)
+                    setModifiedManifest(_manifest)
+                    setIsResourceMissing(false)
                 }
-                setLoading(false);
-                appendRefetchDataToUrl(history, location);
+                setLoading(false)
+                appendRefetchDataToUrl(history, location)
             })
             .catch((err) => {
-                setLoading(false);
-                showError(err);
-            });
-    };
+                setLoading(false)
+                showError(err)
+            })
+    }
 
     const handleCancel = () => {
-        setIsEditmode(false);
-        setModifiedManifest(manifest);
-        setActiveManifestEditorData('');
-        setErrorText('');
-    };
+        setIsEditmode(false)
+        setModifiedManifest(manifest)
+        setActiveManifestEditorData('')
+        setErrorText('')
+    }
 
     const markActiveTab = (_tabName: string) => {
         dispatch({
             type: TabActions.MarkActive,
             tabName: _tabName,
-        });
-    };
+        })
+    }
 
     const updateEditor = (_tabName: string) => {
         switch (_tabName) {
             case 'Live manifest':
-                setActiveManifestEditorData(modifiedManifest);
-                break;
+                setActiveManifestEditorData(modifiedManifest)
+                break
             case 'Compare':
-                setActiveManifestEditorData(manifest);
-                break;
+                setActiveManifestEditorData(manifest)
+                break
             case 'Helm generated manifest':
                 return setTimeout(() => {
-                    setActiveManifestEditorData(desiredManifest);
-                }, 0);
-                break;
+                    setActiveManifestEditorData(desiredManifest)
+                }, 0)
+                break
         }
-    };
+    }
 
     const handleTabClick = (_tab: iLink) => {
         if (_tab.isDisabled || loading) {
-            return;
+            return
         }
-        markActiveTab(_tab.name);
-        updateEditor(_tab.name);
-    };
+        markActiveTab(_tab.name)
+        updateEditor(_tab.name)
+    }
 
     useEffect(() => {
         if (params.actionName) {
-            markActiveTab(params.actionName);
+            markActiveTab(params.actionName)
         }
-    }, [params.actionName]);
+    }, [params.actionName])
 
     return isDeleted ? (
         <div>
-            <MessageUI msg="This resource no longer exists" size={32} />
+            <MessageUI
+                msg="This resource no longer exists"
+                size={32}
+                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+            />
         </div>
     ) : (
-        <div style={{ background: '#0B0F22', flex: 1, minHeight: '600px' }}>
-            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
+        <div
+            className="manifest-container"
+            style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
+        >
+            {error && !loading && (
+                <MessageUI
+                    msg="Manifest not available"
+                    size={24}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+                />
+            )}
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
+                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
@@ -264,7 +312,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                                 {tab.name}
                                             </div>
                                         </div>
-                                    );
+                                    )
                                 })}
 
                                 {activeTab === 'Live manifest' && !loading && !isResourceMissing && (
@@ -302,13 +350,20 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 cleanData={activeTab === 'Compare'}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
-                                height={"100vh"}
+                                height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
                                 value={activeManifestEditorData}
-                                mode="yaml"
+                                mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
                                 loading={loading}
-                                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
+                                customLoader={
+                                    <MessageUI
+                                        msg={loadingMsg}
+                                        icon={MsgUIType.LOADING}
+                                        size={24}
+                                        minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                                    />
+                                }
                                 focus={isEditmode}
                             >
                                 {showInfoText && (
@@ -335,7 +390,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 </>
             )}
         </div>
-    );
+    )
 }
 
-export default ManifestComponent;
+export default ManifestComponent

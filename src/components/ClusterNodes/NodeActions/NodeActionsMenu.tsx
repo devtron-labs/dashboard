@@ -8,7 +8,7 @@ import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spray
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { PopupMenu } from '../../common'
+import { PopupMenu, toastAccessDenied } from '../../common'
 import { NodeActionsMenuProps } from '../types'
 import CordonNodeModal from './CordonNodeModal'
 import DrainNodeModal from './DrainNodeModal'
@@ -16,7 +16,12 @@ import DeleteNodeModal from './DeleteNodeModal'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../constants'
 import EditTaintsModal from './EditTaintsModal'
 
-export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListData }: NodeActionsMenuProps) {
+export default function NodeActionsMenu({
+    nodeData,
+    openTerminal,
+    getNodeListData,
+    isSuperAdmin,
+}: NodeActionsMenuProps) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
@@ -24,16 +29,30 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaintNodeDialog, setEditTaintNodeDialog] = useState(false)
 
+    const isAuthorized = (): boolean => {
+        if (!isSuperAdmin) {
+            toastAccessDenied()
+            return false
+        }
+        return true
+    }
+
     const handleOpenTerminalAction = () => {
-        openTerminal(nodeData)
+        if (isAuthorized()) {
+            openTerminal(nodeData)
+        }
     }
 
     const handleEditYamlAction = () => {
-        history.push(`${url}/${nodeData.name}?tab=yaml`)
+        if (isAuthorized()) {
+            history.push(`${url}/${nodeData.name}?tab=yaml`)
+        }
     }
 
     const showCordonNodeModal = (): void => {
-        setCordonNodeDialog(true)
+        if (isAuthorized()) {
+            setCordonNodeDialog(true)
+        }
     }
 
     const hideCordonNodeModal = (refreshData?: boolean): void => {
@@ -44,7 +63,9 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     }
 
     const showDrainNodeModal = (): void => {
-        setDrainNodeDialog(true)
+        if (isAuthorized()) {
+            setDrainNodeDialog(true)
+        }
     }
 
     const hideDrainNodeModal = (refreshData?: boolean): void => {
@@ -55,7 +76,9 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     }
 
     const showDeleteNodeModal = (): void => {
-        setDeleteNodeDialog(true)
+        if (isAuthorized()) {
+            setDeleteNodeDialog(true)
+        }
     }
 
     const hideDeleteNodeModal = (refreshData?: boolean): void => {
@@ -66,7 +89,9 @@ export default function NodeActionsMenu({ nodeData, openTerminal, getNodeListDat
     }
 
     const showEditTaintsModal = (): void => {
-        setEditTaintNodeDialog(true)
+        if (isAuthorized()) {
+            setEditTaintNodeDialog(true)
+        }
     }
 
     const hideEditTaintsModal = (refreshData?: boolean): void => {
