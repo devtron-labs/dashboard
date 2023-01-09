@@ -4,12 +4,12 @@ import { ReactComponent as Chat } from '../../../../../assets/icons/ic-chat-circ
 import { APP_STATUS_HEADERS, DEPLOYMENT_STATUS } from '../../../../../config'
 import { StatusFilterButtonComponent } from '../../k8Resource/StatusFilterButton.component'
 import IndexStore from '../../index.store'
-import { NodeStreamMap } from '../environment.type'
+import { AppStatusDetailsChartType, NodeStreamMap } from '../environment.type'
 import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import { STATUS_SORTING_ORDER } from './constants'
 
-export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = false, showFooter }) {
+export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = false, showFooter }: AppStatusDetailsChartType) {
     const _appDetails = IndexStore.getAppDetails()
     const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [currentFilter, setCurrentFilter] = useState('')
