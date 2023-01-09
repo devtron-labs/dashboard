@@ -14,19 +14,21 @@ export interface CustomGitOpsState {
     };
 }
 
-
-export interface GitOpsConfig {
-    id: number,
-    provider: GitProviderType;
-    host: string,
-    token: string,
-    username?: string,
-    active: boolean,
-    gitLabGroupId: string,
-    gitHubOrgId: string,
+export interface ShortGitOpsConfig {
+    host: string;
+    token: string;
+    username?: string;
+    gitLabGroupId: string;
+    gitHubOrgId: string;
     azureProjectName: string;
     bitBucketWorkspaceId: string;
     bitBucketProjectKey: string;
+}
+export interface GitOpsConfig {
+    id: number;
+    provider: GitProviderType;
+    active: boolean;
+    shortGitOpsConfig: ShortGitOpsConfig;
 }
 
 
@@ -40,16 +42,7 @@ export interface GitOpsState {
     lastActiveGitOp: undefined | GitOpsConfig;
     saveLoading: boolean;
     validateLoading: boolean;
-    isError: {
-        host: string;
-        username: string;
-        token: string;
-        gitHubOrgId: string;
-        gitLabGroupId: string;
-        azureProjectName: string;
-        bitBucketWorkspaceId: string;
-        bitBucketProjectKey: string;
-    },
+    isError: ShortGitOpsConfig,
     validatedTime: string;
     validationError: GitOpsConfig[];
     validationStatus: string;
@@ -57,19 +50,6 @@ export interface GitOpsState {
     isUrlValidationError: boolean;
 }
 
-export interface GitOpsConfigPayload {
-    id: number,
-    provider: string;
-    host: string,
-    token: string,
-    username?: string,
-    active: boolean,
-    gitLabGroupId: string,
-    gitHubOrgId: string,
-    azureProjectName: string;
-    bitBucketWorkspaceId: string;
-    bitBucketProjectKey: string;
-}
 
 export interface GitOpsProps extends RouteComponentProps<{}> { 
     handleChecklistUpdate: (string) => void
