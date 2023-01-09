@@ -1,5 +1,5 @@
 import React from 'react'
-import { DeploymentStatusDetailBreakdownType, ErrorInfoStatusBarType } from './appDetails.type'
+import { DeploymentStatusDetailBreakdownType } from './appDetails.type'
 import { TIMELINE_STATUS, URLS } from '../../../../config'
 import '../../../../components/v2/appDetails/sourceInfo/environmentStatus/environmentStatus.scss'
 import { useRouteMatch } from 'react-router-dom'
