@@ -9,10 +9,10 @@ import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import ReactSelect from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
-import '../ResourceBrowser.scss'
 import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
+import '../ResourceBrowser.scss'
 
 export function K8SResourceList({
     selectedResource,
