@@ -41,6 +41,7 @@ const NavigationList = [
         icon: CubeIcon,
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,
+        markAsBeta: true,
     },
     {
         title: 'Chart Store',
@@ -236,7 +237,7 @@ export default class Navigation extends Component<
                         action: `${item.title} Clicked`,
                     })
                 }}
-                className={`flex left ${className || ''}`}
+                className={`flex left ${item.markAsBeta ? 'dc__beta-feat-nav' : ''} ${className || ''}`}
                 activeClassName="active-nav"
             >
                 <div className="short-nav__item-selected" />
