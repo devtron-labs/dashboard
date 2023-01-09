@@ -47,9 +47,9 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
         })
 
         if (filterRemoveHealth) {
-            flattenedNodes = flattenedNodes?.filter((node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY) || []
-        } else {
-            flattenedNodes = flattenedNodes || []
+            flattenedNodes = flattenedNodes.filter(
+                (node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY,
+            )
         }
     }
 
