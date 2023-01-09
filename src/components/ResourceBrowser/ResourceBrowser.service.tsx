@@ -1,6 +1,6 @@
 import { Routes } from '../../config'
 import { get, post } from '../../services/api'
-import { APIOptions, ClusterListResponse, ResponseType } from '../../services/service.types'
+import { ClusterListResponse, ResponseType } from '../../services/service.types'
 import {
     APIResourceResponse,
     CreateResourcePayload,
