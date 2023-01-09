@@ -49,7 +49,7 @@ export default function AdvancedConfigOptions({
         }
 
         let _selectedPlatforms = []
-        if(targetPlatform.length > 0){
+        if(targetPlatform && targetPlatform.length > 0) {
             _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
                 _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
                 return { label: platformValue, value: platformValue }
