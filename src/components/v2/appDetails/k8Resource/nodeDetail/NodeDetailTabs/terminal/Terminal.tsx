@@ -437,7 +437,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }
 
-    const onClickResume = (e) => {
+    const onClickResume = (e): void => {
         e.stopPropagation()
         terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
         setIsReconnection(true)
