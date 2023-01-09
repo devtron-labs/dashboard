@@ -38,24 +38,23 @@ export default function AdvancedConfigOptions({
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
+    const updateTargetPlatforms = () => {
+        if (parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+            setTargetPlatforms(parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform)
+        } else if (parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+            setTargetPlatforms(parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform)
+        }
+    }
     const updateSelectedPlatformsCustomTargetPlatform = () => {
         let _customTargetPlatform = false
-        let targetPlatform = ''
-        if (parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            targetPlatform =
-                parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform
-        } else if (parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-                targetPlatform = formData?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-        }
-
+        updateTargetPlatforms()
         let _selectedPlatforms = []
-        if(targetPlatform && targetPlatform.length > 0) {
-            _selectedPlatforms = targetPlatform.split(',').map((platformValue) => {
+        if(targetPlatforms && targetPlatforms.length > 0) {
+            _selectedPlatforms = targetPlatforms.split(',').map((platformValue) => {
                 _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
                 return { label: platformValue, value: platformValue }
             })
         }
-        setTargetPlatforms(targetPlatform)
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
     }
