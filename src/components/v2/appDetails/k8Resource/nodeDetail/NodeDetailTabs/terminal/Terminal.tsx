@@ -364,7 +364,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
-                    }, 3000)
+                    }, 5000)
                 } else if (sessionId) {
                     if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
                         postInitialize(sessionId)
@@ -402,7 +402,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-            getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 5)
+            getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 7)
         } else {
             if (
                 !terminalViewProps.nodeName ||
