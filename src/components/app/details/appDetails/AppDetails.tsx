@@ -29,7 +29,7 @@ import {
 } from '../../../common';
 import { Option } from './../../../v2/common/ReactSelect.utils';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
-import { Link } from 'react-router-dom';
+import { Link, Switch } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
 //@ts-check
@@ -174,7 +174,6 @@ export const Details: React.FC<{
         externalLinks: [],
         monitoringTools: [],
     })
-    const [deploymentDetailedStatus, toggleDeploymentDetailedStatus] = useState<boolean>(false)
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...processDeploymentStatusDetailsData(),
@@ -379,10 +378,6 @@ export const Details: React.FC<{
         }
     }
 
-    const hideDeploymentDetailModal = ():void=>{
-      toggleDeploymentDetailedStatus(false)
-    }
-
     const hideAppDetailsStatus = ():void=>{
       toggleDetailedStatus(false)
     }
@@ -406,10 +401,10 @@ export const Details: React.FC<{
     }
 
     const showApplicationDetailedModal = (): void => {
-         toggleDetailedStatus(true)
-    }
+        toggleDetailedStatus(true)
+   }
 
-    return <React.Fragment>
+    return (<React.Fragment>
          <div className="w-100 pt-16 pr-20 pb-16 pl-20">
                         <SourceInfo
                             appDetails={appDetails}
@@ -418,7 +413,6 @@ export const Details: React.FC<{
                             showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
                             showUrlInfo={isAppDeployment ? setUrlInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                            toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
                             deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
                             deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
@@ -462,14 +456,16 @@ export const Details: React.FC<{
                               showAppStatusMessage={false}
                           />
                     )}
-                     {deploymentDetailedStatus && (
-                        <DeploymentStatusDetailModal
-                            close={hideDeploymentDetailModal}
-                            appName={appDetails.appName}
-                            environmentName={appDetails.environmentName}
-                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        />
-                    )}
+                    <Switch>
+                        <Route exact path={`${path}${URLS.DEPLOYMENT_STATUS}`}>
+                            <DeploymentStatusDetailModal
+                                appName={appDetails.appName}
+                                environmentName={appDetails.environmentName}
+                                streamData={streamData}
+                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                            />
+                        </Route>
+                    </Switch>
                     {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}
@@ -539,6 +535,7 @@ export const Details: React.FC<{
                         </ConfirmationDialog>
                     )}
         </React.Fragment>
+    )
 };
 
 export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ environments: any, disabled: boolean, controlStyleOverrides?: React.CSSProperties }) {

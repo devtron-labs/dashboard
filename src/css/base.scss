@@ -1722,6 +1722,10 @@ button.anchor {
     max-width: 200px;
 }
 
+.dc__mxw-1000 {
+    max-width: 1000px;
+}
+
 .fw-n {
     font-weight: normal !important;
 }
@@ -2024,6 +2028,14 @@ textarea,
     min-width: 48px;
 }
 
+.min-w-800 {
+    min-width: 800px;
+}
+
+.min-w-385 {
+    min-width: 385px;
+}
+
 .mw-4{
   min-width: 4px !important;
 }
@@ -2131,11 +2143,7 @@ textarea,
 
 //min width
 .min-w-200 {
-    min-width: 200px;
-}
-
-.dc_min-w-100{
-    min-width: 100%;
+  min-width: 200px
 }
 
 // Height in pixels
@@ -2411,6 +2419,12 @@ textarea::placeholder {
     transform: translate(-50%, -50%);
 }
 
+.dc__truncate {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
 // opacity
 .dc__opacity-0_5 {
   opacity: 0.5;

@@ -62,6 +62,7 @@ import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManage
 import { renderConfigurationError } from '../cdDetails/cd.utils'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { Host } from '@devtron-labs/devtron-fe-common-lib'
+import { triggerStatus } from '../cdDetails/CDDetails'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -595,6 +596,8 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
 }) => {
     const { url, path } = useRouteMatch()
     const { pathname } = useLocation()
+    const status = type === 'CD' ? triggerStatus(triggerDetails?.status) : triggerDetails?.status
+
     return (
         <div className="trigger-details" style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}>
             <div className="trigger-details__status flex">
@@ -604,8 +607,8 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         cx="12.5"
                         cy="74.5"
                         r="6"
-                        fill={colorMap[triggerDetails?.status?.toLowerCase()]}
-                        stroke={colorMap[triggerDetails?.status?.toLowerCase()]}
+                        fill={colorMap[status?.toLowerCase()]}
+                        stroke={colorMap[status?.toLowerCase()]}
                         strokeWidth="12"
                         strokeOpacity="0.3"
                     />
@@ -680,11 +683,13 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         ),
                         [TERMINAL_STATUS_MAP.FAILED]: <Failed triggerDetails={triggerDetails} type={type} />,
                         [TERMINAL_STATUS_MAP.ERROR]: <Failed triggerDetails={triggerDetails} type={type} />,
-                    }[triggerDetails.status.toLowerCase()]
+                        [TERMINAL_STATUS_MAP.UNABLE_TO_FETCH]: <Failed triggerDetails={triggerDetails} type={type} />,
+                        [TERMINAL_STATUS_MAP.TIMED_OUT]: <Failed triggerDetails={triggerDetails} type={type} />,
+                    }[status.toLowerCase()]
                 }
-                {!Object.values(TERMINAL_STATUS_MAP).includes(triggerDetails.status.toLowerCase()) && (
-                    <Generic triggerDetails={triggerDetails} type={type} />
-                )}
+                {!Object.values(TERMINAL_STATUS_MAP).includes(
+                    status.toLowerCase(),
+                ) && <Generic triggerDetails={triggerDetails} type={type} />}
             </div>
         </div>
     )
@@ -706,13 +711,11 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
     colorClass,
     type,
 }) => {
+    const status = type === 'CD' ? triggerStatus(triggerDetails.status) : triggerDetails.status
+
     return (
         <div className="flex column left">
-            <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>
-                {triggerDetails.status && triggerDetails.status.toLowerCase() === 'cancelled'
-                    ? 'ABORTED'
-                    : triggerDetails.status}
-            </div>
+            <div className={`${status} fs-14 fw-6 ${colorClass}`}>{status && status.toLowerCase()==='cancelled' ? 'ABORTED' : status}</div>
             <div className="flex left">
                 {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
                     <time className="cn-7 fs-12 mr-12">
