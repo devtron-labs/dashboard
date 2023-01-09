@@ -484,13 +484,9 @@ export default function ResourceList() {
         )
     }
 
-    const betaTag = (): JSX.Element => {
-        return <span className="fs-12 fw-4 lh-18 pt-1 pb-1 pl-6 pr-6 ml-8 cn-9 bcy-5 br-4">Beta</span>
-    }
-
     return (
         <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" additionalHeaderInfo={betaTag} />
+            <PageHeader headerName="Kubernetes Resource Browser" markAsBeta={true} />
             {!selectedCluster?.value ? (
                 <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
             ) : (
