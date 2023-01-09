@@ -13,7 +13,6 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes, DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
-import moment from 'moment';
 import { DEPLOYMENT_STATUS, TIMELINE_STATUS } from '../../../../config';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
@@ -398,7 +397,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
       deploymentStatusBreakdown: {
           DEPLOYMENT_INITIATED: {
               icon: 'success',
-              displayText: `Deployment initiated by ${data?.triggeredBy || ''}`,
+              displayText: `Deployment initiated ${data?.triggeredBy ? `by ${data?.triggeredBy}` : ''}`,
               displaySubText: '',
               time: '',
           },
@@ -488,51 +487,48 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
                   deploymentData.deploymentStatus !== DEPLOYMENT_STATUS.SUCCEEDED
               ) {
-                deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = element.resourceDetails.filter((item) => item.resourcePhase ===  tableData.currentPhase)//// check this condition
+                deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = element.resourceDetails?.filter((item) => item.resourcePhase ===  tableData.currentPhase)
                   if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                   } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED) {
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
-                } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT) {
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Unknown'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = deploymentData.deploymentError
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map((item) => {
-                        return {
-                            icon: item.phase === tableData.currentPhase ? 'failed' : 'success',
-                            message: item.message
-                        }
-                      })
-                }  else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) {
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'disconnect'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Unknown'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = deploymentData.deploymentError
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map((item) => {
-                        return {
-                            icon: item.phase === tableData.currentPhase ? 'failed' : 'success',
-                            message: item.message
-                        }
-                      })
-                } else {
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'In progress'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = element.statusDetail
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map(
-                        (item) => {
-                            return {
-                                icon: item.phase === tableData.currentPhase ? 'loading' : 'success',
-                                message: item.message,
-                            }
-                        },
-                    )
-                }
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                  } else if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT || deploymentData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) {
+                      if(deploymentData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT){
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
+                      } else {
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'disconnect'
+                      }
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Unknown'
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus =
+                          deploymentData.deploymentError
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map(
+                          (item) => {
+                              return {
+                                  icon: item.phase === tableData.currentPhase ? 'failed' : 'success',
+                                  message: item.message,
+                              }
+                          },
+                      )
+                  } else {
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'In progress'
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.timelineStatus = element.statusDetail
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData.map(
+                          (item) => {
+                              return {
+                                  icon: item.phase === tableData.currentPhase ? 'loading' : 'success',
+                                  message: item.message,
+                              }
+                          },
+                      )
+                  }
               } else if (element['status'] === TIMELINE_STATUS.KUBECTL_APPLY_SYNCED) {
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = []
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''

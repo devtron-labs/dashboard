@@ -23,14 +23,15 @@ export function DeploymentStatusDetailRow({
     streamData,
 }: DeploymentStatusDetailRowType) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
+    const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
     const [collapsed, toggleCollapsed] = useState<boolean>(
-        deploymentDetailedData.deploymentStatusBreakdown[type].isCollapsed,
+        statusBreakDownType.isCollapsed,
     )
     const appHealthDropDownlist = ['inprogress', 'failed', 'disconnect', 'timed_out']
 
     useEffect(() => {
-        toggleCollapsed(deploymentDetailedData.deploymentStatusBreakdown[type].isCollapsed)
-    }, [deploymentDetailedData.deploymentStatusBreakdown[type].isCollapsed])
+        toggleCollapsed(statusBreakDownType.isCollapsed)
+    }, [statusBreakDownType.isCollapsed])
 
     async function manualSyncData() {
         try {
@@ -47,10 +48,10 @@ export function DeploymentStatusDetailRow({
     const renderDetailedData = () => {
         return !collapsed ? (
             <div className="bcn-0 en-2 detail-tab_border bw-1">
-                {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus && (
+                {statusBreakDownType.timelineStatus && (
                     <div
                         className={`flex left pt-8 pl-12 pb-8 lh-20 ${
-                            deploymentDetailedData.deploymentStatusBreakdown[type].icon !== 'inprogress'
+                            statusBreakDownType.icon !== 'inprogress'
                                 ? 'bcr-1'
                                 : 'bcy-2'
                         }`}
@@ -76,7 +77,7 @@ export function DeploymentStatusDetailRow({
                                 </div>
                             ))}
                         </div>
-                        {deploymentDetailedData.deploymentStatusBreakdown[type].resourceDetails?.length ? (
+                        {statusBreakDownType.resourceDetails?.length ? (
                             <div className="pl-32">
                                 <div className="app-status-row dc__border-bottom pt-8 pb-8">
                                     {MANIFEST_STATUS_HEADERS.map((headerKey, index) => (
@@ -86,7 +87,7 @@ export function DeploymentStatusDetailRow({
                                     ))}
                                 </div>
                                 <div className="resource-list fs-13">
-                                    {deploymentDetailedData.deploymentStatusBreakdown[type].resourceDetails.map(
+                                    {statusBreakDownType.resourceDetails.map(
                                         (nodeDetails) => (
                                             <div
                                                 className="app-status-row pt-8 pb-8"
@@ -123,15 +124,15 @@ export function DeploymentStatusDetailRow({
         return (
             !collapsed && (
                 <div className="bcn-0 en-2 detail-tab_border bw-1">
-                    {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus && (
+                    {statusBreakDownType.timelineStatus && (
                         <div
                             className={`flex left pt-8 pl-12 pb-8 lh-20 ${
-                                deploymentDetailedData.deploymentStatusBreakdown[type].icon !== 'inprogress'
+                                statusBreakDownType.icon !== 'inprogress'
                                     ? 'bcr-1'
                                     : 'bcy-2'
                             }`}
                         >
-                            {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus}
+                            {statusBreakDownType.timelineStatus}
                             {(deploymentDetailedData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
                                 deploymentDetailedData.deploymentStatus === DEPLOYMENT_STATUS.UNABLE_TO_FETCH) && (
                                 <span className="cb-5 fw-6 ml-8 cursor" onClick={manualSyncData}>
@@ -183,37 +184,37 @@ export function DeploymentStatusDetailRow({
                     collapsed ? 'br-4' : 'border-collapse'
                 } en-2`}
             >
-                {renderIcon(deploymentDetailedData.deploymentStatusBreakdown[type].icon)}
+                {renderIcon(statusBreakDownType.icon)}
                 <span className="ml-12 mr-12 fs-13">
-                    <span>{deploymentDetailedData.deploymentStatusBreakdown[type].displayText}</span>
-                    {deploymentDetailedData.deploymentStatusBreakdown[type].displaySubText && (
-                        <span className={`ml-12 f-${deploymentDetailedData.deploymentStatusBreakdown[type].icon || 'waiting'}`}>
-                            {deploymentDetailedData.deploymentStatusBreakdown[type].displaySubText}
+                    <span>{statusBreakDownType.displayText}</span>
+                    {statusBreakDownType.displaySubText && (
+                        <span className={`ml-12 f-${statusBreakDownType.icon || 'waiting'}`}>
+                            {statusBreakDownType.displaySubText}
                         </span>
                     )}
                 </span>
 
-                {deploymentDetailedData.deploymentStatusBreakdown[type].time !== '' &&
-                    deploymentDetailedData.deploymentStatusBreakdown[type].icon !== 'inprogress' && (
+                {statusBreakDownType.time !== '' &&
+                    statusBreakDownType.icon !== 'inprogress' && (
                         <span
                             className={`pl-8 pr-8 pt-4 pb-4 br-12 ${
-                                deploymentDetailedData.deploymentStatusBreakdown[type].icon === 'failed'
+                                statusBreakDownType.icon === 'failed'
                                     ? 'bcr-1 cr-5'
                                     : 'bcg-1 cg-7'
                             }`}
                         >
                             {moment(
-                                deploymentDetailedData.deploymentStatusBreakdown[type].time,
+                                statusBreakDownType.time,
                                 'YYYY-MM-DDTHH:mm:ssZ',
                             ).format(Moment12HourFormat)}
                         </span>
                     )}
                 {((type === TIMELINE_STATUS.KUBECTL_APPLY &&
-                    deploymentDetailedData.deploymentStatusBreakdown[type].kubeList?.length) ||
+                    statusBreakDownType.kubeList?.length) ||
                     (type === TIMELINE_STATUS.APP_HEALTH &&
-                        appHealthDropDownlist.includes(deploymentDetailedData.deploymentStatusBreakdown[type].icon)) ||
+                        appHealthDropDownlist.includes(statusBreakDownType.icon)) ||
                     (type === TIMELINE_STATUS.GIT_COMMIT &&
-                        deploymentDetailedData.deploymentStatusBreakdown[type].icon === 'failed')) && (
+                        statusBreakDownType.icon === 'failed')) && (
                     <DropDownIcon
                         style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
                         className="icon-dim-24 rotate pointer"

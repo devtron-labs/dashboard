@@ -77,7 +77,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
             <CDEmptyState
                 title="Deployment in progress"
                 imgSource={mechanicalOperation}
-                actionButtonStyle="bcb-5 cn-0"
+                actionButtonClass="bcb-5 cn-0"
                 ActionButtonIcon={Arrow}
                 actionHandler={redirectToDeploymentStatus}
                 subtitle="This deployment is in progress. Click on Check status to know the live status."

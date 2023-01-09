@@ -45,6 +45,12 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                 STATUS_SORTING_ORDER[b.health.status?.toLowerCase()]
             )
         })
+
+        if (filterRemoveHealth) {
+            flattenedNodes = flattenedNodes?.filter((node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY) || []
+        } else {
+            flattenedNodes = flattenedNodes || []
+        }
     }
 
     function getNodeMessage(kind: string, name: string) {
@@ -61,22 +67,14 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
         }
     }
 
-    const filteredFlattendNodes = () => {
-        if (filterRemoveHealth) {
-            return flattenedNodes?.filter((node) => node.health.status?.toLowerCase() !== DEPLOYMENT_STATUS.HEALTHY) || []
-        } else {
-            return flattenedNodes || []
-        }
-    }
-
     return (
         <div className="pb-12">
-            {filteredFlattendNodes().length > 0 && (
+            {flattenedNodes.length > 0 && (
                 <div className="pt-16 pl-20 pb-8">
                     <div className="flexbox pr-20 w-100">
                         <div>
                             <StatusFilterButtonComponent
-                                nodes={filteredFlattendNodes()}
+                                nodes={flattenedNodes}
                                 handleFilterClick={onFilterClick}
                             />
                         </div>
@@ -92,8 +90,8 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                     ))}
                 </div>
                 <div className={`resource-list fs-13 ${showFooter ? 'with-footer' : ''}`}>
-                    {filteredFlattendNodes().length > 0 ? (
-                        filteredFlattendNodes()
+                    {flattenedNodes.length > 0 ? (
+                        flattenedNodes
                             .filter(
                                 (nodeDetails) =>
                                     currentFilter === 'all' ||

@@ -7,7 +7,7 @@ export default function CDEmptyState({
     title,
     subtitle,
     ActionButtonIcon,
-    actionButtonStyle,
+    actionButtonClass,
     actionButtonIconRight,
     actionButtonText,
     actionHandler,
@@ -15,7 +15,7 @@ export default function CDEmptyState({
     imgSource?: string
     title?: string
     subtitle?: string
-    actionButtonStyle?: string
+    actionButtonClass?: string
     ActionButtonIcon?: React.FunctionComponent<any>
     actionButtonIconRight?: boolean
     actionButtonText?: string
@@ -36,7 +36,7 @@ export default function CDEmptyState({
             {actionButtonText && (
                 <EmptyState.Button>
                     <div
-                        className={`${actionButtonStyle ? actionButtonStyle : 'cb-5 bcn-0 en-2'} fcn-0 fw-6 fs-13 flexbox br-4 pl-16 pr-16 pt-8 pb-8 pointer`}
+                        className={`${actionButtonClass ? actionButtonClass : 'cb-5 bcn-0 en-2'} fcn-0 fw-6 fs-13 flexbox br-4 pl-16 pr-16 pt-8 pb-8 pointer`}
                         onClick={actionHandler}
                     >
                         {ActionButtonIcon && !actionButtonIconRight && <ActionButtonIcon className="add-icon" />}

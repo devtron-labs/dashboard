@@ -263,7 +263,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {this.renderActiveCD(mat)}
                     {mat.artifactStatus === 'Progressing' && this.renderProgressingCD(mat)}
-                    {mat.artifactStatus === 'Degraded' || (mat.artifactStatus === 'Failed' && this.renderFailedCD(mat))}
+                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && this.renderFailedCD(mat)}
                 </div>
             )
         }
