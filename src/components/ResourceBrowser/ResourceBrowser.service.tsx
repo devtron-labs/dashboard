@@ -26,8 +26,10 @@ export const getResourceList = (
     })
 }
 
-export const getResourceGroupList = (clusterId: string): Promise<APIResourceResponse> => {
-    return get(`${Routes.API_RESOURCE}/${clusterId}`)
+export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): Promise<APIResourceResponse> => {
+    return get(`${Routes.API_RESOURCE}/${clusterId}`, {
+        signal,
+    })
 }
 
 export const createNewResource = (resourceListPayload: CreateResourcePayload): Promise<CreateResourceResponse> => {
