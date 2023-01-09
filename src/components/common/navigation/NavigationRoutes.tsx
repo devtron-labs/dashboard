@@ -17,10 +17,8 @@ import {
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
@@ -36,6 +34,9 @@ const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfigu
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
+const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
+const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
+const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 
 export const mainContext = createContext(null)
 
@@ -89,27 +90,27 @@ export default function NavigationRoutes() {
         }
     }
 
-     const processLoginData = (response, superAdmin, appListCount) => {
-         const count = response.result?.value ? parseInt(response.result.value) : 0
-         setLoginCount(count)
-          if (
-             typeof Storage !== 'undefined' &&
-             (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
-         ) {
-             localStorage.removeItem('isSSOLogin')
-             localStorage.removeItem('isAdminLogin')
-             if (count < MAX_LOGIN_COUNT) {
-                 const updatedPayload = {
-                     key: LOGIN_COUNT,
-                     value: `${count + 1}`,
-                 }
-                 updateLoginCount(updatedPayload)
-             }
-         }
-         if (!count && superAdmin && appListCount === 0) {
-             history.push(`/${URLS.GETTING_STARTED}`)
-         }
-     }
+    const processLoginData = (response, superAdmin, appListCount) => {
+        const count = response.result?.value ? parseInt(response.result.value) : 0
+        setLoginCount(count)
+        if (
+            typeof Storage !== 'undefined' &&
+            (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
+        ) {
+            localStorage.removeItem('isSSOLogin')
+            localStorage.removeItem('isAdminLogin')
+            if (count < MAX_LOGIN_COUNT) {
+                const updatedPayload = {
+                    key: LOGIN_COUNT,
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
+            }
+        }
+        if (!count && superAdmin && appListCount === 0) {
+            history.push(`/${URLS.GETTING_STARTED}`)
+        }
+    }
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -213,8 +214,8 @@ export default function NavigationRoutes() {
         }
     }
 
-    const onClickedDeployManageCardClicked = () =>{
-      setDeployManageCardClicked(true)
+    const onClickedDeployManageCardClicked = () => {
+        setDeployManageCardClicked(true)
     }
 
     if (pageState === ViewType.LOADING || loginLoader) {
@@ -239,7 +240,7 @@ export default function NavigationRoutes() {
                     moduleInInstallingState,
                     setModuleInInstallingState,
                     installedModuleMap,
-                    currentServerInfo
+                    currentServerInfo,
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -269,6 +270,11 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route
+                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:node?`}
+                                        >
+                                            <ResourceBrowserContainer />
+                                        </Route>
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
                                             path={URLS.DEPLOYMENT_GROUPS}
@@ -375,12 +381,17 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    <Route path={`${path}/:appType`} render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount}/>} />
+                    <Route
+                        path={`${path}/:appType`}
+                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount} />}
+                    />
                     <Route exact path="">
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                        <RedirectUserWithSentry
+                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+                        />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -388,11 +399,11 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     )
 }
 
-export function RedirectUserWithSentry({ isFirstLoginUser  }) {
+export function RedirectUserWithSentry({ isFirstLoginUser }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-      if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
         if (isFirstLoginUser) {
             push(`${URLS.GETTING_STARTED}`)
         } else {

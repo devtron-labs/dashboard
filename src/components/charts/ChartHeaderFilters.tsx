@@ -128,18 +128,22 @@ function ChartHeaderFilter({
                 <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8">VIEW AS</div>
                 <div className="cursor flex">
                     <div
-                        onClick={setList}
-                        className={`flex pt-8 pb-8 fs-13 pr-10 pl-10 br-4 w-100 ${!isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'}`}
-                    >
-                        <List className="icon-dim-20 mr-8" />
-                        List
-                    </div>
-                    <div
                         onClick={setGrid}
-                        className={`flex pt-8 pb-8 pl-10 pr-10 fs-13 br-4 w-100 ${isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'}`}
+                        className={`flex pt-8 pb-8 pl-10 pr-10 fs-13 br-4 w-100 ${
+                            isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'
+                        }`}
                     >
                         <Grid className="icon-dim-20 mr-8" />
                         Grid
+                    </div>
+                    <div
+                        onClick={setList}
+                        className={`flex pt-8 pb-8 fs-13 pr-10 pl-10 br-4 w-100 ${
+                            !isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'
+                        }`}
+                    >
+                        <List className="icon-dim-20 mr-8" />
+                        List
                     </div>
                 </div>
                 <hr className="mt-8 mb-8" />

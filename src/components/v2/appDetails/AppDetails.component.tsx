@@ -16,9 +16,11 @@ import { Host } from '@devtron-labs/devtron-fe-common-lib';
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
+    isExternalApp
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    isExternalApp: boolean
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -43,7 +45,7 @@ const AppDetailsComponent = ({
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
-                <EnvironmentSelectorComponent />
+                <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
                 <EnvironmentStatusComponent appStreamData={streamData}/>
             </div>
 

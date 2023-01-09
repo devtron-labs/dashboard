@@ -21,15 +21,16 @@ import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2
 import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
-import { convertToOptionsList, showError } from '../common'
+import {  clusterImageDescription, convertToOptionsList, showError } from '../common'
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
-import { clusterImages, clusterSelectStyle, CLUSTER_STATUS } from './constants'
+import { clusterSelectStyle, CLUSTER_STATUS, IMAGE_LIST } from './constants'
+import { OptionType } from '../userGroups/userGroups.types'
 
 export default function ClusterTerminal({
     clusterId,
@@ -45,7 +46,7 @@ export default function ClusterTerminal({
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const clusterNodeList = convertToOptionsList(nodeList)
-    const imageList = convertToOptionsList(clusterImageList, clusterImages)
+    const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
     const [selectedNodeName, setSelectedNodeName] = useState(node ? { label: node, value: node } : clusterNodeList[0])
@@ -53,7 +54,7 @@ export default function ClusterTerminal({
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
-    const [selectedImage, setImage] = useState<string>(clusterImageList[0])
+    const [selectedImage, setImage] = useState<OptionType>(imageList[0])
     const [selectedNamespace, setNamespace] = useState(defaultNameSpace)
     const [update, setUpdate] = useState<boolean>(false)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
@@ -64,7 +65,7 @@ export default function ClusterTerminal({
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const payload = {
         clusterId: clusterId,
-        baseImage: selectedImage,
+        baseImage: selectedImage.value,
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
         namespace: selectedNamespace.value,
@@ -129,7 +130,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedNodeName.value, selectedImage, isReconnect, selectedNamespace.value])
+    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value])
 
     useEffect(() => {
         try {
@@ -169,6 +170,7 @@ export default function ClusterTerminal({
             }
         } else {
             setNamespace(defaultNameSpace)
+            setImage(imageList[0])
             setSelectedNodeName(clusterNodeList[0])
         }
     }
@@ -265,7 +267,7 @@ export default function ClusterTerminal({
     }
 
     const onChangeImages = (selected): void => {
-        setImage(selected.value)
+        setImage(selected)
     }
 
     const onChangeNamespace = (selected): void => {
@@ -347,6 +349,20 @@ export default function ClusterTerminal({
         )
     }
 
+    const imageOptionComponent = (props) => {
+        const tippyText = clusterImageDescription(clusterImageList, props.data.value)
+
+        return (
+            <Option
+                {...props}
+                tippyClass="default-tt w-200"
+                showTippy={!!tippyText}
+                placement="left"
+                tippyContent={tippyText}
+            />
+        )
+    }
+
     return (
         <div
             className={`${
@@ -359,7 +375,7 @@ export default function ClusterTerminal({
                         <>
                             <div className="cn-6 mr-16">Cluster</div>
                             <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
-                            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
+                            <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
                         </>
                     )}
                     {isNodeDetailsPage && (
@@ -383,7 +399,7 @@ export default function ClusterTerminal({
 
                     {!isNodeDetailsPage && (
                         <>
-                            <div className="cn-6 ml-8 mr-10">Node</div>
+                            <div className="cn-6 mr-10">Node</div>
                             <div style={{ minWidth: '145px' }}>
                                 <ReactSelect
                                     placeholder="Select Containers"
@@ -420,7 +436,8 @@ export default function ClusterTerminal({
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
                     <div className="cn-6 ml-8 mr-4">Image</div>
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         heading="Image"
                         placement="top"
                         interactive={true}
@@ -432,12 +449,13 @@ export default function ClusterTerminal({
                         additionalContent={imageTippyInfo()}
                     >
                         <HelpIcon className="icon-dim-16 mr-8 cursor" />
-                    </TippyWhite>
+                    </TippyCustomized>
                     <div>
                         <CreatableSelect
                             placeholder="Select Image"
                             options={imageList}
-                            defaultValue={imageList[0]}
+                            defaultValue={selectedImage}
+                            value={selectedImage}
                             onChange={onChangeImages}
                             styles={{
                                 ...clusterSelectStyle,
@@ -455,15 +473,7 @@ export default function ClusterTerminal({
                             }}
                             components={{
                                 IndicatorSeparator: null,
-                                Option: (props) => (
-                                    <Option
-                                        {...props}
-                                        tippyClass="default-tt w-200"
-                                        showTippy={!!clusterImages[props.data.value]?.info}
-                                        placement="left"
-                                        tippyContent={clusterImages[props.data.value]?.info || ''}
-                                    />
-                                ),
+                                Option: imageOptionComponent,
                                 MenuList: menuComponent,
                             }}
                         />

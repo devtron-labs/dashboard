@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { showError, Progressing, DeleteDialog } from '../common';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { showError, Progressing, DeleteDialog, deepEqual } from '../common';
 import { ResizableTextarea } from '../configMaps/ConfigMap';
 import { saveGroup, deleteGroup } from './userGroup.service';
 
@@ -9,12 +9,15 @@ import {
     EntityTypes,
     ActionTypes,
     CreateGroup,
+    K8sPermissionFilter,
 } from './userGroups.types';
 import './UserGroup.scss';
 import { toast } from 'react-toastify';
 import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
+import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
+import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 
 export default function GroupForm({
     id = null,
@@ -34,9 +37,11 @@ export default function GroupForm({
         entityName: [],
     });
     const [submitting, setSubmitting] = useState(false);
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [name, setName] = useState({ value: '', error: '' });
     const [description, setDescription] = useState('');
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
+    const currentK8sPermissionRef = useRef<any[]>([])
 
     function isFormComplete(): boolean {
         let isComplete: boolean = true;
@@ -109,6 +114,18 @@ export default function GroupForm({
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
+                    ...k8sPermission.map((permission) => ({
+                        ...permission,
+                        entity: EntityTypes.CLUSTER,
+                        action: permission.action.value,
+                        cluster: permission.cluster.label,
+                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                        resource: permission.resource.find((entity) => entity.value === '*')
+                        ? ''
+                        : permission.resource.map((entity) => entity.value).join(',')
+                    }))
             ],
         };
         if (serverMode !== SERVER_MODE.EA_ONLY) {
@@ -123,6 +140,7 @@ export default function GroupForm({
         try {
             const { result } = await saveGroup(payload);
             if (id) {
+                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 updateCallback(index, result);
                 toast.success('Group updated');
             } else {
@@ -184,6 +202,9 @@ export default function GroupForm({
                 setDirectPermission={setDirectPermission}
                 chartPermission={chartPermission}
                 setChartPermission={setChartPermission}
+                k8sPermission={k8sPermission}
+                setK8sPermission={setK8sPermission}
+                currentK8sPermissionRef={currentK8sPermissionRef}
             />
             <div className="flex right mt-32">
                 {id && (
@@ -194,6 +215,12 @@ export default function GroupForm({
                     >
                         Delete
                     </button>
+                )}
+                {id && !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
+                    <span className="flex cy-7 mr-12">
+                        <Warning className="icon-dim-20 warning-icon-y7 mr-8" />
+                        Unsaved changes
+                    </span>
                 )}
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
                     Cancel
@@ -211,5 +238,5 @@ export default function GroupForm({
                 />
             )}
         </div>
-    );
+    )
 }

@@ -1,96 +1,92 @@
-import Tippy from '@tippyjs/react';
-import React, { useEffect, useRef, useState } from 'react';
-import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
-import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
-import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
-import { useParams, useRouteMatch, useLocation } from 'react-router';
-import { NodeDetailTab } from '../nodeDetail.type';
-import { getLogsURL } from '../nodeDetail.api';
-import IndexStore from '../../../index.store';
-import WebWorker from '../../../../../app/WebWorker';
-import sseWorker from '../../../../../app/grepSSEworker';
+import Tippy from '@tippyjs/react'
+import React, { useEffect, useRef, useState } from 'react'
+import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg'
+import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
+import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
+import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { NodeDetailTab } from '../nodeDetail.type'
+import { getLogsURL } from '../nodeDetail.api'
+import IndexStore from '../../../index.store'
+import WebWorker from '../../../../../app/WebWorker'
+import sseWorker from '../../../../../app/grepSSEworker'
 import { Host } from '@devtron-labs/devtron-fe-common-lib';
-import { Subject } from '../../../../../../util/Subject';
-import LogViewerComponent from './LogViewer.component';
-import { useKeyDown } from '../../../../../common';
-import './nodeDetailTab.scss';
-import { toast } from 'react-toastify';
-import Select from 'react-select';
-import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
-import { EnvType, LogSearchTermType, PodMetaData } from '../../../appDetails.type';
-import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
-import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
-import MessageUI, { MsgUIType } from '../../../../common/message.ui';
-import { Option } from '../../../../common/ReactSelect.utils';
-import { AppDetailsTabs } from '../../../appDetails.store';
-import { replaceLastOddBackslash } from '../../../../../../util/Util';
-import { flatContainers } from '../nodeDetail.util';
+import { Subject } from '../../../../../../util/Subject'
+import LogViewerComponent from './LogViewer.component'
+import { useKeyDown } from '../../../../../common'
+import { toast } from 'react-toastify'
+import Select from 'react-select'
+import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
+import { LogsComponentProps, Options } from '../../../appDetails.type'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
+import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
+import MessageUI, { MsgUIType } from '../../../../common/message.ui'
+import { Option } from '../../../../common/ReactSelect.utils'
+import { AppDetailsTabs } from '../../../appDetails.store'
+import { replaceLastOddBackslash } from '../../../../../../util/Util'
+import {
+    flatContainers,
+    getFirstOrNull,
+    getInitialPodContainerSelection,
+    getPodContainerOptions,
+    getSelectedPodList,
+} from '../nodeDetail.util'
+import './nodeDetailTab.scss'
 
-const subject: Subject<string> = new Subject();
-const commandLineParser = require('command-line-parser');
+const subject: Subject<string> = new Subject()
+const commandLineParser = require('command-line-parser')
 
-interface Options {
-    name: string;
-    selected: boolean;
-}
-interface PodContainerOptions {
-    podOptions: Options[];
-    containerOptions: Options[];
-}
-
-interface LogState {
-    selectedPodOption: string;
-    selectedContainerOption: string;
-    grepTokens?: any;
-}
-
-interface LogsComponentProps extends LogSearchTermType {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
-}
-
-function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTerms }: LogsComponentProps) {
-    const location = useLocation();
-    const key = useKeyDown();
-    const { url } = useRouteMatch();
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
-
-    const [logsPaused, setLogsPaused] = useState(false);
-    const [tempSearch, setTempSearch] = useState<string>('');
-    const [highlightString, setHighlightString] = useState('');
-    const [logsCleared, setLogsCleared] = useState(false);
-    const [readyState, setReadyState] = useState(null);
-
-    const logsPausedRef = useRef(false);
-    const workerRef = useRef(null);
-
-    const appDetails = IndexStore.getAppDetails();
-
-    const isLogAnalyzer = !params.podName;
-
-    const [logState, setLogState] = useState(() => getInitialPodContainerSelection(isLogAnalyzer, params, location));
+function LogsComponent({
+    selectedTab,
+    isDeleted,
+    logSearchTerms,
+    setLogSearchTerms,
+    isResourceBrowserView,
+    selectedResource,
+}: LogsComponentProps) {
+    const location = useLocation()
+    const { url } = useRouteMatch()
+    const params = useParams<{
+        actionName: string
+        podName: string
+        clusterId: string
+        nodeType: string
+        node: string
+    }>()
+    const key = useKeyDown()
+    const [logsPaused, setLogsPaused] = useState(false)
+    const [tempSearch, setTempSearch] = useState<string>('')
+    const [highlightString, setHighlightString] = useState('')
+    const [logsCleared, setLogsCleared] = useState(false)
+    const [readyState, setReadyState] = useState(null)
+    const logsPausedRef = useRef(false)
+    const workerRef = useRef(null)
+    const appDetails = IndexStore.getAppDetails()
+    const isLogAnalyzer = !params.podName && !params.node
+    const [logState, setLogState] = useState(() =>
+        getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+    )
 
     const handlePodSelection = (selectedOption: string) => {
-        let pods = getSelectedPodList(selectedOption);
-        let containers = new Set(pods[0].containers ?? []);
-        let selectedContainer = containers.has(logState.selectedContainerOption)
+        const pods = getSelectedPodList(selectedOption)
+        const containers = new Set(pods[0].containers ?? [])
+        const selectedContainer = containers.has(logState.selectedContainerOption)
             ? logState.selectedContainerOption
-            : '';
+            : ''
 
         setLogState({
             selectedPodOption: selectedOption,
             selectedContainerOption: selectedContainer,
             grepTokens: logState.grepTokens,
-        });
-    };
+        })
+    }
 
     const handleContainerChange = (selectedContainer: string) => {
         setLogState({
             selectedPodOption: logState.selectedPodOption,
             selectedContainerOption: selectedContainer,
             grepTokens: logState.grepTokens,
-        });
-    };
+        })
+    }
 
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
@@ -98,95 +94,119 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                 selectedPodOption: logState.selectedPodOption,
                 selectedContainerOption: logState.selectedContainerOption,
                 grepTokens: undefined,
-            });
-            return;
+            })
+            return
         }
-        const pipes = parsePipes(searchText);
-        const tokens = pipes.map((p) => getGrepTokens(p));
+        const pipes = parsePipes(searchText)
+        const tokens = pipes.map((p) => getGrepTokens(p))
         if (tokens.some((t) => !t)) {
-            toast.warn('Expression is invalid.');
-            return;
+            toast.warn('Expression is invalid.')
+            return
         }
         setLogState({
             selectedPodOption: logState.selectedPodOption,
             selectedContainerOption: logState.selectedContainerOption,
             grepTokens: tokens,
-        });
-    };
+        })
+    }
 
     const parsePipes = (expression: string): string[] => {
-        const pipes = expression.split(/[\|\s]*grep[\s]*/).filter((p) => !!p);
-        return pipes;
-    };
+        const pipes = expression.split(/[\|\s]*grep[\s]*/).filter((p) => !!p)
+        return pipes
+    }
 
     const getGrepTokens = (expression) => {
         const options = commandLineParser({
             args: expression.replace(/"/g, '').split(' '),
             booleanKeys: ['v'],
             allowEmbeddedValues: true,
-        });
-        let { _args, A = 0, B = 0, C = 0, a = 0, b = 0, c = 0, v = false } = options;
+        })
+        let { _args, A = 0, B = 0, C = 0, a = 0, b = 0, c = 0, v = false } = options
         if (C || c) {
-            A = C || c;
-            B = C || c;
+            A = C || c
+            B = C || c
         }
 
-        return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null;
-    };
+        return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null
+    }
 
     const handleMessage = (event: any) => {
         if (!event || !event.data || !event.data.result || logsPausedRef.current) {
-            return;
+            return
         }
 
-        event.data.result.forEach((log: string) => subject.publish(log));
+        event.data.result.forEach((log: string) => subject.publish(log))
 
         if (event.data.readyState) {
-            setReadyState(event.data.readyState);
+            setReadyState(event.data.readyState)
         }
-    };
+    }
 
     const stopWorker = () => {
         if (workerRef.current) {
             try {
-                workerRef.current.postMessage({ type: 'stop' });
-                workerRef.current.terminate();
+                workerRef.current.postMessage({ type: 'stop' })
+                workerRef.current.terminate()
             } catch (err) {}
         }
-    };
+    }
 
     const handleLogsPause = () => {
-        setLogsPaused(!logsPaused);
-    };
+        setLogsPaused(!logsPaused)
+    }
 
     const onLogsCleared = () => {
-        setLogsCleared(true);
-        setTimeout(() => setLogsCleared(false), 100);
-    };
+        setLogsCleared(true)
+        setTimeout(() => setLogsCleared(false), 100)
+    }
 
     const fetchLogs = () => {
         if (podContainerOptions.podOptions.length == 0 || podContainerOptions.containerOptions.length == 0) {
-            return;
+            return
         }
-        workerRef.current = new WebWorker(sseWorker);
-        workerRef.current['addEventListener' as any]('message', handleMessage);
+        workerRef.current = new WebWorker(sseWorker)
+        workerRef.current['addEventListener' as any]('message', handleMessage)
 
-        let pods = podContainerOptions.podOptions
-            .filter((_pod) => _pod.selected)
-            .flatMap((_pod) => getSelectedPodList(_pod.name));
+        const pods = [],
+            urls = []
 
-        let containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name);
+        if (isResourceBrowserView) {
+            const nodeName = podContainerOptions.podOptions[0].name
+            pods.push(nodeName)
 
-        let podsWithContainers = pods
-            .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
-            .filter((_pwc) => containers.includes(_pwc[1]));
+            for (const _co of podContainerOptions.containerOptions) {
+                if (_co.selected) {
+                    urls.push(
+                        getLogsURL(
+                            appDetails,
+                            nodeName,
+                            Host,
+                            _co.name,
+                            isResourceBrowserView,
+                            selectedResource.clusterId,
+                            selectedResource.namespace,
+                        ),
+                    )
+                }
+            }
+        } else {
+            const selectedPods = podContainerOptions.podOptions
+                .filter((_pod) => _pod.selected)
+                .flatMap((_pod) => getSelectedPodList(_pod.name))
 
-        let urls = podsWithContainers.map((_pwc) => {
-            return getLogsURL(appDetails, _pwc[0], Host, _pwc[1]);
-        });
+            const containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name)
+            const podsWithContainers = selectedPods
+                .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
+                .filter((_pwc) => containers.includes(_pwc[1]))
 
-        if (urls.length == 0) {
-            return;
+            for (const _pwc of podsWithContainers) {
+                pods.push(_pwc[0])
+                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1]))
+            }
+
+            if (urls.length == 0) {
+                return
+            }
         }
 
         workerRef.current['postMessage' as any]({
@@ -195,78 +215,94 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                 urls: urls,
                 grepTokens: logState.grepTokens,
                 timeout: 300,
-                pods: podsWithContainers.map((_pwc) => _pwc[0]),
+                pods: pods,
             },
-        });
-    };
+        })
+    }
 
     const handleCurrentSearchTerm = (searchTerm: string): void => {
         setLogSearchTerms({
             ...logSearchTerms,
-            [isLogAnalyzer ? AppDetailsTabs.log_analyzer : `${params.nodeType}/${params.podName}`]: searchTerm,
-        });
-    };
+            [isLogAnalyzer
+                ? AppDetailsTabs.log_analyzer
+                : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`]: searchTerm,
+        })
+    }
 
     const handleLogsSearch = (e) => {
-        e.preventDefault();
+        e.preventDefault()
         if (e.key === 'Enter' || e.keyCode === 13) {
             const str = replaceLastOddBackslash(e.target.value)
-            handleSearchTextChange(str);
-            const { length, [length - 1]: highlightString } = str.split(' ');
-            setHighlightString(highlightString);
-            handleCurrentSearchTerm(str);
+            handleSearchTextChange(str)
+            const { length, [length - 1]: highlightString } = str.split(' ')
+            setHighlightString(highlightString)
+            handleCurrentSearchTerm(str)
         }
-    };
+    }
 
     useEffect(() => {
-        logsPausedRef.current = logsPaused;
-    }, [logsPaused]);
+        logsPausedRef.current = logsPaused
+    }, [logsPaused])
 
     useEffect(() => {
-        const combo = key.join();
+        const combo = key.join()
         if (combo === 'Control,c') {
-            handleLogsPause();
+            handleLogsPause()
         }
-    }, [key.join()]);
+    }, [key.join()])
 
     const handleLogSearchSubmit = (e) => {
-        e.preventDefault();
-    };
+        e.preventDefault()
+    }
 
     useEffect(() => {
         if (selectedTab) {
-            selectedTab(NodeDetailTab.LOGS, url);
+            selectedTab(NodeDetailTab.LOGS, url)
         }
-        setLogState(getInitialPodContainerSelection(isLogAnalyzer, params, location));
+        setLogState(
+            getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
+        )
 
         if (logSearchTerms) {
             const currentSearchTerm =
-                logSearchTerms[isLogAnalyzer ? AppDetailsTabs.log_analyzer : `${params.nodeType}/${params.podName}`];
+                logSearchTerms[
+                    isLogAnalyzer
+                        ? AppDetailsTabs.log_analyzer
+                        : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`
+                ]
 
             if (currentSearchTerm) {
-                setTempSearch(currentSearchTerm);
-                handleSearchTextChange(currentSearchTerm);
-                const { length, [length - 1]: highlightString } = currentSearchTerm.split(' ');
-                setHighlightString(highlightString);
+                setTempSearch(currentSearchTerm)
+                handleSearchTextChange(currentSearchTerm)
+                const { length, [length - 1]: highlightString } = currentSearchTerm.split(' ')
+                setHighlightString(highlightString)
             }
         }
         //TODO: reset pauseLog and grepToken
-    }, [params.podName]);
+    }, [params.podName, params.node])
 
     useEffect(() => {
         //Values are already set once we reach here
         //selected pods, containers, searchText
-        onLogsCleared();
-        stopWorker();
-        fetchLogs();
+        onLogsCleared()
+        stopWorker()
+        fetchLogs()
 
-        return () => stopWorker();
-    }, [logState]);
+        return () => stopWorker()
+    }, [logState])
 
-    let podContainerOptions = getPodContainerOptions(isLogAnalyzer, params, location, logState);
+    const podContainerOptions = getPodContainerOptions(
+        isLogAnalyzer,
+        params,
+        location,
+        logState,
+        isResourceBrowserView,
+        selectedResource,
+    )
 
     const getPodGroups = () => {
-        const allGroupPods = [], individualPods = []
+        const allGroupPods = [],
+            individualPods = []
 
         const podCreate = (podGroupName, _pod: Options) => {
             podGroupName.push({
@@ -292,7 +328,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     return isDeleted ? (
         <div>
-            <MessageUI msg="This resource no longer exists" size={32} />
+            <MessageUI
+                msg="This resource no longer exists"
+                size={32}
+                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+            />
         </div>
     ) : (
         <React.Fragment>
@@ -319,7 +359,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
                             <Abort
                                 onClick={(e) => {
-                                    onLogsCleared();
+                                    onLogsCleared()
                                 }}
                                 className="icon-dim-20 ml-8 cursor"
                             />
@@ -327,8 +367,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                         <div
                             className="cn-2 ml-8 mr-8 "
                             style={{ width: '1px', height: '16px', background: '#0b0f22' }}
-                        >
-                        </div>
+                        ></div>
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10 ">Pods</div>
@@ -370,11 +409,13 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
-                                                })
+                                                }),
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
-                                                Option: (props)=> <Option {...props} showTippy={true} style={{direction:'rtl'}}/>,
+                                                Option: (props) => (
+                                                    <Option {...props} showTippy={true} style={{ direction: 'rtl' }} />
+                                                ),
                                             }}
                                         />
                                     </div>
@@ -402,7 +443,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                 })),
                                         )}
                                         onChange={(selected) => {
-                                            handleContainerChange((selected as any).value as string);
+                                            handleContainerChange((selected as any).value as string)
                                         }}
                                         styles={{
                                             ...multiSelectStyles,
@@ -424,11 +465,13 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                             }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
-                                            })
+                                            }),
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
-                                            Option: (props)=> <Option {...props} showTippy={true} style={{direction:'rtl'}}/>,
+                                            Option: (props) => (
+                                                <Option {...props} showTippy={true} style={{ direction: 'rtl' }} />
+                                            ),
                                         }}
                                     />
                                 </div>
@@ -454,11 +497,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             <CloseImage
                                 className="icon-dim-20 pointer"
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    handleSearchTextChange('');
-                                    setHighlightString('');
-                                    setTempSearch('');
-                                    handleCurrentSearchTerm('');
+                                    e.preventDefault()
+                                    handleSearchTextChange('')
+                                    setHighlightString('')
+                                    setTempSearch('')
+                                    handleCurrentSearchTerm('')
                                 }}
                             />
                         )}
@@ -485,7 +528,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
                 podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                     <div
-                        style={{ gridColumn: '1 / span 2', background: '#0b0f22', minHeight: '600px' }}
+                        style={{
+                            gridColumn: '1 / span 2',
+                            background: '#0b0f22',
+                            minHeight: isResourceBrowserView ? '200px' : '600px',
+                        }}
                         className="flex column log-viewer-container"
                     >
                         <div
@@ -496,10 +543,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             {logsPaused && (
                                 <div className="w-100 cn-0">
                                     Stopped printing logs.{' '}
-                                    <span
-                                        onClick={(e) => handleLogsPause()}
-                                        className="pointer dc__underline"
-                                    >
+                                    <span onClick={(e) => handleLogsPause()} className="pointer dc__underline">
                                         Resume ( Ctrl+c )
                                     </span>
                                 </div>
@@ -507,10 +551,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             {readyState === 2 && (
                                 <div className="w-100 cn-0">
                                     Disconnected.{' '}
-                                    <span
-                                        onClick={(e) => fetchLogs()}
-                                        className="pointer dc__underline"
-                                    >
+                                    <span onClick={(e) => fetchLogs()} className="pointer dc__underline">
                                         Reconnect
                                     </span>
                                 </div>
@@ -536,7 +577,9 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                     Connecting
                                 </div>
                             )}
-                            {readyState === 1 && <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>}
+                            {readyState === 1 && (
+                                <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -555,180 +598,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                 </div>
             )}
         </React.Fragment>
-    );
+    )
 }
 
-export function getSelectedPodList(selectedOption: string): PodMetaData[] {
-    let pods: PodMetaData[];
-    const handleDefaultForSelectedOption = (name: string): void => {
-        let podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name));
-        pods = IndexStore.getAllPods().filter((_po) => podNames.has(_po.name));
-    };
-
-    switch (selectedOption) {
-        case 'All pods':
-            pods = IndexStore.getAllPods();
-            break;
-        case 'All new pods':
-            pods = IndexStore.getAllNewPods();
-            break;
-        case 'All old pods':
-            pods = IndexStore.getAllNewPods();
-            break;
-        default:
-            if (selectedOption.startsWith('All new ')) {
-                handleDefaultForSelectedOption(selectedOption.replace('All new ', ''));
-            } else if (selectedOption.startsWith('All old ')) {
-                handleDefaultForSelectedOption(selectedOption.replace('All old ', ''));
-            } else if (selectedOption.startsWith('All ')) {
-                handleDefaultForSelectedOption(selectedOption.replace('All ', ''));
-            } else {
-                pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption);
-            }
-            break;
-    }
-    return pods;
-}
-
-function getPodContainerOptions(
-    isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string },
-    location: any,
-    logState: LogState,
-): PodContainerOptions {
-    if (!isLogAnalyzer) {
-        let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
-        let containers = IndexStore.getAllPods()
-            .filter((_pod) => _pod.name == params.podName)
-            .flatMap((_pod) => flatContainers(_pod))
-            .sort();
-
-        if (containers.length == 0 || (containers.length === 1 && !containers[0])) {
-            return {
-                containerOptions: [],
-                podOptions: [],
-            };
-        }
-
-        _selectedContainerName =
-            logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0] as string);
-
-        let containerOptions = containers.map((_container) => {
-            return { name: _container, selected: _container == _selectedContainerName };
-        });
-
-        return {
-            containerOptions: containerOptions,
-            podOptions: [{ name: params.podName, selected: true }],
-        };
-    } else {
-        //build pod options
-        let rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus().flatMap((_ps) =>
-            _ps[0].split('/').splice(-1),
-        );
-        let additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All ' + rn, selected: index == 0 }));
-
-        if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
-            additionalPodOptions.concat(
-                rootNamesOfPods.flatMap((rn) => [
-                    { name: 'All new ' + rn, selected: false },
-                    { name: 'All old ' + rn, selected: false },
-                ]),
-            );
-        }
-        const _allPods = IndexStore.getAllPods().sort();
-        if (_allPods.length == 0) {
-            return {
-                containerOptions: [],
-                podOptions: [],
-            };
-        }
-        const podOptions = additionalPodOptions.concat(
-            _allPods.map((_pod) => {
-                return { name: _pod.name, selected: false };
-            }),
-        );
-        if (logState.selectedPodOption) {
-            podOptions.forEach(
-                (_po) => (_po.selected = _po.name.toLowerCase() == logState.selectedPodOption.toLowerCase()),
-            );
-        }
-
-        //build container Options
-        let _allSelectedPods = getSelectedPodList(logState.selectedPodOption);
-        const containers = (flatContainers(_allSelectedPods[0]) ?? []).sort();
-        const containerOptions = containers.map((_container, index) => {
-            return { name: _container, selected: index == 0 };
-        });
-        if (logState.selectedContainerOption) {
-            containerOptions.forEach(
-                (_co) => (_co.selected = _co.name.toLowerCase() == logState.selectedContainerOption.toLowerCase()),
-            );
-        }
-        return {
-            containerOptions: containerOptions,
-            podOptions: podOptions,
-        };
-    }
-}
-
-function getInitialPodContainerSelection(
-    isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string },
-    location: any,
-): LogState {
-    if (!isLogAnalyzer) {
-        let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
-        let containers = IndexStore.getAllPods()
-            .filter((_pod) => _pod.name == params.podName)
-            .flatMap((_pod) => flatContainers(_pod))
-            .sort();
-
-        if (containers.length == 0) {
-            return {
-                selectedContainerOption: '',
-                selectedPodOption: '',
-            };
-        }
-
-        _selectedContainerName = _selectedContainerName ?? (containers[0] as string);
-
-        _selectedContainerName = containers.find((_co) => _co == _selectedContainerName) ?? '';
-
-        return {
-            selectedContainerOption: _selectedContainerName,
-            selectedPodOption: params.podName,
-        };
-    } else {
-        let rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
-            .flatMap((_ps) => _ps[0].split('/').splice(-1))
-            .sort();
-        let additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All ' + rn, selected: index == 0 }));
-
-        const _selectedPodOption = additionalPodOptions.find((_po) => _po.selected)?.name ?? '';
-
-        const _allSelectedPods = getSelectedPodList(_selectedPodOption);
-        if (_allSelectedPods.length == 0) {
-            return {
-                selectedContainerOption: '',
-                selectedPodOption: '',
-            };
-        }
-
-        let containers = new Set(_allSelectedPods.flatMap((_pod) => flatContainers(_pod) ?? []));
-        const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0) ?? '';
-        return {
-            selectedContainerOption: _selectedContainerOption,
-            selectedPodOption: _selectedPodOption,
-        };
-    }
-}
-
-function getFirstOrNull<T>(arr: T[]): T | null {
-    if (arr.length > 0) {
-        return arr[0];
-    }
-    return null;
-}
-
-export default LogsComponent;
+export default LogsComponent
