@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react'
-import { Drawer, handleUTCTime } from '../../../common'
+import { Drawer } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
-import moment from 'moment'
-import { Moment12HourFormat, URLS } from '../../../../config'
+import { URLS } from '../../../../config'
 import { useHistory, useParams } from 'react-router-dom'
 
 export default function DeploymentStatusDetailModal({

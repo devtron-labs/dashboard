@@ -5,8 +5,7 @@ import { DEPLOYMENT_STATUS, MANIFEST_STATUS_HEADERS, Moment12HourFormat, TERMINA
 import { showError } from '../../../common'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { getManualSync } from '../../service'
-import { AppStreamData } from '../../types'
-import { DeploymentStatusDetailRowType, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
+import { DeploymentStatusDetailRowType } from './appDetails.type'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
@@ -16,7 +15,6 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { ReactComponent as TimeOut } from '../../../../assets/icons/ic-timeout-red.svg'
 import AppStatusDetailsChart from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailsChart'
-import { CLUSTER_STATUS } from '../../../ClusterNodes/constants'
 
 export function DeploymentStatusDetailRow({
     type,
