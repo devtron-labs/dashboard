@@ -50,7 +50,6 @@ export interface GitOpsState {
     isUrlValidationError: boolean;
 }
 
-
 export interface GitOpsProps extends RouteComponentProps<{}> { 
     handleChecklistUpdate: (string) => void
 }

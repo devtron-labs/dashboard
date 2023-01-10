@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ViewType, DOCUMENTATION } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, ShortGitOpsConfig, GitOpsFieldKeyType, GitOpsOrganisationIdType, GitProviderType } from './gitops.type'
+import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsFieldKeyType, GitOpsOrganisationIdType, GitProviderType } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
@@ -44,14 +44,14 @@ const GitLink = {
 }
 
 const DefaultShortGitOpsConfig = {
-    host: "",
-    token: "",
-    username: "",
-    gitLabGroupId: "",
-    gitHubOrgId: "",
-    azureProjectName: "",
-    bitBucketWorkspaceId: "",
-    bitBucketProjectKey: "",
+    host: '',
+    token: '',
+    username: '',
+    gitLabGroupId: '',
+    gitHubOrgId: '',
+    azureProjectName: '',
+    bitBucketWorkspaceId: '',
+    bitBucketProjectKey: '',
 }
 
 const DefaultGitOpsConfig = {
@@ -113,7 +113,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 shortGitOpsConfig: {
                     ...DefaultGitOpsConfig.shortGitOpsConfig,  
                     host: GitHost.GITHUB,
-                }
+                },
             },
             isFormEdited: false,
             isError: DefaultShortGitOpsConfig,
@@ -141,8 +141,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             .then((response) => {
                 let form = response.result?.find((item) => item.active) ?? {
                     ...DefaultGitOpsConfig,
-                    host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
+                    shortGitOpsConfig: {
+                        ...DefaultGitOpsConfig.shortGitOpsConfig,  
+                        host: GitHost[this.state.providerTab],
+                    }
                 }
                 let isError = this.getFormErrors(false, form)
                 this.setState({
@@ -170,8 +173,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let newGitOps = event.target.value
         let form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
             ...DefaultGitOpsConfig,
-            host: GitHost[newGitOps],
             provider: newGitOps,
+            shortGitOpsConfig: {
+                ...DefaultGitOpsConfig.shortGitOpsConfig, 
+                host: GitHost[newGitOps],
+            }
         }
         let isError = this.getFormErrors(false, form)
         this.setState({
@@ -431,6 +437,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     getInputFormSpec(): Map<string, Map<GitProviderType, string>> {
+        
+        //{Github: [{link:---; }]}
+        
         const inputFormSpec = new Map()
         const linkSpec = new Map()
         const linkTextSpec = new Map()
