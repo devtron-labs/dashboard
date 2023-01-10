@@ -14,21 +14,19 @@ export interface CustomGitOpsState {
     };
 }
 
-export interface ShortGitOpsConfig {
-    host: string;
-    token: string;
-    username?: string;
-    gitLabGroupId: string;
-    gitHubOrgId: string;
+
+export interface GitOpsConfig {
+    id: number,
+    provider: GitProviderType;
+    host: string,
+    token: string,
+    username?: string,
+    active: boolean,
+    gitLabGroupId: string,
+    gitHubOrgId: string,
     azureProjectName: string;
     bitBucketWorkspaceId: string;
     bitBucketProjectKey: string;
-}
-export interface GitOpsConfig {
-    id: number;
-    provider: GitProviderType;
-    active: boolean;
-    shortGitOpsConfig: ShortGitOpsConfig;
 }
 
 
@@ -42,7 +40,16 @@ export interface GitOpsState {
     lastActiveGitOp: undefined | GitOpsConfig;
     saveLoading: boolean;
     validateLoading: boolean;
-    isError: ShortGitOpsConfig,
+    isError: {
+        host: string;
+        username: string;
+        token: string;
+        gitHubOrgId: string;
+        gitLabGroupId: string;
+        azureProjectName: string;
+        bitBucketWorkspaceId: string;
+        bitBucketProjectKey: string;
+    },
     validatedTime: string;
     validationError: GitOpsConfig[];
     validationStatus: string;

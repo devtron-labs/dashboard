@@ -43,22 +43,18 @@ const GitLink = {
     BITBUCKET_PROJECT: 'https://support.atlassian.com/bitbucket-cloud/docs/group-repositories-into-projects/'
 }
 
-const DefaultShortGitOpsConfig = {
-    host: '',
-    token: '',
-    username: '',
-    gitLabGroupId: '',
-    gitHubOrgId: '',
-    azureProjectName: '',
-    bitBucketWorkspaceId: '',
-    bitBucketProjectKey: '',
-}
-
 const DefaultGitOpsConfig = {
     id: undefined,
     provider: GitProvider.GITHUB,
+    host: "",
+    token: "",
+    username: "",
+    gitLabGroupId: "",
+    gitHubOrgId: "",
+    azureProjectName: "",
     active: true,
-    shortGitOpsConfig: DefaultShortGitOpsConfig,
+    bitBucketWorkspaceId: "",
+    bitBucketProjectKey: ""
 }
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
@@ -109,14 +105,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             lastActiveGitOp: undefined,
             form: {
                 ...DefaultGitOpsConfig,
+                host: GitHost.GITHUB,
                 provider: GitProvider.GITHUB,
-                shortGitOpsConfig: {
-                    ...DefaultGitOpsConfig.shortGitOpsConfig,  
-                    host: GitHost.GITHUB,
-                },
             },
             isFormEdited: false,
-            isError: DefaultShortGitOpsConfig,
+            isError: {
+                host: '',
+                username: '',
+                token: '',
+                gitHubOrgId: '',
+                gitLabGroupId: '',
+                azureProjectName: '',
+                bitBucketWorkspaceId: '',
+                bitBucketProjectKey: '',
+            },
             validatedTime: '',
             validationError: [],
             validationStatus:
@@ -141,11 +143,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             .then((response) => {
                 let form = response.result?.find((item) => item.active) ?? {
                     ...DefaultGitOpsConfig,
+                    host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
-                    shortGitOpsConfig: {
-                        ...DefaultGitOpsConfig.shortGitOpsConfig,  
-                        host: GitHost[this.state.providerTab],
-                    }
                 }
                 let isError = this.getFormErrors(false, form)
                 this.setState({
@@ -173,11 +172,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let newGitOps = event.target.value
         let form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
             ...DefaultGitOpsConfig,
+            host: GitHost[newGitOps],
             provider: newGitOps,
-            shortGitOpsConfig: {
-                ...DefaultGitOpsConfig.shortGitOpsConfig, 
-                host: GitHost[newGitOps],
-            }
         }
         let isError = this.getFormErrors(false, form)
         this.setState({
@@ -207,22 +203,36 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     requiredFieldCheck(formValueType: string): string {
-        return !formValueType.length && 'This is a required field'
+        return formValueType.length ? '' : 'This is a required field'
     }
 
     getFormErrors(isFormEdited, form: GitOpsConfig): any {
-        if (!isFormEdited) return DefaultShortGitOpsConfig
+        if (!isFormEdited)
+            return {
+                host: '',
+                username: '',
+                token: '',
+                gitHubOrgId: '',
+                gitLabGroupId: '',
+                azureProjectName: '',
+                bitBucketWorkspaceId: '',
+                bitBucketProjectKey: '',
+            }
 
         return {
-            host: this.requiredFieldCheck(form.shortGitOpsConfig.host),
-            username: this.requiredFieldCheck(form.shortGitOpsConfig.username),
-            token: this.requiredFieldCheck(form.shortGitOpsConfig.token),
-            gitHubOrgId: this.requiredFieldCheck(form.shortGitOpsConfig.gitHubOrgId),
-            gitLabGroupId: this.requiredFieldCheck(form.shortGitOpsConfig.gitLabGroupId),
-            azureProjectName: this.requiredFieldCheck(form.shortGitOpsConfig.azureProjectName),
-            bitBucketWorkspaceId: this.requiredFieldCheck(form.shortGitOpsConfig.bitBucketWorkspaceId),
+            host: this.requiredFieldCheck(form.host),
+            username: this.requiredFieldCheck(form.username),
+            token: this.requiredFieldCheck(form.token),
+            gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
+            gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
+            azureProjectName: this.requiredFieldCheck(form.azureProjectName),
+            bitBucketWorkspaceId: this.requiredFieldCheck(form.bitBucketWorkspaceId),
             bitBucketProjectKey: '',
         }
+    }
+
+    isValidCheck(isInvalidCheck: any, s: any) {
+        return isInvalidCheck || s?.length > 0
     }
 
     isInvalid() {
@@ -237,20 +247,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0
         if (this.state.providerTab === GitProvider.GITHUB) {
-            isInvalid = isInvalid || isError.gitHubOrgId?.length > 0
+            isInvalid = this.isValidCheck(isInvalid, isError.gitHubOrgId)
         } else if (this.state.providerTab === GitProvider.GITLAB) {
-            isInvalid = isInvalid || isError.gitLabGroupId?.length > 0
+            isInvalid = this.isValidCheck(isInvalid, isError.gitLabGroupId)
         } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-            isInvalid = isInvalid || isError.bitBucketWorkspaceId?.length > 0
+            isInvalid = this.isValidCheck(isInvalid, isError.bitBucketWorkspaceId)
         } else {
-            isInvalid = isInvalid || isError.azureProjectName?.length > 0
+            isInvalid = this.isValidCheck(isInvalid, isError.azureProjectName)
         }
 
         return isInvalid
     }
 
     suggestedValidGitOpsUrl() {
-        let gitOpsUrl = this.state.form.shortGitOpsConfig.host
+        let gitOpsUrl = this.state.form.host
         let suggestedValidGitOpsUrl: string
         ShortGitHosts.forEach((shortGitHost) => {
             if (gitOpsUrl.indexOf(shortGitHost) >= 0) {
@@ -261,22 +271,22 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     isValidGitOpsUrl() {
-        if (!this.state.form.shortGitOpsConfig.host) {
+        if (!this.state.form.host) {
             return true
         }
 
         let isUrlAccepted: boolean = true
         let url: string
         try {
-            url = new URL(this.state.form.shortGitOpsConfig.host).protocol
+            url = new URL(this.state.form.host).protocol
         } catch (error) {
             return false
         }
         ShortGitHosts.forEach((shortGitHost) => {
-            if (this.state.form.shortGitOpsConfig.host.indexOf(shortGitHost) >= 0) {
+            if (this.state.form.host.indexOf(shortGitHost) >= 0) {
                 isUrlAccepted =
-                    (this.state.form.shortGitOpsConfig.host.endsWith(shortGitHost + '/') ||
-                        this.state.form.shortGitOpsConfig.host.endsWith(shortGitHost)) &&
+                    (this.state.form.host.endsWith(shortGitHost + '/') ||
+                        this.state.form.host.endsWith(shortGitHost)) &&
                     url === 'https:'
             }
         })
@@ -285,19 +295,17 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     getPayload = () => {
-        const payload: GitOpsConfig = {
+        const payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
-            shortGitOpsConfig: {
-                username: this.state.form.shortGitOpsConfig.username,
-                host: this.state.form.shortGitOpsConfig.host,
-                token: this.state.form.shortGitOpsConfig.token,
-                gitLabGroupId: this.state.form.shortGitOpsConfig.gitLabGroupId,
-                gitHubOrgId: this.state.form.shortGitOpsConfig.gitHubOrgId,
-                azureProjectName: this.state.form.shortGitOpsConfig.azureProjectName,
-                bitBucketWorkspaceId: this.state.form.shortGitOpsConfig.bitBucketWorkspaceId,
-                bitBucketProjectKey: this.state.form.shortGitOpsConfig.bitBucketProjectKey,
-            },
+            username: this.state.form.username,
+            host: this.state.form.host,
+            token: this.state.form.token,
+            gitLabGroupId: this.state.form.gitLabGroupId,
+            gitHubOrgId: this.state.form.gitHubOrgId,
+            azureProjectName: this.state.form.azureProjectName,
+            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
+            bitBucketProjectKey: this.state.form.bitBucketProjectKey,
             active: true,
         }
         return payload
@@ -323,7 +331,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 validationStatus: VALIDATION_STATUS.LOADER,
                 saveLoading: true,
             })
-            const payload: GitOpsConfig = this.getPayload()
+            const payload = this.getPayload()
             const promise = payload.id ? updateGitOpsConfiguration(payload) : saveGitOpsConfiguration(payload)
             promise
                 .then((response) => {
@@ -379,7 +387,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 saveLoading: true,
                 validateLoading: true,
             })
-            const payload: GitOpsConfig = this.getPayload()
+            const payload = this.getPayload()
             validateGitOpsConfiguration(payload)
                 .then((response) => {
                     let resp = response.result
@@ -436,35 +444,31 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         })
     }
 
-    getInputFormSpec(): Map<string, Map<GitProviderType, string>> {
-        
-        //{Github: [{link:---; }]}
-        
-        const inputFormSpec = new Map()
-        const linkSpec = new Map()
-        const linkTextSpec = new Map()
-        const labelSpec = new Map()
+    getInputFormSpec(): Map<GitProviderType, Map<string, string>> {
+        const linkAndLabelSpec = new Map()
 
-        linkSpec.set(GitProvider.GITHUB, GitLink.GITHUB)
-        linkSpec.set(GitProvider.GITLAB, GitLink.GITLAB)
-        linkSpec.set(GitProvider.AZURE_DEVOPS, GitLink.AZURE_DEVOPS)
-        linkSpec.set(GitProvider.BITBUCKET_CLOUD, GitLink.BITBUCKET_PROJECT)
+        linkAndLabelSpec.set(GitProvider.GITHUB, {
+            link: GitLink.GITHUB,
+            linkText: '(How to create organization in GitHub?)',
+            label: 'GitHub Organisation Name*',
+        })
+        linkAndLabelSpec.set(GitProvider.GITLAB, {
+            link: GitLink.GITLAB,
+            linkText: '(How to create group in GitLab?)',
+            label: 'GitLab Group ID*',
+        })
+        linkAndLabelSpec.set(GitProvider.AZURE_DEVOPS, {
+            link: GitLink.AZURE_DEVOPS,
+            linkText: '(How to create project in Azure?)',
+            label: 'Azure DevOps Project Name*',
+        })
+        linkAndLabelSpec.set(GitProvider.BITBUCKET_CLOUD, {
+            link: GitLink.BITBUCKET_PROJECT,
+            linkText: '(How to create project in bitbucket?)',
+            label: 'Bitbucket Project Key',
+        })
 
-        linkTextSpec.set(GitProvider.GITHUB, '(How to create organization in GitHub?)')
-        linkTextSpec.set(GitProvider.GITLAB, '(How to create group in GitLab?)')
-        linkTextSpec.set(GitProvider.AZURE_DEVOPS, '(How to create project in Azure?)')
-        linkSpec.set(GitProvider.BITBUCKET_CLOUD, '(How to create project in bitbucket?)')
-
-        labelSpec.set(GitProvider.GITHUB, 'GitHub Organisation Name*')
-        labelSpec.set(GitProvider.GITLAB, 'GitLab Group ID*')
-        labelSpec.set(GitProvider.AZURE_DEVOPS, 'Azure DevOps Project Name*')
-        labelSpec.set(GitProvider.BITBUCKET_CLOUD, 'Bitbucket Project Key')
-
-        inputFormSpec.set('link', linkSpec)
-        inputFormSpec.set('linkText', linkTextSpec)
-        inputFormSpec.set('label', labelSpec)
-
-        return inputFormSpec
+        return linkAndLabelSpec
     }
 
     render() {
@@ -575,7 +579,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
                     <CustomInput
                         autoComplete="off"
-                        value={this.state.form.shortGitOpsConfig.host}
+                        value={this.state.form.host}
                         onChange={(event) => this.handleChange(event, 'host')}
                         name="Enter host"
                         error={this.state.isError.host}
@@ -589,11 +593,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                     />
-                    {this.state.isUrlValidationError && this.state.form.shortGitOpsConfig.host.length ? (
+                    {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
                             <div className="form__error mr-4">
                                 <Error className="form__icon form__icon--error fs-13" />
-                                {this.state.form.shortGitOpsConfig.host.startsWith('http:') ? GITOPS_HTTP_MESSAGE : GITOPS_FQDN_MESSAGE}
+                                {this.state.form.host.startsWith('http:') ? GITOPS_HTTP_MESSAGE : GITOPS_FQDN_MESSAGE}
                             </div>
                             {this.suggestedValidGitOpsUrl() && (
                                 <>
@@ -617,7 +621,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                             <CustomInput
                                 autoComplete="off"
-                                value={this.state.form.shortGitOpsConfig.bitBucketWorkspaceId}
+                                value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 showLink={true}
                                 link={GitLink.BITBUCKET_WORKSPACE}
@@ -637,9 +641,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={2}
                             error={this.state.isError[key]}
                             showLink={true}
-                            link={inputFormSpec.get('link').get(this.state.providerTab)}
-                            linkText={inputFormSpec.get('linkText').get(this.state.providerTab)}
-                            label={inputFormSpec.get('label').get(this.state.providerTab)}
+                            link={inputFormSpec.get(this.state.providerTab)['link']}
+                            linkText={inputFormSpec.get(this.state.providerTab)['linkText']}
+                            label={inputFormSpec.get(this.state.providerTab)['label']}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
@@ -662,7 +666,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         <div>
                             <CustomInput
                                 autoComplete="off"
-                                value={this.state.form.shortGitOpsConfig.username}
+                                value={this.state.form.username}
                                 onChange={(event) => this.handleChange(event, 'username')}
                                 name="Enter username"
                                 error={this.state.isError.username}
@@ -681,7 +685,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         </div>
                         <div>
                             <ProtectedInput
-                                value={this.state.form.shortGitOpsConfig.token}
+                                value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
                                 name="Enter token"
                                 tabIndex={4}
