@@ -173,6 +173,8 @@ export default function K8sListItemCard({
                     }
                 })
             }
+        } else {
+            _allKindMapping = [{ label: 'All kind', value: '*' }]
         }
 
         setKindMapping((prevMapping) => ({

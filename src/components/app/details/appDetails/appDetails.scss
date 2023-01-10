@@ -1796,8 +1796,10 @@ table.resource-tree {
     &.f-inprogress {
         color: #ff7e5b;
     }
-    &.f-failed {
-        color: var(--red);
+    &.f-failed,
+    &.f-timed_out,
+    &.f-unable_to_fetch {
+        color:  var(--R500);
     }
   }
   .timer-icon{
@@ -1809,15 +1811,20 @@ table.resource-tree {
 
 .deployment-status-breakdown-container {
   .vertical-connector{
-    border-left: 1px solid var(--N200);
+    border-left: 1px solid var(--N300);
     height: 15px;
     position: relative;
-    left: 10px;
+    left: 18px;
     width: 5px;
   }
   .deployment-status-breakdown-row{
-    display: grid;
-    grid-template-columns: 30px auto 180px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+
+    &.border-collapse {
+        border-radius: 4px 4px 0 0;
+    }
   }
 
   .pulse-highlight {
@@ -1840,4 +1847,26 @@ table.resource-tree {
       stroke: var(--G500);
     }
   }
+
+  .app-status-row {
+        display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+   }
+  .resource-list {
+        .app-status-row {
+            &:hover {
+                background-color: var(--N50);
+            }
+        }
+  }
+
+  .detail-tab_border {
+    border-radius: 0 0 4px 4px;
+    border-top: 0;
+  }
+}
+
+.deployment-status-breakdown {
+    height: calc(100vh - 70px);
 }
