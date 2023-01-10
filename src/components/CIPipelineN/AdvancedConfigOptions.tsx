@@ -39,9 +39,9 @@ export default function AdvancedConfigOptions({
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
     const updateTargetPlatforms = () => {
-        if (parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+        if (allowOverride && parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
             setTargetPlatforms(parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform)
-        } else if (parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
+        } else if (!allowOverride && parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
             setTargetPlatforms(parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform)
         }
     }
@@ -59,28 +59,12 @@ export default function AdvancedConfigOptions({
         setShowCustomPlatformWarning(_customTargetPlatform)
     }
 
-    const handleChangeInTargetPlatforms = () => {
-        const _form = { ...formData }
-        setDockerConfigOverridden(allowOverride)
-        if (parentState?.defaultDockerConfigs) {
-            _form.dockerConfigOverride = parentState?.defaultDockerConfigs
-        }
-        let platformsArray = []
-        selectedTargetPlatforms?.forEach(function (o) {
-            platformsArray.push(o.label)
-        })
-        if (_form.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig) {
-            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join()
-        }
-        setFormData(_form)
-    }
-
     useEffect(() => {
         updateSelectedPlatformsCustomTargetPlatform()
-    }, [parentState])
+    }, [parentState,allowOverride])
 
     useEffect(() => {
-        handleChangeInTargetPlatforms()
+        updateDockerConfigOverride(DockerConfigOverrideKeys.isDockerConfigOverridden, allowOverride)
     }, [selectedTargetPlatforms])
 
     const addDockerArg = (): void => {
@@ -129,7 +113,7 @@ export default function AdvancedConfigOptions({
                 ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig)),
             }
         }
-
+        updateTargetPlatforms()
         // Update the specific config value present at different level from dockerConfigOverride
         if (key === DockerConfigOverrideKeys.isDockerConfigOverridden) {
             const _value = value as boolean
@@ -150,9 +134,9 @@ export default function AdvancedConfigOptions({
         }
 
         // // No need to pass the id in the request
-        // if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
-        //     delete _form.dockerConfigOverride.ciBuildConfig.id
-        // }
+        if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
+            delete _form.dockerConfigOverride.ciBuildConfig.id
+        }
 
         let platformsArray = []
         selectedTargetPlatforms?.forEach(function (o) {
