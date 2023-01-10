@@ -375,7 +375,7 @@ export default function ClusterTerminal({
                         <>
                             <div className="cn-6 mr-16">Cluster</div>
                             <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
-                            <span className="bcn-2 mr-8 h-32" style={{ width: '1px' }} />
+                            <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
                         </>
                     )}
                     {isNodeDetailsPage && (
@@ -399,7 +399,7 @@ export default function ClusterTerminal({
 
                     {!isNodeDetailsPage && (
                         <>
-                            <div className="cn-6 ml-8 mr-10">Node</div>
+                            <div className="cn-6 mr-10">Node</div>
                             <div style={{ minWidth: '145px' }}>
                                 <ReactSelect
                                     placeholder="Select Containers"

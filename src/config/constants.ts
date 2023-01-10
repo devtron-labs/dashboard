@@ -177,6 +177,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',
     SSO_LIST: 'sso/list',
@@ -193,6 +194,10 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events',
+    API_RESOURCE: 'k8s/api-resources',
+    K8S_RESOURCE_LIST: 'k8s/resource/list',
+    K8S_RESOURCE_CREATE: 'k8s/resources/apply',
+    CLUSTER_LIST_PERMISSION: 'cluster/auth-list'
 }
 
 export const ViewType = {
@@ -614,6 +619,8 @@ export const TERMINAL_STATUS_MAP = {
     STARTING: 'starting',
     FAILED: 'failed',
     ERROR: 'error',
+    UNABLE_TO_FETCH: 'unabletofetch',
+    TIMED_OUT: 'timedout'
 }
 
 export const POD_STATUS = {
@@ -646,6 +653,7 @@ export const MODULE_STATUS_RETRY_COUNT = 3
 export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
+export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
 
 export const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -672,4 +680,47 @@ export const MESSAGING_UI = {
     FETCHING_EVENTS: 'Fetching events',
     MANIFEST_NOT_AVAILABLE: 'Manifest not available',
     FETCHING_MANIFEST: 'Fetching manifest',
+}
+
+export const CHART_REPO_TYPE = {
+    PUBLIC: 'PUBLIC',
+    PRIVATE: 'PRIVATE',
+}
+
+export const CHART_REPO_AUTH_TYPE = {
+    ANONYMOUS: 'ANONYMOUS',
+    USERNAME_PASSWORD: 'USERNAME_PASSWORD',
+    ACCESS_TOKEN: 'ACCESS_TOKEN',
+}
+
+export const CHART_REPO_LABEL = [
+    { value: 'PUBLIC' , label: 'Public repository' },
+    { value: 'PRIVATE' , label: 'Private repository' },
+]
+
+export enum TIMELINE_STATUS {
+    DEPLOYMENT_INITIATED = "DEPLOYMENT_INITIATED",
+    GIT_COMMIT = "GIT_COMMIT",
+    GIT_COMMIT_FAILED  = "GIT_COMMIT_FAILED",
+    KUBECTL_APPLY = "KUBECTL_APPLY",
+    KUBECTL_APPLY_STARTED = "KUBECTL_APPLY_STARTED",
+    KUBECTL_APPLY_SYNCED  = "KUBECTL_APPLY_SYNCED",
+    HEALTHY = "HEALTHY",
+    APP_HEALTH = "APP_HEALTH",
+    DEPLOYMENT_FAILED = "FAILED",
+    FETCH_TIMED_OUT = "TIMED_OUT",
+    UNABLE_TO_FETCH_STATUS  = "UNABLE_TO_FETCH_STATUS",
+    DEGRADED = "DEGRADED",
+    DEPLOYMENT_SUPERSEDED = "DEPLOYMENT_SUPERSEDED",
+    ABORTED = "ABORTED",
+}
+
+export const DEPLOYMENT_STATUS = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    FAILED: 'failed',
+    TIMED_OUT: 'timed_out',
+    UNABLE_TO_FETCH: 'unable_to_fetch',
+    INPROGRESS: 'inprogress',
+    SUPERSEDED: 'superseded'
 }

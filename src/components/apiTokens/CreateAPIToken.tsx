@@ -69,6 +69,7 @@ function CreateAPIToken({
         action: ActionTypes.VIEW,
         entityName: [],
     })
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
@@ -175,6 +176,7 @@ function CreateAPIToken({
                     userGroups,
                     directPermission,
                     chartPermission,
+                    k8sPermission,
                     adminPermission === 'SUPERADMIN',
                 )
 
@@ -306,6 +308,8 @@ function CreateAPIToken({
                                 setDirectPermission={setDirectPermission}
                                 chartPermission={chartPermission}
                                 setChartPermission={setChartPermission}
+                                setK8sPermission={setK8sPermission}
+                                k8sPermission={k8sPermission}
                             />
                         )}
                     </div>
