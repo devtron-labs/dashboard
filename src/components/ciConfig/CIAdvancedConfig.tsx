@@ -133,14 +133,16 @@ export default function CIAdvancedConfig({
 
     const renderTargetPlatform = () => {
         return (
-            <TargetPlatformSelector
-                selectedTargetPlatforms={selectedTargetPlatforms}
-                setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                showCustomPlatformWarning={showCustomPlatformWarning}
-                setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                targetPlatformMap={targetPlatformMap}
-                configOverrideView={false}
-            />
+            <div className='pb-8'>
+                <TargetPlatformSelector
+                    selectedTargetPlatforms={selectedTargetPlatforms}
+                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                    showCustomPlatformWarning={showCustomPlatformWarning}
+                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                    targetPlatformMap={targetPlatformMap}
+                    configOverrideView={true}
+                />
+            </div>
         )
     }
 
