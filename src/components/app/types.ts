@@ -317,8 +317,16 @@ export enum Nodes {
     Rollout = 'Rollout',
     PersistentVolumeClaim = 'PersistentVolumeClaim',
     PersistentVolume = 'PersistentVolume',
-    Containers = 'Containers', // containers are being trated same way as nodes for nsted table generation
+    Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
     InitContainers = 'InitContainers',
+    EndpointSlice = 'EndpointSlice',
+    NetworkPolicy = 'NetworkPolicy',
+    StorageClass = 'StorageClass',
+    VolumeSnapshot = 'VolumeSnapshot',
+    VolumeSnapshotContent = 'VolumeSnapshotContent',
+    VolumeSnapshotClass = 'VolumeSnapshotClass',
+    PodDisruptionBudget = 'PodDisruptionBudget',
+    Event = 'Event',
 }
 export type NodeType = keyof typeof Nodes
 
@@ -329,7 +337,8 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     'Custom Resource' = 'Custom Resource',
-    Other = 'Other',
+    'Other Resources' = 'Other Resources',
+    Events = 'Events',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
 

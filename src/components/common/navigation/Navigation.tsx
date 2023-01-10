@@ -22,6 +22,7 @@ import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.t
 import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
+import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 const NavigationList = [
@@ -32,6 +33,15 @@ const NavigationList = [
         icon: ApplicationsIcon,
         href: URLS.APP,
         isAvailableInEA: true,
+    },
+    {
+        title: 'Resource Browser',
+        type: 'link',
+        iconClass: 'nav-short-apps',
+        icon: CubeIcon,
+        href: URLS.RESOURCE_BROWSER,
+        isAvailableInEA: true,
+        markAsBeta: true,
     },
     {
         title: 'Chart Store',
@@ -227,7 +237,7 @@ export default class Navigation extends Component<
                         action: `${item.title} Clicked`,
                     })
                 }}
-                className={`flex left ${className || ''}`}
+                className={`flex left ${item.markAsBeta ? 'dc__beta-feat-nav' : ''} ${className || ''}`}
                 activeClassName="active-nav"
             >
                 <div className="short-nav__item-selected" />
