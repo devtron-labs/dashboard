@@ -106,10 +106,10 @@ function TargetPlatformSelector({
     return (
         <div className="mb-0">
             <div className="fs-13 fw-6">
-                {!allowOverride && !configOverrideView ? 'Target' : 'Set target'} platform for the build
+                {!allowOverride && configOverrideView ? 'Target' : 'Set target'} platform for the build
             </div>
             <div className="fs-13 fw-4 cn-7 mb-12">{SelectorMessaging.PALTFORM_DESCRIPTION}</div>
-            {!allowOverride && !configOverrideView ? (
+            {!allowOverride && configOverrideView ? (
                 getOverridenValue()
             ) : (
                 <CreatableSelect

@@ -37,34 +37,35 @@ export default function AdvancedConfigOptions({
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
-    const updateTargetPlatforms = () => {
-        if (allowOverride && parentState?.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            setTargetPlatforms(parentState.selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform)
-        } else if (!allowOverride && parentState?.ciConfig?.ciBuildConfig?.dockerBuildConfig?.targetPlatform) {
-            setTargetPlatforms(parentState.ciConfig.ciBuildConfig.dockerBuildConfig.targetPlatform)
+    useEffect(() => {
+        if (parentState.ciConfig) {
+            populateCurrentPlatformsData()
         }
-    }
-    const updateSelectedPlatformsCustomTargetPlatform = () => {
+    }, [parentState.ciConfig, allowOverride])
+
+    useEffect(() => {
+        updateDockerConfigOverride(DockerConfigOverrideKeys.targetPlatform, selectedTargetPlatforms)
+    }, [selectedTargetPlatforms])
+
+    const populateCurrentPlatformsData = () => {
+        const _targetPlatforms = allowOverride
+            ? parentState.selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+            : parentState.ciConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+        setTargetPlatforms(_targetPlatforms)
+
         let _customTargetPlatform = false
-        updateTargetPlatforms()
         let _selectedPlatforms = []
-        if (targetPlatforms && targetPlatforms.length > 0) {
-            _selectedPlatforms = targetPlatforms.split(',').map((platformValue) => {
-                _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
+        if (_targetPlatforms?.length > 0) {
+            _selectedPlatforms = _targetPlatforms.split(',').map((platformValue) => {
+                if (!_customTargetPlatform) {
+                    _customTargetPlatform = !targetPlatformMap.get(platformValue)
+                }
                 return { label: platformValue, value: platformValue }
             })
         }
         setSelectedTargetPlatforms(_selectedPlatforms)
         setShowCustomPlatformWarning(_customTargetPlatform)
     }
-
-    useEffect(() => {
-        updateSelectedPlatformsCustomTargetPlatform()
-    }, [parentState,allowOverride])
-
-    useEffect(() => {
-        updateDockerConfigOverride(DockerConfigOverrideKeys.isDockerConfigOverridden, allowOverride)
-    }, [selectedTargetPlatforms])
 
     const addDockerArg = (): void => {
         const _form = { ...formData }
@@ -94,7 +95,10 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
-    const updateDockerConfigOverride = (key: string, value: CIBuildConfigType | boolean | string): void => {
+    const updateDockerConfigOverride = (
+        key: string,
+        value: CIBuildConfigType | OptionType[] | boolean | string,
+    ): void => {
         // Shallow copy all data from formData to _form
         const _form = {
             ...formData,
@@ -112,7 +116,7 @@ export default function AdvancedConfigOptions({
                 ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig)),
             }
         }
-        updateTargetPlatforms()
+
         // Update the specific config value present at different level from dockerConfigOverride
         if (key === DockerConfigOverrideKeys.isDockerConfigOverridden) {
             const _value = value as boolean
@@ -128,23 +132,22 @@ export default function AdvancedConfigOptions({
             key === DockerConfigOverrideKeys.dockerRepository
         ) {
             _form.dockerConfigOverride[key] = value as string
+        } else if (key === DockerConfigOverrideKeys.targetPlatform) {
+            if (_form.dockerConfigOverride.ciBuildConfig?.dockerBuildConfig) {
+                _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = (value as OptionType[])
+                    .map((_selectedTarget) => _selectedTarget.label)
+                    .join(',')
+            }
         } else {
             _form.dockerConfigOverride[DockerConfigOverrideKeys.ciBuildConfig] = value as CIBuildConfigType
         }
 
-        // // No need to pass the id in the request
+        // No need to pass the id in the request
         if (_form.dockerConfigOverride.ciBuildConfig?.hasOwnProperty(DockerConfigOverrideKeys.id)) {
             delete _form.dockerConfigOverride.ciBuildConfig.id
         }
 
-        let platformsArray = []
-        selectedTargetPlatforms?.forEach(function (o) {
-            platformsArray.push(o.label)
-        })
-        if (_form.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig) {
-            _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = platformsArray.join()
-        }
-
+        // set updated form data
         setFormData(_form)
 
         // Check for diff in global & current CI config and set isDockerConfigOverridden flag accordingly
@@ -251,22 +254,24 @@ export default function AdvancedConfigOptions({
                     setLoadingData={setLoadingData}
                 />
 
-                <div className="white-card white-card__docker-config dc__position-rel mb-15">
-                    <TargetPlatformSelector
-                        allowOverride={allowOverride}
-                        selectedTargetPlatforms={selectedTargetPlatforms}
-                        setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                        showCustomPlatformWarning={showCustomPlatformWarning}
-                        setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                        targetPlatformMap={targetPlatformMap}
-                        targetPlatform={targetPlatforms}
-                        configOverrideView={false}
-                    />
-                </div>
-
                 {parentState?.loadingState === ComponentStates.loaded &&
-                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
-                    renderDockerArgs()}
+                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE && (
+                        <>
+                            <div className="white-card white-card__docker-config dc__position-rel mb-15">
+                                <TargetPlatformSelector
+                                    allowOverride={allowOverride}
+                                    selectedTargetPlatforms={selectedTargetPlatforms}
+                                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                                    showCustomPlatformWarning={showCustomPlatformWarning}
+                                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                                    targetPlatformMap={targetPlatformMap}
+                                    targetPlatform={targetPlatforms}
+                                    configOverrideView={true}
+                                />
+                            </div>
+                            {renderDockerArgs()}
+                        </>
+                    )}
             </div>
         </div>
     )

@@ -139,7 +139,7 @@ export default function CIAdvancedConfig({
                 showCustomPlatformWarning={showCustomPlatformWarning}
                 setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                 targetPlatformMap={targetPlatformMap}
-                configOverrideView={true}
+                configOverrideView={false}
             />
         )
     }
