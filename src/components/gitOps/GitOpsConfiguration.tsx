@@ -203,7 +203,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     requiredFieldCheck(formValueType: string): string {
-        return formValueType.length ? '' : 'This is a required field'
+        return !formValueType.length && 'This is a required field'
     }
 
     getFormErrors(isFormEdited, form: GitOpsConfig): any {
