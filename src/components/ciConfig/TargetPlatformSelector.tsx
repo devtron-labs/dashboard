@@ -104,7 +104,7 @@ function TargetPlatformSelector({
     }
 
     return (
-        <div className="mb-20">
+        <div className="mb-0">
             <div className="fs-13 fw-6">
                 {!allowOverride && !configOverrideView ? 'Target' : 'Set target'} platform for the build
             </div>
