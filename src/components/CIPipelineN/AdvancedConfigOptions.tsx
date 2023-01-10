@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
@@ -9,10 +9,9 @@ import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.typ
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
-import {getTargetPlatformMap} from '../ciConfig/CIConfig.utils'
+import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
-import {OptionType} from "../app/types";
-
+import { OptionType } from '../app/types'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -49,7 +48,7 @@ export default function AdvancedConfigOptions({
         let _customTargetPlatform = false
         updateTargetPlatforms()
         let _selectedPlatforms = []
-        if(targetPlatforms && targetPlatforms.length > 0) {
+        if (targetPlatforms && targetPlatforms.length > 0) {
             _selectedPlatforms = targetPlatforms.split(',').map((platformValue) => {
                 _customTargetPlatform = _customTargetPlatform || !targetPlatformMap.get(platformValue)
                 return { label: platformValue, value: platformValue }
@@ -223,7 +222,6 @@ export default function AdvancedConfigOptions({
             updateDockerConfigOverride(DockerConfigOverrideKeys.isDockerConfigOverridden, !allowOverride)
         }
     }
-
 
     return (
         <div className="ci-advanced-options__container mb-20">
