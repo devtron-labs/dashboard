@@ -434,6 +434,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     render() {
+        const suggestedURL = this.suggestedValidGitOpsUrl()
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
         let warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
@@ -560,17 +561,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 <Error className="form__icon form__icon--error fs-13" />
                                 {this.state.form.host.startsWith('http:') ? GITOPS_HTTP_MESSAGE : GITOPS_FQDN_MESSAGE}
                             </div>
-                            //use
-                            {this.suggestedValidGitOpsUrl() && (
+                            {suggestedURL && (
                                 <>
                                     {' '}
                                     Please Use:
                                     <button
                                         type="button"
-                                        onClick={(e) => this.updateGitopsUrl(this.suggestedValidGitOpsUrl())}
+                                        onClick={(e) => this.updateGitopsUrl(suggestedURL)}
                                         className="hosturl__url dc__no-border dc__no-background fw-4 cg-5"
                                     >
-                                        {this.suggestedValidGitOpsUrl()}
+                                        {suggestedURL}
                                     </button>
                                 </>
                             )}
