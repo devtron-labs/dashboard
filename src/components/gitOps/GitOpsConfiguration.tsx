@@ -18,69 +18,7 @@ import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/Validate
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from "../../config/constantMessaging";
-
-enum GitProvider {
-    GITLAB = 'GITLAB',
-    GITHUB = 'GITHUB',
-    AZURE_DEVOPS = 'AZURE_DEVOPS',
-    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD'
-};
-
-const GitHost = {
-    GITHUB: "https://github.com/",
-    GITLAB: "https://gitlab.com/",
-    AZURE_DEVOPS: 'https://dev.azure.com/',
-    BITBUCKET_CLOUD: "https://bitbucket.org/"
-}
-
-const ShortGitHosts = ['github.com', 'gitlab.com', 'dev.azure.com', 'bitbucket.org']
-
-const GitLink = {
-    GITHUB: "https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch",
-    GITLAB: "https://docs.gitlab.com/ee/user/group/#create-a-group",
-    AZURE_DEVOPS: 'https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page#create-a-project',
-    BITBUCKET_WORKSPACE: 'https://support.atlassian.com/bitbucket-cloud/docs/create-your-workspace/',
-    BITBUCKET_PROJECT: 'https://support.atlassian.com/bitbucket-cloud/docs/group-repositories-into-projects/'
-}
-
-const DefaultGitOpsConfig = {
-    id: undefined,
-    provider: GitProvider.GITHUB,
-    active: true,
-}
-
-const DefaultShortGitOps = {
-    host: '',
-    username: '',
-    token: '',
-    gitHubOrgId: '',
-    gitLabGroupId: '',
-    azureProjectName: '',
-    bitBucketWorkspaceId: '',
-    bitBucketProjectKey: '',
-}
-
-const linkAndLabelSpec = new Map()
-linkAndLabelSpec.set(GitProvider.GITHUB, {
-    link: GitLink.GITHUB,
-    linkText: '(How to create organization in GitHub?)',
-    label: 'GitHub Organisation Name*',
-})
-linkAndLabelSpec.set(GitProvider.GITLAB, {
-    link: GitLink.GITLAB,
-    linkText: '(How to create group in GitLab?)',
-    label: 'GitLab Group ID*',
-})
-linkAndLabelSpec.set(GitProvider.AZURE_DEVOPS, {
-    link: GitLink.AZURE_DEVOPS,
-    linkText: '(How to create project in Azure?)',
-    label: 'Azure DevOps Project Name*',
-})
-linkAndLabelSpec.set(GitProvider.BITBUCKET_CLOUD, {
-    link: GitLink.BITBUCKET_PROJECT,
-    linkText: '(How to create project in bitbucket?)',
-    label: 'Bitbucket Project Key',
-})
+import { GitProvider, GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec} from "./gitops.utils";
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -618,9 +556,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={2}
                             error={this.state.isError[key]}
                             showLink={true}
-                            link={linkAndLabelSpec.get(this.state.providerTab)['link']}
-                            linkText={linkAndLabelSpec.get(this.state.providerTab)['linkText']}
-                            label={linkAndLabelSpec.get(this.state.providerTab)['label']}
+                            link={LinkAndLabelSpec.get(this.state.providerTab)['link']}
+                            linkText={LinkAndLabelSpec.get(this.state.providerTab)['linkText']}
+                            label={LinkAndLabelSpec.get(this.state.providerTab)['label']}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
