@@ -1,58 +1,118 @@
-import React, { Component } from "react";
+import React, { Component } from 'react'
 import { ViewType, DOCUMENTATION } from '../../config'
-import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsFieldKeyType, GitOpsOrganisationIdType, GitProviderType } from './gitops.type'
+import {
+    GitOpsState,
+    GitOpsProps,
+    GitOpsConfig,
+    GitOpsFieldKeyType,
+    GitOpsOrganisationIdType,
+    GitProviderType,
+} from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
-import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg';
-import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common';
-import Check from '../../assets/icons/ic-outline-check.svg';
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg';
-import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg';
-import { toast } from 'react-toastify';
-import { updateGitOpsConfiguration, saveGitOpsConfiguration, getGitOpsConfigurationList, validateGitOpsConfiguration } from './gitops.service';
-import '../login/login.css';
-import './gitops.css';
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
+import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
+import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common'
+import Check from '../../assets/icons/ic-outline-check.svg'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
+import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
+import { toast } from 'react-toastify'
+import {
+    updateGitOpsConfiguration,
+    saveGitOpsConfiguration,
+    getGitOpsConfigurationList,
+    validateGitOpsConfiguration,
+} from './gitops.service'
+import '../login/login.css'
+import './gitops.css'
 import { withRouter } from 'react-router-dom'
-import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
+import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from "../../config/constantMessaging";
-import { GitProvider, GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec} from "./gitops.utils";
+import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
+import {
+    GitProvider,
+    GitHost,
+    ShortGitHosts,
+    GitLink,
+    DefaultGitOpsConfig,
+    DefaultShortGitOps,
+    LinkAndLabelSpec,
+} from './gitops.utils'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
-        case "GitHub": return <GitHub />
-        case "GitLab": return <GitLab />
-        case "Azure": return <Azure />
-        case "Bitbucket Cloud": return <Bitbucket />
+        case 'GitHub':
+            return <GitHub />
+        case 'GitLab':
+            return <GitLab />
+        case 'Azure':
+            return <Azure />
+        case 'Bitbucket Cloud':
+            return <Bitbucket />
     }
 }
 
-const GitProviderTab: React.FC<{ providerTab: string; handleGitopsTab: (e) => void; lastActiveGitOp: undefined | GitOpsConfig; provider: string; gitops: string, saveLoading: boolean }> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading }) => {
-    return <label className="dc__tertiary-tab__radio">
-        <input type="radio" name="status" value={provider} checked={providerTab === provider} onChange={!saveLoading && handleGitopsTab} />
-        <span className="dc__tertiary-tab sso-icons">
-            <aside className="login__icon-alignment"><GitProviderTabIcons gitops={gitops} /></aside>
-            <aside className="login__text-alignment"  style={{lineHeight: 1.2}}> {gitops}</aside>
-            <div>
-                {(lastActiveGitOp?.provider === provider) ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
-            </div>
-        </span>
-    </label>
+const GitProviderTab: React.FC<{
+    providerTab: string
+    handleGitopsTab: (e) => void
+    lastActiveGitOp: undefined | GitOpsConfig
+    provider: string
+    gitops: string
+    saveLoading: boolean
+}> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading }) => {
+    return (
+        <label className="dc__tertiary-tab__radio">
+            <input
+                type="radio"
+                name="status"
+                value={provider}
+                checked={providerTab === provider}
+                onChange={!saveLoading && handleGitopsTab}
+            />
+            <span className="dc__tertiary-tab sso-icons">
+                <aside className="login__icon-alignment">
+                    <GitProviderTabIcons gitops={gitops} />
+                </aside>
+                <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
+                    {' '}
+                    {gitops}
+                </aside>
+                <div>
+                    {lastActiveGitOp?.provider === provider ? (
+                        <aside className="login__check-icon">
+                            <img src={Check} />
+                        </aside>
+                    ) : (
+                        ''
+                    )}
+                </div>
+            </span>
+        </label>
+    )
 }
 
-
-const GitInfoTab: React.FC<{ tab: string, gitLink: string, gitProvider: string, gitProviderGroupAlias: string }> = ({ tab, gitLink, gitProvider, gitProviderGroupAlias }) => {
-    return <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
-        <div className="flex left ">
-            <Info className="icon-dim-20" style={{ marginTop: 1 }} />
-            <div className="ml-8 fs-13">
-                <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider} {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing your source code.
-       </div>
+const GitInfoTab: React.FC<{ tab: string; gitLink: string; gitProvider: string; gitProviderGroupAlias: string }> = ({
+    tab,
+    gitLink,
+    gitProvider,
+    gitProviderGroupAlias,
+}) => {
+    return (
+        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
+            <div className="flex left ">
+                <Info className="icon-dim-20" style={{ marginTop: 1 }} />
+                <div className="ml-8 fs-13">
+                    <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider}{' '}
+                    {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing
+                    your source code.
+                </div>
+            </div>
+            <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">
+                How to create {gitProviderGroupAlias} in {gitProvider} ?
+            </a>
         </div>
-        <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">How to create {gitProviderGroupAlias} in {gitProvider} ?</a>
-    </div>
+    )
 }
 
 class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
@@ -164,8 +224,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     getFormErrors(isFormEdited, form: GitOpsConfig): any {
-        if (!isFormEdited)
-            return DefaultShortGitOps
+        if (!isFormEdited) return DefaultShortGitOps
 
         return {
             host: this.requiredFieldCheck(form.host),
@@ -190,15 +249,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0
-        if(!isInvalid){
+        if (!isInvalid) {
             if (this.state.providerTab === GitProvider.GITHUB) {
-                isInvalid = isError.gitHubOrgId?.length>0
+                isInvalid = isError.gitHubOrgId?.length > 0
             } else if (this.state.providerTab === GitProvider.GITLAB) {
-                isInvalid = isError.gitLabGroupId?.length>0
+                isInvalid = isError.gitLabGroupId?.length > 0
             } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-                isInvalid = isError.bitBucketWorkspaceId?.length>0
+                isInvalid = isError.bitBucketWorkspaceId?.length > 0
             } else {
-                isInvalid = isError.azureProjectName?.length>0
+                isInvalid = isError.azureProjectName?.length > 0
             }
         }
 
@@ -650,4 +709,4 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 }
 
-export default withRouter(GitOpsConfiguration);
+export default withRouter(GitOpsConfiguration)

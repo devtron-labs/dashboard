@@ -1,26 +1,26 @@
-
 export enum GitProvider {
     GITLAB = 'GITLAB',
     GITHUB = 'GITHUB',
     AZURE_DEVOPS = 'AZURE_DEVOPS',
-    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD'
-};
+    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
+}
 
 export const GitHost = {
-    GITHUB: "https://github.com/",
-    GITLAB: "https://gitlab.com/",
+    GITHUB: 'https://github.com/',
+    GITLAB: 'https://gitlab.com/',
     AZURE_DEVOPS: 'https://dev.azure.com/',
-    BITBUCKET_CLOUD: "https://bitbucket.org/"
+    BITBUCKET_CLOUD: 'https://bitbucket.org/',
 }
 
 export const ShortGitHosts = ['github.com', 'gitlab.com', 'dev.azure.com', 'bitbucket.org']
 
 export const GitLink = {
-    GITHUB: "https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch",
-    GITLAB: "https://docs.gitlab.com/ee/user/group/#create-a-group",
-    AZURE_DEVOPS: 'https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page#create-a-project',
+    GITHUB: 'https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch',
+    GITLAB: 'https://docs.gitlab.com/ee/user/group/#create-a-group',
+    AZURE_DEVOPS:
+        'https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page#create-a-project',
     BITBUCKET_WORKSPACE: 'https://support.atlassian.com/bitbucket-cloud/docs/create-your-workspace/',
-    BITBUCKET_PROJECT: 'https://support.atlassian.com/bitbucket-cloud/docs/group-repositories-into-projects/'
+    BITBUCKET_PROJECT: 'https://support.atlassian.com/bitbucket-cloud/docs/group-repositories-into-projects/',
 }
 
 export const DefaultGitOpsConfig = {
@@ -28,7 +28,6 @@ export const DefaultGitOpsConfig = {
     provider: GitProvider.GITHUB,
     active: true,
 }
-
 
 export const DefaultShortGitOps = {
     host: '',
