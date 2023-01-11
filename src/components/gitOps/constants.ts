@@ -1,4 +1,4 @@
-import { GitProvider } from "./gitops.type"
+import { GitProvider } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
@@ -35,24 +35,25 @@ export const DefaultShortGitOps = {
     bitBucketProjectKey: '',
 }
 
-export const LinkAndLabelSpec = new Map()
-LinkAndLabelSpec.set(GitProvider.GITHUB, {
-    link: GitLink.GITHUB,
-    linkText: '(How to create organization in GitHub?)',
-    label: 'GitHub Organisation Name*',
-})
-LinkAndLabelSpec.set(GitProvider.GITLAB, {
-    link: GitLink.GITLAB,
-    linkText: '(How to create group in GitLab?)',
-    label: 'GitLab Group ID*',
-})
-LinkAndLabelSpec.set(GitProvider.AZURE_DEVOPS, {
-    link: GitLink.AZURE_DEVOPS,
-    linkText: '(How to create project in Azure?)',
-    label: 'Azure DevOps Project Name*',
-})
-LinkAndLabelSpec.set(GitProvider.BITBUCKET_CLOUD, {
-    link: GitLink.BITBUCKET_PROJECT,
-    linkText: '(How to create project in bitbucket?)',
-    label: 'Bitbucket Project Key',
-})
+export const LinkAndLabelSpec = {
+    [GitProvider.GITHUB]: {
+        link: GitLink.GITHUB,
+        linkText: '(How to create organization in GitHub?)',
+        label: 'GitHub Organisation Name*',
+    },
+    [GitProvider.GITLAB]: {
+        link: GitLink.GITLAB,
+        linkText: '(How to create group in GitLab?)',
+        label: 'GitLab Group ID*',
+    },
+    [GitProvider.AZURE_DEVOPS]: {
+        link: GitLink.AZURE_DEVOPS,
+        linkText: '(How to create project in Azure?)',
+        label: 'Azure DevOps Project Name*',
+    },
+    [GitProvider.BITBUCKET_CLOUD]: {
+        link: GitLink.BITBUCKET_PROJECT,
+        linkText: '(How to create project in bitbucket?)',
+        label: 'Bitbucket Project Key',
+    },
+}

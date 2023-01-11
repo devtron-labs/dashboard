@@ -30,14 +30,7 @@ import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/Validate
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
-import {
-    GitHost,
-    ShortGitHosts,
-    GitLink,
-    DefaultGitOpsConfig,
-    DefaultShortGitOps,
-    LinkAndLabelSpec,
-} from './constants'
+import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -614,9 +607,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={2}
                             error={this.state.isError[key]}
                             showLink={true}
-                            link={LinkAndLabelSpec.get(this.state.providerTab)['link']}
-                            linkText={LinkAndLabelSpec.get(this.state.providerTab)['linkText']}
-                            label={LinkAndLabelSpec.get(this.state.providerTab)['label']}
+                            link={LinkAndLabelSpec[this.state.providerTab]['link']}
+                            linkText={LinkAndLabelSpec[this.state.providerTab]['linkText']}
+                            label={LinkAndLabelSpec[this.state.providerTab]['label']}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
