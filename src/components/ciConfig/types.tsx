@@ -305,4 +305,5 @@ export interface TargetPlatformSelectorType {
   targetPlatformMap: any
   targetPlatform?: string
   configOverrideView?: boolean
+  updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }

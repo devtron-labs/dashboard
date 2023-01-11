@@ -289,7 +289,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 return agg
             }, {}),
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
-        dockerConfigOverride: formData.isDockerConfigOverridden ? (ciPipeline?.dockerConfigOverride.ciBuildConfig ? ciPipeline?.dockerConfigOverride : formData.dockerConfigOverride) : {},
+        dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
     }
     return ci
 }

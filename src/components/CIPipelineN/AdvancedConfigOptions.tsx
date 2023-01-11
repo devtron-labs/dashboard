@@ -24,7 +24,7 @@ export default function AdvancedConfigOptions({
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
-        selectedCIPipeline: ciPipeline ? JSON.parse(JSON.stringify(ciPipeline)) : null,
+        selectedCIPipeline: ciPipeline ? Object.assign({}, ciPipeline) : null,
         dockerRegistries: null,
         sourceConfig: null,
         ciConfig: null,
@@ -43,14 +43,11 @@ export default function AdvancedConfigOptions({
         }
     }, [parentState.ciConfig, allowOverride])
 
-    useEffect(() => {
-        updateDockerConfigOverride(DockerConfigOverrideKeys.targetPlatform, selectedTargetPlatforms)
-    }, [selectedTargetPlatforms])
-
     const populateCurrentPlatformsData = () => {
-        const _targetPlatforms = allowOverride
-            ? parentState.selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
-            : parentState.ciConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+        const _targetPlatforms =
+            allowOverride && parentState.selectedCIPipeline?.isDockerConfigOverridden
+                ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+                : parentState.ciConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform
         setTargetPlatforms(_targetPlatforms)
 
         let _customTargetPlatform = false
@@ -100,20 +97,21 @@ export default function AdvancedConfigOptions({
         value: CIBuildConfigType | OptionType[] | boolean | string,
     ): void => {
         // Shallow copy all data from formData to _form
-        const _form = {
-            ...formData,
-        }
+        const _form = Object.assign({}, formData)
 
         // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
-        if (
-            !ciPipeline?.isDockerConfigOverridden &&
-            (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) &&
-            parentState?.ciConfig
-        ) {
-            _form.dockerConfigOverride = {
-                dockerRegistry: parentState.ciConfig.dockerRegistry,
-                dockerRepository: parentState.ciConfig.dockerRepository,
-                ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig)),
+        if (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) {
+            if (parentState.selectedCIPipeline?.isDockerConfigOverridden) {
+                _form.dockerConfigOverride = Object.assign({}, parentState.selectedCIPipeline.dockerConfigOverride)
+            } else if (parentState?.ciConfig) {
+                _form.dockerConfigOverride = Object.assign(
+                    {},
+                    {
+                        dockerRegistry: parentState.ciConfig.dockerRegistry,
+                        dockerRepository: parentState.ciConfig.dockerRepository,
+                        ciBuildConfig: parentState.ciConfig.ciBuildConfig,
+                    },
+                )
             }
         }
 
@@ -122,24 +120,21 @@ export default function AdvancedConfigOptions({
             const _value = value as boolean
             _form.isDockerConfigOverridden = _value
             setAllowOverride(_value)
-
-            // Empty dockerConfigOverride when deleting override
-            if (!_value) {
-                _form.dockerConfigOverride = {} as DockerConfigOverrideType
-            }
         } else if (
             key === DockerConfigOverrideKeys.dockerRegistry ||
             key === DockerConfigOverrideKeys.dockerRepository
         ) {
             _form.dockerConfigOverride[key] = value as string
         } else if (key === DockerConfigOverrideKeys.targetPlatform) {
-            if (_form.dockerConfigOverride.ciBuildConfig?.dockerBuildConfig) {
-                _form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig.targetPlatform = (value as OptionType[])
-                    .map((_selectedTarget) => _selectedTarget.label)
-                    .join(',')
+            _form.dockerConfigOverride.ciBuildConfig = {
+                ..._form.dockerConfigOverride.ciBuildConfig,
+                dockerBuildConfig: {
+                    ..._form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig,
+                    targetPlatform: (value as OptionType[]).map((_selectedTarget) => _selectedTarget.label).join(','),
+                },
             }
         } else {
-            _form.dockerConfigOverride[DockerConfigOverrideKeys.ciBuildConfig] = value as CIBuildConfigType
+            _form.dockerConfigOverride.ciBuildConfig = value as CIBuildConfigType
         }
 
         // No need to pass the id in the request
@@ -267,6 +262,7 @@ export default function AdvancedConfigOptions({
                                     targetPlatformMap={targetPlatformMap}
                                     targetPlatform={targetPlatforms}
                                     configOverrideView={true}
+                                    updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
                             {renderDockerArgs()}
