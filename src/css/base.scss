@@ -2132,6 +2132,12 @@ textarea,
   min-width: 200px
 }
 
+// width fix content
+
+.dc__w-fit-content{
+  width: fit-content;
+}
+
 // Height in pixels
 
 .dc__height-inherit {
