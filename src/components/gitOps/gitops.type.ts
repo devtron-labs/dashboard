@@ -14,6 +14,12 @@ export interface CustomGitOpsState {
     };
 }
 
+export enum GitProvider {
+    GITLAB = 'GITLAB',
+    GITHUB = 'GITHUB',
+    AZURE_DEVOPS = 'AZURE_DEVOPS',
+    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
+}
 
 export interface GitOpsConfig {
     id: number,

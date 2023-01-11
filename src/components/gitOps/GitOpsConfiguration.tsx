@@ -6,7 +6,7 @@ import {
     GitOpsConfig,
     GitOpsFieldKeyType,
     GitOpsOrganisationIdType,
-    GitProviderType,
+    GitProvider,
 } from './gitops.type'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
@@ -31,14 +31,13 @@ import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import {
-    GitProvider,
     GitHost,
     ShortGitHosts,
     GitLink,
     DefaultGitOpsConfig,
     DefaultShortGitOps,
     LinkAndLabelSpec,
-} from './gitops.utils'
+} from './constants'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {

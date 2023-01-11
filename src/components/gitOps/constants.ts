@@ -1,9 +1,4 @@
-export enum GitProvider {
-    GITLAB = 'GITLAB',
-    GITHUB = 'GITHUB',
-    AZURE_DEVOPS = 'AZURE_DEVOPS',
-    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-}
+import { GitProvider } from "./gitops.type"
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
