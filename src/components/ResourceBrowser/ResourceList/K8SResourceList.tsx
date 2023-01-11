@@ -106,6 +106,7 @@ export function K8SResourceList({
             return
         }
         setSelectedNamespace(selected)
+        handleFilterChanges(searchText)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
         })
@@ -249,6 +250,7 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
+                    title={`No ${selectedResource?.gvk?.Kind} found`}
                     subTitle={`We could not find any ${selectedResource?.gvk?.Kind}. Try selecting a different cluster${
                         selectedResource.namespaced ? ' or namespace.' : '.'
                     }`}

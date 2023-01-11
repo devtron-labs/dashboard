@@ -123,12 +123,14 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                         Icon={InfoIcon}
                     />
                     <CodeEditor
+                        theme="vs-dark--dt"
                         value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing
                         height={'calc(100vh - 165px)'}
                         onChange={handleEditorValueChange}
                         loading={loader}
+                        focus={true}
                     />
                 </>
             )
