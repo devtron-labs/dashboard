@@ -260,13 +260,17 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     suggestedValidGitOpsUrl() {
-        let gitOpsUrl = this.state.form.host
         let suggestedValidGitOpsUrl: string
-        ShortGitHosts.forEach((shortGitHost) => {
-            if (gitOpsUrl.indexOf(shortGitHost) >= 0) {
-                suggestedValidGitOpsUrl = 'https://' + shortGitHost + '/'
-            }
-        })
+        try {
+            suggestedValidGitOpsUrl = new URL(this.state.form.host).href
+        } catch (error) {
+            ShortGitHosts.forEach((shortGitHost) => {
+                if (this.state.form.host.indexOf(shortGitHost) >= 0) {
+                    suggestedValidGitOpsUrl = 'https://' + shortGitHost + '/'
+                }
+            })
+        }
+
         return suggestedValidGitOpsUrl
     }
 
@@ -276,18 +280,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         let isUrlAccepted: boolean = true
-        let url: string
+        let url: URL
         try {
-            url = new URL(this.state.form.host).protocol
+            url = new URL(this.state.form.host)
         } catch (error) {
             return false
         }
         ShortGitHosts.forEach((shortGitHost) => {
-            if (this.state.form.host.indexOf(shortGitHost) >= 0) {
-                isUrlAccepted =
-                    (this.state.form.host.endsWith(shortGitHost + '/') ||
-                        this.state.form.host.endsWith(shortGitHost)) &&
-                    url === 'https:'
+            if (url.host.includes(shortGitHost)) {
+                isUrlAccepted = url.pathname.length === 1 && url.protocol === 'https:'
             }
         })
 
