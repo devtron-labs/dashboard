@@ -298,8 +298,8 @@ export interface CIBuildConfigDiffProps {
 
 export interface TargetPlatformSelectorType {
   allowOverride?: boolean
-  selectedTargetPlatforms: any
-  setSelectedTargetPlatforms: any
+  selectedTargetPlatforms: OptionType[]
+  setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
   showCustomPlatformWarning: boolean
   setShowCustomPlatformWarning: (value: boolean) => void
   targetPlatformMap: any
