@@ -98,7 +98,7 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
         AggregationKeys['Custom Resource'],
         AggregationKeys.RBAC,
         AggregationKeys.Administration,
-        AggregationKeys.Other
+        AggregationKeys['Other Resources']
     ];
 
     useEffect(() => {
