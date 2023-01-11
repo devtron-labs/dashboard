@@ -69,13 +69,13 @@ const GitProviderTab: React.FC<{
                 <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
                     {gitops}
                 </aside>
-                {lastActiveGitOp?.provider === provider && <div>
-                    
-                    <aside className="login__check-icon">
-                        <img src={Check} />
-                    </aside>
-                
-            </div>}
+                {lastActiveGitOp?.provider === provider && (
+                    <div>
+                        <aside className="login__check-icon">
+                            <img src={Check} />
+                        </aside>
+                    </div>
+                )}
             </span>
         </label>
     )
@@ -151,7 +151,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
-                let isError = this.getFormErrors(false, form)
                 this.setState({
                     gitList: response.result || [],
                     saveLoading: false,
@@ -159,7 +158,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     lastActiveGitOp: form,
                     providerTab: form.provider,
                     form: form,
-                    isError: isError,
+                    isError: DefaultShortGitOps,
                     isFormEdited: false,
                 })
             })
@@ -181,11 +180,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             host: GitHost[newGitOps],
             provider: newGitOps,
         }
-        let isError = this.getFormErrors(false, form)
         this.setState({
             providerTab: form.provider,
             form: form,
-            isError: isError,
+            isError: DefaultShortGitOps,
             isFormEdited: false,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
             isUrlValidationError: false,
@@ -209,12 +207,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     requiredFieldCheck(formValueType: string): string {
-        return !formValueType.length && 'This is a required field'
+        return formValueType.length ? '' : 'This is a required field'
     }
 
-    getFormErrors(isFormEdited, form: GitOpsConfig): any {
-        if (!isFormEdited) return DefaultShortGitOps
-
+    getFormErrors(form: GitOpsConfig): any {
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
@@ -230,27 +226,27 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     isInvalid() {
         let isError = this.state.isError
         if (!this.state.isFormEdited) {
-            isError = this.getFormErrors(true, this.state.form)
+            isError = this.getFormErrors(this.state.form)
             this.setState({
                 isError,
                 isFormEdited: true,
             })
         }
 
-        let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0
-        if (!isInvalid) {
+        let _isInvalid = isError.host.length > 0 || isError.username.length > 0 || isError.token.length > 0
+        if (!_isInvalid) {
             if (this.state.providerTab === GitProvider.GITHUB) {
-                isInvalid = isError.gitHubOrgId?.length > 0
+                _isInvalid = isError.gitHubOrgId.length > 0
             } else if (this.state.providerTab === GitProvider.GITLAB) {
-                isInvalid = isError.gitLabGroupId?.length > 0
+                _isInvalid = isError.gitLabGroupId.length > 0
             } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-                isInvalid = isError.bitBucketWorkspaceId?.length > 0
+                _isInvalid = isError.bitBucketWorkspaceId.length > 0
             } else {
-                isInvalid = isError.azureProjectName?.length > 0
+                _isInvalid = isError.azureProjectName.length > 0
             }
         }
 
-        return isInvalid
+        return _isInvalid
     }
 
     suggestedValidGitOpsUrl() {
