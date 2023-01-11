@@ -46,16 +46,41 @@ const GitLink = {
 const DefaultGitOpsConfig = {
     id: undefined,
     provider: GitProvider.GITHUB,
-    host: "",
-    token: "",
-    username: "",
-    gitLabGroupId: "",
-    gitHubOrgId: "",
-    azureProjectName: "",
     active: true,
-    bitBucketWorkspaceId: "",
-    bitBucketProjectKey: ""
 }
+
+const DefaultShortGitOps = {
+    host: '',
+    username: '',
+    token: '',
+    gitHubOrgId: '',
+    gitLabGroupId: '',
+    azureProjectName: '',
+    bitBucketWorkspaceId: '',
+    bitBucketProjectKey: '',
+}
+
+const linkAndLabelSpec = new Map()
+linkAndLabelSpec.set(GitProvider.GITHUB, {
+    link: GitLink.GITHUB,
+    linkText: '(How to create organization in GitHub?)',
+    label: 'GitHub Organisation Name*',
+})
+linkAndLabelSpec.set(GitProvider.GITLAB, {
+    link: GitLink.GITLAB,
+    linkText: '(How to create group in GitLab?)',
+    label: 'GitLab Group ID*',
+})
+linkAndLabelSpec.set(GitProvider.AZURE_DEVOPS, {
+    link: GitLink.AZURE_DEVOPS,
+    linkText: '(How to create project in Azure?)',
+    label: 'Azure DevOps Project Name*',
+})
+linkAndLabelSpec.set(GitProvider.BITBUCKET_CLOUD, {
+    link: GitLink.BITBUCKET_PROJECT,
+    linkText: '(How to create project in bitbucket?)',
+    label: 'Bitbucket Project Key',
+})
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -105,20 +130,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             lastActiveGitOp: undefined,
             form: {
                 ...DefaultGitOpsConfig,
+                ...DefaultShortGitOps,
                 host: GitHost.GITHUB,
                 provider: GitProvider.GITHUB,
             },
             isFormEdited: false,
-            isError: {
-                host: '',
-                username: '',
-                token: '',
-                gitHubOrgId: '',
-                gitLabGroupId: '',
-                azureProjectName: '',
-                bitBucketWorkspaceId: '',
-                bitBucketProjectKey: '',
-            },
+            isError: DefaultShortGitOps,
             validatedTime: '',
             validationError: [],
             validationStatus:
@@ -143,6 +160,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             .then((response) => {
                 let form = response.result?.find((item) => item.active) ?? {
                     ...DefaultGitOpsConfig,
+                    ...DefaultShortGitOps,
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
@@ -172,6 +190,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         let newGitOps = event.target.value
         let form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
             ...DefaultGitOpsConfig,
+            ...DefaultShortGitOps,
             host: GitHost[newGitOps],
             provider: newGitOps,
         }
@@ -208,16 +227,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     getFormErrors(isFormEdited, form: GitOpsConfig): any {
         if (!isFormEdited)
-            return {
-                host: '',
-                username: '',
-                token: '',
-                gitHubOrgId: '',
-                gitLabGroupId: '',
-                azureProjectName: '',
-                bitBucketWorkspaceId: '',
-                bitBucketProjectKey: '',
-            }
+            return DefaultShortGitOps
 
         return {
             host: this.requiredFieldCheck(form.host),
@@ -231,10 +241,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
     }
 
-    isValidCheck(isInvalidCheck: any, s: any) {
-        return isInvalidCheck || s?.length > 0
-    }
-
     isInvalid() {
         let isError = this.state.isError
         if (!this.state.isFormEdited) {
@@ -246,14 +252,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         let isInvalid = isError.host?.length > 0 || isError.username?.length > 0 || isError.token?.length > 0
-        if (this.state.providerTab === GitProvider.GITHUB) {
-            isInvalid = this.isValidCheck(isInvalid, isError.gitHubOrgId)
-        } else if (this.state.providerTab === GitProvider.GITLAB) {
-            isInvalid = this.isValidCheck(isInvalid, isError.gitLabGroupId)
-        } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-            isInvalid = this.isValidCheck(isInvalid, isError.bitBucketWorkspaceId)
-        } else {
-            isInvalid = this.isValidCheck(isInvalid, isError.azureProjectName)
+        if(!isInvalid){
+            if (this.state.providerTab === GitProvider.GITHUB) {
+                isInvalid = isError.gitHubOrgId?.length>0
+            } else if (this.state.providerTab === GitProvider.GITLAB) {
+                isInvalid = isError.gitLabGroupId?.length>0
+            } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
+                isInvalid = isError.bitBucketWorkspaceId?.length>0
+            } else {
+                isInvalid = isError.azureProjectName?.length>0
+            }
         }
 
         return isInvalid
@@ -261,15 +269,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     suggestedValidGitOpsUrl() {
         let suggestedValidGitOpsUrl: string
-        try {
-            suggestedValidGitOpsUrl = new URL(this.state.form.host).href
-        } catch (error) {
-            ShortGitHosts.forEach((shortGitHost) => {
-                if (this.state.form.host.indexOf(shortGitHost) >= 0) {
-                    suggestedValidGitOpsUrl = 'https://' + shortGitHost + '/'
-                }
-            })
-        }
+        ShortGitHosts.forEach((shortGitHost) => {
+            if (this.state.form.host.indexOf(shortGitHost) >= 0) {
+                suggestedValidGitOpsUrl = 'https://' + shortGitHost + '/'
+            }
+        })
 
         return suggestedValidGitOpsUrl
     }
@@ -445,35 +449,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         })
     }
 
-    getInputFormSpec(): Map<GitProviderType, Map<string, string>> {
-        const linkAndLabelSpec = new Map()
-
-        linkAndLabelSpec.set(GitProvider.GITHUB, {
-            link: GitLink.GITHUB,
-            linkText: '(How to create organization in GitHub?)',
-            label: 'GitHub Organisation Name*',
-        })
-        linkAndLabelSpec.set(GitProvider.GITLAB, {
-            link: GitLink.GITLAB,
-            linkText: '(How to create group in GitLab?)',
-            label: 'GitLab Group ID*',
-        })
-        linkAndLabelSpec.set(GitProvider.AZURE_DEVOPS, {
-            link: GitLink.AZURE_DEVOPS,
-            linkText: '(How to create project in Azure?)',
-            label: 'Azure DevOps Project Name*',
-        })
-        linkAndLabelSpec.set(GitProvider.BITBUCKET_CLOUD, {
-            link: GitLink.BITBUCKET_PROJECT,
-            linkText: '(How to create project in bitbucket?)',
-            label: 'Bitbucket Project Key',
-        })
-
-        return linkAndLabelSpec
-    }
-
     render() {
-        const inputFormSpec = this.getInputFormSpec()
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
         let warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
@@ -642,9 +618,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             tabIndex={2}
                             error={this.state.isError[key]}
                             showLink={true}
-                            link={inputFormSpec.get(this.state.providerTab)['link']}
-                            linkText={inputFormSpec.get(this.state.providerTab)['linkText']}
-                            label={inputFormSpec.get(this.state.providerTab)['label']}
+                            link={linkAndLabelSpec.get(this.state.providerTab)['link']}
+                            linkText={linkAndLabelSpec.get(this.state.providerTab)['linkText']}
+                            label={linkAndLabelSpec.get(this.state.providerTab)['label']}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
