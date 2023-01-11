@@ -147,9 +147,9 @@ function TargetPlatformSelector({
                 />
             )}
             {showCustomPlatformWarning && (
-                <span className="flexbox cy-7">
+                <span className="flexbox cy-7 mt-2">
                     <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
-                    {allowOverride ? SelectorMessaging.WARNING_WITH_NO_TARGET : SelectorMessaging.WARNING_WITH_USING_NO_TARGET}
+                    {allowOverride ? SelectorMessaging.WARNING_WITH_NO_TARGET : configOverrideView ? SelectorMessaging.WARNING_WITH_USING_NO_TARGET : SelectorMessaging.WARNING_WITH_NO_TARGET }
                 </span>
             )}
         </div>
