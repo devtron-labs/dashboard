@@ -67,18 +67,15 @@ const GitProviderTab: React.FC<{
                     <GitProviderTabIcons gitops={gitops} />
                 </aside>
                 <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
-                    {' '}
                     {gitops}
                 </aside>
-                <div>
-                    {lastActiveGitOp?.provider === provider ? (
-                        <aside className="login__check-icon">
-                            <img src={Check} />
-                        </aside>
-                    ) : (
-                        ''
-                    )}
-                </div>
+                {lastActiveGitOp?.provider === provider && <div>
+                    
+                    <aside className="login__check-icon">
+                        <img src={Check} />
+                    </aside>
+                
+            </div>}
             </span>
         </label>
     )
@@ -280,7 +277,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return false
         }
         ShortGitHosts.forEach((shortGitHost) => {
-            if (url.host.includes(shortGitHost)) {
+            if (url.hostname.includes(shortGitHost)) {
                 isUrlAccepted = url.pathname.length === 1 && url.protocol === 'https:'
             }
         })
@@ -360,14 +357,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     validateGitOps(tab) {
-        let isInvalid = this.isInvalid()
-        if (isInvalid) {
+        if (this.isInvalid()) {
             toast.error('Some Required Fields are missing')
             return
         }
 
-        const isValidGitOpsUrl = this.isValidGitOpsUrl()
-        if (!isValidGitOpsUrl) {
+        if (!this.isValidGitOpsUrl()) {
             this.setState({
                 isUrlValidationError: true,
                 validationStatus: VALIDATION_STATUS.DRY_RUN,
@@ -565,6 +560,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 <Error className="form__icon form__icon--error fs-13" />
                                 {this.state.form.host.startsWith('http:') ? GITOPS_HTTP_MESSAGE : GITOPS_FQDN_MESSAGE}
                             </div>
+                            //use
                             {this.suggestedValidGitOpsUrl() && (
                                 <>
                                     {' '}

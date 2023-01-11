@@ -19,7 +19,7 @@ export const GitLink = {
 }
 
 export const DefaultGitOpsConfig = {
-    id: undefined,
+    id: null,
     provider: GitProvider.GITHUB,
     active: true,
 }
