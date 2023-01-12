@@ -57,18 +57,24 @@ export function processWorkflow(
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
-    const configuredMaterialList = []
-    filteredCIPipelines?.map((ciPipeline, _) =>
-        ciPipeline?.ciMaterial?.length > 0
-            ? ciPipeline.ciMaterial.map((property, _) => configuredMaterialList.push(property.gitMaterialId))
-            : (ciPipeline.ciMaterial = []),
-    )
+    const configuredMaterialList = new Map()
+    for (let ciPipeline of filteredCIPipelines) {
+        configuredMaterialList[ciPipeline.name] = new Set()
+        if (ciPipeline?.ciMaterial?.length > 0) {
+            ciPipeline.ciMaterial.map((property, _) =>
+                configuredMaterialList[ciPipeline.name].add(property.gitMaterialId),
+            )
+        } else {
+            ciPipeline.ciMaterial = []
+        }
+    }
+
     const gitMaterials = ciResponse?.materials ?? []
     for (let material of gitMaterials) {
-        if (configuredMaterialList.includes(material.gitMaterialId)) {
-            continue
-        }
-        filteredCIPipelines.map((ciPipeline, _) =>
+        for (let ciPipeline of filteredCIPipelines) {
+            if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId)) {
+                continue
+            }
             ciPipeline.ciMaterial.push({
                 source: {
                     regex: '',
@@ -78,8 +84,8 @@ export function processWorkflow(
                 gitMaterialId: material.gitMaterialId,
                 id: 0,
                 gitMaterialName: material.materialName,
-            }),
-        )
+            })
+        }
     }
     const ciMap = new Map(
         filteredCIPipelines

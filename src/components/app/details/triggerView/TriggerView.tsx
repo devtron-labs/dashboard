@@ -868,18 +868,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
-            const configuredMaterialList = []
+            const configuredMaterialList = new Map()
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
+                configuredMaterialList[this.state.workflows[i].name] = new Set()
+
                 if (nd?.[this.state.materialType].length > 0) {
                     nd?.[this.state.materialType].map((node, _) =>
-                        configuredMaterialList.push(node.gitMaterialName.toLowerCase()),
+                        configuredMaterialList[this.state.workflows[i].name].add(node.gitMaterialName.toLowerCase()),
                     )
-                } else {
-                    nd['inputMaterialList'] = []
                 }
                 for (let material of this.state.workflows[i].nodes) {
-                    if (configuredMaterialList.includes(material.title.toLowerCase()) || material.type !== 'GIT') {
+                    if (
+                        configuredMaterialList[this.state.workflows[i].name].has(material.title.toLowerCase()) ||
+                        material.type !== 'GIT'
+                    ) {
                         continue
                     }
                     const ciMaterial: CIMaterialType = {
@@ -902,6 +905,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     }
                     nd?.[this.state.materialType].push(ciMaterial)
                 }
+
                 if (nd) {
                     break
                 }
