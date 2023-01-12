@@ -7,6 +7,7 @@ import {
     getAppTriggerURL,
     DOCUMENTATION,
     DEFAULT_STATUS,
+    DEPLOYMENT_STATUS_QUERY_PARAM,
 } from '../../../../config';
 import {
     NavigationArrow,
@@ -456,7 +457,7 @@ export const Details: React.FC<{
                               showAppStatusMessage={false}
                           />
                     )}
-                    {location.search.includes('deployment-status') && (
+                    {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                         <DeploymentStatusDetailModal
                             appName={appDetails.appName}
                             environmentName={appDetails.environmentName}
