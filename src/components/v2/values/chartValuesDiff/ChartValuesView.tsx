@@ -109,7 +109,7 @@ function ChartValuesView({
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
-    const [isCLIApp, setIsCLIApp] = useState(false)
+    const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
 
     const [commonState, dispatch] = useReducer(
@@ -189,7 +189,7 @@ function ChartValuesView({
                     if (_installedAppInfo) {
                         initData(_installedAppInfo, _releaseInfo)
                     } else {
-                        setIsCLIApp(true)
+                        setIsUnlinkedCLIApp(true)
                         const _chartVersionData: ChartVersionType = {
                             id: 0,
                             version: _releaseInfo.deployedAppDetail.chartVersion,
@@ -322,7 +322,7 @@ function ChartValuesView({
                         ) {
                             updateGeneratedManifest(
                                 isCreateValueView,
-                                isCLIApp,
+                                isUnlinkedCLIApp,
                                 isExternalApp,
                                 isDeployChartView,
                                 appName,
@@ -414,7 +414,7 @@ function ChartValuesView({
 
             updateGeneratedManifest(
                 isCreateValueView,
-                isCLIApp,
+                isUnlinkedCLIApp,
                 isExternalApp,
                 isDeployChartView,
                 appName,
@@ -1135,7 +1135,7 @@ function ChartValuesView({
         if (commonState.activeTab === 'manifest') {
             updateGeneratedManifest(
                 isCreateValueView,
-                isCLIApp,
+                isUnlinkedCLIApp,
                 isExternalApp,
                 isDeployChartView,
                 appName,
@@ -1340,7 +1340,6 @@ function ChartValuesView({
                             )}
                         {!isDeployChartView &&
                             isExternalApp &&
-                            !commonState.installedAppInfo &&
                             !commonState.showRepoSelector && (
                                 <ConnectToHelmChartTippy
                                     condition={commonState.showConnectToChartTippy}

@@ -110,7 +110,7 @@ const generateManifestGenerationKey = (
 
 export const updateGeneratedManifest = (
     isCreateValueView: boolean,
-    isCLIApp: boolean,
+    isUnlinkedCLIApp: boolean,
     isExternalApp: boolean,
     isDeployChartView: boolean,
     appName: string,
@@ -143,7 +143,7 @@ export const updateGeneratedManifest = (
         },
     })
 
-    if (isCLIApp) {
+    if (isUnlinkedCLIApp) {
         getDeploymentManifestDetails( appId, 1, isExternalApp).then((response: ChartDeploymentManifestDetailResponse )=>{
 
             dispatch({
