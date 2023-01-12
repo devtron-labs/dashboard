@@ -154,9 +154,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 <div className="flex left flex-wrap dc__gap-8">
                     {currentLabelTags.length > 0 ? (
                         currentLabelTags.map((tag) => (
-                            <span className="fs-12 fw-4 lh-16 cn-9 pt-4 pb-4 pl-6 pr-6 bc-n50 dc__border br-4">
-                                {`${tag.key} ${tag.value? `: ${tag.value}`: ''}`}
-                            </span>
+                            <div className="flex">
+                                <div
+                                    className={`bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                                        !tag.value ? ' br-4' : ' dc__left-radius-4'
+                                    }`}
+                                >
+                                    {tag.key}
+                                </div>
+                                {tag.value && (
+                                    <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
+                                        {tag.value}
+                                    </div>
+                                )}
+                            </div>
                         ))
                     ) : (
                         <span className="fs-13 fw-4 cn-7">No tags added.</span>
