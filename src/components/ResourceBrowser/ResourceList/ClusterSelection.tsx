@@ -4,10 +4,10 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import emptyCustomChart from '../../../assets/img/terminal@2x.png'
-import '../ResourceBrowser.scss'
 import { OptionType } from '../../app/types'
 import { ClusterSelectionType } from '../Types'
 import { CLUSTER_SELECTION_MESSAGING } from '../Constants'
+import ReactGA from 'react-ga4'
 
 export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSelectionType) {
     const [searchText, setSearchText] = useState('')
@@ -43,6 +43,10 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
     const selectCluster = (e): void => {
         const data = e.currentTarget.dataset
         onChangeCluster({ label: data.label, value: data.value }, true)
+        ReactGA.event({
+            category: 'Resource Browser',
+            action: 'Resource Browser - Cluster Selected',
+        })
     }
 
     const renderSearch = (): JSX.Element => {
@@ -84,6 +88,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
             <>
                 {filteredClusterList?.map((cluster, index) => (
                     <div
+                        key={cluster.label}
                         className={`flex left pt-12 pr-16 pb-12 pl-16 pointer dc__hover-n50 ${
                             index === filteredClusterList.length - 1 ? 'dc__bottom-radius-4' : ' dc__border-bottom-n1'
                         }`}

@@ -68,11 +68,11 @@ export default function CIConfig({
                     dockerRegistries: dockerRegistries,
                     sourceConfig: sourceConfig,
                     ciConfig: ciConfig,
-                    defaultDockerConfigs: {
+                    defaultDockerConfigs: Object.assign({}, {
                         dockerRegistry: ciConfig.dockerRegistry,
                         dockerRepository: ciConfig.dockerRepository,
                         ciBuildConfig: ciConfig.ciBuildConfig,
-                    },
+                    }),
                 })
             }
         } catch (err) {

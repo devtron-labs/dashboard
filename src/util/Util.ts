@@ -55,3 +55,7 @@ export const replaceLastOddBackslash = (str: string): string=>{
   }
   return str
 }
+
+export const safeTrim = (str: string): string => {
+    return str ? str.trim() : str
+}
