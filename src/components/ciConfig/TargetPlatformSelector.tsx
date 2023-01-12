@@ -3,10 +3,10 @@ import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { noMatchingPlatformOptions } from '../common'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
+import { noMatchingPlatformOptions } from "../v2/common/ReactSelect.utils";
 
 const platformMenuList = (props): JSX.Element => {
     return (
