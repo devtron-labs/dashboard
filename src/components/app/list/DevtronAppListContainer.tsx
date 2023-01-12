@@ -29,8 +29,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             showCommandBar: false,
             offset: 0,
             pageSize: 20,
-            expandedRow: false,
-            appData: null,
+            expandedRow: null,
         }
     }
 
@@ -90,12 +89,22 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         this.props.history.push(url);
     }
 
-    expandRow = (app: App | null): void => {
-        this.setState({ expandedRow: true, appData: app });
+    expandRow = (id: number | null): void => {
+        this.setState({ expandedRow: {...this.state.expandedRow, [id]: true} });
     }
 
-    closeExpandedRow = (): void => {
-        this.setState({ expandedRow: false, appData: null });
+    closeExpandedRow = (id: number | null): void => {
+        this.setState({ expandedRow: {...this.state.expandedRow, [id]: false} });
+    }
+
+    expandAllRow = (): void => {
+        let _expandedRow = {}
+        this.state.apps.forEach((app) => {
+        if(app.environments.length > 1){
+            _expandedRow = {..._expandedRow,[app.id]: true}
+        }
+        })
+        this.setState({expandedRow: _expandedRow})
     }
 
     getAppList = (request): void => {
@@ -107,8 +116,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             key: request.sortBy,
             order: request.sortOrder,
         }
-        state.expandedRow = false;
-        state.appData = null;
+        state.expandedRow = {};
         this.setState(state);
         if (this.abortController) {
             this.abortController.abort();
@@ -174,6 +182,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             appListCount={this.props.appListCount}
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
             updateDataSyncing= {this.props.updateDataSyncing}
+            expandAllRow={this.expandAllRow}
         />
     }
 }

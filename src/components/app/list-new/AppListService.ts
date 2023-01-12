@@ -2,6 +2,7 @@ import { getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProje
 import {Routes, SERVER_MODE} from '../../../config';
 import {get, post} from '../../../services/api';
 import {ResponseType, ClusterEnvironmentDetail, EnvironmentListHelmResult, EnvironmentHelmResult, ClusterListResponse, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
+import { NodeStatus } from '../../v2/appDetails/appDetails.type';
 
 
 export interface AppListResponse extends ResponseType{
@@ -26,7 +27,8 @@ export interface HelmApp {
     chartAvatar: string,
     projectId: number,
     lastDeployedAt: string,
-    environmentDetail: AppEnvironmentDetail
+    environmentDetail: AppEnvironmentDetail,
+    appStatus: string
 }
 
 export interface AppEnvironmentDetail {
@@ -58,6 +60,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
             teams: new Set(payloadParsedFromUrl.teams),
             environments: new Set(payloadParsedFromUrl.environments),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
+            appStatus: new Set(payloadParsedFromUrl.appStatus)
         };
 
         let filters = {
@@ -65,6 +68,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
             environments: [],
             clusters: [],
             namespaces: [],
+            appStatus: []
         };
 
         // set filter projects starts
@@ -109,6 +113,17 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         let _namespaces = _buildNamespaces(namespaceListRes as EnvironmentListHelmResponse, filterApplied.clusterVsNamespaceMap);
         filters.namespaces = _namespaces.sort((a, b) => { return sortByLabel(a, b) });
         //set filter namespace ends
+
+        //set filter appStatus starts 
+
+        filters.appStatus = Object.keys(NodeStatus).map((status) => {
+            return {
+                key: status,
+                label: status,
+                isSaved: true,
+                isChecked: filterApplied.appStatus.has(status)
+            }
+        })
 
         ////// set master filters data ends (check/uncheck)
 

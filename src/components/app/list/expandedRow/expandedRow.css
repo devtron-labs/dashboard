@@ -15,16 +15,16 @@
 
 .expanded-row__close {
     border: none;
-    color: var(--white);
+    color: var(--N900);
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     flex: 1;
-    padding-right: 24px;
-    padding-left: 24px;
+    padding-right: 20px;
+    padding-left: 20px;
     align-items: center;
     height: 56px;
     cursor: pointer;
-    background-image: linear-gradient(to left, #009fe8, var(--B500));
+    background-color: var(--N100);
 }
 
 .expanded-row__title {

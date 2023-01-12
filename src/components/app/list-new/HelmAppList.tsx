@@ -28,6 +28,7 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png';
 import '../list/list.css';
+import AppStatus from '../AppStatus';
 
 export default function HelmAppList({
     serverMode,
@@ -336,6 +337,9 @@ export default function HelmAppList({
                         </button>
                     )}
                 </div>
+                <div className="app-list__cell app-list__cell--app_status">
+                    <span className="app-list__cell-header">App status</span>
+                </div>
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">Environment</span>
                     <Tippy
@@ -412,11 +416,16 @@ export default function HelmAppList({
                                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
                                     <div className="dc__truncate-text  m-0">{app.chartName}</div>
                                 </div>
+                                <div className="app-list__cell app-list__cell--namespace">
+                                    <AppStatus appStatus={app.appStatus} />
+                                </div>
                                 <div className="app-list__cell app-list__cell--env">
                                     <p className="dc__truncate-text  m-0">
                                         {app.environmentDetail.environmentName
                                             ? app.environmentDetail.environmentName
-                                            : app.environmentDetail.clusterName + "__" + app.environmentDetail.namespace}
+                                            : app.environmentDetail.clusterName +
+                                              '__' +
+                                              app.environmentDetail.namespace}
                                     </p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--cluster">
@@ -441,7 +450,7 @@ export default function HelmAppList({
                                 </div>
                             </Link>
                         </React.Fragment>
-                    );
+                    )
                 })}
             </>
         );

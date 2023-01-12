@@ -10,6 +10,7 @@ import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
 import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
+import AppStatus from '../AppStatus';
 
 export class AppListView extends Component<AppListViewProps>{
 
@@ -20,7 +21,7 @@ export class AppListView extends Component<AppListViewProps>{
             return <div className="app-list__cell app-list__cell--env">
                 <p  className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>{isEnvConfigured ? app.defaultEnv.name  : "Not configured"}</p>
                 {len > 1 ? <button type="button" className="cell__link"
-                    onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.expandRow(app); }}>
+                    onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.expandRow(app.id); }}>
                     +{len - 1} more </button> : null}
             </div>
         }
@@ -32,11 +33,14 @@ export class AppListView extends Component<AppListViewProps>{
             let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
             return <div className="app-list">
                 <div className="app-list__header">
-                    <div className="app-list__cell--icon"></div>
+                    <div className="app-list__cell--icon" onClick={this.props.expandAllRow}><span className={icon} /></div>
                     <div className="app-list__cell app-list__cell--name">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
                         </button>
+                    </div>
+                    <div className="app-list__cell app-list__cell--app_status">
+                        <span className="app-list__cell-header">App status</span>
                     </div>
                     <div className="app-list__cell app-list__cell--env">
                         <span className="app-list__cell-header mr-4">Environment</span>
@@ -57,13 +61,16 @@ export class AppListView extends Component<AppListViewProps>{
                 </div>
                 {this.props.apps.map((app) => {
                     return <React.Fragment key={app.id} >
-                        {!(this.props.appData && this.props.appData.id == app.id) ?
+                        {!(this.props.expandedRow[app.id]) ?
                             <Link to={this.props.redirectToAppDetails(app, app.defaultEnv.id)} className="app-list__row">
                                 <div className="app-list__cell--icon">
                                     <DevtronAppIcon className="icon-dim-24"/>
                                 </div>
                                 <div className="app-list__cell app-list__cell--name">
                                     <p className="dc__truncate-text  m-0 value">{app.name}</p>
+                                </div>
+                                <div className="app-list__cell app-list__cell--app_status">
+                                    <AppStatus appStatus={app.defaultEnv.appStatus} />
                                 </div>
                                 {this.renderEnvironmentList(app)}
                                 <div className="app-list__cell app-list__cell--cluster">
@@ -86,9 +93,9 @@ export class AppListView extends Component<AppListViewProps>{
                                 </div>
                             </Link>
                             : null}
-                        {(this.props.appData && this.props.appData.id == app.id) ?
-                            <ExpandedRow app={this.props.appData}
-                                close={this.props.closeExpandedRow}
+                        {(this.props.expandedRow[app.id]) ?
+                            <ExpandedRow app={app}
+                                close={() => this.props.closeExpandedRow(app.id)}
                                 redirect={this.props.redirectToAppDetails}
                                 handleEdit={(event) => this.props.handleEditApp(app.id)} />
                             : null}

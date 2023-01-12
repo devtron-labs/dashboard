@@ -168,7 +168,8 @@
 
 .app-list__cell--env,
 .app-list__cell--cluster,
-.app-list__cell--namespace {
+.app-list__cell--namespace,
+.app-list__cell--app_status {
     flex-basis: 18%;
     justify-content: flex-start;
 }

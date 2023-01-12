@@ -19,6 +19,7 @@ import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/Ext
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
+import AppStatus from '../../AppStatus'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -208,6 +209,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     <div className="env-deployments-info-wrapper w-100">
                         <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
                             <span>Environment</span>
+                            <span>App status</span>
                             <span>Last deployed</span>
                         </div>
                         <div className="env-deployments-info-body">
@@ -219,6 +221,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
                                         {_env.environmentName}
                                     </Link>
+                                    <AppStatus appStatus={_env.appStatus} />
                                     <span className="fs-13 fw-4 cn-7">
                                         {_env.lastDeployed ? handleUTCTime(_env.lastDeployed, true) : 'Not deployed'}
                                     </span>

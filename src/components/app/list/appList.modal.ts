@@ -37,6 +37,15 @@ const environmentModal = (env) => {
     if (env.status.toLocaleLowerCase() == "deployment initiated") {
         status = "Progressing";
     }
+    let appStatus = env.appStatus
+    if (!env.appStatus){
+        if(env.lastDeployedTime){
+            appStatus = '-'
+        } else {
+            appStatus = 'notdeployed'
+        }
+    }
+    
     return {
         id: env.environmentId || 0,
         name: env.environmentName || '',
@@ -46,7 +55,8 @@ const environmentModal = (env) => {
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
         clusterName: env.clusterName || '',
-        namespace: env.namespace || ''
+        namespace: env.namespace || '',
+        appStatus: appStatus
     }
 }
 
@@ -63,6 +73,14 @@ const getDefaultEnvironment = (envList): Environment => {
     if (env.status.toLocaleLowerCase() == "deployment initiated") {
         status = "Progressing";
     }
+    let appStatus = env.appStatus
+    if (!env.appStatus){
+        if(env.lastDeployedTime){
+            appStatus = '-'
+        } else {
+            appStatus = 'notdeployed'
+        }
+    }
     return {
         id: env.environmentId as number,
         name: env.environmentName as string,
@@ -71,7 +89,8 @@ const getDefaultEnvironment = (envList): Environment => {
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
         clusterName: env.clusterName || '',
-        namespace: env.namespace || ''
+        namespace: env.namespace || '',
+        appStatus: appStatus
     }
 }
 

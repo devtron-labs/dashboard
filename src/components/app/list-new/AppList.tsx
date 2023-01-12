@@ -60,6 +60,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
 
     // filters
     const [masterFilters, setMasterFilters] = useState({
+        appStatus: [],
         projects: [],
         environments: [],
         clusters: [],
@@ -166,6 +167,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         let params = queryString.parse(searchQuery)
         let search = params.search || ''
         let environments = params.environment || ''
+        let appStatus = params.appStatus || ''
         let teams = params.team || ''
         let clustersAndNamespaces = params.namespace || ''
 
@@ -180,15 +182,20 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
             .split(',')
             .filter((team) => team != '')
             .map((team) => Number(team))
+        let appStatusArr = appStatus.toString()
+        .split(',')
+        .filter((status) => status != '')
+        .map((status) => status)
 
         ////// update master filters data (check/uncheck)
         let filterApplied = {
             environments: new Set(environmentsArr),
             teams: new Set(teamsArr),
+            appStatus: new Set(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
         }
 
-        let _masterFilters = { projects: [], environments: [], clusters: [], namespaces: [] }
+        let _masterFilters = {  appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -230,6 +237,16 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
             }
         })
 
+        _masterFilters.appStatus = masterFilters.appStatus.map((status) => {
+            return {
+                key: status.key,
+                label: status.label,
+                isSaved: true,
+                isChecked: filterApplied.appStatus.has(status.label),
+            }
+        })
+
+
         // set environments (check/uncheck)
         _masterFilters.environments = masterFilters.environments.map((env) => {
             return {
@@ -270,6 +287,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 .split(',')
                 .filter((item) => item != ''),
             appNameSearch: search,
+            appStatuses: appStatusArr,
             sortBy: sortBy,
             sortOrder: sortOrder,
             offset: offset,
@@ -539,6 +557,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         delete query['environment']
         delete query['team']
         delete query['namespace']
+        delete query['appStatus']
         delete query['search']
 
         //delete search string
@@ -618,7 +637,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
-    const getAppListDataToExport = () => {
+    const getAppListDataToExport = () => { 
         return getAppList(
             typeof parsedPayloadOnUrlChange === 'object'
                 ? {
@@ -752,6 +771,18 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 </form>
                 <div className="app-list-filters filters">
                     <Filter
+                        list={masterFilters.appStatus}
+                        labelKey="label"
+                        buttonText="App status"
+                        placeholder="Search app status"
+                        searchable
+                        multi
+                        type={AppListConstants.FilterType.APP_STATUS}
+                        applyFilter={applyFilter}
+                        onShowHideFilterContent={onShowHideFilterContent}
+                    />
+                    <span className="filter-divider"></span>
+                    <Filter
                         list={masterFilters.projects}
                         labelKey="label"
                         buttonText="Projects"
@@ -848,6 +879,9 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                     } else if (key == 'environments') {
                         filterType = AppListConstants.FilterType.ENVIRONMENT
                         _filterKey = 'environment'
+                    } else if (key == 'appStatus') {
+                        filterType = AppListConstants.FilterType.APP_STATUS
+                        _filterKey = 'appStatus'
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
