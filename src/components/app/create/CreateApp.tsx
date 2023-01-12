@@ -116,10 +116,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ showErrors: true, appNameErrors: true })
         let allKeys = Object.keys(this.state.isValid)
         let isFormValid = allKeys.reduce((valid, key) => {
-            valid = valid && this.state.isValid[key] && invalidLabels
+            valid = valid && this.state.isValid[key]
             return valid
         }, true)
-        if (!isFormValid) {
+        if (!isFormValid || invalidLabels) {
             if (invalidLabels) {
                 toast.error('Some required fields in tags are missing or invalid')
             }
