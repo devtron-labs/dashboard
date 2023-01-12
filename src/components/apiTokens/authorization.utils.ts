@@ -4,6 +4,7 @@ import {
     ChartGroupPermissionsFilter,
     CreateUser,
     DirectPermissionsRoleFilter,
+    EntityTypes,
     OptionType,
 } from '../userGroups/userGroups.types'
 
@@ -75,6 +76,7 @@ export const createUserPermissionPayload = (
     userGroups: OptionType[],
     directPermission: DirectPermissionsRoleFilter[],
     chartPermission: ChartGroupPermissionsFilter,
+    k8sPermission: any[],
     isSuperAdminAccess: boolean,
 ): CreateUser => {
     const userPermissionPayload: CreateUser = {
@@ -94,6 +96,18 @@ export const createUserPermissionPayload = (
                     environment: getSelectedEnvironments(permission),
                     entityName: getSelectedEntityName(permission),
                 })),
+                ...k8sPermission.map((permission) => ({
+                    ...permission,
+                    entity: EntityTypes.CLUSTER,
+                    action: permission.action.value,
+                    cluster: permission.cluster.label,
+                    group: permission.group.value === '*' ? '' : permission.group.value, 
+                    kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                    namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                    resource: permission.resource.find((entity) => entity.value === '*')
+                    ? ''
+                    : permission.resource.map((entity) => entity.value).join(',')
+                }))
         ],
         superAdmin: isSuperAdminAccess,
     }

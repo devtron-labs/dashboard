@@ -54,6 +54,7 @@ function EditAPIToken({
         action: ActionTypes.VIEW,
         entityName: [],
     })
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
@@ -138,6 +139,7 @@ function EditAPIToken({
                     userGroups,
                     directPermission,
                     chartPermission,
+                    k8sPermission,
                     adminPermission === 'SUPERADMIN',
                 )
 
@@ -265,7 +267,7 @@ function EditAPIToken({
                         <label className="form__row">
                             <span className="form__label">Token</span>
                             <div className="flex dc__content-space top cn-9">
-                                <span className="mono fs-14 dc__break-word">
+                                <span className="mono fs-14 dc__word-break">
                                     {editData.token}
                                 </span>
                                 <Tippy
@@ -329,6 +331,8 @@ function EditAPIToken({
                                 setDirectPermission={setDirectPermission}
                                 chartPermission={chartPermission}
                                 setChartPermission={setChartPermission}
+                                setK8sPermission={setK8sPermission}
+                                k8sPermission={k8sPermission}
                             />
                         )}
                     </div>
