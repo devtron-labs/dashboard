@@ -12,7 +12,7 @@ export default function TagLabelSelect({ labelTags, setLabelTags }) {
 
     const addNewTag = (): void => {
         const _tags = [...labelTags]
-        _tags.push({
+        _tags.unshift({
             autoGenKey: new Date().getTime(),
             key: '',
             value: '',
