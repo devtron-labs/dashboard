@@ -3,6 +3,7 @@ import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import EmptyState from '../../../EmptyState/EmptyState'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
+import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 
 interface EmptyStateCIMaterialProps {
     isRepoError: boolean
@@ -54,6 +55,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
                 cta: this.props.repoUrl ? null : (
                         <button className="cta flex" onClick={this.props.handleGoToWorkFlowEditor}>
                             {'Configure Source'}
+                            <NextIcon className="icon-dim-16 ml-5 scn-0" />
                         </button>
                 ),
             }
