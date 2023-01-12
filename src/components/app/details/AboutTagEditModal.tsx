@@ -19,22 +19,31 @@ export default function AboutTagEditModal({
 
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
-        const isInvalid = labelTags.some((label) => !label.key || label.isInvalidKey || label.isInvalidValue)
-        if (isInvalid) return
+        const _labelTags = []
+        let invalidLabels = false
+        for (let index = 0; index < labelTags.length; index++) {
+            const element = labelTags[index]
+            if (element.isInvalidKey || element.isInvalidValue) {
+                invalidLabels = true
+                break
+            } else if (element.key) {
+                _labelTags.push({ key: element.key, value: element.value, propagate: element.propagate })
+            }
+        }
+        if (invalidLabels) {
+            toast.error('Some required fields are missing or invalid')
+            return
+        }
         setSubmitting(true)
 
         const payload = {
             id: parseInt(appId),
-            labels:
-                labelTags?.map((labelTag) => {
-                    return { key: labelTag.key, value: labelTag.value, propagate: labelTag.propagate }
-                }) || [],
+            labels: _labelTags,
         }
 
         try {
             await createAppLabels(payload)
             toast.success('Successfully saved')
-
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
         } catch (err) {
@@ -48,7 +57,7 @@ export default function AboutTagEditModal({
     const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
-                <div className="cn-7 p-20">
+                <div className="cn-7 p-20 dc__overflow-scroll" style={{ height: 'calc(100vh - 122px)' }}>
                     <TagLabelSelect labelTags={labelTags} setLabelTags={setLabelTags} />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

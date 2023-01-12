@@ -41,13 +41,14 @@ export default function TagLabelValueSelector({
             if (type === 'key') {
                 _tagData.isInvalidKey = selectedValue
                     ? !validationRules.propagateTagKey(selectedValue).isValid
-                    : (_tagData.value !== '')
+                    : _tagData.value !== ''
             } else {
                 if (selectedValue) {
                     _tagData.isInvalidValue = !validationRules.propagateTagValue(selectedValue).isValid
                     _tagData.isInvalidKey = !_tagData.key || _tagData.isInvalidKey
                 } else {
                     _tagData.isInvalidValue = false
+                    _tagData.isInvalidKey = !_tagData.key ? false : _tagData.isInvalidKey
                 }
             }
             setTagData(selectedTagIndex, _tagData)
