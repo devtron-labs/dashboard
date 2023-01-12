@@ -50,7 +50,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
-
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -103,8 +102,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     createApp(e): void {
         e.preventDefault()
-        const validForm = !this.state.tags?.some(label=> !label.key || label.isInvalidKey || !label.isInvalidValue)
+        const validForm = !this.state.tags?.some((label) => !label.key || label.isInvalidKey || !label.isInvalidValue)
         if (!validForm) {
+            toast.success('Some required fields in tags are missing or invalid')
             return
         }
         this.setState({ showErrors: true, appNameErrors: true })
