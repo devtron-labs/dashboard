@@ -96,13 +96,25 @@ function TargetPlatformSelector({
             )
         } else {
             if (!targetPlatform.includes(',')) {
-                return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{targetPlatform}</div>
+                return (
+                    <div
+                        className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
+                        style={{ maxWidth: '100px' }}
+                    >
+                        {targetPlatform}
+                    </div>
+                )
             } else {
                 return (
                     <div className="flex left ">
                         {targetPlatform.split(',').map((val) => {
                             return (
-                                <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
+                                <div
+                                    className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
+                                    style={{ maxWidth: '100px' }}
+                                >
+                                    {val}
+                                </div>
                             )
                         })}
                     </div>
