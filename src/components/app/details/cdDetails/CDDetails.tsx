@@ -15,7 +15,7 @@ import {
     ConditionalWrap,
     useAppContext,
 } from '../../../common'
-import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, URLS } from '../../../../config'
+import { EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, TIMELINE_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -292,6 +292,17 @@ export default function CDDetails() {
     )
 }
 
+export const triggerStatus = (triggerDetailStatus: string): string => {
+    let triggerStatus = triggerDetailStatus.toUpperCase()
+    if(triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
+        return 'Failed'
+    }else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
+        return 'Succeeded'
+    } else {
+        return triggerDetailStatus
+    }
+}
+
 const DeploymentCard: React.FC<{
     triggerDetails: History
 }> = ({ triggerDetails }) => {
@@ -299,6 +310,7 @@ const DeploymentCard: React.FC<{
     const { pathname } = useLocation()
     const currentTab = pathname.split('/').pop()
     const { triggerId, ...rest } = useParams<{ triggerId: string }>()
+
     return (
         <ConditionalWrap
             condition={Array.isArray(triggerDetails?.ciMaterials)}
@@ -328,7 +340,7 @@ const DeploymentCard: React.FC<{
                     }}
                 >
                     <div
-                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(triggerDetails.status)
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     />
@@ -699,10 +711,10 @@ const HistoryLogs: React.FC<{
                         )}
                         <Redirect
                             to={
-                                triggerDetails.status.toLowerCase() === 'succeeded'
-                                    ? `${path}/artifacts`
-                                    : triggerDetails.stage === 'DEPLOY'
+                                triggerDetails.stage === 'DEPLOY'
                                     ? `${path}/deployment-steps`
+                                    : triggerDetails.status.toLowerCase() === 'succeeded'
+                                    ? `${path}/artifacts`
                                     : `${path}/logs`
                             }
                         />

@@ -6,24 +6,24 @@ import { withRouter } from 'react-router';
 import { CreateMaterial } from './CreateMaterial';
 import { UpdateMaterial } from './UpdateMaterial';
 import { MaterialListProps, MaterialListState } from './material.types';
-import './material.css';
 import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
 import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
+import './material.css';
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             statusCode: 0,
             view: ViewType.LOADING,
             configStatus: AppConfigStatus.LOADING,
             materials: [],
             providers: [],
-        };
-        this.isGitProviderValid = this.isGitProviderValid.bind(this);
-        this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this);
-        this.refreshMaterials = this.refreshMaterials.bind(this);
+        }
+        this.isGitProviderValid = this.isGitProviderValid.bind(this)
+        this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this)
+        this.refreshMaterials = this.refreshMaterials.bind(this)
     }
 
     getGitProviderConfig = () => {
@@ -32,28 +32,28 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             getGitProviderListAuth(this.props.match.params.appId),
         ])
             .then(([sourceConfigRes, providersRes]) => {
-                let materials = sourceConfigRes.result.material || [];
-                let providers = providersRes.result;
+                let materials = sourceConfigRes.result.material || []
+                let providers = providersRes.result
                 materials = materials.map((mat) => {
                     return {
                         ...mat,
                         gitProvider: providers.find((p) => mat.gitProviderId === p.id),
-                    };
-                });
+                    }
+                })
                 this.setState({
                     materials: materials.sort((a, b) => sortCallback('id', a, b)),
                     providers: providersRes.result,
                     view: ViewType.FORM,
-                });
+                })
             })
             .catch((error) => {
-                showError(error);
-                this.setState({ view: ViewType.ERROR });
-            });
-    };
+                showError(error)
+                this.setState({ view: ViewType.ERROR })
+            })
+    }
 
     componentDidMount() {
-        this.getGitProviderConfig();
+        this.getGitProviderConfig()
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -61,50 +61,50 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             return {
                 ...state,
                 configStatus: props.configStatus,
-            };
+            }
         }
-        return null;
+        return null
     }
 
     refreshMaterials() {
         if (this.state.materials.length < 1) {
-            this.props.respondOnSuccess();
+            this.props.respondOnSuccess()
         }
         getSourceConfig(this.props.match.params.appId).then((response) => {
             let materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
                     gitProvider: this.state.providers.find((p) => mat.gitProviderId === p.id),
-                };
-            });
+                }
+            })
             this.setState({
                 materials: materials.sort((a, b) => sortCallback('id', a, b)),
-            });
-        });
+            })
+        })
     }
 
     isCheckoutPathValid(checkoutPath: string) {
         if (this.state.materials.length >= 1) {
             //Multi git
             if (!checkoutPath.length) {
-                return 'This is a required field';
+                return 'This is a required field'
             } else {
                 if (!checkoutPath.startsWith('./')) {
-                    return "Invalid Path. Checkout path should start with './'";
-                } else return;
+                    return "Invalid Path. Checkout path should start with './'"
+                } else return
             }
         } else {
             if (checkoutPath.length && !checkoutPath.startsWith('./')) {
-                return "Invalid Path. Checkout path should start with './'";
+                return "Invalid Path. Checkout path should start with './'"
             }
-            return undefined;
+            return undefined
         }
     }
 
     isGitProviderValid(provider) {
-        if (provider && provider.id) return undefined;
+        if (provider && provider.id) return undefined
 
-        return 'This is required field';
+        return 'This is required field'
     }
 
     renderPageHeader() {
@@ -160,9 +160,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     render() {
-        if (this.state.view == ViewType.LOADING) return <Progressing pageLoader />;
+        if (this.state.view == ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view == ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.statusCode} />;
+            return <ErrorScreenManager code={this.state.statusCode} />
         } else {
             return (
                 <div className="form__app-compose">
@@ -193,13 +193,15 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 isCheckoutPathValid={this.isCheckoutPathValid}
                                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                                 reload={this.getGitProviderConfig}
+                                toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
+                                setRepo={this.props.setRepo}
                             />
-                        );
+                        )
                     })}
                 </div>
-            );
+            )
         }
     }
 }
 
-export default withRouter(MaterialList);
+export default withRouter(MaterialList)

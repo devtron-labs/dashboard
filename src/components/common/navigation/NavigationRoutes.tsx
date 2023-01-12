@@ -18,10 +18,8 @@ import {
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import { showError } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
@@ -37,6 +35,9 @@ const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfigu
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
+const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
+const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
+const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 
 export const mainContext = createContext(null)
 
@@ -291,6 +292,11 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route
+                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:node?`}
+                                        >
+                                            <ResourceBrowserContainer />
+                                        </Route>
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
                                             path={URLS.DEPLOYMENT_GROUPS}
