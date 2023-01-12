@@ -31,8 +31,8 @@ function GuideCommonHeader({
                 <div className={`flex deploy-manage__upper top ${showCloseIcon ? '' : 'pt-64'}`}>
                     <div className="deploy__title flex center">
                         <div className="flex column">
-                            <h1 className="fw-6 mb-8">{title}</h1>
-                            <p className="fs-14 cn-7">{subtitle}</p>
+                            <h1 className={`${showCloseIcon ? 'fs-24' : 'fs-36'} fw-6 mb-8`}>{title}</h1>
+                            {subtitle && <p className="fs-14 cn-7">{subtitle}</p>}
                         </div>
                     </div>
                 </div>

@@ -10,6 +10,7 @@ import './ContentCard.scss'
  */
 export default function ContentCard({
     redirectTo,
+    rootClassName,
     isExternalRedirect,
     direction,
     onClick,
@@ -62,7 +63,7 @@ export default function ContentCard({
         )
     }
     return (
-        <div className="content-card-container bcn-0 br-4 en-2 bw-1 cursor">
+        <div className={`content-card-container bcn-0 br-4 en-2 bw-1 cursor ${rootClassName || ''}`}>
             {isExternalRedirect ? (
                 <a
                     href={redirectTo}

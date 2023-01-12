@@ -22,4 +22,5 @@ export const TIP_RETURN_FROM_HELP_MENU = 'Tip: You can return here anytime from 
 export const GUIDE_COMMON_HEADER = {
     title: 'What will you use devtron for?',
     subtitle: 'This will help us in guiding you towards relevant product features',
+    welcomeText: 'Welcome to Devtron',
 }

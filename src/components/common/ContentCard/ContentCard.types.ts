@@ -12,6 +12,7 @@ export enum CardLinkIconPlacement {
 
 export interface ContentCardProps {
     redirectTo: string
+    rootClassName?: string
     isExternalRedirect?: boolean
     direction?: CardContentDirection
     onClick?: (e) => void

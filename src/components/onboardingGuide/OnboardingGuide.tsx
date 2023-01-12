@@ -62,12 +62,14 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
         updateLoginCount(updatedPayload)
     }
 
+    const isFirstLogin = loginCount === 0 && !isGettingStartedClicked
+
     return (
         <div className="onboarding-container h-100">
             <GuideCommonHeader
                 loginCount={loginCount}
-                title={GUIDE_COMMON_HEADER.title}
-                subtitle={GUIDE_COMMON_HEADER.subtitle}
+                title={isFirstLogin ? GUIDE_COMMON_HEADER.welcomeText : GUIDE_COMMON_HEADER.title}
+                subtitle={isFirstLogin ? '' : GUIDE_COMMON_HEADER.subtitle}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
             <div className="bcn-0 onboarding__bottom flex dc__position-rel cn-9">
@@ -85,6 +87,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                         />
                         <ContentCard
                             redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
+                            rootClassName={isFirstLogin ? 'ev-5' : ''}
                             onClick={onClickCluster}
                             imgSrc={HelmCluster}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
