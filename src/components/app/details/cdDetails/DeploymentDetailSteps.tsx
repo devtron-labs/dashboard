@@ -59,8 +59,11 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     }, [])
 
     const redirectToDeploymentStatus = () => {
-        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}${URLS.DEPLOYMENT_STATUS}`
-        history.push(newUrl)
+        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`
+        history.push({
+            pathname: newUrl,
+            search: 'deployment-status'
+        })
     }
 
     return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED || deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (

@@ -58,7 +58,9 @@ export function SourceInfo({
     
     const showDeploymentDetailedStatus = (e): void => {
         e.stopPropagation()
-        history.push(`${url}${URLS.DEPLOYMENT_STATUS}`)
+        history.push({
+            search: 'deployment-status'
+        })
         ReactGA.event({
             category: 'App Details',
             action: 'Deployment status clicked',

@@ -456,16 +456,14 @@ export const Details: React.FC<{
                               showAppStatusMessage={false}
                           />
                     )}
-                    <Switch>
-                        <Route exact path={`${path}${URLS.DEPLOYMENT_STATUS}`}>
-                            <DeploymentStatusDetailModal
-                                appName={appDetails.appName}
-                                environmentName={appDetails.environmentName}
-                                streamData={streamData}
-                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            />
-                        </Route>
-                    </Switch>
+                    {location.search.includes('deployment-status') && (
+                        <DeploymentStatusDetailModal
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            streamData={streamData}
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        />
+                    )}
                     {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}
