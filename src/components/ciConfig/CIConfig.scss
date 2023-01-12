@@ -207,6 +207,8 @@
             .code-editor-red-diff {
                 background: #ffd4d1;
             }
+            overflow-wrap: break-word; 
+            table-layout: fixed;
         }
     }
 }

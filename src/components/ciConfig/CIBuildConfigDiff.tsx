@@ -26,7 +26,7 @@ export function CIBuildConfigDiff({
     }, [configOverridenWorkflows, configOverridenPipelines, globalCIConfig])
     const renderDetailedValue = (parentClassName: string, value: string): JSX.Element => {
         return (
-            <td className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right`}>
+            <td className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16`}>
                 {value}
             </td>
         )
@@ -38,7 +38,7 @@ export function CIBuildConfigDiff({
         const lastColumnClass = isLastItem ? '' : 'dc__border-bottom-n1'
         return (
             <tr>
-                <td className={`fs-13 fw-4 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__ellipsis-right ${borderClass}`}>
+                <td className={`fs-13 fw-4 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 ${borderClass}`}>
                     {configName}
                 </td>
                 {showInEditor ? (
@@ -61,7 +61,7 @@ export function CIBuildConfigDiff({
                                 baseValue,
                             )
                         ) : (
-                            <td className={borderClass} />
+                            <td className={borderClass } />
                         )}
                         {overridenValue ? (
                             renderDetailedValue(
@@ -81,13 +81,13 @@ export function CIBuildConfigDiff({
         return (
             <tr>
                 <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-right dc__border-bottom dc__uppercase">
-                    Build Configs
+                    BUILD CONFIGS
                 </th>
                 <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-right dc__border-bottom dc__uppercase">
-                    Basic
+                    BASE
                 </th>
                 <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-bottom dc__uppercase">
-                    Overriden
+                    OVERRIDE
                 </th>
             </tr>
         )
@@ -101,7 +101,12 @@ export function CIBuildConfigDiff({
     return (
         <div className="dc__border dc__bottom-radius-4">
             {showOverrides && (
-                <table className="config-override-diff__values w-100">
+                <table className="config-override-diff__values w-100 ">
+                    <colgroup>
+                        <col width="20%" />
+                        <col width="40%" />
+                        <col width="40%" />
+                    </colgroup>
                     {renderHeader()}
 
                     {ciConfigDiffValues.map((val, idx) => {
