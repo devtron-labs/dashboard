@@ -871,7 +871,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const configuredMaterialList = []
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
-                nd?.[this.state.materialType].map((node, _) => configuredMaterialList.push(node.gitMaterialName.toLowerCase()))
+                if (nd?.[this.state.materialType].length > 0) {
+                    nd?.[this.state.materialType].map((node, _) =>
+                        configuredMaterialList.push(node.gitMaterialName.toLowerCase()),
+                    )
+                } else {
+                    nd['inputMaterialList'] = []
+                }
                 for (let material of this.state.workflows[i].nodes) {
                     if (configuredMaterialList.includes(material.title.toLowerCase()) || material.type !== 'GIT') {
                         continue

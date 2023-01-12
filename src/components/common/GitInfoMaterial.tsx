@@ -283,7 +283,7 @@ export default function GitInfoMaterial({
                 ) : (
                     <>
                         {renderMaterialSource(context)}
-                        {renderMaterialHistory(context, selectedMaterial)}
+                        {renderMaterialHistory(context, selectedMaterial ? selectedMaterial : material)}
                     </>
                 )}
             </div>

@@ -58,10 +58,11 @@ export function processWorkflow(
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
     const configuredMaterialList = []
-    filteredCIPipelines.map((ciPipeline, _) =>
-        ciPipeline.ciMaterial.map((property, _) => configuredMaterialList.push(property.gitMaterialId)),
+    filteredCIPipelines?.map((ciPipeline, _) =>
+        ciPipeline?.ciMaterial?.length > 0
+            ? ciPipeline.ciMaterial.map((property, _) => configuredMaterialList.push(property.gitMaterialId))
+            : (ciPipeline.ciMaterial = []),
     )
-
     const gitMaterials = ciResponse?.materials ?? []
     for (let material of gitMaterials) {
         if (configuredMaterialList.includes(material.gitMaterialId)) {
