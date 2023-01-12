@@ -236,11 +236,18 @@ export default function NavigationRoutes() {
         }
     }
 
+    const isOnboardingPage = () => {
+        const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
+        return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
+    }
+
     if (pageState === ViewType.LOADING || loginLoader) {
         return <Progressing pageLoader />
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
+        const _isOnboardingPage = isOnboardingPage()
+
         return (
             <mainContext.Provider
                 value={{
@@ -261,8 +268,8 @@ export default function NavigationRoutes() {
                     currentServerInfo,
                 }}
             >
-                <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
-                    {!window.location.href.includes(URLS.GETTING_STARTED) && (
+                <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
+                    {!_isOnboardingPage && (
                         <Navigation
                             history={history}
                             match={match}
@@ -272,7 +279,6 @@ export default function NavigationRoutes() {
                             installedModuleMap={installedModuleMap}
                         />
                     )}
-
                     {serverMode && (
                         <div
                             className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
