@@ -12,7 +12,14 @@ export default function TagLabelSelect({ labelTags, setLabelTags }) {
 
     const addNewTag = (): void => {
         const _tags = [...labelTags]
-        _tags.push({ key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false })
+        _tags.push({
+            autoGenKey: new Date().getTime(),
+            key: '',
+            value: '',
+            propagate: false,
+            isInvalidKey: false,
+            isInvalidValue: false,
+        })
         setLabelTags(_tags)
     }
 
@@ -35,7 +42,7 @@ export default function TagLabelSelect({ labelTags, setLabelTags }) {
                 <div className="mb-8">
                     {labelTags?.map((tagData, index) => (
                         <TagDetails
-                            key={tagData.key}
+                            key={`${tagData.autoGenKey}-${index}`}
                             index={index}
                             tagData={tagData}
                             setTagData={setTagData}
