@@ -7,30 +7,16 @@ import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../..
 import {
     ActionTypes,
     APIRoleFilter,
+    AppPermissionsDetailType,
+    AppPermissionsType,
     ChartGroupPermissionsFilter,
-    CreateGroup,
-    CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
 } from './userGroups.types'
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-interface AppPermissionsType {
-    data: CreateGroup | CreateUser
-    directPermission: DirectPermissionsRoleFilter[]
-    setDirectPermission: (...rest) => void
-    chartPermission: ChartGroupPermissionsFilter
-    setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
-    hideInfoLegend?: boolean
-}
-interface AppPermissionsDetailType {
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
-    handleDirectPermissionChange: (...rest) => void
-    removeDirectPermissionRow: (index: number) => void
-    AddNewPermissionRow: (accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS) => void
-    directPermission: DirectPermissionsRoleFilter[]
-    hideInfoLegend?: boolean
-}
+import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
+import { apiGroupAll, k8sPermissionRoles } from './K8sObjectPermissions/K8sPermissions.utils'
 
 export default function AppPermissions({
     data = null,
@@ -39,6 +25,9 @@ export default function AppPermissions({
     chartPermission,
     setChartPermission,
     hideInfoLegend,
+    k8sPermission,
+    setK8sPermission,
+    currentK8sPermissionRef,
 }: AppPermissionsType) {
     const { serverMode } = useContext(mainContext)
     const {
@@ -49,6 +38,7 @@ export default function AppPermissions({
         envClustersList,
         fetchAppListHelmApps,
         appsListHelmApps,
+        superAdmin,
     } = useUserGroupContext()
     const { url, path } = useRouteMatch()
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
@@ -222,6 +212,33 @@ export default function AppPermissions({
             }
 
             setChartPermission(chartPermission)
+        }
+
+        const _assignedRoleFilters: APIRoleFilter[] = roleFilters?.filter(
+            (roleFilter) => roleFilter.entity === EntityTypes.CLUSTER,
+        )
+        if (_assignedRoleFilters) {
+            const _k8sPermission = _assignedRoleFilters.map((k8s) => {
+                return {
+                    entity: EntityTypes.CLUSTER,
+                    cluster: { label: k8s.cluster, value: k8s.cluster },
+                    namespace: {
+                        label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
+                        value: k8s.namespace === '' ? '*' : k8s.namespace,
+                    },
+                    group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
+                    action: k8sPermissionRoles.find((_role) => _role.value === k8s.action),
+                    kind: { label: k8s.kind === '' ? 'All Kinds' : k8s.kind, value: k8s.kind === '' ? '*' : k8s.kind },
+                    resource: k8s.resource
+                        .split(',')
+                        ?.map((entity) => ({ value: entity || '*', label: entity || 'All resources' })),
+                }
+            })
+
+            if (currentK8sPermissionRef?.current) {
+                currentK8sPermissionRef.current = [..._k8sPermission]
+            }
+            setK8sPermission(_k8sPermission)
         }
     }
 
@@ -401,6 +418,17 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
+                {superAdmin && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            to={`${url}/kubernetes-objects`}
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
+                            Kubernetes Resources
+                        </NavLink>
+                    </li>
+                )}
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
@@ -433,6 +461,11 @@ export default function AppPermissions({
                             hideInfoLegend={hideInfoLegend}
                         />
                     </Route>
+                    {superAdmin && (
+                        <Route path={`${path}/kubernetes-objects`}>
+                            <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
+                        </Route>
+                    )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <Route path={`${path}/chart-groups`}>
                             <ChartPermission

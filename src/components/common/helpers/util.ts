@@ -48,3 +48,7 @@ export function isArrayEqual(a: any[], b: any[], key: string): boolean {
     return true;
 
 }
+
+export const noMatchingPlatformOptions = (): string => {
+  return 'No matching options'
+}
