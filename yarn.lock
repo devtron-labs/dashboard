@@ -1374,8 +1374,6 @@
 "@devtron-labs/devtron-fe-common-lib@file:../devtron-fe-common-lib":
   "resolved" "file:../devtron-fe-common-lib"
   "version" "0.0.6-beta-8"
-  dependencies:
-    "sass" "^1.56.2"
 
 "@emotion/babel-plugin@^11.7.1":
   "integrity" "sha512-6mGSCWi9UzXut/ZAN6lGFu33wGR3SJisNl3c0tvlmb8XChH1b2SUvxvnOh7hvLpqyRdHHU9AiazV3Cwbk5SXKQ=="

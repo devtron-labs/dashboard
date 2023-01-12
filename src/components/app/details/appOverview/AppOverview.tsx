@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
 import { handleUTCTime, Progressing, showError, sortOptionsByValue, useAsync } from '../../../common'
-import { AppDetails, AppOverviewProps, LabelTagsType } from '../../types'
+import { AppDetails, AppOverviewProps, LabelTagsType, TagType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
@@ -19,18 +19,15 @@ import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/Ext
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
+import AboutTagEditModal from '../AboutTagEditModal'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
-    const [currentLabelTags, setCurrentLabelTags] = useState<LabelTagsType>({
-        tags: [],
-        inputTagValue: '',
-        tagError: '',
-    })
+    const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
-    const [isChangeProjectView, setChangeProjectView] = useState(false)
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+    const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -40,13 +37,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
-            const labelOptionRes = appMetaInfo.labels?.map((_label) => {
-                return {
-                    label: `${_label.key.toString()}:${_label.value.toString()}`,
-                    value: `${_label.key.toString()}:${_label.value.toString()}`,
-                }
-            })
-            setCurrentLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+            setCurrentLabelTags(appMetaInfo.labels)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -85,15 +76,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     }
 
     const toggleChangeProjectModal = () => {
-        setChangeProjectView(!isChangeProjectView)
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
     const toggleTagsUpdateModal = () => {
-        if (isChangeProjectView) {
-            setChangeProjectView(false)
-        }
-        setShowUpdateAppModal(!showUpdateAppModal)
+        setShowUpdateTagModal(!showUpdateTagModal)
     }
 
     const renderInfoModal = () => {
@@ -101,13 +88,24 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             <AboutAppInfoModal
                 isLoading={isLoading}
                 appId={appId}
-                isChangeProjectView={isChangeProjectView}
                 appMetaInfo={appMetaInfo}
-                onClose={isChangeProjectView ? toggleChangeProjectModal : toggleTagsUpdateModal}
-                currentLabelTags={currentLabelTags}
+                onClose={toggleChangeProjectModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
+            />
+        )
+    }
+
+    const renderEditTagsModal = () => {
+        return (
+            <AboutTagEditModal
+                isLoading={isLoading}
+                appId={appId}
+                appMetaInfo={appMetaInfo}
+                onClose={toggleTagsUpdateModal}
+                getAppMetaInfoRes={getAppMetaInfoRes}
+                currentLabelTags={currentLabelTags}
             />
         )
     }
@@ -154,10 +152,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
-                    {currentLabelTags.tags.length > 0 ? (
-                        currentLabelTags.tags.map((tag) => (
+                    {currentLabelTags.length > 0 ? (
+                        currentLabelTags.map((tag) => (
                             <span className="fs-12 fw-4 lh-16 cn-9 pt-4 pb-4 pl-6 pr-6 bc-n50 dc__border br-4">
-                                {tag.label}
+                                {`${tag.key} ${tag.value? `: ${tag.value}`: ''}`}
                             </span>
                         ))
                     ) : (
@@ -246,6 +244,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 {renderEnvironmentDeploymentsStatus()}
             </div>
             {showUpdateAppModal && renderInfoModal()}
+            {showUpdateTagModal && renderEditTagsModal()}
         </div>
     )
 }

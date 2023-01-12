@@ -22,6 +22,20 @@ export interface LabelTags {
     tagError: string;
 }
 
+export interface TagType {
+  key:string
+  value?: string
+  description?: string
+  propagate: boolean
+  isInvalidKey?: boolean
+  isInvalidValue?: boolean
+}
+
+export interface TagErrorType{
+  isValid: boolean
+  messages: string[]
+}
+
 export interface AddNewAppState {
     view: string;
     code: number;
@@ -36,7 +50,7 @@ export interface AddNewAppState {
         cloneId: number;
         appCreationType: string;
     };
-    labels: LabelTags;
+    tags: TagType[];
     isValid: {
         projectId: boolean;
         appName: boolean;
@@ -75,7 +89,7 @@ export interface AppMetaInfo {
     createdOn: string;
     projectId?: number;
     projectName?: string;
-    labels?: LabelTag[];
+    labels?: TagType[];
 }
 
 interface ResourceTree {
@@ -384,8 +398,8 @@ export enum SortingOrder {
 
 export interface CreateAppLabelsRequest {
     id: number
-    labels: { key: string; value: string }[]
-    teamId: number
+    labels?: TagType[]
+    teamId?: number
 }
 
 export interface LabelTagsType {
@@ -402,11 +416,10 @@ export interface AppOverviewProps {
 export interface AboutAppInfoModalProps {
     isLoading: boolean
     appId: string
-    isChangeProjectView: boolean
     onClose: () => void
     appMetaInfo: AppMetaInfo
-    currentLabelTags: LabelTagsType
+    currentLabelTags?: TagType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
-    fetchingProjects: boolean
-    projectsList: Teams[]
+    fetchingProjects?: boolean
+    projectsList?: Teams[]
 }

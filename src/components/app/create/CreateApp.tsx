@@ -7,14 +7,10 @@ import { getHostURLConfiguration, getTeamListMin } from '../../../services/servi
 import { createApp } from './service'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
-import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } from '../appLabelCommon'
-import TagLabelSelect from '../details/TagLabelSelect'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
@@ -24,6 +20,8 @@ import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import Reload from '../../Reload/Reload'
 import './createApp.scss'
 import TagDetails from './CustomTagSelector/TagDetails'
+import PropagateTagInfo from './CustomTagSelector/PropagateTagInfo'
+import TagLabelSelect from '../details/TagLabelSelect'
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -46,11 +44,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneId: 0,
                 appCreationType: AppCreationType.Blank,
             },
-            labels: {
-                tags: [],
-                inputTagValue: '',
-                tagError: '',
-            },
+            tags: [],
             isValid: {
                 projectId: false,
                 appName: false,
@@ -75,41 +69,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
     }
 
-    handleInputChange = (inputTagValue) => {
-        let { form, isValid } = { ...this.state }
-        this.setState({
-            form,
-            isValid,
-            labels: {
-                ...this.state.labels,
-                inputTagValue: inputTagValue,
-                tagError: '',
-            },
-        })
-    }
-
-    handleTagsChange = (newValue: any, actionMeta: any) => {
-        this.setState({
-            labels: {
-                ...this.state.labels,
-                tags: newValue || [],
-                tagError: '',
-            },
-        })
-    }
-
-    handleCreatableBlur = (e) => {
-        this.state.labels.inputTagValue = this.state.labels?.inputTagValue.trim()
-        if (!this.state.labels.inputTagValue) return
-        this.setState({
-            labels: {
-                inputTagValue: '',
-                tags: [...this.state.labels.tags, createOption(e.target.value)],
-                tagError: '',
-            },
-        })
-    }
-
     handleAppname(event: React.ChangeEvent<HTMLInputElement>): void {
         let { form, isValid } = { ...this.state }
         form.appName = event.target.value
@@ -122,21 +81,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         form.projectId = item
         isValid.projectId = !!item
         this.setState({ form, isValid })
-    }
-    validateForm = (): boolean => {
-        if (
-            this.state.labels.tags.length !==
-            this.state.labels.tags.map((tag) => tag.value).filter((tag) => validateTags(tag)).length
-        ) {
-            this.setState({
-                labels: {
-                    ...this.state.labels,
-                    tagError: TAG_VALIDATION_MESSAGE.error,
-                },
-            })
-            return false
-        }
-        return true
     }
 
     getHostURLConfig = async () => {
@@ -158,7 +102,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     createApp(e): void {
         e.preventDefault()
-        const validForm = this.validateForm()
+        const validForm = !this.state.tags?.some(label=> !label.key || label.isInvalidKey || !label.isInvalidValue)
         if (!validForm) {
             return
         }
@@ -170,24 +114,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }, true)
         if (!isFormValid) return
 
-        let _optionTypes = []
-        if (this.state.labels.tags && this.state.labels.tags.length > 0) {
-            this.state.labels.tags.forEach((_label) => {
-                let colonIndex = _label.value.indexOf(':')
-                let splittedTagBeforeColon = _label.value.substring(0, colonIndex)
-                let splittedTagAfterColon = _label.value.substring(colonIndex + 1)
-                _optionTypes.push({
-                    key: splittedTagBeforeColon,
-                    value: splittedTagAfterColon,
-                })
-            })
-        }
-
         let request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
-            labels: _optionTypes,
+            labels:
+                this.state.tags?.map((labelTag) => {
+                    return { key: labelTag.key, value: labelTag.value, propagate: labelTag.propagate }
+                }) || [],
         }
         this.setState({ disableForm: true })
         createApp(request)
@@ -207,10 +141,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             disableForm: false,
                             showErrors: false,
                             appNameErrors: false,
-                            labels: {
-                                ...this.state.labels,
-                                tags: response.result?.labels?.tags,
-                            },
+                            tags: response.result?.labels?.tags,
                         },
                         () => {
                             toast.success('Your application is created. Go ahead and set it up.')
@@ -235,21 +166,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.props.history.push(url)
     }
 
-    setAppTagLabel = () => {
-        let newTag = this.state.labels.inputTagValue.split(',').map((e) => {
-            e = e.trim()
-            return createOption(e)
-        })
-
-        this.setState({
-            labels: {
-                inputTagValue: '',
-                tags: [...this.state.labels.tags, ...newTag],
-                tagError: '',
-            },
-        })
-    }
-
     changeTemplate = (appCreationType: string): void => {
         let { form, isValid } = { ...this.state }
         form.appCreationType = appCreationType
@@ -264,7 +180,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    addNewTag = (): void => {}
+    setTags = (tags): void => {
+        this.setState({ tags })
+    }
 
     _multiSelectStyles = {
         ...multiSelectStyles,
@@ -414,37 +332,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <div className="flexbox dc__content-space mb-8">
-                    <span>Tags</span>
-                    <div className="flexbox">
-                        <InjectTag className="icon-dim-16 mt-2 mr-4" />
-                        <span>Propagate tags</span>
-                        <Help className="icon-dim-16 mt-2 ml-4" />
-                    </div>
-                </div>
-                <div>
-                    <div
-                        className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20 mb-8"
-                        onClick={this.addNewTag}
-                    >
-                        <Add className="icon-dim-20 fcb-5" /> Add tag
-                    </div>
-                    <div className="mb-8">
-                    <TagDetails />
-                    <TagDetails />
-                    <TagDetails />
-                    <TagDetails />
-                    </div>
-                </div>
+                <TagLabelSelect labelTags={this.state.tags} setLabelTags={this.setTags} />
             </div>
         )
     }
 
     renderFooterSection = (): JSX.Element => {
         return (
-            <div
-                className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
-            >
+            <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
                 <button className="cta flex h-36" onClick={this.createApp}>
                     {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone App' : 'Create App'}
                 </button>
