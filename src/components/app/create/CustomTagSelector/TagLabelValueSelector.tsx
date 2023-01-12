@@ -39,7 +39,9 @@ export default function TagLabelValueSelector({
             const _tagData = { ...tagData }
             _tagData[type] = selectedValue
             if (type === 'key') {
-                _tagData.isInvalidKey = !validationRules.propagateTagKey(selectedValue).isValid
+                _tagData.isInvalidKey = selectedValue
+                    ? !validationRules.propagateTagKey(selectedValue).isValid
+                    : (_tagData.value !== '')
             } else {
                 if (selectedValue) {
                     _tagData.isInvalidValue = !validationRules.propagateTagValue(selectedValue).isValid
@@ -75,7 +77,7 @@ export default function TagLabelValueSelector({
             return (
                 <div className="p-4">
                     {field.messages.map((error) => (
-                        <div className="flexbox p-4">
+                        <div key={error} className="flexbox p-4">
                             <span>
                                 <ErrorCross className="icon-dim-14 scr-5 mt-3 mr-4" />
                             </span>

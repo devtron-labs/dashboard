@@ -104,7 +104,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         e.preventDefault()
         const validForm = !this.state.tags?.some((label) => !label.key || label.isInvalidKey || !label.isInvalidValue)
         if (!validForm) {
-            toast.success('Some required fields in tags are missing or invalid')
+            toast.error('Some required fields in tags are missing or invalid')
             return
         }
         this.setState({ showErrors: true, appNameErrors: true })
