@@ -59,9 +59,8 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     }, [])
 
     const redirectToDeploymentStatus = () => {
-        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`
         history.push({
-            pathname: newUrl,
+            pathname: `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`,
             search: 'deployment-status'
         })
     }

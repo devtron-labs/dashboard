@@ -177,9 +177,7 @@ function NodeComponent({
         const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url);
 
         if (isAdded) {
-            history.push({
-                pathname: _url
-            });
+            history.push(_url);
         } else {
             toast.error(
                 <div>
