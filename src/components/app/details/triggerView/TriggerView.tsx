@@ -287,7 +287,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             cicdInProgress = true
                         }
                     })
-
                 }
                 if (allCDs.length) {
                     allCDs.forEach((pipeline) => {
@@ -592,7 +591,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let ciPipelineMaterials = []
         for (let i = 0; i < node.inputMaterialList.length; i++) {
             if (node.inputMaterialList[i]) {
-                if (node.inputMaterialList[i].value==='--') continue
+                if (node.inputMaterialList[i].value === '--') continue
                 let history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) history.push(node.inputMaterialList[i].history[0])
                 history.map((element) => {
@@ -869,8 +868,34 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
+            const configuredMaterialList = []
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
+                nd?.[this.state.materialType].map((node, _) => configuredMaterialList.push(node.gitMaterialName.toLowerCase()))
+                for (let material of this.state.workflows[i].nodes) {
+                    if (configuredMaterialList.includes(material.title.toLowerCase()) || material.type !== 'GIT') {
+                        continue
+                    }
+                    const ciMaterial: CIMaterialType = {
+                        id: 0,
+                        gitMaterialId: 0,
+                        gitMaterialName: material.title,
+                        type: '',
+                        value: '--',
+                        active: false,
+                        gitURL: '',
+                        isRepoError: false,
+                        repoErrorMsg: '',
+                        isBranchError: true,
+                        branchErrorMsg: 'Source not configured',
+                        regex: '',
+                        history: [],
+                        isSelected: false,
+                        lastFetchTime: '',
+                        isRegex: false,
+                    }
+                    nd?.[this.state.materialType].push(ciMaterial)
+                }
                 if (nd) {
                     break
                 }

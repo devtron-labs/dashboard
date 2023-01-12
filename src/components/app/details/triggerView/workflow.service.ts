@@ -57,6 +57,29 @@ export function processWorkflow(
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
+    const configuredMaterialList = []
+    filteredCIPipelines.map((ciPipeline, _) =>
+        ciPipeline.ciMaterial.map((property, _) => configuredMaterialList.push(property.gitMaterialId)),
+    )
+
+    const gitMaterials = ciResponse?.materials ?? []
+    for (let material of gitMaterials) {
+        if (configuredMaterialList.includes(material.gitMaterialId)) {
+            continue
+        }
+        filteredCIPipelines.map((ciPipeline, _) =>
+            ciPipeline.ciMaterial.push({
+                source: {
+                    regex: '',
+                    type: '',
+                    value: 'Not Configured',
+                },
+                gitMaterialId: material.gitMaterialId,
+                id: 0,
+                gitMaterialName: material.materialName,
+            }),
+        )
+    }
     const ciMap = new Map(
         filteredCIPipelines
             .map(ciPipelineToNodeWithDimension)
