@@ -3,9 +3,6 @@ import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import EmptyState from '../../../EmptyState/EmptyState'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
-import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { Link } from 'react-router-dom'
-// import { getCIPipelineURL } from '../../../common'
 
 interface EmptyStateCIMaterialProps {
     isRepoError: boolean
@@ -55,9 +52,8 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
                     <h1 className="dc__empty-title fs-13" style={{color: 'gray'}}>{notConfiguredError}</h1>
                 ),
                 cta: this.props.repoUrl ? null : (
-                        <button type="button" className="cta flex" onClick={this.props.handleGoToWorkFlowEditor}>
-                            Configure Source
-                            <ForwardArrow className="ml-5" />
+                        <button className="cta flex" onClick={this.props.handleGoToWorkFlowEditor}>
+                            {'Configure Source'}
                         </button>
                 ),
             }
