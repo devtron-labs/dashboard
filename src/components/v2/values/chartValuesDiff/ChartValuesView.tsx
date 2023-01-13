@@ -38,7 +38,6 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
     ValueNameInput,
-    ConnectToHelmChartTippy,
     DeploymentAppSelector,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
@@ -1340,19 +1339,15 @@ function ChartValuesView({
                             )}
                         {!isDeployChartView &&
                             isExternalApp &&
+                            !commonState.installedAppInfo &&
                             !commonState.showRepoSelector && (
-                                <ConnectToHelmChartTippy
-                                    condition={commonState.showConnectToChartTippy}
-                                    hideConnectToChartTippy={hideConnectToChartTippy}
-                                >
-                                    <InfoColourBar
-                                        message={CONNECT_TO_HELM_CHART_TEXTS.Message}
-                                        classname="connect-to-chart-wrapper info_bar"
-                                        Icon={InfoIcon}
-                                        linkOnClick={handleConnectToChartClick}
-                                        linkText={renderConnectToHelmChart()}
-                                    />
-                                </ConnectToHelmChartTippy>
+                                <InfoColourBar
+                                    message={CONNECT_TO_HELM_CHART_TEXTS.Message}
+                                    classname="connect-to-chart-wrapper info_bar"
+                                    Icon={InfoIcon}
+                                    linkOnClick={handleConnectToChartClick}
+                                    linkText={renderConnectToHelmChart()}
+                                />
                             )}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
