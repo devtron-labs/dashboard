@@ -301,7 +301,7 @@ export default function CIDockerFileConfig({
                                         : formState.dockerfile.value
                                 }
                                 onChange={handleOnChangeConfig}
-                                autoComplete={'off'}
+                                autoComplete={!configOverrideView && "off"}
                                 disabled={configOverrideView && !allowOverride}
                             />
                         </div>

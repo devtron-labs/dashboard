@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { OptionType, TagErrorType, TagType } from '../../../app/types'
+import { OptionType, TagType } from '../../../app/types'
 import { PopupMenu } from '../../../common'
 import { ValidationRules } from '../validationRules'
 import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
@@ -39,13 +39,16 @@ export default function TagLabelValueSelector({
             const _tagData = { ...tagData }
             _tagData[type] = selectedValue
             if (type === 'key') {
-                _tagData.isInvalidKey = !validationRules.propagateTagKey(selectedValue).isValid
+                _tagData.isInvalidKey = selectedValue
+                    ? !validationRules.propagateTagKey(selectedValue).isValid
+                    : _tagData.value !== ''
             } else {
                 if (selectedValue) {
                     _tagData.isInvalidValue = !validationRules.propagateTagValue(selectedValue).isValid
                     _tagData.isInvalidKey = !_tagData.key || _tagData.isInvalidKey
                 } else {
                     _tagData.isInvalidValue = false
+                    _tagData.isInvalidKey = !_tagData.key ? false : _tagData.isInvalidKey
                 }
             }
             setTagData(selectedTagIndex, _tagData)
@@ -75,7 +78,7 @@ export default function TagLabelValueSelector({
             return (
                 <div className="p-4">
                     {field.messages.map((error) => (
-                        <div className="flexbox p-4">
+                        <div key={error} className="flexbox p-4">
                             <span>
                                 <ErrorCross className="icon-dim-14 scr-5 mt-3 mr-4" />
                             </span>

@@ -102,26 +102,35 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     createApp(e): void {
         e.preventDefault()
-        const validForm = !this.state.tags?.some(label=> !label.key || label.isInvalidKey || !label.isInvalidValue)
-        if (!validForm) {
-            return
+        const labelTags = []
+        let invalidLabels = false
+        for (let index = 0; index < this.state.tags.length; index++) {
+            const element = this.state.tags[index]
+            if (element.isInvalidKey || element.isInvalidValue) {
+                invalidLabels = true
+                break
+            } else if (element.key) {
+                labelTags.push({ key: element.key, value: element.value, propagate: element.propagate })
+            }
         }
         this.setState({ showErrors: true, appNameErrors: true })
         let allKeys = Object.keys(this.state.isValid)
         let isFormValid = allKeys.reduce((valid, key) => {
-            valid = valid && this.state.isValid[key] && validForm
+            valid = valid && this.state.isValid[key]
             return valid
         }, true)
-        if (!isFormValid) return
+        if (!isFormValid || invalidLabels) {
+            if (invalidLabels) {
+                toast.error('Some required fields in tags are missing or invalid')
+            }
+            return
+        }
 
         let request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
-            labels:
-                this.state.tags?.map((labelTag) => {
-                    return { key: labelTag.key, value: labelTag.value, propagate: labelTag.propagate }
-                }) || [],
+            labels: labelTags,
         }
         this.setState({ disableForm: true })
         createApp(request)

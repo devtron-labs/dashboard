@@ -27,7 +27,7 @@ export default function PropagateTagInfo() {
                 showCloseButton={true}
                 trigger="click"
                 interactive={true}
-                documentationLink={DOCUMENTATION.CHART_GROUP}
+                documentationLink={DOCUMENTATION.APP_TAGS}
                 documentationLinkText={'View Documentation'}
             >
                 <Help className="icon-dim-16 mt-2 ml-4 cursor" />

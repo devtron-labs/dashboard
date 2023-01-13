@@ -31,12 +31,7 @@ export default function TagDetails({
             >
                 <InjectTag className={`icon-dim-20 mt-4 ${tagData.propagate ? 'scn-0' : ''}`} />
             </div>
-            <TagLabelValueSelector
-                selectedTagIndex={index}
-                tagData={tagData}
-                setTagData={setTagData}
-                type="key"
-            />
+            <TagLabelValueSelector selectedTagIndex={index} tagData={tagData} setTagData={setTagData} type="key" />
             <TagLabelValueSelector selectedTagIndex={index} tagData={tagData} setTagData={setTagData} type="value" />
             <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer" onClick={deleteTag}>
                 <DeleteCross className="icon-dim-20 mt-4" />
