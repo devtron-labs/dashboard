@@ -138,6 +138,7 @@ export class AppListView extends Component<AppListViewProps>{
                     />
                     <ContentCard
                         redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                        rootClassName="ev-5"
                         imgSrc={DeployCICD}
                         title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
                         linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
