@@ -114,7 +114,7 @@ function NodeTreeDetailTab({
                                 )
                             }}
                         />
-                        {!location.pathname.includes(URLS.DEPLOYMENT_STATUS) && <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />}
+                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </>
             )}
