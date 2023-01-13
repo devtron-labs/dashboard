@@ -207,7 +207,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 regex={node.regex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
                 to={this.openCIPipeline(ci)} //ci attribites for a git material
-                hideWebhookTippy={this.props.hideWebhookTippy}
                 handleGoToWorkFlowEditor={(e) => {
                     var baseUrl = `/app/${appId}/edit/workflow`
                     var url = getCIPipelineURL(appId.toString(), workflowId.toString(), pipelineId.toString())

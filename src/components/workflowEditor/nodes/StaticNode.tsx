@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import branch from '../../../assets/icons/misc/branch.svg'
 import Tippy from '@tippyjs/react'
 import { CiPipelineSourceConfig } from '../../ciPipeline/CiPipelineSourceConfig'
-import { ConditionalWrap } from '../../common'
-import { Link } from 'react-router-dom'
 
 export interface StaticNodeProps {
     x: number
@@ -20,7 +18,6 @@ export interface StaticNodeProps {
     regex?: string
     primaryBranchAfterRegex?: string
     to?: string
-    hideWebhookTippy?: () => void
     handleGoToWorkFlowEditor?: (...args) => void
 }
 
