@@ -5,8 +5,8 @@ import { Collection } from 'yaml/types'
 import { showError } from '../../../common'
 import {
     ChartDeploymentManifestDetailResponse,
-    getDeploymentManifestDetails
-} from "../../chartDeploymentHistory/chartDeploymentHistory.service";
+    getDeploymentManifestDetails,
+} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -144,22 +144,22 @@ export const updateGeneratedManifest = (
     })
 
     if (isUnlinkedCLIApp) {
-        getDeploymentManifestDetails( appId, deploymentVersion, isExternalApp).then((response: ChartDeploymentManifestDetailResponse )=>{
-
-            dispatch({
-                type: ChartValuesViewActionTypes.multipleOptions,
-                payload: {
-                    generatedManifest: response.result.manifest,
-                    valuesYamlUpdated: false,
-                    valuesEditorError: '',
-                    generatingManifest: false,
-                },
-            })
-        })
+        getDeploymentManifestDetails(appId, deploymentVersion, isExternalApp).then(
+            (response: ChartDeploymentManifestDetailResponse) => {
+                dispatch({
+                    type: ChartValuesViewActionTypes.multipleOptions,
+                    payload: {
+                        generatedManifest: response.result.manifest,
+                        valuesYamlUpdated: false,
+                        valuesEditorError: '',
+                        generatingManifest: false,
+                    },
+                })
+            },
+        )
 
         return
     }
-
 
     if (isDeployChartView) {
         getGeneratedHelmManifest(

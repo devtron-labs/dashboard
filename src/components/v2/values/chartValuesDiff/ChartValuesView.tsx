@@ -989,7 +989,7 @@ function ChartValuesView({
                     value="manifest"
                     canSelect={isValidData()}
                     tippyContent={
-                        MANIFEST_INFO
+                        MANIFEST_INFO.InfoText
                     }
                 >
                     Manifest output
