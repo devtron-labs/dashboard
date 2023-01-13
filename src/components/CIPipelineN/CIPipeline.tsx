@@ -433,6 +433,9 @@ export default function CIPipeline({
                         taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
                     inputVarMap.set(element.name, true)
                 })
+                taskData[currentStepTypeVariable].outputVariables?.forEach((element, index) => {
+                    outputVarMap.set(element.name, true)
+                })
                 if (taskData.stepType === PluginType.INLINE) {
                     taskErrorobj.inlineStepDetail.outputVariables = []
                     taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
@@ -441,7 +444,6 @@ export default function CIPipeline({
                         )
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj.inlineStepDetail.outputVariables[index].isValid
-                        outputVarMap.set(element.name, true)
                     })
                     if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
                         taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
