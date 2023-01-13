@@ -144,7 +144,7 @@ export const updateGeneratedManifest = (
     })
 
     if (isUnlinkedCLIApp) {
-        getDeploymentManifestDetails( appId, 1, isExternalApp).then((response: ChartDeploymentManifestDetailResponse )=>{
+        getDeploymentManifestDetails( appId, deploymentVersion, isExternalApp).then((response: ChartDeploymentManifestDetailResponse )=>{
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,

@@ -87,6 +87,7 @@ import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
+    MANIFEST_INFO
 } from './ChartValuesView.constants'
 
 function ChartValuesView({
@@ -985,10 +986,10 @@ function ChartValuesView({
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
-                    value='manifest'
+                    value="manifest"
                     canSelect={isValidData()}
                     tippyContent={
-                        'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
+                        MANIFEST_INFO
                     }
                 >
                     Manifest output
