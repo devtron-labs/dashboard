@@ -5,11 +5,11 @@ import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
 import ReactSelect from 'react-select'
 import InfoColourbar from '../../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
-import {  NumberOptionType } from '../../../app/types'
+import { NumberOptionType } from '../../../app/types'
 import { toast } from 'react-toastify'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
-import {ProjectChangeMessageList} from "./constant";
+import { ProjectChangeMessageList } from './constant'
 
 export default function ProjectUpdateModal({
     appId,
@@ -76,7 +76,6 @@ export default function ProjectUpdateModal({
 
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
-
         setSubmitting(true)
 
         const payload = {
@@ -93,12 +92,9 @@ export default function ProjectUpdateModal({
             } else {
                 toast.success(`Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`)
             }
-
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
-
             onClose()
-
         } catch (err) {
             if (err['code'] === 403 && appMetaInfo.projectName !== selectedProject.label) {
                 toast.error(`You don't have the required access to the target project ${selectedProject.label}`)
@@ -116,9 +112,7 @@ export default function ProjectUpdateModal({
                 <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
                 <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4 m-0">
                     <li> {ProjectChangeMessageList.MessageOne} </li>
-                    <li>
-                        {ProjectChangeMessageList.MessageTwo}
-                    </li>
+                    <li>{ProjectChangeMessageList.MessageTwo}</li>
                 </ol>
             </>
         )
@@ -128,18 +122,16 @@ export default function ProjectUpdateModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <>
-                        <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
-                        {renderProjectSelect()}
-                        {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
-                            <InfoColourbar
-                                classname="warn cn-9 lh-20 pt-8 pr-12"
-                                Icon={Error}
-                                message={projectChangeMessage()}
-                                iconClass="warning-icon"
-                            />
-                        )}
-                    </>
+                    <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
+                    {renderProjectSelect()}
+                    {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
+                        <InfoColourbar
+                            classname="warn cn-9 lh-20 pt-8 pr-12"
+                            Icon={Error}
+                            message={projectChangeMessage()}
+                            iconClass="warning-icon"
+                        />
+                    )}
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button

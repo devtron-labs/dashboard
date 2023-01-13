@@ -173,7 +173,6 @@ function ChartValuesView({
                 },
             })
         } else if (isExternalApp) {
-
             fetchProjects(dispatch)
 
             getReleaseInfo(appId)
@@ -441,7 +440,6 @@ function ChartValuesView({
             dispatch({ type: ChartValuesViewActionTypes.isComparisonAvailable, payload: isVersionAvailableForDiff })
         }
     }, [chartValuesList, commonState.deploymentHistoryArr])
-
 
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
         try {
@@ -1307,7 +1305,7 @@ function ChartValuesView({
                             <div className="mb-16">
                                 <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
                                 <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
-                                    {appMetaInfo?.projectName ? appMetaInfo?.projectName : 'unassigned'}
+                                    {appMetaInfo?.projectName ? appMetaInfo.projectName : 'unassigned'}
                                     <Edit className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
                                 </div>
                             </div>
