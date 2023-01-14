@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react'
-import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common'
+import { ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'

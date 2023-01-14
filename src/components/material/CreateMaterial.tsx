@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { createMaterial } from './material.service';
 import { toast } from 'react-toastify';
-import { showError, VisibleModal } from '../common';
+import { showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
 import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
@@ -105,7 +105,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
-  
+
     handleUrlChange(event) {
 
         this.setState({
@@ -162,7 +162,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             })
         })
     }
-   
+
 
     cancel(event): void {
         this.setState({

@@ -29,12 +29,8 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import {
     Checkbox,
     CHECKBOX_VALUE,
-    ConditionalWrap,
-    Progressing,
-    showError,
-    ToastBody,
-    VisibleModal,
 } from '../../common'
+import { showError, Progressing, ConditionalWrap, VisibleModal, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'

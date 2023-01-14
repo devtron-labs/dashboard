@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { VisibleModal, showError, Progressing, Checkbox, validateEmail } from '../common'
+import { Checkbox, validateEmail } from '../common'
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'

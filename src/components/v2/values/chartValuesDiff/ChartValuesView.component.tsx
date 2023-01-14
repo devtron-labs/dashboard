@@ -6,7 +6,8 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { DeleteDialog, Progressing, Select } from '../../../common'
+import { DeleteDialog, Select } from '../../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,

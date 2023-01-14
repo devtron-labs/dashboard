@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service';
-import { Pagination, Progressing, showError, sortCallback } from '../../../common';
+import { getCIWebhookPayload } from './ciWebhook.service';
+import { sortCallback } from '../../../common';
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';

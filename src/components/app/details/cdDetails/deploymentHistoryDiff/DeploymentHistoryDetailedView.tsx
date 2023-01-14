@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Progressing, showError } from '../../../../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'

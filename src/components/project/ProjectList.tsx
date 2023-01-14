@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ErrorScreenManager, Progressing, showError } from '../../components/common';
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, ViewType } from '../../config';
 import { createProject, getProjectList } from './service';
 import { toast } from 'react-toastify';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ButtonWithLoader, showError } from '../../components/common';
+import { ButtonWithLoader } from '../../components/common';
 import folder from '../../assets/icons/ic-folder.svg';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import DeleteComponent from '../../util/DeleteComponent';

@@ -3,7 +3,8 @@ import { getInitDataWithCIPipeline, saveCIPipeline, deleteCIPipeline, getPipelin
 import { SourceTypeMap, TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
-import { Progressing,  CopyButton, showError, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
+import { CopyButton, DeleteDialog } from '../common';
+import { showError, Progressing, ConditionalWrap, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import Tippy from '@tippyjs/react';

@@ -4,21 +4,19 @@ import { SESConfigModal } from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import {
     Checkbox,
-    Progressing,
-    showError,
     Select,
     validateEmail,
     ErrorBoundary,
     ClearIndicator,
     MultiValueRemove,
 } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg'
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
-import { ReactComponent as Branch } from '../../assets/icons/ic-branch.svg'
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { Link } from 'react-router-dom'

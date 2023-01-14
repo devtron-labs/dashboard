@@ -4,7 +4,8 @@ import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, filterImageList, showError } from '../common'
+import { handleUTCTime, filterImageList } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
@@ -15,7 +16,6 @@ import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
-import { OptionType } from '../app/types'
 
 export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()

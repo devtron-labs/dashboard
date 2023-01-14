@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, VisibleModal, showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineProps, LinkedCIPipelineState } from './types'
 import {
-    Progressing,
     Typeahead,
     TypeaheadOption,
     TypeaheadErrorOption,
-    showError,
-    VisibleModal,
     multiSelectStyles,
 } from '../common'
 import { toast } from 'react-toastify'

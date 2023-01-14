@@ -1,6 +1,6 @@
 import React from 'react';
 import warn from '../../../assets/img/warning-medium.svg';
-import { Progressing } from '../icons/Progressing';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import ConfirmationDialog from './ConfirmationDialog';
 import { DeleteDialogProps } from './Types';
 

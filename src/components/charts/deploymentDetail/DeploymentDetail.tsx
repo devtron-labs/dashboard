@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Progressing, useBreadcrumb, BreadCrumb, OpaqueModal } from '../../common';
+import { Progressing, BreadCrumb, useBreadcrumb, OpaqueModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { getInstalledAppDetail, getChartVersionDetailsV2, getInstalledCharts } from '../charts.service';
 import { Details } from '../../app/details/appDetails/AppDetails';

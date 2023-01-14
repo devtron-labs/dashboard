@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ConfigurationType, ViewType } from '../../config'
-import { Progressing, RadioGroup, showError } from '../common'
+import { RadioGroup } from '../common'
 import {
     ConditionContainerType,
     FormErrorObjectType,
@@ -13,7 +13,7 @@ import {
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'

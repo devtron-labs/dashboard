@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { Drawer, Progressing, showError } from '../../common'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import TagLabelSelect from './TagLabelSelect'
 import { AboutAppInfoModalProps, TagType } from '../types'
 import { createAppLabels } from '../service'

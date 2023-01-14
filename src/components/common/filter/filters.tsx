@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FilterProps, FilterState } from './types';
-import { Progressing } from '../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import './filter.css';
 import Tippy from '@tippyjs/react';

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { showError } from '../common'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
@@ -27,7 +26,7 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 function CreateAPIToken({
     setShowGenerateModal,

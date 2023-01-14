@@ -1,7 +1,7 @@
 import React, { Component, createContext } from 'react';
 import { VisibleModal } from '../modals/VisibleModal';
 import close from '../../../assets/icons/ic-close.svg';
-import { Progressing } from '../icons/Progressing';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 //TODO: may not need context
 const DialogFormContext = createContext({ title: '', isLoading: false, close: (event) => {}, onSave: (event) => {} });
 

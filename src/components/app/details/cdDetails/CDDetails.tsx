@@ -2,9 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppEnvironment } from '../../../../services/service.types'
 import {
-    Progressing,
     Select,
-    showError,
     useAsync,
     useInterval,
     useScrollable,
@@ -14,6 +12,7 @@ import {
     asyncWrap,
     ConditionalWrap,
 } from '../../../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { EVENT_STREAM_EVENTS_MAP, LOGS_RETRY_COUNT, ModuleNameMap, POD_STATUS, TIMELINE_STATUS, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router'

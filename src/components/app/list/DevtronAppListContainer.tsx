@@ -5,7 +5,7 @@ import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
 import { getAppList } from '../service';
-import { showError } from '../../common';
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';

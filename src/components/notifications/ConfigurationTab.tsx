@@ -3,10 +3,9 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
-import { showError, Progressing, ErrorScreenNotAuthorized } from '../common'
+import { showError, Progressing, ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import {
     deleteNotification,
-    getChannelConfigs,
     getSESConfiguration,
     getConfigs,
     getSlackConfiguration,

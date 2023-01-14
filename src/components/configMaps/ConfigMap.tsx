@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-    Progressing,
-    showError,
     Select,
     useThrottledEffect,
     RadioGroup,
@@ -14,6 +12,7 @@ import {
     isChartRef3090OrBelow,
     DeleteDialog,
 } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
 import { getAppChartRef, getConfigMapList } from '../../services/service'

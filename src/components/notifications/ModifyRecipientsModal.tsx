@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { VisibleModal, Progressing, showError } from '../common'
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
@@ -26,6 +26,7 @@ import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils';
 import { defaultProps } from 'recompose';
+import { useAsync, useKeyDown, useSearchString } from '../common';
 
 const commandLineParser = require('command-line-parser')
 

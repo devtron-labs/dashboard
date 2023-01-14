@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
-import { PopupMenu, showError, useSearchString, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '../../../../common'
+import { PopupMenu, useSearchString, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '../../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import { toast } from 'react-toastify'
 import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'

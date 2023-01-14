@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Drawer, Progressing, showError, stopPropagation } from '../../common'
+import { stopPropagation } from '../../common'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'

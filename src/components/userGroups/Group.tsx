@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { showError, Progressing, DeleteDialog, deepEqual } from '../common';
+import { DeleteDialog, deepEqual } from '../common';
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ResizableTextarea } from '../configMaps/ConfigMap';
 import { saveGroup, deleteGroup } from './userGroup.service';
 
@@ -9,7 +10,6 @@ import {
     EntityTypes,
     ActionTypes,
     CreateGroup,
-    K8sPermissionFilter,
 } from './userGroups.types';
 import './UserGroup.scss';
 import { toast } from 'react-toastify';
@@ -119,7 +119,7 @@ export default function GroupForm({
                         entity: EntityTypes.CLUSTER,
                         action: permission.action.value,
                         cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        group: permission.group.value === '*' ? '' : permission.group.value,
                         kind: permission.kind.value === '*' ? '' : permission.kind.label,
                         namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
                         resource: permission.resource.find((entity) => entity.value === '*')

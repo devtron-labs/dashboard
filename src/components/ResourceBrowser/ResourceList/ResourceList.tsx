@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
-    ErrorScreenManager,
     handleUTCTime,
     processK8SObjects,
-    Progressing,
-    showError,
     sortObjectArrayAlphabetically,
 } from '../../common'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
 import {

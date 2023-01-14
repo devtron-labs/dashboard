@@ -8,7 +8,8 @@ import {
     getChartVersionsMin,
     getReadme,
 } from '../../../charts/charts.service'
-import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
+import { sortCallback, sortObjectArrayAlphabetically } from '../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
 

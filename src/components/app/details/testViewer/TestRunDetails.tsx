@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAsync, Drawer, Progressing, useDebouncedEffect, useThrottledEffect } from '../../../common/';
+import { useAsync, useDebouncedEffect } from '../../../common/';
+import { Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router';
 import './TestRunDetails.scss';
 import List from './List';

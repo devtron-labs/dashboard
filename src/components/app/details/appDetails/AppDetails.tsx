@@ -9,24 +9,18 @@ import {
 } from '../../../../config';
 import {
     NavigationArrow,
-    Redirect as RedirectIcon,
-    Branch,
     useEffectAfterMount,
-    showError,
-    Progressing,
-    VisibleModal,
-    createGitCommitUrl,
     ConfirmationDialog,
     useAppContext,
     noop,
     useEventSource,
-    not,
     FragmentHOC,
     useSearchString,
     multiSelectStyles,
     useAsync,
     ScanDetailsModal,
 } from '../../../common';
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from './../../../v2/common/ReactSelect.utils';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link, Switch } from 'react-router-dom';

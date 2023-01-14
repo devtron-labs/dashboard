@@ -3,20 +3,18 @@ import {
     Select,
     Page,
     DropdownIcon,
-    Progressing,
-    showError,
     useJsonYaml,
     DeleteDialog,
     sortCallback,
-    multiSelectStyles,
 } from '../../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { useHistory, useParams } from 'react-router'
-import { URLS, SERVER_MODE, ACCESS_TYPE_MAP } from '../../../config'
+import { URLS, SERVER_MODE } from '../../../config'
 import {
     installChart,
     updateChart,
@@ -32,7 +30,7 @@ import { styles, menuList, DropdownIndicator } from '../charts.util'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async'
 import ReactGA from 'react-ga4'
-import ReactSelect, { components } from 'react-select'
+import ReactSelect from 'react-select'
 import './DeployChart.scss'
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../v2/common/ReactSelect.utils'

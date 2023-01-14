@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common';
+import { useForm, useEffectAfterMount, useAsync } from '../common';
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';

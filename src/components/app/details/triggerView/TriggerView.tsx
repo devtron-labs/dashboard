@@ -11,7 +11,8 @@ import {
     getGitMaterialByCommitHash,
 } from '../../service'
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
+import { createGitCommitUrl, ISTTimeModal } from '../../../common'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'

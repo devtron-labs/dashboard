@@ -23,11 +23,9 @@ import docker from '../../../../assets/icons/misc/docker.svg'
 import {
     VisibleModal,
     ScanVulnerabilitiesTable,
-    Progressing,
-    getRandomColor,
-    showError,
-    ConditionalWrap,
+    getRandomColor
 } from '../../../common'
+import { showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
 import {

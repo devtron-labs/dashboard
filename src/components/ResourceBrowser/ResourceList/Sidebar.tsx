@@ -5,7 +5,7 @@ import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-fi
 import { SidebarType } from '../Types'
 import { AggregationKeys } from '../../app/types'
 import { SIDEBAR_KEYS } from '../Constants'
-import { Progressing } from '../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export function Sidebar({
     k8SObjectList,

@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
 import {
-    showError,
-    Progressing,
     mapByKey,
     validateEmail,
     Option,
@@ -12,6 +10,7 @@ import {
     MultiValueChipContainer,
     deepEqual,
 } from '../common';
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
 import Select from 'react-select';
@@ -22,7 +21,6 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
-    K8sPermissionFilter,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext } from './UserGroup';

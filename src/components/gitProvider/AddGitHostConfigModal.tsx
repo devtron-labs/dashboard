@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { saveGitHost } from './gitProvider.service'
-import { showError } from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
 interface GitHostConfigModalProps {
     closeGitConfigModal: () => void;

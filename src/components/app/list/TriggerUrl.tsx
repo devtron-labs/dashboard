@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { copyToClipboard, Progressing, showError, VisibleModal } from '../../common'
+import { copyToClipboard } from '../../common'
+import { Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as CopyText } from '../../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'

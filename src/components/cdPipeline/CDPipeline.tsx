@@ -3,23 +3,19 @@ import { SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
-    VisibleModal,
     Select,
-    Progressing,
     ButtonWithLoader,
-    showError,
     isEmpty,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     Checkbox,
     DeleteDialog,
     CHECKBOX_VALUE,
-    sortObjectArrayAlphabetically,
-    Drawer,
+    sortObjectArrayAlphabetically
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
-import { ErrorScreenManager } from '../common'
+import { ErrorScreenManager, Progressing, showError, VisibleModal, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
     saveCDPipeline,

@@ -2,14 +2,13 @@
 //@ts-nocheck
 
 import React, { useEffect } from 'react';
-import { Progressing, useEffectAfterMount, PopupMenu } from '../../common'
+import { useEffectAfterMount, PopupMenu } from '../../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types';
 
 import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
-import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 
 import './select.css';
-import { showError } from '../helpers/Helpers';
 
 const SelectContext = React.createContext(null)
 

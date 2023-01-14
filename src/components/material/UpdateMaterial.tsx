@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { updateMaterial } from './material.service'
 import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { toast } from 'react-toastify'
-import { showError } from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialView } from './MaterialView'
 
 interface UpdateMaterialProps {

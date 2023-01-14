@@ -6,11 +6,11 @@ import {
     Option,
     MultiValueRemove,
     processK8SObjects,
-    showError,
     MultiValueChipContainer,
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
 } from '../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getClusterList,
     getResourceGroupList,

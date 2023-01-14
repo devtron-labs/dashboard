@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef, Component } from 'react'
 import {
-    Progressing,
-    showError,
-    Select,
     RadioGroup,
     not,
     Info,
@@ -13,8 +10,8 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
     DeleteDialog,
-    useAsync,
 } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'

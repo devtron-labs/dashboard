@@ -8,7 +8,7 @@ import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow
 import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from '../cd.type'
 import { Option, styles } from '../cd.utils'
 import { getDeploymentDiffSelector } from '../service'
-import { showError } from '../../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
 export default function DeploymentHistoryHeader({

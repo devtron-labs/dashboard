@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody } from '../common'
+import { useForm, useEffectAfterMount, useAsync } from '../common'
+import { showError, Progressing, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';

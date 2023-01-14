@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ConfirmationDialog, Progressing, showError } from '../../common'
+import { ConfirmationDialog } from '../../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import CordonIcon from '../../../assets/icons/ic-cordon-medium.svg'
 import UncordonIcon from '../../../assets/icons/ic-play-medium.svg'
 import { CordonNodeModalType } from '../types'

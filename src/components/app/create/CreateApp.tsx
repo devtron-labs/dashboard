@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Progressing, showError, sortObjectArrayAlphabetically, multiSelectStyles, Drawer } from '../../common'
+import { sortObjectArrayAlphabetically, multiSelectStyles } from '../../common'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'

@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
-import { toast } from 'react-toastify'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
-import * as Sentry from '@sentry/browser'
+import { showError } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -181,32 +178,6 @@ export function getRandomColor(email: string): string {
         sum += email.charCodeAt(i)
     }
     return colors[sum % colors.length]
-}
-
-export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
-    if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
-        serverError.errors.map(({ userMessage, internalMessage }) => {
-            if (serverError.code === 403 && userMessage === 'unauthorized') {
-                if (!hideAccessError) {
-                    toastAccessDenied()
-                }
-            } else {
-                toast.error(userMessage || internalMessage)
-            }
-        })
-    } else {
-        if (serverError.code !== 403 && serverError.code !== 408) {
-            Sentry.captureException(serverError)
-        }
-
-        if (showToastOnUnknownError) {
-            if (serverError.message) {
-                toast.error(serverError.message)
-            } else {
-                toast.error('Some Error Occurred')
-            }
-        }
-    }
 }
 
 export function noop(...args): any {}

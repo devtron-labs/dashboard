@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { VisibleModal, Select, showError, Progressing } from '../common';
+import { Select } from '../common';
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { getTeamListMin as getProjectListMin } from '../../services/service';
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';

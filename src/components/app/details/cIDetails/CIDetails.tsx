@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { getCIPipelines, cancelCiTrigger, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import {
-    Progressing,
     useScrollable,
-    showError,
     Select,
     useAsync,
     useInterval,
@@ -17,6 +15,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     Routes,
     URLS,

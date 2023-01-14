@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { VisibleModal, showError, Progressing, } from '../../../components/common';
-import { RouteComponentProps } from 'react-router-dom';
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../service';
 import { ViewType } from '../../../config';
 import close from '../../../assets/icons/ic-close.svg';

@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import {
-    showError,
     useForm,
-    Select,
-    Progressing,
     useAsync,
     sortCallback,
     CustomInput,
     not,
     multiSelectStyles,
 } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'

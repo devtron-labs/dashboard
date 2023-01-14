@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { CreateChartGroupProps } from '../charts.types';
-import { showError, Progressing, DialogForm } from '../../common';
+import { DialogForm } from '../../common';
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { saveChartGroup, updateChartGroup } from '../charts.service';
 import { getChartGroupEditURL } from '../charts.helper';
 import { toast } from 'react-toastify';
