@@ -16,6 +16,7 @@ import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 
 export const getTriggerWorkflows = (
     appId,
@@ -58,10 +59,10 @@ export function processWorkflow(
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
     const configuredMaterialList = new Map()
-    for (let ciPipeline of filteredCIPipelines) {
+    for (const ciPipeline of filteredCIPipelines) {
         configuredMaterialList[ciPipeline.name] = new Set()
         if (ciPipeline?.ciMaterial?.length > 0) {
-            ciPipeline.ciMaterial.map((property, _) =>
+            ciPipeline.ciMaterial.forEach((property, _) =>
                 configuredMaterialList[ciPipeline.name].add(property.gitMaterialId),
             )
         } else {
@@ -70,8 +71,8 @@ export function processWorkflow(
     }
 
     const gitMaterials = ciResponse?.materials ?? []
-    for (let material of gitMaterials) {
-        for (let ciPipeline of filteredCIPipelines) {
+    for (const material of gitMaterials) {
+        for (const ciPipeline of filteredCIPipelines) {
             if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId)) {
                 continue
             }
@@ -79,7 +80,7 @@ export function processWorkflow(
                 source: {
                     regex: '',
                     type: '',
-                    value: 'Not Configured',
+                    value: GIT_BRANCH_NOT_CONFIGURED,
                 },
                 gitMaterialId: material.gitMaterialId,
                 id: 0,

@@ -9,7 +9,7 @@ import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
-import { useHistory } from 'react-router-dom'
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 
 export class Workflow extends Component<WorkflowProps> {
     renderNodes() {
@@ -29,9 +29,9 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     renderSourceNode(node: NodeAttr) {
-        let appId = this.props.match.params.appId
-        let workflowId = this.props.id
-        let pipelineId = node.downstreams[0].split('-')[1]
+        const appId = this.props.match.params.appId.toString()
+        const workflowId = this.props.id.toString()
+        const pipelineId = (node.downstreams[0].split('-')[1]).toString()
         return (
             <StaticNode
                 key={`${node.type}-${node.id}`}
@@ -51,13 +51,11 @@ export class Workflow extends Component<WorkflowProps> {
                 isRegex={node.isRegex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
                 handleGoToWorkFlowEditor={(e) => {
-                    var baseUrl = `/app/${appId}/edit/workflow`
-                    var url = getCIPipelineURL(
-                        (appId = appId.toString()),
-                        (workflowId = workflowId.toString()),
-                        (pipelineId = pipelineId.toString()),
-                    )
-                    this.props.history.push(`${baseUrl}/${url}`)
+                    if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
+                        const baseUrl = `/app/${appId}/edit/workflow`
+                        const url = getCIPipelineURL(appId, workflowId, pipelineId)
+                        this.props.history.push(`${baseUrl}/${url}`)
+                    }
                 }}
             />
         )

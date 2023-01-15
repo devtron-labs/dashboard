@@ -6,6 +6,7 @@ import { SourceTypeMap } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
 export interface CIPipelineSourceConfigInterface {
     sourceType
     sourceValue
@@ -117,7 +118,7 @@ export function CiPipelineSourceConfig({
         regexTippyContent()
     }, [])
 
-    if(sourceValue==="Not Configured") {
+    if(sourceValue===GIT_BRANCH_NOT_CONFIGURED) {
             showIcons= false
     }
     return (
@@ -139,7 +140,7 @@ export function CiPipelineSourceConfig({
                                     <div className="flex left">
                                         <div
                                             className="dc__ellipsis-right"
-                                            style={sourceValue === 'Not Configured' ? { color: 'red' } : null}
+                                            style={sourceValue === GIT_BRANCH_NOT_CONFIGURED ? { color: 'red' } : null}
                                         >
                                             {sourceValueBase}
                                         </div>

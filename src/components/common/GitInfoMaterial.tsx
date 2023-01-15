@@ -214,8 +214,8 @@ export default function GitInfoMaterial({
                             clearSearch={clearSearch}
                             appId={appId}
                             handleGoToWorkFlowEditor={(e) => {
-                                var baseUrl = `/app/${appId}/edit/workflow`
-                                var url = getCIPipelineURL(appId=appId.toString(), workflowId= workflowId.toString(), pipelineId= pipelineId.toString())
+                                const baseUrl = `/app/${appId}/edit/workflow`
+                                const url = getCIPipelineURL(appId.toString(), workflowId.toString(), pipelineId.toString())
                                 push(`${baseUrl}/${url}`)
                                   
                             }}
@@ -283,7 +283,7 @@ export default function GitInfoMaterial({
                 ) : (
                     <>
                         {renderMaterialSource(context)}
-                        {renderMaterialHistory(context, selectedMaterial ? selectedMaterial : material)}
+                        {renderMaterialHistory(context, selectedMaterial ?? material)}
                     </>
                 )}
             </div>

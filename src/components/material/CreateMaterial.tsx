@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { createMaterial } from './material.service';
 import { toast } from 'react-toastify';
-import { showError, VisibleModal } from '../common';
+import { showError } from '../common';
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
 

@@ -40,7 +40,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
                 cta: null,
             }
         } else if (this.props.isBranchError) {
-            var notConfiguredError =
+            const notConfiguredError =
                 'Source is not configured for one or more git repositories. Please configure and try again.'
             return {
                 img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,

@@ -141,8 +141,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let isMaterialActive = false
-        for (let i = 0; i < this.props.material.length; i++) {
-            if (this.props.material[i].active) {
+        for(const material of this.props.material){
+            if(material.active){
                 isMaterialActive = true
                 break
             }

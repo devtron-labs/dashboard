@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import branch from '../../../assets/icons/misc/branch.svg'
 import Tippy from '@tippyjs/react'
 import { CiPipelineSourceConfig } from '../../ciPipeline/CiPipelineSourceConfig'
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
 
 export interface StaticNodeProps {
     x: number
@@ -26,9 +27,9 @@ export class StaticNode extends Component<StaticNodeProps> {
         return (
             <div
                 className={`workflow-node workflow-node--static ${
-                    this.props.branch === 'Not Configured' ? 'cursor workflow-node--dash' : ''
+                    this.props.branch === GIT_BRANCH_NOT_CONFIGURED ? 'cursor workflow-node--dash' : ''
                 }`}
-                onClick={this.props.branch === 'Not Configured' ? this.props.handleGoToWorkFlowEditor : null}
+                onClick={this.props.handleGoToWorkFlowEditor}
             >
                 <div className={`workflow-node__git-icon`} />
                 <div className="workflow-node__title workflow-node__title--static">

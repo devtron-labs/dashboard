@@ -726,3 +726,5 @@ export const DEPLOYMENT_STATUS = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+
+export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
