@@ -1,0 +1,30 @@
+.content-card-container {
+    &:hover {
+        box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+        border-radius: 400;
+    }
+
+    .horizontal {
+        display: flex;
+        max-width: 500px;
+
+        .content-card-img {
+            width: 200px;
+            height: 140px;
+        }
+    }
+
+    .vertical {
+        .content-card-img {
+            width: 298px;
+            height: 210px;
+        }
+    }
+
+    a {
+        &:hover {
+            color: var(--N900);
+            text-decoration: none;
+        }
+    }
+}

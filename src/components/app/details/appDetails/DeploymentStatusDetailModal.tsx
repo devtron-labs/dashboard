@@ -17,8 +17,9 @@ export default function DeploymentStatusDetailModal({
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
 
     const closeStatusModal = () => {
-        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`
-        history.replace(newUrl)
+        history.replace({
+            search: ''
+        })
     }
 
     const escKeyPressHandler = (evt): void => {

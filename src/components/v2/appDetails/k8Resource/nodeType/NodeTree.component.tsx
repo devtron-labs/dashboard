@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { getTreeNodesWithChild } from './useNodeTreeReducer';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../../index.store';
 import { useSharedState } from '../../../utils/useSharedState';
@@ -20,6 +20,7 @@ function NodeTreeComponent({
 }) {
     const { url } = useRouteMatch();
     const history = useHistory();
+    const location = useLocation();
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
@@ -53,7 +54,10 @@ function NodeTreeComponent({
                 handleClickOnNodes(_kind, [parent.toLowerCase()]);
             }
         } else {
-            history.replace(url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes));
+            history.replace({
+                pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes),
+                search: location.search
+            });
         }
     }, [url]);
 

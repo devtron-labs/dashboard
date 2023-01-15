@@ -724,3 +724,5 @@ export const DEPLOYMENT_STATUS = {
     INPROGRESS: 'inprogress',
     SUPERSEDED: 'superseded'
 }
+
+export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
