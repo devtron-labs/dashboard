@@ -12,6 +12,18 @@ import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipe
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 
 export class Workflow extends Component<WorkflowProps> {
+    goToWorkFlowEditor = (node: NodeAttr) => {
+        const appId = this.props.match.params.appId.toString()
+        const workflowId = this.props.id.toString()
+        const pipelineId = node.downstreams[0].split('-')[1].toString()
+
+        if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
+            this.props.history.push(
+                `${`/app/${appId}/edit/workflow`}/${getCIPipelineURL(appId, workflowId, pipelineId)}`,
+            )
+        }
+    }
+
     renderNodes() {
         return this.props.nodes.map((node: any) => {
             if (node.type === WorkflowNodeType.GIT) {
@@ -29,9 +41,6 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     renderSourceNode(node: NodeAttr) {
-        const appId = this.props.match.params.appId.toString()
-        const workflowId = this.props.id.toString()
-        const pipelineId = (node.downstreams[0].split('-')[1]).toString()
         return (
             <StaticNode
                 key={`${node.type}-${node.id}`}
@@ -51,11 +60,7 @@ export class Workflow extends Component<WorkflowProps> {
                 isRegex={node.isRegex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
                 handleGoToWorkFlowEditor={(e) => {
-                    if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-                        const baseUrl = `/app/${appId}/edit/workflow`
-                        const url = getCIPipelineURL(appId, workflowId, pipelineId)
-                        this.props.history.push(`${baseUrl}/${url}`)
-                    }
+                    this.goToWorkFlowEditor(node)
                 }}
             />
         )

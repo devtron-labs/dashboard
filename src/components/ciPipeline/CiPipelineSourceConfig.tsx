@@ -118,8 +118,8 @@ export function CiPipelineSourceConfig({
         regexTippyContent()
     }, [])
 
-    if(sourceValue===GIT_BRANCH_NOT_CONFIGURED) {
-            showIcons= false
+    if (sourceValue === GIT_BRANCH_NOT_CONFIGURED) {
+        showIcons = false
     }
     return (
         <div className={showTooltip ? 'branch-name' : ''}>
@@ -139,8 +139,9 @@ export function CiPipelineSourceConfig({
                                 {!baseText && (
                                     <div className="flex left">
                                         <div
-                                            className="dc__ellipsis-right"
-                                            style={sourceValue === GIT_BRANCH_NOT_CONFIGURED ? { color: 'red' } : null}
+                                            className={`dc__ellipsis-right ${
+                                                sourceValue === GIT_BRANCH_NOT_CONFIGURED ? 'cr-5' : ''
+                                            }`}
                                         >
                                             {sourceValueBase}
                                         </div>

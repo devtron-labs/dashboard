@@ -12,7 +12,12 @@ import {
     ConditionalWrap,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
-import { CIPipelineNodeType, NodeAttr, PipelineType, WorkflowNodeType } from '../../components/app/details/triggerView/types'
+import {
+    CIPipelineNodeType,
+    NodeAttr,
+    PipelineType,
+    WorkflowNodeType,
+} from '../../components/app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { Link } from 'react-router-dom'
@@ -23,7 +28,6 @@ import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
-
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -40,7 +44,7 @@ export interface WorkflowProps
         ciPipelineId: number | string,
         parentPipelineType: string,
         parentPipelineId: number | string,
-        isWebhookCD?: boolean
+        isWebhookCD?: boolean,
     ) => void
     openEditWorkflow: (event, workflowId: number) => string
     handleCISelect: (workflowId: string | number, type: CIPipelineNodeType) => void
@@ -96,6 +100,18 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return {
             nodes: _nodes,
             cdNamesList: _cdNamesList || [],
+        }
+    }
+
+    goToWorkFlowEditor = (node: NodeAttr) => {
+        const appId = this.props.match.params.appId.toString()
+        const workflowId = this.props.id.toString()
+        const pipelineId = node.downstreams[0].split('-')[1].toString()
+
+        if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
+            this.props.history.push(
+                `${`/app/${appId}/edit/workflow`}/${getCIPipelineURL(appId, workflowId, pipelineId)}`,
+            )
         }
     }
 
@@ -191,7 +207,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderSourceNode(node, ci) {
         const appId = this.props.match.params.appId.toString()
         const workflowId = this.props.id.toString()
-        const pipelineId = (node.downstreams[0].split('-')[1]).toString()
+        const pipelineId = node.downstreams[0].split('-')[1].toString()
         return (
             <StaticNode
                 x={node.x}
@@ -210,11 +226,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
                 to={this.openCIPipeline(ci)} //ci attribites for a git material
                 handleGoToWorkFlowEditor={(e) => {
-                    if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-                        const baseUrl = `/app/${appId}/edit/workflow`
-                        const url = getCIPipelineURL(appId, workflowId, pipelineId)
-                        this.props.history.push(`${baseUrl}/${url}`)
-                    }
+                    this.goToWorkFlowEditor(node)
                 }}
             />
         )

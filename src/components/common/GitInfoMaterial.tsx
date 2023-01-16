@@ -85,7 +85,9 @@ export default function GitInfoMaterial({
         }
         return (
             <div className="material-list">
-                <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">Git Repository</div>
+                <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
+                    Git Repository
+                </div>
                 <MaterialSource
                     material={material}
                     selectMaterial={context.selectMaterial}
@@ -107,7 +109,11 @@ export default function GitInfoMaterial({
                 onClick={material.regex ? showBranchRegexModal : noop}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
-                {showWebhookModal ? 'Select commit to build' : <div className="dc__ellipsis-right"> {material?.value}</div>}
+                {showWebhookModal ? (
+                    'Select commit to build'
+                ) : (
+                    <div className="dc__ellipsis-right"> {material?.value}</div>
+                )}
                 {material.regex && (
                     <Tippy
                         className="default-tt"
@@ -148,6 +154,10 @@ export default function GitInfoMaterial({
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         }
+    }
+
+    const goToWorkFlowEditor = (appId: string, workflowId: string, pipelineId: string) => {
+        push(`${`/app/${appId}/edit/workflow`}/${getCIPipelineURL(appId, workflowId, pipelineId)}`)
     }
 
     const renderSearch = (): JSX.Element => {
@@ -213,11 +223,8 @@ export default function GitInfoMaterial({
                             noSearchResultsMsg={material.noSearchResultsMsg}
                             clearSearch={clearSearch}
                             appId={appId}
-                            handleGoToWorkFlowEditor={(e) => {
-                                const baseUrl = `/app/${appId}/edit/workflow`
-                                const url = getCIPipelineURL(appId.toString(), workflowId.toString(), pipelineId.toString())
-                                push(`${baseUrl}/${url}`)
-                                  
+                            handleGoToWorkFlowEditor={() => {
+                                goToWorkFlowEditor(appId.toString(), workflowId.toString(), pipelineId.toString())
                             }}
                         />
                     </div>
@@ -234,10 +241,7 @@ export default function GitInfoMaterial({
                                     showIcons={false}
                                 />
                                 .
-                                <span
-                                    className="dc__link cursor"
-                                    onClick={() => toggleWebhookModal(material.id)}
-                                >
+                                <span className="dc__link cursor" onClick={() => toggleWebhookModal(material.id)}>
                                     View all incoming webhook payloads
                                 </span>
                             </div>
