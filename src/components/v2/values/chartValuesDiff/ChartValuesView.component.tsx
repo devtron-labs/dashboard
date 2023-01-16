@@ -134,18 +134,13 @@ export const DeploymentAppSelector = ({
 }
 
 export const ChartProjectSelector = ({
-    isDeployChartView,
     selectedProject,
     handleProjectSelection,
     projects,
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
-    return !isDeployChartView ? (
-        <div className="chart-values__project-container mb-12">
-            <h2 className="chart-values__project-label fs-13 fw-4 lh-20 cn-7">Project</h2>
-            <span className="chart-values__project-name fs-13 fw-6 lh-20 cn-9">{selectedProject.label}</span>
-        </div>
-    ) : (
+    return  (
+
         <label className="form__row form__row--w-100 fw-4">
             <span className="form__label required-field">Project</span>
             <ReactSelect
@@ -162,7 +157,8 @@ export const ChartProjectSelector = ({
             />
             {invalidProject && renderValidationErrorLabel()}
         </label>
-    )
+        )
+
 }
 
 export const ChartVersionSelector = ({
