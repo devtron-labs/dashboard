@@ -1,6 +1,6 @@
 import { get } from '../../../../services/api'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
-import { History } from '../cIDetails/types'
+import { History } from '../cicdHistory/types'
 import { ResponseType } from '../../../../services/service.types'
 import {
     DeploymentTemplateList,

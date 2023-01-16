@@ -5,7 +5,7 @@ import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
 import moment from 'moment'
-import { Moment12HourFormat } from '../../../../config'
+import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 
 export default function DeploymentStatusDetailModal({
     close,
@@ -71,8 +71,7 @@ export default function DeploymentStatusDetailModal({
                                     </>
                                 ) : (
                                     <span className="fs-13">
-                                        {deploymentStatusDetailsBreakdownData.deploymentEndTime !==
-                                        '0001-01-01T00:00:00Z'
+                                        {deploymentStatusDetailsBreakdownData.deploymentEndTime !== ZERO_TIME_STRING
                                             ? moment(
                                                   deploymentStatusDetailsBreakdownData.deploymentEndTime,
                                                   'YYYY-MM-DDTHH:mm:ssZ',

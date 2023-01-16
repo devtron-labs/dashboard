@@ -8,7 +8,7 @@ import { AutoSizer } from 'react-virtualized';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
 import './nodeDetailTab.scss';
 import { Subject } from '../../../../../../util/Subject';
-import { Scroller } from '../../../../../app/details/cIDetails/CIDetails';
+import { Scroller } from '../../../../../app/details/cicdHistory/History.components';
 
 interface logViewerInterface {
     rootClassName?: string;

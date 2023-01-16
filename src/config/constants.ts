@@ -225,7 +225,7 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
-    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
 }
 
@@ -609,6 +609,7 @@ export const TERMINAL_STATUS_MAP = {
     STARTING: 'starting',
     FAILED: 'failed',
     ERROR: 'error',
+    CANCELLED: 'cancelled',
 }
 
 export const POD_STATUS = {
@@ -668,3 +669,5 @@ export const MESSAGING_UI = {
     MANIFEST_NOT_AVAILABLE: 'Manifest not available',
     FETCHING_MANIFEST: 'Fetching manifest',
 }
+
+export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
