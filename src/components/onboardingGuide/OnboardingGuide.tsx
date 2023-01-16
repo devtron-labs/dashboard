@@ -1,21 +1,25 @@
 import React, { useEffect } from 'react'
-import HelmCollage from '../../assets/img/helm-collage.png'
+import HelmCollage from '../../assets/img/guided-helm-collage.png'
+import HelmCluster from '../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
-import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
-import { PREVIEW_DEVTRON, SERVER_MODE, URLS } from '../../config'
-import './onboardingGuide.scss'
-import PreviewImage from '../../assets/img/ic-preview.png'
+import { NavLink } from 'react-router-dom'
+import { AppListConstants, ModuleNameMap, SERVER_MODE, URLS } from '../../config'
+import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { handlePostHogEventUpdate, LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import GuideCommonHeader from './GuideCommonHeader'
 import { OnboardingGuideProps } from './OnboardingGuide.type'
 import { updateLoginCount } from '../../services/service'
+import './onboardingGuide.scss'
+import ContentCard from '../common/ContentCard/ContentCard'
+import { CardLinkIconPlacement } from '../common/ContentCard/ContentCard.types'
+import {
+    GUIDE_COMMON_HEADER,
+    HELM_GUIDED_CONTENT_CARDS_TEXTS,
+    SKIP_AND_EXPLORE_NOTE,
+    TIP_RETURN_FROM_HELP_MENU,
+} from './OnboardingGuide.constants'
 
-function OnboardingGuide({
-    loginCount,
-    serverMode,
-    onClickedDeployManageCardClicked,
-    isGettingStartedClicked,
-}: OnboardingGuideProps) {
+export default function OnboardingGuide({ loginCount, serverMode, isGettingStartedClicked }: OnboardingGuideProps) {
     useEffect(() => {
         return () => {
             if (loginCount === 0) {
@@ -28,17 +32,18 @@ function OnboardingGuide({
         }
     }, [])
 
-    const match = useRouteMatch()
-    const history = useHistory()
-
-    const onClickCloseButton = () => {
-        history.goBack()
-    }
-
     const redirectDeployCardToCICD = (): string => {
         return serverMode === SERVER_MODE.FULL
-            ? `${URLS.APP}/${URLS.APP_LIST}`
-            : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
+            ? `${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`
+            : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`
+    }
+
+    const onClickHelmChart = (e) => {
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+    }
+
+    const onClickCluster = (e) => {
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)
     }
 
     const onClickedCICD = (e) => {
@@ -49,10 +54,6 @@ function OnboardingGuide({
         }
     }
 
-    const onClickPreviewCard = (e) => {
-        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.PREVIEW)
-    }
-
     const handleSkipOnboarding = () => {
         const updatedPayload = {
             key: POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON,
@@ -61,70 +62,54 @@ function OnboardingGuide({
         updateLoginCount(updatedPayload)
     }
 
+    const isFirstLogin = loginCount === 0 && !isGettingStartedClicked
+
     return (
         <div className="onboarding-container h-100">
             <GuideCommonHeader
                 loginCount={loginCount}
-                title="What will you use devtron for?"
-                subtitle="This will help us in guiding you towards relevant product features"
-                onClickCloseButton={onClickCloseButton}
+                title={isFirstLogin ? GUIDE_COMMON_HEADER.welcomeText : GUIDE_COMMON_HEADER.title}
+                subtitle={isFirstLogin ? '' : GUIDE_COMMON_HEADER.subtitle}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
             <div className="bcn-0 onboarding__bottom flex dc__position-rel cn-9">
                 <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
-                        <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
-                            <a
-                                className="dc__link-n9 cn-9"
-                                href={PREVIEW_DEVTRON}
-                                rel="noreferrer noopener"
-                                target="_blank"
-                                onClick={onClickPreviewCard}
-                            >
-                                <img className="onboarding-card__img dc__top-radius-4" src={PreviewImage} />
-                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
-                                    Explore a preconfigured Demo app at <span className="cb-5">preview.devtron.ai</span>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="onboarding__line" />
-                        <div
-                            className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor"
-                            onClick={onClickedDeployManageCardClicked}
-                        >
-                            <NavLink
-                                to={`${match.path}/${URLS.GUIDE}`}
-                                className="dc__no-decor fw-6 cursor cn-9"
-                                activeClassName="active"
-                            >
-                                <img
-                                    className="onboarding-card__img dc__top-radius-4"
-                                    src={HelmCollage}
-                                    alt="Deploy and manage helm"
-                                />
-                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 dc__break-word">
-                                    Deploy and manage helm applications
-                                </div>
-                            </NavLink>
-                        </div>
-
-                        <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
-                            <NavLink
-                                to={redirectDeployCardToCICD()}
-                                className="dc__no-decor fw-6 cursor cn-9"
-                                activeClassName="active"
-                                onClick={onClickedCICD}
-                            >
-                                <img
-                                    className="onboarding-card__img dc__top-radius-4"
-                                    src={DeployCICD}
-                                    alt="Please connect cluster"
-                                />
-                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">
-                                    Deploy custom applications using CI/CD pipelines
-                                </div>
-                            </NavLink>
-                        </div>
+                        <ContentCard
+                            redirectTo={URLS.CHARTS_DISCOVER}
+                            onClick={onClickHelmChart}
+                            imgSrc={HelmCollage}
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.title}
+                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.linkText}
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                        />
+                        <ContentCard
+                            redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
+                            rootClassName={isFirstLogin ? 'ev-5' : ''}
+                            onClick={onClickCluster}
+                            imgSrc={HelmCluster}
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
+                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.linkText}
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                        />
+                        <ContentCard
+                            redirectTo={redirectDeployCardToCICD()}
+                            onClick={onClickedCICD}
+                            imgSrc={DeployCICD}
+                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
+                            linkText={
+                                serverMode === SERVER_MODE.FULL
+                                    ? HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText
+                                    : HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.installLinkText
+                            }
+                            LinkIcon={ArrowRight}
+                            linkIconClass="scb-5"
+                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                        />
                     </div>
                     <div className="fs-14 mt-40 mb-20 flex column">
                         <NavLink
@@ -133,14 +118,12 @@ function OnboardingGuide({
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                             onClick={handleSkipOnboarding}
                         >
-                            Skip and explore Devtron on your own
+                            {SKIP_AND_EXPLORE_NOTE}
                         </NavLink>
-                        <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
+                        <div className="cn-7">{TIP_RETURN_FROM_HELP_MENU}</div>
                     </div>
                 </div>
             </div>
         </div>
     )
 }
-
-export default OnboardingGuide

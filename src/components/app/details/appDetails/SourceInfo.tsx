@@ -3,7 +3,7 @@
 import React from 'react'
 import moment from 'moment'
 import { Link, useHistory } from 'react-router-dom'
-import { URLS, getAppCDURL } from '../../../../config'
+import { URLS, getAppCDURL, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
@@ -58,7 +58,9 @@ export function SourceInfo({
     
     const showDeploymentDetailedStatus = (e): void => {
         e.stopPropagation()
-        history.push(`${url}${URLS.DEPLOYMENT_STATUS}`)
+        history.push({
+            search: DEPLOYMENT_STATUS_QUERY_PARAM
+        })
         ReactGA.event({
             category: 'App Details',
             action: 'Deployment status clicked',
