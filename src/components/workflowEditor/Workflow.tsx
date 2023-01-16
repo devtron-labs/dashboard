@@ -109,9 +109,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const pipelineId = node.downstreams[0].split('-')[1].toString()
 
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(
-                `${`/app/${appId}/edit/workflow`}/${getCIPipelineURL(appId, workflowId, pipelineId)}`,
-            )
+            this.props.history.push(getCIPipelineURL(appId, workflowId, pipelineId, true))
         }
     }
 
@@ -274,7 +272,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         let url = ''
         if (node.isLinkedCI) url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
         else if (node.isExternalCI) url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
-        else url = getCIPipelineURL(appId, this.props.id.toString(), node.id)
+        else url = getCIPipelineURL(appId, this.props.id.toString(), node.id, node.branch === GIT_BRANCH_NOT_CONFIGURED)
         return `${this.props.match.url}/${url}`
     }
 

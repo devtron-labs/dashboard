@@ -156,8 +156,8 @@ export default function GitInfoMaterial({
         }
     }
 
-    const goToWorkFlowEditor = (appId: string, workflowId: string, pipelineId: string) => {
-        push(`${`/app/${appId}/edit/workflow`}/${getCIPipelineURL(appId, workflowId, pipelineId)}`)
+    const goToWorkFlowEditor = () => {
+        push(getCIPipelineURL(appId, workflowId, pipelineId, true))
     }
 
     const renderSearch = (): JSX.Element => {
@@ -224,7 +224,7 @@ export default function GitInfoMaterial({
                             clearSearch={clearSearch}
                             appId={appId}
                             handleGoToWorkFlowEditor={() => {
-                                goToWorkFlowEditor(appId.toString(), workflowId.toString(), pipelineId.toString())
+                                goToWorkFlowEditor()
                             }}
                         />
                     </div>

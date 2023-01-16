@@ -18,9 +18,7 @@ export class Workflow extends Component<WorkflowProps> {
         const pipelineId = node.downstreams[0].split('-')[1].toString()
 
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(
-                `${`/app/${appId}/edit/workflow`}/${getCIPipelineURL(appId, workflowId, pipelineId)}`,
-            )
+            this.props.history.push(getCIPipelineURL(appId, workflowId, pipelineId, true))
         }
     }
 
