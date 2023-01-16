@@ -145,7 +145,7 @@ export function CiPipelineSourceConfig({
                                         >
                                             {sourceValueBase}
                                         </div>
-                                        {sourceValue !== '--' ? <Info className="icon-dim-12 fcn-5 ml-4" /> : ''}
+                                        {sourceValue !== '--' && <Info className="icon-dim-12 fcn-5 ml-4" />}
                                     </div>
                                 )}
                                 {baseText && (

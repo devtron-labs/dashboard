@@ -13,12 +13,15 @@ import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 
 export class Workflow extends Component<WorkflowProps> {
     goToWorkFlowEditor = (node: NodeAttr) => {
-        const appId = this.props.match.params.appId.toString()
-        const workflowId = this.props.id.toString()
-        const pipelineId = node.downstreams[0].split('-')[1].toString()
-
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(getCIPipelineURL(appId, workflowId, pipelineId, true))
+            this.props.history.push(
+                getCIPipelineURL(
+                    this.props.match.params.appId.toString(),
+                    this.props.id.toString(),
+                    node.downstreams[0].split('-')[1].toString(),
+                    true,
+                ),
+            )
         }
     }
 
