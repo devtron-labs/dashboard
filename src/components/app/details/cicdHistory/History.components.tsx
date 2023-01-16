@@ -11,6 +11,7 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { NavLink } from 'react-router-dom'
+import { TIMELINE_STATUS } from '../../../../config'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -120,4 +121,15 @@ export const EmptyView = ({ title, subTitle, link, linkText }: EmptyViewType) =>
             )}
         </EmptyState>
     )
+}
+
+export const triggerStatus = (triggerDetailStatus: string): string => {
+  let triggerStatus = triggerDetailStatus.toUpperCase()
+  if(triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
+      return 'Failed'
+  }else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
+      return 'Succeeded'
+  } else {
+      return triggerDetailStatus
+  }
 }

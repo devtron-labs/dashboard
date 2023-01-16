@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { URLS, AppListConstants, ViewType, SERVER_MODE } from '../../../config'
+import { URLS, AppListConstants, ViewType, SERVER_MODE, Host } from '../../../config'
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common'
 import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
@@ -11,21 +11,20 @@ import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
     getAppListMin,
+    getClusterListMinWithoutAuth,
     getLoginData,
     getVersionConfig,
     updateLoginCount,
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
-import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
+import { AppListResponse } from '../../app/list-new/AppListService'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -36,6 +35,9 @@ const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfigu
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
+const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
+const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
+const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 
 export const mainContext = createContext(null)
 
@@ -58,7 +60,6 @@ export default function NavigationRoutes() {
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
-    const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
@@ -89,27 +90,49 @@ export default function NavigationRoutes() {
         }
     }
 
-     const processLoginData = (response, superAdmin, appListCount) => {
-         const count = response.result?.value ? parseInt(response.result.value) : 0
-         setLoginCount(count)
-          if (
-             typeof Storage !== 'undefined' &&
-             (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
-         ) {
-             localStorage.removeItem('isSSOLogin')
-             localStorage.removeItem('isAdminLogin')
-             if (count < MAX_LOGIN_COUNT) {
-                 const updatedPayload = {
-                     key: LOGIN_COUNT,
-                     value: `${count + 1}`,
-                 }
-                 updateLoginCount(updatedPayload)
-             }
-         }
-         if (!count && superAdmin && appListCount === 0) {
-             history.push(`/${URLS.GETTING_STARTED}`)
-         }
-     }
+    const processLoginData = async (response, superAdmin, appListCount) => {
+        const count = response.result?.value ? parseInt(response.result.value) : 0
+        setLoginCount(count)
+        if (
+            typeof Storage !== 'undefined' &&
+            (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
+        ) {
+            localStorage.removeItem('isSSOLogin')
+            localStorage.removeItem('isAdminLogin')
+            if (count < MAX_LOGIN_COUNT) {
+                const updatedPayload = {
+                    key: LOGIN_COUNT,
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
+            }
+        }
+
+        // Check for external app count also before redirecting user on GETTING STARTED page
+        if (!count && superAdmin && appListCount === 0) {
+            try {
+                const { result } = await getClusterListMinWithoutAuth()
+                if (Array.isArray(result) && result.length === 1) {
+                    const _sseConnection = new EventSource(`${Host}/application?clusterIds=${result[0].id}`, {
+                        withCredentials: true,
+                    })
+                    _sseConnection.onmessage = (message) => {
+                        const externalAppData: AppListResponse = JSON.parse(message.data)
+                        if (externalAppData.result?.helmApps?.length <= 1) {
+                            history.push(`/${URLS.GETTING_STARTED}`)
+                        }
+                        _sseConnection.close()
+                    }
+                    _sseConnection.onerror = (err) => {
+                        _sseConnection.close()
+                        history.push(`/${URLS.GETTING_STARTED}`)
+                    }
+                }
+            } catch (e) {
+                history.push(`/${URLS.GETTING_STARTED}`)
+            }
+        }
+    }
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -213,8 +236,9 @@ export default function NavigationRoutes() {
         }
     }
 
-    const onClickedDeployManageCardClicked = () =>{
-      setDeployManageCardClicked(true)
+    const isOnboardingPage = () => {
+        const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
+        return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
     }
 
     if (pageState === ViewType.LOADING || loginLoader) {
@@ -222,6 +246,8 @@ export default function NavigationRoutes() {
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
+        const _isOnboardingPage = isOnboardingPage()
+
         return (
             <mainContext.Provider
                 value={{
@@ -239,11 +265,11 @@ export default function NavigationRoutes() {
                     moduleInInstallingState,
                     setModuleInInstallingState,
                     installedModuleMap,
-                    currentServerInfo
+                    currentServerInfo,
                 }}
             >
-                <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
-                    {!window.location.href.includes(URLS.GETTING_STARTED) && (
+                <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
+                    {!_isOnboardingPage && (
                         <Navigation
                             history={history}
                             match={match}
@@ -253,9 +279,12 @@ export default function NavigationRoutes() {
                             installedModuleMap={installedModuleMap}
                         />
                     )}
-
                     {serverMode && (
-                        <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
+                        <div
+                            className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
+                                pageOverflowEnabled ? '' : 'main__overflow-disabled'
+                            }`}
+                        >
                             <Suspense fallback={<Progressing pageLoader />}>
                                 <ErrorBoundary>
                                     <Switch>
@@ -269,6 +298,11 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route
+                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:node?`}
+                                        >
+                                            <ResourceBrowserContainer />
+                                        </Route>
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
                                             path={URLS.DEPLOYMENT_GROUPS}
@@ -295,18 +329,11 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide
-                                                isGettingStartedClicked={isGettingStartedClicked}
-                                                loginCount={loginCount}
-                                            />
-                                        </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
                                                 serverMode={serverMode}
-                                                onClickedDeployManageCardClicked={onClickedDeployManageCardClicked}
                                                 isGettingStartedClicked={isGettingStartedClicked}
                                             />
                                         </Route>
@@ -375,12 +402,17 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    <Route path={`${path}/:appType`} render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount}/>} />
+                    <Route
+                        path={`${path}/:appType`}
+                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount} />}
+                    />
                     <Route exact path="">
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                        <RedirectUserWithSentry
+                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+                        />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -388,11 +420,11 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     )
 }
 
-export function RedirectUserWithSentry({ isFirstLoginUser  }) {
+export function RedirectUserWithSentry({ isFirstLoginUser }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-      if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
         if (isFirstLoginUser) {
             push(`${URLS.GETTING_STARTED}`)
         } else {

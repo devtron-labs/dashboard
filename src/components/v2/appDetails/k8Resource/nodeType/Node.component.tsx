@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouteMatch, useParams, useHistory } from 'react-router';
 import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
-import { copyToClipboard } from '../../../../common';
+import { copyToClipboard, getElapsedTime } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
-import { NodeType, Node, iNode, AppType } from '../../appDetails.type';
+import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type';
 import './nodeType.scss';
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
@@ -24,13 +24,8 @@ function NodeComponent({
     externalLinks,
     monitoringTools,
     isDevtronApp
-}: {
-    handleFocusTabs: () => void,
-    externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
-    isDevtronApp?:boolean
-}) {
-    const { path, url } = useRouteMatch();
+}: NodeComponentProps) {
+    const { url } = useRouteMatch();
     const history = useHistory();
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -39,7 +34,6 @@ function NodeComponent({
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState('');
     const [podType, setPodType] = useState(false);
-    const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
     const params = useParams<{ nodeType: NodeType, resourceName: string }>();
     const podMetaData = IndexStore.getPodMetaData();
@@ -152,31 +146,6 @@ function NodeComponent({
         return restartCount
     }
 
-    const getElapsedTime = (createdAt: Date) => {
-        const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
-        if (elapsedTime >= 0) {
-            const days = Math.floor(elapsedTime / (24 * 60 * 60)),
-                hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
-                mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
-                secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
-
-            const dh = `${days}d ${hrs}h`
-                .split(' ')
-                .filter((a) => !a.startsWith('0'))
-                .join(' ')
-            // f age is more than hours just show age in days and hours
-            if (dh.length > 0) {
-                return dh
-            }
-            //return age in minutes and seconds
-            return `${mins}m ${secs}s`
-                .split(' ')
-                .filter((a) => !a.startsWith('0'))
-                .join(' ')
-        }
-        return ''
-    }
-
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
             if (node.name === nodeName) {
@@ -193,10 +162,6 @@ function NodeComponent({
         })
 
         setSelectedNodes(updatedNodes)
-    };
-
-    const describeNode = (name: string, containerName: string) => {
-        setDetailedNode({ name, containerName });
     };
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
@@ -238,7 +203,7 @@ function NodeComponent({
                         <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
                             <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
                             { node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
-                            { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }  
+                            { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
@@ -337,7 +302,7 @@ function NodeComponent({
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
-                    
+
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
@@ -350,29 +315,29 @@ function NodeComponent({
                             </div>
                         )}
 
-                    
+
                         {params.nodeType!== NodeType.Service.toLocaleLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
-                                {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (    
+                                {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         helmAppDetails={appDetails}
                                         nodeLevelExternalLinks={podLevelExternalLinks}
                                         podName={node.name}
-                                    />   
+                                    />
                                 )}
-                            
-                                {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (    
+
+                                {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         helmAppDetails={appDetails}
                                         nodeLevelExternalLinks={containerLevelExternalLinks}
                                         podName={node['pNode']?.name}
                                         containerName={node.name}
                                         addExtraSpace={true}
-                                    />    
+                                    />
                                 )}
                             </div>
                         )}
-                      
+
 
                         <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
                             <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />

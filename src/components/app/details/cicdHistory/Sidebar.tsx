@@ -21,6 +21,7 @@ import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.s
 import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE } from './Constants'
+import { triggerStatus } from './History.components'
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
@@ -143,7 +144,7 @@ const HistorySummaryCard = React.memo(
                 <NavLink to={getPath} className="w-100 ci-details__build-card-container" activeClassName="active">
                     <div className="w-100 ci-details__build-card">
                         <div
-                            className={`dc__app-summary__icon icon-dim-20 ${status
+                            className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)
                                 ?.toLocaleLowerCase()
                                 .replace(/\s+/g, '')}`}
                         />

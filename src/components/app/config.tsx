@@ -21,6 +21,8 @@ export const statusColor = {
     error: '#f33e3e',
     cancelled: '#767d84',
     aborted: '#767d84',
+    timedout: '#f33e3e',
+    unabletofetch: '#f33e3e'
 }
 
 export const statusIcon = {
@@ -34,7 +36,10 @@ export const statusIcon = {
     missing: 'missing',
     progressing: 'progressing',
     deploymentinitiated: 'progressing',
-    hibernating: 'hibernating'
+    hibernating: 'hibernating',
+    succeeded: 'healthy',
+    timedout: 'timed-out',
+    unabletofetch: 'failed'
 }
 
 export const AppListViewType = {

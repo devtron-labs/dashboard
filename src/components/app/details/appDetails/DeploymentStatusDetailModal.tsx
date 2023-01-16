@@ -1,34 +1,42 @@
 import React, { useEffect, useRef } from 'react'
-import { Drawer, handleUTCTime } from '../../../common'
+import { Drawer } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
-import moment from 'moment'
-import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
+import { URLS } from '../../../../config'
+import { useHistory, useParams } from 'react-router-dom'
 
 export default function DeploymentStatusDetailModal({
-    close,
     appName,
     environmentName,
+    streamData,
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailModalType) {
+    const history = useHistory()
+    const { appId, envId} = useParams<{appId: string , envId: string}>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
+
+    const closeStatusModal = () => {
+        history.replace({
+            search: ''
+        })
+    }
+
     const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof close === 'function') {
+        if (evt && evt.key === 'Escape') {
             evt.preventDefault()
-            close()
+            closeStatusModal()
         }
     }
     const outsideClickHandler = (evt): void => {
         if (
             appStatusDetailRef.current &&
-            !appStatusDetailRef.current.contains(evt.target) &&
-            typeof close === 'function'
+            !appStatusDetailRef.current.contains(evt.target)
         ) {
-            close()
+            closeStatusModal()
         }
     }
+
     useEffect(() => {
         document.addEventListener('keydown', escKeyPressHandler)
         return (): void => {
@@ -46,7 +54,7 @@ export default function DeploymentStatusDetailModal({
     return (
         <Drawer position="right" width="1024px">
             <div className="deployment-status-breakdown-modal-container bcn-0" ref={appStatusDetailRef}>
-                <div className="dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
+                <div className="dc__box-shadow pb-12 pt-12 bcn-0">
                     <div className="title flex dc__content-space pl-20 pr-20 ">
                         <div>
                             <div className="cn-9 fs-16 fw-6">
@@ -58,37 +66,17 @@ export default function DeploymentStatusDetailModal({
                                 >
                                     {deploymentStatusDetailsBreakdownData.deploymentStatusText}
                                 </span>
-                                <span className="dc__bullet mr-8 ml-8 mt-10"></span>
-                                {deploymentStatusDetailsBreakdownData.deploymentStatus === 'inprogress' ? (
-                                    <>
-                                        <Timer className="icon-dim-16 mt-3 mr-5 timer-icon" />
-                                        <span className="fs-13">
-                                            {handleUTCTime(
-                                                deploymentStatusDetailsBreakdownData.deploymentTriggerTime,
-                                                true,
-                                            )}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span className="fs-13">
-                                        {deploymentStatusDetailsBreakdownData.deploymentEndTime !== ZERO_TIME_STRING
-                                            ? moment(
-                                                  deploymentStatusDetailsBreakdownData.deploymentEndTime,
-                                                  'YYYY-MM-DDTHH:mm:ssZ',
-                                              ).format(Moment12HourFormat)
-                                            : '-'}
-                                    </span>
-                                )}
                             </div>
                         </div>
-                        <span className="cursor" onClick={close}>
+                        <span className="cursor" onClick={closeStatusModal}>
                             <Close className="icon-dim-24" />
                         </span>
                     </div>
                 </div>
-                <div style={{ height: 'calc(100vh - 90px)' }} className="bcn-0">
+                <div className="bcn-1 dc__overflow-scroll pb-20 deployment-status-breakdown">
                     <DeploymentStatusDetailBreakdown
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        streamData={streamData}
                     />
                 </div>
             </div>

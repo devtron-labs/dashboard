@@ -219,7 +219,12 @@ export const getCIMaterialList = (params) => {
 export function getCDMaterialList(cdMaterialId, stageType: 'PRECD' | 'CD' | 'POSTCD') {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
     return get(URL).then((response) => {
-        return cdMaterialListModal(response.result.ci_artifacts, true)
+        return cdMaterialListModal(
+            response.result.ci_artifacts,
+            true,
+            response.result.latest_wf_artifact_id,
+            response.result.latest_wf_artifact_status,
+        )
     })
 }
 
@@ -234,10 +239,20 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
     })
 }
 
-function cdMaterialListModal(artifacts: any[], markFirstSelected: boolean) {
+function cdMaterialListModal(
+    artifacts: any[],
+    markFirstSelected: boolean,
+    artifactId?: number,
+    artifactStatus?: string,
+) {
     if (!artifacts || !artifacts.length) return []
 
-    let materials = artifacts.map((material, index) => {
+    const materials = artifacts.map((material, index) => {
+        let artifactStatusValue = ''
+        if (artifactId && artifactStatus && material.id === artifactId) {
+            artifactStatusValue = artifactStatus
+        }
+
         return {
             id: material.id,
             deployedTime: material.deployed_time
@@ -259,6 +274,7 @@ function cdMaterialListModal(artifacts: any[], markFirstSelected: boolean) {
             scanEnabled: material.scanEnabled,
             vulnerable: material.vulnerable,
             runningOnParentCd: material?.runningOnParentCd,
+            artifactStatus: artifactStatusValue,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {
@@ -451,4 +467,8 @@ export const getIngressServiceUrls = (params: {
         return `${key}=${value}`
     })
     return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)
+}
+
+export function getManualSync(params: { appId: string; envId: string }): Promise<ResponseType> {
+    return get(`${Routes.MANUAL_SYNC}/${params.appId}/${params.envId}`)
 }

@@ -1,3 +1,5 @@
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 
 export interface ApplicationObject extends iLink {
@@ -34,7 +36,8 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     CustomResource = 'Custom Resource',
-    Other = 'Other',
+    OtherResources = 'Other Resources',
+    Events = 'Events'
 }
 
 export enum NodeStatus {
@@ -76,47 +79,64 @@ export enum NodeType {
     PersistentVolume = 'PersistentVolume',
     Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
     InitContainers = 'InitContainers',
+    EndpointSlice = 'EndpointSlice',
+    NetworkPolicy = 'NetworkPolicy',
+    StorageClass = 'StorageClass',
+    VolumeSnapshot = 'VolumeSnapshot',
+    VolumeSnapshotContent = 'VolumeSnapshotContent',
+    VolumeSnapshotClass = 'VolumeSnapshotClass',
+    PodDisruptionBudget = 'PodDisruptionBudget',
+    Event = 'Event',
 }
 
 // export type NodeType = keyof typeof NodeType;
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
-    switch (nodeType.toLowerCase()) {
-        case NodeType.DaemonSet.toLowerCase():
-        case NodeType.Deployment.toLowerCase():
-        case NodeType.Pod.toLowerCase():
-        case NodeType.ReplicaSet.toLowerCase():
-        case NodeType.Job.toLowerCase():
-        case NodeType.CronJob.toLowerCase():
-        case NodeType.ReplicationController.toLowerCase():
-        case NodeType.StatefulSet.toLowerCase():
-            return AggregationKeys.Workloads
-        case NodeType.Ingress.toLowerCase():
-        case NodeType.Service.toLowerCase():
-        case NodeType.Endpoints.toLowerCase():
-            return AggregationKeys.Networking
-        case NodeType.ConfigMap.toLowerCase():
-        case NodeType.Secret.toLowerCase():
-        case NodeType.PersistentVolume.toLowerCase():
-        case NodeType.PersistentVolumeClaim.toLowerCase():
-            return AggregationKeys.ConfigAndStorage
-        case NodeType.ServiceAccount.toLowerCase():
-        case NodeType.ClusterRoleBinding.toLowerCase():
-        case NodeType.RoleBinding.toLowerCase():
-        case NodeType.ClusterRole.toLowerCase():
-        case NodeType.Role.toLowerCase():
-            return AggregationKeys.RBAC
-        case NodeType.MutatingWebhookConfiguration.toLowerCase():
-        case NodeType.PodSecurityPolicy.toLowerCase():
-        case NodeType.ValidatingWebhookConfiguration.toLowerCase():
-            return AggregationKeys.Administration
-        case NodeType.Alertmanager.toLowerCase():
-        case NodeType.Prometheus.toLowerCase():
-        case NodeType.ServiceMonitor.toLowerCase():
-            return AggregationKeys.CustomResource
-        default:
-            return AggregationKeys.CustomResource
-    }
+  switch (nodeType.toLowerCase()) {
+    case NodeType.DaemonSet.toLowerCase():
+    case NodeType.Deployment.toLowerCase():
+    case NodeType.Pod.toLowerCase():
+    case NodeType.ReplicaSet.toLowerCase():
+    case NodeType.Job.toLowerCase():
+    case NodeType.CronJob.toLowerCase():
+    case NodeType.ReplicationController.toLowerCase():
+    case NodeType.StatefulSet.toLowerCase():
+        return AggregationKeys.Workloads
+    case NodeType.Ingress.toLowerCase():
+    case NodeType.Service.toLowerCase():
+    case NodeType.Endpoints.toLowerCase():
+    case NodeType.EndpointSlice.toLowerCase():
+    case NodeType.NetworkPolicy.toLowerCase():
+        return AggregationKeys.Networking
+    case NodeType.ConfigMap.toLowerCase():
+    case NodeType.Secret.toLowerCase():
+    case NodeType.PersistentVolume.toLowerCase():
+    case NodeType.PersistentVolumeClaim.toLowerCase():
+    case NodeType.StorageClass.toLowerCase():
+    case NodeType.VolumeSnapshot.toLowerCase():
+    case NodeType.VolumeSnapshotContent.toLowerCase():
+    case NodeType.VolumeSnapshotClass.toLowerCase():
+    case NodeType.PodDisruptionBudget.toLowerCase():
+        return AggregationKeys.ConfigAndStorage
+    case NodeType.ServiceAccount.toLowerCase():
+    case NodeType.ClusterRoleBinding.toLowerCase():
+    case NodeType.RoleBinding.toLowerCase():
+    case NodeType.ClusterRole.toLowerCase():
+    case NodeType.Role.toLowerCase():
+    case NodeType.PodSecurityPolicy.toLowerCase():
+        return AggregationKeys.RBAC
+    case NodeType.MutatingWebhookConfiguration.toLowerCase():
+    case NodeType.ValidatingWebhookConfiguration.toLowerCase():
+        return AggregationKeys.Administration
+    case NodeType.Alertmanager.toLowerCase():
+    case NodeType.Prometheus.toLowerCase():
+    case NodeType.ServiceMonitor.toLowerCase():
+        return AggregationKeys.CustomResource
+    case NodeType.Event.toLowerCase():
+        return AggregationKeys.Events
+    default:
+        return AggregationKeys.CustomResource
+}
 }
 
 export enum DeploymentAppType {
@@ -352,6 +372,43 @@ export interface LogSearchTermType {
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>
 }
 
+export interface NodeDetailPropsType extends LogSearchTermType {
+    loadingResources?: boolean
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+}
+
+export interface LogsComponentProps extends NodeDetailPropsType {
+    selectedTab: (_tabName: string, _url?: string) => void;
+    isDeleted: boolean;
+}
+
+export interface TerminalComponentProps {
+    selectedTab: (_tabName: string, _url?: string) => void;
+    isDeleted: boolean;
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+}
+
+export interface NodeTreeTabListProps extends LogSearchTermType {
+    tabRef?: MutableRefObject<HTMLDivElement>
+}
+
+export interface Options {
+    name: string;
+    selected: boolean;
+}
+export interface PodContainerOptions {
+    podOptions: Options[];
+    containerOptions: Options[];
+}
+
+export interface LogState {
+    selectedPodOption: string;
+    selectedContainerOption: string;
+    grepTokens?: any;
+}
+
 export interface AppStatusDetailType {
     close: () => void
     appStreamData: any
@@ -370,4 +427,44 @@ export interface StatusFilterButtonType {
 export interface SyncErrorType {
     appStreamData: AppStreamData
     showApplicationDetailedModal?: () => void
+}
+
+export interface SelectedResourceType {
+    clusterId: number
+    group: string
+    version: string
+    kind: string
+    namespace: string
+    name: string
+    containers: string[]
+}
+
+export interface ResourceInfoActionPropsType {
+    selectedTab: (_tabName: string, _url: string) => void
+    isDeleted: boolean
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+}
+
+export interface NodeTreeDetailTabProps {
+    appDetails: AppDetails
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?: boolean
+}
+
+export interface K8ResourceComponentProps {
+    clickedNodes: Map<string, string>;
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
+    handleFocusTabs: () => void;
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?: boolean
+}
+
+export interface NodeComponentProps {
+    handleFocusTabs: () => void,
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?:boolean
 }
