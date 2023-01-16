@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { TriggerCDNodeProps } from '../../types';
 import { statusColor, statusIcon } from '../../../../config';
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
-import { TriggerViewContext } from '../../TriggerView';
 import { URLS, DEFAULT_STATUS } from '../../../../../../config';
 import Tippy from '@tippyjs/react';
 import { Link } from 'react-router-dom';
+import { TriggerViewContext } from '../../config';
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps>{
     constructor(props) {
