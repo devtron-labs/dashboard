@@ -371,7 +371,7 @@ export default function HelmAppList({
                     )}
                 </div>
                 <div className="app-list__cell app-list__cell--app_status">
-                    <span className="app-list__cell-header">App status</span>
+                    <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>

@@ -1,5 +1,6 @@
 export const APP_LIST_HEADERS = {
     AppName: 'App name',
+    AppStatus: 'App status',
     ReleaseName: 'App/Release name',
     Environment: 'Environment',
     Cluster: 'Cluster',
