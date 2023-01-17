@@ -133,7 +133,7 @@ export default function CIAdvancedConfig({
 
     const renderTargetPlatform = () => {
         return (
-            <div className='pb-8'>
+            <div className="pb-8">
                 <TargetPlatformSelector
                     selectedTargetPlatforms={selectedTargetPlatforms}
                     setSelectedTargetPlatforms={setSelectedTargetPlatforms}

@@ -3,10 +3,10 @@ import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { noMatchingPlatformOptions } from '../common'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
+import { noMatchingPlatformOptions } from "../v2/common/ReactSelect.utils";
 
 const platformMenuList = (props): JSX.Element => {
     return (
@@ -96,13 +96,25 @@ function TargetPlatformSelector({
             )
         } else {
             if (!targetPlatform.includes(',')) {
-                return <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{targetPlatform}</div>
+                return (
+                    <div
+                        className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
+                        style={{ maxWidth: '100px' }}
+                    >
+                        {targetPlatform}
+                    </div>
+                )
             } else {
                 return (
                     <div className="flex left ">
                         {targetPlatform.split(',').map((val) => {
                             return (
-                                <div className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8">{val}</div>
+                                <div
+                                    className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
+                                    style={{ maxWidth: '100px' }}
+                                >
+                                    {val}
+                                </div>
                             )
                         })}
                     </div>

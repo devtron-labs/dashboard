@@ -326,3 +326,9 @@ export interface EmptyCharts {
     showChartGroupModal?: boolean
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
+
+export interface HelmProjectUpdatePayload {
+    appId: string
+    appName: string
+    teamId: number
+}

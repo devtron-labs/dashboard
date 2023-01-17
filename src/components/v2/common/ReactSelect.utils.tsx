@@ -196,3 +196,7 @@ export const menuComponent = (props,text) => {
         </components.MenuList>
     )
 }
+
+export const noMatchingPlatformOptions = (): string => {
+    return 'No matching options'
+}
