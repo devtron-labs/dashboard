@@ -21,13 +21,11 @@ interface EmptyStateCIMaterialProps {
     noSearchResultsMsg?: string
     toggleWebHookModal?: () => void
     clearSearch?: () => void
-    appId?: string|number
-    handleGoToWorkFlowEditor?: (...args) => void
+    handleGoToWorkFlowEditor?: (e?: any) => void
 }
 
 export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
-
-  getData(): { img; title; subtitle; cta } {
+    getData(): { img; title; subtitle; cta } {
         if (this.props.isRepoError) {
             return {
                 img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
@@ -50,13 +48,15 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
                         {this.props.repoUrl}
                     </a>
                 ) : (
-                    <h1 className="dc__empty-title fs-13" style={{color: 'gray'}}>{notConfiguredError}</h1>
+                    <h1 className="dc__empty-title fs-13" style={{ color: 'gray' }}>
+                        {notConfiguredError}
+                    </h1>
                 ),
                 cta: this.props.repoUrl ? null : (
-                        <button className="cta flex" onClick={this.props.handleGoToWorkFlowEditor}>
-                            {'Configure Source'}
-                            <NextIcon className="icon-dim-16 ml-5 scn-0" />
-                        </button>
+                    <button className="cta flex" onClick={this.props.handleGoToWorkFlowEditor}>
+                        Configure Source
+                        <NextIcon className="icon-dim-16 ml-5 scn-0" />
+                    </button>
                 ),
             }
         } else if (this.props.noSearchResults) {

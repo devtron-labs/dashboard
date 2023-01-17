@@ -6,7 +6,7 @@ import { SourceTypeMap } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
+import { GIT_BRANCH_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../config'
 export interface CIPipelineSourceConfigInterface {
     sourceType
     sourceValue
@@ -118,9 +118,6 @@ export function CiPipelineSourceConfig({
         regexTippyContent()
     }, [])
 
-    if (sourceValue === GIT_BRANCH_NOT_CONFIGURED) {
-        showIcons = false
-    }
     return (
         <div className={showTooltip ? 'branch-name' : ''}>
             {loading && showIcons && <span className="dc__loading-dots">loading</span>}
@@ -145,7 +142,7 @@ export function CiPipelineSourceConfig({
                                         >
                                             {sourceValueBase}
                                         </div>
-                                        {sourceValue !== '--' && <Info className="icon-dim-12 fcn-5 ml-4" />}
+                                        {sourceValue !== DEFAULT_GIT_BRANCH_VALUE && <Info className="icon-dim-12 fcn-5 ml-4" />}
                                     </div>
                                 )}
                                 {baseText && (

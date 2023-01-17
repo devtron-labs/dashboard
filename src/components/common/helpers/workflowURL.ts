@@ -5,15 +5,9 @@ export function getCDPipelineURL(
     isWebhookParent: boolean,
     cdPipelineId: string = null,
 ) {
-    if (cdPipelineId)
-        return `${workflowId}/${
-            isWebhookParent ? 'webhook' : 'ci-pipeline'
-        }/${ciPipelineId}/cd-pipeline/${cdPipelineId}`
-    else return `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline`
-}
-
-export function getPrefixURL(appId: string) {
-    return `/app/${appId}/edit/workflow/`
+    return `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
+        cdPipelineId ? `/${cdPipelineId}` : ''
+    }`
 }
 
 export function getCIPipelineURL(
@@ -22,17 +16,12 @@ export function getCIPipelineURL(
     ciPipelineId: string | number = null,
     isGitNotConfigured: boolean,
 ) {
-    let prefixURL = ''
-    if (isGitNotConfigured) {
-        prefixURL = getPrefixURL(appId)
-    }
-    if (ciPipelineId) return `${prefixURL}${workflowId}/ci-pipeline/${ciPipelineId}`
-    else return `${prefixURL}${workflowId}/ci-pipeline`
+    const prefixURL = isGitNotConfigured ? `/app/${appId}/edit/workflow/` : ''
+    return `${prefixURL}${workflowId}/ci-pipeline${ciPipelineId ? `/${ciPipelineId}` : ''}`
 }
 
 export function getExCIPipelineURL(appId: string, workflowId: string, ciPipelineId: string = null) {
-    if (ciPipelineId) return `${workflowId}/external-ci/${ciPipelineId}`
-    else return `${workflowId}/external-ci`
+    return `${workflowId}/external-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
 }
 
 export function getLinkedCIPipelineURL(
@@ -40,11 +29,9 @@ export function getLinkedCIPipelineURL(
     workflowId: string | number,
     ciPipelineId: string | number = null,
 ) {
-    if (ciPipelineId) return `${workflowId}/linked-ci/${ciPipelineId}`
-    else return `${workflowId}/linked-ci`
+    return `${workflowId}/linked-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
 }
 
 export function getWebhookDetailsURL(workflowId: string | number, ciPipelineId: string | number = null) {
-    if (ciPipelineId) return `${workflowId}/webhook/${ciPipelineId}`
-    else return `${workflowId}/webhook`
+    return `${workflowId}/webhook${ciPipelineId ? `/${ciPipelineId}` : ''}`
 }

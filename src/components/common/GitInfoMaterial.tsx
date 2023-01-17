@@ -15,6 +15,7 @@ import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, noop } from '../common'
 import { useHistory } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 export default function GitInfoMaterial({
     context,
@@ -30,8 +31,8 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     onClickShowBranchRegexModal,
-    appId,
 }) {
+    const appId = useParams()['appId']
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const { push } = useHistory()
@@ -222,10 +223,7 @@ export default function GitInfoMaterial({
                             noSearchResults={material.noSearchResult}
                             noSearchResultsMsg={material.noSearchResultsMsg}
                             clearSearch={clearSearch}
-                            appId={appId}
-                            handleGoToWorkFlowEditor={() => {
-                                goToWorkFlowEditor()
-                            }}
+                            handleGoToWorkFlowEditor={goToWorkFlowEditor}
                         />
                     </div>
                 ) : (

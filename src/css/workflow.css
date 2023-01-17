@@ -76,10 +76,6 @@
     align-items: center;
 }
 
-.workflow-node--dash {
-    border-style: dashed;
-}
-
 .workflow-node__trigger-type {
     height: 16px;
     opacity: 0.4;

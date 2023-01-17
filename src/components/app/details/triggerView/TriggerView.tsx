@@ -17,7 +17,7 @@ import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
-import { URLS, ViewType, SourceTypeMap, BUILD_STATUS } from '../../../../config'
+import { URLS, ViewType, SourceTypeMap, BUILD_STATUS, SOURCE_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -591,7 +591,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         let ciPipelineMaterials = []
         for (let i = 0; i < node.inputMaterialList.length; i++) {
             if (node.inputMaterialList[i]) {
-                if (node.inputMaterialList[i].value === '--') continue
+                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
                 let history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) history.push(node.inputMaterialList[i].history[0])
                 history.map((element) => {
@@ -865,85 +865,90 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
+    handleSourceNotConfigured = (
+        configuredMaterialList: Map<string, Set<string>>,
+        wf: WorkflowType,
+        _materialList: any[],
+    ) => {
+        if (_materialList.length > 0) {
+            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialName.toLowerCase()))
+        }
+
+        for (const material of wf.nodes) {
+            if (configuredMaterialList[wf.name].has(material.title.toLowerCase()) || material.type !== 'GIT') {
+                continue
+            }
+
+            const ciMaterial: CIMaterialType = {
+                id: 0,
+                gitMaterialId: 0,
+                gitMaterialName: material.title,
+                type: '',
+                value: DEFAULT_GIT_BRANCH_VALUE,
+                active: false,
+                gitURL: '',
+                isRepoError: false,
+                repoErrorMsg: '',
+                isBranchError: true,
+                branchErrorMsg: SOURCE_NOT_CONFIGURED,
+                regex: '',
+                history: [],
+                isSelected: false,
+                lastFetchTime: '',
+                isRegex: false,
+            }
+            _materialList.push(ciMaterial)
+        }
+    }
+
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
-            const configuredMaterialList = new Map()
+            const configuredMaterialList = new Map<string, Set<string>>()
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
-                configuredMaterialList[this.state.workflows[i].name] = new Set()
-
-                if (nd?.[this.state.materialType].length > 0) {
-                    nd?.[this.state.materialType].map((node, _) =>
-                        configuredMaterialList[this.state.workflows[i].name].add(node.gitMaterialName.toLowerCase()),
-                    )
-                }
-                for (let material of this.state.workflows[i].nodes) {
-                    if (
-                        configuredMaterialList[this.state.workflows[i].name].has(material.title.toLowerCase()) ||
-                        material.type !== 'GIT'
-                    ) {
-                        continue
-                    }
-                    const ciMaterial: CIMaterialType = {
-                        id: 0,
-                        gitMaterialId: 0,
-                        gitMaterialName: material.title,
-                        type: '',
-                        value: '--',
-                        active: false,
-                        gitURL: '',
-                        isRepoError: false,
-                        repoErrorMsg: '',
-                        isBranchError: true,
-                        branchErrorMsg: 'Source not configured',
-                        regex: '',
-                        history: [],
-                        isSelected: false,
-                        lastFetchTime: '',
-                        isRegex: false,
-                    }
-                    nd?.[this.state.materialType].push(ciMaterial)
-                }
-
                 if (nd) {
+                    configuredMaterialList[this.state.workflows[i].name] = new Set<string>()
+                    this.handleSourceNotConfigured(
+                        configuredMaterialList,
+                        this.state.workflows[i],
+                        nd[this.state.materialType],
+                    )
                     break
                 }
             }
-            let material = nd?.[this.state.materialType] || []
+            const material = nd?.[this.state.materialType] || []
             return (
-                <>
-                    <CIMaterial
-                        workflowId={this.state.workflowId}
-                        history={this.props.history}
-                        location={this.props.location}
-                        match={this.props.match}
-                        material={material}
-                        pipelineName={this.state.ciPipelineName}
-                        isLoading={this.state.isLoading}
-                        title={this.state.ciPipelineName}
-                        pipelineId={this.state.ciNodeId}
-                        showWebhookModal={this.state.showWebhookModal}
-                        hideWebhookModal={this.hideWebhookModal}
-                        toggleWebhookModal={this.toggleWebhookModal}
-                        webhookPayloads={this.state.webhookPayloads}
-                        isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
-                        onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
-                        webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
-                        showMaterialRegexModal={this.state.showMaterialRegexModal}
-                        onCloseBranchRegexModal={this.onCloseBranchRegexModal}
-                        filteredCIPipelines={this.state.filteredCIPipelines}
-                        onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
-                        showCIModal={this.state.showCIModal}
-                        onShowCIModal={this.onShowCIModal}
-                        isChangeBranchClicked={this.state.isChangeBranchClicked}
-                        getWorkflows={this.getWorkflows}
-                        loader={this.state.loader}
-                        setLoader={this.setLoader}
-                        isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
-                        isCacheAvailable={nd?.storageConfigured}
-                    />
-                </>
+                <CIMaterial
+                    workflowId={this.state.workflowId}
+                    history={this.props.history}
+                    location={this.props.location}
+                    match={this.props.match}
+                    material={material}
+                    pipelineName={this.state.ciPipelineName}
+                    isLoading={this.state.isLoading}
+                    title={this.state.ciPipelineName}
+                    pipelineId={this.state.ciNodeId}
+                    showWebhookModal={this.state.showWebhookModal}
+                    hideWebhookModal={this.hideWebhookModal}
+                    toggleWebhookModal={this.toggleWebhookModal}
+                    webhookPayloads={this.state.webhookPayloads}
+                    isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
+                    onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
+                    webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
+                    showMaterialRegexModal={this.state.showMaterialRegexModal}
+                    onCloseBranchRegexModal={this.onCloseBranchRegexModal}
+                    filteredCIPipelines={this.state.filteredCIPipelines}
+                    onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
+                    showCIModal={this.state.showCIModal}
+                    onShowCIModal={this.onShowCIModal}
+                    isChangeBranchClicked={this.state.isChangeBranchClicked}
+                    getWorkflows={this.getWorkflows}
+                    loader={this.state.loader}
+                    setLoader={this.setLoader}
+                    isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
+                    isCacheAvailable={nd?.storageConfigured}
+                />
             )
         }
     }

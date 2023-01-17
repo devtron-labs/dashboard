@@ -107,9 +107,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             this.props.history.push(
                 getCIPipelineURL(
-                    this.props.match.params.appId.toString(),
+                    this.props.match.params.appId,
                     this.props.id.toString(),
-                    node.downstreams[0].split('-')[1].toString(),
+                    node.downstreams[0].split('-')[1],
                     true,
                 ),
             )
@@ -206,9 +206,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
     renderSourceNode(node, ci) {
-        const appId = this.props.match.params.appId.toString()
-        const workflowId = this.props.id.toString()
-        const pipelineId = node.downstreams[0].split('-')[1].toString()
         return (
             <StaticNode
                 x={node.x}
@@ -226,7 +223,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 regex={node.regex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
                 to={this.openCIPipeline(ci)} //ci attribites for a git material
-                handleGoToWorkFlowEditor={(e) => {
+                handleGoToWorkFlowEditor={() => {
                     this.goToWorkFlowEditor(node)
                 }}
             />

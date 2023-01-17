@@ -8,7 +8,7 @@ import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from
 import { TriggerViewContext } from './TriggerView'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
@@ -33,7 +33,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         this.state = {
             regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
-            isBlobStorageConfigured: false
+            isBlobStorageConfigured: false,
         }
     }
 
@@ -141,16 +141,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let isMaterialActive = false
-        for(const material of this.props.material){
-            if(material.active){
-                isMaterialActive = true
-                break
-            }
-        }
+        isMaterialActive = this.props.material.some((material) => material.active)
+
         let canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =
                 (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
-                (mat.branchErrorMsg === 'Source not configured' && isMaterialActive)
+                (mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)
         if (this.props.material.length > 0) {
@@ -170,7 +166,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
-                        appId={this.props.match.params.appId}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
                 </>

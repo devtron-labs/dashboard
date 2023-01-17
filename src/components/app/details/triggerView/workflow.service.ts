@@ -47,21 +47,14 @@ export const getInitialWorkflows = (
     )
 }
 
-export function processWorkflow(
-    workflow: WorkflowResult,
+function handleSourceNotConfigured(
+    configuredMaterialList: Map<string, Set<string>>,
+    filteredCIPipelines: CiPipeline[],
     ciResponse: CiPipelineResult,
-    cdResponse: CdPipelineResult,
-    externalCIResponse: WebhookDetailsType[],
-    dimensions: WorkflowDimensions,
-    workflowOffset: Offset,
-): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
-    let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
-    const filteredCIPipelines =
-        ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
-    const configuredMaterialList = new Map()
+) {
     for (const ciPipeline of filteredCIPipelines) {
-        configuredMaterialList[ciPipeline.name] = new Set()
-        if (ciPipeline?.ciMaterial?.length > 0) {
+        configuredMaterialList[ciPipeline.name] = new Set<string>()
+        if (ciPipeline.ciMaterial?.length > 0) {
             ciPipeline.ciMaterial.forEach((property, _) =>
                 configuredMaterialList[ciPipeline.name].add(property.gitMaterialId),
             )
@@ -69,8 +62,8 @@ export function processWorkflow(
             ciPipeline.ciMaterial = []
         }
     }
-
     const gitMaterials = ciResponse?.materials ?? []
+
     for (const material of gitMaterials) {
         for (const ciPipeline of filteredCIPipelines) {
             if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId)) {
@@ -88,6 +81,22 @@ export function processWorkflow(
             })
         }
     }
+}
+
+export function processWorkflow(
+    workflow: WorkflowResult,
+    ciResponse: CiPipelineResult,
+    cdResponse: CdPipelineResult,
+    externalCIResponse: WebhookDetailsType[],
+    dimensions: WorkflowDimensions,
+    workflowOffset: Offset,
+): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
+    let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
+    const filteredCIPipelines =
+        ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
+    const configuredMaterialList = new Map<string, Set<string>>()
+    handleSourceNotConfigured(configuredMaterialList, filteredCIPipelines, ciResponse)
+
     const ciMap = new Map(
         filteredCIPipelines
             .map(ciPipelineToNodeWithDimension)

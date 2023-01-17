@@ -20,7 +20,7 @@ export interface StaticNodeProps {
     regex?: string
     isRegex?: boolean
     primaryBranchAfterRegex?: string
-    handleGoToWorkFlowEditor?: (...args)=>void
+    handleGoToWorkFlowEditor?: (...args) => void
 }
 
 export class StaticNode extends Component<StaticNodeProps> {
@@ -28,7 +28,7 @@ export class StaticNode extends Component<StaticNodeProps> {
         return (
             <div
                 className={`workflow-node workflow-node--static ${
-                    this.props.branch === GIT_BRANCH_NOT_CONFIGURED ? 'cursor workflow-node--dash' : ''
+                    this.props.branch === GIT_BRANCH_NOT_CONFIGURED ? 'cursor dashed' : ''
                 }`}
                 onClick={this.props.handleGoToWorkFlowEditor}
             >
@@ -39,6 +39,7 @@ export class StaticNode extends Component<StaticNodeProps> {
                         sourceType={this.props.sourceType}
                         sourceValue={this.props.branch}
                         showTooltip={true}
+                        showIcons={this.props.branch !== GIT_BRANCH_NOT_CONFIGURED}
                         regex={this.props.regex}
                         isRegex={this.props.isRegex}
                         primaryBranchAfterRegex={this.props.primaryBranchAfterRegex}

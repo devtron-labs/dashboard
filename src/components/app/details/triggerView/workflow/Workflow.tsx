@@ -16,9 +16,9 @@ export class Workflow extends Component<WorkflowProps> {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             this.props.history.push(
                 getCIPipelineURL(
-                    this.props.match.params.appId.toString(),
-                    this.props.id.toString(),
-                    node.downstreams[0].split('-')[1].toString(),
+                    this.props.match.params.appId,
+                    this.props.id,
+                    node.downstreams[0].split('-')[1],
                     true,
                 ),
             )
