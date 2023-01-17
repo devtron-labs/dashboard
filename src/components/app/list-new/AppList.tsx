@@ -948,18 +948,6 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                             Helm Apps
                         </a>
                     </li>
-                    {serverMode === SERVER_MODE.EA_ONLY && (
-                        <li className="tab-list__tab">
-                            <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
-                                className={`tab-list__tab-link ${
-                                    currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
-                                }`}
-                            >
-                                Install CI/CD
-                            </NavLink>
-                        </li>
-                    )}
                 </ul>
                 <div className="app-tabs-sync fs-13">
                     {lastDataSyncTimeString &&
