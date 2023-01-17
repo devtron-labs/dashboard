@@ -1,23 +1,27 @@
-import React, { Component } from 'react';
-import { statusIcon, statusColor } from '../../config';
-import { handleUTCTime } from '../../../common';
-import { ExpandedRowProps } from './types';
+import React, { Component } from 'react'
+import { statusIcon, statusColor } from '../../config'
+import { handleUTCTime } from '../../../common'
+import { ExpandedRowProps } from './types'
 import { Link } from 'react-router-dom'
-import { ReactComponent as Expand } from '../../../../assets/icons/ic-dropdown-filled.svg';
-import { ReactComponent as Settings } from '../../../../assets/icons/ic-settings.svg';
-import Tippy from '@tippyjs/react';
-import './expandedRow.css';
-import AppStatus from '../../AppStatus';
+import { ReactComponent as Expand } from '../../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as Settings } from '../../../../assets/icons/ic-settings.svg'
+import Tippy from '@tippyjs/react'
+import './expandedRow.css'
+import AppStatus from '../../AppStatus'
 
-export class ExpandedRow extends Component<ExpandedRowProps>{
-
+export class ExpandedRow extends Component<ExpandedRowProps> {
     renderRows() {
         return this.props.app.environments.map((env) => {
-            let color = statusColor[env.appStatus.toLocaleLowerCase()];
-            return <Link key={env.id} to={`${this.props.redirect(this.props.app, env.id)}`} className="app-list__row app-list__row--expanded">
+            let color = statusColor[env.appStatus.toLocaleLowerCase()]
+            return (
+                <Link
+                    key={env.id}
+                    to={`${this.props.redirect(this.props.app, env.id)}`}
+                    className="app-list__row app-list__row--expanded"
+                >
                     <div className="app-list__cell--icon"></div>
                     <div className="app-list__cell app-list__cell--name">
-                    <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
+                        <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
                             <line x1="0" y1="20" x2="300" y2="20" stroke={color} strokeWidth="1" />
                             <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
                         </svg>
@@ -37,21 +41,30 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
                 </Link>
+            )
         })
     }
 
     render() {
-        return <div className="expanded-row">
-            <div className="expanded-row__title" >
-                <div className="expanded-row__close" onClick={this.props.close}>
-                    <Expand className="icon-dim-20 mr-18 fcn-7" />
-                    <span>{this.props.app.name}</span>
+        return (
+            <div className="expanded-row">
+                <div className="expanded-row__title">
+                    <div className="expanded-row__close" onClick={this.props.close}>
+                        <Expand className="icon-dim-20 mr-18 fcn-7" />
+                        <span>{this.props.app.name}</span>
+                    </div>
+                    <button
+                        type="button"
+                        className="button-edit button-edit--white"
+                        onClick={() => {
+                            this.props.handleEdit(this.props.app.id)
+                        }}
+                    >
+                        <Settings className="button-edit__icon" />
+                    </button>
                 </div>
-                <button type="button" className="button-edit button-edit--white" onClick={() => { this.props.handleEdit(this.props.app.id) }}>
-                    <Settings className="button-edit__icon" />
-                </button>
-            </div >
-            {this.renderRows()}
-        </div >
+                {this.renderRows()}
+            </div>
+        )
     }
 }
