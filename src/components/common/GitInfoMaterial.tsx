@@ -32,7 +32,7 @@ export default function GitInfoMaterial({
     workflowId,
     onClickShowBranchRegexModal,
 }) {
-    const appId = useParams()['appId']
+    const { appId } = useParams<{appId: string}>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const { push } = useHistory()
