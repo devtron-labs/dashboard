@@ -161,7 +161,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             })
             .catch((errors: ServerErrors) => {
                 if (Array.isArray(errors.errors)) {
-                    errors.errors.map(({ userMessage }) => toast.error(userMessage))
+                    errors.errors.forEach((element) => {
+                        toast.error(element.userMessage)
+                    })
                     this.setState({ code: errors.code })
                 } else {
                     showError(errors)
