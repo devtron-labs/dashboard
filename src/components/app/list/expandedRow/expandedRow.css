@@ -24,7 +24,7 @@
     align-items: center;
     height: 56px;
     cursor: pointer;
-    background-color: var(--N100);
+    background-color: var(--N50);
 }
 
 .expanded-row__title {
@@ -51,6 +51,7 @@
 
 .app-list__row--expanded {
     box-shadow: inset 0 -1px 0 0 #d1d1d1;
+    background-color: var(--N50) !important;
     position: relative;
 }
 

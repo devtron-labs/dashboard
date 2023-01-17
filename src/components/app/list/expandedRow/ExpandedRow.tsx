@@ -13,7 +13,7 @@ export class ExpandedRow extends Component<ExpandedRowProps>{
 
     renderRows() {
         return this.props.app.environments.map((env) => {
-            let color = 'var(--N700)';
+            let color = statusColor[env.appStatus.toLocaleLowerCase()];
             return <Link key={env.id} to={`${this.props.redirect(this.props.app, env.id)}`} className="app-list__row app-list__row--expanded">
                     <div className="app-list__cell--icon"></div>
                     <div className="app-list__cell app-list__cell--name">

@@ -242,7 +242,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 key: status.key,
                 label: status.label,
                 isSaved: true,
-                isChecked: filterApplied.appStatus.has(status.label),
+                isChecked: filterApplied.appStatus.has(status.key),
             }
         })
 

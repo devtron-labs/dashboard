@@ -16,6 +16,8 @@ export interface AppListState {
     offset: number;
     pageSize: number;
     expandedRow: Record<number,boolean>;
+    isAllExpanded: boolean
+    isAllExpandable: boolean
 }
 
 export interface App {
@@ -71,7 +73,7 @@ export interface AppListViewProps extends AppListState, RouteComponentProps<{}> 
   isSuperAdmin: boolean
   openDevtronAppCreateModel: (event) => void
   updateDataSyncing: (loading: boolean) => void
-  expandAllRow: () => void
+  toggleExpandAllRow: () => void
 }
 
 export interface AppListResponse {

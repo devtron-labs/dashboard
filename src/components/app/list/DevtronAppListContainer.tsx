@@ -30,6 +30,8 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             offset: 0,
             pageSize: 20,
             expandedRow: null,
+            isAllExpanded: false,
+            isAllExpandable: false,
         }
     }
 
@@ -97,19 +99,21 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         this.setState({ expandedRow: {...this.state.expandedRow, [id]: false} });
     }
 
-    expandAllRow = (): void => {
+    toggleExpandAllRow = (): void => {
         let _expandedRow = {}
-        this.state.apps.forEach((app) => {
-        if(app.environments.length > 1){
-            _expandedRow = {..._expandedRow,[app.id]: true}
+        if(!this.state.isAllExpanded){
+            this.state.apps.forEach((app) => {
+                if(app.environments.length > 1){
+                    _expandedRow = {..._expandedRow,[app.id]: true}
+                }
+                })
         }
-        })
-        this.setState({expandedRow: _expandedRow})
+        this.setState({expandedRow: _expandedRow, isAllExpanded: !this.state.isAllExpanded})
     }
 
     getAppList = (request): void => {
         this.props.updateDataSyncing(true);
-        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length;
+        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length || request.appStatuses?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
         state.sortRule = {
@@ -117,6 +121,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             order: request.sortOrder,
         }
         state.expandedRow = {};
+        state.isAllExpanded = false
         this.setState(state);
         if (this.abortController) {
             this.abortController.abort();
@@ -132,8 +137,10 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 else view = AppListViewType.EMPTY;
             }
             let state = { ...this.state };
+            const apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : []
             state.code = response.code;
-            state.apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : [];
+            state.apps = apps;
+            state.isAllExpandable = apps.filter((app) => app.environments.length > 1).length > 0
             state.view = view;
             state.offset = request.offset;
             state.size = response.result.appCount;
@@ -182,7 +189,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             appListCount={this.props.appListCount}
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
             updateDataSyncing= {this.props.updateDataSyncing}
-            expandAllRow={this.expandAllRow}
+            toggleExpandAllRow={this.toggleExpandAllRow}
         />
     }
 }

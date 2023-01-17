@@ -11,9 +11,16 @@ import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-o
 import Tippy from '@tippyjs/react';
 import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
 import AppStatus from '../AppStatus';
+import { ReactComponent as Arrow} from '../../../assets/icons/ic-dropdown-filled.svg'
 
 export class AppListView extends Component<AppListViewProps>{
 
+    expandEnv = (event,id) => {
+        event.stopPropagation()
+        event.preventDefault()
+        this.props.expandRow(id)
+    }
+    
     renderEnvironmentList(app) {
         let len = app.environments.length;
         if (len) {
@@ -21,7 +28,7 @@ export class AppListView extends Component<AppListViewProps>{
             return <div className="app-list__cell app-list__cell--env">
                 <p  className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>{isEnvConfigured ? app.defaultEnv.name  : "Not configured"}</p>
                 {len > 1 ? <button type="button" className="cell__link"
-                    onClick={(event) => { event.stopPropagation(); event.preventDefault(); this.props.expandRow(app.id); }}>
+                    onClick={(event) => this.expandEnv(event,app.id)}>
                     +{len - 1} more </button> : null}
             </div>
         }
@@ -33,10 +40,10 @@ export class AppListView extends Component<AppListViewProps>{
             let icon = this.props.sortRule.order == OrderBy.ASC ? "sort-up" : "sort-down";
             return <div className="app-list">
                 <div className="app-list__header">
-                    <div className="app-list__cell--icon" onClick={this.props.expandAllRow}><span className={icon} /></div>
+                    <div className="app-list__cell--icon flex left cursor" onClick={ this.props.isAllExpandable && this.props.toggleExpandAllRow}><Arrow className={`icon-dim-20 ${this.props.isAllExpandable ? (this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90') : 'dc__flip-90'}`} /></div>
                     <div className="app-list__cell app-list__cell--name">
-                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
-                            {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
+                        <button className="app-list__cell-header flex" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
+                            {this.props.sortRule.key == SortBy.APP_NAME ? <span className={`${icon} ml-4`}></span> : <span className="sort-col"></span>}
                         </button>
                     </div>
                     <div className="app-list__cell app-list__cell--app_status">
@@ -60,11 +67,13 @@ export class AppListView extends Component<AppListViewProps>{
                     <div className="app-list__cell app-list__cell--action"></div>
                 </div>
                 {this.props.apps.map((app) => {
+                    let len = app.environments.length > 1;
                     return <React.Fragment key={app.id} >
                         {!(this.props.expandedRow[app.id]) ?
-                            <Link to={this.props.redirectToAppDetails(app, app.defaultEnv.id)} className="app-list__row">
+                            <Link to={this.props.redirectToAppDetails(app, app.defaultEnv.id)} className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}>
                                 <div className="app-list__cell--icon">
-                                    <DevtronAppIcon className="icon-dim-24"/>
+                                    <DevtronAppIcon className="icon-dim-24 dc__show-first--icon"/>
+                                    {len && <Arrow className="icon-dim-20 dc__flip-90 fcn-7 dc__show-second--icon" onClick={(event) => this.expandEnv(event,app.id)} />}
                                 </div>
                                 <div className="app-list__cell app-list__cell--name">
                                     <p className="dc__truncate-text  m-0 value">{app.name}</p>

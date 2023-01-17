@@ -45,8 +45,8 @@ export enum NodeStatus {
     Healthy = 'healthy',
     Progressing = 'progressing',
     Missing = 'missing',
-    NotDeployed = 'not deployed',
-    Suspended = 'suspended'
+    Suspended = 'suspended',
+    Unknown = 'unknown'
 }
 
 export enum NodeType {

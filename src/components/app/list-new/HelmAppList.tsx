@@ -49,6 +49,7 @@ export default function HelmAppList({
     const [sortBy, setSortBy] = useState(SortBy.APP_NAME);
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC);
     const [clusterIdsCsv, setClusterIdsCsv] = useState('');
+    const [appStatus, setAppStatus] = useState('');
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined);
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([]);
     const location = useLocation();
@@ -63,7 +64,7 @@ export default function HelmAppList({
     // it means filter/sorting has been applied
     useEffect(() => {
         if (dataStateType == AppListViewType.LIST) {
-            if (clusterIdsCsv == _getClusterIdsFromRequestUrl()) {
+            if (clusterIdsCsv == _getClusterIdsFromRequestUrl() && appStatus == _getAppStatusFromRequestUrl()) {
                 handleFilteration();
             } else {
                 init();
@@ -94,7 +95,7 @@ export default function HelmAppList({
                 updateDataSyncing(false)
             }
         } else {
-            getDevtronInstalledHelmApps(clusterIdsCsv)
+            getDevtronInstalledHelmApps(clusterIdsCsv,appStatus)
                 .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
                     setDevtronInstalledHelmAppsList(
                         devtronInstalledHelmAppsListResponse.result
@@ -114,7 +115,7 @@ export default function HelmAppList({
                 })
         }
 
-    }, [clusterIdsCsv]);
+    }, [clusterIdsCsv,appStatus]);
 
     // reset data
     function init() {
@@ -122,6 +123,7 @@ export default function HelmAppList({
         setDevtronInstalledHelmAppsList([]);
         setFilteredHelmAppsList([]);
         setClusterIdsCsv(_getClusterIdsFromRequestUrl());
+        setAppStatus(_getAppStatusFromRequestUrl())
         setExternalHelmAppsList([]);
         if (sseConnection) {
             sseConnection.close();
@@ -160,6 +162,10 @@ export default function HelmAppList({
 
     function _getClusterIdsFromRequestUrl() {
         return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',');
+    } 
+
+    function _getAppStatusFromRequestUrl() {
+        return payloadParsedFromUrl.appStatuses.join(',')
     }
 
     function _onExternalAppDataFromSse(
@@ -322,7 +328,7 @@ export default function HelmAppList({
                     {sseConnection && <span>App/Release name</span>}
                     {!sseConnection && (
                         <button
-                            className="app-list__cell-header"
+                            className="app-list__cell-header flex"
                             onClick={(e) => {
                                 e.preventDefault();
                                 sortApplicationList('appNameSort');
@@ -330,9 +336,9 @@ export default function HelmAppList({
                         >
                             App/Release name
                             {sortBy == SortBy.APP_NAME ? (
-                                <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'}`}></span>
+                                <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'} ml-4`}></span>
                             ) : (
-                                <span className="sort-col"></span>
+                                <span className="sort-col ml-4"></span>
                             )}
                         </button>
                     )}
