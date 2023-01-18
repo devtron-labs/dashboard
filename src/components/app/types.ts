@@ -1,3 +1,4 @@
+import { TagType } from '@devtron-labs/devtron-fe-common-lib';
 import { RouteComponentProps } from 'react-router';
 import { Teams } from '../../services/service.types';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
@@ -20,15 +21,6 @@ export interface LabelTags {
     tags: OptionType[];
     inputTagValue: string;
     tagError: string;
-}
-
-export interface TagType {
-  key:string
-  value?: string
-  description?: string
-  propagate: boolean
-  isInvalidKey?: boolean
-  isInvalidValue?: boolean
 }
 
 export interface TagErrorType{

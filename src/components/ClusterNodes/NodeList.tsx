@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory } from 'react-router'
+import { NavLink, useRouteMatch, useParams, useHistory } from 'react-router-dom'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import {
     handleUTCTime,

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ConfirmationDialog } from '../../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager , ConfirmationDialog} from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'

@@ -3,8 +3,14 @@ import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.servic
 import { TriggerType, ViewType, URLS } from '../../config';
 import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import { CIPipelineProps, CIPipelineState } from './types';
-import { getCIPipelineURL, DeleteDialog } from '../common';
-import { showError, Progressing, ConditionalWrap, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { getCIPipelineURL } from '../common';
+import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    VisibleModal,
+    DeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';

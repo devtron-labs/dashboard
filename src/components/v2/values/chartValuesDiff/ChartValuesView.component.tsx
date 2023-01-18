@@ -6,8 +6,8 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { DeleteDialog, Select } from '../../../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Select } from '../../../common'
+import { Progressing, DeleteDialog, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -29,7 +29,6 @@ import {
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import EmptyState from '../../../EmptyState/EmptyState'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DELETE_CHART_APP_DESCRIPTION_LINES,

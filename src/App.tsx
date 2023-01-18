@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router'
+import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { URLS } from './config'
 import { toast } from 'react-toastify'
 import 'patternfly/dist/css/patternfly.css'

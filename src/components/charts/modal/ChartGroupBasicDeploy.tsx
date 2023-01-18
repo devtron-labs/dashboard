@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DialogForm, DialogFormSubmit } from '../../common';
+import { DialogForm, DialogFormSubmit } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';

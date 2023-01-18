@@ -9,13 +9,20 @@ import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     Checkbox,
-    DeleteDialog,
     CHECKBOX_VALUE,
     sortObjectArrayAlphabetically
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
-import { ErrorScreenManager, Progressing, showError, VisibleModal, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ErrorScreenManager,
+    Progressing,
+    showError,
+    VisibleModal,
+    Drawer,
+    DeleteDialog,
+    ForceDeleteDialog
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
     saveCDPipeline,
@@ -45,7 +52,6 @@ import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
 import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'

@@ -25,7 +25,7 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
@@ -62,7 +62,6 @@ import {
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { mainContext } from '../../../common/navigation/NavigationRoutes'
-import ForceDeleteDialog from '../../../common/dialogs/ForceDeleteDialog'
 import {
     ChartEnvironmentOptionType,
     ChartKind,

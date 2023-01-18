@@ -1,7 +1,14 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, DeleteDialog } from '../common'
-import { ServerErrors, showError, ConditionalWrap, VisibleModal, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { ButtonWithLoader } from '../common'
+import {
+    ServerErrors,
+    showError,
+    ConditionalWrap,
+    VisibleModal,
+    Drawer,
+    DeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { BuildStageVariable, BuildTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
 import {

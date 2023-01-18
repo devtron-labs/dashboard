@@ -4,10 +4,9 @@ import {
     Page,
     DropdownIcon,
     useJsonYaml,
-    DeleteDialog,
     sortCallback,
 } from '../../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
@@ -32,9 +31,7 @@ import AsyncSelect from 'react-select/async'
 import ReactGA from 'react-ga4'
 import ReactSelect from 'react-select'
 import './DeployChart.scss'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'

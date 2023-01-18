@@ -7,7 +7,6 @@ import {
     mapByKey,
     Pencil,
     not,
-    ConfirmationDialog,
     useAsync,
     Select,
     RadioGroup,
@@ -18,7 +17,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'

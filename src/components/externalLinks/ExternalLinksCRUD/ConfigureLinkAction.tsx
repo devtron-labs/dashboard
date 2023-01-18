@@ -14,7 +14,7 @@ import {
 import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
-import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import IdentifierSelector from './IdentifierSelector'
 
 export default function ConfigureLinkAction({

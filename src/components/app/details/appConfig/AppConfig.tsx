@@ -12,12 +12,18 @@ import {
 import {
     ErrorBoundary,
     usePrevious,
-    DeleteDialog,
-    ConfirmationDialog,
     useAsync,
     ConditionalWrap,
 } from '../../../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DeleteDialog,
+    ConfirmationDialog,
+    TippyCustomized,
+    TippyTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
@@ -46,7 +52,6 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import { DeleteComponentsName } from '../../../../config/constantMessaging'
 import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
 

@@ -1,7 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
-import { DeleteDialog } from '../../common'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteExternalLink, getExternalLinks } from '../ExternalLinks.service'
 import { DeleteExternalLinkType, ExternalLinkIdentifierType, ExternalLinkScopeType } from '../ExternalLinks.type'
 import { sortByUpdatedOn } from '../ExternalLinks.utils'

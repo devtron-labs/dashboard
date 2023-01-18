@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { DeleteDialog } from '../common'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
-import { deleteUser } from '../userGroups/userGroup.service'
+import { showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({

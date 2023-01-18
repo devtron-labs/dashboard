@@ -3,8 +3,8 @@ import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
-import { PopupMenu, Checkbox, Pagination, DeleteDialog, toastAccessDenied } from '../common';
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, Pagination } from '../common';
+import { showError, Progressing, DeleteDialog, toastAccessDenied, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmailsFilteredByEmail } from './notifications.service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';

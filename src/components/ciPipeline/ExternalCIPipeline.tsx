@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, saveCIPipeline, deleteCIPipeline, getPipelineMetaConfiguration } from './ciPipeline.service';
 import { SourceTypeMap, TriggerType, ViewType } from '../../config';
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
-import { CopyButton, DeleteDialog } from '../common';
-import { showError, Progressing, ConditionalWrap, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { CopyButton } from '../common';
+import {
+    ServerErrors,
+    showError,
+    Progressing,
+    ConditionalWrap,
+    VisibleModal,
+    DeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import Tippy from '@tippyjs/react';

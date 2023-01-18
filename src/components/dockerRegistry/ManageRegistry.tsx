@@ -5,7 +5,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
 import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import Select, { components } from 'react-select'
@@ -16,7 +15,7 @@ import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-
 import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { TippyCustomized, TippyTheme } from  '@devtron-labs/devtron-fe-common-lib'
 
 export function DropdownIndicator(props) {
     return (

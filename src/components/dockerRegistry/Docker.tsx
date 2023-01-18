@@ -7,7 +7,7 @@ import {
     not,
     multiSelectStyles,
 } from '../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
@@ -31,7 +31,6 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
 import Reload from '../Reload/Reload'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 enum CERTTYPE {
     SECURE = 'secure',

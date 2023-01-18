@@ -2,8 +2,8 @@ import React from 'react'
 import { useParams, useHistory, useLocation } from 'react-router';
 import { useCallback } from 'react';
 import { useReducer } from 'react';
-import { useKeyDown, Info, ConfirmationDialog, useAsync } from '../common'
-import { showError, Progressing, OpaqueModal } from '@devtron-labs/devtron-fe-common-lib'
+import { useKeyDown, Info, useAsync } from '../common'
+import { showError, Progressing, OpaqueModal, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect } from 'react';
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg';

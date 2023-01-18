@@ -1,17 +1,15 @@
 import React, { Component } from 'react'
 import { sortObjectArrayAlphabetically, multiSelectStyles } from '../../common'
-import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, Progressing, Drawer, TagType, TagLabelSelect } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
 import { getHostURLConfiguration, getTeamListMin } from '../../../services/service'
 import { createApp } from './service'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
@@ -20,9 +18,6 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import Reload from '../../Reload/Reload'
 import './createApp.scss'
-import TagDetails from './CustomTagSelector/TagDetails'
-import PropagateTagInfo from './CustomTagSelector/PropagateTagInfo'
-import TagLabelSelect from '../details/TagLabelSelect'
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -190,7 +185,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    setTags = (tags): void => {
+    setTags = (tags: TagType[]): void => {
         this.setState({ tags })
     }
 

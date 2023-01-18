@@ -25,7 +25,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) return null

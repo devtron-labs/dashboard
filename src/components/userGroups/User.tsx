@@ -6,11 +6,10 @@ import {
     ClearIndicator,
     MultiValueRemove,
     multiSelectStyles,
-    DeleteDialog,
     MultiValueChipContainer,
     deepEqual,
 } from '../common';
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
 import Select from 'react-select';

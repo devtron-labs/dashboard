@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { RouteComponentProps } from 'react-router'
-import { PopupMenu, DeleteDialog } from '../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, PopupMenu, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType, SourceTypeMap, URLS } from '../../config'
 import { deploymentGroupList, triggerGroupDeploy, getCDMaterialList, deleteDeploymentGroup } from './service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'

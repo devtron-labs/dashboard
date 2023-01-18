@@ -10,12 +10,11 @@ import {
     useIntersection,
     copyToClipboard,
     asyncWrap,
-    ConfirmationDialog,
     useKeyDown,
     not,
     ConditionalWrap,
 } from '../../../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import {
     Routes,
     URLS,

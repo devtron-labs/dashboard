@@ -1,8 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
-import TagLabelSelect from './TagLabelSelect'
-import { AboutAppInfoModalProps, TagType } from '../types'
+import { showError, Progressing, Drawer, TagLabelSelect, TagType } from '@devtron-labs/devtron-fe-common-lib'
+import { AboutAppInfoModalProps } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
 

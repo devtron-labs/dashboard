@@ -10,7 +10,6 @@ import {
 import {
     NavigationArrow,
     useEffectAfterMount,
-    ConfirmationDialog,
     useAppContext,
     noop,
     useEventSource,
@@ -20,7 +19,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common';
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from './../../../v2/common/ReactSelect.utils';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link, Switch } from 'react-router-dom';

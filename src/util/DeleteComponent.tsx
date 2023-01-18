@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { ConfirmationDialog, DeleteDialog } from '../components/common'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, ConfirmationDialog, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
 import info from '../assets/icons/ic-info-filled.svg'
