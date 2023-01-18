@@ -82,8 +82,8 @@ export default function HelmAppList({
 
     // it means filter/sorting has been applied
     useEffect(() => {
-        if (dataStateType == AppListViewType.LIST) {
-            if (clusterIdsCsv == _getClusterIdsFromRequestUrl() && appStatus == _getAppStatusFromRequestUrl()) {
+        if (dataStateType === AppListViewType.LIST) {
+            if (clusterIdsCsv === _getClusterIdsFromRequestUrl() && appStatus === _getAppStatusFromRequestUrl()) {
                 handleFilteration();
             } else {
                 init()
@@ -353,7 +353,6 @@ export default function HelmAppList({
     }
 
     function renderHeaders() {
-        let sortIcon = sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down';
         return (
             <div className="app-list__header">
                 <div className="app-list__cell--icon"></div>
@@ -363,7 +362,7 @@ export default function HelmAppList({
                         <button className="app-list__cell-header flex" onClick={sortByAppName}>
                             {APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
-                                <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'} ml-4`}></span>
+                                <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
                             ) : (
                                 <span className="sort-col ml-4"></span>
                             )}

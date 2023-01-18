@@ -10,9 +10,13 @@ import './expandedRow.css'
 import AppStatus from '../../AppStatus'
 
 export class ExpandedRow extends Component<ExpandedRowProps> {
+    handleEditApp = () => {
+        this.props.handleEdit(this.props.app.id)
+    }
+
     renderRows() {
         return this.props.app.environments.map((env) => {
-            let color = statusColor[env.appStatus.toLocaleLowerCase()]
+            const color = statusColor[env.appStatus.toLowerCase()]
             return (
                 <Link
                     key={env.id}
@@ -56,9 +60,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                     <button
                         type="button"
                         className="button-edit button-edit--white"
-                        onClick={() => {
-                            this.props.handleEdit(this.props.app.id)
-                        }}
+                        onClick={this.handleEditApp}
                     >
                         <Settings className="button-edit__icon" />
                     </button>

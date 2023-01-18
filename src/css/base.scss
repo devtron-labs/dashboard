@@ -975,7 +975,7 @@ button.anchor {
     &.not-triggered {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
-        &.not-deployed {
+        &.not-deployed--node {
             background: url('../assets/icons/ic-close.svg'), transparent;
             background-size: contain, contain;
         }

@@ -298,20 +298,15 @@
     -webkit-background-size: 100% 100%;
 }
 
-.sort-up {
+.sort {
     background-image: url('../../../assets/icons/ic-sort-arrow-down.svg');
     display: inline-block;
-    transform: rotate(180deg);
     height: 12px;
     width: 12px;
 }
 
-.sort-down {
-    background-image: url('../../../assets/icons/ic-sort-arrow-down.svg');
-    display: inline-block;
-    vertical-align: bottom;
-    height: 12px;
-    width: 12px;
+.sort-up {
+    transform: rotate(180deg);
 }
 
 .select-material--h450 {

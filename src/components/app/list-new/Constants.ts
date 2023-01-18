@@ -6,6 +6,8 @@ export const APP_LIST_HEADERS = {
     Cluster: 'Cluster',
     Namespace: 'Namespace',
     LastDeployedAt: 'Last deployed at',
+    SearchAppStatus: 'Search app status',
+    appStatus: 'appStatus'
 }
 export const ENVIRONMENT_HEADER_TIPPY_CONTENT = 'Environment is a unique combination of cluster and namespace'
 export const EXTERNAL_HELM_SSE_CONNECTION_ERROR = 'Some network error occured while fetching external apps.'

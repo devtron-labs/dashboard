@@ -92,11 +92,11 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     expandRow = (id: number | null): void => {
-        this.setState({ expandedRow: {...this.state.expandedRow, [id]: true} });
+        this.setState((prevState) => ({ expandedRow: {...prevState.expandedRow, [id]: true} }));
     }
 
     closeExpandedRow = (id: number | null): void => {
-        this.setState({ expandedRow: {...this.state.expandedRow, [id]: false} });
+        this.setState((prevState) => ({ expandedRow: {...prevState.expandedRow, [id]: false} }));
     }
 
     toggleExpandAllRow = (): void => {

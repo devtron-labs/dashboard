@@ -22,7 +22,8 @@ export const statusColor = {
     cancelled: '#767d84',
     aborted: '#767d84',
     timedout: '#f33e3e',
-    unabletofetch: '#f33e3e'
+    unabletofetch: '#f33e3e',
+    hibernating: 'var(--N700)'
 }
 
 export const statusIcon = {

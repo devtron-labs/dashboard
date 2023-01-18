@@ -34,6 +34,7 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
+import { APP_LIST_HEADERS } from './Constants'
 
 export default function AppList({ isSuperAdmin, appListCount }: AppListPropType) {
     const location = useLocation()
@@ -182,10 +183,11 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
             .split(',')
             .filter((team) => team != '')
             .map((team) => Number(team))
-        let appStatusArr = appStatus.toString()
-        .split(',')
-        .filter((status) => status != '')
-        .map((status) => status)
+        let appStatusArr = appStatus
+            .toString()
+            .split(',')
+            .filter((status) => status != '')
+            .map((status) => status)
 
         ////// update master filters data (check/uncheck)
         let filterApplied = {
@@ -773,8 +775,8 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                     <Filter
                         list={masterFilters.appStatus}
                         labelKey="label"
-                        buttonText="App status"
-                        placeholder="Search app status"
+                        buttonText={APP_LIST_HEADERS.AppStatus}
+                        placeholder={APP_LIST_HEADERS.SearchAppStatus}
                         searchable
                         multi
                         type={AppListConstants.FilterType.APP_STATUS}
@@ -879,9 +881,9 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                     } else if (key == 'environments') {
                         filterType = AppListConstants.FilterType.ENVIRONMENT
                         _filterKey = 'environment'
-                    } else if (key == 'appStatus') {
+                    } else if (key == APP_LIST_HEADERS.appStatus) {
                         filterType = AppListConstants.FilterType.APP_STATUS
-                        _filterKey = 'appStatus'
+                        _filterKey = APP_LIST_HEADERS.appStatus
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
