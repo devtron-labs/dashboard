@@ -20,7 +20,7 @@ export interface StaticNodeProps {
     regex?: string
     isRegex?: boolean
     primaryBranchAfterRegex?: string
-    handleGoToWorkFlowEditor?: (...args) => void
+    handleGoToWorkFlowEditor?: (e?: any) => void
 }
 
 export class StaticNode extends Component<StaticNodeProps> {

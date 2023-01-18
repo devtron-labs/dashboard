@@ -140,8 +140,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
-        let isMaterialActive = false
-        isMaterialActive = this.props.material.some((material) => material.active)
+        const isMaterialActive = this.props.material.some((material) => material.active)
 
         let canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =

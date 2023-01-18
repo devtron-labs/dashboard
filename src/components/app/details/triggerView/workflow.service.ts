@@ -47,11 +47,8 @@ export const getInitialWorkflows = (
     )
 }
 
-function handleSourceNotConfigured(
-    configuredMaterialList: Map<string, Set<string>>,
-    filteredCIPipelines: CiPipeline[],
-    ciResponse: CiPipelineResult,
-) {
+function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse: CiPipelineResult) {
+    const configuredMaterialList = new Map<string, Set<string>>()
     for (const ciPipeline of filteredCIPipelines) {
         configuredMaterialList[ciPipeline.name] = new Set<string>()
         if (ciPipeline.ciMaterial?.length > 0) {
@@ -94,8 +91,7 @@ export function processWorkflow(
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
-    const configuredMaterialList = new Map<string, Set<string>>()
-    handleSourceNotConfigured(configuredMaterialList, filteredCIPipelines, ciResponse)
+    handleSourceNotConfigured(filteredCIPipelines, ciResponse)
 
     const ciMap = new Map(
         filteredCIPipelines
