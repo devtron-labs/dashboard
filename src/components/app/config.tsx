@@ -71,6 +71,6 @@ export const APP_STATUS = {
     Healthy : 'Healthy',
     Progressing : 'Progressing',
     Missing: 'Missing',
-    Hibernating: 'Hibernating',
+    Hibernating: 'HIBERNATING',
     Unknown: 'Unknown'
 }
