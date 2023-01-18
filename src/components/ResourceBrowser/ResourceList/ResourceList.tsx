@@ -271,21 +271,6 @@ export default function ResourceList() {
         return totalTimeInSec
     }
 
-    const sortEventListOnLastSeen = (warningEvents: Record<string, any>[], otherEvents: Record<string, any>[]) => {
-        const warningData = new Map<number, Record<string, any>>(),
-            otherData = new Map<number, Record<string, any>>()
-        warningEvents.forEach((event) => (warningData[secondsParser(event.last_seen)] = event))
-        otherEvents.forEach((event) => (otherData[secondsParser(event.last_seen)] = event))
-
-        const sortedWarningDataOnLastSeen = new Map([...warningData.entries()].sort())
-        const sortedOtherDataOnLastSeen = new Map([...otherData.entries()].sort())
-
-        warningEvents = [...sortedWarningDataOnLastSeen.values()]
-        otherEvents = [...sortedOtherDataOnLastSeen.values()]
-
-        return [...warningEvents, ...otherEvents]
-    }
-
     const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
         const warningEvents: Record<string, any>[] = [],
             otherEvents: Record<string, any>[] = []
@@ -297,7 +282,14 @@ export default function ResourceList() {
                 otherEvents.push(iterator)
             }
         }
-        return sortEventListOnLastSeen(warningEvents, otherEvents)
+        return [
+            ...warningEvents.sort((a, b) => {
+                return secondsParser(a['last seen']) - secondsParser(b['last seen'])
+            }),
+            ...otherEvents.sort((a, b) => {
+                return secondsParser(a['last seen']) - secondsParser(b['last seen'])
+            }),
+        ]
     }
 
     const getResourceListData = async (): Promise<void> => {
