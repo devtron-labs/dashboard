@@ -254,6 +254,20 @@ export default function ResourceList() {
         }
     }
 
+    const sortEventListOnLastSeen = (warningEvents: Record<string, any>[], otherEvents: Record<string, any>[]) =>{
+        const warningLastSeenData: Array<number> = []
+        for (const event of warningEvents){
+            let totalTime: number = 0
+            const matches = event.last_seen.match(/\d+/g)
+            
+            matches.forEach(element => {
+                totalTime+= +element
+            });
+            
+        }
+        return [...warningEvents, ...otherEvents]
+    }
+
     const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
         const warningEvents: Record<string, any>[] = [],
             otherEvents: Record<string, any>[] = []
@@ -265,7 +279,7 @@ export default function ResourceList() {
                 otherEvents.push(iterator)
             }
         }
-        return [...warningEvents, ...otherEvents]
+        return sortEventListOnLastSeen(warningEvents,otherEvents)
     }
 
     const getResourceListData = async (): Promise<void> => {
