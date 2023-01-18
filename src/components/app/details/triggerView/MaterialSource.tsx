@@ -35,7 +35,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.target.dataset.id))
+        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.currentTarget.dataset.id))
     }
 
     const renderRefreshButton = (mat: CIMaterialType) => {
@@ -54,7 +54,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
 
     const handleSelectMaterialAction = (e) => {
         e.stopPropagation()
-        selectMaterial(e.target.dataset.id)
+        selectMaterial(e.currentTarget.dataset.id)
     }
 
     return (
