@@ -254,17 +254,35 @@ export default function ResourceList() {
         }
     }
 
-    const sortEventListOnLastSeen = (warningEvents: Record<string, any>[], otherEvents: Record<string, any>[]) =>{
-        const warningLastSeenData: Array<number> = []
-        for (const event of warningEvents){
-            let totalTime: number = 0
-            const matches = event.last_seen.match(/\d+/g)
-            
-            matches.forEach(element => {
-                totalTime+= +element
-            });
-            
+    const secondsParser = (duration: any): number => {
+        //Parses time(format:- ex. 4h20m) in second
+        let totalTimeInSec: number = 0
+        const matchesNumber = duration.match(/\d+/g)
+        const matchesChar = duration.match(/[dhms]/)
+        for (let i = 0; i < matchesNumber.length; i++) {
+            matchesChar[i] === 'd'
+                ? (totalTimeInSec += +matchesNumber[i] * 24 * 60 * 60)
+                : matchesChar[i] === 'h'
+                ? (totalTimeInSec += +matchesNumber[i] * 60 * 60)
+                : matchesChar[i] === 'm'
+                ? (totalTimeInSec += +matchesNumber[i] * 60)
+                : (totalTimeInSec += +matchesNumber[i])
         }
+        return totalTimeInSec
+    }
+
+    const sortEventListOnLastSeen = (warningEvents: Record<string, any>[], otherEvents: Record<string, any>[]) => {
+        const warningData = new Map<number, Record<string, any>>(),
+            otherData = new Map<number, Record<string, any>>()
+        warningEvents.forEach((event) => (warningData[secondsParser(event.last_seen)] = event))
+        otherEvents.forEach((event) => (otherData[secondsParser(event.last_seen)] = event))
+
+        const sortedWarningDataOnLastSeen = new Map([...warningData.entries()].sort())
+        const sortedOtherDataOnLastSeen = new Map([...otherData.entries()].sort())
+
+        warningEvents = [...sortedWarningDataOnLastSeen.values()]
+        otherEvents = [...sortedOtherDataOnLastSeen.values()]
+
         return [...warningEvents, ...otherEvents]
     }
 
@@ -279,7 +297,7 @@ export default function ResourceList() {
                 otherEvents.push(iterator)
             }
         }
-        return sortEventListOnLastSeen(warningEvents,otherEvents)
+        return sortEventListOnLastSeen(warningEvents, otherEvents)
     }
 
     const getResourceListData = async (): Promise<void> => {
