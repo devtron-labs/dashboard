@@ -597,7 +597,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
     const { url, path } = useRouteMatch()
     const { pathname } = useLocation()
     const status = type === 'CD' ? triggerStatus(triggerDetails?.status) : triggerDetails?.status
-    
+
     return (
         <div className="trigger-details" style={{ height: '137px', display: 'grid', gridTemplateColumns: '60px 1fr' }}>
             <div className="trigger-details__status flex">
@@ -687,9 +687,9 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         [TERMINAL_STATUS_MAP.TIMED_OUT]: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[status.toLowerCase()]
                 }
-                {!Object.values(TERMINAL_STATUS_MAP).includes(
-                    status.toLowerCase(),
-                ) && <Generic triggerDetails={triggerDetails} type={type} />}
+                {!Object.values(TERMINAL_STATUS_MAP).includes(status.toLowerCase()) && (
+                    <Generic triggerDetails={triggerDetails} type={type} />
+                )}
             </div>
         </div>
     )
@@ -712,10 +712,12 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
     type,
 }) => {
     const status = type === 'CD' ? triggerStatus(triggerDetails.status) : triggerDetails.status
-    
+
     return (
         <div className="flex column left">
-            <div className={`${status} fs-14 fw-6 ${colorClass}`}>{status && status.toLowerCase()==='cancelled' ? 'ABORTED' : status}</div>
+            <div className={`${status} fs-14 fw-6 ${colorClass}`}>
+                {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
+            </div>
             <div className="flex left">
                 {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
                     <time className="cn-7 fs-12 mr-12">
@@ -934,6 +936,8 @@ const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
 }
 
 export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetails }) => {
+    const triggerDetailsMaterials: number[] = []
+    Object.entries(triggerDetails.gitTriggers).forEach(([key, _]) => triggerDetailsMaterials.push(+key))
     return (
         <div className="flex column left w-100 p-16">
             {Array.isArray(triggerDetails.ciMaterials) &&
@@ -941,7 +945,9 @@ export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetai
                     <MaterialHistory
                         ciMaterial={ciMaterial}
                         key={ciMaterial.id}
-                        gitTrigger={triggerDetails.gitTriggers[ciMaterial.id]}
+                        gitTrigger={
+                            triggerDetailsMaterials.includes(ciMaterial.id) && triggerDetails.gitTriggers[ciMaterial.id]
+                        }
                     />
                 ))}
         </div>
@@ -1177,26 +1183,27 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
 
 const MaterialHistory: React.FC<{ gitTrigger: GitTriggers; ciMaterial: CiMaterial }> = ({ gitTrigger, ciMaterial }) => {
     return (
-            gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
-                <div
-                    key={gitTrigger?.Commit}
-                    className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
-                    style={{ width: 'min( 100%, 800px )' }}
-                >
-                    <GitCommitInfoGeneric
-                        materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
-                        showMaterialInfo={true}
-                        commitInfo={gitTrigger}
-                        materialSourceType={
-                            gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
-                        }
-                        selectedCommitInfo={''}
-                        materialSourceValue={
-                            gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
-                        }
-                    />
-                </div>
-            )
+        gitTrigger &&
+        (gitTrigger.Commit || gitTrigger.WebhookData?.Data) && (
+            <div
+                key={gitTrigger?.Commit}
+                className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                style={{ width: 'min( 100%, 800px )' }}
+            >
+                <GitCommitInfoGeneric
+                    materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger?.GitRepoUrl : ciMaterial?.url}
+                    showMaterialInfo={true}
+                    commitInfo={gitTrigger}
+                    materialSourceType={
+                        gitTrigger?.CiConfigureSourceType ? gitTrigger?.CiConfigureSourceType : ciMaterial?.type
+                    }
+                    selectedCommitInfo={''}
+                    materialSourceValue={
+                        gitTrigger?.CiConfigureSourceValue ? gitTrigger?.CiConfigureSourceValue : ciMaterial?.value
+                    }
+                />
+            </div>
+        )
     )
 }
 

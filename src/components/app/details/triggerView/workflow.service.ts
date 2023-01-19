@@ -10,6 +10,7 @@ import {
     WorkflowResult,
     PipelineType,
     WorkflowNodeType,
+    Material,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
@@ -111,7 +112,7 @@ export function processWorkflow(
     workflow.workflows
         ?.sort((a, b) => a.id - b.id)
         .forEach((workflow) => {
-            const wf = toWorkflowType(workflow)
+            const wf = toWorkflowType(workflow, ciResponse.materials ?? [])
             workflows.push(wf)
             const _wfTree = workflow.tree ?? []
             _wfTree
@@ -296,11 +297,12 @@ function processDownstreamDeployments(
     }
 }
 
-function toWorkflowType(workflow: Workflow): WorkflowType {
+function toWorkflowType(workflow: Workflow, ciMaterials: Material[]): WorkflowType {
     return {
         id: '' + workflow.id,
         name: workflow.name,
         nodes: new Array<NodeAttr>(),
+        gitMaterials: ciMaterials,
         startX: 0,
         startY: 0,
         height: 0,

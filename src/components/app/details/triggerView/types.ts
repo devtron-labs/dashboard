@@ -34,13 +34,13 @@ export interface CDMaterialProps {
 export enum DeploymentWithConfigType {
     LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
     LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
-    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG'
+    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG',
 }
 
 export interface ConfigToDeployOptionType {
-    label: string,
-    value: DeploymentWithConfigType,
-    infoText: string,
+    label: string
+    value: DeploymentWithConfigType
+    infoText: string
 }
 
 export interface CDMaterialState {
@@ -254,6 +254,7 @@ export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterP
 export interface WorkflowType {
     id: string
     name: string
+    gitMaterials: Material[]
     startX: number
     startY: number
     width: number
@@ -327,17 +328,17 @@ export interface ApplicationConditionResponse {
 export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK'
+    WEBHOOK = 'WEBHOOK',
 }
 
 export enum CIPipelineNodeType {
-  EXTERNAL_CI ='EXTERNAL-CI',
-  CI='CI',
-  LINKED_CI='LINKED-CI'
+    EXTERNAL_CI = 'EXTERNAL-CI',
+    CI = 'CI',
+    LINKED_CI = 'LINKED-CI',
 }
 
 export enum WorkflowNodeType {
-    GIT= 'GIT',
+    GIT = 'GIT',
     CI = 'CI',
     WEBHOOK = 'WEBHOOK',
     PRE_CD = 'PRECD',
@@ -558,7 +559,7 @@ export interface TriggerViewConfigDiffProps {
 export const MATERIAL_TYPE = {
     rollbackMaterialList: 'rollbackMaterialList',
     inputMaterialList: 'inputMaterialList',
-    none: 'none'
+    none: 'none',
 }
 
 export const STAGE_TYPE = {

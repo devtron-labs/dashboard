@@ -17,7 +17,15 @@ import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
-import { URLS, ViewType, SourceTypeMap, BUILD_STATUS, SOURCE_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../../../config'
+import {
+    URLS,
+    ViewType,
+    SourceTypeMap,
+    BUILD_STATUS,
+    SOURCE_NOT_CONFIGURED,
+    DEFAULT_GIT_BRANCH_VALUE,
+    GIT_BRANCH_NOT_CONFIGURED,
+} from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -866,23 +874,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     handleSourceNotConfigured = (
-        configuredMaterialList: Map<string, Set<string>>,
+        configuredMaterialList: Map<number, Set<number>>,
         wf: WorkflowType,
         _materialList: any[],
     ) => {
         if (_materialList.length > 0) {
-            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialName.toLowerCase()))
+            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
         }
-
-        for (const material of wf.nodes) {
-            if (configuredMaterialList[wf.name].has(material.title.toLowerCase()) || material.type !== 'GIT') {
+        for (const material of wf.gitMaterials) {
+            if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
                 continue
             }
-
             const ciMaterial: CIMaterialType = {
                 id: 0,
-                gitMaterialId: 0,
-                gitMaterialName: material.title,
+                gitMaterialId: material.gitMaterialId,
+                gitMaterialName: material.materialName.toLowerCase(),
                 type: '',
                 value: DEFAULT_GIT_BRANCH_VALUE,
                 active: false,
@@ -904,11 +910,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
-            const configuredMaterialList = new Map<string, Set<string>>()
+            const configuredMaterialList = new Map<number, Set<number>>()
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
+
                 if (nd) {
-                    configuredMaterialList[this.state.workflows[i].name] = new Set<string>()
+                    configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
                     this.handleSourceNotConfigured(
                         configuredMaterialList,
                         this.state.workflows[i],
