@@ -29,21 +29,6 @@
                   top: 3px;
               }
           }
-
-          .radio-group-no-border {
-              border: none;
-              display: inline-block;
-              .form__radio-item {
-                  border: none;
-                  min-width: 110px;
-                  .form__radio-item-content {
-                      padding: 0 15px 0 0;
-                      .radio__title {
-                          text-transform: none;
-                      }
-                  }
-              }
-          }
       }
   }
 }
