@@ -34,7 +34,7 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
-import { APP_LIST_HEADERS } from './Constants'
+import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 
 export default function AppList({ isSuperAdmin, appListCount }: AppListPropType) {
     const location = useLocation()
@@ -191,9 +191,9 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
 
         ////// update master filters data (check/uncheck)
         let filterApplied = {
-            environments: new Set(environmentsArr),
-            teams: new Set(teamsArr),
-            appStatus: new Set(appStatusArr),
+            environments: new Set<number>(environmentsArr),
+            teams: new Set<number>(teamsArr),
+            appStatus: new Set<string>(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
         }
 
@@ -869,21 +869,21 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 {keys.map((key) => {
                     let filterType = ''
                     let _filterKey = ''
-                    if (key == 'projects') {
+                    if (key == StatusConstants.PROJECT.pluralLower) {
                         filterType = AppListConstants.FilterType.PROJECT
-                        _filterKey = 'project'
-                    } else if (key == 'clusters') {
+                        _filterKey = StatusConstants.PROJECT.lowerCase
+                    } else if (key == StatusConstants.CLUSTER.pluralLower) {
                         filterType = AppListConstants.FilterType.CLUTSER
-                        _filterKey = 'cluster'
-                    } else if (key == 'namespaces') {
+                        _filterKey = StatusConstants.CLUSTER.lowerCase
+                    } else if (key == StatusConstants.NAMESPACE.pluralLower) {
                         filterType = AppListConstants.FilterType.NAMESPACE
-                        _filterKey = 'namespace'
-                    } else if (key == 'environments') {
+                        _filterKey = StatusConstants.NAMESPACE.lowerCase
+                    } else if (key == StatusConstants.ENVIRONMENT.pluralLower) {
                         filterType = AppListConstants.FilterType.ENVIRONMENT
-                        _filterKey = 'environment'
-                    } else if (key == APP_LIST_HEADERS.appStatus) {
+                        _filterKey = StatusConstants.ENVIRONMENT.lowerCase
+                    } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
-                        _filterKey = APP_LIST_HEADERS.appStatus
+                        _filterKey = StatusConstants.APP_STATUS.noSpaceLower
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {

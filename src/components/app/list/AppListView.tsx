@@ -22,11 +22,19 @@ import AppStatus from '../AppStatus';
 import { ReactComponent as Arrow} from '../../../assets/icons/ic-dropdown-filled.svg'
 
 export class AppListView extends Component<AppListViewProps> {
-    expandEnv = (event, id) => {
+    expandEnv = (event) => {
         event.stopPropagation()
         event.preventDefault()
-        this.props.expandRow(id)
+        this.props.expandRow(event.currentTarget.dataset.key)
     }
+
+    handleEditApp = (event) => {
+        event.stopPropagation()
+        event.preventDefault()
+        this.props.handleEditApp(event.currentTarget.dataset.key)
+    }
+
+    closeExpandedRow = (event) => this.props.closeExpandedRow(event.currentTarget.dataset.key)
 
     renderEnvironmentList(app) {
         let len = app.environments.length
@@ -38,7 +46,7 @@ export class AppListView extends Component<AppListViewProps> {
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
-                        <button type="button" className="cell__link" onClick={(event) => this.expandEnv(event, app.id)}>
+                        <button type="button" className="cell__link" data-key={app.id} onClick={this.expandEnv}>
                             +{len - 1} more
                         </button>
                     ) : null}
@@ -53,7 +61,7 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     toggleAllExpandRow = () => {
-        if(this.props.isAllExpandable){
+        if (this.props.isAllExpandable) {
             this.props.toggleExpandAllRow()
         }
     }
@@ -120,7 +128,8 @@ export class AppListView extends Component<AppListViewProps> {
                                             {len && (
                                                 <Arrow
                                                     className="icon-dim-20 dc__flip-90 fcn-7 dc__show-second--icon"
-                                                    onClick={(event) => this.expandEnv(event, app.id)}
+                                                    onClick={this.expandEnv}
+                                                    data-key={app.id}
                                                 />
                                             )}
                                         </div>
@@ -158,12 +167,9 @@ export class AppListView extends Component<AppListViewProps> {
                                         <div className="app-list__cell app-list__cell--action">
                                             <button
                                                 type="button"
+                                                data-key={app.id}
                                                 className="button-edit"
-                                                onClick={(event) => {
-                                                    event.stopPropagation()
-                                                    event.preventDefault()
-                                                    this.props.handleEditApp(app.id)
-                                                }}
+                                                onClick={this.handleEditApp}
                                             >
                                                 <Edit className="button-edit__icon" />
                                             </button>
@@ -175,7 +181,7 @@ export class AppListView extends Component<AppListViewProps> {
                                         app={app}
                                         close={() => this.props.closeExpandedRow(app.id)}
                                         redirect={this.props.redirectToAppDetails}
-                                        handleEdit={(event) => this.props.handleEditApp(app.id)}
+                                        handleEdit={this.props.handleEditApp}
                                     />
                                 )}
                             </React.Fragment>

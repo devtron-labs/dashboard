@@ -6,8 +6,7 @@ export const APP_LIST_HEADERS = {
     Cluster: 'Cluster',
     Namespace: 'Namespace',
     LastDeployedAt: 'Last deployed at',
-    SearchAppStatus: 'Search app status',
-    appStatus: 'appStatus'
+    SearchAppStatus: 'Search app status'
 }
 export const ENVIRONMENT_HEADER_TIPPY_CONTENT = 'Environment is a unique combination of cluster and namespace'
 export const EXTERNAL_HELM_SSE_CONNECTION_ERROR = 'Some network error occured while fetching external apps.'
@@ -30,3 +29,30 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
 }
 export const ClearFiltersLabel = 'Clear filters'
+
+export const StatusConstants = {
+    NOT_DEPLOYED: {
+        noSpaceLower: 'notdeployed',
+        normalCase: 'Not deployed',
+        lowerCase: 'not-deployed'
+    },
+    APP_STATUS: {
+        noSpaceLower: 'appStatus'
+    },
+    PROJECT: {
+        pluralLower: 'projects',
+        lowerCase: 'project'
+    },
+    CLUSTER: {
+        pluralLower: 'clusters',
+        lowerCase: 'cluster'
+    },
+    NAMESPACE: {
+        pluralLower: 'namespaces',
+        lowerCase: 'namespace'
+    },
+    ENVIRONMENT: {
+        pluralLower: 'environments',
+        lowerCase: 'environment'
+    }
+}
