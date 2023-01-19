@@ -1134,3 +1134,20 @@ export const processK8SObjects = (
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
+
+export const secondsParser = (duration: any): number => {
+    //Parses time(format:- ex. 4h20m) in second
+    let totalTimeInSec: number = 0
+    const matchesNumber = duration.match(/\d+/g)
+    const matchesChar = duration.match(/[dhms]/g)
+    for (let i = 0; i < matchesNumber.length; i++) {
+        matchesChar[i] === 'd'
+            ? (totalTimeInSec += +matchesNumber[i] * 24 * 60 * 60)
+            : matchesChar[i] === 'h'
+            ? (totalTimeInSec += +matchesNumber[i] * 60 * 60)
+            : matchesChar[i] === 'm'
+            ? (totalTimeInSec += +matchesNumber[i] * 60)
+            : (totalTimeInSec += +matchesNumber[i])
+    }
+    return totalTimeInSec
+}

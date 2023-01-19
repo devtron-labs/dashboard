@@ -6,6 +6,7 @@ import {
     handleUTCTime,
     processK8SObjects,
     Progressing,
+    secondsParser,
     showError,
     sortObjectArrayAlphabetically,
 } from '../../common'
@@ -253,24 +254,6 @@ export default function ResourceList() {
             setLoader(false)
         }
     }
-
-    const secondsParser = (duration: any): number => {
-        //Parses time(format:- ex. 4h20m) in second
-        let totalTimeInSec: number = 0
-        const matchesNumber = duration.match(/\d+/g)
-        const matchesChar = duration.match(/[dhms]/g)
-        for (let i = 0; i < matchesNumber.length; i++) {
-            matchesChar[i] === 'd'
-                ? (totalTimeInSec += +matchesNumber[i] * 24 * 60 * 60)
-                : matchesChar[i] === 'h'
-                ? (totalTimeInSec += +matchesNumber[i] * 60 * 60)
-                : matchesChar[i] === 'm'
-                ? (totalTimeInSec += +matchesNumber[i] * 60)
-                : (totalTimeInSec += +matchesNumber[i])
-        }
-        return totalTimeInSec
-    }
-    {console.log(secondsParser('4h3m5s'))}
 
     const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
         const warningEvents: Record<string, any>[] = [],
