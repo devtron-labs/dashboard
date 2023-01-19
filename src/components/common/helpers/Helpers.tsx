@@ -13,7 +13,7 @@ import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1133,4 +1133,20 @@ export const processK8SObjects = (
         _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
+}
+
+export function createClusterEnvGroup<T>(list: T[], propKey: string): { label: string; options: T[] }[] {
+    const objList: Record<string, T[]> = list.reduce((acc, obj) => {
+        const key = obj[propKey]
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push(obj)
+        return acc
+    }, {})
+
+    return Object.entries(objList).map(([key, value]) => ({
+        label: key,
+        options: value,
+    }))
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, EnvFormatOptions, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
@@ -73,7 +73,7 @@ export const ChartEnvironmentSelector = ({
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
-                    Option,
+                    Option: (props) => <EnvFormatOptions {...props} environmentfieldName="label" />,
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
