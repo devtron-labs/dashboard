@@ -33,6 +33,7 @@ import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetai
 import ResourceListEmptyState from './ResourceListEmptyState'
 import Tippy from '@tippyjs/react'
 import '../ResourceBrowser.scss'
+import { secondsParser } from '../../common'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -265,7 +266,14 @@ export default function ResourceList() {
                 otherEvents.push(iterator)
             }
         }
-        return [...warningEvents, ...otherEvents]
+        return [
+            ...warningEvents.sort((a, b) => {
+                return secondsParser(a['last seen']) - secondsParser(b['last seen'])
+            }),
+            ...otherEvents.sort((a, b) => {
+                return secondsParser(a['last seen']) - secondsParser(b['last seen'])
+            }),
+        ]
     }
 
     const getResourceListData = async (): Promise<void> => {

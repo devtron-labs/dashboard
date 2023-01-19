@@ -14,6 +14,7 @@ import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import moment from 'moment'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1133,4 +1134,11 @@ export const processK8SObjects = (
         _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
+}
+
+export const secondsParser=(duration: any) =>{
+    const matchesChar = duration.match(/[dhms]/g)
+    return moment
+        .duration(moment(duration, matchesChar.join('')).diff(moment('00d00h00m00s', matchesChar.join('')), 'seconds'))
+        .asMilliseconds()
 }
