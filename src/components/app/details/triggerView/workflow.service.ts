@@ -112,7 +112,7 @@ export function processWorkflow(
     workflow.workflows
         ?.sort((a, b) => a.id - b.id)
         .forEach((workflow) => {
-            const wf = toWorkflowType(workflow, ciResponse.materials ?? [])
+            const wf = toWorkflowType(workflow, ciResponse)
             workflows.push(wf)
             const _wfTree = workflow.tree ?? []
             _wfTree
@@ -297,12 +297,13 @@ function processDownstreamDeployments(
     }
 }
 
-function toWorkflowType(workflow: Workflow, ciMaterials: Material[]): WorkflowType {
+function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): WorkflowType {
     return {
         id: '' + workflow.id,
         name: workflow.name,
         nodes: new Array<NodeAttr>(),
-        gitMaterials: ciMaterials,
+        gitMaterials: ciResponse.materials ?? [],
+        dockerfileConfiguredGitMaterialId: ciResponse.ciBuildConfig.gitMaterialId,
         startX: 0,
         startY: 0,
         height: 0,

@@ -588,16 +588,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             action: 'CI Triggered',
         })
         this.setState({ isLoading: true })
-        let node
+        let node, dockerfileConfiguredGitmaterialId
         for (let i = 0; i < this.state.workflows.length; i++) {
             node = this.state.workflows[i].nodes.find((node) => {
                 return node.type === 'CI' && +node.id == this.state.ciNodeId
             })
+            dockerfileConfiguredGitmaterialId = this.state.workflows[i].dockerfileConfiguredGitMaterialId
             if (node) break
         }
-
+        const gitMaterials = new Map<number, string[]>()
         let ciPipelineMaterials = []
         for (let i = 0; i < node.inputMaterialList.length; i++) {
+            gitMaterials[node.inputMaterialList[i].gitMaterialId] = [
+                node.inputMaterialList[i].gitMaterialName.toLowerCase(),
+                node.inputMaterialList[i].value,
+            ]
             if (node.inputMaterialList[i]) {
                 if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
                 let history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
@@ -617,6 +622,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     return ciPipelineMaterials.push(historyItem)
                 })
             }
+        }
+        if (gitMaterials[dockerfileConfiguredGitmaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
+            toast.error(
+                `Unable to trigger build as you're using Dockerfile from '${gitMaterials[dockerfileConfiguredGitmaterialId][0]}' repo but code source is not configured for the repo.`,
+            )
+            this.setState({ isLoading: false })
+            return
         }
         let payload = {
             pipelineId: +this.state.ciNodeId,

@@ -255,6 +255,7 @@ export interface WorkflowType {
     id: string
     name: string
     gitMaterials: Material[]
+    dockerfileConfiguredGitMaterialId: number
     startX: number
     startY: number
     width: number
