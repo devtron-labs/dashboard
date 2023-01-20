@@ -6,7 +6,7 @@ import {
     handleUTCTime,
     processK8SObjects,
     Progressing,
-    secondsParser,
+    k8sStyledAgeToSeconds,
     showError,
     sortObjectArrayAlphabetically,
 } from '../../common'
@@ -268,10 +268,10 @@ export default function ResourceList() {
         }
         return [
             ...warningEvents.sort((a, b) => {
-                return secondsParser(a['last seen']) - secondsParser(b['last seen'])
+                return k8sStyledAgeToSeconds(a['last seen']) - k8sStyledAgeToSeconds(b['last seen'])
             }),
             ...otherEvents.sort((a, b) => {
-                return secondsParser(a['last seen']) - secondsParser(b['last seen'])
+                return k8sStyledAgeToSeconds(a['last seen']) - k8sStyledAgeToSeconds(b['last seen'])
             }),
         ]
     }

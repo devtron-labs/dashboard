@@ -1135,7 +1135,7 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export const secondsParser = (duration: any): number => {
+export const  k8sStyledAgeToSeconds = (duration: any): number => {
     //Parses time(format:- ex. 4h20m) in second
     let totalTimeInSec: number = 0
     const matchesNumber = duration.match(/\d+/g)
