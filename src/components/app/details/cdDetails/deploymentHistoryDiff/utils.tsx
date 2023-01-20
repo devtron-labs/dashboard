@@ -1,10 +1,6 @@
 import React from 'react'
 import { components } from 'react-select'
-import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { DOCUMENTATION } from '../../../../config'
-import { multiSelectStyles } from '../../../common'
+import { multiSelectStyles } from '../../../../common'
 
 export const styles = {
     ...multiSelectStyles,
@@ -66,40 +62,4 @@ export function Option(props) {
             </div>
         </components.Option>
     )
-}
-
-const renderLogsNotAvailable = (subtitle?: string): JSX.Element => {
-  return (
-      <div className="flexbox dc__content-center flex-align-center dc__height-inherit">
-          <div>
-          <div className="text-center"><Info className="icon-dim-20"/></div>
-          <div className="text-center cn-0 fs-14 fw-6">Logs not available</div>
-          <div className="text-center cn-0 fs-13 fw-4">{subtitle || 'Blob storage was not configured at pipeline run.'}</div>
-          </div>
-      </div>
-  )
-}
-
-const renderBlobNotConfigured = (): JSX.Element => {
-  return (
-      <>
-          {renderLogsNotAvailable('Logs are available only at runtime.')}
-          <div className="flexbox configure-blob-container pt-8 pr-12 pb-8 pl-12 bcv-1 br-4">
-              <Question className="icon-dim-20 fcv-5" />
-              <span className="fs-13 fw-4 mr-8 ml-8">Want to store logs to view later?</span>
-              <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
-                  Configure blob storage
-              </a>
-              <OpenInNew className="icon-dim-20 ml-8" />
-          </div>
-      </>
-  )
-}
-
-export const renderConfigurationError = (isBlobStorageConfigured: boolean): JSX.Element => {
-  return (
-      <div className="flexbox dc__content-center flex-align-center dc__height-inherit">
-          {!isBlobStorageConfigured ? renderBlobNotConfigured() : renderLogsNotAvailable()}
-      </div>
-  )
 }
