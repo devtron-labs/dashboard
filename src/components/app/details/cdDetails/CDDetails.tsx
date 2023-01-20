@@ -432,7 +432,7 @@ const HistoryLogs: React.FC<{
                                 triggerDetails.stage === 'DEPLOY'
                                     ? `deployment-steps`
                                     : triggerDetails.status.toLowerCase() === 'succeeded'
-                                    ? `${path}/artifacts`
+                                    ? `artifacts`
                                     : `logs`
                             }`}
                         />
