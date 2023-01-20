@@ -1135,9 +1135,12 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export const  k8sStyledAgeToSeconds = (duration: any): number => {
-    //Parses time(format:- ex. 4h20m) in second
+export const  k8sStyledAgeToSeconds = (duration: string): number => {
     let totalTimeInSec: number = 0
+    if (!duration) {
+        return totalTimeInSec
+    }
+    //Parses time(format:- ex. 4h20m) in second
     const matchesNumber = duration.match(/\d+/g)
     const matchesChar = duration.match(/[dhms]/g)
     for (let i = 0; i < matchesNumber.length; i++) {
