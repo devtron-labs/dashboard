@@ -70,6 +70,14 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
 }
 
 export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
+    if (!ciMaterials?.length || !gitTriggers?.size) {
+        return (
+            <EmptyView
+                title="Data not available"
+                subTitle="Source code detail is not available"
+            />
+        )
+    }
     return (
         <div className="flex column left w-100 p-16">
             {ciMaterials?.map((ciMaterial) => {
@@ -114,7 +122,7 @@ export const EmptyView = ({ title, subTitle, link, linkText }: EmptyViewType) =>
             {link && (
                 <EmptyState.Button>
                     <NavLink to={link} className="cta cta--ci-details" target="_blank">
-                        <OpenInNew className="mr-5" />
+                        <OpenInNew className="mr-5 mr-5 scn-0 fcb-5" />
                         {linkText}
                     </NavLink>
                 </EmptyState.Button>
@@ -124,12 +132,12 @@ export const EmptyView = ({ title, subTitle, link, linkText }: EmptyViewType) =>
 }
 
 export const triggerStatus = (triggerDetailStatus: string): string => {
-  let triggerStatus = triggerDetailStatus.toUpperCase()
-  if(triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
-      return 'Failed'
-  }else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
-      return 'Succeeded'
-  } else {
-      return triggerDetailStatus
-  }
+    let triggerStatus = triggerDetailStatus.toUpperCase()
+    if (triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
+        return 'Failed'
+    } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
+        return 'Succeeded'
+    } else {
+        return triggerDetailStatus
+    }
 }
