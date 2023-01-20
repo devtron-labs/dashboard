@@ -945,9 +945,7 @@ export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetai
                     <MaterialHistory
                         ciMaterial={ciMaterial}
                         key={ciMaterial.id}
-                        gitTrigger={
-                            triggerDetailsMaterials.includes(ciMaterial.id) && triggerDetails.gitTriggers[ciMaterial.id]
-                        }
+                        gitTrigger={triggerDetails.gitTriggers[ciMaterial.id]}
                     />
                 ))}
         </div>

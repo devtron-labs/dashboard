@@ -303,7 +303,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         name: workflow.name,
         nodes: new Array<NodeAttr>(),
         gitMaterials: ciResponse.materials ?? [],
-        dockerfileConfiguredGitMaterialId: ciResponse.ciBuildConfig.gitMaterialId,
+        ciConfiguredGitMaterialId: ciResponse.ciBuildConfig.gitMaterialId,
         startX: 0,
         startY: 0,
         height: 0,
