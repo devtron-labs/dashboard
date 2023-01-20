@@ -162,7 +162,7 @@
         bottom: 0;
         right: 0;
         padding: 12px 20px;
-        width: calc(100% - 240px);
+        width: calc(100% - 255px);
     }
 }
 
@@ -199,6 +199,8 @@
 
         .config-override-diff__values {
             background: white;
+            overflow-wrap: break-word;
+            table-layout: fixed;
 
             .code-editor-green-diff {
                 background: #eaf1dd;

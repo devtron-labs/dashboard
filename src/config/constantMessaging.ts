@@ -22,6 +22,8 @@ export const DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE =
 export const DC_CONFIGURATION_CONFIRMATION_MESSAGE =
     'This configuration is being used in some notifications. Please delete notifications using this configuration and try again.'
 export const DC_PROJECT_CONFIRMATION_MESSAGE = 'Please delete applications assigned to this project and try again.'
+export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (FQDN).'
+export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
 
 export const enum DeleteComponentsName {
     ChartGroup = 'chart group',
@@ -40,6 +42,7 @@ export const enum DeleteComponentsName {
 
 //DELETE COMPONENT ENDS
 
+export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'

@@ -2137,6 +2137,12 @@ textarea,
   min-width: 200px
 }
 
+// width fix content
+
+.dc__w-fit-content{
+  width: fit-content;
+}
+
 // Height in pixels
 
 .dc__height-inherit {
@@ -2276,6 +2282,10 @@ textarea,
 // Padding in pixels
 .pl-16 {
     padding-left: 16px !important;
+}
+
+.pt-40 {
+    padding-top: 40px;
 }
 
 .pl-200 {

@@ -132,6 +132,7 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    HELM_APP_META_INFO: 'app/helm/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
     APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',
@@ -194,6 +195,7 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events',
+    UPDATE_HELM_APP_META_INFO: 'app-store/deployment/application/update/project',
     API_RESOURCE: 'k8s/api-resources',
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
@@ -292,7 +294,7 @@ export const DOCUMENTATION = {
     PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
     CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts`,
     CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts#prerequisites`,
-    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/install-devtron#devtron-admin-credentials`,
+    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/install/install-devtron#devtron-admin-credentials`,
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/external-links`,
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/upgrade`,
@@ -724,3 +726,5 @@ export const DEPLOYMENT_STATUS = {
     INPROGRESS: 'inprogress',
     SUPERSEDED: 'superseded'
 }
+
+export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
