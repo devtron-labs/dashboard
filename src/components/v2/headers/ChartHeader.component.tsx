@@ -1,9 +1,8 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { URLS, Routes, AppListConstants } from '../../../config'
-import { BreadCrumb, useBreadcrumb } from '../../common'
+import {  } from '../../common'
 import ReactGA from 'react-ga4'
-import { ChartSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
 import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { handleUTCTime } from '../../common'
@@ -43,30 +42,6 @@ function ChartHeaderComponent() {
             }
         })
     }
-
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                ':appId(\\d+)': {
-                    component: (
-                        <ChartSelector
-                            //@ts-ignore
-                            api={getInstalledCharts}
-                            primaryKey="appId"
-                            primaryValue="appName"
-                            matchedKeys={['envId']}
-                            apiPrimaryKey="installedAppId"
-                            onChange={handleBreadcrumbChartChange}
-                        />
-                    ),
-                    linked: false,
-                },
-                'chart-store': null,
-                deployments: 'Deployed',
-            },
-        },
-        [params.appId, params.envId],
-    )
 
     const renderBreadcrumbs = () => {
         return (

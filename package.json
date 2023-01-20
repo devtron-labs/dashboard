@@ -43,7 +43,7 @@
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
         "yamljs": "^0.3.0",
-        "@devtron-labs/devtron-fe-common-lib": "v0.0.6-beta-14",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.6-beta-16",
         "@devtron-labs/devtron-fe-lib": "0.0.5-beta-1"
     },
     "scripts": {
