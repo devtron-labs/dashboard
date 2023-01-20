@@ -53,7 +53,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
         return (
             <div className="expanded-row">
                 <div className="expanded-row__title">
-                    <div className="cn-9 expanded-row__close flex left pr-20 pl-20 cursor" onClick={this.props.close}>
+                    <div className="cn-9 expanded-row__close flex left pr-20 pl-20 cursor" data-key={this.props.app.id} onClick={this.props.close}>
                         <Expand className="icon-dim-24 p-2 mr-8 fcn-7" />
                         <span>{this.props.app.name}</span>
                     </div>

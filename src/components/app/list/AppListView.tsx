@@ -22,19 +22,21 @@ import AppStatus from '../AppStatus';
 import { ReactComponent as Arrow} from '../../../assets/icons/ic-dropdown-filled.svg'
 
 export class AppListView extends Component<AppListViewProps> {
-    expandEnv = (event) => {
+    expandEnv = (event): void => {
         event.stopPropagation()
         event.preventDefault()
         this.props.expandRow(event.currentTarget.dataset.key)
     }
 
-    handleEditApp = (event) => {
+    handleEditApp = (event): void => {
         event.stopPropagation()
         event.preventDefault()
         this.props.handleEditApp(event.currentTarget.dataset.key)
     }
 
-    closeExpandedRow = (event) => this.props.closeExpandedRow(event.currentTarget.dataset.key)
+    closeExpandedRow = (event): void => { 
+        this.props.closeExpandedRow(event.currentTarget.dataset.key)
+    }
 
     renderEnvironmentList(app) {
         let len = app.environments.length
@@ -179,7 +181,7 @@ export class AppListView extends Component<AppListViewProps> {
                                 {this.props.expandedRow[app.id] && (
                                     <ExpandedRow
                                         app={app}
-                                        close={() => this.props.closeExpandedRow(app.id)}
+                                        close={this.closeExpandedRow}
                                         redirect={this.props.redirectToAppDetails}
                                         handleEdit={this.props.handleEditApp}
                                     />
