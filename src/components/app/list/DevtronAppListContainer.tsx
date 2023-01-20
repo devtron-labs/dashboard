@@ -100,15 +100,16 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     toggleExpandAllRow = (): void => {
-        let _expandedRow = {}
-        if(!this.state.isAllExpanded){
-            this.state.apps.forEach((app) => {
-                if(app.environments.length > 1){
-                    _expandedRow = {..._expandedRow,[app.id]: true}
+        this.setState((prevState) => {
+            const _expandedRow = {}
+            if (!prevState.isAllExpanded) {
+                for (const _app of prevState.apps) {
+                    _expandedRow[_app.id] = _app.environments.length > 1
                 }
-                })
-        }
-        this.setState({expandedRow: _expandedRow, isAllExpanded: !this.state.isAllExpanded})
+            }
+    
+            return { expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
+        })
     }
 
     getAppList = (request): void => {

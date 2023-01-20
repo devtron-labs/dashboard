@@ -9,11 +9,11 @@ export const Colors = {
 export const statusColor = {
     suspended: '#ffaa00',
     unknown: 'var(--N700)',
-    degraded: '#f32e2e',
+    degraded: 'var(--R500)',
     healthy: 'var(--G500)',
-    notdeployed: 'var(--N700)',
+    notdeployed: 'var(--N500)',
     missing: 'var(--N700)',
-    progressing: "#FF7E5B",
+    progressing: "var(--orange)",
     starting: "#FF7E5B",
     succeeded: '#1dad70',
     running: '#FF7E5B',
@@ -23,7 +23,7 @@ export const statusColor = {
     aborted: '#767d84',
     timedout: '#f33e3e',
     unabletofetch: '#f33e3e',
-    hibernating: 'var(--N700)'
+    hibernating: 'var(--N700)',
 }
 
 export const statusIcon = {
@@ -70,8 +70,8 @@ export const TriggerStatus = {
 export const APP_STATUS = {
     Degraded: 'Degraded',
     Healthy : 'Healthy',
-    Progressing : 'Progressing',
-    Missing: 'Missing',
     Hibernating: 'HIBERNATING',
+    Missing: 'Missing',
+    Progressing : 'Progressing',
     Unknown: 'Unknown'
 }

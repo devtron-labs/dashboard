@@ -15,15 +15,8 @@
 
 .expanded-row__close {
     border: none;
-    color: var(--N900);
-    display: flex;
-    justify-content: start;
     flex: 1;
-    padding-right: 20px;
-    padding-left: 20px;
-    align-items: center;
     height: 56px;
-    cursor: pointer;
     background-color: var(--N50);
 }
 
@@ -73,4 +66,8 @@
 
 .expanded-row .dc__app-commit__hash:hover {
     color: var(--B500);
+}
+
+.app-list__row--expanded:hover {
+    background-color: var(--N100) !important
 }

@@ -103,7 +103,7 @@
 .app-list__row {
     min-height: 56px;
     display: flex;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     font-style: normal;
     font-stretch: normal;
@@ -333,7 +333,7 @@
 .app-list__row:hover {
     text-decoration: none;
     color: var(--N900);
-    background-color: var(--N100);
+    background-color: var(--N50);
 }
 
 .app-list__row:hover .app-list__cell--status .bg {

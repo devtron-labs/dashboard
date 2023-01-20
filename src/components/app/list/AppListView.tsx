@@ -77,7 +77,7 @@ export class AppListView extends Component<AppListViewProps> {
                 <div className="app-list">
                     <div className="app-list__header">
                         <div className="app-list__cell--icon flex left cursor" onClick={this.toggleAllExpandRow}>
-                            <Arrow className={`icon-dim-20 ${this.arrowIcon()}`} />
+                            <Arrow className={`icon-dim-24 p-2 ${this.arrowIcon()}`} />
                         </div>
                         <div className="app-list__cell app-list__cell--name">
                             <button className="app-list__cell-header flex" onClick={this.sortByAppName}>
@@ -127,7 +127,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
                                             {len && (
                                                 <Arrow
-                                                    className="icon-dim-20 dc__flip-90 fcn-7 dc__show-second--icon"
+                                                    className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
                                                     onClick={this.expandEnv}
                                                     data-key={app.id}
                                                 />

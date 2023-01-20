@@ -37,7 +37,8 @@ export const StatusConstants = {
         lowerCase: 'not-deployed'
     },
     APP_STATUS: {
-        noSpaceLower: 'appStatus'
+        noSpaceLower: 'appStatus',
+        normalText: 'App status'
     },
     PROJECT: {
         pluralLower: 'projects',

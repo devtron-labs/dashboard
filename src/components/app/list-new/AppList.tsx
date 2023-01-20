@@ -189,7 +189,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
             .filter((status) => status != '')
             .map((status) => status)
 
-        ////// update master filters data (check/uncheck)
+        // update master filters data (check/uncheck)
         let filterApplied = {
             environments: new Set<number>(environmentsArr),
             teams: new Set<number>(teamsArr),
@@ -883,7 +883,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                         _filterKey = StatusConstants.ENVIRONMENT.lowerCase
                     } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
-                        _filterKey = StatusConstants.APP_STATUS.noSpaceLower
+                        _filterKey = StatusConstants.APP_STATUS.normalText
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
