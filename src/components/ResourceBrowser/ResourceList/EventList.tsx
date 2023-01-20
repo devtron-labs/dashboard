@@ -1,4 +1,5 @@
 import React from 'react'
+import Tippy from '@tippyjs/react'
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
 
@@ -24,15 +25,22 @@ export function EventList({ filteredData, handleResourceClick }: EventListType) 
                         <div>{eventData.message}</div>
                         <div className="dc__ellipsis-right">{eventData.namespace}</div>
                         <div className="dc__ellipsis-right">
-                            <a
-                                className="dc__link cursor"
-                                data-name={eventData[EVENT_LIST.dataKeys.involvedObject]}
-                                data-namespace={eventData.namespace}
-                                data-origin={'event'}
-                                onClick={handleResourceClick}
+                            <Tippy
+                                className="default-tt"
+                                placement="left"
+                                arrow={false}
+                                content={eventData[EVENT_LIST.dataKeys.involvedObject]}
                             >
-                                {eventData[EVENT_LIST.dataKeys.involvedObject]}
-                            </a>
+                                <a
+                                    className="dc__link cursor"
+                                    data-name={eventData[EVENT_LIST.dataKeys.involvedObject]}
+                                    data-namespace={eventData.namespace}
+                                    data-origin="event"
+                                    onClick={handleResourceClick}
+                                >
+                                    {eventData[EVENT_LIST.dataKeys.involvedObject]}
+                                </a>
+                            </Tippy>
                         </div>
 
                         <div className="dc__ellipsis-right">{eventData.source}</div>

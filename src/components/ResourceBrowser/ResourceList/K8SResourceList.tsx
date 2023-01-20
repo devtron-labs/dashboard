@@ -18,7 +18,6 @@ export function K8SResourceList({
     selectedResource,
     resourceList,
     filteredResourceList,
-    setFilteredResourceList,
     noResults,
     clusterOptions,
     selectedCluster,
@@ -33,6 +32,7 @@ export function K8SResourceList({
     setSearchText,
     searchApplied,
     setSearchApplied,
+    handleFilterChanges,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -59,25 +59,9 @@ export function K8SResourceList({
         }
     }, [resourceList?.headers])
 
-    const handleFilterChanges = (_searchText: string): void => {
-        const lowerCaseSearchText = _searchText.toLowerCase()
-        const _filteredData = resourceList.data.filter(
-            (resource) =>
-                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
-        )
-        setFilteredResourceList(_filteredData)
-    }
-
     const clearSearch = (): void => {
         if (searchApplied) {
-            handleFilterChanges('')
+            handleFilterChanges('', resourceList)
             setSearchApplied(false)
         }
         setSearchText('')
@@ -88,7 +72,7 @@ export function K8SResourceList({
         if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         } else {
-            handleFilterChanges(event.target.value)
+            handleFilterChanges(event.target.value, resourceList)
             setSearchApplied(true)
         }
     }
@@ -106,7 +90,7 @@ export function K8SResourceList({
             return
         }
         setSelectedNamespace(selected)
-        handleFilterChanges(searchText)
+        handleFilterChanges(searchText, resourceList)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
         })

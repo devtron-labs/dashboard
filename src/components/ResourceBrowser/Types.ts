@@ -97,7 +97,6 @@ export interface K8SResourceListType {
     selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
     filteredResourceList: Record<string, any>[]
-    setFilteredResourceList: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
     noResults: boolean
     clusterOptions: OptionType[]
     selectedCluster: OptionType
@@ -112,6 +111,7 @@ export interface K8SResourceListType {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
 }
 
 export interface ResourceBrowserActionMenuType {
