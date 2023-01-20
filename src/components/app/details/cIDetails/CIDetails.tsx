@@ -936,8 +936,6 @@ const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
 }
 
 export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetails }) => {
-    const triggerDetailsMaterials: number[] = []
-    Object.entries(triggerDetails.gitTriggers).forEach(([key, _]) => triggerDetailsMaterials.push(+key))
     return (
         <div className="flex column left w-100 p-16">
             {Array.isArray(triggerDetails.ciMaterials) &&
