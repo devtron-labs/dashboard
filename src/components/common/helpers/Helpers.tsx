@@ -1144,13 +1144,15 @@ export const  k8sStyledAgeToSeconds = (duration: string): number => {
     const matchesNumber = duration.match(/\d+/g)
     const matchesChar = duration.match(/[dhms]/g)
     for (let i = 0; i < matchesNumber.length; i++) {
-        matchesChar[i] === 'd'
-            ? (totalTimeInSec += +matchesNumber[i] * 24 * 60 * 60)
-            : matchesChar[i] === 'h'
-            ? (totalTimeInSec += +matchesNumber[i] * 60 * 60)
-            : matchesChar[i] === 'm'
-            ? (totalTimeInSec += +matchesNumber[i] * 60)
-            : (totalTimeInSec += +matchesNumber[i])
+        let _unit = matchesChar[i]
+        let _unitVal = +matchesNumber[i]
+        _unit === 'd'
+            ? (totalTimeInSec += _unitVal * 24 * 60 * 60)
+            : _unit === 'h'
+            ? (totalTimeInSec += _unitVal * 60 * 60)
+            : _unit === 'm'
+            ? (totalTimeInSec += _unitVal * 60)
+            : (totalTimeInSec += _unitVal)
     }
     return totalTimeInSec
 }
