@@ -214,14 +214,12 @@ export function GroupHeading(props) {
 
 export function EnvFormatOptions(props) {
     const { data, environmentfieldName } = props
-    console.log(data.clusterName,data.namespace);
-    
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props}>
             <div className="flex left column">
             <span className="w-100 dc__ellipsis-right">{data[environmentfieldName]}</span>
-            {data.clusterName && data.namespace && <small className="cn-6">{data.clusterName} / {data.namespace}</small>}
+            {data.clusterName && data.namespace && <small className="cn-6">{data.clusterName}/{data.namespace}</small>}
         </div>
         </components.Option>
     )
