@@ -254,8 +254,8 @@ export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterP
 export interface WorkflowType {
     id: string
     name: string
-    gitMaterials: Material[]
-    dockerfileConfiguredGitMaterialId: number
+    gitMaterials?: Material[]
+    dockerfileConfiguredGitMaterialId?: number
     startX: number
     startY: number
     width: number
