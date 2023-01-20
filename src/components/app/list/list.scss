@@ -498,3 +498,19 @@
 .first-app-container {
     margin-top: 60px;
 }
+
+.helm-app-guided-cards-wrapper,
+.devtron-app-guided-cards-wrapper {
+    display: grid;
+    justify-content: center;
+    padding: 40px 20px 20px;
+    grid-gap: 20px;
+}
+
+.helm-app-guided-cards-wrapper {
+    grid-template-rows: 140px 140px;
+}
+
+.devtron-app-guided-cards-wrapper {
+    grid-template-columns: 300px 300px;
+}

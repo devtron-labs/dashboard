@@ -2,7 +2,7 @@ import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
-import { multiSelectStyles } from '../common'
+import {deepEqual, multiSelectStyles} from '../common'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 
 export const _customStyles = {
@@ -468,6 +468,19 @@ export const getCIConfigDiffValues = (
         globalCIBuildType,
         ciBuildTypeOverride,
     )
-
+    ciConfigDiffValues.push({
+        configName: 'Target platform for build',
+        changeBGColor: getTargetPlatformChangeBGColor(globalCIConfig, ciConfigOverride),
+        baseValue: globalCIConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
+        overridenValue: ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
+    })
     return ciConfigDiffValues
+}
+const getTargetPlatformChangeBGColor = (
+    globalCIConfig: DockerConfigOverrideType,
+    ciConfigOverride: DockerConfigOverrideType,
+): boolean => {
+    const globalTargetPlatforms = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform?.split(',')
+    const overridenTargetPlatforms = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform?.split(',')
+    return !deepEqual(globalTargetPlatforms, overridenTargetPlatforms)
 }

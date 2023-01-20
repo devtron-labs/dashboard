@@ -38,13 +38,20 @@
 }
 
 .f-degraded,
+.f-timed_out,
+.f-disconnect,
 .f-sync.failed,
 .f-failed,
+.f-unknown,
 .f-imagepullbackoff,
 .f-errimagepull,
 .f-superseded,
 .f-outofsync {
     color: var(--R500);
+}
+
+.f-waiting {
+    color:  var(--Y700);
 }
 
 .f-progressing,

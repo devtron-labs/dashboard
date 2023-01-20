@@ -18,6 +18,7 @@ import {
     CIPipelineDataType,
     CIPipelineType,
     ConditionType,
+    DockerConfigOverrideType,
     FormType,
     PluginDetailType,
     PluginType,
@@ -386,6 +387,7 @@ export default function CIPipeline({
         // Reset allow override flag to false if config matches with global
         if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
             formData.isDockerConfigOverridden = false
+            formData.dockerConfigOverride = {} as DockerConfigOverrideType
         }
 
         saveCIPipeline(

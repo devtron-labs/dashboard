@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
@@ -8,7 +8,10 @@ import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
-import TippyWhite from '../common/TippyWhite'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
+import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
+import { OptionType } from '../app/types'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -21,13 +24,45 @@ export default function AdvancedConfigOptions({
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
-        selectedCIPipeline: ciPipeline ? JSON.parse(JSON.stringify(ciPipeline)) : null,
+        selectedCIPipeline: ciPipeline ? Object.assign({}, ciPipeline) : null,
         dockerRegistries: null,
         sourceConfig: null,
         ciConfig: null,
         defaultDockerConfigs: null,
         currentCIBuildType: null,
     })
+
+    const [targetPlatforms, setTargetPlatforms] = useState<string>('')
+    const targetPlatformMap = getTargetPlatformMap()
+    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
+    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (parentState.ciConfig) {
+            populateCurrentPlatformsData()
+        }
+    }, [parentState.ciConfig, allowOverride])
+
+    const populateCurrentPlatformsData = () => {
+        const _targetPlatforms =
+            allowOverride && parentState.selectedCIPipeline?.isDockerConfigOverridden
+                ? parentState.selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+                : parentState.ciConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform
+        setTargetPlatforms(_targetPlatforms)
+
+        let _customTargetPlatform = false
+        let _selectedPlatforms = []
+        if (_targetPlatforms?.length > 0) {
+            _selectedPlatforms = _targetPlatforms.split(',').map((platformValue) => {
+                if (!_customTargetPlatform) {
+                    _customTargetPlatform = !targetPlatformMap.get(platformValue)
+                }
+                return { label: platformValue, value: platformValue }
+            })
+        }
+        setSelectedTargetPlatforms(_selectedPlatforms)
+        setShowCustomPlatformWarning(_customTargetPlatform)
+    }
 
     const addDockerArg = (): void => {
         const _form = { ...formData }
@@ -57,22 +92,26 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
-    const updateDockerConfigOverride = (key: string, value: CIBuildConfigType | boolean | string): void => {
+    const updateDockerConfigOverride = (
+        key: string,
+        value: CIBuildConfigType | OptionType[] | boolean | string,
+    ): void => {
         // Shallow copy all data from formData to _form
-        const _form = {
-            ...formData,
-        }
+        const _form = Object.assign({}, formData)
 
         // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
-        if (
-            !ciPipeline?.isDockerConfigOverridden &&
-            (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) &&
-            parentState?.ciConfig
-        ) {
-            _form.dockerConfigOverride = {
-                dockerRegistry: parentState.ciConfig.dockerRegistry,
-                dockerRepository: parentState.ciConfig.dockerRepository,
-                ciBuildConfig: JSON.parse(JSON.stringify(parentState.ciConfig.ciBuildConfig)),
+        if (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) {
+            if (parentState.selectedCIPipeline?.isDockerConfigOverridden) {
+                _form.dockerConfigOverride = Object.assign({}, parentState.selectedCIPipeline.dockerConfigOverride)
+            } else if (parentState?.ciConfig) {
+                _form.dockerConfigOverride = Object.assign(
+                    {},
+                    {
+                        dockerRegistry: parentState.ciConfig.dockerRegistry,
+                        dockerRepository: parentState.ciConfig.dockerRepository,
+                        ciBuildConfig: parentState.ciConfig.ciBuildConfig,
+                    },
+                )
             }
         }
 
@@ -81,18 +120,21 @@ export default function AdvancedConfigOptions({
             const _value = value as boolean
             _form.isDockerConfigOverridden = _value
             setAllowOverride(_value)
-
-            // Empty dockerConfigOverride when deleting override
-            if (!_value) {
-                _form.dockerConfigOverride = {} as DockerConfigOverrideType
-            }
         } else if (
             key === DockerConfigOverrideKeys.dockerRegistry ||
             key === DockerConfigOverrideKeys.dockerRepository
         ) {
             _form.dockerConfigOverride[key] = value as string
+        } else if (key === DockerConfigOverrideKeys.targetPlatform) {
+            _form.dockerConfigOverride.ciBuildConfig = {
+                ..._form.dockerConfigOverride.ciBuildConfig,
+                dockerBuildConfig: {
+                    ..._form.dockerConfigOverride.ciBuildConfig.dockerBuildConfig,
+                    targetPlatform: (value as OptionType[]).map((_selectedTarget) => _selectedTarget.label).join(','),
+                },
+            }
         } else {
-            _form.dockerConfigOverride[DockerConfigOverrideKeys.ciBuildConfig] = value as CIBuildConfigType
+            _form.dockerConfigOverride.ciBuildConfig = value as CIBuildConfigType
         }
 
         // No need to pass the id in the request
@@ -100,6 +142,7 @@ export default function AdvancedConfigOptions({
             delete _form.dockerConfigOverride.ciBuildConfig.id
         }
 
+        // set updated form data
         setFormData(_form)
 
         // Check for diff in global & current CI config and set isDockerConfigOverridden flag accordingly
@@ -111,7 +154,8 @@ export default function AdvancedConfigOptions({
             <div>
                 <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
                     Docker build arguments
-                    <TippyWhite
+                    <TippyCustomized
+                        theme={TippyTheme.white}
                         className="w-300"
                         placement="top"
                         Icon={HelpIcon}
@@ -123,7 +167,7 @@ export default function AdvancedConfigOptions({
                         interactive={true}
                     >
                         <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </TippyWhite>
+                    </TippyCustomized>
                 </h3>
                 <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg}>
@@ -204,9 +248,26 @@ export default function AdvancedConfigOptions({
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     setLoadingData={setLoadingData}
                 />
+
                 {parentState?.loadingState === ComponentStates.loaded &&
-                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
-                    renderDockerArgs()}
+                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE && (
+                        <>
+                            <div className="white-card white-card__docker-config dc__position-rel mb-15">
+                                <TargetPlatformSelector
+                                    allowOverride={allowOverride}
+                                    selectedTargetPlatforms={selectedTargetPlatforms}
+                                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                                    showCustomPlatformWarning={showCustomPlatformWarning}
+                                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                                    targetPlatformMap={targetPlatformMap}
+                                    targetPlatform={targetPlatforms}
+                                    configOverrideView={true}
+                                    updateDockerConfigOverride={updateDockerConfigOverride}
+                                />
+                            </div>
+                            {renderDockerArgs()}
+                        </>
+                    )}
             </div>
         </div>
     )

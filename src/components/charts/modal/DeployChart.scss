@@ -189,7 +189,7 @@
 }
 
 .repo-chart-selector {
-    div:first-child {
+    div:first-child:not(.tippy-box) {
         width: 100%;
     }
 
