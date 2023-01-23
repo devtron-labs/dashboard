@@ -49,6 +49,7 @@
         "lint-fix": "eslint --fix src/**/*.tsx",
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
+        "build-light": "GENERATE_SOURCEMAP=false react-app-rewired build",
         "test": "react-app-rewired test --env=jest-environment-jsdom-sixteen",
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
