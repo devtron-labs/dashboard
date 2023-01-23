@@ -608,6 +608,7 @@ export interface EmptyStateCIMaterialProps {
     noSearchResultsMsg?: string
     toggleWebHookModal?: () => void;
     clearSearch?: () => void
+    handleGoToWorkFlowEditor?: (e?: any) => void
   }
 
 export interface MaterialSourceProps {

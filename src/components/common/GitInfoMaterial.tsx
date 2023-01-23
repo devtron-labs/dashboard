@@ -104,7 +104,7 @@ export default function GitInfoMaterial({
         onClickChangebranch(true)
     }
 
-    const renderBranchChangeHeader = (): JSX.Element => {
+    const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
         return (
             <div
                 className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${
@@ -207,7 +207,7 @@ export default function GitInfoMaterial({
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
-                        {renderBranchChangeHeader()}
+                        {renderBranchChangeHeader(selectedMaterial)}
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && <>{renderSearch()}</>}
                     </div>
                 )}
