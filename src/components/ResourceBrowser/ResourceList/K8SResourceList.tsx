@@ -161,7 +161,11 @@ export function K8SResourceList({
                                         <NamespaceIcon className="icon-dim-20 fcn-6" />
                                     )}
                                 </span>
-                                <span className="dc__ellipsis-right ml-8">{selectProps.value.label}</span>
+                                {selectProps.value.label ? (
+                                    <span className="cn-9 dc__ellipsis-right ml-8">{selectProps.value.label}</span>
+                                ) : (
+                                    <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
+                                )}
                             </div>
                         )}
                         {React.cloneElement(props.children[1])}
