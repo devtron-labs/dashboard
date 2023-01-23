@@ -58,6 +58,7 @@ export default function HelmAppList({
     updateDataSyncing,
     setShowPulsatingDotState,
     masterFilters,
+    syncListData
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -107,6 +108,7 @@ export default function HelmAppList({
 
     useEffect(() => {
         updateDataSyncing(true)
+        setDataStateType(AppListViewType.LOADING)
         if (serverMode == SERVER_MODE.EA_ONLY) {
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
@@ -134,7 +136,7 @@ export default function HelmAppList({
                 })
         }
 
-    }, [clusterIdsCsv,appStatus]);
+    }, [clusterIdsCsv,appStatus,syncListData]);
 
     // reset data
     function init() {

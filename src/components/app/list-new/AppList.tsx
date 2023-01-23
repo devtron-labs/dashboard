@@ -50,6 +50,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
+    const [syncListData, setSyncListData] = useState<boolean>()
 
     // API master data
     const [projectListRes, setProjectListRes] = useState({ result: [] })
@@ -108,7 +109,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 setDataStateType(AppListViewType.ERROR)
                 setErrorResponseCode(errors.code)
             })
-    }, [])
+    }, [syncListData])
 
     // update lasy sync time on tab change
 
@@ -620,7 +621,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
     }
 
     const syncNow = (): void => {
-        window.location.reload()
+        setSyncListData(!syncListData)
     }
 
     const setFetchingExternalAppsState = (fetching: boolean): void => {
@@ -1093,6 +1094,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                                     updateDataSyncing={updateDataSyncing}
                                     setShowPulsatingDotState={setShowPulsatingDotState}
                                     masterFilters={masterFilters}
+                                    syncListData={syncListData}
                                 />
                                 {fetchingExternalApps && (
                                     <div className="mt-16">
