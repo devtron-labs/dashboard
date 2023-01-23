@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
@@ -18,13 +18,24 @@ import {
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, EVENT_LIST, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
+import {
+    ALL_NAMESPACE_OPTION,
+    ERROR_SCREEN_SUBTITLE,
+    EVENT_LIST,
+    K8S_RESOURCE_LIST,
+    MARK_AS_STALE_DATA_CUT_OFF_MINS,
+    ORDERED_AGGREGATORS,
+    RESOURCE_LIST_EMPTY_STATE,
+    SIDEBAR_KEYS,
+    STALE_DATA_WARNING_TEXT,
+} from '../Constants'
 import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { CreateResource } from './CreateResource'
 import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
@@ -33,6 +44,7 @@ import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetai
 import ResourceListEmptyState from './ResourceListEmptyState'
 import Tippy from '@tippyjs/react'
 import '../ResourceBrowser.scss'
+import moment from 'moment'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -66,6 +78,7 @@ export default function ResourceList() {
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const isStaleData = useRef<boolean>(false)
     const abortController = new AbortController()
 
     useEffect(() => {
@@ -131,14 +144,25 @@ export default function ResourceList() {
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Synced ' + handleUTCTime(_lastDataSyncTime, true))
+        const _staleDataCheckTime = moment()
+        isStaleData.current = false
+
+        setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
-            setLastDataSyncTimeString('Synced ' + handleUTCTime(_lastDataSyncTime, true))
+            checkIfDataIsStale(_staleDataCheckTime)
+            setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         }, 1000)
+
         return () => {
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    const checkIfDataIsStale = (_staleDataCheckTime: moment.Moment) => {
+        if (!isStaleData.current && moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS) {
+            isStaleData.current = true
+        }
+    }
 
     const getClusterData = async () => {
         try {
@@ -448,9 +472,9 @@ export default function ResourceList() {
         return (
             <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
                 <ResourceListEmptyState
-                    title="Some error occured"
-                    subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
-                    actionButtonText="Change cluster"
+                    title={RESOURCE_LIST_EMPTY_STATE.title}
+                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedCluster.label)}
+                    actionButtonText={RESOURCE_LIST_EMPTY_STATE.actionButtonText}
                     actionHandler={goToClusterList}
                 />
             </div>
@@ -516,10 +540,7 @@ export default function ResourceList() {
         } else if (errorStatusCode > 0) {
             return (
                 <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
-                    <ErrorScreenManager
-                        code={errorStatusCode}
-                        subtitle="Information on this page is available only to superadmin users."
-                    />
+                    <ErrorScreenManager code={errorStatusCode} subtitle={ERROR_SCREEN_SUBTITLE} />
                 </div>
             )
         } else if (!selectedCluster?.value) {
@@ -552,8 +573,24 @@ export default function ResourceList() {
                         )}
                         {!node && lastDataSyncTimeString && (
                             <div className="ml-12 flex pl-12 dc__border-left">
-                                <span>{lastDataSyncTimeString}</span>
-                                <RefreshIcon className="icon-dim-16 scb-5 ml-8 cursor" onClick={refreshData} />
+                                {loader || resourceListLoader ? (
+                                    <span className="dc__loading-dots">Syncing</span>
+                                ) : (
+                                    <>
+                                        {isStaleData.current && (
+                                            <Tippy
+                                                className="default-tt"
+                                                placement="bottom"
+                                                arrow={false}
+                                                content={STALE_DATA_WARNING_TEXT}
+                                            >
+                                                <Warning className="icon-dim-16 mr-4" />
+                                            </Tippy>
+                                        )}
+                                        <span>{lastDataSyncTimeString}</span>
+                                        <RefreshIcon className="icon-dim-16 scb-5 ml-8 cursor" onClick={refreshData} />
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
