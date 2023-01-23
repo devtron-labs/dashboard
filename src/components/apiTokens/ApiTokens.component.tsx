@@ -11,6 +11,8 @@ import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './authorization.type'
+import GenericEmptyState from '../EmptyState/GenericEmptyState'
+import { EMPTY_STATE_STATUS } from '../../config'
 
 function ApiTokens() {
     const { path } = useRouteMatch()
@@ -178,27 +180,22 @@ function ApiTokens() {
         history.push(`${path}/create`)
     }
 
+    const renderGenerateButton = () => {
+        return (
+            <button className="flex cta h-32" onClick={redirectToCreate}>
+                Generate new token
+            </button>
+        )
+    }
     const renderEmptyState = (): JSX.Element => {
         return (
-            <div className="flex column h-100">
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={emptyGeneratToken} alt="Empty api token links" />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="title">Generate a token to access the Devtron API</h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>
-                        API tokens are like ordinary OAuth access tokens. They can be used instead of username and
-                        password for programmatic access to API.
-                    </EmptyState.Subtitle>
-                    <EmptyState.Button>
-                        <button className="flex cta h-32" onClick={redirectToCreate}>
-                            Generate new token
-                        </button>
-                    </EmptyState.Button>
-                </EmptyState>
-            </div>
+          <GenericEmptyState
+          image={emptyGeneratToken}
+          title={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.TITLE}
+          subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}
+          isButtonAvailable={true}
+          renderButton={renderGenerateButton}
+      />
         )
     }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
-import { ModuleNameMap, URLS } from '../../../../config'
+import { EMPTY_STATE_STATUS, ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -20,6 +20,8 @@ import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import GenericEmptyState from '../../../EmptyState/GenericEmptyState'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -113,6 +115,7 @@ export default function CDDetails() {
         return null
     }
 
+
     const pipelines = result[1]['value'].pipelines
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
@@ -134,6 +137,8 @@ export default function CDDetails() {
             pipelineId: cdPipelinesMap.get(item.environmentId).id,
         }
     })
+    const DeploymentSubtitle = `No deployment history available for the ${environment?.environmentName} environment.`
+
     return (
         <>
             <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -167,14 +172,16 @@ export default function CDDetails() {
                             />
                         </Route>
                     ) : !envId ? (
-                        <EmptyView
-                            title="No environment selected"
-                            subTitle="Please select an environment to start seeing CD deployments."
+                        <GenericEmptyState
+                            image={AppNotDeployed}
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
-                        <EmptyView
-                            title="No deployments"
-                            subTitle={`No deployment history available for the ${environment?.environmentName} environment.`}
+                        <GenericEmptyState
+                            image={AppNotDeployed}
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_DEPLOYMENT.TITLE}
+                            subTitle={DeploymentSubtitle}
                         />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
