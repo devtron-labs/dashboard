@@ -96,7 +96,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
-            this.props.serverMode === SERVER_MODE.EA_ONLY ? { result: undefined } : getEnvironmentList(),
+            (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT) ? { result: undefined } : getEnvironmentList(),
         ])
             .then(([clusterRes, envResponse]) => {
                 let environments = envResponse.result || []
@@ -184,7 +184,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
         else {
             const moduleBasedTitle =
-                'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')
+                'Clusters' +
+                (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
+                    ? ''
+                    : ' and Environments')
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
@@ -231,7 +234,10 @@ function Cluster({
     const [config, setConfig] = useState(defaultConfig)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId])
+    const [, grafanaModuleStatus] = useAsync(
+        window._env_.K8S_CLIENT ? null : () => getModuleInfo(ModuleNameMap.GRAFANA),
+        [clusterId],
+    )
     const history = useHistory()
     const newEnvs = useMemo(() => {
         let namespacesInAll = true
@@ -307,8 +313,8 @@ function Cluster({
                             </div>
                             {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                         </List>
-                        {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? <hr className="mt-0 mb-0" /> : null}
-                        {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? (
+                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? <hr className="mt-0 mb-0" /> : null}
+                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
                             <ClusterInstallStatus
                                 agentInstallationStage={agentInstallationStage}
                                 envName={envName}
@@ -327,7 +333,7 @@ function Cluster({
                                 }}
                             />
                         ) : null}
-                        {serverMode !== SERVER_MODE.EA_ONLY && Array.isArray(newEnvs) && newEnvs.length > 0 && (
+                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 0 && (
                             <div className="environments-container">
                                 {newEnvs.map(
                                     ({
@@ -608,7 +614,7 @@ function ClusterForm({
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            render={() => 
+                            render={() =>
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}

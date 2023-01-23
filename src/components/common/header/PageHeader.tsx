@@ -89,7 +89,9 @@ function PageHeader({
     }, [])
 
     useEffect(() => {
-        getCurrentServerInfo()
+        if (!window._env_.K8S_CLIENT) {
+            getCurrentServerInfo()
+        }
     }, [])
 
     const onClickLogoutButton = () => {
