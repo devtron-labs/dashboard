@@ -24,7 +24,6 @@ import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
-import { Page } from '../../common/pagination/types'
 
 export function K8SResourceList({
     selectedResource,
