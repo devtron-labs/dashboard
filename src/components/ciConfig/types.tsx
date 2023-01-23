@@ -295,3 +295,15 @@ export interface CIBuildConfigDiffProps {
     materials: Material[]
     globalCIConfig: DockerConfigOverrideType
 }
+
+export interface TargetPlatformSelectorType {
+  allowOverride?: boolean
+  selectedTargetPlatforms: OptionType[]
+  setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
+  showCustomPlatformWarning: boolean
+  setShowCustomPlatformWarning: (value: boolean) => void
+  targetPlatformMap: Map<string, boolean>
+  targetPlatform?: string
+  configOverrideView?: boolean
+  updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
+}

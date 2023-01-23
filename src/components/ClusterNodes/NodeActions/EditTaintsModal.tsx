@@ -172,7 +172,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                         iconClass="icon-dim-20"
                     />
                     <div
-                        className="task-item add-task-container cursor cb-5 fw-6 fs-13 flexbox mr-20 mb-12"
+                        className="cursor cb-5 fw-6 fs-13 flexbox mr-20 mb-12"
                         onClick={addNewTaint}
                     >
                         <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}

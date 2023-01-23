@@ -4,7 +4,7 @@ import { ResponseType } from '../../services/service.types'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback } from '../common'
 import moment from 'moment-timezone'
 import { ServerErrors } from '../../modals/commonTypes'
-import { History } from './details/cIDetails/types'
+import { History } from './details/cicdHistory/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
 import { CDMdalTabType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
@@ -171,45 +171,43 @@ const gitTriggersModal = (triggers, materials) => {
 }
 
 export const getCIMaterialList = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
-    return get(URL).then((response) => {
-        let materials = response?.result
-            ? response?.result?.map((material, index) => {
-                  return {
-                      ...material,
-                      isSelected: index == 0,
-                      gitURL: material.gitMaterialUrl || '',
-                      lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
-                      isMaterialLoading: false,
-                      history: material.history
-                          ? material.history.map((history, indx) => {
-                                return {
-                                    commitURL: material.gitMaterialUrl
-                                        ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
-                                        : '',
-                                    changes: history.Changes || [],
-                                    author: history.Author,
-                                    message: history.Message,
-                                    date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
-                                    commit: history?.Commit,
-                                    isSelected: indx == 0,
-                                    showChanges: false,
-                                    webhookData: history.WebhookData
-                                        ? {
-                                              id: history.WebhookData.id,
-                                              eventActionType: history.WebhookData.eventActionType,
-                                              data: history.WebhookData.data,
-                                          }
-                                        : null,
-                                }
-                            })
-                          : [],
-                  }
-              })
+    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`).then((response) => {
+        const materials = Array.isArray(response?.result)
+            ? response.result
+                  .sort((a, b) => sortCallback('id', a, b))
+                  .map((material, index) => {
+                      return {
+                          ...material,
+                          isSelected: index == 0,
+                          gitURL: material.gitMaterialUrl || '',
+                          lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                          isMaterialLoading: false,
+                          history: material.history
+                              ? material.history.map((history, indx) => {
+                                    return {
+                                        commitURL: material.gitMaterialUrl
+                                            ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
+                                            : '',
+                                        changes: history.Changes || [],
+                                        author: history.Author,
+                                        message: history.Message,
+                                        date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
+                                        commit: history?.Commit,
+                                        isSelected: indx == 0,
+                                        showChanges: false,
+                                        webhookData: history.WebhookData
+                                            ? {
+                                                  id: history.WebhookData.id,
+                                                  eventActionType: history.WebhookData.eventActionType,
+                                                  data: history.WebhookData.data,
+                                              }
+                                            : null,
+                                    }
+                                })
+                              : [],
+                      }
+                  })
             : []
-        materials.sort((a, b) => {
-            sortCallback('id', a, b)
-        })
         return {
             code: response.code,
             status: response.status,
@@ -453,6 +451,10 @@ export function getNodeStatus({ appName, envName, version, namespace, group, kin
 
 export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
+}
+
+export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse>{
+    return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 
 export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {

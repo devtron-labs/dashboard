@@ -43,6 +43,7 @@ import {
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
     fetchChartVersionsData,
+    fetchProjects,
     fetchProjectsAndEnvironments,
     getChartRelatedReadMe,
     getChartValuesList,
@@ -74,8 +75,12 @@ import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifes
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
+import '../../../../components/app/details/appOverview/AppOverview.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
+import { AppMetaInfo } from '../../../app/types'
+import { getHelmAppMetaInfo } from '../../../app/service'
+import ProjectUpdateModal from './ProjectUpdateModal'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
@@ -109,6 +114,8 @@ function ChartValuesView({
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
+    const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
+    const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
 
@@ -130,6 +137,7 @@ function ChartValuesView({
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
+    const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
 
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
@@ -168,19 +176,23 @@ function ChartValuesView({
                 },
             })
         } else if (isExternalApp) {
+            fetchProjects(dispatch)
+
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
                     const _releaseInfo = releaseInfoResponse.result.releaseInfo
                     const _installedAppInfo = releaseInfoResponse.result.installedAppInfo
                     const _fetchedReadMe = commonState.fetchedReadMe
                     _fetchedReadMe.set(0, _releaseInfo.readme)
-
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
+                            selectedProject: _installedAppInfo?.teamName
+                                ? { value: _installedAppInfo.teamId, label: _installedAppInfo.teamName }
+                                : null,
                             activeTab:
                                 !_releaseInfo.valuesSchemaJson || presetValueId || isCreateValueView ? 'yaml' : 'gui',
                         },
@@ -287,6 +299,10 @@ function ChartValuesView({
                     })
                 })
                 .catch((e) => {})
+        }
+
+        if (!isDeployChartView) {
+            getHelmAppMetaInfoRes()
         }
     }, [])
 
@@ -475,7 +491,7 @@ function ChartValuesView({
                     modifiedValuesYaml: result?.valuesOverrideYaml,
                 },
             })
-        } catch (e) {
+        } catch (e: any) {
             dispatch({ type: ChartValuesViewActionTypes.isLoading, payload: false })
         }
     }
@@ -608,9 +624,7 @@ function ChartValuesView({
 
         if (
             isDeployChartView &&
-            (!_validatedAppName.isValid ||
-                !commonState.selectedEnvironment ||
-                (serverMode === SERVER_MODE.FULL && !commonState.selectedProject))
+            (!_validatedAppName.isValid || !commonState.selectedEnvironment || !commonState.selectedProject)
         ) {
             return false
         }
@@ -740,10 +754,10 @@ function ChartValuesView({
                 }
             } else if (isDeployChartView) {
                 const payload = {
-                    teamId: serverMode == SERVER_MODE.FULL ? commonState.selectedProject.value : 0,
+                    teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
                     referenceValueKind: commonState.chartValues.kind,
-                    environmentId: serverMode == SERVER_MODE.FULL ? commonState.selectedEnvironment.value : 0,
+                    environmentId: commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0,
                     clusterId: commonState.selectedEnvironment.clusterId,
                     namespace: commonState.selectedEnvironment.namespace,
                     appStoreVersion: commonState.selectedVersion,
@@ -1250,6 +1264,24 @@ function ChartValuesView({
         )
     }
 
+    const getHelmAppMetaInfoRes = async (): Promise<void> => {
+        try {
+            setProjectLoading(true)
+            const { result } = await getHelmAppMetaInfo(appId)
+            if (result) {
+                setAppMetaInfo(result)
+            }
+        } catch (err) {
+            showError(err)
+        } finally {
+            setProjectLoading(false)
+        }
+    }
+
+    const toggleChangeProjectModal = () => {
+        setShowUpdateAppModal(!showUpdateAppModal)
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
         return (
@@ -1283,17 +1315,38 @@ function ChartValuesView({
                                 invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />
                         )}
-                        {!isExternalApp &&
-                            ((!isDeployChartView && commonState.selectedProject) ||
-                                (isDeployChartView && serverMode === SERVER_MODE.FULL)) && (
-                                <ChartProjectSelector
-                                    isDeployChartView={isDeployChartView}
-                                    selectedProject={commonState.selectedProject}
-                                    handleProjectSelection={handleProjectSelection}
-                                    projects={commonState.projects}
-                                    invalidProject={commonState.invalidProject}
+
+                        {!isDeployChartView && (
+                            <div className="mb-16">
+                                <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
+                                <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
+                                    {appMetaInfo?.projectName ? appMetaInfo.projectName : 'unassigned'}
+                                    <Edit className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
+                                </div>
+                            </div>
+                        )}
+
+                        {!isDeployChartView && showUpdateAppModal && (
+                            <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
+                                <ProjectUpdateModal
+                                    appId={appId}
+                                    appMetaInfo={appMetaInfo}
+                                    installedAppId={commonState.installedConfig?.installedAppId}
+                                    onClose={toggleChangeProjectModal}
+                                    projectList={commonState.projects}
+                                    getAppMetaInfoRes={getHelmAppMetaInfoRes}
                                 />
-                            )}
+                            </div>
+                        )}
+
+                        {isDeployChartView && (
+                            <ChartProjectSelector
+                                selectedProject={commonState.selectedProject}
+                                handleProjectSelection={handleProjectSelection}
+                                projects={commonState.projects}
+                                invalidProject={commonState.invalidProject}
+                            />
+                        )}
                         {(isDeployChartView ||
                             (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
                             <ChartEnvironmentSelector
@@ -1469,7 +1522,7 @@ function ChartValuesView({
         )
     }
 
-    if (commonState.isLoading) {
+    if (commonState.isLoading || isProjectLoading) {
         return (
             <div className="dc__loading-wrapper">
                 <Progressing pageLoader />

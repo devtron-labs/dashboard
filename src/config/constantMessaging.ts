@@ -18,10 +18,12 @@ export const DC_GIT_PROVIDER_CONFIRMATION_MESSAGE =
 export const DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE =
     'Some build pipelines are currently using this git repositry. Please delete the build pipelines and try again.'
 export const DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE =
-    'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.'
+    'Please select another repository containing Dockerfile and try again.'
 export const DC_CONFIGURATION_CONFIRMATION_MESSAGE =
     'This configuration is being used in some notifications. Please delete notifications using this configuration and try again.'
 export const DC_PROJECT_CONFIRMATION_MESSAGE = 'Please delete applications assigned to this project and try again.'
+export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (FQDN).'
+export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
 
 export const enum DeleteComponentsName {
     ChartGroup = 'chart group',
@@ -35,10 +37,12 @@ export const enum DeleteComponentsName {
     SesConfigurationTab = 'ses',
     SMTPConfigurationTab = 'smtp',
     Project = 'project',
+    GitRepo = 'Repo',
 }
 
 //DELETE COMPONENT ENDS
 
+export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'

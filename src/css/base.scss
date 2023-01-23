@@ -1718,6 +1718,10 @@ button.anchor {
     max-width: 300px;
 }
 
+.dc__mxw-304 {
+    max-width: 304px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2070,6 +2074,15 @@ textarea,
     width: 300px;
 }
 
+
+.w-303 {
+    width: 303px;
+}
+
+.w-350 {
+    width: 350px;
+}
+
 .w-332 {
     width: 332px;
 }
@@ -2130,6 +2143,12 @@ textarea,
 //min width
 .min-w-200 {
   min-width: 200px
+}
+
+// width fix content
+
+.dc__w-fit-content {
+  width: fit-content;
 }
 
 // Height in pixels
@@ -2273,6 +2292,10 @@ textarea,
     padding-left: 16px !important;
 }
 
+.pt-40 {
+    padding-top: 40px;
+}
+
 .pl-200 {
     padding-left: 200px;
 }
@@ -2350,6 +2373,10 @@ textarea,
 //Overflow
 .dc__overflow-hidden {
     overflow: hidden !important;
+}
+
+.dc__overflow-auto {
+  overflow: auto !important;
 }
 
 .dc__overflow-scroll {
