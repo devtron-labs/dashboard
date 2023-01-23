@@ -132,6 +132,7 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    HELM_APP_META_INFO: 'app/helm/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
     APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',
@@ -194,6 +195,7 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events',
+    UPDATE_HELM_APP_META_INFO: 'app-store/deployment/application/update/project',
     API_RESOURCE: 'k8s/api-resources',
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
@@ -231,7 +233,7 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
-    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
     KUBERNETES_KEY: /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
@@ -619,6 +621,7 @@ export const TERMINAL_STATUS_MAP = {
     STARTING: 'starting',
     FAILED: 'failed',
     ERROR: 'error',
+    CANCELLED: 'cancelled',
     UNABLE_TO_FETCH: 'unabletofetch',
     TIMED_OUT: 'timedout'
 }
@@ -682,6 +685,7 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
+export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
 export const CHART_REPO_TYPE = {
     PUBLIC: 'PUBLIC',
     PRIVATE: 'PRIVATE',

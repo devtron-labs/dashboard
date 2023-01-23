@@ -202,3 +202,22 @@ export async function fetchProjectsAndEnvironments(
         })
     })
 }
+
+export async function fetchProjects(dispatch: (action: ChartValuesViewAction) => void): Promise<void> {
+    getTeamListMin().then((response) => {
+        const projectListRes: Teams[] = response.result || []
+
+        const projectList = projectListRes
+            .map((p) => {
+                return { value: p.id, label: p.name }
+            })
+            .sort((a, b) => sortCallback('label', a, b, true))
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                projects: projectList,
+            },
+        })
+    })
+}

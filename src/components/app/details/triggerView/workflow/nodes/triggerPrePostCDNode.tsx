@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { TriggerPrePostCDNodeProps } from '../../types';
 import { TriggerStatus } from '../../../../config';
 import { URLS } from './../../../../../../config';
-import { TriggerViewContext } from '../../TriggerView';
 import { Link } from 'react-router-dom';
 import { DEFAULT_STATUS } from '../../../../../../config';
+import { TriggerViewContext } from '../../config';
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
 

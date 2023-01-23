@@ -898,14 +898,14 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-    const availableArrayMap = mapByKey(availableArray, matchKey)
-    const actualSelectedArray = selectedArray.filter((item) => availableArrayMap.has(item[matchKey]))
-    const selectedArrayMap = mapByKey(actualSelectedArray, matchKey)
-    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
-    return [
-        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
-        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
-    ]
+
+    const selectedArrayMap = mapByKey(selectedArray, matchKey)
+
+    const actualSelectedArray = availableArray.filter(item => selectedArrayMap.has(item[matchKey]))
+
+    const unselectedAvailableArray = availableArray.filter(item => !selectedArrayMap.has(item[matchKey]))
+
+    return [...sortObjectArrayAlphabetically(actualSelectedArray, matchKey), ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey)]
 }
 
 export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string) {
@@ -1022,6 +1022,18 @@ export const setActionWithExpiry = (key: string, days: number): void => {
 
 export const stopPropagation = (event): void => {
     event.stopPropagation()
+}
+
+export const preventBodyScroll = (lock: boolean): void => {
+    if (lock) {
+        document.body.style.overflowY = 'hidden'
+        document.body.style.height = '100vh'
+        document.documentElement.style.overflow = 'initial'
+    } else {
+        document.body.style.overflowY = null
+        document.body.style.height = null
+        document.documentElement.style.overflow = null
+    }
 }
 
 // Creates object of arrays containing items grouped by item value of provided key
