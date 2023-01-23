@@ -131,10 +131,27 @@ export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
 export const ERROR_SCREEN_SUBTITLE = 'Information on this page is available only to superadmin users.'
 
-export const RESOURCE_LIST_EMPTY_STATE = {
+export const RESOURCE_LIST_ERROR_STATE = {
     title: 'Some error occured',
-    subTitle: (label: string): string => {
-        return `Kubernetes resources for the cluster ‘${label}’ could not be fetched`
-    },
+    subTitle: (label: string): string => `Kubernetes resources for the cluster ‘${label}’ could not be fetched`,
     actionButtonText: 'Change cluster',
 }
+
+export const RESOURCE_LIST_EMPTY_STATE = {
+    title: 'No matching results',
+    subTitle: (kind: string): string => `We could not find any matching ${kind || 'resource'}.`,
+}
+
+export const RESOURCE_EMPTY_PAGE_STATE = {
+    title: (kind: string) => `No ${kind || 'resource'} found`,
+    subTitle: (kind: string, namespaced: boolean) =>
+        `We could not find any ${kind || 'resource'}. Try selecting a different cluster${
+            namespaced ? ' or namespace.' : '.'
+        }`,
+}
+
+export const RESOURCE_PAGE_SIZE_OPTIONS = [
+    { value: 100, selected: true },
+    { value: 150, selected: false },
+    { value: 200, selected: false },
+]

@@ -25,7 +25,7 @@ import {
     K8S_RESOURCE_LIST,
     MARK_AS_STALE_DATA_CUT_OFF_MINS,
     ORDERED_AGGREGATORS,
-    RESOURCE_LIST_EMPTY_STATE,
+    RESOURCE_LIST_ERROR_STATE,
     SIDEBAR_KEYS,
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
@@ -479,9 +479,9 @@ export default function ResourceList() {
         return (
             <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
                 <ResourceListEmptyState
-                    title={RESOURCE_LIST_EMPTY_STATE.title}
-                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedCluster.label)}
-                    actionButtonText={RESOURCE_LIST_EMPTY_STATE.actionButtonText}
+                    title={RESOURCE_LIST_ERROR_STATE.title}
+                    subTitle={RESOURCE_LIST_ERROR_STATE.subTitle(selectedCluster.label)}
+                    actionButtonText={RESOURCE_LIST_ERROR_STATE.actionButtonText}
                     actionHandler={goToClusterList}
                 />
             </div>

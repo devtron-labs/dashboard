@@ -134,4 +134,5 @@ export interface ResourceListEmptyStateType {
 export interface EventListType {
     filteredData: Record<string, any>[]
     handleResourceClick: (e: any) => void
+    paginatedView: boolean
 }
