@@ -69,7 +69,11 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     arrowIcon = (): string => {
-        return this.props.isAllExpandable ? (this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90') : 'cursor-not-allowed dc__flip-90'
+        if(this.props.isAllExpandable){
+            return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90'
+        }else {
+            return 'cursor-not-allowed dc__flip-90'
+        }
     }
 
     renderAppList() {
