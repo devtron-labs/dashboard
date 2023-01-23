@@ -8,10 +8,10 @@ import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import Tippy from '@tippyjs/react'
 import EmptyState from '../../../EmptyState/EmptyState'
-import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
-import { TERMINAL_STATUS_MAP } from '../../../../config'
+import { EMPTY_STATE_STATUS, TERMINAL_STATUS_MAP } from '../../../../config'
+import GenericEmptyState from '../../../EmptyState/GenericEmptyState'
 export default function Artifacts({ status, artifact, blobStorageEnabled, getArtifactPromise }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [copied, setCopied] = useState(false)
@@ -39,7 +39,11 @@ export default function Artifacts({ status, artifact, blobStorageEnabled, getArt
         status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
-        return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
+        return  <GenericEmptyState
+          title={EMPTY_STATE_STATUS.ARTIFACT.TITLE}
+          subTitle={EMPTY_STATE_STATUS.ARTIFACT.SUBTITLE}
+             />
+        //  <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
     } else {
         return (
             <div className="flex left column p-16">

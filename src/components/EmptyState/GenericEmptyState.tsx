@@ -1,8 +1,9 @@
 import React, { CSSProperties, ReactNode } from 'react'
 import './emptyState.scss'
+import AppNotDeployed from '../../assets/img/app-not-deployed.png'
 
 interface GenericEmptyStateType {
-    image
+    image?
     classname?: string
     title: ReactNode
     subTitle?: ReactNode
@@ -48,7 +49,7 @@ function GenericEmptyState({
             {...(heightToDeduct >= 0 && { style: { ...styles, height: `calc(100vh - ${heightToDeduct}px)` } })}
         >
             <img
-                src={image}
+                src={image || AppNotDeployed}
                 width={imageType === ImageType.Medium ? '200' : '250'}
                 height={imageType === ImageType.Medium ? '160' : '200'}
                 alt="empty state"

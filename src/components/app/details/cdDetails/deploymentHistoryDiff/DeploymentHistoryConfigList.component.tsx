@@ -5,9 +5,11 @@ import { useRouteMatch, useParams } from 'react-router'
 import { DeploymentTemplateList } from '../cd.type'
 import { DeploymentHistoryParamsType } from './types'
 import { getDeploymentHistoryList } from '../service'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EMPTY_STATE_STATUS } from '../../../../../config'
 import CDEmptyState from '../CDEmptyState'
 import { Progressing } from '../../../../common'
+import AppNotDeployed from '../../../../../assets/img/app-not-deployed.png'
+import GenericEmptyState from '../../../../EmptyState/GenericEmptyState'
 
 interface TemplateConfiguration {
   setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
@@ -56,7 +58,10 @@ export default function DeploymentHistoryConfigList({
     return (
         <>
             {!deploymentHistoryList && !deploymentListLoader ? (
-                <CDEmptyState />
+                 <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.DEPLOYMENT_HISTORY_CONFIG_LIST.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_HISTORY_CONFIG_LIST.SUBTITLE}
+                />
             ) : deploymentListLoader ? (
                 <Progressing pageLoader />
             ) : (

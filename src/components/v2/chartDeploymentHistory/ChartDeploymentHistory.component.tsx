@@ -4,7 +4,7 @@ import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { ServerErrors } from '../../../modals/commonTypes'
-import { Moment12HourFormat, URLS } from '../../../config'
+import { EMPTY_STATE_STATUS, Moment12HourFormat, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -26,6 +26,8 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
+import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
+import GenericEmptyState from '../../EmptyState/GenericEmptyState'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -53,7 +55,7 @@ function ChartDeploymentHistory({
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
-    const [showDockerInfo,setShowDockerInfo] = useState(false)
+    const [showDockerInfo, setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
 
@@ -305,6 +307,7 @@ function ChartDeploymentHistory({
     function renderCodeEditor(): JSX.Element {
         const version = deploymentHistoryArr[selectedDeploymentHistoryIndex].version
         const selectedDeploymentManifestDetail = deploymentManifestDetails.get(version)
+        const deploymentTabEmptySubtitle = `${deploymentTabs[selectedDeploymentTabIndex]} is not available for this deployment.`
 
         if (selectedDeploymentManifestDetail.loading && !selectedDeploymentManifestDetail.error) {
             return <Progressing theme="white" pageLoader />
@@ -315,8 +318,11 @@ function ChartDeploymentHistory({
                 (selectedDeploymentTabIndex === 2 && !selectedDeploymentManifestDetail.manifest))
         ) {
             return (
-                <CDEmptyState
-                    subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} is not available for this deployment`}
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.TITLE}
+                    subTitle={deploymentTabEmptySubtitle}
+                    classname='dc__window-bg'
                 />
             )
         } else if (!selectedDeploymentManifestDetail.loading && selectedDeploymentManifestDetail.error) {
@@ -471,9 +477,9 @@ function ChartDeploymentHistory({
                             </button>
                         </Tippy>
                     )}
-                    {showDockerInfo &&
-                            <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
-                    }
+                    {showDockerInfo && (
+                        <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
+                    )}
                 </div>
             </div>
         )
@@ -552,7 +558,12 @@ function ChartDeploymentHistory({
             )
         } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
             return (
-                <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.SUBTITLE}
+                    classname="dc__window-bg"
+                />
             )
         }
 

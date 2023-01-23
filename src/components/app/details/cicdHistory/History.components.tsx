@@ -11,7 +11,8 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { NavLink } from 'react-router-dom'
-import { TIMELINE_STATUS } from '../../../../config'
+import { EMPTY_STATE_STATUS, TIMELINE_STATUS } from '../../../../config'
+import GenericEmptyState from '../../../EmptyState/GenericEmptyState'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -72,9 +73,11 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
 export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     if (!ciMaterials?.length || !gitTriggers?.size) {
         return (
-            <EmptyView
-                title="Data not available"
-                subTitle="Source code detail is not available"
+            <GenericEmptyState
+                image={AppNotDeployed}
+                title={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.TITLE}
+                subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE}
+                classname="dc__window-bg"
             />
         )
     }

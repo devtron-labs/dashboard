@@ -731,20 +731,38 @@ export const DEPLOYMENT_STATUS = {
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
 
-export const EMPTY_STATE_STATUS={
-  API_TOKEN:{
-    TITLE: 'No matching results',
-    SUBTITLE: "We couldn't find any matching token"
-  },
-  GENERATE_API_TOKEN:{
-    TITLE: 'Generate a token to access the Devtron API',
-    SUBTITLE:'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.'
-  },
-  CD_DETAILS_ENVIRONMENT:{
-    TITLE: 'No environment selected',
-    SUBTITLE: 'Please select an environment to start seeing CD deployments.'
-  },
-  CD_DETAILS_DEPLOYMENT:{
-    TITLE: 'No deployments',
-  }
+export const EMPTY_STATE_STATUS = {
+    API_TOKEN: {
+        TITLE: 'No matching results',
+        SUBTITLE: "We couldn't find any matching token",
+    },
+    GENERATE_API_TOKEN: {
+        TITLE: 'Generate a token to access the Devtron API',
+        SUBTITLE:
+            'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.',
+    },
+    CD_DETAILS_ENVIRONMENT: {
+        TITLE: 'No environment selected',
+        SUBTITLE: 'Please select an environment to start seeing CD deployments.',
+    },
+    CD_DETAILS_DEPLOYMENT: {
+        TITLE: 'No deployments',
+    },
+    CHART_DEPLOYMENT_HISTORY: {
+        TITLE: 'Data not available',
+        SUBTITLE:
+            'Data for previous deployments is not available. History for any new deployment will be available here.',
+    },
+    DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE:{
+      TITLE: 'Data not available',
+      SUBTITLE: 'Source code detail is not available'
+    },
+    DEPLOYMENT_HISTORY_CONFIG_LIST:{
+      TITLE: 'Data not available',
+      SUBTITLE: 'Deployed configurations is not available for older deployments'
+    },
+    ARTIFACT:{
+      TITLE: 'No artifacts generated',
+      SUBTITLE: 'Errr..!! We couldn’t build your code.'
+    }
 }
