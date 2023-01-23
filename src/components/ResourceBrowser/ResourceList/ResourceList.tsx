@@ -88,12 +88,41 @@ export default function ResourceList() {
 
         getClusterData()
 
+        // Initialize tabs on load
+        AppDetailsStore.initAppDetailsTabs(
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
+            false,
+            false,
+            true,
+            nodeType,
+        )
         return (): void => {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
         }
     }, [])
+
+    // Mark tab active on path change
+    useEffect(() => {
+        if (selectedResource && !node) {
+            AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        }
+        if (location.pathname === URLS.RESOURCE_BROWSER) {
+            setSelectedCluster(null)
+        }
+    }, [location.pathname])
+
+    // Update K8sResources tab url on cluster/namespace/kind changes
+    useEffect(() => {
+        if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
+            AppDetailsStore.updateK8sResourcesTabUrl(
+                `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                    selectedNamespace.value
+                }/${selectedResource.gvk.Kind.toLowerCase()}`,
+            )
+        }
+    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
 
     useEffect(() => {
         if (clusterId && selectedResource) {
@@ -111,36 +140,6 @@ export default function ResourceList() {
             getResourceListData(true)
         }
     }, [namespace])
-
-    useEffect(() => {
-        if (selectedCluster?.value && selectedNamespace?.value) {
-            const _clusterId = selectedCluster.value
-            const _namespace = selectedNamespace.value
-
-            if (!nodeType || !selectedResource) {
-                AppDetailsStore.initAppDetailsTabs(
-                    `${URLS.RESOURCE_BROWSER}/${_clusterId}/${_namespace}`,
-                    false,
-                    false,
-                    true,
-                    nodeType,
-                )
-            } else if (selectedResource?.gvk?.Kind) {
-                AppDetailsStore.updateK8sResourcesTabUrl(
-                    `${URLS.RESOURCE_BROWSER}/${_clusterId}/${_namespace}/${selectedResource.gvk.Kind.toLowerCase()}`,
-                )
-            }
-        }
-    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
-
-    useEffect(() => {
-        if (selectedResource && !node) {
-            AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
-        }
-        if (location.pathname === URLS.RESOURCE_BROWSER) {
-            setSelectedCluster(null)
-        }
-    }, [location.pathname])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()

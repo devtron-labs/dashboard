@@ -60,7 +60,7 @@ export function K8SResourceList({
              * 295 is width of left nav + sidebar
              * 200 is the diff of name column
              */
-            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 150
+            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
@@ -236,19 +236,28 @@ export function K8SResourceList({
                 {resourceList.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            className={`w-300 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
+                            className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
                             <div className="w-100 flex left">
-                                <div className="w-280 pr-4 dc__ellipsis-right">
-                                    <a
-                                        className="dc__link cursor"
-                                        data-name={resourceData.name}
-                                        onClick={handleResourceClick}
-                                    >
-                                        {resourceData.name}
-                                    </a>
+                                <div className="w-303 pr-4">
+                                    <div className="dc__w-fit-content dc__mxw-304 pr-4">
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="right"
+                                            content={resourceData.name}
+                                        >
+                                            <a
+                                                className="dc__link dc__ellipsis-right dc__block cursor"
+                                                data-name={resourceData.name}
+                                                onClick={handleResourceClick}
+                                            >
+                                                {resourceData.name}
+                                            </a>
+                                        </Tippy>
+                                    </div>
                                 </div>
                                 <ResourceBrowserActionMenu
                                     clusterId={clusterId}
@@ -315,7 +324,7 @@ export function K8SResourceList({
                                               fixedNodeNameColumn
                                                   ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
                                                   : ''
-                                          } w-300 pl-20`
+                                          } w-350 pl-20`
                                         : 'w-150'
                                 }`}
                             >
