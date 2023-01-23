@@ -124,8 +124,13 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isCacheAvailable?: boolean
 }
 
+export interface RegexValueType {
+    value: string
+    isInvalid: boolean
+}
+
 export interface CIMaterialState {
-    regexValue: Record<number, { value: string; isInvalid: boolean }>
+    regexValue: Record<number, RegexValueType>
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -242,6 +247,22 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
+}
+
+export interface TriggerViewContextType {
+    invalidateCache: boolean
+    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+    onClickTriggerCINode: () => void
+    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
+    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
+    closeCIModal: () => void
+    selectCommit: (materialId: string, hash: string) => void
+    selectMaterial: (materialId) => void
+    toggleChanges: (materialId: string, hash: string) => void
+    toggleInvalidateCache: () => void
+    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
 }
 
 export interface TriggerViewRouterProps {
@@ -530,8 +551,7 @@ export interface BranchRegexModalProps {
     showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
-    context
-    onClickNextButton: (context) => void
+    onClickNextButton: () => void
     onShowCIModal: () => void
     handleRegexInputValue: (id, value, mat) => void
     regexValue
@@ -570,4 +590,32 @@ export const STAGE_TYPE = {
     PRECD: 'PRECD',
     POSTCD: 'POSTCD',
     ROLLBACK: 'ROLLBACK',
+}
+
+export interface EmptyStateCIMaterialProps {
+    isRepoError: boolean;
+    isBranchError: boolean;
+    gitMaterialName: string;
+    sourceValue: string;
+    repoUrl: string;
+    branchErrorMsg: string;
+    repoErrorMsg: string;
+    isMaterialLoading: boolean;
+    onRetry: (...args) => void;
+    anyCommit: boolean;
+    isWebHook?: boolean;
+    noSearchResults?: boolean
+    noSearchResultsMsg?: string
+    toggleWebHookModal?: () => void;
+    clearSearch?: () => void
+  }
+
+export interface MaterialSourceProps {
+    material: CIMaterialType[]
+    selectMaterial: (materialId: string) => void
+    refreshMaterial?: {
+        pipelineId: number
+        title: string
+        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+    }
 }

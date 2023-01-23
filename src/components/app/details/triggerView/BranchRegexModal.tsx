@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
@@ -8,23 +8,27 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { BranchRegexModalProps } from './types'
+import { TriggerViewContext } from './config'
+import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
+import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 
-function BranchRegexModal({
+export default function BranchRegexModal({
     material,
     selectedCIPipeline,
     showWebhookModal,
     title,
     isChangeBranchClicked,
-    context,
     onClickNextButton,
     onShowCIModal,
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
 }: BranchRegexModalProps) {
+    const triggerViewContext = useContext(TriggerViewContext)
+
     const getBranchRegexName = (gitMaterialId: number): string => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
-            for (let _ciMaterial of selectedCIPipeline.ciMaterial) {
+            for (const _ciMaterial of selectedCIPipeline.ciMaterial) {
                 if (
                     _ciMaterial.gitMaterialId === gitMaterialId &&
                     _ciMaterial.source &&
@@ -37,24 +41,22 @@ function BranchRegexModal({
         return ''
     }
 
-    const renderBranchRegexMaterialHeader = (close: () => void) => {
+    const _closeCIModal = () => {
+        triggerViewContext.closeCIModal()
+    }
+
+    const renderBranchRegexMaterialHeader = () => {
         return (
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">{title}</h1>
-                <button
-                    type="button"
-                    className="dc__transparent"
-                    onClick={() => {
-                        close()
-                    }}
-                >
+                <button type="button" className="dc__transparent" onClick={_closeCIModal}>
                     <Close />
                 </button>
             </div>
         )
     }
 
-    const renderMaterialRegexFooterNextButton = (context) => {
+    const renderMaterialRegexFooterNextButton = () => {
         let _isDisabled = true
 
         for (let index = 0; index < material.length; index++) {
@@ -68,13 +70,7 @@ function BranchRegexModal({
 
         return (
             <div className="trigger-modal__trigger flex right">
-                <button
-                    className="cta flex mr-20"
-                    onClick={(e) => {
-                        onClickNextButton(context)
-                    }}
-                    disabled={_isDisabled}
-                >
+                <button className="cta flex mr-20" onClick={onClickNextButton} disabled={_isDisabled}>
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (
                         <LeftIcon
@@ -103,7 +99,7 @@ function BranchRegexModal({
 
     return (
         <>
-            {renderBranchRegexMaterialHeader(context.closeCIModal)}
+            {renderBranchRegexMaterialHeader()}
             <div className="select-material--regex-body p-20 fs-13">
                 <div className="flex left">
                     {isChangeBranchClicked && (
@@ -113,11 +109,8 @@ function BranchRegexModal({
                     )}
 
                     <div>
-                        <h4 className="mb-0 fw-6 ">Set a primary branch</h4>
-                        <p className="mt-4">
-                            Primary branch will be used to trigger automatic builds on every commit. This can be changed
-                            later.
-                        </p>
+                        <h4 className="mb-0 fw-6">{BRANCH_REGEX_MODAL_MESSAGING.SetPrimaryHeading}</h4>
+                        <p className="mt-4">{BRANCH_REGEX_MODAL_MESSAGING.SetPrimaryInfoText}</p>
                     </div>
                 </div>
                 {material?.map((mat, index) => {
@@ -139,7 +132,7 @@ function BranchRegexModal({
                                     <span>
                                         <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
                                         <div className="pb-12">
-                                            Use branch name matching&nbsp;
+                                            {BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchName}&nbsp;
                                             <span className="fw-6">
                                                 {getBranchRegexName(mat.gitMaterialId) || mat.regex}
                                             </span>
@@ -148,7 +141,7 @@ function BranchRegexModal({
                                 </div>
                                 <input
                                     tabIndex={index}
-                                    placeholder="Enter branch name matching regex"
+                                    placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
                                     className="form__input ml-36 w-95"
                                     name="name"
                                     value={_regexValue.value}
@@ -158,16 +151,14 @@ function BranchRegexModal({
                                 />
                                 {_regexValue.value &&
                                     _regexValue.isInvalid &&
-                                    renderValidationErrorLabel('Branch name does not match the regex.')}
-                                {!_regexValue.value && renderValidationErrorLabel('This is a required field')}
+                                    renderValidationErrorLabel(BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName)}
+                                {!_regexValue.value && renderValidationErrorLabel(REQUIRED_FIELD_MSG)}
                             </div>
                         )
                     )
                 })}
             </div>
-            {!showWebhookModal && renderMaterialRegexFooterNextButton(context)}
+            {!showWebhookModal && renderMaterialRegexFooterNextButton()}
         </>
     )
 }
-
-export default BranchRegexModal
