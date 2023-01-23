@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { useState } from 'react'
-import { MomentDateFormat } from '../../config'
+import { EMPTY_STATE_STATUS, MomentDateFormat } from '../../config'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
@@ -30,8 +30,8 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         return (
             <GenericEmptyState
                 image={NoResults}
-                title="No matching results"
-                subTitle="We couldn't find any matching token"
+                title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
+                subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}
             />
         )
     }

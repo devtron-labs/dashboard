@@ -730,3 +730,10 @@ export const DEPLOYMENT_STATUS = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+
+export const EMPTY_STATE_STATUS={
+  API_TOKEN:{
+    TITLE: 'No matching results',
+    SUBTITLE: "We couldn't find any matching token"
+  }
+}
