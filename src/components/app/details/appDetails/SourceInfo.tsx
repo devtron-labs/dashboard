@@ -2,8 +2,8 @@
 
 import React from 'react'
 import moment from 'moment'
-import { Link } from 'react-router-dom'
-import { URLS, getAppCDURL } from '../../../../config'
+import { Link, useHistory } from 'react-router-dom'
+import { URLS, getAppCDURL, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
@@ -12,7 +12,7 @@ import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { useParams } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router'
 import { Nodes } from '../../types'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
@@ -26,12 +26,13 @@ export function SourceInfo({
     showCommitInfo = null,
     showUrlInfo = null,
     showHibernateModal = null,
-    toggleDeploymentDetailedStatus = null,
     deploymentStatus = null,
     deploymentStatusText = null,
     deploymentTriggerTime = null,
     triggeredBy = null,
 }) {
+    const { url } = useRouteMatch();
+    const history = useHistory()
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
@@ -54,8 +55,12 @@ export function SourceInfo({
             action: 'App Status clicked',
         })
     }
-    const showDeploymentDetailedStatus = (): void => {
-        toggleDeploymentDetailedStatus && toggleDeploymentDetailedStatus(true)
+    
+    const showDeploymentDetailedStatus = (e): void => {
+        e.stopPropagation()
+        history.push({
+            search: DEPLOYMENT_STATUS_QUERY_PARAM
+        })
         ReactGA.event({
             category: 'App Details',
             action: 'Deployment status clicked',
@@ -156,9 +161,7 @@ export function SourceInfo({
                                             {message && (
                                                 <span className="select-material-message">{message.slice(0, 30)}</span>
                                             )}
-                                            {message?.length > 30 && (
-                                                <span className="more-message cb-5 fw-6">Details</span>
-                                            )}
+                                                <span className={`${message?.length > 30 ? 'more-message': ''} cb-5 fw-6`}>Details</span>
                                         </>
                                     )}
                                 </div>

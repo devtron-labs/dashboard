@@ -11,41 +11,43 @@ import { clusterNamespaceList } from './clusterNodes.service'
 import { ClusterImageList } from './types'
 
 export default function ClusterNodeContainer() {
-    const [imageList,setImageList] = useState<ClusterImageList[]>(null)
+    const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>()
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
-    
+
     useEffect(() => {
         try {
-            Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),getUserRole(),clusterNamespaceList()]).then(([hostUrlConfig, userRole, namespaceList]) => {
-                if(hostUrlConfig.result) {
-                    const imageValue: string = hostUrlConfig.result.value
-                    setImageList(JSON.parse(imageValue))
-                }
-                if(userRole.result) {
-                    setSuperAdmin(userRole.result?.superAdmin)
-                }
-                if(namespaceList.result) {
-                    setNameSpaceList(namespaceList.result)
-                }
-            }).catch((error) => {
-                showError(error)
-            })
+            Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'), getUserRole(), clusterNamespaceList()])
+                .then(([hostUrlConfig, userRole, namespaceList]) => {
+                    if (hostUrlConfig.result) {
+                        const imageValue: string = hostUrlConfig.result.value
+                        setImageList(JSON.parse(imageValue))
+                    }
+                    if (userRole.result) {
+                        setSuperAdmin(userRole.result?.superAdmin)
+                    }
+                    if (namespaceList.result) {
+                        setNameSpaceList(namespaceList.result)
+                    }
+                })
+                .catch((error) => {
+                    showError(error)
+                })
         } catch (error) {
             showError(error)
         }
-    },[])
+    }, [])
 
     return (
         <Switch>
             <Route path={URLS.CLUSTER_LIST} exact>
-                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}/>
+                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
             </Route>
             <Route path={`${URLS.CLUSTER_LIST}/:clusterId`} exact>
-                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}/>
+                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
             </Route>
             <Route path={`${URLS.CLUSTER_LIST}/:clusterId/:nodeName`} exact>
-                <NodeDetails imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}/>
+                <NodeDetails imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
             </Route>
             <Redirect to={URLS.CLUSTER_LIST} />
         </Switch>

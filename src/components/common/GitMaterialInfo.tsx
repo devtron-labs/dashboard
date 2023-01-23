@@ -6,7 +6,7 @@ import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.s
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg';
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg';
-import { GitTriggers, CiMaterial } from '../app/details/cIDetails/types'
+import { GitTriggers, CiMaterial } from '../app/details/cicdHistory/types'
 import { Moment12HourFormat } from '../../config';
 import moment from 'moment'
 import {CiPipelineSourceConfig} from '../ciPipeline/CiPipelineSourceConfig';

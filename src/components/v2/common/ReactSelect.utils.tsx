@@ -160,3 +160,43 @@ export function ValueContainerWithIcon(props) {
 }
 
 export const noMatchingOptions = () => 'No matching results'
+
+export const formatOptionLabel = (option): JSX.Element => {
+    return (
+        <div className="flex left column">
+            <span className="w-100 dc__ellipsis-right">
+                {option.label}
+            </span>
+            {option.infoText && <small className="cn-6">{option.infoText}</small>}
+        </div>
+    )
+}
+
+export const CustomValueContainer = (props): JSX.Element => {
+    return (
+        <components.ValueContainer {...props}>
+            {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
+                (props.selectProps.value?.label ? (
+                    <span className="dc__position-abs cn-9 ml-2">{props.selectProps.value.label}</span>
+                ) : (
+                    <span className="dc__position-abs cn-5 ml-2">{props.selectProps.placeholder}</span>
+                ))}
+            {React.cloneElement(props.children[1])}
+        </components.ValueContainer>
+    )
+}
+
+export const menuComponent = (props,text) => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                {`Type to enter custom ${text}`}
+            </div>
+            {props.children}
+        </components.MenuList>
+    )
+}
+
+export const noMatchingPlatformOptions = (): string => {
+    return 'No matching options'
+}

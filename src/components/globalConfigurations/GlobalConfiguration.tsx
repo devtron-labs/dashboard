@@ -156,36 +156,36 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: ClusterList,
             isAvailableInEA: true,
         },
-        { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
+        { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
         { name: 'Container Registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
     ]
 
     const ConfigOptional = [
-        { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
+        { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
-            name: 'Custom charts',
+            name: 'Custom Charts',
             href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
             component: CustomChartList,
             isAvailableInEA: false,
         },
-        { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
+        { name: 'SSO Login Services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
             name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
             preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [
                 {
-                    name: 'User permissions',
+                    name: 'User Permissions',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
                     isAvailableInEA: true,
                 },
                 {
-                    name: 'Permission groups',
+                    name: 'Permission Groups',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
                     isAvailableInEA: true,
                 },
                 {
-                    name: 'API tokens',
+                    name: 'API Tokens',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
                     isAvailableInEA: true,
                 },

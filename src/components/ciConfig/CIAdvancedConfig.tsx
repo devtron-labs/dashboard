@@ -1,15 +1,12 @@
 import React, { useState } from 'react'
-import { components } from 'react-select'
-import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { CIAdvancedConfigProps } from './types'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import TargetPlatformSelector from './TargetPlatformSelector'
 
 export default function CIAdvancedConfig({
     configOverrideView,
@@ -39,14 +36,15 @@ export default function CIAdvancedConfig({
     }
 
     const handleArgsChange = (e): void => {
-        if (updateNotAllowed || !e.target) {
+        const _target = e.currentTarget
+        if (updateNotAllowed || !_target) {
             return
         }
 
-        const isKey = e.target.name === 'arg-key',
-            id = e.target.dataset.id,
-            k = isKey ? e.target.value : e.target.dataset.value,
-            v = isKey ? e.target.dataset.value : e.target.value
+        const isKey = _target.name === 'arg-key',
+            id = _target.dataset.id,
+            k = isKey ? _target.value : _target.dataset.value,
+            v = isKey ? _target.dataset.value : _target.value
 
         setArgs((arr) => {
             arr[id] = { k: k, v: v, keyError: '', valueError: '' }
@@ -60,73 +58,8 @@ export default function CIAdvancedConfig({
         }
 
         const argsTemp = [...args]
-        argsTemp.splice(e.target.dataset.id, 1)
+        argsTemp.splice(e.currentTarget.dataset.id, 1)
         setArgs(argsTemp)
-    }
-
-    const platformMenuList = (props): JSX.Element => {
-        return (
-            <components.MenuList {...props}>
-                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                    Type to enter a target platform. Press Enter to accept.
-                </div>
-                {props.children}
-            </components.MenuList>
-        )
-    }
-
-    const noMatchingPlatformOptions = (): string => {
-        return 'No matching options'
-    }
-
-    const platformOption = (props): JSX.Element => {
-        const { selectOption, data } = props
-        return (
-            <div
-                onClick={(e) => selectOption(data)}
-                className="flex left pl-12"
-                style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
-            >
-                {!data.__isNew__ && (
-                    <input
-                        checked={props.isSelected}
-                        type="checkbox"
-                        style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
-                    />
-                )}
-                <div className="flex left column w-100">
-                    <components.Option className="w-100 option-label-padding" {...props} />
-                </div>
-            </div>
-        )
-    }
-    const handlePlatformChange = (selectedValue): void => {
-        setSelectedTargetPlatforms(selectedValue)
-    }
-
-    const handleCreatableBlur = (event): void => {
-        if (event.target.value) {
-            setSelectedTargetPlatforms([
-                ...selectedTargetPlatforms,
-                {
-                    label: event.target.value,
-                    value: event.target.value,
-                },
-            ])
-            if (!showCustomPlatformWarning) {
-                setShowCustomPlatformWarning(!targetPlatformMap.get(event.target.value))
-            }
-        } else {
-            setShowCustomPlatformWarning(
-                selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
-            )
-        }
-    }
-
-    const handleKeyDown = (event): void => {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            event.target.blur()
-        }
     }
 
     const renderBuildArgs = (isDockerArgsSection?: boolean) => {
@@ -199,6 +132,21 @@ export default function CIAdvancedConfig({
         )
     }
 
+    const renderTargetPlatform = () => {
+        return (
+            <div className="pb-8">
+                <TargetPlatformSelector
+                    selectedTargetPlatforms={selectedTargetPlatforms}
+                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                    showCustomPlatformWarning={showCustomPlatformWarning}
+                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                    targetPlatformMap={targetPlatformMap}
+                    configOverrideView={false}
+                />
+            </div>
+        )
+    }
+
     if (configOverrideView && !isBuildpackType) {
         return null
     }
@@ -226,43 +174,7 @@ export default function CIAdvancedConfig({
             </div>
             {isCollapsed && (
                 <>
-                    <div className="mb-20">
-                        <div className="fs-13 fw-6">Set target platform for the build</div>
-                        <div className="fs-13 fw-4 cn-7 mb-12">
-                            If target platform is not set, Devtron will build image for architecture and operating
-                            system of the k8s node on which CI is running
-                        </div>
-                        <CreatableSelect
-                            value={selectedTargetPlatforms}
-                            isMulti={true}
-                            components={{
-                                ClearIndicator: null,
-                                IndicatorSeparator: null,
-                                Option: platformOption,
-                                MenuList: platformMenuList,
-                            }}
-                            styles={tempMultiSelectStyles}
-                            closeMenuOnSelect={false}
-                            name="targetPlatform"
-                            placeholder="Type to select or create"
-                            options={TARGET_PLATFORM_LIST}
-                            className="basic-multi-select mb-4"
-                            classNamePrefix="target-platform__select"
-                            onChange={handlePlatformChange}
-                            hideSelectedOptions={false}
-                            noOptionsMessage={noMatchingPlatformOptions}
-                            onBlur={handleCreatableBlur}
-                            isValidNewOption={() => false}
-                            onKeyDown={handleKeyDown}
-                            captureMenuScroll={false}
-                        />
-                        {showCustomPlatformWarning && (
-                            <span className="flexbox cy-7">
-                                <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
-                                You have entered a custom target platform, please ensure it is valid.
-                            </span>
-                        )}
-                    </div>
+                    {renderTargetPlatform()}
                     {renderBuildArgs(true)}
                 </>
             )}
