@@ -12,7 +12,11 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
-import { handlePostHogEventUpdate, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
+import {
+    handlePostHogEventUpdate,
+    MAX_LOGIN_COUNT,
+    POSTHOG_EVENT_ONBOARDING,
+} from '../../onboardingGuide/onboarding.utils'
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
@@ -120,22 +124,21 @@ function PageHeader({
     const renderLogoutHelpSection = () => {
         return (
             <>
-                <div
-                    className="flex left cursor mr-16"
-                    onClick={onClickHelp}
-                >
+                <div className="flex left cursor mr-16" onClick={onClickHelp}>
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>
                     <span className="fs-13 cn-9">Help</span>
                 </div>
-                <div
-                    className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
-                    onClick={onClickLogoutButton}
-                    style={{ backgroundColor: getRandomColor(email) }}
-                >
-                    {email[0]}
-                </div>
+                {!window._env_.K8S_CLIENT && (
+                    <div
+                        className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
+                        onClick={onClickLogoutButton}
+                        style={{ backgroundColor: getRandomColor(email) }}
+                    >
+                        {email[0]}
+                    </div>
+                )}
             </>
         )
     }
@@ -202,7 +205,7 @@ function PageHeader({
             {showTabs && renderHeaderTabs()}
             {showHelpCard && (
                 <HelpNav
-                    className={'help-card__more-option'}
+                    className={`help-card__more-option ${window._env_.K8S_CLIENT ? 'k8s-client-view' : ''}`}
                     showHelpCard={showHelpCard}
                     setShowHelpCard={setShowHelpCard}
                     serverInfo={currentServerInfo.serverInfo}
@@ -210,14 +213,18 @@ function PageHeader({
                     setGettingStartedClicked={setGettingStartedClicked}
                 />
             )}
-            {showGettingStartedCard && loginCount >= 0 && loginCount < MAX_LOGIN_COUNT && getExpired() && (
-                <GettingStartedCard
-                    className="w-300"
-                    showHelpCard={false}
-                    hideGettingStartedCard={hideGettingStartedCard}
-                    loginCount={loginCount}
-                />
-            )}
+            {!window._env_.K8S_CLIENT &&
+                showGettingStartedCard &&
+                loginCount >= 0 &&
+                loginCount < MAX_LOGIN_COUNT &&
+                getExpired() && (
+                    <GettingStartedCard
+                        className="w-300"
+                        showHelpCard={false}
+                        hideGettingStartedCard={hideGettingStartedCard}
+                        loginCount={loginCount}
+                    />
+                )}
             {showLogOutCard && (
                 <LogoutCard
                     className={'logout-card__more-option'}

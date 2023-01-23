@@ -54,7 +54,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
     return (
         <div className="dc__transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
-                <NavLink
+                {!window._env_.K8S_CLIENT && <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
                     className="help-card__option dc__no-decor help-card__link flex left cn-9"
                     activeClassName="active"
@@ -62,7 +62,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                 >
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
-                </NavLink>
+                </NavLink>}
 
                 {HelpOptions.map((option) => {
                     return (
