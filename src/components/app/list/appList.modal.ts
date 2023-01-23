@@ -40,7 +40,7 @@ const environmentModal = (env) => {
     let appStatus = env.appStatus
     if (!env.appStatus){
         if(env.lastDeployedTime){
-            appStatus = '-'
+            appStatus = ''
         } else {
             appStatus = 'notdeployed'
         }
@@ -66,7 +66,7 @@ const getDefaultEnvironment = (envList): Environment => {
     if (env.status.toLowerCase() === 'deployment initiated') {
         status = 'Progressing'
     }
-    let appStatus = env.appStatus || (env.lastDeployedTime ? '-' : 'notdeployed')
+    let appStatus = env.appStatus || (env.lastDeployedTime ? '' : 'notdeployed')
     return {
         id: env.environmentId as number,
         name: env.environmentName,
