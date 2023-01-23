@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {Scroller} from '../app/details/cIDetails/CIDetails'
 import CopyToast,{ handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit';
@@ -8,6 +7,7 @@ import { SearchAddon } from 'xterm-addon-search';
 import '../../../node_modules/xterm/css/xterm.css';
 import { Subject } from '../../util/Subject';
 import './LogViewer.scss'
+import { Scroller } from '../app/details/cicdHistory/History.components';
 
 
 

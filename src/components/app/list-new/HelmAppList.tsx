@@ -341,7 +341,7 @@ export default function HelmAppList({
     }
 
     function _removeExternalAppFetchError(e) {
-        const index = Number(e.target.dataset.id)
+        const index = Number(e.currentTarget.dataset.id)
         const _externalHelmListFetchErrors = [...externalHelmListFetchErrors]
         _externalHelmListFetchErrors.splice(index, 1)
         setExternalHelmListFetchErrors(_externalHelmListFetchErrors)

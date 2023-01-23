@@ -1024,6 +1024,18 @@ export const stopPropagation = (event): void => {
     event.stopPropagation()
 }
 
+export const preventBodyScroll = (lock: boolean): void => {
+    if (lock) {
+        document.body.style.overflowY = 'hidden'
+        document.body.style.height = '100vh'
+        document.documentElement.style.overflow = 'initial'
+    } else {
+        document.body.style.overflowY = null
+        document.body.style.height = null
+        document.documentElement.style.overflow = null
+    }
+}
+
 // Creates object of arrays containing items grouped by item value of provided key
 export const createGroupedItemsByKey = (arr: any[], key: string) => {
     return arr.reduce((prevObj, currentObj) => {

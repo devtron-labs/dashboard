@@ -1738,6 +1738,10 @@ button.anchor {
     max-width: 300px;
 }
 
+.dc__mxw-304 {
+    max-width: 304px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2090,6 +2094,15 @@ textarea,
     width: 300px;
 }
 
+
+.w-303 {
+    width: 303px;
+}
+
+.w-350 {
+    width: 350px;
+}
+
 .w-332 {
     width: 332px;
 }
@@ -2154,7 +2167,7 @@ textarea,
 
 // width fix content
 
-.dc__w-fit-content{
+.dc__w-fit-content {
   width: fit-content;
 }
 
@@ -2380,6 +2393,10 @@ textarea,
 //Overflow
 .dc__overflow-hidden {
     overflow: hidden !important;
+}
+
+.dc__overflow-auto {
+  overflow: auto !important;
 }
 
 .dc__overflow-scroll {
