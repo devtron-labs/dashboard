@@ -70,13 +70,8 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
 }
 
 export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
-    if (!ciMaterials?.length || !gitTriggers?.size) {
-        return (
-            <EmptyView
-                title="Data not available"
-                subTitle="Source code detail is not available"
-            />
-        )
+    if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
+        return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
     }
     return (
         <div className="flex column left w-100 p-16">
