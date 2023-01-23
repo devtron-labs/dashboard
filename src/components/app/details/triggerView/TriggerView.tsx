@@ -31,7 +31,6 @@ import {
     BUILD_STATUS,
     SOURCE_NOT_CONFIGURED,
     DEFAULT_GIT_BRANCH_VALUE,
-    GIT_BRANCH_NOT_CONFIGURED,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'

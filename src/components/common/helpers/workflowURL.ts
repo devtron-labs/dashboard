@@ -13,8 +13,8 @@ export function getCDPipelineURL(
 export function getCIPipelineURL(
     appId: string,
     workflowId: string,
-    ciPipelineId: string | number = null,
     isGitNotConfigured: boolean,
+    ciPipelineId: string | number = null,
 ) {
     const prefixURL = isGitNotConfigured ? `/app/${appId}/edit/workflow/` : ''
     return `${prefixURL}${workflowId}/ci-pipeline${ciPipelineId ? `/${ciPipelineId}` : ''}`

@@ -2,11 +2,10 @@ import React, { useState, useEffect, ReactNode } from 'react'
 import branchIcon from '../../assets/icons/misc/branch.svg'
 import webhookIcon from '../../assets/icons/misc/webhook.svg'
 import Tippy from '@tippyjs/react'
-import { SourceTypeMap } from '../../config'
+import { SourceTypeMap, GIT_BRANCH_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
-import { GIT_BRANCH_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../config'
 export interface CIPipelineSourceConfigInterface {
     sourceType
     sourceValue
@@ -142,7 +141,9 @@ export function CiPipelineSourceConfig({
                                         >
                                             {sourceValueBase}
                                         </div>
-                                        {sourceValue !== DEFAULT_GIT_BRANCH_VALUE && <Info className="icon-dim-12 fcn-5 ml-4" />}
+                                        {sourceValue !== DEFAULT_GIT_BRANCH_VALUE && (
+                                            <Info className="icon-dim-12 fcn-5 ml-4" />
+                                        )}
                                     </div>
                                 )}
                                 {baseText && (

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import EmptyState from '../../../EmptyState/EmptyState'
@@ -33,7 +33,7 @@ export default function EmptyStateCIMaterial({
                         className="empty-state__img--ci-material"
                     />
                 ),
-                title: <h1 className="dc__empty-title">{isRepoError ? repoErrorMsg : branchErrorMsg}</h1>,
+                title: <h1 className="dc__empty-title">{repoErrorMsg}</h1>,
                 subtitle: (
                     <a href={repoUrl} rel="noopener noreferrer" target="_blank">
                         {repoUrl}
@@ -56,7 +56,7 @@ export default function EmptyStateCIMaterial({
                         {notConfiguredError}
                     </h1>
                 ),
-                cta: repoUrl ? null : (
+                cta: repoUrl ?? (
                     <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
                         Configure Source
                         <NextIcon className="icon-dim-16 ml-5 scn-0" />

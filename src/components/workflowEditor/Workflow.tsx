@@ -109,8 +109,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 getCIPipelineURL(
                     this.props.match.params.appId,
                     this.props.id.toString(),
-                    node.downstreams[0].split('-')[1],
                     true,
+                    node.downstreams[0].split('-')[1],
                 ),
             )
         }
@@ -272,7 +272,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         let url = ''
         if (node.isLinkedCI) url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
         else if (node.isExternalCI) url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
-        else url = getCIPipelineURL(appId, this.props.id.toString(), node.id, node.branch === GIT_BRANCH_NOT_CONFIGURED)
+        else url = getCIPipelineURL(appId, this.props.id.toString(), node.branch === GIT_BRANCH_NOT_CONFIGURED, node.id)
         return `${this.props.match.url}/${url}`
     }
 

@@ -10,14 +10,12 @@ import {
     WorkflowResult,
     PipelineType,
     WorkflowNodeType,
-    Material,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
-import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
+import { TriggerType, TriggerTypeMap, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 
 export const getTriggerWorkflows = (
     appId,

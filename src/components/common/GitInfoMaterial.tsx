@@ -32,7 +32,7 @@ export default function GitInfoMaterial({
     workflowId,
     onClickShowBranchRegexModal,
 }) {
-    const { appId } = useParams<{appId: string}>()
+    const { appId } = useParams<{ appId: string }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const { push } = useHistory()
@@ -164,7 +164,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        push(getCIPipelineURL(appId, workflowId, pipelineId, true))
+        push(getCIPipelineURL(appId, workflowId, true, pipelineId))
     }
 
     const renderSearch = (): JSX.Element => {
