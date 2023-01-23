@@ -10,10 +10,12 @@ export const CLUSTER_SELECT_STYLE = {
     }),
     control: (base, state) => ({
         ...base,
-        backgroundColor: 'transparent',
-        cursor: 'pointer',
         height: '28px',
-        minHeight: '30px',
+        minHeight: '32px',
+        border: state.isFocused && !state.isDisabled ? '1px solid #06c' : '1px solid #d6dbdf',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
+        pointerEvents: 'auto',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -24,11 +26,12 @@ export const CLUSTER_SELECT_STYLE = {
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        height: '30px',
+        height: '32px',
     }),
     valueContainer: (base, state) => ({
         ...base,
-        height: '30px',
+        display: 'flex',
+        height: '32px',
         padding: '0 6px',
     }),
 }
@@ -42,6 +45,11 @@ export const RESOURCE_ACTION_MENU = {
 }
 
 export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
+export const NAMESPACE_NOT_APPLICABLE_OPTION = {
+    label: 'Namespace: Not applicable',
+    value: 'not-applicable',
+}
+export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for this resource kind'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
     AggregationKeys.Workloads,
@@ -119,7 +127,7 @@ export const SIDEBAR_KEYS = {
     },
 }
 
-export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 14
+export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
 export const ERROR_SCREEN_SUBTITLE = 'Information on this page is available only to superadmin users.'
 

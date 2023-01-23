@@ -78,7 +78,7 @@ export default function ResourceList() {
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
-    const isStaleData = useRef<boolean>(false)
+    const isStaleDataRef = useRef<boolean>(false)
     const abortController = new AbortController()
 
     useEffect(() => {
@@ -145,8 +145,8 @@ export default function ResourceList() {
     useEffect(() => {
         const _lastDataSyncTime = Date()
         const _staleDataCheckTime = moment()
-        isStaleData.current = false
 
+        isStaleDataRef.current = false
         setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
             checkIfDataIsStale(_staleDataCheckTime)
@@ -159,8 +159,16 @@ export default function ResourceList() {
     }, [lastDataSync])
 
     const checkIfDataIsStale = (_staleDataCheckTime: moment.Moment) => {
-        if (!isStaleData.current && moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS) {
-            isStaleData.current = true
+        /**
+         * Stale data warning to be shown after 15 min. However, kept the cut off mins at 13 instead of 15 to,
+         * 1. skip 1st min as render for 1st min has already been started/done
+         * 2. skip maintaining unnecessary state just for re-rendering
+         */
+        if (
+            !isStaleDataRef.current &&
+            moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
+        ) {
+            isStaleDataRef.current = true
         }
     }
 
@@ -577,7 +585,7 @@ export default function ResourceList() {
                                     <span className="dc__loading-dots">Syncing</span>
                                 ) : (
                                     <>
-                                        {isStaleData.current && (
+                                        {isStaleDataRef.current && (
                                             <Tippy
                                                 className="default-tt"
                                                 placement="bottom"
@@ -602,7 +610,7 @@ export default function ResourceList() {
 
     return (
         <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" markAsBeta={true} />
+            <PageHeader headerName="Kubernetes Resource Browser" />
             {renderResourceListBody()}
             {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
         </div>

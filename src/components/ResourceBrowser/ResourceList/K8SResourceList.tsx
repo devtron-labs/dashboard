@@ -2,16 +2,25 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { Progressing } from '../../common'
+import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
+import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.svg'
+import { ConditionalWrap, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { CLUSTER_SELECT_STYLE, EVENT_LIST, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../Constants'
+import {
+    CLUSTER_SELECT_STYLE,
+    K8S_RESOURCE_LIST,
+    NAMESPACE_NOT_APPLICABLE_OPTION,
+    NAMESPACE_NOT_APPLICABLE_TEXT,
+    SIDEBAR_KEYS,
+} from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import ReactSelect from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
+import Tippy from '@tippyjs/react'
 
 export function K8SResourceList({
     selectedResource,
@@ -129,6 +138,41 @@ export function K8SResourceList({
         }
     }
 
+    const tippyWrapper = (children) => {
+        return (
+            <Tippy className="default-tt w-200" placement="top" arrow={false} content={NAMESPACE_NOT_APPLICABLE_TEXT}>
+                <div>{children}</div>
+            </Tippy>
+        )
+    }
+
+    const valueContainerWithIcon = (props) => {
+        const { selectProps } = props
+        return (
+            <components.ValueContainer {...props}>
+                {selectProps.value ? (
+                    <>
+                        {(!selectProps.menuIsOpen || !selectProps.inputValue) && (
+                            <div className="flex left dc__position-abs w-100">
+                                <span className="icon-dim-20">
+                                    {selectProps.placeholder.includes('Cluster') ? (
+                                        <ClusterIcon className="icon-dim-20 scn-6" />
+                                    ) : (
+                                        <NamespaceIcon className="icon-dim-20 fcn-6" />
+                                    )}
+                                </span>
+                                <span className="dc__ellipsis-right ml-8">{selectProps.value.label}</span>
+                            </div>
+                        )}
+                        {React.cloneElement(props.children[1])}
+                    </>
+                ) : (
+                    <>{props.children}</>
+                )}
+            </components.ValueContainer>
+        )
+    }
+
     const renderSearch = (): JSX.Element => {
         return (
             <div className="flexbox dc__content-space pt-16 pr-20 pb-12 pl-20">
@@ -159,22 +203,25 @@ export function K8SResourceList({
                         components={{
                             IndicatorSeparator: null,
                             Option,
+                            ValueContainer: valueContainerWithIcon,
                         }}
                     />
-                    {selectedResource?.namespaced && (
+                    <ConditionalWrap condition={!selectedResource?.namespaced} wrap={tippyWrapper}>
                         <ReactSelect
                             placeholder="Select Namespace"
                             className="w-220 ml-8"
                             options={namespaceOptions}
-                            value={selectedNamespace}
+                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
                             onChange={handleNamespaceChange}
+                            isDisabled={!selectedResource?.namespaced}
                             styles={CLUSTER_SELECT_STYLE}
                             components={{
                                 IndicatorSeparator: null,
                                 Option,
+                                ValueContainer: valueContainerWithIcon,
                             }}
                         />
-                    )}
+                    </ConditionalWrap>
                 </div>
             </div>
         )
