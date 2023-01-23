@@ -898,14 +898,16 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-
     const selectedArrayMap = mapByKey(selectedArray, matchKey)
 
-    const actualSelectedArray = availableArray.filter(item => selectedArrayMap.has(item[matchKey]))
+    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
 
-    const unselectedAvailableArray = availableArray.filter(item => !selectedArrayMap.has(item[matchKey]))
+    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
 
-    return [...sortObjectArrayAlphabetically(actualSelectedArray, matchKey), ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey)]
+    return [
+        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
+        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
+    ]
 }
 
 export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string) {
@@ -1147,7 +1149,7 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export const  k8sStyledAgeToSeconds = (duration: string): number => {
+export const k8sStyledAgeToSeconds = (duration: string): number => {
     let totalTimeInSec: number = 0
     if (!duration) {
         return totalTimeInSec
@@ -1159,12 +1161,12 @@ export const  k8sStyledAgeToSeconds = (duration: string): number => {
         let _unit = matchesChar[i]
         let _unitVal = +matchesNumber[i]
         _unit === 'd'
-            ? (totalTimeInSec += _unitVal * 24 * 60 * 60)
+            ? (totalTimeInSec = totalTimeInSec + _unitVal * 24 * 60 * 60)
             : _unit === 'h'
-            ? (totalTimeInSec += _unitVal * 60 * 60)
+            ? (totalTimeInSec = totalTimeInSec + _unitVal * 60 * 60)
             : _unit === 'm'
-            ? (totalTimeInSec += _unitVal * 60)
-            : (totalTimeInSec += _unitVal)
+            ? (totalTimeInSec = totalTimeInSec + _unitVal * 60)
+            : (totalTimeInSec = totalTimeInSec + _unitVal)
     }
     return totalTimeInSec
 }
