@@ -61,36 +61,22 @@ const environmentModal = (env) => {
 }
 
 const getDefaultEnvironment = (envList): Environment => {
-    let env = envList.find(env => env.default);
-    if (env) {
-        return environmentModal(env);;
+    let env = envList.find((env) => env.default) || getLastDeployedEnv(envList) || envList[0]
+    let status = env.status
+    if (env.status.toLowerCase() === 'deployment initiated') {
+        status = 'Progressing'
     }
-    if (!env && envList.length == 1) env = envList[0];
-    else if (!env && envList.length > 1) {
-        env = getLastDeployedEnv(envList);
-    }
-    let status = env.status;
-    if (env.status.toLocaleLowerCase() == "deployment initiated") {
-        status = "Progressing";
-    }
-    let appStatus = env.appStatus
-    if (!env.appStatus){
-        if(env.lastDeployedTime){
-            appStatus = '-'
-        } else {
-            appStatus = 'notdeployed'
-        }
-    }
+    let appStatus = env.appStatus || (env.lastDeployedTime ? '-' : 'notdeployed')
     return {
         id: env.environmentId as number,
-        name: env.environmentName as string,
-        lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime, false) : "",
-        status: env.status ? handleDeploymentInitiatedStatus(env.status) : "notdeployed",
+        name: env.environmentName,
+        lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime) : '',
+        status: handleDeploymentInitiatedStatus(status),
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
         clusterName: env.clusterName || '',
         namespace: env.namespace || '',
-        appStatus: appStatus
+        appStatus,
     }
 }
 

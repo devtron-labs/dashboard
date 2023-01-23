@@ -1,5 +1,4 @@
 import React from 'react'
-import { statusIcon } from './config'
 import { StatusConstants } from './list-new/Constants'
 import { AppStatusType } from './types'
 

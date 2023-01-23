@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { buildInitState, appListModal } from './appList.modal';
 import { ServerErrors } from '../../../modals/commonTypes';
-import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
+import { AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
 import { getAppList } from '../service';
