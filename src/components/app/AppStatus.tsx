@@ -10,9 +10,13 @@ export default function AppStatus({ appStatus }: AppStatusType) {
 
     return (
         <div className="flex left">
-            <span className={`dc__app-summary__icon icon-dim-16 mr-6 ${iconClass} ${iconClass}--node`} />
-            <p className={`dc__truncate-text  m-0`}>
-                {isNotDeployed ? <span className="cn-6">{StatusConstants.NOT_DEPLOYED.normalCase}</span> : appStatus || '-'}
+            {iconClass && <span className={`dc__app-summary__icon icon-dim-16 mr-6 ${iconClass} ${iconClass}--node`} />}
+            <p className={`dc__truncate-text dc__first-letter-capitalize  m-0`}>
+                {isNotDeployed ? (
+                    <span className="cn-6">{StatusConstants.NOT_DEPLOYED.normalCase}</span>
+                ) : (
+                    appStatus || '-'
+                )}
             </p>
         </div>
     )

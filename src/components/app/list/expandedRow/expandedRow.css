@@ -16,7 +16,7 @@
 .expanded-row__close {
     border: none;
     flex: 1;
-    height: 56px;
+    height: 48px;
     background-color: var(--N50);
 }
 

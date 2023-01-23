@@ -48,7 +48,7 @@ export class AppListView extends Component<AppListViewProps> {
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
-                        <button type="button" className="cell__link" data-key={app.id} onClick={this.expandEnv}>
+                        <button type="button" className="cell__link fs-13" data-key={app.id} onClick={this.expandEnv}>
                             +{len - 1} more
                         </button>
                     ) : null}
@@ -69,7 +69,7 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     arrowIcon = (): string => {
-        return this.props.isAllExpandable ? (this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90') : 'dc__flip-90'
+        return this.props.isAllExpandable ? (this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90') : 'cursor-not-allowed dc__flip-90'
     }
 
     renderAppList() {

@@ -20,6 +20,7 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
 import AppStatus from '../../AppStatus'
+import { StatusConstants } from '../../list-new/Constants'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -221,9 +222,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
                                         {_env.environmentName}
                                     </Link>
-                                    <AppStatus appStatus={_env.appStatus} />
+                                    <AppStatus appStatus={_env.lastDeployed ? _env.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
                                     <span className="fs-13 fw-4 cn-7">
-                                        {_env.lastDeployed ? handleUTCTime(_env.lastDeployed, true) : 'Not deployed'}
+                                        {_env.lastDeployed ? handleUTCTime(_env.lastDeployed, true) : ''}
                                     </span>
                                 </div>
                             ))}

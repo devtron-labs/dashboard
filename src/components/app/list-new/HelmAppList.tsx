@@ -427,7 +427,7 @@ export default function HelmAppList({
                 </div>
                 <div className="app-list__cell app-list__cell--name flex column left">
                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
-                    <div className="dc__truncate-text  m-0">{app.chartName}</div>
+                    <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
                     <AppStatus appStatus={app.appStatus} />

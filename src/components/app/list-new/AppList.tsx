@@ -782,6 +782,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                         type={AppListConstants.FilterType.APP_STATUS}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
+                        isFirstLetterCapitalize={true}
                     />
                     <span className="filter-divider"></span>
                     <Filter

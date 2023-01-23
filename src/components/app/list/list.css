@@ -101,7 +101,7 @@
 }
 
 .app-list__row {
-    min-height: 56px;
+    min-height: 48px;
     display: flex;
     font-size: 13px;
     font-weight: 400;
@@ -170,7 +170,7 @@
 .app-list__cell--cluster,
 .app-list__cell--namespace,
 .app-list__cell--app_status {
-    flex-basis: 18%;
+    flex-basis: 14%;
     justify-content: flex-start;
 }
 
@@ -229,9 +229,9 @@
 }
 
 .button-edit {
-    height: 56px;
-    background-color: var(--N600);
-    width: 56px;
+    height: 48px;
+    background-color: var(--N200);
+    width: 48px;
     font-style: normal;
     font-stretch: normal;
     line-height: 1.5;
@@ -241,11 +241,13 @@
 }
 
 .button-edit .fill-color {
-    fill: var(--N000);
+    fill: var(--N700);
 }
 
 .button-edit__icon {
     display: inline-block;
+    width: 20px;
+    height: 20px;
     vertical-align: middle;
 }
 
