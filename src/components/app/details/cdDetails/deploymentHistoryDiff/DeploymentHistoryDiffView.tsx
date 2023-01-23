@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
-import { DeploymentHistoryParamsType, DeploymentHistorySingleValue, DeploymentTemplateHistoryType } from '../cd.type'
+import { DeploymentHistorySingleValue } from '../cd.type'
+import { DeploymentHistoryParamsType, DeploymentTemplateHistoryType } from './types'
 import YAML from 'yaml'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { useParams } from 'react-router'
