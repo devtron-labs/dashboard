@@ -574,8 +574,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             node = this.state.workflows[i].nodes.find((node) => {
                 return node.type === 'CI' && +node.id == this.state.ciNodeId
             })
-            dockerfileConfiguredGitMaterialId = this.state.workflows[i].ciConfiguredGitMaterialId
-            if (node) break
+
+            if (node) {
+                dockerfileConfiguredGitMaterialId = this.state.workflows[i].ciConfiguredGitMaterialId
+                break
+            }
         }
         const gitMaterials = new Map<number, string[]>()
         const ciPipelineMaterials = []

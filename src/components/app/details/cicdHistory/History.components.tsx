@@ -75,11 +75,11 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     }
     return (
         <div className="flex column left w-100 p-16">
-            {ciMaterials?.map((ciMaterial) => {
+            {ciMaterials?.map((ciMaterial, index) => {
                 const gitTrigger = gitTriggers[ciMaterial.id]
                 return gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) ? (
                     <div
-                        key={gitTrigger?.Commit}
+                        key={`mat-${gitTrigger?.Commit}-${index}`}
                         className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
