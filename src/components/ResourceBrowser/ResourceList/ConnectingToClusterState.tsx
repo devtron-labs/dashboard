@@ -1,32 +1,42 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 
 export default function ConnectingToClusterState({ loader, clusterName, errorMsg }: ConnectingToClusterStateProps) {
+    const history = useHistory()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
-    const progressValueRef = useRef(0)
+    const [showCancel, setShowCancel] = useState(false)
 
     useEffect(() => {
-        setTimeout(() => {
+        if (showCancel) {
+            setInfoText(TRYING_TO_CONNECT)
+            setShowCancel(false)
+        }
+
+        const timer = setTimeout(() => {
             setInfoText(TAKING_LONGER_TO_CONNECT)
+            setShowCancel(true)
+
+            if (timer) {
+                clearTimeout(timer)
+            }
         }, 10000)
-    }, [])
+    }, [clusterName])
 
     const renderInfo = (heading: string, infoText: string) => {
         return (
             <>
                 <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300">{heading}</h2>
-                <p className="fs-13 fw-4 lh-20 w-300">{infoText}</p>
+                <p className="fs-13 fw-4 lh-20 w-300 mb-20">{infoText}</p>
             </>
         )
     }
 
-    const updateProgressValue = (currentValue) => {
-        if (currentValue <= 30) {
-            progressValueRef.current = currentValue
-        }
+    const handleCancelClick = () => {
+        history.goBack()
     }
 
     return (
@@ -38,7 +48,7 @@ export default function ConnectingToClusterState({ loader, clusterName, errorMsg
         >
             {loader && !errorMsg && (
                 <>
-                    <StyledProgressBar updateProgressValue={updateProgressValue} />
+                    <StyledProgressBar />
                     {renderInfo(`Connecting to ‘${clusterName}’`, infoText)}
                 </>
             )}
@@ -47,6 +57,11 @@ export default function ConnectingToClusterState({ loader, clusterName, errorMsg
                     <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
                     {renderInfo(`‘${clusterName}’ is not reachable`, errorMsg)}
                 </>
+            )}
+            {showCancel && (
+                <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
+                    Cancel
+                </span>
             )}
         </div>
     )

@@ -75,8 +75,8 @@ export default function ResourceList() {
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>()
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
+    const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>([])
+    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>([])
     const [selectedCluster, setSelectedCluster] = useState<ClusterOptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
@@ -89,7 +89,8 @@ export default function ResourceList() {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
     const isStaleDataRef = useRef<boolean>(false)
-    const abortController = new AbortController()
+    const resourceListAbortController = new AbortController()
+    const sideDataAbortController = new AbortController()
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -110,6 +111,8 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
+
+            sideDataAbortController.abort()
         }
     }, [])
 
@@ -140,7 +143,7 @@ export default function ResourceList() {
             setSearchText('')
             setSearchApplied(false)
             return (): void => {
-                abortController.abort()
+                resourceListAbortController.abort()
             }
         }
     }, [selectedResource])
@@ -230,7 +233,7 @@ export default function ResourceList() {
         if (!_clusterId) return
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(_clusterId)
+            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.signal)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -282,21 +285,23 @@ export default function ResourceList() {
                 setErrorStatusCode(0)
             }
         } catch (err) {
-            showError(err)
-            if (err['code'] === 403) {
-                setErrorStatusCode(err['code'])
-            } else if (err['code'] === 404) {
-                setSelectedCluster(null)
-                replace({
-                    pathname: URLS.RESOURCE_BROWSER,
-                })
+            if (!sideDataAbortController.signal.aborted) {
+                showError(err)
+                if (err['code'] === 403) {
+                    setErrorStatusCode(err['code'])
+                } else if (err['code'] === 404) {
+                    setSelectedCluster(null)
+                    replace({
+                        pathname: URLS.RESOURCE_BROWSER,
+                    })
+                }
+                setShowErrorState(true)
+                setErrorMsg(
+                    (err instanceof ServerErrors && Array.isArray(err.errors)
+                        ? err.errors[0]?.userMessage
+                        : err['message']) ?? SOME_ERROR_MSG,
+                )
             }
-            setShowErrorState(true)
-            setErrorMsg(
-                (err instanceof ServerErrors && Array.isArray(err.errors)
-                    ? err.errors[0]?.userMessage
-                    : err['message']) ?? SOME_ERROR_MSG,
-            )
         } finally {
             setLoader(false)
         }
@@ -350,7 +355,7 @@ export default function ResourceList() {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace =
                     namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
-            const { result } = await getResourceList(resourceListPayload, abortController.signal)
+            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
             setLastDataSync(!lastDataSync)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
@@ -366,7 +371,7 @@ export default function ResourceList() {
             setResourceListLoader(false)
             setShowErrorState(false)
         } catch (err) {
-            if (!abortController.signal.aborted) {
+            if (!resourceListAbortController.signal.aborted) {
                 showError(err)
                 setResourceListLoader(false)
                 setShowErrorState(true)
