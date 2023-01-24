@@ -36,7 +36,7 @@ import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 
-export default function AppList({ isSuperAdmin, appListCount }: AppListPropType) {
+export default function AppList({ isSuperAdmin, appListCount, isAgroInstalled }: AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -773,19 +773,23 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    <Filter
-                        list={masterFilters.appStatus}
-                        labelKey="label"
-                        buttonText={APP_LIST_HEADERS.AppStatus}
-                        placeholder={APP_LIST_HEADERS.SearchAppStatus}
-                        searchable
-                        multi
-                        type={AppListConstants.FilterType.APP_STATUS}
-                        applyFilter={applyFilter}
-                        onShowHideFilterContent={onShowHideFilterContent}
-                        isFirstLetterCapitalize={true}
-                    />
-                    <span className="filter-divider"></span>
+                    {isAgroInstalled && (
+                        <>
+                            <Filter
+                                list={masterFilters.appStatus}
+                                labelKey="label"
+                                buttonText={APP_LIST_HEADERS.AppStatus}
+                                placeholder={APP_LIST_HEADERS.SearchAppStatus}
+                                searchable
+                                multi
+                                type={AppListConstants.FilterType.APP_STATUS}
+                                applyFilter={applyFilter}
+                                onShowHideFilterContent={onShowHideFilterContent}
+                                isFirstLetterCapitalize={true}
+                            />
+                            <span className="filter-divider"></span>
+                        </>
+                    )}
                     <Filter
                         list={masterFilters.projects}
                         labelKey="label"
@@ -1069,6 +1073,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                                     openDevtronAppCreateModel={openDevtronAppCreateModel}
                                     setAppCount={setAppCount}
                                     updateDataSyncing={updateDataSyncing}
+                                    isAgroInstalled={isAgroInstalled}
                                 />
                             )}
                         {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
@@ -1095,6 +1100,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                                     setShowPulsatingDotState={setShowPulsatingDotState}
                                     masterFilters={masterFilters}
                                     syncListData={syncListData}
+                                    isAgroInstalled={isAgroInstalled}
                                 />
                                 {fetchingExternalApps && (
                                     <div className="mt-16">

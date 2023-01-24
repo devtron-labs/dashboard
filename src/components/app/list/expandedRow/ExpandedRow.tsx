@@ -16,7 +16,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
 
     renderRows() {
         return this.props.app.environments.map((env) => {
-            const color = statusColor[env.appStatus.toLowerCase()]
+            const color = statusColor[env.appStatus.toLowerCase()] || 'var(--N500)'
             return (
                 <Link
                     key={env.id}
@@ -30,9 +30,11 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                             <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
                         </svg>
                     </div>
-                    <div className="app-list__cell app-list__cell--app_status">
-                        <AppStatus appStatus={env.appStatus} />
-                    </div>
+                    {this.props.isAgroInstalled && (
+                        <div className="app-list__cell app-list__cell--app_status">
+                            <AppStatus appStatus={env.appStatus} />
+                        </div>
+                    )}
                     <div className="app-list__cell app-list__cell--env">{env.name}</div>
                     <div className="app-list__cell app-list__cell--cluster">{env.clusterName}</div>
                     <div className="app-list__cell app-list__cell--namespace">{env.namespace}</div>

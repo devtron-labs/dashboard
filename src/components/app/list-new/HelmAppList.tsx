@@ -58,7 +58,8 @@ export default function HelmAppList({
     updateDataSyncing,
     setShowPulsatingDotState,
     masterFilters,
-    syncListData
+    syncListData,
+    isAgroInstalled
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -371,9 +372,11 @@ export default function HelmAppList({
                         </button>
                     )}
                 </div>
-                <div className="app-list__cell app-list__cell--app_status">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
-                </div>
+                {isAgroInstalled && (
+                    <div className="app-list__cell app-list__cell--app_status">
+                        <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
+                    </div>
+                )}
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy
@@ -431,9 +434,11 @@ export default function HelmAppList({
                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
                     <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
                 </div>
-                <div className="app-list__cell app-list__cell--namespace">
-                    <AppStatus appStatus={app.appStatus} />
-                </div>
+                {isAgroInstalled && (
+                    <div className="app-list__cell app-list__cell--namespace">
+                        <AppStatus appStatus={app.appStatus} />
+                    </div>
+                )}
                 <div className="app-list__cell app-list__cell--env">
                     <p className="dc__truncate-text  m-0">
                         {app.environmentDetail.environmentName

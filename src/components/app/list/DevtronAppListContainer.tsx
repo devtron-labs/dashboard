@@ -191,6 +191,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
             updateDataSyncing= {this.props.updateDataSyncing}
             toggleExpandAllRow={this.toggleExpandAllRow}
+            isAgroInstalled={this.props.isAgroInstalled}
         />
     }
 }
