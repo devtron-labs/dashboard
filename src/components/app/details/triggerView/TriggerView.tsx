@@ -43,6 +43,7 @@ import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
+import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -608,7 +609,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
         if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
             toast.error(
-                `Unable to trigger build as you're using Dockerfile from '${gitMaterials[dockerfileConfiguredGitMaterialId][0]}' repo but code source is not configured for the repo.`,
+                CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
+                    '$GIT_MATERIAL_ID',
+                    `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
+                ),
             )
             this.setState({ isLoading: false })
             return

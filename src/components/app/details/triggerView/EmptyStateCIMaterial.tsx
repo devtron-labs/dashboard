@@ -6,6 +6,7 @@ import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
+import { SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -42,8 +43,7 @@ export default function EmptyStateCIMaterial({
                 cta: null,
             }
         } else if (isBranchError) {
-            const notConfiguredError =
-                'Source is not configured for one or more git repositories. Please configure and try again.'
+            const notConfiguredError = SOURCE_NOT_CONFIGURED_MESSAGE
             return {
                 img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
                 title: <h1 className="dc__empty-title">{branchErrorMsg}</h1>,
