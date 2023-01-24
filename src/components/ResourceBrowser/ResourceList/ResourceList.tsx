@@ -570,38 +570,43 @@ export default function ResourceList() {
                     </div>
                     <div className="fs-13 flex pt-12 pb-12">
                         {!loader && !showErrorState && (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={K8S_RESOURCE_LIST.createResource}
-                            >
-                                <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
-                                    <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
-                                </div>
-                            </Tippy>
-                        )}
-                        {!showErrorState && !node && lastDataSyncTimeString && (
-                            <div className="ml-12 flex pl-12 dc__border-left">
-                                {loader || resourceListLoader ? (
-                                    <span className="dc__loading-dots">Syncing</span>
-                                ) : (
-                                    <>
-                                        {isStaleDataRef.current && (
-                                            <Tippy
-                                                className="default-tt w-200"
-                                                placement="bottom"
-                                                arrow={false}
-                                                content={STALE_DATA_WARNING_TEXT}
-                                            >
-                                                <Warning className="icon-dim-16 mr-4" />
-                                            </Tippy>
+                            <>
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={K8S_RESOURCE_LIST.createResource}
+                                >
+                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                        <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
+                                    </div>
+                                </Tippy>
+                                {!node && lastDataSyncTimeString && (
+                                    <div className="ml-12 flex pl-12 dc__border-left">
+                                        {resourceListLoader ? (
+                                            <span className="dc__loading-dots">Syncing</span>
+                                        ) : (
+                                            <>
+                                                {isStaleDataRef.current && (
+                                                    <Tippy
+                                                        className="default-tt w-200"
+                                                        placement="bottom"
+                                                        arrow={false}
+                                                        content={STALE_DATA_WARNING_TEXT}
+                                                    >
+                                                        <Warning className="icon-dim-16 mr-4" />
+                                                    </Tippy>
+                                                )}
+                                                <span>{lastDataSyncTimeString}</span>
+                                                <RefreshIcon
+                                                    className="icon-dim-16 scb-5 ml-8 cursor"
+                                                    onClick={refreshData}
+                                                />
+                                            </>
                                         )}
-                                        <span>{lastDataSyncTimeString}</span>
-                                        <RefreshIcon className="icon-dim-16 scb-5 ml-8 cursor" onClick={refreshData} />
-                                    </>
+                                    </div>
                                 )}
-                            </div>
+                            </>
                         )}
                     </div>
                 </div>
