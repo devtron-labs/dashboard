@@ -1371,10 +1371,10 @@
   "resolved" "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   "version" "9.0.1"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.6-beta-16":
-  "integrity" "sha512-w1zBaRvKukavznV8Tyr0yzgPnUHp+S9ZerXzTgnv4aDZHkVEdCOMzSfY4jjn3KNNOcHKVs2nL9t47n/qDvQghw=="
-  "resolved" "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.6-beta-16/c774ae2176131398afabbff743a5be48523a5e87"
-  "version" "0.0.6-beta-16"
+"@devtron-labs/devtron-fe-common-lib@0.0.6-beta-17":
+  "integrity" "sha512-RvSffwZpCA+RkqR8G+pDRPcb/ok1hyBnMQmJeyHq4cSfu19bFd5lgskj1cUh/ARXfdMV6eJq1Oob9nWVrPqF0w=="
+  "resolved" "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.6-beta-17/65dedd360337870599cb55e205a37204159238a1"
+  "version" "0.0.6-beta-17"
   dependencies:
     "sass" "^1.56.2"
     "tslib" "^2.4.1"

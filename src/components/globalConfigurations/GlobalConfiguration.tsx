@@ -29,7 +29,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
-const TagList = importComponentFromFELibrary('TagList')
+const TagListContainer = importComponentFromFELibrary('TagListContainer')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -343,7 +343,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             >
                 <div className="flexbox flex-justify">External Links</div>
             </NavLink>
-            {TagList && (
+            {TagListContainer && (
                 <>
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
                     <NavLink to={URLS.GLOBAL_CONFIG_TAGS} key={URLS.GLOBAL_CONFIG_TAGS} activeClassName="active-route">
@@ -461,8 +461,8 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
             <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                 <ExternalLinks />
             </Route>
-            {TagList && <Route path={URLS.GLOBAL_CONFIG_TAGS}>
-                <TagList />
+            {TagListContainer && <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                <TagListContainer />
             </Route>}
             <Redirect
                 to={
