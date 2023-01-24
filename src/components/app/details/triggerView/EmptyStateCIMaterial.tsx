@@ -43,7 +43,6 @@ export default function EmptyStateCIMaterial({
                 cta: null,
             }
         } else if (isBranchError) {
-            const notConfiguredError = SOURCE_NOT_CONFIGURED_MESSAGE
             return {
                 img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
                 title: <h1 className="dc__empty-title">{branchErrorMsg}</h1>,
@@ -53,7 +52,7 @@ export default function EmptyStateCIMaterial({
                     </a>
                 ) : (
                     <h1 className="dc__empty-title fs-13" style={{ color: 'gray' }}>
-                        {notConfiguredError}
+                        {SOURCE_NOT_CONFIGURED_MESSAGE}
                     </h1>
                 ),
                 cta:
