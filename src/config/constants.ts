@@ -730,3 +730,4 @@ export const DEPLOYMENT_STATUS = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const LAST_SEEN = 'last seen'

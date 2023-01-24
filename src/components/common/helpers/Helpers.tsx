@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { TOKEN_COOKIE_NAME } from '../../../config'
+import { LAST_SEEN, TOKEN_COOKIE_NAME } from '../../../config'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../modals/commonTypes'
 import * as Sentry from '@sentry/browser'
@@ -13,7 +13,7 @@ import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1176,4 +1176,8 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
         }
     }
     return totalTimeInSec
+}
+
+export const eventAgeComparator = (a: Record<string, any>, b: Record<string, any>): any => {
+    return k8sStyledAgeToSeconds(a[LAST_SEEN]) - k8sStyledAgeToSeconds(b[LAST_SEEN])
 }

@@ -6,9 +6,9 @@ import {
     handleUTCTime,
     processK8SObjects,
     Progressing,
-    k8sStyledAgeToSeconds,
     showError,
     sortObjectArrayAlphabetically,
+    eventAgeComparator,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
@@ -20,7 +20,7 @@ import {
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
-import { URLS } from '../../../config'
+import { URLS, LAST_SEEN } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -267,10 +267,10 @@ export default function ResourceList() {
         }
         return [
             ...warningEvents.sort((a, b) => {
-                return k8sStyledAgeToSeconds(a['last seen']) - k8sStyledAgeToSeconds(b['last seen'])
+                return eventAgeComparator(a, b)
             }),
             ...otherEvents.sort((a, b) => {
-                return k8sStyledAgeToSeconds(a['last seen']) - k8sStyledAgeToSeconds(b['last seen'])
+                return eventAgeComparator(a, b)
             }),
         ]
     }
