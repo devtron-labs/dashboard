@@ -9,7 +9,6 @@ import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
@@ -18,15 +17,12 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import Reload from '../../Reload/Reload'
 import './createApp.scss'
-import TagDetails from './CustomTagSelector/TagDetails'
-import PropagateTagInfo from './CustomTagSelector/PropagateTagInfo'
 import TagLabelSelect from '../details/TagLabelSelect'
 import { ServerErrors } from '../../../modals/commonTypes'
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
-    timeoutId
     createAppRef: HTMLDivElement
     constructor(props) {
         super(props)
