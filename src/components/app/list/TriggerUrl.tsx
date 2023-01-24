@@ -5,10 +5,9 @@ import { ReactComponent as CopyText } from '../../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
-import EmptyState from '../../EmptyState/EmptyState'
-import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
 import { ManifestUrlList, TriggerURL } from './types'
+import GenericEmptyState from '../../EmptyState/GenericEmptyState'
 
 export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) {
     const [result, setResponse] = useState<ManifestUrlList[]>()
@@ -188,14 +187,18 @@ export function CopyToClipboardText({ text, iconClass }: { text: string; iconCla
 
 function EmptyUrlState({title = "", subtitle = ""}) {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>{title || "No URLs available"}</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>{subtitle || "No URLs found in ingress and service resources"}</EmptyState.Subtitle>
-        </EmptyState>
+      <GenericEmptyState
+            title={title || "No URLs available"}
+            subTitle={subtitle || "No URLs found in ingress and service resources"}
+        />
+        // <EmptyState>
+        //     <EmptyState.Image>
+        //         <img src={AppNotDeployed} alt="" />
+        //     </EmptyState.Image>
+        //     <EmptyState.Title>
+        //         <h4>{title || "No URLs available"}</h4>
+        //     </EmptyState.Title>
+        //     <EmptyState.Subtitle>{subtitle || "No URLs found in ingress and service resources"}</EmptyState.Subtitle>
+        // </EmptyState>
     )
 }

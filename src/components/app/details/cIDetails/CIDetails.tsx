@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import { Progressing, useScrollable, showError, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
-import { URLS, ModuleNameMap } from '../../../../config'
+import { URLS, ModuleNameMap, EMPTY_STATE_STATUS } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
@@ -9,8 +9,6 @@ import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-fil
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
 import Reload from '../../../Reload/Reload'
-import docker from '../../../../assets/icons/misc/docker.svg'
-import folder from '../../../../assets/icons/ic-folder.svg'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -21,6 +19,7 @@ import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
+import GenericEmptyState from '../../../EmptyState/GenericEmptyState'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -124,7 +123,7 @@ export default function CIDetails() {
                 )}
                 <div className="ci-details__body">
                     {!pipelineId ? (
-                        <EmptyView
+                        <GenericEmptyState
                             title="No pipeline selected"
                             subTitle="Please select a pipeline to start seeing CI builds."
                         />
@@ -159,7 +158,7 @@ export default function CIDetails() {
                                     />
                                 ) : (
                                     !loading && (
-                                        <EmptyView
+                                        <GenericEmptyState
                                             title="Build pipeline not triggered"
                                             subTitle="Pipeline trigger history, details and logs will be available here."
                                         />
@@ -402,7 +401,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
-        return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACT.TITLE}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACT.SUBTITLE}
+            />
+        )
     } else if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab={true} />
     } else if (securityData.isLoading) {

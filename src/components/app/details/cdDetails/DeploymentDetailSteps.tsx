@@ -11,6 +11,8 @@ import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import GenericEmptyState from '../../../EmptyState/GenericEmptyState'
 
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
@@ -65,11 +67,13 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         })
     }
 
-    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED || deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
+    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED ||
+        deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted">
-            <CDEmptyState
+            <GenericEmptyState
                 title="Deployment failed"
-                subtitle="A new deployment was initiated before this deployment completed."
+                subTitle="A new deployment was initiated before this deployment completed."
+                classname="dc__window-bg"
             />
         </div>
     ) : deploymentListLoader ? (

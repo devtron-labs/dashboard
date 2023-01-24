@@ -39,11 +39,13 @@ export default function Artifacts({ status, artifact, blobStorageEnabled, getArt
         status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
-        return  <GenericEmptyState
-          title={EMPTY_STATE_STATUS.ARTIFACT.TITLE}
-          subTitle={EMPTY_STATE_STATUS.ARTIFACT.SUBTITLE}
-             />
-        //  <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACT.TITLE}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACT.SUBTITLE}
+            />
+        )
+
     } else {
         return (
             <div className="flex left column p-16">
