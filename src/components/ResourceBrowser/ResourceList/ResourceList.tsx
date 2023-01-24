@@ -20,7 +20,7 @@ import {
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
-import { URLS } from '../../../config'
+import { LAST_SEEN, URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -266,8 +266,8 @@ export default function ResourceList() {
             }
         }
         return [
-            ...warningEvents.sort(eventAgeComparator<Record<string, any>>('last seen')),
-            ...otherEvents.sort(eventAgeComparator<Record<string, any>>('last seen')),
+            ...warningEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
+            ...otherEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
         ]
     }
 
