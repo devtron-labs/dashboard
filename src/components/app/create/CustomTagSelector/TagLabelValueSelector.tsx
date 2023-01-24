@@ -26,7 +26,7 @@ export default function TagLabelValueSelector({
         if (
             !e.relatedTarget ||
             !e.relatedTarget.classList.value ||
-            e.relatedTarget.classList.value.includes(`tag-${selectedTagIndex}-class`)
+            !e.relatedTarget.classList.value.includes(`tag-${selectedTagIndex}-class`)
         ) {
             const _tagData = { ...tagData }
             _tagData[type] = selectedValue
