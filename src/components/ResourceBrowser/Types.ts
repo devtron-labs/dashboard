@@ -145,4 +145,5 @@ export interface ConnectingToClusterStateProps {
     loader: boolean
     clusterName: string
     errorMsg: string
+    handleRetry: (e) => void
 }

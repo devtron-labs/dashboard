@@ -286,7 +286,6 @@ export default function ResourceList() {
             }
         } catch (err) {
             if (!sideDataAbortController.signal.aborted) {
-                showError(err)
                 if (err['code'] === 403) {
                     setErrorStatusCode(err['code'])
                 } else if (err['code'] === 404) {
@@ -491,6 +490,11 @@ export default function ResourceList() {
         } as SelectedResourceType
     }
 
+    const handleRetry = () => {
+        setErrorMsg('')
+        getSidebarData(clusterId)
+    }
+
     const renderResourceBrowser = (): JSX.Element => {
         if (node) {
             return (
@@ -507,7 +511,12 @@ export default function ResourceList() {
         }
 
         return errorMsg || (loader && selectedCluster?.value) ? (
-            <ConnectingToClusterState loader={loader} clusterName={selectedCluster.label} errorMsg={errorMsg} />
+            <ConnectingToClusterState
+                loader={loader}
+                clusterName={selectedCluster.label}
+                errorMsg={errorMsg}
+                handleRetry={handleRetry}
+            />
         ) : (
             <div className="resource-browser bcn-0">
                 <Sidebar

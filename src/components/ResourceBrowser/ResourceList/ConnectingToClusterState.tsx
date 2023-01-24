@@ -5,7 +5,12 @@ import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 
-export default function ConnectingToClusterState({ loader, clusterName, errorMsg }: ConnectingToClusterStateProps) {
+export default function ConnectingToClusterState({
+    loader,
+    clusterName,
+    errorMsg,
+    handleRetry,
+}: ConnectingToClusterStateProps) {
     const history = useHistory()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
@@ -39,6 +44,12 @@ export default function ConnectingToClusterState({ loader, clusterName, errorMsg
         history.goBack()
     }
 
+    const handleRetryClick = (e) => {
+        setInfoText(TRYING_TO_CONNECT)
+        setShowCancel(false)
+        handleRetry(e)
+    }
+
     return (
         <div
             className="flex column bcn-0 dc__text-center"
@@ -46,7 +57,7 @@ export default function ConnectingToClusterState({ loader, clusterName, errorMsg
                 height: 'calc(100vh - 92px)',
             }}
         >
-            {loader && !errorMsg && (
+            {loader && (
                 <>
                     <StyledProgressBar />
                     {renderInfo(`Connecting to ‘${clusterName}’`, infoText)}
@@ -56,9 +67,12 @@ export default function ConnectingToClusterState({ loader, clusterName, errorMsg
                 <>
                     <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
                     {renderInfo(`‘${clusterName}’ is not reachable`, errorMsg)}
+                    <button className="flex cta h-36" onClick={handleRetryClick}>
+                        Retry
+                    </button>
                 </>
             )}
-            {showCancel && (
+            {showCancel && !errorMsg && (
                 <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
                     Cancel
                 </span>
