@@ -2508,6 +2508,17 @@ textarea::placeholder {
     }
 }
 
-.error-input {
-    border: 1px solid var(--R500) !important;
+.radio-group-no-border {
+  border: none !important;
+  display: inline-block !important;
+  .form__radio-item {
+      border: none;
+      min-width: 110px;
+      .form__radio-item-content {
+          padding: 0 15px 0 0;
+          .radio__title {
+              text-transform: none;
+          }
+      }
+  }
 }

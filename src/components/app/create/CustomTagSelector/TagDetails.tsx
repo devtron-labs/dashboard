@@ -1,7 +1,7 @@
 import React from 'react'
 import { ReactComponent as DeleteCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
-import { TagType } from '../../types'
+import { TagDetailType } from '../../types'
 import TagLabelValueSelector from './TagLabelValueSelector'
 
 export default function TagDetails({
@@ -9,12 +9,7 @@ export default function TagDetails({
     tagData,
     setTagData,
     removeTag,
-}: {
-    index: number
-    tagData: TagType
-    setTagData: (index: number, tagData: TagType) => void
-    removeTag: (index: number) => void
-}) {
+}: TagDetailType) {
     const deleteTag = (): void => {
         removeTag(index)
     }

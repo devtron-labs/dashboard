@@ -5,11 +5,11 @@ const validateTagValue = (value: string): string[] => {
     if (value.length > 63) {
         errorList.push('Can be max 63 characters')
     }
-    let firstLastAlphanumeric = PATTERNS.START_END_ALPHANUMERIC.test(value)
+    const firstLastAlphanumeric = PATTERNS.START_END_ALPHANUMERIC.test(value)
     if (!firstLastAlphanumeric) {
         errorList.push('Must start and end with an alphanumeric character')
     }
-    let validValue = PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR.test(value)
+    const validValue = PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR.test(value)
     if (!validValue) {
         errorList.push('Can only contain alphanumeric chars and (-), (_), (.)')
     }
@@ -17,9 +17,9 @@ const validateTagValue = (value: string): string[] => {
 }
 export class ValidationRules {
     appName = (value: string): { isValid: boolean; message: string } => {
-        let re = PATTERNS.APP_NAME
-        let regExp = new RegExp(re)
-        let test = regExp.test(value)
+        const re = PATTERNS.APP_NAME
+        const regExp = new RegExp(re)
+        const test = regExp.test(value)
         if (value.length === 0) return { isValid: false, message: 'Please provide app name' }
         if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' }
         if (value.length > 30) return { isValid: false, message: 'Max 30 characters allowed' }
@@ -33,7 +33,7 @@ export class ValidationRules {
     }
 
     team = (projectId: number): { isValid: boolean; message: string } => {
-        let found = !!projectId
+        const found = !!projectId
         if (found) return { isValid: true, message: '' }
         else return { isValid: false, message: 'Please select a project' }
     }
@@ -59,7 +59,7 @@ export class ValidationRules {
                 if (prefix.length > 253) {
                     errorList.push('Prefix: Can be max 253 characters')
                 }
-                let validPrefix = PATTERNS.KUBERNETES_KEY_PREFIX.test(prefix)
+                const validPrefix = PATTERNS.KUBERNETES_KEY_PREFIX.test(prefix)
                 if (!validPrefix) {
                     errorList.push('Prefix: Must be a DNS subdomain (a series of DNS labels separated by dots (.)')
                 }

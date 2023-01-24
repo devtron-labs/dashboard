@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { OptionType, TagType } from '../../../app/types'
+import { TagLabelValueSelectorType } from '../../../app/types'
 import { PopupMenu } from '../../../common'
 import { ValidationRules } from '../validationRules'
 import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
@@ -12,29 +12,21 @@ export default function TagLabelValueSelector({
     tagOptions,
     isRequired,
     type,
-}: {
-    selectedTagIndex: number
-    tagData: TagType
-    setTagData: (index: number, tagData: TagType) => void
-    tagOptions?: OptionType[]
-    isRequired?: boolean
-    type?: string
-}) {
+}: TagLabelValueSelectorType) {
     const [selectedValue, setSelectedValue] = useState<string>('')
     const [isPopupOpen, togglePopup] = useState<boolean>(false)
 
     const validationRules = new ValidationRules()
 
     useEffect(() => {
-        const _tagData = { ...tagData }
-        setSelectedValue(_tagData[type])
+        setSelectedValue(tagData?.[type] || '')
     }, [selectedTagIndex, tagData, type])
 
     const handleOnBlur = (e) => {
         if (
             !e.relatedTarget ||
             !e.relatedTarget.classList.value ||
-            e.relatedTarget.classList.value.indexOf(`tag-${selectedTagIndex}-class`) === -1
+            e.relatedTarget.classList.value.includes(`tag-${selectedTagIndex}-class`)
         ) {
             const _tagData = { ...tagData }
             _tagData[type] = selectedValue
@@ -42,14 +34,12 @@ export default function TagLabelValueSelector({
                 _tagData.isInvalidKey = selectedValue
                     ? !validationRules.propagateTagKey(selectedValue).isValid
                     : _tagData.value !== ''
+            } else if (selectedValue) {
+                _tagData.isInvalidValue = !validationRules.propagateTagValue(selectedValue).isValid
+                _tagData.isInvalidKey = !_tagData.key || _tagData.isInvalidKey
             } else {
-                if (selectedValue) {
-                    _tagData.isInvalidValue = !validationRules.propagateTagValue(selectedValue).isValid
-                    _tagData.isInvalidKey = !_tagData.key || _tagData.isInvalidKey
-                } else {
-                    _tagData.isInvalidValue = false
-                    _tagData.isInvalidKey = !_tagData.key ? false : _tagData.isInvalidKey
-                }
+                _tagData.isInvalidValue = false
+                _tagData.isInvalidKey = !_tagData.key ? false : _tagData.isInvalidKey
             }
             setTagData(selectedTagIndex, _tagData)
         }
@@ -67,12 +57,10 @@ export default function TagLabelValueSelector({
 
     const renderValidationsSuggestions = (): JSX.Element => {
         let field = { isValid: true, messages: [] }
-        if (type === 'value') {
-            if (isRequired || selectedValue) {
-                field = validationRules.propagateTagValue(selectedValue)
-            }
-        } else {
+        if (type === 'key') {
             field = validationRules.propagateTagKey(selectedValue)
+        } else if (isRequired || selectedValue) {
+            field = validationRules.propagateTagValue(selectedValue)
         }
         if (!field.isValid) {
             return (
