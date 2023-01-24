@@ -20,7 +20,7 @@ import {
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
 import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
-import { URLS, LAST_SEEN } from '../../../config'
+import { URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
