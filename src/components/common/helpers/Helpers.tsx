@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { LAST_SEEN, TOKEN_COOKIE_NAME } from '../../../config'
+import { TOKEN_COOKIE_NAME } from '../../../config'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../modals/commonTypes'
 import * as Sentry from '@sentry/browser'
@@ -1178,6 +1178,6 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
     return totalTimeInSec
 }
 
-export const eventAgeComparator = <T,>(key: string | number): any => {
+export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }
