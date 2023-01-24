@@ -57,9 +57,8 @@ function ChartDeploymentHistory({
     const history = useHistory()
     const { url } = useRouteMatch()
 
-    const deploymentTabs: string[] = isExternal
-        ? ['Source', 'values.yaml', 'Helm generated manifest']
-        : ['Source', 'values.yaml']
+    const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest']
+
 
     // component load
     useEffect(() => {
