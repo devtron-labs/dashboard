@@ -51,3 +51,7 @@ export interface StyledSelectPropsType extends WidgetPropsType {
     classNamePrefix?: string
     styleOverrides?: StylesConfig<any, false, GroupBase<any>>
 }
+
+export interface StyledProgressBarProps {
+    updateProgressValue?: (currentValue: number) => void
+}

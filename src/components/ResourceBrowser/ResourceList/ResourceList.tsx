@@ -10,7 +10,13 @@ import {
     sortObjectArrayAlphabetically,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
+import {
+    ApiResourceGroupType,
+    ClusterOptionType,
+    K8SObjectType,
+    ResourceDetailType,
+    ResourceListPayloadType,
+} from '../Types'
 import {
     getClusterList,
     getResourceGroupList,
@@ -45,6 +51,9 @@ import ResourceListEmptyState from './ResourceListEmptyState'
 import Tippy from '@tippyjs/react'
 import '../ResourceBrowser.scss'
 import moment from 'moment'
+import ConnectingToClusterState from './ConnectingToClusterState'
+import { ServerErrors } from '../../../modals/commonTypes'
+import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -66,9 +75,9 @@ export default function ResourceList() {
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
+    const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>()
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
-    const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
+    const [selectedCluster, setSelectedCluster] = useState<ClusterOptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
@@ -78,6 +87,7 @@ export default function ResourceList() {
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [errorMsg, setErrorMsg] = useState('')
     const isStaleDataRef = useRef<boolean>(false)
     const abortController = new AbortController()
 
@@ -180,8 +190,9 @@ export default function ResourceList() {
                     sortObjectArrayAlphabetically(result, 'cluster_name'),
                     'cluster_name',
                     'id',
+                    'errorInConnecting',
                 )
-                setClusterOptions(_clusterOptions)
+                setClusterOptions(_clusterOptions as ClusterOptionType[])
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
@@ -267,6 +278,7 @@ export default function ResourceList() {
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected)
                 setShowErrorState(false)
+                setErrorMsg('')
                 setErrorStatusCode(0)
             }
         } catch (err) {
@@ -280,6 +292,11 @@ export default function ResourceList() {
                 })
             }
             setShowErrorState(true)
+            setErrorMsg(
+                (err instanceof ServerErrors && Array.isArray(err.errors)
+                    ? err.errors[0]?.userMessage
+                    : err['message']) ?? SOME_ERROR_MSG,
+            )
         } finally {
             setLoader(false)
         }
@@ -469,25 +486,6 @@ export default function ResourceList() {
         } as SelectedResourceType
     }
 
-    const goToClusterList = (): void => {
-        replace({
-            pathname: URLS.RESOURCE_BROWSER,
-        })
-    }
-
-    const renderError = (): JSX.Element => {
-        return (
-            <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
-                <ResourceListEmptyState
-                    title={RESOURCE_LIST_ERROR_STATE.title}
-                    subTitle={RESOURCE_LIST_ERROR_STATE.subTitle(selectedCluster.label)}
-                    actionButtonText={RESOURCE_LIST_ERROR_STATE.actionButtonText}
-                    actionHandler={goToClusterList}
-                />
-            </div>
-        )
-    }
-
     const renderResourceBrowser = (): JSX.Element => {
         if (node) {
             return (
@@ -503,8 +501,8 @@ export default function ResourceList() {
             )
         }
 
-        return showErrorState ? (
-            renderError()
+        return errorMsg || (loader && selectedCluster?.value) ? (
+            <ConnectingToClusterState loader={loader} clusterName={selectedCluster.label} errorMsg={errorMsg} />
         ) : (
             <div className="resource-browser bcn-0">
                 <Sidebar
@@ -538,7 +536,7 @@ export default function ResourceList() {
     }
 
     const renderResourceListBody = () => {
-        if (loader || clusterLoader) {
+        if ((loader && !selectedCluster?.value) || clusterLoader) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <Progressing pageLoader />
@@ -566,7 +564,7 @@ export default function ResourceList() {
                         <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                     </div>
                     <div className="fs-13 flex pt-12 pb-12">
-                        {!showErrorState && (
+                        {!loader && !showErrorState && (
                             <Tippy
                                 className="default-tt"
                                 arrow={false}
@@ -578,7 +576,7 @@ export default function ResourceList() {
                                 </div>
                             </Tippy>
                         )}
-                        {!node && lastDataSyncTimeString && (
+                        {!showErrorState && !node && lastDataSyncTimeString && (
                             <div className="ml-12 flex pl-12 dc__border-left">
                                 {loader || resourceListLoader ? (
                                     <span className="dc__loading-dots">Syncing</span>
@@ -586,7 +584,7 @@ export default function ResourceList() {
                                     <>
                                         {isStaleDataRef.current && (
                                             <Tippy
-                                                className="default-tt"
+                                                className="default-tt w-200"
                                                 placement="bottom"
                                                 arrow={false}
                                                 content={STALE_DATA_WARNING_TEXT}

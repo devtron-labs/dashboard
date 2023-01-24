@@ -77,7 +77,7 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 }
 
 export interface ClusterSelectionType {
-    clusterOptions: OptionType[]
+    clusterOptions: ClusterOptionType[]
     onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
 }
 
@@ -135,4 +135,14 @@ export interface EventListType {
     filteredData: Record<string, any>[]
     handleResourceClick: (e: any) => void
     paginatedView: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
+}
+
+export interface ConnectingToClusterStateProps {
+    loader: boolean
+    clusterName: string
+    errorMsg: string
 }

@@ -5,14 +5,15 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import emptyCustomChart from '../../../assets/img/terminal@2x.png'
 import { OptionType } from '../../app/types'
-import { ClusterSelectionType } from '../Types'
+import { ClusterOptionType, ClusterSelectionType } from '../Types'
 import { CLUSTER_SELECTION_MESSAGING } from '../Constants'
 import ReactGA from 'react-ga4'
+import Tippy from '@tippyjs/react'
 
 export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSelectionType) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [filteredClusterList, setFilteredClusterList] = useState<OptionType[]>(clusterOptions)
+    const [filteredClusterList, setFilteredClusterList] = useState<ClusterOptionType[]>(clusterOptions)
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = clusterOptions.filter((resource) => resource.label.indexOf(_searchText) >= 0)
@@ -83,6 +84,15 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
         )
     }
 
+    const clusterUnreachableTippyContent = (errorMsg: string) => {
+        return (
+            <div>
+                <span className="fs-12 fw-6 lh-18">Cluster is not reachable</span>
+                <p className="fs-12 fw-4 lh-18 dc__word-break">{errorMsg}</p>
+            </div>
+        )
+    }
+
     const renderClusterList = (): JSX.Element => {
         return (
             <>
@@ -98,6 +108,19 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                     >
                         <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
                         <div className="fw-4 fs-13 cb-5">{cluster.label}</div>
+                        {cluster.errorInConnecting && (
+                            <Tippy
+                                className="default-tt w-200"
+                                placement="top"
+                                arrow={false}
+                                content={clusterUnreachableTippyContent(cluster.errorInConnecting)}
+                            >
+                                <div className="flex left ml-auto">
+                                    <Error className="icon-dim-16 mr-4" />
+                                    <span className="fs-13 fw-4 lh-20 cr-5">Unreachable</span>
+                                </div>
+                            </Tippy>
+                        )}
                     </div>
                 ))}
             </>
