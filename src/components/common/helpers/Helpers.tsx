@@ -1178,6 +1178,6 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
     return totalTimeInSec
 }
 
-export const eventAgeComparator = (a: Record<string, any>, b: Record<string, any>): any => {
-    return k8sStyledAgeToSeconds(a[LAST_SEEN]) - k8sStyledAgeToSeconds(b[LAST_SEEN])
+export const eventAgeComparator = <T,>(key: string | number): any => {
+    return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }

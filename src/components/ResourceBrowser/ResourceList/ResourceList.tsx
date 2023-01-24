@@ -266,12 +266,8 @@ export default function ResourceList() {
             }
         }
         return [
-            ...warningEvents.sort((a, b) => {
-                return eventAgeComparator(a, b)
-            }),
-            ...otherEvents.sort((a, b) => {
-                return eventAgeComparator(a, b)
-            }),
+            ...warningEvents.sort(eventAgeComparator<Record<string, any>>('last seen')),
+            ...otherEvents.sort(eventAgeComparator<Record<string, any>>('last seen')),
         ]
     }
 
