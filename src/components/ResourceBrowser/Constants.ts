@@ -129,7 +129,9 @@ export const SIDEBAR_KEYS = {
 
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
-export const ERROR_SCREEN_SUBTITLE = 'Information on this page is available only to superadmin users.'
+export const ERROR_SCREEN_SUBTITLE =
+    'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
+export const ERROR_SCREEN_LEARN_MORE = 'Learn about Kubernetes resource permissions.'
 
 export const RESOURCE_LIST_ERROR_STATE = {
     title: 'Some error occured',

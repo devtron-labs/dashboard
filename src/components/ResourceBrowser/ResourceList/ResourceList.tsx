@@ -26,16 +26,16 @@ import {
 import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
+    ERROR_SCREEN_LEARN_MORE,
     ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
     K8S_RESOURCE_LIST,
     MARK_AS_STALE_DATA_CUT_OFF_MINS,
     ORDERED_AGGREGATORS,
-    RESOURCE_LIST_ERROR_STATE,
     SIDEBAR_KEYS,
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
-import { URLS } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -47,13 +47,12 @@ import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
-import ResourceListEmptyState from './ResourceListEmptyState'
 import Tippy from '@tippyjs/react'
-import '../ResourceBrowser.scss'
 import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -111,7 +110,6 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
-
             sideDataAbortController.abort()
         }
     }, [])
@@ -121,8 +119,18 @@ export default function ResourceList() {
         if (selectedResource && !node) {
             AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
         }
+
         if (location.pathname === URLS.RESOURCE_BROWSER) {
             setSelectedCluster(null)
+        }
+
+        // Todo: Revisit for multi call & request abort
+        if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
+            onChangeCluster(
+                clusterOptions.find((_option) => _option.value == clusterId),
+                false,
+                true,
+            )
         }
     }, [location.pathname])
 
@@ -142,6 +150,7 @@ export default function ResourceList() {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
+
             return (): void => {
                 resourceListAbortController.abort()
             }
@@ -549,6 +558,22 @@ export default function ResourceList() {
         )
     }
 
+    const unauthorizedInfoText = () => {
+        return (
+            <>
+                {ERROR_SCREEN_SUBTITLE}&nbsp;
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.K8S_RESOURCES_PERMISSIONS}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                >
+                    {ERROR_SCREEN_LEARN_MORE}
+                </a>
+            </>
+        )
+    }
+
     const renderResourceListBody = () => {
         if ((loader && !selectedCluster?.value) || clusterLoader) {
             return (
@@ -559,7 +584,11 @@ export default function ResourceList() {
         } else if (errorStatusCode > 0) {
             return (
                 <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
-                    <ErrorScreenManager code={errorStatusCode} subtitle={ERROR_SCREEN_SUBTITLE} />
+                    <ErrorScreenManager
+                        code={errorStatusCode}
+                        subtitle={unauthorizedInfoText()}
+                        subtitleClass="w-300"
+                    />
                 </div>
             )
         } else if (!selectedCluster?.value) {
