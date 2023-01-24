@@ -4,11 +4,11 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import emptyCustomChart from '../../../assets/img/terminal@2x.png'
-import { OptionType } from '../../app/types'
 import { ClusterOptionType, ClusterSelectionType } from '../Types'
 import { CLUSTER_SELECTION_MESSAGING } from '../Constants'
 import ReactGA from 'react-ga4'
 import Tippy from '@tippyjs/react'
+import { clusterUnreachableTippyContent } from './ResourceList.component'
 
 export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSelectionType) {
     const [searchText, setSearchText] = useState('')
@@ -80,15 +80,6 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                     <Error className="icon-dim-16 mt-3 mr-8" />
                     <div>{CLUSTER_SELECTION_MESSAGING.noResultText}</div>
                 </div>
-            </div>
-        )
-    }
-
-    const clusterUnreachableTippyContent = (errorMsg: string) => {
-        return (
-            <div>
-                <span className="fs-12 fw-6 lh-18">Cluster is not reachable</span>
-                <p className="fs-12 fw-4 lh-18 dc__word-break">{errorMsg}</p>
             </div>
         )
     }
