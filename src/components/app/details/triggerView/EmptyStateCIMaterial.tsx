@@ -56,12 +56,12 @@ export default function EmptyStateCIMaterial({
                         {notConfiguredError}
                     </h1>
                 ),
-                cta: repoUrl ?? (
+                cta: repoUrl ? (
                     <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
                         Configure Source
                         <NextIcon className="icon-dim-16 ml-5 scn-0" />
                     </button>
-                ),
+                ) : null,
             }
         } else if (noSearchResults) {
             return {
