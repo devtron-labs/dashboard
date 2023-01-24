@@ -2,12 +2,23 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { Progressing } from '../../common'
+import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
+import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.svg'
+import { ConditionalWrap, Pagination, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { CLUSTER_SELECT_STYLE, EVENT_LIST, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../Constants'
+import {
+    CLUSTER_SELECT_STYLE,
+    K8S_RESOURCE_LIST,
+    NAMESPACE_NOT_APPLICABLE_OPTION,
+    NAMESPACE_NOT_APPLICABLE_TEXT,
+    RESOURCE_EMPTY_PAGE_STATE,
+    RESOURCE_LIST_EMPTY_STATE,
+    RESOURCE_PAGE_SIZE_OPTIONS,
+    SIDEBAR_KEYS,
+} from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import ReactSelect from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
@@ -18,7 +29,6 @@ export function K8SResourceList({
     selectedResource,
     resourceList,
     filteredResourceList,
-    setFilteredResourceList,
     noResults,
     clusterOptions,
     selectedCluster,
@@ -33,6 +43,7 @@ export function K8SResourceList({
     setSearchText,
     searchApplied,
     setSearchApplied,
+    handleFilterChanges,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -44,6 +55,8 @@ export function K8SResourceList({
         node: string
     }>()
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
+    const [resourceListOffset, setResourceListOffset] = useState(0)
+    const [pageSize, setPageSize] = useState(100)
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -59,25 +72,18 @@ export function K8SResourceList({
         }
     }, [resourceList?.headers])
 
-    const handleFilterChanges = (_searchText: string): void => {
-        const lowerCaseSearchText = _searchText.toLowerCase()
-        const _filteredData = resourceList.data.filter(
-            (resource) =>
-                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
-        )
-        setFilteredResourceList(_filteredData)
+    useEffect(() => {
+        resetPaginator()
+    }, [nodeType])
+
+    const resetPaginator = () => {
+        setResourceListOffset(0)
+        setPageSize(100)
     }
 
     const clearSearch = (): void => {
         if (searchApplied) {
-            handleFilterChanges('')
+            handleFilterChanges('', resourceList)
             setSearchApplied(false)
         }
         setSearchText('')
@@ -88,7 +94,7 @@ export function K8SResourceList({
         if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         } else {
-            handleFilterChanges(event.target.value)
+            handleFilterChanges(event.target.value, resourceList)
             setSearchApplied(true)
         }
     }
@@ -106,6 +112,7 @@ export function K8SResourceList({
             return
         }
         setSelectedNamespace(selected)
+        handleFilterChanges(searchText, resourceList)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
         })
@@ -145,6 +152,45 @@ export function K8SResourceList({
         }
     }
 
+    const tippyWrapper = (children) => {
+        return (
+            <Tippy className="default-tt w-200" placement="top" arrow={false} content={NAMESPACE_NOT_APPLICABLE_TEXT}>
+                <div>{children}</div>
+            </Tippy>
+        )
+    }
+
+    const valueContainerWithIcon = (props) => {
+        const { selectProps } = props
+        return (
+            <components.ValueContainer {...props}>
+                {selectProps.value ? (
+                    <>
+                        {(!selectProps.menuIsOpen || !selectProps.inputValue) && (
+                            <div className="flex left dc__position-abs w-100">
+                                <span className="icon-dim-20">
+                                    {selectProps.placeholder.includes('Cluster') ? (
+                                        <ClusterIcon className="icon-dim-20 scn-6" />
+                                    ) : (
+                                        <NamespaceIcon className="icon-dim-20 fcn-6" />
+                                    )}
+                                </span>
+                                {selectProps.value.label ? (
+                                    <span className="cn-9 dc__ellipsis-right ml-8">{selectProps.value.label}</span>
+                                ) : (
+                                    <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
+                                )}
+                            </div>
+                        )}
+                        {React.cloneElement(props.children[1])}
+                    </>
+                ) : (
+                    <>{props.children}</>
+                )}
+            </components.ValueContainer>
+        )
+    }
+
     const renderSearch = (): JSX.Element => {
         return (
             <div className="flexbox dc__content-space pt-16 pr-20 pb-12 pl-20">
@@ -175,22 +221,25 @@ export function K8SResourceList({
                         components={{
                             IndicatorSeparator: null,
                             Option,
+                            ValueContainer: valueContainerWithIcon,
                         }}
                     />
-                    {selectedResource?.namespaced && (
+                    <ConditionalWrap condition={!selectedResource?.namespaced} wrap={tippyWrapper}>
                         <ReactSelect
                             placeholder="Select Namespace"
                             className="w-220 ml-8"
                             options={namespaceOptions}
-                            value={selectedNamespace}
+                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
                             onChange={handleNamespaceChange}
+                            isDisabled={!selectedResource?.namespaced}
                             styles={CLUSTER_SELECT_STYLE}
                             components={{
                                 IndicatorSeparator: null,
                                 Option,
+                                ValueContainer: valueContainerWithIcon,
                             }}
                         />
-                    )}
+                    </ConditionalWrap>
                 </div>
             </div>
         )
@@ -258,50 +307,91 @@ export function K8SResourceList({
         if (noResults) {
             return (
                 <ResourceListEmptyState
-                    subTitle={`We could not find any ${selectedResource?.gvk?.Kind}. Try selecting a different cluster${
-                        selectedResource.namespaced ? ' or namespace.' : '.'
-                    }`}
+                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
+                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
+                        selectedResource?.gvk?.Kind,
+                        selectedResource?.namespaced,
+                    )}
                 />
             )
         } else {
             return (
                 <ResourceListEmptyState
-                    title="No matching results"
-                    subTitle={`We could not find any matching ${selectedResource?.gvk?.Kind}.`}
+                    title={RESOURCE_LIST_EMPTY_STATE.title}
+                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
                     actionHandler={clearSearch}
                 />
             )
         }
     }
 
+    const changePage = (pageNo: number) => {
+        setResourceListOffset(pageSize * (pageNo - 1))
+    }
+
+    const changePageSize = (size: number) => {
+        setPageSize(size)
+        setResourceListOffset(0)
+    }
+
+    const renderResourceList = (): JSX.Element => {
+        return (
+            <div
+                className={`scrollable-resource-list ${
+                    resourceList?.data?.length >= pageSize ? 'paginated-list-view' : ''
+                }`}
+            >
+                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
+                    {resourceList.headers.map((columnName) => (
+                        <div
+                            className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                                columnName === 'name'
+                                    ? `${
+                                          fixedNodeNameColumn
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+                                              : ''
+                                      } w-350 pl-20`
+                                    : 'w-150'
+                            }`}
+                        >
+                            {columnName}
+                        </div>
+                    ))}
+                </div>
+                {filteredResourceList
+                    .slice(resourceListOffset, resourceListOffset + pageSize)
+                    .map((clusterData, index) => renderResourceRow(clusterData, index))}
+            </div>
+        )
+    }
+
     const renderList = (): JSX.Element => {
         if (filteredResourceList.length === 0) {
             return renderEmptyPage()
         } else {
-            if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
-                return <EventList filteredData={filteredResourceList} handleResourceClick={handleResourceClick} />
-            }
             return (
-                <div className="scrollable-resource-list">
-                    <div className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky ">
-                        {resourceList.headers.map((columnName) => (
-                            <div
-                                className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
-                                    columnName === 'name'
-                                        ? `${
-                                              fixedNodeNameColumn
-                                                  ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
-                                                  : ''
-                                          } w-350 pl-20`
-                                        : 'w-150'
-                                }`}
-                            >
-                                {columnName}
-                            </div>
-                        ))}
-                    </div>
-                    {filteredResourceList?.map((clusterData, index) => renderResourceRow(clusterData, index))}
-                </div>
+                <>
+                    {selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind ? (
+                        <EventList
+                            filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
+                            handleResourceClick={handleResourceClick}
+                            paginatedView={resourceList?.data?.length >= 100}
+                        />
+                    ) : (
+                        renderResourceList()
+                    )}
+                    {resourceList?.data?.length >= 100 && (
+                        <Pagination
+                            rootClassName="resource-browser-paginator dc__border-top"
+                            size={filteredResourceList.length}
+                            pageSize={pageSize}
+                            offset={resourceListOffset}
+                            changePage={changePage}
+                            changePageSize={changePageSize}
+                            pageSizeOptions={RESOURCE_PAGE_SIZE_OPTIONS}
+                        />
+                    )}
+                </>
             )
         }
     }

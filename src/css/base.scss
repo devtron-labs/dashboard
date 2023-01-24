@@ -561,12 +561,14 @@ button.anchor {
     &.f-bound,
     &.f-Active,
     &.f-scalingreplicasetdown {
-        color: var(--green);
+        color: var(--G500);
     }
 
     &.f-suspended,
-    &.f-switchedtoactiveservice {
-        color: var(--orange);
+    &.f-switchedtoactiveservice,
+    &.f-containercreating,
+    &.f-pending {
+        color: var(--O500);
     }
 
     &.f-degraded,
@@ -575,7 +577,10 @@ button.anchor {
     &.f-imagepullbackoff,
     &.f-errimagepull,
     &.f-warning,
-    &.f-outofsync {
+    &.f-outofsync,
+    &.f-terminating,
+    &.f-crashloopbackof,
+    &.f-evicted {
         color: var(--R500);
     }
 
