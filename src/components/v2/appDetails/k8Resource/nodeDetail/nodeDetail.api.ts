@@ -160,13 +160,9 @@ export const updateManifestResourceHelmApps = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    var requestData
-    if (isResourceBrowserView) {
-        requestData = createResourceRequestBody(selectedResource, updatedManifest)
-    } else {
-        requestData = createBody(ad, nodeName, nodeType, updatedManifest)
-    }
-
+    const requestData = isResourceBrowserView
+        ? createResourceRequestBody(selectedResource, updatedManifest)
+        : createBody(ad, nodeName, nodeType, updatedManifest)
     return put(Routes.MANIFEST, requestData)
 }
 
