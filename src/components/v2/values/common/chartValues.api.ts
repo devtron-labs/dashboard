@@ -169,7 +169,6 @@ export async function fetchProjectsAndEnvironments(
                     clusterName: env.cluster_name
                 }
             }), 'clusterName')
-            envList = sortObjectArrayAlphabetically(envList, 'clusterName')
         } else {
             const _sortedResult = (
                 environmentListRes ? sortObjectArrayAlphabetically(environmentListRes, 'clusterName') : []

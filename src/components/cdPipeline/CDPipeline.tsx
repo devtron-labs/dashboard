@@ -1085,6 +1085,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
+    selectOption = (props) => {
+        return <EnvFormatOptions {...props} environmentfieldName="name" />
+    }
+
     renderEnvNamespaceAndTriggerType() {
         let envId = this.state.pipelineConfig.environmentId
         let selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
@@ -1112,7 +1116,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
-                                Option: (props) => <EnvFormatOptions {...props} environmentfieldName="name" />,
+                                Option: this.selectOption,
                                 GroupHeading,
                             }}
                             styles={{

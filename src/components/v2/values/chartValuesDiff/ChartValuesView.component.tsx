@@ -50,6 +50,11 @@ export const ChartEnvironmentSelector = ({
     environments,
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
+
+    const selectOption = (props) => {
+        return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
             <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7">Environment</h2>
@@ -72,7 +77,7 @@ export const ChartEnvironmentSelector = ({
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
-                    Option: (props) => <EnvFormatOptions {...props} environmentfieldName="label" />,
+                    Option: selectOption,
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
