@@ -730,6 +730,11 @@ export const DEPLOYMENT_STATUS = {
     SUPERSEDED: 'superseded',
 }
 
+export const HELM_DEPLOYMENT_STATUS_TEXT = {
+    PROGRESSING: 'Progressing',
+    INPROGRESS: 'In progress'
+}
+
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
 
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'

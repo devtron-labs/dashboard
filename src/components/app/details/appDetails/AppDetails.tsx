@@ -9,6 +9,7 @@ import {
     DEFAULT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
     DEPLOYMENT_STATUS,
+    HELM_DEPLOYMENT_STATUS_TEXT,
 } from '../../../../config'
 import {
     NavigationArrow,
@@ -258,8 +259,8 @@ export const Details: React.FC<{
                                     deploymentStatus:
                                         DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
                                     deploymentStatusText:
-                                        deploymentStatusDetailRes.result.wfrStatus === 'Progressing'
-                                            ? 'In progress'
+                                        deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
+                                            ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
                                             : deploymentStatusDetailRes.result.wfrStatus,
                                     deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
                                     deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,

@@ -3,7 +3,7 @@
 import React from 'react'
 import moment from 'moment'
 import { Link, useHistory } from 'react-router-dom'
-import { URLS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
+import { URLS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
@@ -201,7 +201,7 @@ export function SourceInfo({
                                 <div className="flexbox">
                                     <span
                                         className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
-                                            deploymentStatus === 'inprogress' ? 'dc__loading-dots' : ''
+                                            deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 'dc__loading-dots' : ''
                                         }`}
                                     >
                                         {deploymentStatusText}
@@ -222,7 +222,7 @@ export function SourceInfo({
                                             ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
                                             : '-'}
                                     </span>
-                                    {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
+                                    {deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && <Timer className="icon-dim-16 mt-4" />}
                                 </div>
                                 <div className="fw-4 fs-12 cn-9 dc__ellipsis-right" style={{ maxWidth: 'inherit' }}>
                                     by {triggeredBy || '-'}
