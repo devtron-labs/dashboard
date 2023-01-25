@@ -73,7 +73,7 @@ export default function CDDetails() {
         return () => {
             setTriggerHistory(new Map())
         }
-    }, [deploymentHistoryResult])
+    }, [deploymentHistoryResult, loading])
 
     async function pollHistory() {
         // polling

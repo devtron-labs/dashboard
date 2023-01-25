@@ -358,12 +358,6 @@ export interface ChaartValuesGUIFormType {
     formValidationError: Record<string, boolean>
 }
 
-export interface ConnectToHelmChartTippyProps {
-    condition: boolean
-    hideConnectToChartTippy: () => void
-    children: React.ReactElement<any>
-}
-
 export interface ActiveReadmeColumnProps {
     fetchingReadMe: boolean
     activeReadMe: string
