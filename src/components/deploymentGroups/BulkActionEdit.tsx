@@ -253,13 +253,20 @@ export function BulkActionEdit() {
                                 {state.pipelines.map(p => <PipelineSelect key={p.ciPipelineId} {...p} isActive={p.ciPipelineId === state.ciPipelineId} select={Number(id) === 0 ? e => dispatch({ type: 'selectPipeline', value: p.ciPipelineId }) : () => { }} />)}
                                 {state.pipelines.length === 0 &&
                                     <div style={{height:'400px'}} className="flex column empty-pipelines">
-                                        <GenericEmptyState
-                                        imageClassName='icon-dim-32'
-                                        title="No Linked pipelines created"
-                                        subTitle="Deployment groups can only be created for applications and environments using Linked CI Pipelines."
-                                    />
+                                      {/* //Todo with image svg */}
+                                {/* <GenericEmptyState
+                                imageClassName='icon-dim-32'
+                                image={error}
+                                title="No Linked pipelines created"
+                                subTitle="Deployment groups can only be created for applications and environments using Linked CI Pipelines."
+                            /> */}
+                                <EmptyState>
+                                        <EmptyState.Image><Error style={{width:'32px', height:'32px'}}/></EmptyState.Image>
+                                        <EmptyState.Title><h3>No Linked pipelines created</h3></EmptyState.Title>
+                                        <EmptyState.Subtitle>Deployment groups can only be created for applications and environments using Linked CI Pipelines.</EmptyState.Subtitle>
+                                </EmptyState>
                                     </div>
-                                }
+}
                             </>}
                         </div>}
 

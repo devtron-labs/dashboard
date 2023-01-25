@@ -14,6 +14,7 @@ interface GenericEmptyStateType {
     imageType?: string
     renderButton?: () => JSX.Element
     imageClassName?: string
+    children?: ReactNode
 }
 
 enum ImageType {
@@ -31,7 +32,8 @@ function GenericEmptyState({
     heightToDeduct,
     imageType,
     renderButton,
-    imageClassName
+    imageClassName,
+    children
 }: GenericEmptyStateType): JSX.Element {
     return (
         <div
@@ -49,6 +51,7 @@ function GenericEmptyState({
             {subTitle && <p className="subtitle">{subTitle}</p>}
             {/* {isPostIcon && <Icon classname={`icon-dim-${iconSize ? iconSize : '16'}`} />} */}
             {isButtonAvailable && renderButton()}
+              {children}
         </div>
     )
 }
