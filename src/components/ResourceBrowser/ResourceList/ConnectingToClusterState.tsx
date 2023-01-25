@@ -10,6 +10,7 @@ export default function ConnectingToClusterState({
     clusterName,
     errorMsg,
     handleRetry,
+    abortController,
 }: ConnectingToClusterStateProps) {
     const history = useHistory()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
@@ -41,6 +42,7 @@ export default function ConnectingToClusterState({
     }
 
     const handleCancelClick = () => {
+        abortController.abort()
         history.goBack()
     }
 

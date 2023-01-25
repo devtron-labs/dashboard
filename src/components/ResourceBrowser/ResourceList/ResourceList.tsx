@@ -89,7 +89,7 @@ export default function ResourceList() {
     const [errorMsg, setErrorMsg] = useState('')
     const isStaleDataRef = useRef<boolean>(false)
     const resourceListAbortController = new AbortController()
-    const sideDataAbortController = new AbortController()
+    const sideDataAbortController = useRef<AbortController>(new AbortController())
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -110,7 +110,7 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
-            sideDataAbortController.abort()
+            sideDataAbortController.current.abort()
         }
     }, [])
 
@@ -124,8 +124,12 @@ export default function ResourceList() {
             setSelectedCluster(null)
         }
 
-        // Todo: Revisit for multi call & request abort
         if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
+            if (!sideDataAbortController.current.signal.aborted) {
+                sideDataAbortController.current.abort()
+                sideDataAbortController.current = new AbortController()
+            }
+
             onChangeCluster(
                 clusterOptions.find((_option) => _option.value == clusterId),
                 false,
@@ -160,6 +164,10 @@ export default function ResourceList() {
     useEffect(() => {
         if (clusterId && selectedResource?.namespaced) {
             getResourceListData(true)
+
+            return (): void => {
+                resourceListAbortController.abort()
+            }
         }
     }, [namespace])
 
@@ -242,7 +250,7 @@ export default function ResourceList() {
         if (!_clusterId) return
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.signal)
+            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.signal)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -294,7 +302,7 @@ export default function ResourceList() {
                 setErrorStatusCode(0)
             }
         } catch (err) {
-            if (!sideDataAbortController.signal.aborted) {
+            if (!sideDataAbortController.current.signal.aborted) {
                 if (err['code'] === 403) {
                     setErrorStatusCode(err['code'])
                 } else if (err['code'] === 404) {
@@ -309,6 +317,8 @@ export default function ResourceList() {
                         ? err.errors[0]?.userMessage
                         : err['message']) ?? SOME_ERROR_MSG,
                 )
+            } else {
+                sideDataAbortController.current = new AbortController()
             }
         } finally {
             setLoader(false)
@@ -525,6 +535,7 @@ export default function ResourceList() {
                 clusterName={selectedCluster.label}
                 errorMsg={errorMsg}
                 handleRetry={handleRetry}
+                abortController={sideDataAbortController.current}
             />
         ) : (
             <div className="resource-browser bcn-0">

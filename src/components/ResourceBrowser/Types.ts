@@ -146,4 +146,5 @@ export interface ConnectingToClusterStateProps {
     clusterName: string
     errorMsg: string
     handleRetry: (e) => void
+    abortController: AbortController
 }
