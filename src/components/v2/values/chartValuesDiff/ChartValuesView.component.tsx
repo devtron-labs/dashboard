@@ -16,7 +16,6 @@ import {
     ChartValuesViewActionTypes,
     ChartVersionSelectorType,
     ChartVersionValuesSelectorType,
-    ConnectToHelmChartTippyProps,
     DeleteApplicationButtonProps,
     DeleteChartDialogProps,
     DeploymentAppSelectorType,
@@ -440,33 +439,5 @@ export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
             </EmptyState.Image>
             <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
         </EmptyState>
-    )
-}
-
-export const ConnectToHelmChartTippy = ({
-    condition,
-    hideConnectToChartTippy,
-    children,
-}: ConnectToHelmChartTippyProps) => {
-    return (
-        <TippyCustomized
-            theme={TippyTheme.black}
-            visible={condition}
-            className="w-300 ml-4 dc__border-radius-8-imp"
-            placement="right"
-            Icon={LinkIcon}
-            iconClass="link-chart-icon"
-            iconSize={32}
-            infoTextHeading={CONNECT_TO_HELM_CHART_TEXTS.InfoTextHeading}
-            infoText={CONNECT_TO_HELM_CHART_TEXTS.InfoText}
-            showCloseButton={true}
-            trigger="manual"
-            interactive={true}
-            arrow={true}
-            animation="shift-toward-subtle"
-            onClose={hideConnectToChartTippy}
-        >
-            <div>{children}</div>
-        </TippyCustomized>
     )
 }
