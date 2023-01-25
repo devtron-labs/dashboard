@@ -9,8 +9,8 @@ import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
 import { ErrorScreenManager, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
 import { ChartDetailType, ChartListResponse } from './types'
-import EmptyState from '../EmptyState/EmptyState'
 import Tippy from '@tippyjs/react'
+import GenericEmptyState from '../EmptyState/GenericEmptyState'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -132,19 +132,14 @@ export default function CustomChartList() {
 
     const renderEmptyState = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={emptyCustomChart} alt="Empty external links" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="title">Use custom charts in applications</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Import custom charts to use them in apps instead of the default system template.&nbsp;
-                    {renderLearnMoreLink()}
-                </EmptyState.Subtitle>
-                <EmptyState.Button>{renderUploadButton()}</EmptyState.Button>
-            </EmptyState>
+            <GenericEmptyState
+                image={emptyCustomChart}
+                title="Use custom charts in applications"
+                subTitle={`Import custom charts to use them in apps instead of the default system template.&nbsp;
+            ${renderLearnMoreLink()}`}
+                isButtonAvailable={true}
+                renderButton={renderUploadButton}
+            />
         )
     }
 

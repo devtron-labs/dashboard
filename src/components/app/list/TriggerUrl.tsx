@@ -191,14 +191,5 @@ function EmptyUrlState({title = "", subtitle = ""}) {
             title={title || "No URLs available"}
             subTitle={subtitle || "No URLs found in ingress and service resources"}
         />
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={AppNotDeployed} alt="" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h4>{title || "No URLs available"}</h4>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle>{subtitle || "No URLs found in ingress and service resources"}</EmptyState.Subtitle>
-        // </EmptyState>
     )
 }
