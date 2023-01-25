@@ -130,11 +130,14 @@ export default function ResourceList() {
                 sideDataAbortController.current = new AbortController()
             }
 
-            onChangeCluster(
-                clusterOptions.find((_option) => _option.value == clusterId),
-                false,
-                true,
-            )
+            const _clusterOption = clusterOptions.find((_option) => _option.value == clusterId)
+            if (_clusterOption) {
+                onChangeCluster(
+                    clusterOptions.find((_option) => _option.value == clusterId),
+                    false,
+                    true,
+                )
+            }
         }
     }, [location.pathname])
 

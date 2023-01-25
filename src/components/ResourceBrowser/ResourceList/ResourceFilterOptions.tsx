@@ -55,7 +55,6 @@ export default function ResourceFilterOptions({
             return
         }
         setSelectedNamespace(selected)
-        handleFilterChanges(searchText, resourceList)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
         })
