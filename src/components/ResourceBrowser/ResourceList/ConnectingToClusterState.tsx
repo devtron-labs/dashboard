@@ -4,13 +4,27 @@ import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
+import ResourceFilterOptions from './ResourceFilterOptions'
 
 export default function ConnectingToClusterState({
     loader,
-    clusterName,
     errorMsg,
     handleRetry,
     abortController,
+    selectedResource,
+    resourceList,
+    clusterOptions,
+    selectedCluster,
+    onChangeCluster,
+    namespaceOptions,
+    selectedNamespace,
+    setSelectedNamespace,
+    searchText,
+    setSearchText,
+    searchApplied,
+    setSearchApplied,
+    handleFilterChanges,
+    clearSearch,
 }: ConnectingToClusterStateProps) {
     const history = useHistory()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
@@ -30,7 +44,7 @@ export default function ConnectingToClusterState({
                 clearTimeout(timer)
             }
         }, 10000)
-    }, [clusterName])
+    }, [selectedCluster.value])
 
     const renderInfo = (heading: string, infoText: string) => {
         return (
@@ -54,31 +68,55 @@ export default function ConnectingToClusterState({
 
     return (
         <div
-            className="flex column bcn-0 dc__text-center"
+            className="flex column bcn-0"
             style={{
                 height: 'calc(100vh - 92px)',
             }}
         >
-            {loader && (
-                <>
-                    <StyledProgressBar />
-                    {renderInfo(`Connecting to ‘${clusterName}’`, infoText)}
-                </>
-            )}
-            {!loader && errorMsg && (
-                <>
-                    <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
-                    {renderInfo(`‘${clusterName}’ is not reachable`, errorMsg)}
-                    <button className="flex cta h-36" onClick={handleRetryClick}>
-                        Retry
-                    </button>
-                </>
-            )}
-            {showCancel && !errorMsg && (
-                <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
-                    Cancel
-                </span>
-            )}
+            <ResourceFilterOptions
+                selectedResource={selectedResource}
+                clusterOptions={clusterOptions}
+                selectedCluster={selectedCluster}
+                onChangeCluster={onChangeCluster}
+                namespaceOptions={namespaceOptions}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                hideSearchInput={true}
+                searchText={searchText}
+                searchApplied={searchApplied}
+                resourceList={resourceList}
+                setSearchText={setSearchText}
+                setSearchApplied={setSearchApplied}
+                handleFilterChanges={handleFilterChanges}
+                clearSearch={clearSearch}
+            />
+            <div
+                className="flex column dc__text-center bcn-0"
+                style={{
+                    height: 'calc(100vh - 152px)',
+                }}
+            >
+                {loader && (
+                    <>
+                        <StyledProgressBar />
+                        {renderInfo(`Connecting to ‘${selectedCluster.label}’`, infoText)}
+                    </>
+                )}
+                {!loader && errorMsg && (
+                    <>
+                        <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
+                        {renderInfo(`‘${selectedCluster.label}’ is not reachable`, errorMsg)}
+                        <button className="flex cta h-36" onClick={handleRetryClick}>
+                            Retry
+                        </button>
+                    </>
+                )}
+                {showCancel && !errorMsg && (
+                    <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
+                        Cancel
+                    </span>
+                )}
+            </div>
         </div>
     )
 }

@@ -509,6 +509,14 @@ export default function ResourceList() {
         } as SelectedResourceType
     }
 
+    const clearSearch = (): void => {
+        if (searchApplied) {
+            handleFilterChanges('', resourceList)
+            setSearchApplied(false)
+        }
+        setSearchText('')
+    }
+
     const handleRetry = () => {
         setErrorMsg('')
         getSidebarData(clusterId)
@@ -532,10 +540,23 @@ export default function ResourceList() {
         return errorMsg || (loader && selectedCluster?.value) ? (
             <ConnectingToClusterState
                 loader={loader}
-                clusterName={selectedCluster.label}
                 errorMsg={errorMsg}
                 handleRetry={handleRetry}
                 abortController={sideDataAbortController.current}
+                selectedResource={selectedResource}
+                resourceList={resourceList}
+                clusterOptions={clusterOptions}
+                selectedCluster={selectedCluster}
+                onChangeCluster={onChangeCluster}
+                namespaceOptions={namespaceOptions}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchApplied={searchApplied}
+                setSearchApplied={setSearchApplied}
+                handleFilterChanges={handleFilterChanges}
+                clearSearch={clearSearch}
             />
         ) : (
             <div className="resource-browser bcn-0">
@@ -564,6 +585,7 @@ export default function ResourceList() {
                     searchApplied={searchApplied}
                     setSearchApplied={setSearchApplied}
                     handleFilterChanges={handleFilterChanges}
+                    clearSearch={clearSearch}
                 />
             </div>
         )
