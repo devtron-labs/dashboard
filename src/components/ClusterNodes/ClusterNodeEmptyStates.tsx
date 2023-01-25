@@ -1,6 +1,6 @@
 import React from 'react'
-import EmptyState from '../EmptyState/EmptyState'
 import emptyCustomChart from '../../assets/img/empty-noresult@2x.png'
+import GenericEmptyState from '../EmptyState/GenericEmptyState'
 
 export default function ClusterNodeEmptyState({
     title,
@@ -9,20 +9,21 @@ export default function ClusterNodeEmptyState({
     title?: string
     actionHandler?: () => void
 }) {
+    const renderClearSearchButton = () => {
+        return (
+            <button onClick={actionHandler} className="add-link cta flex">
+                Clear search
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={emptyCustomChart} alt="Empty external links" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="title">{title || 'No matching clusters'}</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn’t find any matching results</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={actionHandler} className="add-link cta flex">
-                    Clear search
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={emptyCustomChart}
+            title={title || 'No matching clusters'}
+            subTitle="We couldn’t find any matching results"
+            isButtonAvailable={true}
+            renderButton={renderClearSearchButton}
+        />
+
     )
 }
