@@ -7,7 +7,7 @@ import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in
 import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing, sortCallback } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
@@ -134,8 +134,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     renderCIModal() {
         const selectedMaterial = this.props.material.find((mat) => mat.isSelected)
+        const isMaterialActive = this.props.material.some((material) => material.active)
+
         const canTrigger = this.props.material.reduce((isValid, mat) => {
-            isValid = isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)
+            isValid =
+                (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
+                (mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)
         if (this.props.material.length > 0) {
