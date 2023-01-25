@@ -12,7 +12,7 @@ import {
     WorkflowNodeType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
-import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
+import { TriggerType, TriggerTypeMap, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
@@ -46,6 +46,39 @@ export const getInitialWorkflows = (
     )
 }
 
+function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse: CiPipelineResult) {
+    const configuredMaterialList = new Map<string, Set<string>>()
+    for (const ciPipeline of filteredCIPipelines) {
+        configuredMaterialList[ciPipeline.name] = new Set<string>()
+        if (ciPipeline.ciMaterial?.length > 0) {
+            ciPipeline.ciMaterial.forEach((property, _) =>
+                configuredMaterialList[ciPipeline.name].add(property.gitMaterialId),
+            )
+        } else {
+            ciPipeline.ciMaterial = []
+        }
+    }
+    const gitMaterials = ciResponse?.materials ?? []
+
+    for (const material of gitMaterials) {
+        for (const ciPipeline of filteredCIPipelines) {
+            if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId)) {
+                continue
+            }
+            ciPipeline.ciMaterial.push({
+                source: {
+                    regex: '',
+                    type: '',
+                    value: GIT_BRANCH_NOT_CONFIGURED,
+                },
+                gitMaterialId: material.gitMaterialId,
+                id: 0,
+                gitMaterialName: material.materialName,
+            })
+        }
+    }
+}
+
 export function processWorkflow(
     workflow: WorkflowResult,
     ciResponse: CiPipelineResult,
@@ -57,6 +90,8 @@ export function processWorkflow(
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
+    handleSourceNotConfigured(filteredCIPipelines, ciResponse)
+
     const ciMap = new Map(
         filteredCIPipelines
             .map(ciPipelineToNodeWithDimension)
@@ -75,7 +110,7 @@ export function processWorkflow(
     workflow.workflows
         ?.sort((a, b) => a.id - b.id)
         .forEach((workflow) => {
-            const wf = toWorkflowType(workflow)
+            const wf = toWorkflowType(workflow, ciResponse)
             workflows.push(wf)
             const _wfTree = workflow.tree ?? []
             _wfTree
@@ -260,11 +295,13 @@ function processDownstreamDeployments(
     }
 }
 
-function toWorkflowType(workflow: Workflow): WorkflowType {
+function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): WorkflowType {
     return {
         id: '' + workflow.id,
         name: workflow.name,
         nodes: new Array<NodeAttr>(),
+        gitMaterials: ciResponse.materials ?? [],
+        ciConfiguredGitMaterialId: ciResponse.ciBuildConfig.gitMaterialId,
         startX: 0,
         startY: 0,
         height: 0,

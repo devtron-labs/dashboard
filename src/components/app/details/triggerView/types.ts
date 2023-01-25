@@ -275,6 +275,8 @@ export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterP
 export interface WorkflowType {
     id: string
     name: string
+    gitMaterials?: Material[]
+    ciConfiguredGitMaterialId?: number
     startX: number
     startY: number
     width: number
@@ -606,6 +608,7 @@ export interface EmptyStateCIMaterialProps {
     noSearchResultsMsg?: string
     toggleWebHookModal?: () => void;
     clearSearch?: () => void
+    handleGoToWorkFlowEditor?: (e?: any) => void
   }
 
 export interface MaterialSourceProps {
