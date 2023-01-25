@@ -74,7 +74,6 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
         return (
             <GenericEmptyState
-                image={AppNotDeployed}
                 title={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE}
                 classname="dc__window-bg"

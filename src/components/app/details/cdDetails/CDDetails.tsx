@@ -173,13 +173,11 @@ export default function CDDetails() {
                         </Route>
                     ) : !envId ? (
                         <GenericEmptyState
-                            image={AppNotDeployed}
                             title={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.TITLE}
                             subTitle={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
                         <GenericEmptyState
-                            image={AppNotDeployed}
                             title={EMPTY_STATE_STATUS.CD_DETAILS_DEPLOYMENT.TITLE}
                             subTitle={DeploymentSubtitle}
                         />

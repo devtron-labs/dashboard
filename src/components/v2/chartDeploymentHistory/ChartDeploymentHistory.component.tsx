@@ -26,7 +26,6 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import GenericEmptyState from '../../EmptyState/GenericEmptyState'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
@@ -318,7 +317,6 @@ function ChartDeploymentHistory({
         ) {
             return (
                 <GenericEmptyState
-                    image={AppNotDeployed}
                     title={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.TITLE}
                     subTitle={deploymentTabEmptySubtitle}
                     classname='dc__window-bg'
@@ -558,7 +556,6 @@ function ChartDeploymentHistory({
         } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
             return (
                 <GenericEmptyState
-                    image={AppNotDeployed}
                     title={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.TITLE}
                     subTitle={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.SUBTITLE}
                     classname="dc__window-bg"
