@@ -726,6 +726,7 @@ export const DEPLOYMENT_STATUS = {
     TIMED_OUT: 'timed_out',
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
+    PROGRESSING: 'inprogress',
     SUPERSEDED: 'superseded',
 }
 
