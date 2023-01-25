@@ -13,6 +13,7 @@ interface GenericEmptyStateType {
     heightToDeduct?: number
     imageType?: string
     renderButton?: () => JSX.Element
+    imageClassName?: string
 }
 
 enum ImageType {
@@ -30,6 +31,7 @@ function GenericEmptyState({
     heightToDeduct,
     imageType,
     renderButton,
+    imageClassName
 }: GenericEmptyStateType): JSX.Element {
     return (
         <div
@@ -37,7 +39,7 @@ function GenericEmptyState({
             style={styles}
             {...(heightToDeduct >= 0 && { style: { ...styles, height: `calc(100vh - ${heightToDeduct}px)` } })}
         >
-            <img
+            <img className={imageClassName ? imageClassName : ''}
                 src={image || AppNotDeployed}
                 width={imageType === ImageType.Medium ? '200' : '250'}
                 height={imageType === ImageType.Medium ? '160' : '200'}
