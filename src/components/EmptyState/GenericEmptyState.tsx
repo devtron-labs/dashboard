@@ -8,13 +8,13 @@ interface GenericEmptyStateType {
     classname?: string
     subTitle?: ReactNode
     isButtonAvailable?: boolean
-    // iconSize?: number // E.g. 16, 20, etc.. Currently, there are around 12 sizes supported. Check `icons.css` or `base.scss` for supported sizes or add new size (class names starts with `icon-dim-`).
     styles?: CSSProperties
     heightToDeduct?: number
     imageType?: string
     renderButton?: () => JSX.Element
     imageClassName?: string
     children?: ReactNode
+    noImage?: boolean
 }
 
 enum ImageType {
@@ -33,7 +33,8 @@ function GenericEmptyState({
     imageType,
     renderButton,
     imageClassName,
-    children
+    children,
+    noImage
 }: GenericEmptyStateType): JSX.Element {
     return (
         <div
@@ -41,15 +42,14 @@ function GenericEmptyState({
             style={styles}
             {...(heightToDeduct >= 0 && { style: { ...styles, height: `calc(100vh - ${heightToDeduct}px)` } })}
         >
-            <img className={imageClassName ? imageClassName : ''}
+            {!noImage && <img className={imageClassName ? imageClassName : ''}
                 src={image || AppNotDeployed}
                 width={imageType === ImageType.Medium ? '200' : '250'}
                 height={imageType === ImageType.Medium ? '160' : '200'}
                 alt="empty-state"
-            />
+            />}
             <h4 className="title fw-6 cn-9 mb-8">{title}</h4>
             {subTitle && <p className="subtitle">{subTitle}</p>}
-            {/* {isPostIcon && <Icon classname={`icon-dim-${iconSize ? iconSize : '16'}`} />} */}
             {isButtonAvailable && renderButton()}
               {children}
         </div>
