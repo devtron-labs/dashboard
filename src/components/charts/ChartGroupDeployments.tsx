@@ -4,11 +4,11 @@ import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg';
 import { DeleteDialog, not } from '../common'
 import moment from 'moment'
-import EmptyState from '../EmptyState/EmptyState';
 import NoDeploymentImg from '../../assets/img/app-not-configured.png';
 import { InstalledChartGroup, InstalledChart } from './charts.types';
 import { URLS } from '../../config';
 import placeHolder from '../../assets/icons/ic-plc-chart.svg';
+import GenericEmptyState from '../EmptyState/GenericEmptyState';
 
 interface ChartGroupDeploymentsProps {
     name: string;
@@ -122,11 +122,14 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
 }
 
 function EmptyStateChartDeploymentList() {
-    return <EmptyState>
-        <EmptyState.Image><img src={NoDeploymentImg} alt="so empty" /></EmptyState.Image>
-        <EmptyState.Title><h4>No Deployments</h4></EmptyState.Title>
-        <EmptyState.Subtitle>You haven't made any deployments.</EmptyState.Subtitle>
-    </EmptyState>
+    return (
+        <GenericEmptyState
+            image={NoDeploymentImg}
+            title="No Deployments"
+            subTitle="You haven't made any deployments."
+        />
+    )
+
 }
 
 export default ChartGroupDeployments;
