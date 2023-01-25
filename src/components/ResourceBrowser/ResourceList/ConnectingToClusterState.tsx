@@ -9,6 +9,7 @@ import ResourceFilterOptions from './ResourceFilterOptions'
 export default function ConnectingToClusterState({
     loader,
     errorMsg,
+    setErrorMsg,
     handleRetry,
     abortController,
     selectedResource,
@@ -32,8 +33,7 @@ export default function ConnectingToClusterState({
 
     useEffect(() => {
         if (showCancel) {
-            setInfoText(TRYING_TO_CONNECT)
-            setShowCancel(false)
+            resetStates()
         }
 
         const timer = setTimeout(() => {
@@ -44,7 +44,7 @@ export default function ConnectingToClusterState({
                 clearTimeout(timer)
             }
         }, 10000)
-    }, [selectedCluster.value])
+    }, [selectedCluster])
 
     const renderInfo = (heading: string, infoText: string) => {
         return (
@@ -55,14 +55,20 @@ export default function ConnectingToClusterState({
         )
     }
 
+    const resetStates = () => {
+        setInfoText(TRYING_TO_CONNECT)
+        setShowCancel(false)
+        setErrorMsg('')
+    }
+
     const handleCancelClick = () => {
+        resetStates()
         abortController.abort()
         history.goBack()
     }
 
     const handleRetryClick = (e) => {
-        setInfoText(TRYING_TO_CONNECT)
-        setShowCancel(false)
+        resetStates()
         handleRetry(e)
     }
 

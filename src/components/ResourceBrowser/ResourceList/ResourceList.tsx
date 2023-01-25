@@ -544,6 +544,7 @@ export default function ResourceList() {
             <ConnectingToClusterState
                 loader={loader}
                 errorMsg={errorMsg}
+                setErrorMsg={setErrorMsg}
                 handleRetry={handleRetry}
                 abortController={sideDataAbortController.current}
                 selectedResource={selectedResource}

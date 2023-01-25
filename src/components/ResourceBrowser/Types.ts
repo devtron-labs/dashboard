@@ -149,6 +149,7 @@ export interface ClusterOptionType extends OptionType {
 export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProps {
     loader: boolean
     errorMsg: string
+    setErrorMsg: React.Dispatch<React.SetStateAction<string>>
     handleRetry: (e) => void
     abortController: AbortController
 }
