@@ -93,46 +93,33 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
 
-    var requestBody
+    const appId =
+        appDetails.deploymentAppType == DeploymentAppType.argo_cd
+            ? ''
+            : getAppId(
+                  appDetails.clusterId,
+                  appDetails.namespace,
+                  appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
+                      ? `${appDetails.appName}-${appDetails.environmentName}`
+                      : appDetails.appName,
+              )
 
-    if (appDetails.deploymentAppType == DeploymentAppType.argo_cd) {
-        requestBody = {
-            appId: '',
-            clusterId: appDetails.clusterId,
-            k8sRequest: {
-                resourceIdentifier: {
-                    groupVersionKind: {
-                        Group: selectedResource.group ? selectedResource.group : '',
-                        Version: selectedResource.version ? selectedResource.version : 'v1',
-                        Kind: selectedResource.kind,
-                    },
-                    namespace: selectedResource.namespace,
-                    name: selectedResource.name,
+    const requestBody = {
+        appId: appId,
+        clusterId: appDetails.clusterId,
+        k8sRequest: {
+            resourceIdentifier: {
+                groupVersionKind: {
+                    Group: selectedResource.group ? selectedResource.group : '',
+                    Version: selectedResource.version ? selectedResource.version : 'v1',
+                    Kind: selectedResource.kind,
                 },
+                namespace: selectedResource.namespace,
+                name: selectedResource.name,
             },
-        }
-    } else {
-        requestBody = {
-            appId: getAppId(
-                appDetails.clusterId,
-                appDetails.namespace,
-                appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                    ? `${appDetails.appName}-${appDetails.environmentName}`
-                    : appDetails.appName,
-            ),
-            k8sRequest: {
-                resourceIdentifier: {
-                    groupVersionKind: {
-                        Group: selectedResource.group ? selectedResource.group : '',
-                        Version: selectedResource.version ? selectedResource.version : 'v1',
-                        Kind: selectedResource.kind,
-                    },
-                    namespace: selectedResource.namespace,
-                    name: selectedResource.name,
-                },
-            },
-        }
+        },
     }
+
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
     }

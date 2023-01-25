@@ -288,53 +288,53 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {
-                            <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
-                                {tabs.map((tab: iLink, index) => {
-                                    return (!showDesiredAndCompareManifest &&
-                                        (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
-                                        (isResourceMissing && tab.name == 'Compare') ? (
-                                        <></>
-                                    ) : (
-                                        <div
-                                            key={index + 'tab'}
-                                            className={` ${
-                                                tab.isDisabled || loading ? 'no-drop' : 'cursor'
-                                            } pl-4 pt-8 pb-8 pr-4`}
-                                        >
-                                            <div
-                                                className={`${
-                                                    tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
-                                                } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
-                                                onClick={() => handleTabClick(tab)}
-                                            >
-                                                {tab.name}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
 
-                                {activeTab === 'Live manifest' && !loading && !isResourceMissing && (
-                                    <>
-                                        <div className="pl-16 pr-16">|</div>
-                                        {!isEditmode ? (
-                                            <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
-                                                <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
-                                            </div>
-                                        ) : (
-                                            <div>
-                                                <button className="apply-change" onClick={handleApplyChanges}>
-                                                    Apply Changes
-                                                </button>
-                                                <button className="cancel-change" onClick={handleCancel}>
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        }
+                        <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
+                            {tabs.map((tab: iLink, index) => {
+                                return (!showDesiredAndCompareManifest &&
+                                    (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
+                                    (isResourceMissing && tab.name == 'Compare') ? (
+                                    <></>
+                                ) : (
+                                    <div
+                                        key={index + 'tab'}
+                                        className={` ${
+                                            tab.isDisabled || loading ? 'no-drop' : 'cursor'
+                                        } pl-4 pt-8 pb-8 pr-4`}
+                                    >
+                                        <div
+                                            className={`${
+                                                tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
+                                            } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
+                                            onClick={() => handleTabClick(tab)}
+                                        >
+                                            {tab.name}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+
+                            {activeTab === 'Live manifest' && !loading && !isResourceMissing && (
+                                <>
+                                    <div className="pl-16 pr-16">|</div>
+                                    {!isEditmode ? (
+                                        <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
+                                            <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <button className="apply-change" onClick={handleApplyChanges}>
+                                                Apply Changes
+                                            </button>
+                                            <button className="cancel-change" onClick={handleCancel}>
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
                         {isResourceMissing && !loading && activeTab === 'Live manifest' ? (
                             <MessageUI
                                 msg="Manifest not available"
