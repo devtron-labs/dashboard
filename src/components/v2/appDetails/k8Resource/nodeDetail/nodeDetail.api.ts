@@ -92,25 +92,46 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
-    let requestBody = {
-        appId: getAppId(
-            appDetails.clusterId,
-            appDetails.namespace,
-            appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                ? `${appDetails.appName}-${appDetails.environmentName}`
-                : appDetails.appName,
-        ),
-        k8sRequest: {
-            resourceIdentifier: {
-                groupVersionKind: {
-                    Group: selectedResource.group ? selectedResource.group : '',
-                    Version: selectedResource.version ? selectedResource.version : 'v1',
-                    Kind: selectedResource.kind,
+
+    var requestBody
+
+    if (appDetails.deploymentAppType == DeploymentAppType.argo_cd) {
+        requestBody = {
+            appId: '',
+            clusterId: appDetails.clusterId,
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: {
+                        Group: selectedResource.group ? selectedResource.group : '',
+                        Version: selectedResource.version ? selectedResource.version : 'v1',
+                        Kind: selectedResource.kind,
+                    },
+                    namespace: selectedResource.namespace,
+                    name: selectedResource.name,
                 },
-                namespace: selectedResource.namespace,
-                name: selectedResource.name,
             },
-        },
+        }
+    } else {
+        requestBody = {
+            appId: getAppId(
+                appDetails.clusterId,
+                appDetails.namespace,
+                appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
+                    ? `${appDetails.appName}-${appDetails.environmentName}`
+                    : appDetails.appName,
+            ),
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: {
+                        Group: selectedResource.group ? selectedResource.group : '',
+                        Version: selectedResource.version ? selectedResource.version : 'v1',
+                        Kind: selectedResource.kind,
+                    },
+                    namespace: selectedResource.namespace,
+                    name: selectedResource.name,
+                },
+            },
+        }
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -139,9 +160,13 @@ export const updateManifestResourceHelmApps = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource, updatedManifest)
-        : createBody(ad, nodeName, nodeType, updatedManifest)
+    var requestData
+    if (isResourceBrowserView) {
+        requestData = createResourceRequestBody(selectedResource, updatedManifest)
+    } else {
+        requestData = createBody(ad, nodeName, nodeType, updatedManifest)
+    }
+
     return put(Routes.MANIFEST, requestData)
 }
 

@@ -76,9 +76,8 @@ function ManifestComponent({
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
         setLoading(true)
 
-        if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            markActiveTab('Live manifest')
-        }
+        markActiveTab('Live manifest')
+
         try {
             Promise.all([
                 !_isResourceMissing &&
@@ -289,7 +288,7 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView) && (
+                        {
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
@@ -335,7 +334,7 @@ function ManifestComponent({
                                     </>
                                 )}
                             </div>
-                        )}
+                        }
                         {isResourceMissing && !loading && activeTab === 'Live manifest' ? (
                             <MessageUI
                                 msg="Manifest not available"
