@@ -54,6 +54,7 @@ setTagData: (index: number, tagData: TagType) => void
 tagOptions?: OptionType[]
 isRequired?: boolean
 type?: string
+placeholder?: string
 }
 
 export interface AddNewAppState {
@@ -436,7 +437,7 @@ export interface AppOverviewProps {
 export interface AboutAppInfoModalProps {
     isLoading: boolean
     appId: string
-    onClose: () => void
+    onClose: (e) => void
     appMetaInfo: AppMetaInfo
     currentLabelTags?: TagType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>

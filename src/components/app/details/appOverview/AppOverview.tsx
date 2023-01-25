@@ -3,12 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, Progressing, showError, sortOptionsByValue, useAsync } from '../../../common'
+import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
 import { AppDetails, AppOverviewProps, TagType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -75,11 +76,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             })
     }
 
-    const toggleChangeProjectModal = () => {
+    const toggleChangeProjectModal = (e) => {
+        stopPropagation(e)
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
-    const toggleTagsUpdateModal = () => {
+    const toggleTagsUpdateModal = (e) => {
+        stopPropagation(e)
         setShowUpdateTagModal(!showUpdateTagModal)
     }
 
@@ -156,10 +159,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         currentLabelTags.map((tag) => (
                             <div className="flex">
                                 <div
-                                    className={`bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                                    className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                                         !tag.value ? ' br-4' : ' dc__left-radius-4'
                                     }`}
                                 >
+                                    {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
                                     {tag.key}
                                 </div>
                                 {tag.value && (

@@ -4,12 +4,7 @@ import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag
 import { TagDetailType } from '../../types'
 import TagLabelValueSelector from './TagLabelValueSelector'
 
-export default function TagDetails({
-    index,
-    tagData,
-    setTagData,
-    removeTag,
-}: TagDetailType) {
+export default function TagDetails({ index, tagData, setTagData, removeTag }: TagDetailType) {
     const deleteTag = (): void => {
         removeTag(index)
     }
@@ -31,8 +26,15 @@ export default function TagDetails({
                 tagData={tagData}
                 setTagData={setTagData}
                 type="key"
+                placeholder="Enter key"
             />
-            <TagLabelValueSelector selectedTagIndex={index} tagData={tagData} setTagData={setTagData} type="value" />
+            <TagLabelValueSelector
+                selectedTagIndex={index}
+                tagData={tagData}
+                setTagData={setTagData}
+                type="value"
+                placeholder="Enter value"
+            />
             <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer" onClick={deleteTag}>
                 <DeleteCross className="icon-dim-20 mt-4" />
             </div>

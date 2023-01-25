@@ -13,25 +13,25 @@ export default function PropagateTagInfo() {
         )
     }
     return (
-        <div className="flexbox">
-            <InjectTag className="icon-dim-16 mt-2 mr-4" />
-            <span>Propagate tags</span>
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300"
-                placement="top"
-                Icon={InjectTag}
-                heading={'Propagate tags to K8s resources'}
-                infoText={`Add a tag and click on the ⬡ icon to propagate tags as labels to Kubernetes resources.`}
-                additionalContent={additionalInfo()}
-                showCloseButton={true}
-                trigger="click"
-                interactive={true}
-                documentationLink={DOCUMENTATION.APP_TAGS}
-                documentationLinkText={'View Documentation'}
-            >
-                <Help className="icon-dim-16 mt-2 ml-4 cursor" />
-            </TippyCustomized>
-        </div>
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-300"
+            placement="top"
+            Icon={InjectTag}
+            heading={'Propagate tags to K8s resources'}
+            infoText={`Add a tag and click on the ⬡ icon to propagate tags as labels to Kubernetes resources.`}
+            additionalContent={additionalInfo()}
+            showCloseButton={true}
+            trigger="click"
+            interactive={true}
+            documentationLink={DOCUMENTATION.APP_TAGS}
+            documentationLinkText={'View Documentation'}
+        >
+            <div className="flexbox cursor">
+                <InjectTag className="icon-dim-16 mt-2 mr-4" />
+                <span>Propagate tags</span>
+                <Help className="icon-dim-16 mt-2 ml-4" />
+            </div>
+        </TippyCustomized>
     )
 }

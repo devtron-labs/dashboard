@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { Drawer, Progressing, showError } from '../../common'
 import TagLabelSelect from './TagLabelSelect'
@@ -15,7 +15,37 @@ export default function AboutTagEditModal({
 }: AboutAppInfoModalProps) {
     const editLabelRef = useRef(null)
     const [submitting, setSubmitting] = useState(false)
-    const [labelTags, setLabelTags] = useState<TagType[]>(currentLabelTags || [])
+    const [labelTags, setLabelTags] = useState<TagType[]>(
+        currentLabelTags?.length
+            ? currentLabelTags
+            : [{ key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false }],
+    )
+
+    const escKeyPressHandler = (evt): void => {
+        if (evt && evt.key === 'Escape' && typeof onClose === 'function') {
+            evt.preventDefault()
+            onClose(evt)
+        }
+    }
+    const outsideClickHandler = (evt): void => {
+        if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && typeof onClose === 'function') {
+            onClose(evt)
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', escKeyPressHandler)
+        return (): void => {
+            document.removeEventListener('keydown', escKeyPressHandler)
+        }
+    }, [escKeyPressHandler])
+
+    useEffect(() => {
+        document.addEventListener('click', outsideClickHandler)
+        return (): void => {
+            document.removeEventListener('click', outsideClickHandler)
+        }
+    }, [outsideClickHandler])
 
     const handleSaveAction = async (e): Promise<void> => {
         e.preventDefault()
@@ -49,7 +79,7 @@ export default function AboutTagEditModal({
         } catch (err) {
             showError(err)
         } finally {
-            onClose()
+            onClose(e)
             setSubmitting(false)
         }
     }

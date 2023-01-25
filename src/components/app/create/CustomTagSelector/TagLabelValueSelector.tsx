@@ -12,6 +12,7 @@ export default function TagLabelValueSelector({
     tagOptions,
     isRequired,
     type,
+    placeholder
 }: TagLabelValueSelectorType) {
     const [selectedValue, setSelectedValue] = useState<string>('')
     const [isPopupOpen, togglePopup] = useState<boolean>(false)
@@ -58,7 +59,9 @@ export default function TagLabelValueSelector({
     const renderValidationsSuggestions = (): JSX.Element => {
         let field = { isValid: true, messages: [] }
         if (type === 'key') {
-            field = validationRules.propagateTagKey(selectedValue)
+            if (selectedValue || tagData.value) {
+                field = validationRules.propagateTagKey(selectedValue)
+            }
         } else if (isRequired || selectedValue) {
             field = validationRules.propagateTagValue(selectedValue)
         }
@@ -122,6 +125,7 @@ export default function TagLabelValueSelector({
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
+                    placeholder={placeholder}
                 />
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true}>

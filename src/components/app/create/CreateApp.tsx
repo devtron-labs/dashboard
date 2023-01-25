@@ -40,7 +40,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneId: 0,
                 appCreationType: AppCreationType.Blank,
             },
-            tags: [],
+            tags: [{ key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false }],
             isValid: {
                 projectId: false,
                 appName: false,
