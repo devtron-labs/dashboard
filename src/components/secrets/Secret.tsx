@@ -38,7 +38,7 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast, handleSecretDataYamlChange } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { NavLink } from 'react-router-dom'
@@ -641,47 +641,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setSecretDataYaml(secretYaml)
     }
 
-    function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
-        if (isESO) {
-            setEsoYaml(yaml)
-        } else {
-            setSecretDataYaml(yaml)
-        }
-        try {
-            let json = YAML.parse(yaml)
-            if (!json || !Object.keys(json).length) {
-                setSecretData([])
-                setEsoData([])
-                setSecretStore(null)
-                setScretStoreRef(null)
-                setRefreshInterval(null)
-                return
-            }
-            if (isESO) {
-                setEsoData(json.esoData)
-                setSecretStore(json.secretStore)
-                setScretStoreRef(json.secretStoreRef)
-                setRefreshInterval(json.refreshInterval)
-            }
-            if (!isESO && Array.isArray(json)) {
-                json = json.map((j) => {
-                    let temp = {}
-                    temp['isBinary'] = j.isBinary
-                    if (j.key) {
-                        temp['fileName'] = j.key
-                    }
-                    if (j.property) {
-                        temp['property'] = j.property
-                    }
-                    if (j.name) {
-                        temp['name'] = j.name
-                    }
-                    return temp
-                })
-                setSecretData(json)
-            }
-        } catch (error) {}
+    const handleSecretYamlChange = (yaml) => {
+        handleSecretDataYamlChange( yaml,
+            codeEditorRadio,
+            isESO,
+            setEsoYaml,
+            setSecretDataYaml,
+            setSecretData,
+            setEsoData,
+            setSecretStore,
+            setScretStoreRef,
+            setRefreshInterval)
     }
 
     function handleDeleteParam(e, idx: number): void {
@@ -1030,7 +1000,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         mode="yaml"
                         inline
                         height={350}
-                        onChange={handleSecretDataYamlChange}
+                        onChange={handleSecretYamlChange}
                         readOnly={secretMode && codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
                         shebang={
                             codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
