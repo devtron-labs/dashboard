@@ -28,7 +28,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, MODES } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast } from '../secrets/secret.utils'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
 
