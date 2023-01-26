@@ -479,7 +479,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             let isValid = true
             if (isESO) {
                 isValid = esoSecretData?.reduce((isValid, s) => {
-                    isValid = isValid && !!s.secretKey && !!s.key
+                    isValid = isValid && !!s?.secretKey && !!s.key
                     return isValid
                 }, ((!secretStore != !secretStoreRef)) && !!esoSecretData?.length)
             } else {
@@ -642,7 +642,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     const handleSecretYamlChange = (yaml) => {
-        handleSecretDataYamlChange( yaml,
+        handleSecretDataYamlChange(
+            yaml,
             codeEditorRadio,
             isESO,
             setEsoYaml,
@@ -651,7 +652,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             setEsoData,
             setSecretStore,
             setScretStoreRef,
-            setRefreshInterval)
+            setRefreshInterval,
+        )
     }
 
     function handleDeleteParam(e, idx: number): void {

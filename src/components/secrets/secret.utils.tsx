@@ -6,6 +6,7 @@ import { multiSelectStyles } from '../common'
 import { toast } from 'react-toastify'
 import { SECRET_TOAST_INFO } from './constants'
 import YAML from 'yaml'
+import { EsoData } from '../deploymentConfig/types'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -330,16 +331,16 @@ export const secretValidationInfoToast = (isESO,secretStore,secretStoreRef) => {
 }
 
 export function handleSecretDataYamlChange(
-    yaml,
-    codeEditorRadio,
-    isESO,
-    setEsoYaml,
-    setSecretDataYaml,
-    setSecretData,
-    setEsoData,
-    setSecretStore,
-    setScretStoreRef,
-    setRefreshInterval
+    yaml: any,
+    codeEditorRadio: string,
+    isESO: boolean,
+    setEsoYaml: (arg: string) => void,
+    setSecretDataYaml: (arg: string) => void,
+    setSecretData: (arg: any[]) => void,
+    setEsoData: (arg: EsoData[]) => void,
+    setSecretStore: (arg: any) => void,
+    setScretStoreRef: (arg: any) => void,
+    setRefreshInterval: (arg: string) => void
 ): void {
     if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
     if (isESO) {

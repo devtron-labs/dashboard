@@ -407,7 +407,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 let isValid = true
                 if (isESO) {
                     isValid = esoDataSecret?.reduce((isValid, s) => {
-                        isValid = isValid && !!s.secretKey && !!s.key
+                        isValid = isValid && !!s?.secretKey && !!s.key
                         return isValid
                     }, (!secretStore != !secretStoreRef) && !!esoDataSecret?.length)
                 } else {
@@ -541,7 +541,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     }
 
     const handleSecretYamlChange = (yaml) => {
-        handleSecretDataYamlChange( yaml,
+        handleSecretDataYamlChange(
+            yaml,
             codeEditorRadio,
             isESO,
             setEsoYaml,
@@ -550,7 +551,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             setEsoData,
             setSecretStore,
             setScretStoreRef,
-            setRefreshInterval)
+            setRefreshInterval,
+        )
     }
 
     const memoisedHandleChange = (index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })
