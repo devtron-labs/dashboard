@@ -5,7 +5,7 @@
     }
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 150px 50px 90px 100px 100px 120px 30px;
+        grid-template-columns: auto 150px 50px 90px 100px 100px 120px;
         column-gap: 16px;
         .cluster-status {
             height: 12px;
@@ -15,7 +15,7 @@
 }
 .node-list {
     .list-min-height {
-        min-height: calc(100vh - 220px);
+        min-height: calc(100vh - 250px);
         &.no-result-container {
             overflow: hidden;
             display: grid;

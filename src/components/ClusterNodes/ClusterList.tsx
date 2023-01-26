@@ -136,7 +136,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
             >
-                <div className="cb-5 dc__ellipsis-right">
+                <div className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
@@ -145,6 +145,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     >
                         {clusterData.name}
                     </NavLink>
+                    <TerminalIcon className="cursor dc__visible-hover--child ml-4" onClick={() => openTerminal(clusterData)} />
                 </div>
                 <div>
                     {clusterData.errorInNodeListing ? (
@@ -177,7 +178,6 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 </div>
                 <div>{clusterData.cpu?.capacity}</div>
                 <div>{clusterData.memory?.capacity}</div>
-                <TerminalIcon className="cursor dc__visible-hover--child" onClick={() => openTerminal(clusterData)} />
             </div>
         )
     }
