@@ -3,6 +3,7 @@ import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { multiSelectStyles } from '../common'
+import { toast } from 'react-toastify'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -308,4 +309,20 @@ export const hasESO = (externalType): boolean => {
 
 export const hasProperty = (externalType): boolean => {
     return externalType === 'ESO_AWSSecretsManager'
+}
+
+export const secretValidationInfoToast = (isESO,secretStore,secretStoreRef) => {
+    let errorMessage = ''
+    if (isESO) {
+        if (secretStore && secretStoreRef) {
+            errorMessage = 'Please use either secretStore or secretStoreRef'
+        } else if (secretStore || secretStoreRef) {
+            errorMessage = 'Please check key and secretKey'
+        } else {
+            errorMessage = 'Please provide secretStore or secretStoreRef'
+        }
+    } else {
+        errorMessage = 'Please check key and name'
+    }
+    toast.error(errorMessage)
 }

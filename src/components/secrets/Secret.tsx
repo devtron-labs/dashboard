@@ -38,7 +38,7 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { NavLink } from 'react-router-dom'
@@ -305,10 +305,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
-    const isEsoSecretData = props.esoSecretData?.secretStore && props.esoSecretData?.esoData.length > 0
+    const isEsoSecretData = (props.esoSecretData?.secretStore || props.esoSecretData?.secretStoreRef) && props.esoSecretData?.esoData.length > 0
     const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
+    const [secretStoreRef, setScretStoreRef] = useState(props.esoSecretData?.secretStoreRef)
+    const [refreshInterval, setRefreshInterval] = useState<string>(props.esoSecretData?.refreshInterval)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
     const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
@@ -477,9 +479,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             let isValid = true
             if (isESO) {
                 isValid = esoSecretData?.reduce((isValid, s) => {
-                    isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
+                    isValid = isValid && !!s.secretKey && !!s.key
                     return isValid
-                }, !!secretStore && !!esoSecretData?.length)
+                }, ((!secretStore != !secretStoreRef)) && !!esoSecretData?.length)
             } else {
                 isValid = secretData.reduce((isValid, s) => {
                     isValid = isValid && !!s.fileName && !!s.name
@@ -488,11 +490,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             }
 
             if (!isValid) {
-                !isESO
-                    ? toast.error('Please check key and name')
-                    : !secretStore
-                    ? toast.error('Please check secretStore')
-                    : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                secretValidationInfoToast(isESO,secretStore,secretStoreRef)
                 return
             }
         }
@@ -528,6 +526,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
                     esoData: esoSecretData,
+                    secretStoreRef: secretStoreRef,
+                    refreshInterval: refreshInterval,
                 }
             }
 
@@ -654,11 +654,15 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setSecretData([])
                 setEsoData([])
                 setSecretStore(null)
+                setScretStoreRef(null)
+                setRefreshInterval(null)
                 return
             }
             if (isESO) {
                 setEsoData(json.esoData)
                 setSecretStore(json.secretStore)
+                setScretStoreRef(json.secretStoreRef)
+                setRefreshInterval(json.refreshInterval)
             }
             if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
