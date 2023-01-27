@@ -310,24 +310,25 @@ export default function ResourceList() {
             }
             setLoader(false)
         } catch (err) {
-            if (err['code'] === 403) {
-                setErrorStatusCode(err['code'])
-            } else if (err['code'] === 404) {
-                setSelectedCluster(null)
-                replace({
-                    pathname: URLS.RESOURCE_BROWSER,
-                })
-            }
-            setShowErrorState(true)
-            setErrorMsg(
-                (err instanceof ServerErrors && Array.isArray(err.errors)
-                    ? err.errors[0]?.userMessage
-                    : err['message']) ?? SOME_ERROR_MSG,
-            )
-            if (sideDataAbortController.current.prev?.signal.aborted) {
+            if (err['code'] > 0) {
+                if (err['code'] === 403) {
+                    setErrorStatusCode(err['code'])
+                } else if (err['code'] === 404) {
+                    setSelectedCluster(null)
+                    replace({
+                        pathname: URLS.RESOURCE_BROWSER,
+                    })
+                }
+                setShowErrorState(true)
+                setErrorMsg(
+                    (err instanceof ServerErrors && Array.isArray(err.errors)
+                        ? err.errors[0]?.userMessage
+                        : err['message']) ?? SOME_ERROR_MSG,
+                )
+                setLoader(false)
+            } else if (sideDataAbortController.current.prev?.signal.aborted) {
                 sideDataAbortController.current.prev = null
             }
-            setLoader(false)
         }
     }
 
@@ -417,6 +418,9 @@ export default function ResourceList() {
             setShowSelectClusterState(false)
         }
 
+        if (sideDataAbortController.current.prev?.signal.aborted) {
+            sideDataAbortController.current.prev = null
+        }
         abortReqAndUpdateSideDataController()
         setSelectedCluster(selected)
         getSidebarData(selected.value)
@@ -528,13 +532,17 @@ export default function ResourceList() {
     }
 
     const handleRetry = () => {
-        setErrorMsg('')
+        abortReqAndUpdateSideDataController(true)
         getSidebarData(clusterId)
     }
 
-    const abortReqAndUpdateSideDataController = () => {
-        sideDataAbortController.current.new.abort()
-        sideDataAbortController.current.prev = sideDataAbortController.current.new
+    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
+        if (emptyPrev) {
+            sideDataAbortController.current.prev = null
+        } else {
+            sideDataAbortController.current.new.abort()
+            sideDataAbortController.current.prev = sideDataAbortController.current.new
+        }
         setErrorMsg('')
     }
 
