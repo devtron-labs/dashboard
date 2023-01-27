@@ -2199,6 +2199,10 @@ textarea,
     height: 28px !important;
 }
 
+.h-30 {
+    height: 30px !important;
+}
+
 .h-32 {
     height: 32px !important;
 }
@@ -2326,6 +2330,14 @@ textarea,
 .p-lr-12 {
     padding-left: 12px !important;
     padding-right: 12px !important;
+}
+
+.pb-0-imp {
+    padding-bottom: 0 !important;
+}
+
+.pt-0-imp {
+    padding-top: 0 !important;
 }
 
 .pb-4-imp {
@@ -2465,7 +2477,7 @@ textarea::placeholder {
     opacity: 0.5;
 }
 
-.dc__hover-n50:hover {
+.dc__hover-n50:hover, .dc__bg-n50 {
     background-color: var(--N50);
 }
 

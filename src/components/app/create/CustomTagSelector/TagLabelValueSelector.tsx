@@ -4,6 +4,7 @@ import { PopupMenu, stopPropagation } from '../../../common'
 import { ValidationRules } from '../validationRules'
 import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-outlined.svg'
+import { ResizableTextArea } from '../../../common/formFields/ResizableTextArea'
 
 export default function TagLabelValueSelector({
     selectedTagIndex,
@@ -114,15 +115,23 @@ export default function TagLabelValueSelector({
     return (
         <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose>
             <PopupMenu.Button
-                rootClassName={`${
+                rootClassName={`dc__bg-n50 ${
                     type === 'key'
                         ? `dc__no-right-radius`
                         : `dc__no-border-radius dc__no-right-border dc__no-left-border`
                 } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'er-5 bw-1' : ''}`}
             >
-                <input
+                {/* <input
                     type="text"
                     className="form__input pt-4-imp pb-4-imp dc__no-border"
+                    value={selectedValue}
+                    onChange={handleInputChange}
+                    onBlur={handleOnBlur}
+                    placeholder={placeholder}
+                /> */}
+                <ResizableTextArea
+                    defaultRows={1}
+                    className="form__input pt-0-imp pb-0-imp dc__no-border"
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}

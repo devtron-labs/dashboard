@@ -18,7 +18,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag }: Ta
     return (
         <div className="flexbox mb-8">
             <div
-                className={`dc__border pl-4 pr-4 br-4 mr-8 pointer ${tagData.propagate ? 'bcn-7' : ''}`}
+                className={`dc__border h-30 pl-4 pr-4 br-4 mr-8 pointer ${tagData.propagate ? 'bcn-7' : ''}`}
                 onClick={propagateTagToResource}
             >
                 <InjectTag className={`icon-dim-20 mt-4 ${tagData.propagate ? 'scn-0' : ''}`} />
