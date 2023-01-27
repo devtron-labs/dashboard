@@ -1063,12 +1063,23 @@ export const filterImageList = (imageList: ClusterImageList[], serverVersion: st
     return nodeImageList?.imageList || []
 }
 
-export const convertToOptionsList = (arr: any[], customLabel?: string, customValue?: string): OptionType[] => {
+export const convertToOptionsList = (
+    arr: any[],
+    customLabel?: string,
+    customValue?: string,
+    customFieldKey?: string,
+): OptionType[] => {
     return arr.map((ele) => {
-        return {
+        const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
         }
+
+        if (customFieldKey) {
+            _option[customFieldKey] = ele[customFieldKey] ?? ''
+        }
+
+        return _option
     })
 }
 
