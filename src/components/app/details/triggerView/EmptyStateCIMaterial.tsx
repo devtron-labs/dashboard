@@ -3,10 +3,8 @@ import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import EmptyState from '../../../EmptyState/EmptyState'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
-import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
-import { SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -22,10 +20,9 @@ export default function EmptyStateCIMaterial({
     noSearchResultsMsg,
     toggleWebHookModal,
     clearSearch,
-    handleGoToWorkFlowEditor,
 }: EmptyStateCIMaterialProps) {
     const getData = () => {
-        if (isRepoError) {
+        if (isRepoError || isBranchError) {
             return {
                 img: (
                     <img
@@ -34,34 +31,13 @@ export default function EmptyStateCIMaterial({
                         className="empty-state__img--ci-material"
                     />
                 ),
-                title: <h1 className="dc__empty-title">{repoErrorMsg}</h1>,
+                title: <h1 className="dc__empty-title">{isRepoError ? repoErrorMsg : branchErrorMsg}</h1>,
                 subtitle: (
                     <a href={repoUrl} rel="noopener noreferrer" target="_blank">
                         {repoUrl}
                     </a>
                 ),
                 cta: null,
-            }
-        } else if (isBranchError) {
-            return {
-                img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
-                title: <h1 className="dc__empty-title">{branchErrorMsg}</h1>,
-                subtitle: repoUrl ? (
-                    <a href={repoUrl} rel="noopener noreferrer" target="_blank" className="">
-                        {repoUrl}
-                    </a>
-                ) : (
-                    <h1 className="dc__empty-title fs-13" style={{ color: 'gray' }}>
-                        {SOURCE_NOT_CONFIGURED_MESSAGE}
-                    </h1>
-                ),
-                cta:
-                    repoUrl?.length === 0 ? (
-                        <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
-                            Configure Source
-                            <NextIcon className="icon-dim-16 ml-5 scn-0" />
-                        </button>
-                    ) : null,
             }
         } else if (noSearchResults) {
             return {

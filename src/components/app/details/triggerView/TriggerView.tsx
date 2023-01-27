@@ -24,14 +24,7 @@ import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
-import {
-    URLS,
-    ViewType,
-    SourceTypeMap,
-    BUILD_STATUS,
-    SOURCE_NOT_CONFIGURED,
-    DEFAULT_GIT_BRANCH_VALUE,
-} from '../../../../config'
+import { URLS, ViewType, SourceTypeMap, BUILD_STATUS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -43,7 +36,6 @@ import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -569,26 +561,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickTriggerCINode = () => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CITriggered)
         this.setState({ isLoading: true })
-        let node, dockerfileConfiguredGitMaterialId
+        let node
         for (let i = 0; i < this.state.workflows.length; i++) {
             node = this.state.workflows[i].nodes.find((node) => {
                 return node.type === 'CI' && +node.id == this.state.ciNodeId
             })
-
-            if (node) {
-                dockerfileConfiguredGitMaterialId = this.state.workflows[i].ciConfiguredGitMaterialId
-                break
-            }
+            if (node) break
         }
-        const gitMaterials = new Map<number, string[]>()
+
         const ciPipelineMaterials = []
         for (let i = 0; i < node.inputMaterialList.length; i++) {
-            gitMaterials[node.inputMaterialList[i].gitMaterialId] = [
-                node.inputMaterialList[i].gitMaterialName.toLowerCase(),
-                node.inputMaterialList[i].value,
-            ]
             if (node.inputMaterialList[i]) {
-                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
                 const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
@@ -610,16 +593,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
             }
         }
-        if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
-            toast.error(
-                CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
-                    '$GIT_MATERIAL_ID',
-                    `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
-                ),
-            )
-            this.setState({ isLoading: false })
-            return
-        }
+
         const payload = {
             pipelineId: +this.state.ciNodeId,
             ciPipelineMaterials: ciPipelineMaterials,
@@ -877,58 +851,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    handleSourceNotConfigured = (
-        configuredMaterialList: Map<number, Set<number>>,
-        wf: WorkflowType,
-        _materialList: any[],
-    ) => {
-        if (_materialList.length > 0) {
-            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
-        }
-        for (const material of wf.gitMaterials) {
-            if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
-                continue
-            }
-            const ciMaterial: CIMaterialType = {
-                id: 0,
-                gitMaterialId: material.gitMaterialId,
-                gitMaterialName: material.materialName.toLowerCase(),
-                type: '',
-                value: DEFAULT_GIT_BRANCH_VALUE,
-                active: false,
-                gitURL: '',
-                isRepoError: false,
-                repoErrorMsg: '',
-                isBranchError: true,
-                branchErrorMsg: SOURCE_NOT_CONFIGURED,
-                regex: '',
-                history: [],
-                isSelected: false,
-                lastFetchTime: '',
-                isRegex: false,
-            }
-            _materialList.push(ciMaterial)
-        }
-    }
-
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
-            const configuredMaterialList = new Map<number, Set<number>>()
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
-
                 if (nd) {
-                    configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
-                    this.handleSourceNotConfigured(
-                        configuredMaterialList,
-                        this.state.workflows[i],
-                        nd[this.state.materialType],
-                    )
                     break
                 }
             }
-            const material = nd?.[this.state.materialType] || []
+            let material = nd?.[this.state.materialType] || []
             return (
                 <CIMaterial
                     workflowId={this.state.workflowId}

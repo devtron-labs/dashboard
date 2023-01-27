@@ -5,21 +5,12 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
+import { RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 
 export class Workflow extends Component<WorkflowProps> {
-    goToWorkFlowEditor = (node: NodeAttr) => {
-        if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(
-                getCIPipelineURL(this.props.match.params.appId, this.props.id, true, node.downstreams[0].split('-')[1]),
-            )
-        }
-    }
-
     renderNodes() {
         return this.props.nodes.map((node: any) => {
             if (node.type === WorkflowNodeType.GIT) {
@@ -27,8 +18,8 @@ export class Workflow extends Component<WorkflowProps> {
             } else if (node.type === WorkflowNodeType.CI) {
                 return this.renderCINodes(node)
             } else if (node.type === PipelineType.WEBHOOK) {
-                return this.renderWebhookNode(node)
-            } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
+              return this.renderWebhookNode(node)
+          } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
                 return this.renderPrePostCDNodes(node)
             } else if (node.type === WorkflowNodeType.CD) {
                 return this.renderCDNodes(node)
@@ -55,23 +46,20 @@ export class Workflow extends Component<WorkflowProps> {
                 regex={node.regex}
                 isRegex={node.isRegex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
-                handleGoToWorkFlowEditor={(e) => {
-                    this.goToWorkFlowEditor(node)
-                }}
             />
         )
     }
     renderWebhookNode(node) {
-        return (
-            <WebhookNode
-                x={node.x}
-                y={node.y}
-                height={node.height}
-                width={node.width}
-                key={`webhook-${node.id}`}
-                id={node.id}
-            />
-        )
+      return (
+          <WebhookNode
+              x={node.x}
+              y={node.y}
+              height={node.height}
+              width={node.width}
+              key={`webhook-${node.id}`}
+              id={node.id}
+          />
+      )
     }
 
     renderCINodes(node: NodeAttr) {

@@ -102,7 +102,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     allCINodeMap: allCINodeMap,
                     allDeploymentNodeMap: allDeploymentNodeMap,
                     view: ViewType.FORM,
-                    envToShowWebhookTippy: -1,
+                    envToShowWebhookTippy: -1
                 })
             })
             .catch((errors) => {

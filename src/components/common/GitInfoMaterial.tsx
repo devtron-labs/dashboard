@@ -13,9 +13,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, noop } from '../common'
-import { useHistory } from 'react-router'
-import { useParams } from 'react-router-dom'
+import { noop } from '../common'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 export default function GitInfoMaterial({
@@ -32,10 +30,8 @@ export default function GitInfoMaterial({
     workflowId,
     onClickShowBranchRegexModal,
 }) {
-    const { appId } = useParams<{ appId: string }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const { push } = useHistory()
     const triggerViewContext = useContext(TriggerViewContext)
 
     useEffect(() => {
@@ -104,7 +100,7 @@ export default function GitInfoMaterial({
         onClickChangebranch(true)
     }
 
-    const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
+    const renderBranchChangeHeader = (): JSX.Element => {
         return (
             <div
                 className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${
@@ -163,10 +159,6 @@ export default function GitInfoMaterial({
         }
     }
 
-    const goToWorkFlowEditor = () => {
-        push(getCIPipelineURL(appId, workflowId, true, pipelineId))
-    }
-
     const renderSearch = (): JSX.Element => {
         return (
             <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
@@ -197,7 +189,7 @@ export default function GitInfoMaterial({
         toggleWebhookModal(selectedMaterial.id)
     }
 
-    function renderMaterialHistory(selectedMaterial: CIMaterialType) {
+    function renderMaterialHistory() {
         let anyCommit = selectedMaterial.history?.length > 0
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
         return (
@@ -207,7 +199,7 @@ export default function GitInfoMaterial({
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
-                        {renderBranchChangeHeader(selectedMaterial)}
+                        {renderBranchChangeHeader()}
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && <>{renderSearch()}</>}
                     </div>
                 )}
@@ -234,7 +226,6 @@ export default function GitInfoMaterial({
                             noSearchResults={selectedMaterial.noSearchResult}
                             noSearchResultsMsg={selectedMaterial.noSearchResultsMsg}
                             clearSearch={clearSearch}
-                            handleGoToWorkFlowEditor={goToWorkFlowEditor}
                         />
                     </div>
                 ) : (
@@ -296,7 +287,7 @@ export default function GitInfoMaterial({
                 ) : (
                     <>
                         {renderMaterialSource()}
-                        {renderMaterialHistory(selectedMaterial ?? material)}
+                        {renderMaterialHistory()}
                     </>
                 )}
             </div>

@@ -70,16 +70,21 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
 }
 
 export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
-    if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
-        return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
+    if (!ciMaterials?.length || !gitTriggers?.size) {
+        return (
+            <EmptyView
+                title="Data not available"
+                subTitle="Source code detail is not available"
+            />
+        )
     }
     return (
         <div className="flex column left w-100 p-16">
-            {ciMaterials?.map((ciMaterial, index) => {
+            {ciMaterials?.map((ciMaterial) => {
                 const gitTrigger = gitTriggers[ciMaterial.id]
                 return gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) ? (
                     <div
-                        key={`mat-${gitTrigger?.Commit}-${index}`}
+                        key={gitTrigger?.Commit}
                         className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
                         style={{ width: 'min( 100%, 800px )' }}
                     >

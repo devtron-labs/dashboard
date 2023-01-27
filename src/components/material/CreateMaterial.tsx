@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { createMaterial } from './material.service';
 import { toast } from 'react-toastify';
-import { showError } from '../common';
+import { showError, VisibleModal } from '../common';
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
+import { ReactComponent as Info } from '../../assets/ic-info-filled-border.svg';
 
 interface CreateMaterialProps {
     appId: number;
@@ -36,6 +37,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 url: undefined,
                 checkoutPath: undefined,
             },
+            showSaveModal: false,
         }
 
         this.handleProviderChange = this.handleProviderChange.bind(this);
@@ -128,6 +130,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     save(event): void {
         this.setState({
             isChecked: true,
+            showSaveModal: false,
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
                 url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id ),
@@ -180,6 +183,40 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
+    toggleSaveModal = () => {
+        this.setState({
+            showSaveModal: !this.state.showSaveModal
+        })
+    }
+
+    renderSavePopupModal = () => {
+        return <VisibleModal className="app-status__material-modal">
+            <div className="modal__body pl-24 pr-24 pb-0" onClick={e => e.stopPropagation()}>
+                <Info className="icon-dim-40" />
+                <div className="mt-16 cn-9 fw-6 fs-18 mb-8">Configure existing build pipelines to use changes</div>
+                <div className="fs-14 cn-7">
+                    To use this repository please configure it in existing build pipelines, if any.
+                        <br />
+                    <br />
+                        NOTE: Already created build pipelines will continue running based on previous configurations.
+                   </div>
+                <div className="form__row form__buttons mt-40">
+                    <button className="cta cancel mr-16" type="button" onClick={() => this.setState({ showSaveModal: false })}>Cancel</button>
+                    <button className="cta" type="submit" onClick={(e) => this.save(e)} >Okay, Save changes</button>
+                </div>
+            </div>
+        </VisibleModal>
+    }
+
+    handleSaveButton = (e) => {
+        if (this.props.isWorkflowEditorUnlocked) {
+            return this.toggleSaveModal()
+        }
+        else {
+            return this.save(e)
+        }
+    }
+
     render() {
         return <>
             <MaterialView
@@ -196,11 +233,12 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 handleUrlChange={this.handleUrlChange}
                 handlePathChange={this.handlePathChange}
                 toggleCollapse={this.toggleCollapse}
-                save={this.save}
+                save={this.handleSaveButton}
                 cancel={this.cancel}
                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                 reload = {this.props.reload}
             />
+            {this.state.showSaveModal && this.renderSavePopupModal()}
         </>
     }
 }

@@ -211,7 +211,7 @@ function ChartDeploymentHistory({
                                         height: '64px',
                                         display: 'grid',
                                         gridTemplateColumns: '20px 1fr',
-                                        padding: '12px 16px',
+                                        padding: '12px 0',
                                         gridColumnGap: '12px',
                                     }}
                                 >

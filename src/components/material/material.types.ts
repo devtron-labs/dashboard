@@ -38,6 +38,7 @@ export interface CreateMaterialState {
     isChecked: boolean
     isLoading: boolean
     isError: MaterialError
+    showSaveModal: boolean
 }
 
 interface MaterialError {
