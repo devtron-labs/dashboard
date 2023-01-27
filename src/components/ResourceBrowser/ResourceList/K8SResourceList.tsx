@@ -107,6 +107,16 @@ export function K8SResourceList({
         }
     }
 
+    const getStatusClass = (status: string) => {
+        let statusPostfix = status?.toLowerCase()
+
+        if (statusPostfix && (statusPostfix.includes(':') || statusPostfix.includes('/'))) {
+            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__')
+        }
+
+        return `f-${statusPostfix}`
+    }
+
     const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
         return (
             <div
@@ -153,7 +163,7 @@ export function K8SResourceList({
                         <div
                             className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
+                                    ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
                             }`}
                         >
