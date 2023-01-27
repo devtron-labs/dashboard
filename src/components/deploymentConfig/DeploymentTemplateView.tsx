@@ -26,7 +26,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { getDeploymentTemplate } from './service'
+import { getDefaultDeploymentTemplate, getDeploymentTemplate } from './service'
 import { getDeploymentTemplate as getEnvDeploymentTemplate } from '../EnvironmentOverride/service'
 import YAML from 'yaml'
 import {
@@ -145,7 +145,10 @@ export const ChartTypeVersionOptions = ({
     return (
         <div
             className={`chart-type-version-options pr-16 pt-8 pb-8 ${
-                disableVersionSelect || (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? '' : 'dc__border-right'
+                disableVersionSelect ||
+                (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT)
+                    ? ''
+                    : 'dc__border-right'
             }`}
         >
             <div className="chart-type-options">
@@ -367,6 +370,7 @@ const customValueContainer = (props): JSX.Element => {
 const CompareWithDropdown = ({
     isEnvOverride,
     environments,
+    charts,
     selectedOption,
     setSelectedOption,
     globalChartRef,
@@ -387,7 +391,7 @@ const CompareWithDropdown = ({
 
     useEffect(() => {
         _initOptions()
-    }, [environments])
+    }, [environments, charts])
 
     const _initOptions = () => {
         const _groupOptions = []
@@ -416,9 +420,14 @@ const CompareWithDropdown = ({
             })
 
             if (!selectedOption) {
-                setSelectedOption(environments[0])
+                setSelectedOption(environments.length > 0 ? environments[0] : charts[0])
             }
         }
+
+        _groupOptions.push({
+            label: 'Other version values',
+            options: charts.length > 0 ? charts : [{ label: 'No options', value: 0, kind: 'chartVersion' }],
+        })
 
         setGroupedOptions(_groupOptions)
     }
@@ -559,7 +568,9 @@ export const DeploymentTemplateEditorView = ({
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
+    const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
+
     useEffect(() => {
         if (selectedChart && environments.length > 0) {
             let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
@@ -580,31 +591,55 @@ export const DeploymentTemplateEditorView = ({
     }, [selectedChart, environments])
 
     useEffect(() => {
-        if (charts.length > 0 && !globalChartRef) {
-            setGlobalChartRef(charts.find((_chart) => _chart.id === globalChartRefId))
+        if (selectedChart && charts.length > 0) {
+            const _filteredCharts = charts
+                .filter((chart) => {
+                    if (!globalChartRef && chart.id === globalChartRefId) {
+                        setGlobalChartRef(chart)
+                    }
+
+                    return chart.id !== selectedChart.id && chart.name === selectedChart.name
+                })
+                .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
+
+            setFilteredCharts(
+                _filteredCharts.map((chart) => ({
+                    id: `version-${chart.version}`,
+                    label: chart.version,
+                    value: chart.id,
+                    kind: 'chartVersion',
+                })) as DeploymentChartOptionType[],
+            )
         }
-    }, [charts])
+    }, [selectedChart, charts])
 
     useEffect(() => {
         if (selectedChart && selectedOption && selectedOption.id !== -1 && !fetchedValues[selectedOption.id]) {
             setFetchingValues(true)
             const isEnvOption = selectedOption.kind === 'env'
-            const _getDeploymentTemplate =
-                isEnvOverride || isEnvOption
-                    ? getEnvDeploymentTemplate(appId, isEnvOption ? selectedOption.id : envId, selectedOption.value)
-                    : getDeploymentTemplate(+appId, +selectedOption.value)
+            const isChartVersionOption = selectedOption.kind === 'chartVersion'
+
+            const _getDeploymentTemplate = isChartVersionOption
+                ? getDefaultDeploymentTemplate(appId, selectedOption.value)
+                : isEnvOverride || isEnvOption
+                ? getEnvDeploymentTemplate(appId, isEnvOption ? selectedOption.id : envId, selectedOption.value)
+                : getDeploymentTemplate(+appId, +selectedOption.value)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
-                    const _fetchedValues = {
-                        ...fetchedValues,
-                        [selectedOption.id]: YAML.stringify(
-                            isEnvOverride || isEnvOption
-                                ? result?.environmentConfig?.envOverrideValues || result?.globalConfig
-                                : result?.globalConfig.defaultAppOverride,
-                        ),
+                    if (result) {
+                        const _fetchedValues = {
+                            ...fetchedValues,
+                            [selectedOption.id]: YAML.stringify(
+                                isChartVersionOption
+                                    ? result.defaultAppOverride
+                                    : isEnvOverride || isEnvOption
+                                    ? result.environmentConfig?.envOverrideValues || result?.globalConfig
+                                    : result.globalConfig.defaultAppOverride,
+                            ),
+                        }
+                        setFetchedValues(_fetchedValues)
                     }
-                    setFetchedValues(_fetchedValues)
                     setFetchingValues(false)
                 })
                 .catch((err) => {
@@ -722,8 +757,7 @@ export const DeploymentTemplateEditorView = ({
         setBasicFieldValues(_basicFieldValues)
     }
 
-    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT)
-      ? (
+    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
         <>
             {showReadme && (
                 <div className="dt-readme dc__border-right">
@@ -765,6 +799,7 @@ export const DeploymentTemplateEditorView = ({
                                     <CompareWithDropdown
                                         isEnvOverride={isEnvOverride}
                                         environments={filteredEnvironments}
+                                        charts={filteredCharts}
                                         selectedOption={selectedOption}
                                         setSelectedOption={setSelectedOption}
                                         globalChartRef={globalChartRef}
@@ -1029,7 +1064,9 @@ export const DeploymentConfigFormCTA = ({
                             />
                         ) : (
                             <Checkbox
-                                rootClassName={`mt-2 mr-8 ${!selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''}`}
+                                rootClassName={`mt-2 mr-8 ${
+                                    !selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''
+                                }`}
                                 isChecked={isAppMetricsEnabled}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={toggleAppMetrics}
