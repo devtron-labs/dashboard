@@ -3,7 +3,7 @@ import { Teams } from '../../services/service.types';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
-    close: () => void
+    close: (e) => void
 }
 
 export interface OptionType {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { TagLabelValueSelectorType } from '../../../app/types'
-import { PopupMenu } from '../../../common'
+import { PopupMenu, stopPropagation } from '../../../common'
 import { ValidationRules } from '../validationRules'
 import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-outlined.svg'
@@ -12,7 +12,7 @@ export default function TagLabelValueSelector({
     tagOptions,
     isRequired,
     type,
-    placeholder
+    placeholder,
 }: TagLabelValueSelectorType) {
     const [selectedValue, setSelectedValue] = useState<string>('')
     const [isPopupOpen, togglePopup] = useState<boolean>(false)
@@ -51,6 +51,7 @@ export default function TagLabelValueSelector({
     }
 
     const onSelectValue = (e): void => {
+        stopPropagation(e)
         const _tagData = { ...tagData }
         _tagData[type] = e.currentTarget.dataset.key
         setTagData(selectedTagIndex, _tagData)
@@ -67,7 +68,7 @@ export default function TagLabelValueSelector({
         }
         if (!field.isValid) {
             return (
-                <div className="p-4">
+                <div className="p-4" onClick={stopPropagation}>
                     {field.messages.map((error) => (
                         <div key={error} className="flexbox p-4">
                             <span>

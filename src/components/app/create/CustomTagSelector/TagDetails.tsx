@@ -1,11 +1,13 @@
 import React from 'react'
 import { ReactComponent as DeleteCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
+import { stopPropagation } from '../../../common'
 import { TagDetailType } from '../../types'
 import TagLabelValueSelector from './TagLabelValueSelector'
 
 export default function TagDetails({ index, tagData, setTagData, removeTag }: TagDetailType) {
-    const deleteTag = (): void => {
+    const deleteTag = (e): void => {
+        stopPropagation(e)
         removeTag(index)
     }
     const propagateTagToResource = (): void => {

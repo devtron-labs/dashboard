@@ -23,7 +23,7 @@ import { ServerErrors } from '../../../modals/commonTypes'
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
-    createAppRef: HTMLDivElement
+    createAppRef = null
     constructor(props) {
         super(props)
         this.state = {
@@ -50,6 +50,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
         this.handleProject = this.handleProject.bind(this)
+        this.escKeyPressHandler = this.escKeyPressHandler.bind(this)
+        this.outsideClickHandler = this.outsideClickHandler.bind(this)
+        this.createAppRef = React.createRef()
     }
 
     async componentDidMount() {
@@ -62,6 +65,29 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             showError(err)
         } finally {
             if (this._inputAppName) this._inputAppName.focus()
+        }
+        document.addEventListener('keydown', this.escKeyPressHandler)
+        document.addEventListener('click', this.outsideClickHandler)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.escKeyPressHandler)
+        document.removeEventListener('click', this.outsideClickHandler)
+    }
+
+    escKeyPressHandler(evt): void {
+        if (evt && evt.key === 'Escape' && typeof this.props.close === 'function') {
+            evt.preventDefault()
+            this.props.close(evt)
+        }
+    }
+    outsideClickHandler(evt): void {
+        if (
+            this.createAppRef.current &&
+            !this.createAppRef.current.contains(evt.target) &&
+            typeof this.props.close === 'function'
+        ) {
+            this.props.close(evt)
         }
     }
 
@@ -372,7 +398,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     render() {
         return (
             <Drawer position="right" width="800px">
-                <div className="h-100 bcn-0 create-app-container" ref={(node) => (this.createAppRef = node)}>
+                <div className="h-100 bcn-0 create-app-container" ref={this.createAppRef}>
                     {this.renderHeaderSection()}
                     {this.renderPageDetails()}
                 </div>
