@@ -33,6 +33,7 @@ export default function CDDetails() {
     }>()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
+    const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
 
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
@@ -62,16 +63,21 @@ export default function CDDetails() {
             setHasMore(false)
         } else {
             setHasMore(true)
+            setHasMoreLoading(true)
         }
         const newTriggerHistory = (deploymentHistoryResult?.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
         setTriggerHistory(new Map(newTriggerHistory))
-        return () => {
-            setTriggerHistory(new Map())
-        }
     }, [deploymentHistoryResult, loading])
+
+    useEffect(() => {
+      return () => {
+          setTriggerHistory(new Map())
+          setHasMoreLoading(false)
+      }
+  }, [envId])
 
     async function pollHistory() {
         // polling
@@ -102,7 +108,7 @@ export default function CDDetails() {
         }
     }
 
-    if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) {
+    if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
         return <Progressing pageLoader />
     } else if (
         result &&
@@ -134,6 +140,10 @@ export default function CDDetails() {
             pipelineId: cdPipelinesMap.get(item.environmentId).id,
         }
     })
+
+    if(result[0]['value'].result.length === 1 && !envId){
+      replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+    }
     return (
         <>
             <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
