@@ -121,14 +121,6 @@ export default function TagLabelValueSelector({
                         : `dc__no-border-radius dc__no-right-border dc__no-left-border`
                 } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'er-5 bw-1' : ''}`}
             >
-                {/* <input
-                    type="text"
-                    className="form__input pt-4-imp pb-4-imp dc__no-border"
-                    value={selectedValue}
-                    onChange={handleInputChange}
-                    onBlur={handleOnBlur}
-                    placeholder={placeholder}
-                /> */}
                 <ResizableTextArea
                     defaultRows={1}
                     className="form__input pt-4-imp pb-4-imp dc__no-border fs-13"
