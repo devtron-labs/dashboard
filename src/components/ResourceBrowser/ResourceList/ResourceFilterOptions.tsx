@@ -8,6 +8,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import { ALL_NAMESPACE_OPTION, CLUSTER_SELECT_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '../../common'
+import { OptionType } from '../../app/types'
 
 export default function ResourceFilterOptions({
     selectedResource,
@@ -47,11 +48,11 @@ export default function ResourceFilterOptions({
         setSearchText(event.target.value)
     }
 
-    const handleClusterChange = (selected): void => {
+    const handleClusterChange = (selected: OptionType): void => {
         onChangeCluster(selected)
     }
 
-    const handleNamespaceChange = (selected): void => {
+    const handleNamespaceChange = (selected: OptionType): void => {
         if (selected.value === selectedNamespace?.value) {
             return
         }

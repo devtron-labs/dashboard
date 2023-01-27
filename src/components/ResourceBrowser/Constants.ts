@@ -50,6 +50,7 @@ export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     value: 'not-applicable',
 }
 export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for this resource kind'
+export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
     AggregationKeys.Workloads,

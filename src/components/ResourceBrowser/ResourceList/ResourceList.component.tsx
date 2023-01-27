@@ -5,12 +5,12 @@ import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.
 import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import { CLUSTER_NOT_REACHABLE, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 
 export const clusterUnreachableTippyContent = (errorMsg: string) => {
     return (
         <div>
-            <span className="fs-12 fw-6 lh-18">Cluster is not reachable</span>
+            <span className="fs-12 fw-6 lh-18">{CLUSTER_NOT_REACHABLE}</span>
             <p className="fs-12 fw-4 lh-18 dc__word-break">{errorMsg}</p>
         </div>
     )
