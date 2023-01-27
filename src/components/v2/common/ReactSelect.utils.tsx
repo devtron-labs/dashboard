@@ -2,7 +2,7 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop } from '../../common'
+import { noop, stopPropagation } from '../../common'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -98,7 +98,7 @@ export function Option(props) {
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
-            <div>
+            <div onClick={stopPropagation}>
                 <components.Option {...props} />
             </div>
         )
