@@ -71,6 +71,7 @@ export interface DeploymentStatusDetailsType {
     statusFetchCount: number
     statusLastFetchedAt: string
     timelines: DeploymentStatusDetailsTimelineType[]
+    wfrStatus?: string
 }
 
 export interface DeploymentStatusDetailsResponse extends ResponseType {
