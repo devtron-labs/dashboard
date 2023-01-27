@@ -898,14 +898,16 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-
     const selectedArrayMap = mapByKey(selectedArray, matchKey)
 
-    const actualSelectedArray = availableArray.filter(item => selectedArrayMap.has(item[matchKey]))
+    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
 
-    const unselectedAvailableArray = availableArray.filter(item => !selectedArrayMap.has(item[matchKey]))
+    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
 
-    return [...sortObjectArrayAlphabetically(actualSelectedArray, matchKey), ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey)]
+    return [
+        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
+        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
+    ]
 }
 
 export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string) {
@@ -1061,12 +1063,23 @@ export const filterImageList = (imageList: ClusterImageList[], serverVersion: st
     return nodeImageList?.imageList || []
 }
 
-export const convertToOptionsList = (arr: any[], customLabel?: string, customValue?: string): OptionType[] => {
+export const convertToOptionsList = (
+    arr: any[],
+    customLabel?: string,
+    customValue?: string,
+    customFieldKey?: string,
+): OptionType[] => {
     return arr.map((ele) => {
-        return {
+        const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
         }
+
+        if (customFieldKey) {
+            _option[customFieldKey] = ele[customFieldKey] ?? ''
+        }
+
+        return _option
     })
 }
 

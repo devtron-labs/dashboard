@@ -10,7 +10,13 @@ import {
     sortObjectArrayAlphabetically,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
+import {
+    ApiResourceGroupType,
+    ClusterOptionType,
+    K8SObjectType,
+    ResourceDetailType,
+    ResourceListPayloadType,
+} from '../Types'
 import {
     getClusterList,
     getResourceGroupList,
@@ -20,16 +26,16 @@ import {
 import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
+    ERROR_SCREEN_LEARN_MORE,
     ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
     K8S_RESOURCE_LIST,
     MARK_AS_STALE_DATA_CUT_OFF_MINS,
     ORDERED_AGGREGATORS,
-    RESOURCE_LIST_ERROR_STATE,
     SIDEBAR_KEYS,
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
-import { URLS } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -41,10 +47,12 @@ import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
-import ResourceListEmptyState from './ResourceListEmptyState'
 import Tippy from '@tippyjs/react'
-import '../ResourceBrowser.scss'
 import moment from 'moment'
+import ConnectingToClusterState from './ConnectingToClusterState'
+import { ServerErrors } from '../../../modals/commonTypes'
+import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node } = useParams<{
@@ -66,9 +74,9 @@ export default function ResourceList() {
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
-    const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
+    const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>([])
+    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>([])
+    const [selectedCluster, setSelectedCluster] = useState<ClusterOptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
@@ -78,8 +86,17 @@ export default function ResourceList() {
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [errorMsg, setErrorMsg] = useState('')
+    const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const isStaleDataRef = useRef<boolean>(false)
-    const abortController = new AbortController()
+    const resourceListAbortController = new AbortController()
+    const sideDataAbortController = useRef<{
+        prev: AbortController
+        new: AbortController
+    }>({
+        prev: null,
+        new: new AbortController(),
+    })
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -100,6 +117,8 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
+            resourceListAbortController.abort()
+            abortReqAndUpdateSideDataController()
         }
     }, [])
 
@@ -108,8 +127,20 @@ export default function ResourceList() {
         if (selectedResource && !node) {
             AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
         }
+
         if (location.pathname === URLS.RESOURCE_BROWSER) {
+            abortReqAndUpdateSideDataController()
             setSelectedCluster(null)
+            setLoader(false)
+        } else if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
+            const _clusterOption = clusterOptions.find((_option) => _option.value == clusterId)
+            if (_clusterOption) {
+                onChangeCluster(
+                    clusterOptions.find((_option) => _option.value == clusterId),
+                    false,
+                    true,
+                )
+            }
         }
     }, [location.pathname])
 
@@ -129,15 +160,20 @@ export default function ResourceList() {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
+
             return (): void => {
-                abortController.abort()
+                resourceListAbortController.abort()
             }
         }
     }, [selectedResource])
 
     useEffect(() => {
-        if (clusterId && selectedResource?.namespaced) {
+        if (!loader && clusterId && selectedResource?.namespaced) {
             getResourceListData(true)
+
+            return (): void => {
+                resourceListAbortController.abort()
+            }
         }
     }, [namespace])
 
@@ -180,8 +216,9 @@ export default function ResourceList() {
                     sortObjectArrayAlphabetically(result, 'cluster_name'),
                     'cluster_name',
                     'id',
+                    'errorInConnecting',
                 )
-                setClusterOptions(_clusterOptions)
+                setClusterOptions(_clusterOptions as ClusterOptionType[])
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
@@ -219,7 +256,8 @@ export default function ResourceList() {
         if (!_clusterId) return
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(_clusterId)
+            sideDataAbortController.current.new = new AbortController()
+            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -267,21 +305,30 @@ export default function ResourceList() {
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected)
                 setShowErrorState(false)
+                setErrorMsg('')
                 setErrorStatusCode(0)
             }
-        } catch (err) {
-            showError(err)
-            if (err['code'] === 403) {
-                setErrorStatusCode(err['code'])
-            } else if (err['code'] === 404) {
-                setSelectedCluster(null)
-                replace({
-                    pathname: URLS.RESOURCE_BROWSER,
-                })
-            }
-            setShowErrorState(true)
-        } finally {
             setLoader(false)
+        } catch (err) {
+            if (err['code'] > 0) {
+                if (err['code'] === 403) {
+                    setErrorStatusCode(err['code'])
+                } else if (err['code'] === 404) {
+                    setSelectedCluster(null)
+                    replace({
+                        pathname: URLS.RESOURCE_BROWSER,
+                    })
+                }
+                setShowErrorState(true)
+                setErrorMsg(
+                    (err instanceof ServerErrors && Array.isArray(err.errors)
+                        ? err.errors[0]?.userMessage
+                        : err['message']) ?? SOME_ERROR_MSG,
+                )
+                setLoader(false)
+            } else if (sideDataAbortController.current.prev?.signal.aborted) {
+                sideDataAbortController.current.prev = null
+            }
         }
     }
 
@@ -333,7 +380,7 @@ export default function ResourceList() {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace =
                     namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
-            const { result } = await getResourceList(resourceListPayload, abortController.signal)
+            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
             setLastDataSync(!lastDataSync)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
@@ -349,7 +396,7 @@ export default function ResourceList() {
             setResourceListLoader(false)
             setShowErrorState(false)
         } catch (err) {
-            if (!abortController.signal.aborted) {
+            if (!resourceListAbortController.signal.aborted) {
                 showError(err)
                 setResourceListLoader(false)
                 setShowErrorState(true)
@@ -367,7 +414,14 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         if (selected.value === selectedCluster?.value) {
             return
+        } else if (showSelectClusterState) {
+            setShowSelectClusterState(false)
         }
+
+        if (sideDataAbortController.current.prev?.signal.aborted) {
+            sideDataAbortController.current.prev = null
+        }
+        abortReqAndUpdateSideDataController()
         setSelectedCluster(selected)
         getSidebarData(selected.value)
         getNamespaceList(selected.value)
@@ -469,23 +523,27 @@ export default function ResourceList() {
         } as SelectedResourceType
     }
 
-    const goToClusterList = (): void => {
-        replace({
-            pathname: URLS.RESOURCE_BROWSER,
-        })
+    const clearSearch = (): void => {
+        if (searchApplied) {
+            handleFilterChanges('', resourceList)
+            setSearchApplied(false)
+        }
+        setSearchText('')
     }
 
-    const renderError = (): JSX.Element => {
-        return (
-            <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
-                <ResourceListEmptyState
-                    title={RESOURCE_LIST_ERROR_STATE.title}
-                    subTitle={RESOURCE_LIST_ERROR_STATE.subTitle(selectedCluster.label)}
-                    actionButtonText={RESOURCE_LIST_ERROR_STATE.actionButtonText}
-                    actionHandler={goToClusterList}
-                />
-            </div>
-        )
+    const handleRetry = () => {
+        abortReqAndUpdateSideDataController(true)
+        getSidebarData(clusterId)
+    }
+
+    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
+        if (emptyPrev) {
+            sideDataAbortController.current.prev = null
+        } else {
+            sideDataAbortController.current.new.abort()
+            sideDataAbortController.current.prev = sideDataAbortController.current.new
+        }
+        setErrorMsg('')
     }
 
     const renderResourceBrowser = (): JSX.Element => {
@@ -503,8 +561,31 @@ export default function ResourceList() {
             )
         }
 
-        return showErrorState ? (
-            renderError()
+        return showSelectClusterState || errorMsg || loader ? (
+            <ConnectingToClusterState
+                loader={loader}
+                errorMsg={errorMsg}
+                setErrorMsg={setErrorMsg}
+                handleRetry={handleRetry}
+                sideDataAbortController={sideDataAbortController.current}
+                selectedResource={selectedResource}
+                resourceList={resourceList}
+                clusterOptions={clusterOptions}
+                selectedCluster={selectedCluster}
+                setSelectedCluster={setSelectedCluster}
+                onChangeCluster={onChangeCluster}
+                namespaceOptions={namespaceOptions}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchApplied={searchApplied}
+                setSearchApplied={setSearchApplied}
+                handleFilterChanges={handleFilterChanges}
+                clearSearch={clearSearch}
+                showSelectClusterState={showSelectClusterState}
+                setShowSelectClusterState={setShowSelectClusterState}
+            />
         ) : (
             <div className="resource-browser bcn-0">
                 <Sidebar
@@ -532,13 +613,30 @@ export default function ResourceList() {
                     searchApplied={searchApplied}
                     setSearchApplied={setSearchApplied}
                     handleFilterChanges={handleFilterChanges}
+                    clearSearch={clearSearch}
                 />
             </div>
         )
     }
 
+    const unauthorizedInfoText = () => {
+        return (
+            <>
+                {ERROR_SCREEN_SUBTITLE}&nbsp;
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.K8S_RESOURCES_PERMISSIONS}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                >
+                    {ERROR_SCREEN_LEARN_MORE}
+                </a>
+            </>
+        )
+    }
+
     const renderResourceListBody = () => {
-        if (loader || clusterLoader) {
+        if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <Progressing pageLoader />
@@ -547,10 +645,14 @@ export default function ResourceList() {
         } else if (errorStatusCode > 0) {
             return (
                 <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
-                    <ErrorScreenManager code={errorStatusCode} subtitle={ERROR_SCREEN_SUBTITLE} />
+                    <ErrorScreenManager
+                        code={errorStatusCode}
+                        subtitle={unauthorizedInfoText()}
+                        subtitleClass="w-300"
+                    />
                 </div>
             )
-        } else if (!selectedCluster?.value) {
+        } else if (!showSelectClusterState && !selectedCluster?.value) {
             return <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
         }
 
@@ -566,39 +668,44 @@ export default function ResourceList() {
                         <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
                     </div>
                     <div className="fs-13 flex pt-12 pb-12">
-                        {!showErrorState && (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={K8S_RESOURCE_LIST.createResource}
-                            >
-                                <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
-                                    <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
-                                </div>
-                            </Tippy>
-                        )}
-                        {!node && lastDataSyncTimeString && (
-                            <div className="ml-12 flex pl-12 dc__border-left">
-                                {loader || resourceListLoader ? (
-                                    <span className="dc__loading-dots">Syncing</span>
-                                ) : (
-                                    <>
-                                        {isStaleDataRef.current && (
-                                            <Tippy
-                                                className="default-tt"
-                                                placement="bottom"
-                                                arrow={false}
-                                                content={STALE_DATA_WARNING_TEXT}
-                                            >
-                                                <Warning className="icon-dim-16 mr-4" />
-                                            </Tippy>
+                        {!loader && !showErrorState && (
+                            <>
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={K8S_RESOURCE_LIST.createResource}
+                                >
+                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                        <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
+                                    </div>
+                                </Tippy>
+                                {!node && lastDataSyncTimeString && (
+                                    <div className="ml-12 flex pl-12 dc__border-left">
+                                        {resourceListLoader ? (
+                                            <span className="dc__loading-dots">Syncing</span>
+                                        ) : (
+                                            <>
+                                                {isStaleDataRef.current && (
+                                                    <Tippy
+                                                        className="default-tt w-200"
+                                                        placement="bottom"
+                                                        arrow={false}
+                                                        content={STALE_DATA_WARNING_TEXT}
+                                                    >
+                                                        <Warning className="icon-dim-16 mr-4" />
+                                                    </Tippy>
+                                                )}
+                                                <span>{lastDataSyncTimeString}</span>
+                                                <RefreshIcon
+                                                    className="icon-dim-16 scb-5 ml-8 cursor"
+                                                    onClick={refreshData}
+                                                />
+                                            </>
                                         )}
-                                        <span>{lastDataSyncTimeString}</span>
-                                        <RefreshIcon className="icon-dim-16 scb-5 ml-8 cursor" onClick={refreshData} />
-                                    </>
+                                    </div>
                                 )}
-                            </div>
+                            </>
                         )}
                     </div>
                 </div>

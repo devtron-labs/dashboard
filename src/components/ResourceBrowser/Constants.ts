@@ -50,6 +50,7 @@ export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     value: 'not-applicable',
 }
 export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for this resource kind'
+export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
     AggregationKeys.Workloads,
@@ -129,7 +130,9 @@ export const SIDEBAR_KEYS = {
 
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
-export const ERROR_SCREEN_SUBTITLE = 'Information on this page is available only to superadmin users.'
+export const ERROR_SCREEN_SUBTITLE =
+    'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
+export const ERROR_SCREEN_LEARN_MORE = 'Learn about Kubernetes resource permissions.'
 
 export const RESOURCE_LIST_ERROR_STATE = {
     title: 'Some error occured',
@@ -155,3 +158,12 @@ export const RESOURCE_PAGE_SIZE_OPTIONS = [
     { value: 150, selected: false },
     { value: 200, selected: false },
 ]
+
+export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
+export const TAKING_LONGER_TO_CONNECT =
+    'Is taking longer than usual to connect to the cluster. If cluster is reachable it may take up to 30 seconds.'
+export const SELECTE_CLUSTER_STATE_MESSAGING = {
+    heading: 'Select a cluster to view Kubernetes resources',
+    infoText: 'All Kubernetes resources in the selected cluster will be shown here',
+    altText: 'No Cluster Selected',
+}

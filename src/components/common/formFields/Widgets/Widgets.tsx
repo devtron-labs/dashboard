@@ -11,6 +11,7 @@ import {
     SliderPropsType,
     StyledFieldPropsType,
     StyledInputPropsType,
+    StyledProgressBarProps,
     StyledSelectPropsType,
 } from './Widgets.type'
 import './Widgets.scss'
@@ -299,4 +300,34 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
             />
         </StyledField>
     )
+}
+
+export const StyledProgressBar = ({ resetProgress, updateProgressValue }: StyledProgressBarProps) => {
+    const [progressValue, setProgressValue] = useState(0)
+    let progressTimer = null
+
+    useEffect(() => {        
+        progressTimer = setInterval(() => {
+            setProgressValue((prevValue) => {
+                const _currentValue = prevValue + 1
+                if (_currentValue === 100) {
+                    clearInterval(progressTimer)
+                }
+
+                if (updateProgressValue) {
+                    updateProgressValue(_currentValue)
+                }
+                return _currentValue
+            })
+        }, 300)
+
+        return (): void => {
+            setProgressValue(0)
+            if (progressTimer) {
+                clearInterval(progressTimer)
+            }
+        }
+    }, [resetProgress])
+
+    return <progress className="styled-progress-bar" value={progressValue} max={100} />
 }

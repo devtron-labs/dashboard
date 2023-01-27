@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
-import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.svg'
-import { ConditionalWrap, Pagination, Progressing } from '../../common'
+import { Pagination, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
-    CLUSTER_SELECT_STYLE,
     K8S_RESOURCE_LIST,
-    NAMESPACE_NOT_APPLICABLE_OPTION,
-    NAMESPACE_NOT_APPLICABLE_TEXT,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
@@ -18,12 +11,11 @@ import {
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import ReactSelect, { components } from 'react-select'
-import { Option } from '../../../components/v2/common/ReactSelect.utils'
 import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
+import ResourceFilterOptions from './ResourceFilterOptions'
 
 export function K8SResourceList({
     selectedResource,
@@ -44,10 +36,10 @@ export function K8SResourceList({
     searchApplied,
     setSearchApplied,
     handleFilterChanges,
+    clearSearch,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
-    const location = useLocation()
     const { clusterId, namespace, nodeType, node } = useParams<{
         clusterId: string
         namespace: string
@@ -79,43 +71,6 @@ export function K8SResourceList({
     const resetPaginator = () => {
         setResourceListOffset(0)
         setPageSize(100)
-    }
-
-    const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('', resourceList)
-            setSearchApplied(false)
-        }
-        setSearchText('')
-    }
-
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        } else {
-            handleFilterChanges(event.target.value, resourceList)
-            setSearchApplied(true)
-        }
-    }
-
-    const handleOnChangeSearchText = (event): void => {
-        setSearchText(event.target.value)
-    }
-
-    const handleClusterChange = (selected): void => {
-        onChangeCluster(selected)
-    }
-
-    const handleNamespaceChange = (selected): void => {
-        if (selected.value === selectedNamespace?.value) {
-            return
-        }
-        setSelectedNamespace(selected)
-        handleFilterChanges(searchText, resourceList)
-        push({
-            pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
-        })
     }
 
     const handleResourceClick = (e) => {
@@ -152,97 +107,14 @@ export function K8SResourceList({
         }
     }
 
-    const tippyWrapper = (children) => {
-        return (
-            <Tippy className="default-tt w-200" placement="top" arrow={false} content={NAMESPACE_NOT_APPLICABLE_TEXT}>
-                <div>{children}</div>
-            </Tippy>
-        )
-    }
+    const getStatusClass = (status: string) => {
+        let statusPostfix = status?.toLowerCase()
 
-    const valueContainerWithIcon = (props) => {
-        const { selectProps } = props
-        return (
-            <components.ValueContainer {...props}>
-                {selectProps.value ? (
-                    <>
-                        {(!selectProps.menuIsOpen || !selectProps.inputValue) && (
-                            <div className="flex left dc__position-abs w-100">
-                                <span className="icon-dim-20">
-                                    {selectProps.placeholder.includes('Cluster') ? (
-                                        <ClusterIcon className="icon-dim-20 scn-6" />
-                                    ) : (
-                                        <NamespaceIcon className="icon-dim-20 fcn-6" />
-                                    )}
-                                </span>
-                                {selectProps.value.label ? (
-                                    <span className="cn-9 dc__ellipsis-right ml-8">{selectProps.value.label}</span>
-                                ) : (
-                                    <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
-                                )}
-                            </div>
-                        )}
-                        {React.cloneElement(props.children[1])}
-                    </>
-                ) : (
-                    <>{props.children}</>
-                )}
-            </components.ValueContainer>
-        )
-    }
+        if (statusPostfix && (statusPostfix.includes(':') || statusPostfix.includes('/'))) {
+            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__')
+        }
 
-    const renderSearch = (): JSX.Element => {
-        return (
-            <div className="flexbox dc__content-space pt-16 pr-20 pb-12 pl-20">
-                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                    <Search className="search__icon icon-dim-18" />
-                    <input
-                        type="text"
-                        placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
-                        value={searchText}
-                        className="search__input"
-                        onChange={handleOnChangeSearchText}
-                        onKeyUp={handleFilterKeyPress}
-                    />
-                    {searchApplied && (
-                        <button className="search__clear-button" type="button" onClick={clearSearch}>
-                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                        </button>
-                    )}
-                </div>
-                <div className="flex">
-                    <ReactSelect
-                        className="w-220"
-                        placeholder="Select Cluster"
-                        options={clusterOptions}
-                        value={selectedCluster}
-                        onChange={handleClusterChange}
-                        styles={CLUSTER_SELECT_STYLE}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                            ValueContainer: valueContainerWithIcon,
-                        }}
-                    />
-                    <ConditionalWrap condition={!selectedResource?.namespaced} wrap={tippyWrapper}>
-                        <ReactSelect
-                            placeholder="Select Namespace"
-                            className="w-220 ml-8"
-                            options={namespaceOptions}
-                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
-                            onChange={handleNamespaceChange}
-                            isDisabled={!selectedResource?.namespaced}
-                            styles={CLUSTER_SELECT_STYLE}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                                ValueContainer: valueContainerWithIcon,
-                            }}
-                        />
-                    </ConditionalWrap>
-                </div>
-            </div>
-        )
+        return `f-${statusPostfix}`
     }
 
     const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
@@ -291,7 +163,7 @@ export function K8SResourceList({
                         <div
                             className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name f-${resourceData[columnName]?.toLowerCase()}`
+                                    ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
                             }`}
                         >
@@ -402,7 +274,22 @@ export function K8SResourceList({
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >
-            {renderSearch()}
+            <ResourceFilterOptions
+                selectedResource={selectedResource}
+                clusterOptions={clusterOptions}
+                selectedCluster={selectedCluster}
+                onChangeCluster={onChangeCluster}
+                namespaceOptions={namespaceOptions}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                searchText={searchText}
+                searchApplied={searchApplied}
+                resourceList={resourceList}
+                setSearchText={setSearchText}
+                setSearchApplied={setSearchApplied}
+                handleFilterChanges={handleFilterChanges}
+                clearSearch={clearSearch}
+            />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>
     )
