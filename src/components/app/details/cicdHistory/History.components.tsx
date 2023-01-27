@@ -70,7 +70,7 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
 }
 
 export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
-    if (!ciMaterials?.length || !gitTriggers?.size) {
+    if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
         return (
             <EmptyView
                 title="Data not available"
