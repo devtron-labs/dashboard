@@ -68,6 +68,10 @@ export const CONNECT_TO_HELM_CHART_TEXTS = {
         'This app is not connected to a helm chart. Connect to a helm chart to keep up with latest chart versions.',
 }
 
+export const MANIFEST_INFO = {
+    InfoText: 'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
+}
+
 export const CHART_DEPCRECATED_TEXTS = {
     Label: 'Chart deprecated',
     InfoText: 'This chart has been deprecated. Please select another chart to continue receiving updates.',

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import branch from '../../../assets/icons/misc/branch.svg'
 import Tippy from '@tippyjs/react'
 import { CiPipelineSourceConfig } from '../../ciPipeline/CiPipelineSourceConfig'
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
 
 export interface StaticNodeProps {
     x: number
@@ -17,12 +18,19 @@ export interface StaticNodeProps {
     sourceType: string
     regex?: string
     primaryBranchAfterRegex?: string
+    to?: string
+    handleGoToWorkFlowEditor?: (e?: any) => void
 }
 
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
         return (
-            <div className="workflow-node workflow-node--static">
+            <div
+                className={`workflow-node workflow-node--static ${
+                    this.props.branch === GIT_BRANCH_NOT_CONFIGURED ? 'cursor dashed' : ''
+                }`}
+                onClick={this.props.handleGoToWorkFlowEditor}
+            >
                 <div className={`workflow-node__git-icon`} />
                 <div className="workflow-node__title workflow-node__title--static">
                     <span>/{this.props.title}</span>
@@ -30,6 +38,7 @@ export class StaticNode extends Component<StaticNodeProps> {
                         sourceType={this.props.sourceType}
                         sourceValue={this.props.branch}
                         showTooltip={true}
+                        showIcons={this.props.branch !== GIT_BRANCH_NOT_CONFIGURED}
                         regex={this.props.regex}
                         primaryBranchAfterRegex={this.props.primaryBranchAfterRegex}
                     />
