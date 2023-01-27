@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
+import { SELECTE_CLUSTER_STATE_MESSAGING, TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
+import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import EmptyState from '../../EmptyState/EmptyState'
+import { useParams } from 'react-router-dom'
 
 export default function ConnectingToClusterState({
     loader,
@@ -16,6 +18,9 @@ export default function ConnectingToClusterState({
     resourceList,
     clusterOptions,
     selectedCluster,
+    setSelectedCluster,
+    showSelectClusterState,
+    setShowSelectClusterState,
     onChangeCluster,
     namespaceOptions,
     selectedNamespace,
@@ -27,24 +32,43 @@ export default function ConnectingToClusterState({
     handleFilterChanges,
     clearSearch,
 }: ConnectingToClusterStateProps) {
-    const history = useHistory()
+    const { clusterId } = useParams<{ clusterId: string }>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
+    const [resetProgress, setResetProgress] = useState(false)
+    let progressTimer = null
 
     useEffect(() => {
-        if (showCancel) {
-            resetStates()
+        if (selectedCluster) {
+            if (showCancel) {
+                resetStates()
+            } else {
+                setResetProgress(!resetProgress)
+            }
+            initProgressTimer()
         }
 
-        const timer = setTimeout(() => {
+        return (): void => {
+            if (progressTimer) {
+                clearTimeout(progressTimer)
+            }
+        }
+    }, [clusterId, selectedCluster])
+
+    const initProgressTimer = () => {
+        if (progressTimer) {
+            clearTimeout(progressTimer)
+        }
+
+        progressTimer = setTimeout(() => {
             setInfoText(TAKING_LONGER_TO_CONNECT)
             setShowCancel(true)
 
-            if (timer) {
-                clearTimeout(timer)
+            if (progressTimer) {
+                clearTimeout(progressTimer)
             }
         }, 10000)
-    }, [selectedCluster])
+    }
 
     const renderInfo = (heading: string, infoText: string) => {
         return (
@@ -59,17 +83,78 @@ export default function ConnectingToClusterState({
         setInfoText(TRYING_TO_CONNECT)
         setShowCancel(false)
         setErrorMsg('')
+        setResetProgress(!resetProgress)
     }
 
     const handleCancelClick = () => {
         resetStates()
         abortController.abort()
-        history.goBack()
+        setSelectedCluster(null)
+        setShowSelectClusterState(true)
     }
 
     const handleRetryClick = (e) => {
         resetStates()
+        initProgressTimer()
         handleRetry(e)
+    }
+
+    const renderNoClusterSelected = () => {
+        return (
+            <div style={{ height: 'calc(100vh - 150px)' }}>
+                <EmptyState>
+                    <img
+                        src={NoClusterSelectImage}
+                        width="250"
+                        height="200"
+                        alt={SELECTE_CLUSTER_STATE_MESSAGING.altText}
+                    />
+                    <h2 className="dc__text-center fs-16 fw-4 c-9">{SELECTE_CLUSTER_STATE_MESSAGING.heading}</h2>
+                    <p className="dc__text-center w-300">{SELECTE_CLUSTER_STATE_MESSAGING.infoText}</p>
+                </EmptyState>
+            </div>
+        )
+    }
+
+    const renderSelectionState = () => {
+        if (loader) {
+            return (
+                <>
+                    <StyledProgressBar resetProgress={resetProgress} />
+                    {renderInfo(`Connecting to ‘${selectedCluster.label}’`, infoText)}
+                </>
+            )
+        } else if (!selectedCluster) {
+            return renderNoClusterSelected()
+        } else if (errorMsg) {
+            return (
+                <>
+                    <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
+                    {renderInfo(`‘${selectedCluster.label}’ is not reachable`, errorMsg)}
+                    <button className="flex cta h-36" onClick={handleRetryClick}>
+                        Retry
+                    </button>
+                </>
+            )
+        }
+    }
+
+    const renderClusterState = () => {
+        return (
+            <div
+                className="flex column dc__text-center bcn-0"
+                style={{
+                    height: 'calc(100vh - 152px)',
+                }}
+            >
+                {renderSelectionState()}
+                {showCancel && !errorMsg && (
+                    <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
+                        Cancel
+                    </span>
+                )}
+            </div>
+        )
     }
 
     return (
@@ -95,34 +180,9 @@ export default function ConnectingToClusterState({
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                isNamespaceSelectDisabled={loader || showSelectClusterState || !!errorMsg}
             />
-            <div
-                className="flex column dc__text-center bcn-0"
-                style={{
-                    height: 'calc(100vh - 152px)',
-                }}
-            >
-                {loader && (
-                    <>
-                        <StyledProgressBar />
-                        {renderInfo(`Connecting to ‘${selectedCluster.label}’`, infoText)}
-                    </>
-                )}
-                {!loader && errorMsg && (
-                    <>
-                        <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
-                        {renderInfo(`‘${selectedCluster.label}’ is not reachable`, errorMsg)}
-                        <button className="flex cta h-36" onClick={handleRetryClick}>
-                            Retry
-                        </button>
-                    </>
-                )}
-                {showCancel && !errorMsg && (
-                    <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
-                        Cancel
-                    </span>
-                )}
-            </div>
+            {renderClusterState()}
         </div>
     )
 }

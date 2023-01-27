@@ -109,6 +109,7 @@ export interface ResourceFilterOptionsProps {
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
     clearSearch: () => void
+    isNamespaceSelectDisabled?: boolean
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
@@ -150,6 +151,9 @@ export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProp
     loader: boolean
     errorMsg: string
     setErrorMsg: React.Dispatch<React.SetStateAction<string>>
+    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
+    showSelectClusterState: boolean
+    setShowSelectClusterState: React.Dispatch<React.SetStateAction<boolean>>
     handleRetry: (e) => void
     abortController: AbortController
 }

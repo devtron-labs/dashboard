@@ -53,5 +53,6 @@ export interface StyledSelectPropsType extends WidgetPropsType {
 }
 
 export interface StyledProgressBarProps {
+    resetProgress?: boolean
     updateProgressValue?: (currentValue: number) => void
 }

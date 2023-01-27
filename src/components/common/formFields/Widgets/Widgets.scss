@@ -88,15 +88,18 @@ progress.styled-progress-bar {
     &::-webkit-progress-bar {
         border-radius: 6px;
         background-color: var(--N100);
+        transition: width 500ms linear;
     }
 
     &::-webkit-progress-value {
         border-radius: 6px;
         background-color: var(--B500);
+        transition: width 500ms linear;
     }
 
     &::-moz-progress-bar {
         border-radius: 6px;
         background-color: var(--B500);
+        transition: width 500ms linear;
     }
 }

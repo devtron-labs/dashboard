@@ -87,6 +87,7 @@ export default function ResourceList() {
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
+    const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const isStaleDataRef = useRef<boolean>(false)
     const resourceListAbortController = new AbortController()
     const sideDataAbortController = useRef<AbortController>(new AbortController())
@@ -165,7 +166,7 @@ export default function ResourceList() {
     }, [selectedResource])
 
     useEffect(() => {
-        if (clusterId && selectedResource?.namespaced) {
+        if (!loader && clusterId && selectedResource?.namespaced) {
             getResourceListData(true)
 
             return (): void => {
@@ -540,7 +541,7 @@ export default function ResourceList() {
             )
         }
 
-        return errorMsg || (loader && selectedCluster?.value) ? (
+        return showSelectClusterState || errorMsg || loader ? (
             <ConnectingToClusterState
                 loader={loader}
                 errorMsg={errorMsg}
@@ -548,6 +549,7 @@ export default function ResourceList() {
                 handleRetry={handleRetry}
                 abortController={sideDataAbortController.current}
                 selectedResource={selectedResource}
+                setSelectedCluster={setSelectedCluster}
                 resourceList={resourceList}
                 clusterOptions={clusterOptions}
                 selectedCluster={selectedCluster}
@@ -561,6 +563,8 @@ export default function ResourceList() {
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                showSelectClusterState={showSelectClusterState}
+                setShowSelectClusterState={setShowSelectClusterState}
             />
         ) : (
             <div className="resource-browser bcn-0">
@@ -628,7 +632,7 @@ export default function ResourceList() {
                     />
                 </div>
             )
-        } else if (!selectedCluster?.value) {
+        } else if (!showSelectClusterState && !selectedCluster?.value) {
             return <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
         }
 

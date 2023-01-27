@@ -302,11 +302,11 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
     )
 }
 
-export const StyledProgressBar = ({ updateProgressValue }: StyledProgressBarProps) => {
+export const StyledProgressBar = ({ resetProgress, updateProgressValue }: StyledProgressBarProps) => {
     const [progressValue, setProgressValue] = useState(0)
     let progressTimer = null
 
-    useEffect(() => {
+    useEffect(() => {        
         progressTimer = setInterval(() => {
             setProgressValue((prevValue) => {
                 const _currentValue = prevValue + 1
@@ -322,11 +322,12 @@ export const StyledProgressBar = ({ updateProgressValue }: StyledProgressBarProp
         }, 300)
 
         return (): void => {
+            setProgressValue(0)
             if (progressTimer) {
                 clearInterval(progressTimer)
             }
         }
-    }, [])
+    }, [resetProgress])
 
     return <progress className="styled-progress-bar" value={progressValue} max={100} />
 }

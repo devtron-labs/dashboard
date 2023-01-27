@@ -6,7 +6,7 @@ import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { CLUSTER_SELECT_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ALL_NAMESPACE_OPTION, CLUSTER_SELECT_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '../../common'
 
 export default function ResourceFilterOptions({
@@ -25,6 +25,7 @@ export default function ResourceFilterOptions({
     setSearchApplied,
     handleFilterChanges,
     clearSearch,
+    isNamespaceSelectDisabled,
 }: ResourceFilterOptionsProps) {
     const { push } = useHistory()
     const location = useLocation()
@@ -98,14 +99,20 @@ export default function ResourceFilterOptions({
                         ValueContainer: ResourceValueContainerWithIcon,
                     }}
                 />
-                <ConditionalWrap condition={!selectedResource?.namespaced} wrap={tippyWrapper}>
+                <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
                     <ReactSelect
                         placeholder="Select Namespace"
                         className="w-220 ml-8"
                         options={namespaceOptions}
-                        value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
+                        value={
+                            isNamespaceSelectDisabled
+                                ? ALL_NAMESPACE_OPTION
+                                : selectedResource?.namespaced
+                                ? selectedNamespace
+                                : NAMESPACE_NOT_APPLICABLE_OPTION
+                        }
                         onChange={handleNamespaceChange}
-                        isDisabled={!selectedResource?.namespaced}
+                        isDisabled={isNamespaceSelectDisabled ?? !selectedResource?.namespaced}
                         styles={CLUSTER_SELECT_STYLE}
                         components={{
                             IndicatorSeparator: null,
