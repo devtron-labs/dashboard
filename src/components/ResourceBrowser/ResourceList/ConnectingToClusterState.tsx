@@ -13,7 +13,7 @@ export default function ConnectingToClusterState({
     errorMsg,
     setErrorMsg,
     handleRetry,
-    abortController,
+    sideDataAbortController,
     selectedResource,
     resourceList,
     clusterOptions,
@@ -87,8 +87,9 @@ export default function ConnectingToClusterState({
     }
 
     const handleCancelClick = () => {
+        sideDataAbortController.new.abort()
+        sideDataAbortController.prev = sideDataAbortController.new
         resetStates()
-        abortController.abort()
         setSelectedCluster(null)
         setShowSelectClusterState(true)
     }
@@ -117,14 +118,14 @@ export default function ConnectingToClusterState({
     }
 
     const renderSelectionState = () => {
-        if (loader) {
+        if (loader && !showSelectClusterState && !errorMsg) {
             return (
                 <>
                     <StyledProgressBar resetProgress={resetProgress} />
                     {renderInfo(`Connecting to ‘${selectedCluster.label}’`, infoText)}
                 </>
             )
-        } else if (!selectedCluster) {
+        } else if (showSelectClusterState) {
             return renderNoClusterSelected()
         } else if (errorMsg) {
             return (

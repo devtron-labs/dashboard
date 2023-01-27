@@ -155,5 +155,8 @@ export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProp
     showSelectClusterState: boolean
     setShowSelectClusterState: React.Dispatch<React.SetStateAction<boolean>>
     handleRetry: (e) => void
-    abortController: AbortController
+    sideDataAbortController: {
+        prev: AbortController
+        new: AbortController
+    }
 }

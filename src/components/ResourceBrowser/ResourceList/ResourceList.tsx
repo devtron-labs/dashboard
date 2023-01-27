@@ -90,7 +90,13 @@ export default function ResourceList() {
     const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const isStaleDataRef = useRef<boolean>(false)
     const resourceListAbortController = new AbortController()
-    const sideDataAbortController = useRef<AbortController>(new AbortController())
+    const sideDataAbortController = useRef<{
+        prev: AbortController
+        new: AbortController
+    }>({
+        prev: null,
+        new: new AbortController(),
+    })
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -111,7 +117,8 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
-            sideDataAbortController.current.abort()
+            resourceListAbortController.abort()
+            abortReqAndUpdateSideDataController()
         }
     }, [])
 
@@ -122,15 +129,10 @@ export default function ResourceList() {
         }
 
         if (location.pathname === URLS.RESOURCE_BROWSER) {
+            abortReqAndUpdateSideDataController()
             setSelectedCluster(null)
-        }
-
-        if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
-            if (!sideDataAbortController.current.signal.aborted) {
-                sideDataAbortController.current.abort()
-                sideDataAbortController.current = new AbortController()
-            }
-
+            setLoader(false)
+        } else if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
             const _clusterOption = clusterOptions.find((_option) => _option.value == clusterId)
             if (_clusterOption) {
                 onChangeCluster(
@@ -254,7 +256,8 @@ export default function ResourceList() {
         if (!_clusterId) return
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.signal)
+            sideDataAbortController.current.new = new AbortController()
+            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -305,26 +308,25 @@ export default function ResourceList() {
                 setErrorMsg('')
                 setErrorStatusCode(0)
             }
+            setLoader(false)
         } catch (err) {
-            if (!sideDataAbortController.current.signal.aborted) {
-                if (err['code'] === 403) {
-                    setErrorStatusCode(err['code'])
-                } else if (err['code'] === 404) {
-                    setSelectedCluster(null)
-                    replace({
-                        pathname: URLS.RESOURCE_BROWSER,
-                    })
-                }
-                setShowErrorState(true)
-                setErrorMsg(
-                    (err instanceof ServerErrors && Array.isArray(err.errors)
-                        ? err.errors[0]?.userMessage
-                        : err['message']) ?? SOME_ERROR_MSG,
-                )
-            } else {
-                sideDataAbortController.current = new AbortController()
+            if (err['code'] === 403) {
+                setErrorStatusCode(err['code'])
+            } else if (err['code'] === 404) {
+                setSelectedCluster(null)
+                replace({
+                    pathname: URLS.RESOURCE_BROWSER,
+                })
             }
-        } finally {
+            setShowErrorState(true)
+            setErrorMsg(
+                (err instanceof ServerErrors && Array.isArray(err.errors)
+                    ? err.errors[0]?.userMessage
+                    : err['message']) ?? SOME_ERROR_MSG,
+            )
+            if (sideDataAbortController.current.prev?.signal.aborted) {
+                sideDataAbortController.current.prev = null
+            }
             setLoader(false)
         }
     }
@@ -411,7 +413,11 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         if (selected.value === selectedCluster?.value) {
             return
+        } else if (showSelectClusterState) {
+            setShowSelectClusterState(false)
         }
+
+        abortReqAndUpdateSideDataController()
         setSelectedCluster(selected)
         getSidebarData(selected.value)
         getNamespaceList(selected.value)
@@ -526,6 +532,12 @@ export default function ResourceList() {
         getSidebarData(clusterId)
     }
 
+    const abortReqAndUpdateSideDataController = () => {
+        sideDataAbortController.current.new.abort()
+        sideDataAbortController.current.prev = sideDataAbortController.current.new
+        setErrorMsg('')
+    }
+
     const renderResourceBrowser = (): JSX.Element => {
         if (node) {
             return (
@@ -547,12 +559,12 @@ export default function ResourceList() {
                 errorMsg={errorMsg}
                 setErrorMsg={setErrorMsg}
                 handleRetry={handleRetry}
-                abortController={sideDataAbortController.current}
+                sideDataAbortController={sideDataAbortController.current}
                 selectedResource={selectedResource}
-                setSelectedCluster={setSelectedCluster}
                 resourceList={resourceList}
                 clusterOptions={clusterOptions}
                 selectedCluster={selectedCluster}
+                setSelectedCluster={setSelectedCluster}
                 onChangeCluster={onChangeCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
@@ -616,7 +628,7 @@ export default function ResourceList() {
     }
 
     const renderResourceListBody = () => {
-        if ((loader && !selectedCluster?.value) || clusterLoader) {
+        if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <Progressing pageLoader />
