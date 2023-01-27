@@ -10,7 +10,7 @@ import {
     ClearIndicator,
     MultiValueRemove,
 } from '../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
@@ -27,7 +27,7 @@ import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import './notifications.css'
-import { getAppListMin, getEnvironmentListMin, getTeamListMin } from '../../services/service'
+import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { EMAIL_AGENT } from './types'

@@ -45,16 +45,6 @@ export interface CDPipeline {
     deploymentAppType?: DeploymentAppType
 }
 
-export interface TeamList extends RootObject {
-    result: Teams[];
-}
-
-export interface Teams {
-    id: number;
-    name: string;
-    active: boolean;
-}
-
 export interface AppListMin extends ResponseType {
     result?: { id: number, name: string }[];
 }

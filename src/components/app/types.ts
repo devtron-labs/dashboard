@@ -1,6 +1,5 @@
-import { TagType } from '@devtron-labs/devtron-fe-common-lib';
+import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib';
 import { RouteComponentProps } from 'react-router';
-import { Teams } from '../../services/service.types';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {

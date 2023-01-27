@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { sortCallback } from '../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants } from '../../config'
 import { withRouter } from 'react-router'
 import { CreateMaterial } from './CreateMaterial'

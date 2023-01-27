@@ -1,6 +1,6 @@
-import { getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
+import { getEnvironmentListMin as getEnvironmentList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
 import {Routes, SERVER_MODE} from '../../../config';
-import {get, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
+import {get, ResponseType, getTeamListMin as getProjectList} from '@devtron-labs/devtron-fe-common-lib';
 import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 
 

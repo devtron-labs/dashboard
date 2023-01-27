@@ -4,10 +4,9 @@ import {
     Page,
     DropdownIcon,
     useJsonYaml,
-    sortCallback,
 } from '../../common'
-import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../services/service'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'

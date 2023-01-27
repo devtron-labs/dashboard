@@ -1,6 +1,6 @@
 import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config'
-import { get, post, trash, ServerErrors, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback } from '../common'
+import { get, post, trash, ServerErrors, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cIDetails/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'

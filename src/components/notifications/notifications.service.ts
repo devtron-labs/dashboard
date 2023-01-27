@@ -1,6 +1,5 @@
 import { Routes } from '../../config/constants'
-import { get, post, trash, put, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { sortCallback } from '../common'
+import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
 import { SMTPConfigResponseType } from './types'

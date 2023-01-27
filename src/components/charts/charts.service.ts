@@ -1,6 +1,6 @@
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { handleUTCTime, sortCallback } from '../common'
+import { handleUTCTime } from '../common'
 import { ChartValuesType, ChartGroup, HelmTemplateChartRequest } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
 

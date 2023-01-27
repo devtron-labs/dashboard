@@ -3,8 +3,7 @@ import React, { Component } from 'react';
 import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { SecurityPolicyEdit } from './SecurityPolicyEdit';
 import { getEnvironmentListMinPublic } from '../../services/service';
-import { sortCallback } from '../common';
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { SecurityPolicyEnvironmentState } from './security.types';
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';

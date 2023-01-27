@@ -43,7 +43,7 @@
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
         "yamljs": "^0.3.0",
-        "@devtron-labs/devtron-fe-common-lib": "0.0.6-beta-17"
+        "@devtron-labs/devtron-fe-common-lib": "0.0.6-beta-20"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
