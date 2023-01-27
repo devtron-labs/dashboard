@@ -1,15 +1,21 @@
+export interface PageSizeOption {
+    value: number
+    selected: boolean
+}
 export interface PaginationProps {
     size: number
     pageSize: number
     offset: number
-    changePage: (pageNo) => void
-    changePageSize?: (pageSize) => void
+    changePage: (pageNo: number) => void
+    changePageSize?: (pageSize: number) => void
     isPageSizeFix?: boolean
+    pageSizeOptions?: PageSizeOption[]
+    rootClassName?: string
 }
 
 export interface PaginationState {
     show: boolean
-    options: { value: number; selected: boolean }[]
+    options: PageSizeOption[]
     pages: Page[]
 }
 
