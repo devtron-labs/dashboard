@@ -28,7 +28,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION, MODES } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE } from '../secrets/secret.utils'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast, handleSecretDataYamlChange } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
 
@@ -255,10 +255,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
-    const isEsoSecretData: boolean = tempEsoSecretData?.secretStore && tempEsoSecretData.esoData
+    const isEsoSecretData: boolean = (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
     const [yamlMode, toggleYamlMode] = useState(true)
     const [esoDataSecret, setEsoData] = useState(tempEsoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(tempEsoSecretData?.secretStore)
+    const [secretStoreRef, setScretStoreRef] = useState(tempEsoSecretData?.secretStoreRef)
+    const [refreshInterval, setRefreshInterval] = useState<string>(tempEsoSecretData?.refreshInterval)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '')
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
@@ -336,6 +338,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             if(configData[0].esoSecretData?.esoData) {
                 setEsoData(configData[0].esoSecretData.esoData)
                 setSecretStore(configData[0].esoSecretData.secretStore)
+                setScretStoreRef(configData[0].esoSecretData.secretStoreRef)
+                setRefreshInterval(configData[0].esoSecretData.refreshInterval)
                 setEsoYaml(YAML.stringify(configData[0].esoSecretData))
             }
         } catch (err) {
@@ -403,9 +407,9 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 let isValid = true
                 if (isESO) {
                     isValid = esoDataSecret?.reduce((isValid, s) => {
-                        isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
+                        isValid = isValid && !!s?.secretKey && !!s.key
                         return isValid
-                    }, !!secretStore && !!esoDataSecret?.length)
+                    }, (!secretStore != !secretStoreRef) && !!esoDataSecret?.length)
                 } else {
                     isValid = secretDataValue.reduce((isValid, s) => {
                         isValid = isValid && !!s.fileName && !!s.name
@@ -413,11 +417,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     }, !!secretDataValue.length)
                 }
                 if (!isValid) {
-                    !isESO
-                        ? toast.error('Please check key and name')
-                        : !secretStore
-                        ? toast.error('Please check secretStore')
-                        : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                    secretValidationInfoToast(isESO,secretStore,secretStoreRef)
                     return
                 }
             }
@@ -446,7 +446,9 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
-                    esoData: esoDataSecret
+                    esoData: esoDataSecret,
+                    secretStoreRef: secretStoreRef,
+                    refreshInterval: refreshInterval,
                 }
             }
             if (type === 'volume') {
@@ -538,47 +540,21 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         setSecretDataYaml(secretYaml)
     }
 
-    function handleSecretDataYamlChange(yaml): void {
-        if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
-        if(isESO){
-            setEsoYaml(yaml)
-        }else {
-            setSecretDataYaml(yaml)
-        }
-        try {
-            let json = YAML.parse(yaml)
-            if (!json || !Object.keys(json).length) {
-                setSecretData([])
-                setSecretStore(null)
-                return
-            }
-            if(isESO){
-                setEsoData(json.esoData)
-                setSecretStore(json.secretStore)
-            }
-            if (!isESO && Array.isArray(json)) {
-                json = json.map((j) => {
-                    let temp = {}
-                    temp['isBinary'] = j.isBinary
-                    if (j.key) {
-                        temp['fileName'] = j.key
-                    }
-                    if (j.property) {
-                        temp['property'] = j.property
-                    }
-                    if (j.name) {
-                        temp['name'] = j.name
-                    }
-                    return temp
-                })
-                setSecretData(json)
-            }
-            if(isESO && Array.isArray(json?.esoData)){
-                setEsoData(json.esoData)
-            }
-        } catch (error) {
-        }
+    const handleSecretYamlChange = (yaml) => {
+        handleSecretDataYamlChange(
+            yaml,
+            codeEditorRadio,
+            isESO,
+            setEsoYaml,
+            setSecretDataYaml,
+            setSecretData,
+            setEsoData,
+            setSecretStore,
+            setScretStoreRef,
+            setRefreshInterval,
+        )
     }
+
     const memoisedHandleChange = (index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })
     return (
         <>
@@ -872,7 +848,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                 mode={MODES.YAML}
                                 inline
                                 height={350}
-                                onChange={handleSecretDataYamlChange}
+                                onChange={handleSecretYamlChange}
                                 readOnly={state.locked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
                                 shebang={
                                     codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
