@@ -13,7 +13,7 @@ import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1158,4 +1158,37 @@ export const processK8SObjects = (
         _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
+}
+
+export const k8sStyledAgeToSeconds = (duration: string): number => {
+    let totalTimeInSec: number = 0
+    if (!duration) {
+        return totalTimeInSec
+    }
+    //Parses time(format:- ex. 4h20m) in second
+    const matchesNumber = duration.match(/\d+/g)
+    const matchesChar = duration.match(/[dhms]/g)
+    for (let i = 0; i < matchesNumber.length; i++) {
+        let _unit = matchesChar[i]
+        let _unitVal = +matchesNumber[i]
+        switch (_unit) {
+            case 'd':
+                totalTimeInSec += _unitVal * 24 * 60 * 60
+                break
+            case 'h':
+                totalTimeInSec += _unitVal * 60 * 60
+                break
+            case 'm':
+                totalTimeInSec += _unitVal * 60
+                break
+            default:
+                totalTimeInSec += _unitVal
+                break
+        }
+    }
+    return totalTimeInSec
+}
+
+export const eventAgeComparator = <T,>(key: string): any => {
+    return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }

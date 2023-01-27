@@ -8,6 +8,7 @@ import {
     Progressing,
     showError,
     sortObjectArrayAlphabetically,
+    eventAgeComparator,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import {
@@ -35,7 +36,7 @@ import {
     SIDEBAR_KEYS,
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DOCUMENTATION, LAST_SEEN, URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -343,7 +344,10 @@ export default function ResourceList() {
                 otherEvents.push(iterator)
             }
         }
-        return [...warningEvents, ...otherEvents]
+        return [
+            ...warningEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
+            ...otherEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
+        ]
     }
 
     const handleFilterChanges = (_searchText: string, _resourceList: ResourceDetailType): void => {
