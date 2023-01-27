@@ -8,7 +8,15 @@ export default function PropagateTagInfo() {
     const additionalInfo = () => {
         return (
             <div className="p-12 fs-13">
-                Use these tags to filter/identify resources via CLI or in other Kubernetes tools.
+                <div className="mb-20">
+                    <span className="flex left">
+                        Add a tag and click on the
+                        <InjectTag className="icon-dim-16 ml-4 mr-4" />
+                        icon to
+                    </span>
+                    propagate tags as labels to Kubernetes resources
+                </div>
+                <div>Use these tags to filter/identify resources via CLI or in other Kubernetes tools.</div>
             </div>
         )
     }
@@ -19,7 +27,7 @@ export default function PropagateTagInfo() {
             placement="top"
             Icon={InjectTag}
             heading={'Propagate tags to K8s resources'}
-            infoText={`Add a tag and click on the ⬡ icon to propagate tags as labels to Kubernetes resources.`}
+            infoText=""
             additionalContent={additionalInfo()}
             showCloseButton={true}
             trigger="click"

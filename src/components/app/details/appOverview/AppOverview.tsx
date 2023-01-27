@@ -21,6 +21,7 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
 import AboutTagEditModal from '../AboutTagEditModal'
+import Tippy from '@tippyjs/react'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -164,12 +165,30 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     }`}
                                 >
                                     {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
-                                    {tag.key}
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.key}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="dc__mxw-400 dc__ellipsis-right">{tag.key}</div>
+                                    </Tippy>
                                 </div>
                                 {tag.value && (
-                                    <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
-                                        {tag.value}
-                                    </div>
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.value}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right">
+                                            {tag.value}
+                                        </div>
+                                    </Tippy>
                                 )}
                             </div>
                         ))
