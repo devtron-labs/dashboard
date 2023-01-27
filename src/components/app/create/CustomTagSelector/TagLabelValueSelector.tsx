@@ -115,7 +115,7 @@ export default function TagLabelValueSelector({
     return (
         <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose>
             <PopupMenu.Button
-                rootClassName={`dc__bg-n50 ${
+                rootClassName={`dc__bg-n50 flex top ${
                     type === 'key'
                         ? `dc__no-right-radius`
                         : `dc__no-border-radius dc__no-right-border dc__no-left-border`
@@ -131,7 +131,7 @@ export default function TagLabelValueSelector({
                 /> */}
                 <ResizableTextArea
                     defaultRows={1}
-                    className="form__input pt-0-imp pb-0-imp dc__no-border"
+                    className="form__input pt-4-imp pb-4-imp dc__no-border fs-13"
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}

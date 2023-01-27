@@ -8,11 +8,17 @@ export function ResizableTextArea({ className, defaultRows, value, onChange, onB
     }
     const reInitRows = (event) => {
         const textareaLineHeight = 28
-        event.target.rows = defaultRows // reset number of rows in textarea
+        const previousRows = event.target.rows
+        event.target.rows = defaultRows
         const currentRows = ~~(event.target.scrollHeight / textareaLineHeight)
-        if (currentRows !== rows) {
-            setRows(currentRows)
+        if (currentRows === previousRows) {
+            event.target.rows = currentRows
         }
+        if (currentRows >= 4) {
+            event.target.rows = 4
+            event.target.scrollTop = event.target.scrollHeight
+        }
+        setRows(currentRows)
     }
     const handleOnBlur = (event) => {
         setRows(defaultRows)
@@ -23,7 +29,7 @@ export function ResizableTextArea({ className, defaultRows, value, onChange, onB
             rows={rows}
             value={value}
             placeholder={placeholder}
-            className={`${className || ''} lh-28`}
+            className={`${className || ''} mh-30 lh-20`}
             style={{ resize: 'none' }}
             onChange={handleChange}
             onBlur={handleOnBlur}
