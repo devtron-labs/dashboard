@@ -328,7 +328,6 @@ function NavItem({ serverMode }) {
             {!window._env_.K8S_CLIENT && (
                 <>
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
-                    <>
                         {ConfigOptional.map(
                             (route, index) =>
                                 ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
@@ -376,7 +375,6 @@ function NavItem({ serverMode }) {
                         >
                             <div className="flexbox flex-justify">External Links</div>
                         </NavLink>
-                    </>
                 </>
             )}
         </div>
@@ -389,7 +387,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
-        } else if (serverMode && serverMode === SERVER_MODE.EA_ONLY) {
+        } else if (serverMode === SERVER_MODE.EA_ONLY) {
             return URLS.GLOBAL_CONFIG_PROJECT
         } else {
             return URLS.GLOBAL_CONFIG_HOST_URL
@@ -398,46 +396,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
 
     return (
         <Switch location={location}>
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_HOST_URL}
-                    render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <HostURLConfiguration
-                                    {...props}
-                                    refreshGlobalConfig={getHostURLConfig}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            </div>
-                        )
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_GITOPS}
-                    render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            </div>
-                        )
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_PROJECT}
-                    render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <Project {...props} />
-                            </div>
-                        )
-                    }}
-                />
-            )}
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
@@ -449,79 +407,98 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 }}
             />
             {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_GIT}
-                    render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitProvider {...props} />
-                            </div>
-                        )
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
-                    render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <Docker {...props} handleChecklistUpdate={handleChecklistUpdate} />
-                            </div>
-                        )
-                    }}
-                />
-            )}
-
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_CHART}
-                    render={(props) => {
-                        return <ChartRepo />
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                    <CustomChartList />
-                </Route>
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_LOGIN}
-                    render={(props) => {
-                        return <SSOLogin {...props} />
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_AUTH}
-                    render={(props) => {
-                        return <UserGroup />
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
-                    render={(props) => {
-                        return <AddNotification {...props} />
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    render={(props) => {
-                        return <Notifier {...props} />
-                    }}
-                />
-            )}
-            {!window._env_.K8S_CLIENT && (
-                <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
-                    <ExternalLinks />
-                </Route>
+                <>
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_HOST_URL}
+                        render={(props) => {
+                            return (
+                                <div className="flexbox">
+                                    <HostURLConfiguration
+                                        {...props}
+                                        refreshGlobalConfig={getHostURLConfig}
+                                        handleChecklistUpdate={handleChecklistUpdate}
+                                    />
+                                </div>
+                            )
+                        }}
+                    />
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_GITOPS}
+                        render={(props) => {
+                            return (
+                                <div className="flexbox">
+                                    <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                                </div>
+                            )
+                        }}
+                    />
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_PROJECT}
+                        render={(props) => {
+                            return (
+                                <div className="flexbox">
+                                    <Project {...props} />
+                                </div>
+                            )
+                        }}
+                    />
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_GIT}
+                        render={(props) => {
+                            return (
+                                <div className="flexbox">
+                                    <GitProvider {...props} />
+                                </div>
+                            )
+                        }}
+                    />
+                    <Route
+                        path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
+                        render={(props) => {
+                            return (
+                                <div className="flexbox">
+                                    <Docker {...props} handleChecklistUpdate={handleChecklistUpdate} />
+                                </div>
+                            )
+                        }}
+                    />
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_CHART}
+                        render={(props) => {
+                            return <ChartRepo />
+                        }}
+                    />
+                    <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
+                        <CustomChartList />
+                    </Route>
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_LOGIN}
+                        render={(props) => {
+                            return <SSOLogin {...props} />
+                        }}
+                    />
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_AUTH}
+                        render={(props) => {
+                            return <UserGroup />
+                        }}
+                    />
+                    <Route
+                        path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
+                        render={(props) => {
+                            return <AddNotification {...props} />
+                        }}
+                    />
+                    <Route
+                        path={URLS.GLOBAL_CONFIG_NOTIFIER}
+                        render={(props) => {
+                            return <Notifier {...props} />
+                        }}
+                    />
+                    <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
+                        <ExternalLinks />
+                    </Route>
+                </>
             )}
             <Redirect to={defaultRoute()} />
         </Switch>

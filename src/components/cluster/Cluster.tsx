@@ -235,8 +235,9 @@ function Cluster({
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [, grafanaModuleStatus] = useAsync(
-        window._env_.K8S_CLIENT ? null : () => getModuleInfo(ModuleNameMap.GRAFANA),
+        () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
+        !window._env_.K8S_CLIENT,
     )
     const history = useHistory()
     const newEnvs = useMemo(() => {
@@ -313,13 +314,15 @@ function Cluster({
                             </div>
                             {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                         </List>
-                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? <hr className="mt-0 mb-0" /> : null}
                         {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
-                            <ClusterInstallStatus
-                                agentInstallationStage={agentInstallationStage}
-                                envName={envName}
-                                onClick={clusterInstallStatusOnclick}
-                            />
+                            <>
+                                <hr className="mt-0 mb-0" />
+                                <ClusterInstallStatus
+                                    agentInstallationStage={agentInstallationStage}
+                                    envName={envName}
+                                    onClick={clusterInstallStatusOnclick}
+                                />
+                            </>
                         ) : null}
                         {showClusterComponentModal ? (
                             <ClusterComponentModal
@@ -333,54 +336,57 @@ function Cluster({
                                 }}
                             />
                         ) : null}
-                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 0 && (
-                            <div className="environments-container">
-                                {newEnvs.map(
-                                    ({
-                                        id,
-                                        environment_name,
-                                        cluster_id,
-                                        cluster_name,
-                                        active,
-                                        prometheus_url,
-                                        namespace,
-                                        default: isProduction,
-                                    }) => (
-                                        <List
-                                            onClick={(e) =>
-                                                setEnvironment({
-                                                    id,
-                                                    environment_name,
-                                                    cluster_id: clusterId,
-                                                    namespace,
-                                                    prometheus_url,
-                                                    isProduction,
-                                                })
-                                            }
-                                            key={id}
-                                            className={`cluster-environment cluster-environment--${
-                                                id ? 'update' : 'create collapsed-list collapsed-list--create'
-                                            }`}
-                                        >
-                                            <List.Logo>
-                                                {id ? (
-                                                    <Database className="icon-dim-24" />
-                                                ) : (
-                                                    <Add className="icon-dim-24 fcb-5" />
-                                                )}
-                                            </List.Logo>
-                                            <div className="flex left">
-                                                <List.Title
-                                                    title={environment_name || 'Add environment'}
-                                                    subtitle={id ? `namespace: ${namespace}` : ''}
-                                                    tag={isProduction ? 'PROD' : null}
-                                                />
-                                            </div>
-                                        </List>
-                                    ),
-                                )}
-                            </div>
-                        )}
+                        {serverMode !== SERVER_MODE.EA_ONLY &&
+                            !window._env_.K8S_CLIENT &&
+                            Array.isArray(newEnvs) &&
+                            newEnvs.length > 0 && (
+                                <div className="environments-container">
+                                    {newEnvs.map(
+                                        ({
+                                            id,
+                                            environment_name,
+                                            cluster_id,
+                                            cluster_name,
+                                            active,
+                                            prometheus_url,
+                                            namespace,
+                                            default: isProduction,
+                                        }) => (
+                                            <List
+                                                onClick={(e) =>
+                                                    setEnvironment({
+                                                        id,
+                                                        environment_name,
+                                                        cluster_id: clusterId,
+                                                        namespace,
+                                                        prometheus_url,
+                                                        isProduction,
+                                                    })
+                                                }
+                                                key={id}
+                                                className={`cluster-environment cluster-environment--${
+                                                    id ? 'update' : 'create collapsed-list collapsed-list--create'
+                                                }`}
+                                            >
+                                                <List.Logo>
+                                                    {id ? (
+                                                        <Database className="icon-dim-24" />
+                                                    ) : (
+                                                        <Add className="icon-dim-24 fcb-5" />
+                                                    )}
+                                                </List.Logo>
+                                                <div className="flex left">
+                                                    <List.Title
+                                                        title={environment_name || 'Add environment'}
+                                                        subtitle={id ? `namespace: ${namespace}` : ''}
+                                                        tag={isProduction ? 'PROD' : null}
+                                                    />
+                                                </div>
+                                            </List>
+                                        ),
+                                    )}
+                                </div>
+                            )}
                     </>
                 ) : (
                     <>
@@ -396,7 +402,8 @@ function Cluster({
                                 prometheus_url,
                                 prometheusAuth,
                                 defaultClusterComponent,
-                                isGrafanaModuleInstalled: grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+                                isGrafanaModuleInstalled:
+                                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
                         />
                     </>

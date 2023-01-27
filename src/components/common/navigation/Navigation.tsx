@@ -283,7 +283,7 @@ export default class Navigation extends Component<
                             if (
                                 (!window._env_.K8S_CLIENT &&
                                     (!item.forceHideEnvKey ||
-                                        (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
+                                        (item.forceHideEnvKey && !window._env_[item.forceHideEnvKey])) &&
                                     ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
                                         (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
                                         this.props.installedModuleMap.current?.[item.moduleName])) ||
