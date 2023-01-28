@@ -720,7 +720,7 @@ export default function ResourceList() {
 
     return (
         <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" />
+            <PageHeader headerName="Kubernetes Resource Browser" markAsBeta={true} />
             {renderResourceListBody()}
             {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
         </div>

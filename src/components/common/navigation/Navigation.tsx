@@ -41,7 +41,7 @@ const NavigationList = [
         icon: CubeIcon,
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,
-        markAsBeta: false,
+        markAsBeta: true,
     },
     {
         title: 'Chart Store',
