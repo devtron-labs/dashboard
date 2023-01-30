@@ -138,6 +138,7 @@ export interface ResourceListEmptyStateType {
 }
 
 export interface EventListType {
+    listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: Record<string, any>[]
     handleResourceClick: (e: any) => void
     paginatedView: boolean

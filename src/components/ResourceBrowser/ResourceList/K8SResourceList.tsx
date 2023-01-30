@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { Pagination, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
@@ -49,6 +49,8 @@ export function K8SResourceList({
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(100)
+    const resourceListRef = useRef<HTMLDivElement>(null)
+    const showPaginatedView = resourceList?.data?.length >= 100
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -199,6 +201,11 @@ export function K8SResourceList({
 
     const changePage = (pageNo: number) => {
         setResourceListOffset(pageSize * (pageNo - 1))
+
+        // scroll to top on page change
+        if (resourceListRef.current) {
+            resourceListRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+        }
     }
 
     const changePageSize = (size: number) => {
@@ -209,9 +216,8 @@ export function K8SResourceList({
     const renderResourceList = (): JSX.Element => {
         return (
             <div
-                className={`scrollable-resource-list ${
-                    resourceList?.data?.length >= pageSize ? 'paginated-list-view' : ''
-                }`}
+                ref={resourceListRef}
+                className={`scrollable-resource-list ${showPaginatedView ? 'paginated-list-view' : ''}`}
             >
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
@@ -245,14 +251,15 @@ export function K8SResourceList({
                 <>
                     {selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind ? (
                         <EventList
+                            listRef={resourceListRef}
                             filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                             handleResourceClick={handleResourceClick}
-                            paginatedView={resourceList?.data?.length >= 100}
+                            paginatedView={showPaginatedView}
                         />
                     ) : (
                         renderResourceList()
                     )}
-                    {resourceList?.data?.length >= 100 && (
+                    {showPaginatedView && (
                         <Pagination
                             rootClassName="resource-browser-paginator dc__border-top"
                             size={filteredResourceList.length}
