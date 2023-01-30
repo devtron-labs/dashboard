@@ -641,6 +641,17 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                             <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
                                             <span className="cr-5"> SchedulingDisabled</span>
                                         </span>
+                                    ) : column.value === 'k8sVersion' ? (
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content={nodeData[column.value]}
+                                        >
+                                            <span className="dc__inline-block dc__ellipsis-right mw-85px ">
+                                                {nodeData[column.value]}
+                                            </span>
+                                        </Tippy>
                                     ) : (
                                         nodeData[column.value]
                                     )}
