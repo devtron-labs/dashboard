@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { NavLink } from 'react-router-dom'
 import ReactSelect, { components } from 'react-select'
-import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT } from '../../config'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -40,7 +39,14 @@ import {
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
 } from './types'
-import { BASIC_FIELDS, getCommonSelectStyles } from './constants'
+import {
+    BASIC_FIELDS,
+    BASIC_VIEW_TIPPY_CONTENT,
+    COMPARE_VALUES_TIPPY_CONTENT,
+    DEPLOYMENT_TEMPLATE_LABELS_KEYS,
+    getCommonSelectStyles,
+    README_TIPPY_CONTENT,
+} from './constants'
 import { SortingOrder } from '../app/types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
@@ -111,14 +117,14 @@ const renderComparisonOption = (openComparison: boolean, handleComparisonClick: 
 const getComparisonTippyContent = (isComparisonAvailable: boolean, isEnvOverride?: boolean) => {
     if (isComparisonAvailable) {
         return isEnvOverride
-            ? `Compare with values saved for base template or other environments`
-            : 'Compare base template values with values saved for specific environments'
+            ? COMPARE_VALUES_TIPPY_CONTENT.compareEnvValueWithOtherValues
+            : COMPARE_VALUES_TIPPY_CONTENT.compareBaseValueWithOtherValues
     }
 
     return (
         <>
-            <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
-            <p className="fs-12 fw-4 lh-18 m-0">No deployment pipelines are created</p>
+            <h2 className="fs-12 fw-6 lh-18 m-0">{COMPARE_VALUES_TIPPY_CONTENT.nothingToCompare}</h2>
+            <p className="fs-12 fw-4 lh-18 m-0">{COMPARE_VALUES_TIPPY_CONTENT.noCDPipelineCreated}</p>
         </>
     )
 }
@@ -135,7 +141,9 @@ export const ChartTypeVersionOptions = ({
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
-              .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
+              .sort((a, b) =>
+                  versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
+              )
         : []
 
     const onSelectChartVersion = (selected) => {
@@ -232,7 +240,7 @@ const CompareOptions = ({
                         className="default-tt"
                         arrow={false}
                         placement="bottom"
-                        content={chartConfigLoading ? 'Fetching...' : 'Readme is not available for this chart version'}
+                        content={chartConfigLoading ? README_TIPPY_CONTENT.fetching : README_TIPPY_CONTENT.notAvailable}
                     >
                         {children}
                     </Tippy>
@@ -298,12 +306,9 @@ export const DeploymentTemplateOptionsTab = ({
                                     <>
                                         <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
                                             <Locked className="icon-dim-20 mr-6 fcy-7" />
-                                            <span className="fs-14 fw-6 cn-9">Basic view is locked</span>
+                                            <span className="fs-14 fw-6 cn-9">{BASIC_VIEW_TIPPY_CONTENT.title}</span>
                                         </div>
-                                        <div className="fs-13 fw-4 cn-9 p-12">
-                                            Basic view is locked as some advanced configurations have been modified.
-                                            Please continue editing in Advanced (YAML) view.
-                                        </div>
+                                        <div className="fs-13 fw-4 cn-9 p-12">{BASIC_VIEW_TIPPY_CONTENT.infoText}</div>
                                     </>
                                 }
                             >
@@ -326,7 +331,7 @@ export const DeploymentTemplateOptionsTab = ({
                 </div>
             ) : (
                 <span className="flex fs-13 fw-6 cn-9 h-32">
-                    {openComparison ? 'Comparing deployment template' : 'Showing README.md'}
+                    {openComparison ? COMPARE_VALUES_TIPPY_CONTENT.comparing : README_TIPPY_CONTENT.showing}
                 </span>
             )}
             {yamlMode && (
@@ -384,9 +389,9 @@ const CompareWithDropdown = ({
     const baseTemplateOption = {
         id: -1,
         value: '',
-        label: 'Base deployment template',
+        label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
         version: globalChartRef?.version || '',
-        kind: 'base',
+        kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.key,
     }
 
     useEffect(() => {
@@ -395,41 +400,35 @@ const CompareWithDropdown = ({
 
     const _initOptions = () => {
         const _groupOptions = []
+
+        // Push base template option if in environment override view
         if (isEnvOverride) {
-            _groupOptions.push(
-                ...[
-                    {
-                        label: '',
-                        options: [baseTemplateOption],
-                    },
-                    {
-                        label: 'Values on other environments',
-                        options:
-                            environments.length > 0 ? environments : [{ label: 'No options', value: 0, kind: 'env' }],
-                    },
-                ],
-            )
-
-            if (!selectedOption) {
-                setSelectedOption(baseTemplateOption as DeploymentChartOptionType)
-            }
-        } else {
             _groupOptions.push({
-                label: 'Values used on environment',
-                options: environments.length > 0 ? environments : [{ label: 'No options', value: 0, kind: 'env' }],
+                label: '',
+                options: [baseTemplateOption],
             })
-
-            if (!selectedOption) {
-                setSelectedOption(environments.length > 0 ? environments[0] : charts[0])
-            }
         }
 
+        // Push all environment & other version options
         _groupOptions.push({
-            label: 'Other version values',
-            options: charts.length > 0 ? charts : [{ label: 'No options', value: 0, kind: 'chartVersion' }],
+            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.label,
+            options: environments.length > 0 ? environments : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.noOptions],
+        })
+        _groupOptions.push({
+            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.label,
+            options: charts.length > 0 ? charts : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.noOptions],
         })
 
         setGroupedOptions(_groupOptions)
+        if (!selectedOption) {
+            setSelectedOption(
+                isEnvOverride
+                    ? (baseTemplateOption as DeploymentChartOptionType)
+                    : environments.length > 0
+                    ? environments[0]
+                    : charts[0],
+            )
+        }
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
@@ -519,7 +518,7 @@ const renderEditorHeading = (
     return (
         <>
             {!readOnly && <Edit className="icon-dim-16 mr-10" />}
-            {`${isEnvOverride ? environmentName : 'Base deployment template'} ${
+            {`${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
                 selectedChart ? `(${selectedChart.version})` : ''
             }`}
             {isEnvOverride && readOnly && (
@@ -527,7 +526,7 @@ const renderEditorHeading = (
                     className="default-tt w-200"
                     arrow={false}
                     placement="top"
-                    content="Base configurations are being inherited for this environment. Allow override to fork and edit."
+                    content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
                 >
                     <Locked className="icon-dim-16 fcn-6 ml-10" />
                 </Tippy>
@@ -584,7 +583,7 @@ export const DeploymentTemplateEditorView = ({
                     label: env.environmentName,
                     value: env.chartRefId,
                     version: charts.find((chart) => chart.id === env.chartRefId)?.version || '',
-                    kind: 'env',
+                    kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key,
                 })) as DeploymentChartOptionType[],
             )
         }
@@ -600,14 +599,16 @@ export const DeploymentTemplateEditorView = ({
 
                     return chart.id !== selectedChart.id && chart.name === selectedChart.name
                 })
-                .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
+                .sort((a, b) =>
+                    versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
+                )
 
             setFilteredCharts(
                 _filteredCharts.map((chart) => ({
-                    id: `version-${chart.version}`,
+                    id: `${DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version}-${chart.version}`,
                     label: chart.version,
                     value: chart.id,
-                    kind: 'chartVersion',
+                    kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key,
                 })) as DeploymentChartOptionType[],
             )
         }
@@ -616,8 +617,8 @@ export const DeploymentTemplateEditorView = ({
     useEffect(() => {
         if (selectedChart && selectedOption && selectedOption.id !== -1 && !fetchedValues[selectedOption.id]) {
             setFetchingValues(true)
-            const isEnvOption = selectedOption.kind === 'env'
-            const isChartVersionOption = selectedOption.kind === 'chartVersion'
+            const isEnvOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
+            const isChartVersionOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
 
             const _getDeploymentTemplate = isChartVersionOption
                 ? getDefaultDeploymentTemplate(appId, selectedOption.value)
@@ -782,7 +783,7 @@ export const DeploymentTemplateEditorView = ({
                     readOnly={readOnly}
                 >
                     {isUnSet && !openComparison && !showReadme && (
-                        <CodeEditor.Warning text={'Chart type cannot be changed once saved.'} />
+                        <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
                     )}
                     {showReadme && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
@@ -819,7 +820,7 @@ export const DeploymentTemplateEditorView = ({
             {isUnSet && (
                 <div className="bcy-1 fs-12 fw-4 cn-9 en-2 bw-1 dc__no-left-border dc__no-right-border flexbox pt-8 pr-16 pb-8 pl-16 h-32 lh-16">
                     <WarningIcon className="warning-icon-y7 icon-dim-16 mr-8" />
-                    Chart type cannot be changed once saved.
+                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>
             )}
             <div
@@ -1075,19 +1076,23 @@ export const DeploymentConfigFormCTA = ({
                         )}
                         <div className="flex column left">
                             <div className="fs-13 mb-4">
-                                <b className="fw-6 cn-9 mr-8">Show application metrics</b>
+                                <b className="fw-6 cn-9 mr-8">
+                                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
+                                </b>
                                 <a
                                     href={DOCUMENTATION.APP_METRICS}
                                     target="_blank"
                                     className="fw-4 cb-5 dc__underline-onhover"
                                 >
-                                    Learn more
+                                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
                                 </a>
                             </div>
                             <div className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}>
                                 {!selectedChart.isAppMetricsSupported
-                                    ? `Application metrics is not supported for ${selectedChart.name} version.`
-                                    : 'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).'}
+                                    ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.notSupported(
+                                          selectedChart.name,
+                                      )
+                                    : DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.supported}
                             </div>
                         </div>
                     </div>
@@ -1099,7 +1104,7 @@ export const DeploymentConfigFormCTA = ({
                             className="default-tt w-200"
                             arrow={false}
                             placement="top"
-                            content="Base configurations are being inherited for this environment. Allow override to fork and edit."
+                            content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
                         >
                             {children}
                         </Tippy>

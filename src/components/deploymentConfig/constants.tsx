@@ -88,5 +88,56 @@ export const CHART_TYPE_TAB = { devtronChart: 'Charts by Devtron', customCharts:
 export const CHART_DOCUMENTATION_LINK = {
     'Job & CronJob': DOCUMENTATION.JOB_CRONJOB,
     'Rollout Deployment': DOCUMENTATION.ROLLOUT,
-    'Deployment': DOCUMENTATION.DEPLOYMENT
+    Deployment: DOCUMENTATION.DEPLOYMENT,
+}
+
+export const COMPARE_VALUES_TIPPY_CONTENT = {
+    compareEnvValueWithOtherValues: 'Compare with values saved for base template or other environments',
+    compareBaseValueWithOtherValues: 'Compare base template values with values saved for specific environments',
+    comparing: 'Comparing deployment template',
+    nothingToCompare: 'Nothing to compare with',
+    noCDPipelineCreated: 'No deployment pipelines are created',
+}
+
+export const README_TIPPY_CONTENT = {
+    fetching: 'Fetching...',
+    showing: 'Showing README.md',
+    notAvailable: 'Readme is not available for this chart version',
+}
+
+export const BASIC_VIEW_TIPPY_CONTENT = {
+    title: 'Basic view is locked',
+    infoText:
+        'Basic view is locked as some advanced configurations have been modified. Please continue editing in Advanced (YAML) view.',
+}
+
+export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
+    applicationMetrics: {
+        label: 'Show application metrics',
+        learnMore: 'Learn more',
+        supported:
+            'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).',
+        notSupported: (selectedChartName: string): string =>
+            `Application metrics is not supported for ${selectedChartName} version.`,
+    },
+    baseTemplate: {
+        key: 'base',
+        label: 'Base deployment template',
+        allowOverrideText:
+            'Base configurations are being inherited for this environment. Allow override to fork and edit.',
+    },
+    codeEditor: {
+        warning: 'Chart type cannot be changed once saved.',
+    },
+    otherEnv: {
+        key: 'env',
+        label: 'Values on other environments',
+        noOptions: { label: 'No options', value: 0, kind: 'env' },
+    },
+    otherVersion: {
+        key: 'chartVersion',
+        label: 'Other version values',
+        version: 'version',
+        noOptions: { label: 'No options', value: 0, kind: 'chartVersion' },
+    },
 }
