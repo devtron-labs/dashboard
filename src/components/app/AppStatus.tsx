@@ -17,13 +17,13 @@ export default function AppStatus({ appStatus }: AppStatusType) {
                 <Tippy
                     className="default-tt w-200"
                     arrow={false}
-                    placement={'top'}
+                    placement="top"
                     content="To fetch app status for GitOps based deployments open the app detail page"
                 >
                     <InfoIcon className="icon-dim-16 mr-6 fcn-6" />
                 </Tippy>
             )}
-            <p className={`dc__truncate-text dc__first-letter-capitalize  m-0`}>
+            <p className="dc__truncate-text dc__first-letter-capitalize  m-0">
                 {isNotDeployed ? (
                     <span className="cn-6">{StatusConstants.NOT_DEPLOYED.normalCase}</span>
                 ) : (

@@ -36,7 +36,7 @@ import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 
-export default function AppList({ isSuperAdmin, appListCount, isAgroInstalled }: AppListPropType) {
+export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -773,7 +773,7 @@ export default function AppList({ isSuperAdmin, appListCount, isAgroInstalled }:
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    {isAgroInstalled && (
+                    {isArgoInstalled && (
                         <>
                             <Filter
                                 list={masterFilters.appStatus}
@@ -1073,7 +1073,7 @@ export default function AppList({ isSuperAdmin, appListCount, isAgroInstalled }:
                                     openDevtronAppCreateModel={openDevtronAppCreateModel}
                                     setAppCount={setAppCount}
                                     updateDataSyncing={updateDataSyncing}
-                                    isAgroInstalled={isAgroInstalled}
+                                    isArgoInstalled={isArgoInstalled}
                                 />
                             )}
                         {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
@@ -1100,7 +1100,7 @@ export default function AppList({ isSuperAdmin, appListCount, isAgroInstalled }:
                                     setShowPulsatingDotState={setShowPulsatingDotState}
                                     masterFilters={masterFilters}
                                     syncListData={syncListData}
-                                    isAgroInstalled={isAgroInstalled}
+                                    isArgoInstalled={isArgoInstalled}
                                 />
                                 {fetchingExternalApps && (
                                     <div className="mt-16">

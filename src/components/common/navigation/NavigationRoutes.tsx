@@ -399,7 +399,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
-    const isAgroInstalled: boolean = argoInfoData?.result.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = argoInfoData?.result.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>
@@ -407,7 +407,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                 <Switch>
                     <Route
                         path={`${path}/:appType`}
-                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} isAgroInstalled={isAgroInstalled} appListCount={appListCount} />}
+                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} isArgoInstalled={isArgoInstalled} appListCount={appListCount} />}
                     />
                     <Route exact path="">
                         <RedirectToAppList />

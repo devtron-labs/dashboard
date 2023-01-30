@@ -5,5 +5,5 @@ export interface ExpandedRowProps {
     handleEdit: (appId: number) => void;
     redirect: (app, envId: number) => string;
     close: (event) => void;
-    isAgroInstalled: boolean
+    isArgoInstalled: boolean
 }

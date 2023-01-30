@@ -58,7 +58,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     openDevtronAppCreateModel: (event) => void
     setAppCount: React.Dispatch<React.SetStateAction<number>>
     updateDataSyncing: (loading: boolean) => void
-    isAgroInstalled: boolean
+    isArgoInstalled: boolean
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
@@ -75,7 +75,7 @@ export interface AppListViewProps extends AppListState, RouteComponentProps<{}> 
   openDevtronAppCreateModel: (event) => void
   updateDataSyncing: (loading: boolean) => void
   toggleExpandAllRow: () => void
-  isAgroInstalled: boolean
+  isArgoInstalled: boolean
 }
 
 export interface AppListResponse {
@@ -133,7 +133,7 @@ export const SortBy = {
 export interface AppListPropType {
   isSuperAdmin: boolean
   appListCount: number
-  isAgroInstalled: boolean
+  isArgoInstalled: boolean
 }
 
 export interface TriggerURL {

@@ -30,7 +30,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                             <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
                         </svg>
                     </div>
-                    {this.props.isAgroInstalled && (
+                    {this.props.isArgoInstalled && (
                         <div className="app-list__cell app-list__cell--app_status">
                             <AppStatus appStatus={env.appStatus} />
                         </div>

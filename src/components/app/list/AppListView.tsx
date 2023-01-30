@@ -95,7 +95,7 @@ export class AppListView extends Component<AppListViewProps> {
                                 )}
                             </button>
                         </div>
-                        {this.props.isAgroInstalled && (
+                        {this.props.isArgoInstalled && (
                             <div className="app-list__cell app-list__cell--app_status">
                                 <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
                             </div>
@@ -144,7 +144,7 @@ export class AppListView extends Component<AppListViewProps> {
                                         <div className="app-list__cell app-list__cell--name">
                                             <p className="dc__truncate-text  m-0 value">{app.name}</p>
                                         </div>
-                                        {this.props.isAgroInstalled && (
+                                        {this.props.isArgoInstalled && (
                                             <div className="app-list__cell app-list__cell--app_status">
                                                 <AppStatus appStatus={app.defaultEnv.appStatus} />
                                             </div>
@@ -192,7 +192,7 @@ export class AppListView extends Component<AppListViewProps> {
                                         close={this.closeExpandedRow}
                                         redirect={this.props.redirectToAppDetails}
                                         handleEdit={this.props.handleEditApp}
-                                        isAgroInstalled={this.props.isAgroInstalled}
+                                        isArgoInstalled={this.props.isArgoInstalled}
                                     />
                                 )}
                             </React.Fragment>
