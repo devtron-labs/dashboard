@@ -898,14 +898,16 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-
     const selectedArrayMap = mapByKey(selectedArray, matchKey)
 
-    const actualSelectedArray = availableArray.filter(item => selectedArrayMap.has(item[matchKey]))
+    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
 
-    const unselectedAvailableArray = availableArray.filter(item => !selectedArrayMap.has(item[matchKey]))
+    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
 
-    return [...sortObjectArrayAlphabetically(actualSelectedArray, matchKey), ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey)]
+    return [
+        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
+        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
+    ]
 }
 
 export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string) {
@@ -1061,12 +1063,23 @@ export const filterImageList = (imageList: ClusterImageList[], serverVersion: st
     return nodeImageList?.imageList || []
 }
 
-export const convertToOptionsList = (arr: any[], customLabel?: string, customValue?: string): OptionType[] => {
+export const convertToOptionsList = (
+    arr: any[],
+    customLabel?: string,
+    customValue?: string,
+    customFieldKey?: string,
+): OptionType[] => {
     return arr.map((ele) => {
-        return {
+        const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
         }
+
+        if (customFieldKey) {
+            _option[customFieldKey] = ele[customFieldKey] ?? ''
+        }
+
+        return _option
     })
 }
 
@@ -1161,4 +1174,37 @@ export function createClusterEnvGroup<T>(list: T[], propKey: string): { label: s
         label: key,
         options: value,
     }))
+}
+
+export const k8sStyledAgeToSeconds = (duration: string): number => {
+    let totalTimeInSec: number = 0
+    if (!duration) {
+        return totalTimeInSec
+    }
+    //Parses time(format:- ex. 4h20m) in second
+    const matchesNumber = duration.match(/\d+/g)
+    const matchesChar = duration.match(/[dhms]/g)
+    for (let i = 0; i < matchesNumber.length; i++) {
+        let _unit = matchesChar[i]
+        let _unitVal = +matchesNumber[i]
+        switch (_unit) {
+            case 'd':
+                totalTimeInSec += _unitVal * 24 * 60 * 60
+                break
+            case 'h':
+                totalTimeInSec += _unitVal * 60 * 60
+                break
+            case 'm':
+                totalTimeInSec += _unitVal * 60
+                break
+            default:
+                totalTimeInSec += _unitVal
+                break
+        }
+    }
+    return totalTimeInSec
+}
+
+export const eventAgeComparator = <T,>(key: string): any => {
+    return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }

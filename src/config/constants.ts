@@ -306,6 +306,7 @@ export const DOCUMENTATION = {
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+    K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -726,11 +727,17 @@ export const DEPLOYMENT_STATUS = {
     TIMED_OUT: 'timed_out',
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
+    PROGRESSING: 'inprogress',
     SUPERSEDED: 'superseded',
 }
 
-export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const HELM_DEPLOYMENT_STATUS_TEXT = {
+    PROGRESSING: 'Progressing',
+    INPROGRESS: 'In progress'
+}
 
+export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'

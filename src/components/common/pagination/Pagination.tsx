@@ -10,11 +10,14 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
     constructor(props) {
         super(props)
         let pages = this.createPageArr(this.props.size, this.props.pageSize, 1)
-        let options = [
-            { value: 20, selected: true },
-            { value: 40, selected: false },
-            { value: 50, selected: false },
-        ]
+        let options =
+            props.pageSizeOptions?.length > 0
+                ? props.pageSizeOptions
+                : [
+                      { value: 20, selected: true },
+                      { value: 40, selected: false },
+                      { value: 50, selected: false },
+                  ]
         options = options.map((option) => {
             return {
                 value: option.value,
@@ -211,7 +214,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
 
     render() {
         return (
-            <div className="pagination-wrapper">
+            <div className={`pagination-wrapper ${this.props.rootClassName || ''}`}>
                 {this.renderPageInfo()}
                 {this.renderPages()}
                 {!this.props.isPageSizeFix && this.renderDropdown()}
