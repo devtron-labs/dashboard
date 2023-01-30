@@ -481,12 +481,29 @@ export default function ClusterTerminal({
                 </div>
                 {!isNodeDetailsPage && (
                     <span className="flex">
-                        {isFullScreen ? (
-                            <ExitScreen className="mr-12 cursor fcn-6" onClick={toggleScreenView} />
-                        ) : (
-                            <FullScreen className="mr-12 cursor fcn-6" onClick={toggleScreenView} />
-                        )}
-                        <Close className="icon-dim-20 cursor fcn-6 mr-20" onClick={closeTerminalModal} />
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="top"
+                            content={isFullScreen ? 'Restore height' : 'Maximise height'}
+                        >
+                            {isFullScreen ? (
+                                <ExitScreen className="mr-12 dc__hover-n100 br-4  cursor fcn-6" onClick={toggleScreenView} />
+                            ) : (
+                                <FullScreen className="mr-12 dc__hover-n100 br-4  cursor fcn-6" onClick={toggleScreenView} />
+                            )}
+                        </Tippy>
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="top"
+                            content={'Close'}
+                        >
+                            <Close
+                                className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
+                                onClick={closeTerminalModal}
+                            />
+                        </Tippy>
                     </span>
                 )}
             </div>
@@ -561,7 +578,7 @@ export default function ClusterTerminal({
                                 <ReactSelect
                                     placeholder="Select Shell"
                                     options={clusterShellTypes}
-                                    defaultValue={clusterShellTypes[0]}
+                                    defaultValue={clusterShellTypes[1]}
                                     onChange={onChangeTerminalType}
                                     styles={clusterSelectStyle}
                                     components={{

@@ -37,6 +37,9 @@ import ClusterTerminal from './ClusterTerminal'
 import { COLUMN_METADATA } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
+import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -448,16 +451,28 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const renderClusterSummary = (): JSX.Element => {
         return (
             <>
-                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
-                    <div className="fw-6 fs-14 cn-9">Resource allocation and usage</div>
-                    <div className="fs-13">
+                <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 mt-16 mb-16 ml-20 mr-20 bcn-0 br-4 en-2 bw-1">
+                    <div className="flex fw-6 fs-13">
+                        <div className="fw-6 fs-14 cn-9 h-20 cursor flex cg-5">
+                            <CloudIcon className="icon-dim-16 mr-4" /><span className="h-20 flex">Connected</span>
+                        </div>
+                        <span className='dc__divider ml-12 h-16'></span>
+                        <div
+                            className="flex left cursor pl-12 pr-12 cb-5"
+                            onClick={() => openTerminal(filteredFlattenNodeList[0])}
+                        >
+                            <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
+                            <span className="h-20">Terminal</span>
+                        </div>
+                    </div>
+                    <div className="fs-13 h-20">
                         {lastDataSyncTimeString && (
-                            <span>
+                            <div className='flex h-20'>
                                 {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getNodeListData}>
-                                    Refresh
+                                <button className="btn flex btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getNodeListData}>
+                                    <SyncIcon className="icon-dim-16" />
                                 </button>
-                            </span>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -673,7 +688,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
             <div
                 className="node-list dc__overflow-scroll"
-                style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 61px)` }}
+                style={{ height: `calc(${showTerminal ? '50vh - 61px' : '100vh - 48px'})` }}
             >
                 {renderClusterSummary()}
                 <div
