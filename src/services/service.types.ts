@@ -182,9 +182,10 @@ export interface ClusterListResponse extends ResponseType {
 }
 
 export interface Cluster {
-    id: number,
-    cluster_name : string,
+    id: number
+    cluster_name: string
     active: boolean
+    errorInConnecting?: string
 }
 export interface LoginCountType extends ResponseType {
   result?: LoginCount
