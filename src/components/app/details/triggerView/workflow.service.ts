@@ -62,7 +62,7 @@ function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse
 
     for (const material of gitMaterials) {
         for (const ciPipeline of filteredCIPipelines) {
-            if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId)) {
+            if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId) || ciPipeline.parentCiPipeline) {
                 continue
             }
             ciPipeline.ciMaterial.push({
