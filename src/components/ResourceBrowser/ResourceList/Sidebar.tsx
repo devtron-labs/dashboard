@@ -2,13 +2,14 @@ import React, { Fragment } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { SidebarType } from '../Types'
+import { ApiResourceGroupType, SidebarType } from '../Types'
 import { AggregationKeys } from '../../app/types'
 import { SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
 
 export function Sidebar({
-    k8SObjectList,
+    k8SObjectMap,
+    selectedResource,
     handleGroupHeadingClick,
     setSelectedResource,
     updateResourceSelectionData,
@@ -34,16 +35,51 @@ export function Sidebar({
                 Version: e.currentTarget.dataset.version,
                 Kind: e.currentTarget.dataset.kind,
             },
+            isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
     }
-    if (!k8SObjectList.length) {
+    if (!k8SObjectMap?.size) {
         return <Progressing pageLoader />
     }
+
+    const renderChild = (childData: ApiResourceGroupType, useGroupName?: boolean) => {
+        const _kindLowerCased = childData.gvk.Kind.toLowerCase()
+        if (
+            _kindLowerCased === 'node' ||
+            _kindLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+            _kindLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+        ) {
+            return null
+        }
+
+        const nodeName = useGroupName && childData.gvk.Group ? childData.gvk.Group : childData.gvk.Kind
+        const isSelected =
+            useGroupName && childData.gvk.Group
+                ? selectedResource?.gvk?.Group === childData.gvk.Group
+                : nodeType === _kindLowerCased
+        return (
+            <div
+                key={nodeName}
+                className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                    useGroupName ? 'ml-16' : ''
+                } ${isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'}`}
+                data-group={childData.gvk.Group}
+                data-version={childData.gvk.Version}
+                data-kind={childData.gvk.Kind}
+                data-namespaced={childData.namespaced}
+                data-grouped={useGroupName}
+                onClick={selectNode}
+            >
+                {nodeName}
+            </div>
+        )
+    }
+
     return (
-        <div className="k8s-object-container p-8">
-            {k8SObjectList.map((k8sObject) =>
+        <div className="k8s-object-container p-8 dc__user-select-none">
+            {[...k8SObjectMap.values()].map((k8sObject) =>
                 k8sObject.name === AggregationKeys.Events ? null : (
                     <Fragment key={k8sObject.name}>
                         <div
@@ -59,28 +95,39 @@ export function Sidebar({
                         </div>
                         {k8sObject.isExpanded && (
                             <div className="pl-20">
-                                {k8sObject.child.map((childData) =>
-                                    childData.gvk.Kind.toLowerCase() === 'node' ||
-                                    childData.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-                                    childData.gvk.Kind.toLowerCase() ===
-                                        SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ? null : (
-                                        <div
-                                            key={childData.gvk.Kind}
-                                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                                                nodeType === childData.gvk.Kind.toLowerCase()
-                                                    ? 'bcb-1 cb-5'
-                                                    : 'cn-7 resource-tree-object'
-                                            }`}
-                                            data-group={childData.gvk.Group}
-                                            data-version={childData.gvk.Version}
-                                            data-kind={childData.gvk.Kind}
-                                            data-namespaced={childData.namespaced}
-                                            onClick={selectNode}
-                                        >
-                                            {childData.gvk.Kind}
-                                        </div>
-                                    ),
-                                )}
+                                {[...k8sObject.child.entries()].map(([key, value]) => {
+                                    if (value.data.length === 1) {
+                                        return renderChild(value.data[0])
+                                    } else {
+                                        return (
+                                            <>
+                                                <div
+                                                    className="flex pointer"
+                                                    data-group-name={`${k8sObject.name}/${key}`}
+                                                    onClick={handleGroupHeadingClick}
+                                                >
+                                                    <DropDown
+                                                        className={`${
+                                                            value.isExpanded ? 'fcn-9' : 'fcn-5'
+                                                        }  rotate icon-dim-24 pointer`}
+                                                        style={{
+                                                            ['--rotateBy' as any]: value.isExpanded ? '0deg' : '-90deg',
+                                                        }}
+                                                    />
+                                                    <span
+                                                        className={`fs-14 ${
+                                                            value.isExpanded ? 'fw-6' : 'fw-4'
+                                                        } pointer w-100 pt-6 pb-6`}
+                                                    >
+                                                        {key}
+                                                    </span>
+                                                </div>
+                                                {value.isExpanded &&
+                                                    value.data.map((_child) => renderChild(_child, _child.isGrouped))}
+                                            </>
+                                        )
+                                    }
+                                })}
                             </div>
                         )}
                     </Fragment>
