@@ -112,7 +112,7 @@ export default function TagLabelValueSelector({
     }
 
     return (
-        <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoResize>
+        <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoPosition>
             <PopupMenu.Button
                 rootClassName={`dc__bg-n50 flex top ${
                     type === 'key'
