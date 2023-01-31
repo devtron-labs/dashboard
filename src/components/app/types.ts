@@ -39,6 +39,7 @@ export interface TagLabelSelectType {
     isCreateApp?: boolean
     labelTags: TagType[]
     setLabelTags: (tagList: TagType[]) => void
+    tabIndex?: number
 }
 
 export interface TagDetailType {
@@ -46,6 +47,7 @@ export interface TagDetailType {
   tagData: TagType
   setTagData: (index: number, tagData: TagType) => void
   removeTag: (index: number) => void
+  tabIndex?: number
 }
 
 export interface TagLabelValueSelectorType {
@@ -56,6 +58,7 @@ tagOptions?: OptionType[]
 isRequired?: boolean
 type?: string
 placeholder?: string
+tabIndex?: number
 }
 
 export interface AddNewAppState {

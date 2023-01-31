@@ -312,8 +312,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 components={{
                                     IndicatorSeparator: null,
                                     LoadingIndicator: null,
+                                    Option,
                                 }}
                                 placeholder="Select app"
+                                tabIndex={3}
                             />
                             <span className="form__error">
                                 {showError && !this.state.isValid.cloneAppId ? (
@@ -340,7 +342,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label">Project*</span>
                     <ReactSelect
                         className="m-0"
-                        tabIndex={2}
+                        tabIndex={4}
                         isMulti={false}
                         isClearable={false}
                         options={this.state.projects}
@@ -365,7 +367,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagLabelSelect isCreateApp={true} labelTags={this.state.tags} setLabelTags={this.setTags} />
+                <TagLabelSelect isCreateApp={true} labelTags={this.state.tags} setLabelTags={this.setTags} tabIndex={5} />
             </div>
         )
     }

@@ -5,7 +5,7 @@ import { stopPropagation } from '../../../common'
 import { TagDetailType } from '../../types'
 import TagLabelValueSelector from './TagLabelValueSelector'
 
-export default function TagDetails({ index, tagData, setTagData, removeTag }: TagDetailType) {
+export default function TagDetails({ index, tagData, setTagData, removeTag, tabIndex=1 }: TagDetailType) {
     const deleteTag = (e): void => {
         stopPropagation(e)
         removeTag(index)
@@ -29,6 +29,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag }: Ta
                 setTagData={setTagData}
                 type="key"
                 placeholder="Enter key"
+                tabIndex={tabIndex-1}
             />
             <TagLabelValueSelector
                 selectedTagIndex={index}
@@ -36,6 +37,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag }: Ta
                 setTagData={setTagData}
                 type="value"
                 placeholder="Enter value"
+                tabIndex={tabIndex}
             />
             <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer" onClick={deleteTag}>
                 <DeleteCross className="icon-dim-20 mt-4" />

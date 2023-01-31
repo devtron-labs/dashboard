@@ -4,7 +4,7 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import TagDetails from '../create/CustomTagSelector/TagDetails'
 import { TagLabelSelectType } from '../types'
 
-export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags }: TagLabelSelectType) {
+export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags, tabIndex = 0 }: TagLabelSelectType) {
     const setTagData = (index, tagValue): void => {
         const _tags = [...labelTags]
         _tags[index] = tagValue
@@ -41,6 +41,7 @@ export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags }:
                             tagData={tagData}
                             setTagData={setTagData}
                             removeTag={removeTag}
+                            tabIndex={tabIndex + (index + 2)}
                         />
                     ))}
                 </div>

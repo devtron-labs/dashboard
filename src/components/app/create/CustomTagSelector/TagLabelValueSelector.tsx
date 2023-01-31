@@ -13,6 +13,7 @@ export default function TagLabelValueSelector({
     isRequired,
     type,
     placeholder,
+    tabIndex = null,
 }: TagLabelValueSelectorType) {
     const [selectedValue, setSelectedValue] = useState<string>('')
     const [isPopupOpen, togglePopup] = useState<boolean>(false)
@@ -121,12 +122,13 @@ export default function TagLabelValueSelector({
                 } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'er-5 bw-1' : ''}`}
             >
                 <ResizableTextarea
+                    defaultHeight={0}
                     className="form__input pt-4-imp pb-4-imp dc__no-border fs-13"
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
                     placeholder={placeholder}
-                    tabIndex={type === 'key' ? selectedTagIndex + 1 : selectedTagIndex + 2}
+                    tabIndex={tabIndex}
                     lineHeight={20}
                     maxHeight={80}
                 />
