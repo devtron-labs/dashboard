@@ -1160,6 +1160,22 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
+export function createClusterEnvGroup<T>(list: T[], propKey: string): { label: string; options: T[] }[] {
+    const objList: Record<string, T[]> = list.reduce((acc, obj) => {
+        const key = obj[propKey]
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push(obj)
+        return acc
+    }, {})
+
+    return Object.entries(objList).map(([key, value]) => ({
+        label: key,
+        options: value,
+    }))
+}
+
 export const k8sStyledAgeToSeconds = (duration: string): number => {
     let totalTimeInSec: number = 0
     if (!duration) {
