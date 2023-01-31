@@ -39,7 +39,6 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
 
     useEffect(() => {
         if (buttonRef?.current && autoResize) {
-            console.log(buttonRef.current.clientHeight)
             const { bottom, height, left, right, top, width, x, y } = buttonRef.current.getBoundingClientRect()
             setPopupPosition({ left: x, top: y + height })
         }
