@@ -123,7 +123,7 @@ export function Sidebar({
                                                     </span>
                                                 </div>
                                                 {value.isExpanded &&
-                                                    value.data.map((_child) => renderChild(_child, _child.isGrouped))}
+                                                    value.data.map((_child) => renderChild(_child, true))}
                                             </>
                                         )
                                     }
