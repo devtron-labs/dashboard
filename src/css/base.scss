@@ -559,23 +559,31 @@ button.anchor {
     &.f-running,
     &.f-completed,
     &.f-bound,
-    &.f-Active,
+    &.f-active,
     &.f-scalingreplicasetdown {
-        color: var(--green);
+        color: var(--G500);
     }
 
     &.f-suspended,
-    &.f-switchedtoactiveservice {
-        color: var(--orange);
+    &.f-switchedtoactiveservice,
+    &.f-containercreating,
+    &.f-pending,
+    &[class*="f-init__"]:not(.f-init__crashloopbackoff) {
+        color: var(--O500);
     }
 
     &.f-degraded,
     &.f-sync.failed,
     &.f-failed,
+    &.f-error,
     &.f-imagepullbackoff,
     &.f-errimagepull,
     &.f-warning,
-    &.f-outofsync {
+    &.f-outofsync,
+    &.f-terminating,
+    &.f-crashloopbackoff,
+    &.f-init__crashloopbackoff,
+    &.f-evicted {
         color: var(--R500);
     }
 
@@ -2085,7 +2093,7 @@ textarea,
 }
 
 .w-300 {
-    width: 300px;
+    width: 300px !important;
 }
 
 

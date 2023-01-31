@@ -310,6 +310,7 @@ export const DOCUMENTATION = {
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
     APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
+    K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -740,7 +741,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
-
+export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'

@@ -40,6 +40,11 @@
                 height: calc(100vh - 152px);
                 overflow: auto;
                 width: calc(100vw - 285px);
+
+                &.paginated-list-view {
+                    height: calc(100vh - 209px);
+                }
+
                 .list-header {
                     width: max-content;
                     min-width: calc(100vw - 283px);
@@ -51,6 +56,18 @@
             .scrollable-event-list {
                 height: calc(100vh - 198.66px);
                 overflow: hidden auto;
+
+                &.paginated-list-view {
+                    height: calc(100vh - 255.66px);
+                }
+            }
+
+            .pagination-wrapper {
+                &.resource-browser-paginator {
+                    .select__button {
+                        width: fit-content;
+                    }
+                }
             }
 
             .sticky-column {
@@ -58,11 +75,13 @@
                 z-index: 1;
                 background-color: var(--N0);
             }
+
             .event-list-row {
                 display: grid;
                 grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
                 column-gap: 16px;
             }
+
             .node-actions-menu-icon {
                 path:nth-child(2) {
                     fill: var(--N600);
