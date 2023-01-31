@@ -13,7 +13,7 @@ export const Modal = ({ style = {}, children, modal = false, rootClassName = "",
     }
 
     function disableWheel(e) {
-      if(!e.target.classList?.contains('dc__resizable-textarea')){
+      if(!preventWheelDisable){
         if (innerRef && innerRef.current.contains(e.target)) {
           if (innerRef.current.clientHeight === innerRef.current.scrollHeight) {
               e.preventDefault();
