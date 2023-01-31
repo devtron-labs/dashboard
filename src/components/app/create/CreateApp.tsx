@@ -365,7 +365,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagLabelSelect labelTags={this.state.tags} setLabelTags={this.setTags} />
+                <TagLabelSelect isCreateApp={true} labelTags={this.state.tags} setLabelTags={this.setTags} />
             </div>
         )
     }

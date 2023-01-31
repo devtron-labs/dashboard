@@ -36,8 +36,9 @@ export interface TagErrorType{
   messages: string[]
 }
 export interface TagLabelSelectType {
-  labelTags: TagType[]
-  setLabelTags: (tagList: TagType[]) => void
+    isCreateApp?: boolean
+    labelTags: TagType[]
+    setLabelTags: (tagList: TagType[]) => void
 }
 
 export interface TagDetailType {

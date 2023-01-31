@@ -4,7 +4,7 @@ import { ReactComponent as Help } from '../../../../assets/icons/ic-help-outline
 import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import { DOCUMENTATION } from '../../../../config'
 
-export default function PropagateTagInfo() {
+export default function PropagateTagInfo({ isCreateApp }: { isCreateApp: boolean }) {
     const additionalInfo = () => {
         return (
             <div className="p-12 fs-13">
@@ -32,8 +32,8 @@ export default function PropagateTagInfo() {
             showCloseButton={true}
             trigger="click"
             interactive={true}
-            documentationLink={DOCUMENTATION.APP_TAGS}
-            documentationLinkText={'View Documentation'}
+            documentationLink={isCreateApp ? DOCUMENTATION.APP_TAGS : DOCUMENTATION.APP_OVERVIEW_TAGS}
+            documentationLinkText="View Documentation"
         >
             <div className="flexbox cursor">
                 <InjectTag className="icon-dim-16 mt-2 mr-4" />

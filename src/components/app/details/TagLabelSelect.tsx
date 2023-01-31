@@ -4,7 +4,7 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import TagDetails from '../create/CustomTagSelector/TagDetails'
 import { TagLabelSelectType } from '../types'
 
-export default function TagLabelSelect({ labelTags, setLabelTags }: TagLabelSelectType) {
+export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags }: TagLabelSelectType) {
     const setTagData = (index, tagValue): void => {
         const _tags = [...labelTags]
         _tags[index] = tagValue
@@ -27,7 +27,7 @@ export default function TagLabelSelect({ labelTags, setLabelTags }: TagLabelSele
         <div>
             <div className="flexbox dc__content-space mb-8">
                 <span>Tags</span>
-                <PropagateTagInfo />
+                <PropagateTagInfo isCreateApp={isCreateApp} />
             </div>
             <div>
                 <div className="dc_width-max-content cb-5 fw-6 fs-13 flexbox mr-20 mb-8 cursor" onClick={addNewTag}>
