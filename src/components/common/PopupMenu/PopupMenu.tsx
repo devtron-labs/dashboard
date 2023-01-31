@@ -125,9 +125,9 @@ function Button({ children = null, disabled = false, rootClassName = "", tabInde
     </button>
 }
 
-function Body({children=null, rootClassName="", style={}, autoWidth=false}){
+function Body({children=null, rootClassName="", style={}, autoWidth=false, preventWheelDisable = false}){
     const {handleClose, popupPosition, opacity, callbackRef, buttonWidth} = usePopupContext()
-    return popupPosition ? <Modal callbackRef={callbackRef} onClick={handleClose} rootClassName={`${rootClassName} popup-body ${!children ? 'popup-body--empty' : ''} ${Object.keys(popupPosition).join(" ")}`}  style={{...popupPosition, ...style,...(autoWidth ? {width: buttonWidth.current} : {}), opacity:opacity}}>
+    return popupPosition ? <Modal callbackRef={callbackRef} onClick={handleClose} rootClassName={`${rootClassName} popup-body ${!children ? 'popup-body--empty' : ''} ${Object.keys(popupPosition).join(" ")}`}  style={{...popupPosition, ...style,...(autoWidth ? {width: buttonWidth.current} : {}), opacity:opacity}} preventWheelDisable={preventWheelDisable}>
         {children}
     </Modal> : null
 }

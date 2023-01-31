@@ -131,7 +131,7 @@ export default function TagLabelValueSelector({
                     maxHeight={80}
                 />
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true}>
+            <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true} preventWheelDisable={true}>
                 {isPopupOpen && renderSuggestions()}
             </PopupMenu.Body>
         </PopupMenu>

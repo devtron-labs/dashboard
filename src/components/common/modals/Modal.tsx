@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom'
-export const Modal = ({ style = {}, children, modal = false, rootClassName = "", onClick = null, callbackRef = null }) => {
+export const Modal = ({ style = {}, children, modal = false, rootClassName = "", onClick = null, callbackRef = null, preventWheelDisable = false }) => {
     const innerRef = React.useRef(null)
     function handleClick(e) {
         if (typeof onClick !== 'function') return
-        if (innerRef && innerRef.current.contains(e.target)) {
+        if (innerRef && innerRef.current?.contains(e.target)) {
             onClick(e, 'in')
         }
         else {
@@ -13,24 +13,27 @@ export const Modal = ({ style = {}, children, modal = false, rootClassName = "",
     }
 
     function disableWheel(e) {
+      if(!e.target.classList?.contains('dc__resizable-textarea')){
         if (innerRef && innerRef.current.contains(e.target)) {
-            if (innerRef.current.clientHeight === innerRef.current.scrollHeight) {
-                e.preventDefault();
-            }
-        }
-        else {
-            e.preventDefault();
-        }
+          if (innerRef.current.clientHeight === innerRef.current.scrollHeight) {
+              e.preventDefault();
+          }
+      }
+      else {
+          e.preventDefault();
+      }
+      }
+
     }
     useEffect(() => {
         document.addEventListener('click', handleClick)
         let modal = document.getElementById("visible-modal");
         if (modal) modal.classList.add("show")
-        document.body.addEventListener('wheel', disableWheel, { passive: false })
+        if (!preventWheelDisable) document.body.addEventListener('wheel', disableWheel, { passive: false })
         return () => {
-            document.body.removeEventListener('wheel', disableWheel)
-            document.removeEventListener('click', handleClick)
-            if (modal) modal.classList.remove("show")
+          if (!preventWheelDisable) document.body.removeEventListener('wheel', disableWheel)
+          document.removeEventListener('click', handleClick)
+          if (modal) modal.classList.remove('show')
 
         }
     }, []
