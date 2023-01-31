@@ -596,8 +596,7 @@ export const DeploymentTemplateEditorView = ({
                     if (!globalChartRef && chart.id === globalChartRefId) {
                         setGlobalChartRef(chart)
                     }
-
-                    return chart.id !== selectedChart.id && chart.name === selectedChart.name
+                    return chart.name === selectedChart.name
                 })
                 .sort((a, b) =>
                     versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),

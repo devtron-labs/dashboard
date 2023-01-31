@@ -136,7 +136,7 @@ export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
     },
     otherVersion: {
         key: 'chartVersion',
-        label: 'Other version values',
+        label: 'Default values',
         version: 'version',
         noOptions: { label: 'No options', value: 0, kind: 'chartVersion' },
     },
