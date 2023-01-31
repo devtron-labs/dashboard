@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { TagLabelValueSelectorType } from '../../../app/types'
-import { PopupMenu, stopPropagation } from '../../../common'
+import { PopupMenu, stopPropagation, ResizableTextarea } from '../../../common'
 import { ValidationRules } from '../validationRules'
 import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-outlined.svg'
-import { ResizableTextArea } from '../../../common/formFields/ResizableTextArea'
 
 export default function TagLabelValueSelector({
     selectedTagIndex,
@@ -113,7 +112,7 @@ export default function TagLabelValueSelector({
     }
 
     return (
-        <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose>
+        <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoResize>
             <PopupMenu.Button
                 rootClassName={`dc__bg-n50 flex top ${
                     type === 'key'
@@ -121,13 +120,15 @@ export default function TagLabelValueSelector({
                         : `dc__no-border-radius dc__no-right-border dc__no-left-border`
                 } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'er-5 bw-1' : ''}`}
             >
-                <ResizableTextArea
-                    defaultRows={1}
+                <ResizableTextarea
                     className="form__input pt-4-imp pb-4-imp dc__no-border fs-13"
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
                     placeholder={placeholder}
+                    tabIndex={type === 'key' ? selectedTagIndex + 1 : selectedTagIndex + 2}
+                    lineHeight={20}
+                    maxHeight={80}
                 />
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true}>

@@ -12,7 +12,7 @@ function usePopupContext() {
     return context
 }
 
-function PopupMenu({ children = null, onToggleCallback = null, autoClose = false}) {
+function PopupMenu({ children = null, onToggleCallback = null, autoClose = false, autoResize = false}) {
     const [popupPosition, setPopupPosition]=React.useState(null)
     const [opacity, setOpacity] = React.useState(0)
     const observer = React.useRef<IntersectionObserver | null>(null);
@@ -36,6 +36,14 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
             }
         }
     }, [popupPosition])
+
+    useEffect(() => {
+        if (buttonRef?.current && autoResize) {
+            console.log(buttonRef.current.clientHeight)
+            const { bottom, height, left, right, top, width, x, y } = buttonRef.current.getBoundingClientRect()
+            setPopupPosition({ left: x, top: y + height })
+        }
+    }, [buttonRef?.current?.clientHeight])
 
     let options = {
         root: null,

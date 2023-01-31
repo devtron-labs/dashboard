@@ -3,7 +3,6 @@ import {
     Progressing,
     showError,
     Select,
-    useThrottledEffect,
     RadioGroup,
     not,
     Info,
@@ -13,6 +12,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
     DeleteDialog,
+    ResizableTextarea,
 } from '../common'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
@@ -236,75 +236,6 @@ export function Tab({ title, active, onClick }) {
             <div className="tab__selector"></div>
             <div className="tab__title">{title}</div>
         </nav>
-    )
-}
-
-interface ResizableTextareaProps {
-    minHeight?: number
-    maxHeight?: number
-    value?: string
-    onChange?: (e) => void
-    className?: string
-    placeholder?: string
-    lineHeight?: number
-    padding?: number
-    disabled?: boolean
-    name?: string
-}
-
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-    minHeight,
-    maxHeight,
-    value,
-    onChange = null,
-    className = '',
-    placeholder = 'Enter your text here..',
-    lineHeight = 14,
-    padding = 12,
-    disabled = false,
-    ...props
-}) => {
-    const [text, setText] = useState('')
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist()
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
-    }
-
-    useThrottledEffect(
-        () => {
-            _textRef.current.style.height = 'auto'
-            let nextHeight = _textRef.current.scrollHeight
-            if (minHeight && nextHeight < minHeight) {
-                nextHeight = minHeight
-            }
-            if (maxHeight && nextHeight > maxHeight) {
-                nextHeight = maxHeight
-            }
-            _textRef.current.style.height = nextHeight + 2 + 'px'
-        },
-        500,
-        [text],
-    )
-
-    return (
-        <textarea
-            ref={(el) => (_textRef.current = el)}
-            value={text}
-            placeholder={placeholder}
-            className={`dc__resizable-textarea ${className}`}
-            onChange={handleChange}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
     )
 }
 

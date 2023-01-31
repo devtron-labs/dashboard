@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync } from '../common'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync, ResizableTextarea } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -14,7 +14,6 @@ import {
     deleteCluster,
     deleteEnvironment,
 } from './cluster.service'
-import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
@@ -608,7 +607,7 @@ function ClusterForm({
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            render={() => 
+                            render={() =>
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}
