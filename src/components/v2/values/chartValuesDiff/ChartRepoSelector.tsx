@@ -9,7 +9,6 @@ import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../../config'
 import Tippy from '@tippyjs/react'
-import { ConnectToHelmChartTippy } from './ChartValuesView.component'
 import { getCommonSelectStyle, noMatchingOptions } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
 
@@ -151,41 +150,36 @@ export function ChartRepoSelector({
                     </Tippy>
                 </div>
                 <div className="repo-chart-selector flex">
-                    <ConnectToHelmChartTippy
-                        condition={showConnectToChartTippy}
-                        hideConnectToChartTippy={hideConnectToChartTippy}
-                    >
-                        <AsyncSelect
-                            cacheOptions
-                            defaultOptions={repoChartOptions}
-                            isSearchable={false}
-                            formatOptionLabel={repoChartSelectOptionLabel}
-                            value={
-                                isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue
-                            }
-                            loadOptions={repoChartLoadOptions}
-                            onFocus={onFocus}
-                            onChange={handleRepoChartValueChange}
-                            noOptionsMessage={noMatchingOptions}
-                            isLoading={!repoChartAPIMade || refetchingCharts}
-                            isClearable={isExternal && !installedAppInfo}
-                            components={{
-                                LoadingIndicator: null,
-                                Option: repoChartOptionLabel,
-                                MenuList: customMenuListItem,
-                                ...((!isExternal || installedAppInfo || !repoChartValue.chartRepoName) && {
-                                    IndicatorSeparator: null,
-                                }),
-                            }}
-                            styles={getCommonSelectStyle({
-                                clearIndicator: (base) => ({
-                                    ...base,
-                                    padding: '0px 8px',
-                                    color: 'var(--N400)',
-                                }),
-                            })}
-                        />
-                    </ConnectToHelmChartTippy>
+                    <AsyncSelect
+                        cacheOptions
+                        defaultOptions={repoChartOptions}
+                        isSearchable={false}
+                        formatOptionLabel={repoChartSelectOptionLabel}
+                        value={
+                            isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue
+                        }
+                        loadOptions={repoChartLoadOptions}
+                        onFocus={onFocus}
+                        onChange={handleRepoChartValueChange}
+                        noOptionsMessage={noMatchingOptions}
+                        isLoading={!repoChartAPIMade || refetchingCharts}
+                        isClearable={isExternal && !installedAppInfo}
+                        components={{
+                            LoadingIndicator: null,
+                            Option: repoChartOptionLabel,
+                            MenuList: customMenuListItem,
+                            ...((!isExternal || installedAppInfo || !repoChartValue.chartRepoName) && {
+                                IndicatorSeparator: null,
+                            }),
+                        }}
+                        styles={getCommonSelectStyle({
+                            clearIndicator: (base) => ({
+                                ...base,
+                                padding: '0px 8px',
+                                color: 'var(--N400)',
+                            }),
+                        })}
+                    />
                 </div>
                 {repoChartValue.deprecated && (
                     <div className="chart-deprecated-wrapper flex top left br-4 cn-9 bcy-1 mt-12">

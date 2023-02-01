@@ -38,7 +38,6 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
     ValueNameInput,
-    ConnectToHelmChartTippy,
     DeploymentAppSelector,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
@@ -93,6 +92,7 @@ import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
+    MANIFEST_INFO
 } from './ChartValuesView.constants'
 
 function ChartValuesView({
@@ -116,6 +116,9 @@ function ChartValuesView({
     const [valueName, setValueName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [isProjectLoading, setProjectLoading] = useState(false)
+    const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
+    const [deploymentVersion, setDeploymentVersion] = useState(1)
+
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -198,6 +201,7 @@ function ChartValuesView({
                     if (_installedAppInfo) {
                         initData(_installedAppInfo, _releaseInfo)
                     } else {
+                        setIsUnlinkedCLIApp(true)
                         const _chartVersionData: ChartVersionType = {
                             id: 0,
                             version: _releaseInfo.deployedAppDetail.chartVersion,
@@ -286,6 +290,9 @@ function ChartValuesView({
                         deploymentHistoryResponse.result?.deploymentHistory?.sort(
                             (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
                         ) || []
+
+                    setDeploymentVersion(_deploymentHistoryArr[0].version)
+
                     dispatch({
                         type: ChartValuesViewActionTypes.deploymentHistoryArr,
                         payload: _deploymentHistoryArr,
@@ -305,6 +312,8 @@ function ChartValuesView({
             ((commonState.chartValues.id && commonState.chartValues.chartVersion) ||
                 (isExternalApp && commonState.releaseInfo))
         ) {
+
+
             dispatch({ type: ChartValuesViewActionTypes.fetchingValuesYaml, payload: true })
             if (commonState.chartValues.id && commonState.chartValues.chartVersion) {
                 getChartValues(commonState.chartValues.id, commonState.chartValues.kind)
@@ -329,12 +338,15 @@ function ChartValuesView({
                         ) {
                             updateGeneratedManifest(
                                 isCreateValueView,
+                                isUnlinkedCLIApp,
                                 isExternalApp,
                                 isDeployChartView,
                                 appName,
                                 _valueName,
                                 commonState,
                                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                                appId,
+                                deploymentVersion,
                                 response.result.values,
                                 dispatch,
                             )
@@ -385,9 +397,14 @@ function ChartValuesView({
             const project = commonState.projects.find(
                 (e) => e.value.toString() === commonState.installedConfig.teamId.toString(),
             )
-            const environment = (commonState.environments as ChartValuesOptionType[]).find(
-                (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
-            )
+
+            let environment = {}
+            commonState.environments.forEach((env) => {
+                environment = (env.options as ChartValuesOptionType[]).find(
+                    (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
+                )
+            })
+            
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -418,12 +435,15 @@ function ChartValuesView({
 
             updateGeneratedManifest(
                 isCreateValueView,
+                isUnlinkedCLIApp,
                 isExternalApp,
                 isDeployChartView,
                 appName,
                 valueName,
                 commonState,
                 appStoreApplicationVersionId,
+                appId,
+                deploymentVersion,
                 commonState.modifiedValuesYaml,
                 dispatch,
             )
@@ -843,12 +863,6 @@ function ChartValuesView({
                     })
                     toast.error(MANIFEST_TAB_VALIDATION_ERROR)
                     return
-                } else if (isExternalApp && !commonState.installedAppInfo) {
-                    dispatch({
-                        type: ChartValuesViewActionTypes.showConnectToChartTippy,
-                        payload: true,
-                    })
-                    return
                 } else if (!isValidData(validatedName)) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
@@ -992,7 +1006,10 @@ function ChartValuesView({
                 </RadioGroup.Radio>
                 <RadioGroup.Radio
                     value="manifest"
-                    canSelect={isExternalApp && !commonState.installedAppInfo ? false : isValidData()}
+                    canSelect={isValidData()}
+                    tippyContent={
+                        MANIFEST_INFO.InfoText
+                    }
                 >
                     Manifest output
                 </RadioGroup.Radio>
@@ -1137,12 +1154,15 @@ function ChartValuesView({
         if (commonState.activeTab === 'manifest') {
             updateGeneratedManifest(
                 isCreateValueView,
+                isUnlinkedCLIApp,
                 isExternalApp,
                 isDeployChartView,
                 appName,
                 valueName,
                 commonState,
                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                appId,
+                deploymentVersion,
                 commonState.modifiedValuesYaml,
                 dispatch,
             )
@@ -1380,18 +1400,13 @@ function ChartValuesView({
                             isExternalApp &&
                             !commonState.installedAppInfo &&
                             !commonState.showRepoSelector && (
-                                <ConnectToHelmChartTippy
-                                    condition={commonState.showConnectToChartTippy}
-                                    hideConnectToChartTippy={hideConnectToChartTippy}
-                                >
-                                    <InfoColourBar
-                                        message={CONNECT_TO_HELM_CHART_TEXTS.Message}
-                                        classname="connect-to-chart-wrapper info_bar"
-                                        Icon={InfoIcon}
-                                        linkOnClick={handleConnectToChartClick}
-                                        linkText={renderConnectToHelmChart()}
-                                    />
-                                </ConnectToHelmChartTippy>
+                                <InfoColourBar
+                                    message={CONNECT_TO_HELM_CHART_TEXTS.Message}
+                                    classname="connect-to-chart-wrapper info_bar"
+                                    Icon={InfoIcon}
+                                    linkOnClick={handleConnectToChartClick}
+                                    linkText={renderConnectToHelmChart()}
+                                />
                             )}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||

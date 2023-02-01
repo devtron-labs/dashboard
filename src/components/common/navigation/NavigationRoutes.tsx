@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { URLS, AppListConstants, ViewType, SERVER_MODE, Host } from '../../../config'
+import { URLS, AppListConstants, ViewType, SERVER_MODE, Host, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common'
 import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
@@ -18,9 +18,9 @@ import {
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { showError } from '../helpers/Helpers'
+import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { showError, useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
@@ -398,13 +398,16 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
 export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
+    const isArgoInstalled: boolean = argoInfoData?.result.status === ModuleStatus.INSTALLED
+
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     <Route
                         path={`${path}/:appType`}
-                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount} />}
+                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} isArgoInstalled={isArgoInstalled} appListCount={appListCount} />}
                     />
                     <Route exact path="">
                         <RedirectToAppList />

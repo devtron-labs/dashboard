@@ -340,11 +340,11 @@ function NodeComponent({
                                 )}
                             </div>
                         )}
-
-
-                        <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
-                            <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
-                        </div>
+                        {node?.kind !== NodeType.Containers && (
+                            <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
+                                <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
+                            </div>
+                        )}
                     </div>
 
                     {node.childNodes?.length > 0 && _isSelected && (

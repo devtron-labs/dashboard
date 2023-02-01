@@ -73,7 +73,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     isDeployChartView?: boolean
     selectedEnvironment?: ChartEnvironmentOptionType
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
-    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
+    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[] 
     invalidaEnvironment: boolean
 }
 
@@ -356,12 +356,6 @@ export interface ChaartValuesGUIFormType {
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
-}
-
-export interface ConnectToHelmChartTippyProps {
-    condition: boolean
-    hideConnectToChartTippy: () => void
-    children: React.ReactElement<any>
 }
 
 export interface ActiveReadmeColumnProps {

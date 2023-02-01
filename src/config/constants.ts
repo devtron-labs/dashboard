@@ -199,7 +199,7 @@ export const Routes = {
     API_RESOURCE: 'k8s/api-resources',
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
-    CLUSTER_LIST_PERMISSION: 'cluster/auth-list'
+    CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
 }
 
 export const ViewType = {
@@ -306,6 +306,7 @@ export const DOCUMENTATION = {
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+    K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -329,6 +330,7 @@ export const AppListConstants = {
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
+        APP_STATUS: 'appStatus'
     },
 }
 // APP LIST ENDS
@@ -623,7 +625,7 @@ export const TERMINAL_STATUS_MAP = {
     ERROR: 'error',
     CANCELLED: 'cancelled',
     UNABLE_TO_FETCH: 'unabletofetch',
-    TIMED_OUT: 'timedout'
+    TIMED_OUT: 'timedout',
 }
 
 export const POD_STATUS = {
@@ -698,25 +700,25 @@ export const CHART_REPO_AUTH_TYPE = {
 }
 
 export const CHART_REPO_LABEL = [
-    { value: 'PUBLIC' , label: 'Public repository' },
-    { value: 'PRIVATE' , label: 'Private repository' },
+    { value: 'PUBLIC', label: 'Public repository' },
+    { value: 'PRIVATE', label: 'Private repository' },
 ]
 
 export enum TIMELINE_STATUS {
-    DEPLOYMENT_INITIATED = "DEPLOYMENT_INITIATED",
-    GIT_COMMIT = "GIT_COMMIT",
-    GIT_COMMIT_FAILED  = "GIT_COMMIT_FAILED",
-    KUBECTL_APPLY = "KUBECTL_APPLY",
-    KUBECTL_APPLY_STARTED = "KUBECTL_APPLY_STARTED",
-    KUBECTL_APPLY_SYNCED  = "KUBECTL_APPLY_SYNCED",
-    HEALTHY = "HEALTHY",
-    APP_HEALTH = "APP_HEALTH",
-    DEPLOYMENT_FAILED = "FAILED",
-    FETCH_TIMED_OUT = "TIMED_OUT",
-    UNABLE_TO_FETCH_STATUS  = "UNABLE_TO_FETCH_STATUS",
-    DEGRADED = "DEGRADED",
-    DEPLOYMENT_SUPERSEDED = "DEPLOYMENT_SUPERSEDED",
-    ABORTED = "ABORTED",
+    DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
+    GIT_COMMIT = 'GIT_COMMIT',
+    GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
+    KUBECTL_APPLY = 'KUBECTL_APPLY',
+    KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
+    KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',
+    HEALTHY = 'HEALTHY',
+    APP_HEALTH = 'APP_HEALTH',
+    DEPLOYMENT_FAILED = 'FAILED',
+    FETCH_TIMED_OUT = 'TIMED_OUT',
+    UNABLE_TO_FETCH_STATUS = 'UNABLE_TO_FETCH_STATUS',
+    DEGRADED = 'DEGRADED',
+    DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
+    ABORTED = 'ABORTED',
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -726,7 +728,18 @@ export const DEPLOYMENT_STATUS = {
     TIMED_OUT: 'timed_out',
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
-    SUPERSEDED: 'superseded'
+    PROGRESSING: 'inprogress',
+    SUPERSEDED: 'superseded',
+}
+
+export const HELM_DEPLOYMENT_STATUS_TEXT = {
+    PROGRESSING: 'Progressing',
+    INPROGRESS: 'In progress'
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const LAST_SEEN = 'last seen'
+export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
+export const SOURCE_NOT_CONFIGURED = 'Source not configured'
+export const DEFAULT_GIT_BRANCH_VALUE = '--'
+export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'

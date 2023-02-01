@@ -559,23 +559,31 @@ button.anchor {
     &.f-running,
     &.f-completed,
     &.f-bound,
-    &.f-Active,
+    &.f-active,
     &.f-scalingreplicasetdown {
-        color: var(--green);
+        color: var(--G500);
     }
 
     &.f-suspended,
-    &.f-switchedtoactiveservice {
-        color: var(--orange);
+    &.f-switchedtoactiveservice,
+    &.f-containercreating,
+    &.f-pending,
+    &[class*="f-init__"]:not(.f-init__crashloopbackoff) {
+        color: var(--O500);
     }
 
     &.f-degraded,
     &.f-sync.failed,
     &.f-failed,
+    &.f-error,
     &.f-imagepullbackoff,
     &.f-errimagepull,
     &.f-warning,
-    &.f-outofsync {
+    &.f-outofsync,
+    &.f-terminating,
+    &.f-crashloopbackoff,
+    &.f-init__crashloopbackoff,
+    &.f-evicted {
         color: var(--R500);
     }
 
@@ -975,6 +983,10 @@ button.anchor {
     &.not-triggered {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
+        &.not-deployed--node {
+            background: url('../assets/icons/ic-close.svg'), transparent;
+            background-size: contain, contain;
+        }
     }
 
     &.suspended {
@@ -1320,6 +1332,23 @@ button.anchor {
     }
 }
 
+.dc__hover-icon {
+    .dc__show-first--icon {
+       display: inherit;
+    }
+    .dc__show-second--icon {
+       display: none;
+    }
+    &:hover {
+        .dc__show-first--icon {
+            display: none;
+         }
+         .dc__show-second--icon {
+            display: inherit;
+         }
+    }
+}
+
 .grayscale {
     filter: grayscale(1);
 }
@@ -1477,7 +1506,6 @@ button.anchor {
     border-radius: 4px;
     border: solid 1px #72767a;
     background-color: var(--white);
-    text-transform: lowercase;
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -2071,7 +2099,7 @@ textarea,
 }
 
 .w-300 {
-    width: 300px;
+    width: 300px !important;
 }
 
 
@@ -2399,6 +2427,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+}
+
+.dc__flip-90 {
+    transform: rotate(-90deg);
 }
 
 textarea::-webkit-input-placeholder {
