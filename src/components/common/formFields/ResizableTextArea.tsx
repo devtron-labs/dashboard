@@ -4,7 +4,6 @@ import { useThrottledEffect } from "../helpers/Helpers"
 interface ResizableTextareaProps {
   minHeight?: number
   maxHeight?: number
-  defaultHeight?: number
   value?: string
   onChange?: (e) => void
   onBlur?: (e) => void
@@ -15,12 +14,12 @@ interface ResizableTextareaProps {
   disabled?: boolean
   name?: string
   tabIndex?: number
+  defaultRows?: number
 }
 
 export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
   minHeight,
   maxHeight,
-  defaultHeight,
   value,
   onChange = null,
   onBlur = null,
@@ -30,6 +29,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
   padding = 12,
   disabled = false,
   tabIndex = null,
+  defaultRows = null,
   ...props
 }) => {
   const [text, setText] = useState('')
@@ -52,7 +52,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 
   useThrottledEffect(
       () => {
-          _textRef.current.style.height = defaultHeight
+          _textRef.current.style.height = 'auto'
           let nextHeight = _textRef.current.scrollHeight
           if (minHeight && nextHeight < minHeight) {
               nextHeight = minHeight
@@ -78,6 +78,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
           spellCheck={false}
           disabled={disabled}
           tabIndex={tabIndex}
+          rows={defaultRows}
           {...props}
       />
   )

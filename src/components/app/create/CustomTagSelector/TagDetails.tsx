@@ -40,7 +40,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
                 tabIndex={tabIndex}
             />
             <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer" onClick={deleteTag}>
-                <DeleteCross className="icon-dim-20 mt-4" />
+                <DeleteCross className="icon-dim-20 mt-3" />
             </div>
         </div>
     )

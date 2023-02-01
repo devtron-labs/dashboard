@@ -115,15 +115,14 @@ export default function TagLabelValueSelector({
     return (
         <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoPosition>
             <PopupMenu.Button
-                rootClassName={`dc__bg-n50 flex top ${
-                    type === 'key'
-                        ? `dc__no-right-radius`
-                        : `dc__no-border-radius dc__no-right-border dc__no-left-border`
-                } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'er-5 bw-1' : ''}`}
+                rootClassName="dc__bg-n50 flex top dc__no-border"
             >
                 <ResizableTextarea
-                    defaultHeight={0}
-                    className="form__input pt-4-imp pb-4-imp dc__no-border fs-13"
+                    className={`form__input pt-4-imp pb-3-imp fs-13 mh-100-per ${
+                      type === 'key'
+                          ? `dc__no-right-radius`
+                          : `dc__no-border-radius dc__no-right-border dc__no-left-border`
+                  } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
@@ -131,6 +130,7 @@ export default function TagLabelValueSelector({
                     tabIndex={tabIndex}
                     lineHeight={20}
                     maxHeight={80}
+                    defaultRows={1}
                 />
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true} preventWheelDisable={true}>
