@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, EnvFormatOptions, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, EnvFormatOptions, formatHighlightedText, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
@@ -34,6 +34,7 @@ import {
     DELETE_PRESET_VALUE_DESCRIPTION_LINES,
     UPDATE_APP_BUTTON_TEXTS,
 } from './ChartValuesView.constants'
+import { groupStyle } from '../../../../components/secrets/secret.utils'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
@@ -51,8 +52,12 @@ export const ChartEnvironmentSelector = ({
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
 
-    const selectOption = (props) => {
+    const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
+    const handleFormatHighlightedText = (opt, { inputValue }) => {
+        return formatHighlightedText(opt, { inputValue }, 'label')
     }
 
     return !isDeployChartView ? (
@@ -77,15 +82,19 @@ export const ChartEnvironmentSelector = ({
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
-                    Option: selectOption,
+                    SingleValue: singleOption,
                     GroupHeading
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={getCommonSelectStyle()}
+                styles={{
+                    ...groupStyle(),
+                    control: (base) => ({ ...base, border: '1px solid #d6dbdf', background: 'var(--N50)'}),
+                }}
                 onChange={handleEnvironmentSelection}
                 options={environments}
+                formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
         </div>

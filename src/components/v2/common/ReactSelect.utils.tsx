@@ -205,7 +205,7 @@ export function GroupHeading(props) {
     if (!props.data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__uppercase flex-justify h-100">
+            <div className="flex dc__no-text-transform flex-justify h-100">
                 {`Cluster : ${props.data.label}`}
             </div>
         </components.GroupHeading>
@@ -214,13 +214,32 @@ export function GroupHeading(props) {
 
 export function EnvFormatOptions(props) {
     const { data, environmentfieldName } = props
-    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
+}
+
+export function formatHighlightedText(option, { inputValue }, environmentfieldName) {
     return (
-        <components.Option {...props}>
-            <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">{data[environmentfieldName]}</span>
-            {data.clusterName && data.namespace && <small className="cn-6">{data.clusterName}/{data.namespace}</small>}
+        <div className="flex left column dc__high-light-text">
+            <span
+                className="w-100 dc__ellipsis-right"
+                dangerouslySetInnerHTML={{
+                    __html: option[environmentfieldName].replace(
+                        new RegExp(inputValue, 'gi'),
+                        (highlighted) => `<mark>${highlighted}</mark>`,
+                    ),
+                }}
+            />
+            {option.clusterName && option.namespace && (
+                <small
+                    className="cn-6"
+                    dangerouslySetInnerHTML={{
+                        __html: (option.clusterName + '/' + option.namespace).replace(
+                            new RegExp(inputValue, 'gi'),
+                            (highlighted) => `<mark>${highlighted}</mark>`,
+                        ),
+                    }}
+                ></small>
+            )}
         </div>
-        </components.Option>
     )
 }

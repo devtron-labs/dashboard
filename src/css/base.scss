@@ -2517,3 +2517,11 @@ textarea::placeholder {
         }
     }
 }
+
+.dc__high-light-text {
+    mark {
+        padding: 0;
+        background-color: #ffd597 !important;
+        font-weight: 600;
+    }
+}

@@ -47,7 +47,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, GroupHeading } from '../v2/common/ReactSelect.utils'
+import { EnvFormatOptions, formatHighlightedText, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
@@ -1085,8 +1085,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    selectOption = (props) => {
+    singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="name" />
+    }
+
+    handleFormatHighlightedText = (opt, { inputValue }) => {
+        return formatHighlightedText(opt, { inputValue }, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
@@ -1096,7 +1100,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
-        
+       
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1116,13 +1120,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
-                                Option: this.selectOption,
+                                SingleValue: this.singleOption,
                                 GroupHeading,
                             }}
                             styles={{
                                 ...groupStyle(),
-                                control: (base) => ({ ...base, border: '1px solid #d6dbdf'}),
+                                control: (base) => ({ ...base, border: '1px solid #d6dbdf' }),
                             }}
+                            formatOptionLabel={this.handleFormatHighlightedText}
                         />
                         {this.state.showError && !envErrorObj.isValid ? (
                             <span className="form__error">
