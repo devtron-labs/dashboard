@@ -68,10 +68,14 @@ export default function CIDetails() {
             return agg
         }, triggerHistory)
         setTriggerHistory(new Map(newTriggerHistory))
-        return () => {
-            setTriggerHistory(new Map())
-        }
     }, [triggerHistoryResult])
+
+    useEffect(() => {
+      return () => {
+          setTriggerHistory(new Map())
+          setHasMoreLoading(false)
+      }
+  }, [pipelineId])
 
     function synchroniseState(triggerId: number, triggerDetails: History) {
         if (triggerId === triggerDetails.id) {
@@ -102,6 +106,9 @@ export default function CIDetails() {
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
+    if(pipelines.length ===1 && !pipelineId){
+      replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
+    }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
         return { value: `${item.id}`, label: item.name, pipelineId: item.id }
     })

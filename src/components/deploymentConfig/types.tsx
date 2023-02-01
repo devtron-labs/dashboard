@@ -212,7 +212,9 @@ export interface SecretData {
 
 export interface EsoSecretData {
     secretStore: any
+    secretStoreRef: any
     esoData: EsoData[]
+    refreshInterval: string
 }
 export interface SecretFormProps {
     id: number

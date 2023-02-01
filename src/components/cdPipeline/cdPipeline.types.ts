@@ -43,6 +43,7 @@ export interface Environment {
     name: string;
     namespace: string;
     active: boolean;
+    clusterName: string
     isClusterCdActive: boolean;
 }
 export interface CDPipelineState {
