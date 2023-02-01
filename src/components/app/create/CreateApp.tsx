@@ -254,8 +254,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.rules.team(this.state.form.projectId),
             this.rules.cloneApp(this.state.form.cloneId),
         ]
-        let showError = this.state.showErrors
-        let appNameErrors = this.state.appNameErrors
+        const showError = this.state.showErrors
+        const appNameErrors = this.state.appNameErrors
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
