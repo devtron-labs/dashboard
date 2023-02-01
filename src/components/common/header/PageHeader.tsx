@@ -28,6 +28,7 @@ export interface PageHeaderType {
     renderActionButtons?: () => JSX.Element
     showCloseButton?: boolean
     onClose?: () => void
+    markAsBeta?: boolean
 }
 
 function PageHeader({
@@ -45,6 +46,7 @@ function PageHeader({
     renderActionButtons,
     showCloseButton = false,
     onClose,
+    markAsBeta,
 }: PageHeaderType) {
     const {
         loginCount,
@@ -149,6 +151,10 @@ function PageHeader({
         return now > expiryDate
     }
 
+    const renderBetaTag = (): JSX.Element => {
+        return <span className="fs-12 fw-4 lh-18 pt-1 pb-1 pl-6 pr-6 ml-8 cn-9 bcy-5 br-4">Beta</span>
+    }
+
     return (
         <div
             className={`dc__page-header dc__content-space cn-9 bcn-0 pl-20 pr-20 ${
@@ -182,6 +188,7 @@ function PageHeader({
                             </Tippy>
                         </a>
                     )}
+                    {markAsBeta && renderBetaTag()}
                 </div>
                 {showTabs && (
                     <div className="flex left">

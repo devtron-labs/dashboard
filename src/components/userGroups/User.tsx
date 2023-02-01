@@ -3,7 +3,6 @@ import {
     showError,
     Progressing,
     mapByKey,
-    removeItemsFromArray,
     validateEmail,
     Option,
     ClearIndicator,
@@ -11,6 +10,7 @@ import {
     multiSelectStyles,
     DeleteDialog,
     MultiValueChipContainer,
+    deepEqual,
 } from '../common';
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
@@ -22,17 +22,18 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
+    K8sPermissionFilter,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
-import { useUserGroupContext, GroupRow } from './UserGroup';
+import { useUserGroupContext } from './UserGroup';
 import './UserGroup.scss';
 import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ServerError } from '../../modals/commonTypes';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { PermissionType } from '../apiTokens/authorization.utils';
+import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -80,11 +81,13 @@ export default function UserForm({
         action: ActionTypes.VIEW,
         entityName: [],
     });
+    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
     const [userGroups, setUserGroups] = useState<OptionType[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
     const creatableRef = useRef(null);
     const groupPermissionsRef = useRef(null);
+    const currentK8sPermissionRef = useRef<any[]>([])
 
     useEffect(() => {
         if (creatableRef.current) {
@@ -185,6 +188,18 @@ export default function UserForm({
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
+                    ...k8sPermission.map((permission) => ({
+                        ...permission,
+                        entity: EntityTypes.CLUSTER,
+                        action: permission.action.value,
+                        cluster: permission.cluster.label,
+                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                        resource: permission.resource.find((entity) => entity.value === '*')
+                        ? ''
+                        : permission.resource.map((entity) => entity.value).join(',')
+                    }))
             ],
             superAdmin: localSuperAdmin === 'SUPERADMIN',
         };
@@ -199,6 +214,7 @@ export default function UserForm({
         try {
             const { result } = await saveUser(payload);
             if (id) {
+                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 updateCallback(index, result);
                 toast.success('User updated');
             } else {
@@ -373,7 +389,7 @@ export default function UserForm({
                     onChange={handlePermissionType}
                 >
                     {PermissionType.map(({ label, value }) => (
-                        <RadioGroupItem value={value}>
+                        <RadioGroupItem value={value} key={label}>
                             <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
                                 {label}
                             </span>
@@ -424,6 +440,9 @@ export default function UserForm({
                         setDirectPermission={setDirectPermission}
                         chartPermission={chartPermission}
                         setChartPermission={setChartPermission}
+                        k8sPermission={k8sPermission}
+                        setK8sPermission={setK8sPermission}
+                        currentK8sPermissionRef={currentK8sPermissionRef}
                     />
                 </>
             )}
@@ -436,6 +455,12 @@ export default function UserForm({
                     >
                         Delete
                     </button>
+                )}
+                {id && !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
+                    <span className="flex cy-7 mr-12">
+                        <Error className="icon-dim-20 warning-icon-y7 mr-8" />
+                        Unsaved changes
+                    </span>
                 )}
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
                     Cancel

@@ -3,6 +3,8 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
+import {Teams} from "../../../../services/service.types";
+import {AppMetaInfo, LabelTagsType} from "../../../app/types";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -71,7 +73,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     isDeployChartView?: boolean
     selectedEnvironment?: ChartEnvironmentOptionType
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
-    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
+    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[] 
     invalidaEnvironment: boolean
 }
 
@@ -83,7 +85,6 @@ export interface DeploymentAppSelectorType {
 }
 
 export interface ChartProjectSelectorType {
-    isDeployChartView: boolean
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void
     projects: ChartValuesOptionType[]
@@ -110,6 +111,8 @@ export interface ChartRepoSelectorType extends ChartSelectorType {
     handleRepoChartValueChange?: (event: any) => void
     repoChartOptionLabel?: (props: any) => JSX.Element
     chartDetails?: ChartRepoOptions
+    showConnectToChartTippy: boolean
+    hideConnectToChartTippy: () => void
 }
 
 export interface ChartDeprecatedType {
@@ -212,7 +215,8 @@ export interface ChartValuesViewState {
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
     showDeleteAppConfirmationDialog: boolean
-    showAppNotLinkedDialog: boolean
+    showRepoSelector: boolean
+    showConnectToChartTippy: boolean
     selectedProject: ChartValuesOptionType
     selectedEnvironment: ChartEnvironmentOptionType
     selectedVersion: number
@@ -265,7 +269,8 @@ export enum ChartValuesViewActionTypes {
     isUpdateInProgress = 'isUpdateInProgress',
     isDeleteInProgress = 'isDeleteInProgress',
     showDeleteAppConfirmationDialog = 'showDeleteAppConfirmationDialog',
-    showAppNotLinkedDialog = 'showAppNotLinkedDialog',
+    showRepoSelector = 'showRepoSelector',
+    showConnectToChartTippy = 'showConnectToChartTippy',
     selectedProject = 'selectedProject',
     selectedEnvironment = 'selectedEnvironment',
     selectedVersion = 'selectedVersion',
@@ -351,4 +356,66 @@ export interface ChaartValuesGUIFormType {
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
+}
+
+export interface ActiveReadmeColumnProps {
+    fetchingReadMe: boolean
+    activeReadMe: string
+}
+
+export interface CompareWithDropdownProps {
+    deployedChartValues: ChartValuesDiffOptionType[]
+    defaultChartValues: ChartValuesDiffOptionType[]
+    presetChartValues: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
+    selectedVersionForDiff: ChartValuesDiffOptionType
+    handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
+}
+
+export interface ValuesForDiffStateType {
+    loadingValuesForDiff: boolean
+    deployedChartValues: ChartValuesDiffOptionType[]
+    defaultChartValues: ChartValuesDiffOptionType[]
+    presetChartValues: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
+    selectedVersionForDiff: ChartValuesDiffOptionType
+    deployedManifest: string
+    valuesForDiff: Map<number, string>
+    selectedValuesForDiff: string
+}
+
+export interface DeleteChartDialogProps {
+    appName: string
+    handleDelete: (force?: boolean) => void
+    toggleConfirmation: () => void
+    isCreateValueView?: boolean
+}
+
+export interface DeleteApplicationButtonProps {
+    type: string
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    dispatch: (action: ChartValuesViewAction) => void
+    clickHandler?: () => void
+}
+
+export interface UpdateApplicationButtonProps {
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    isDeployChartView: boolean
+    isCreateValueView: boolean
+    deployOrUpdateApplication: () => Promise<void>
+}
+
+export interface ErrorScreenWithInfoProps {
+    info: string
+}
+
+export interface ProjectSelectorTypes {
+    appId: string
+    onClose: () => void
+    appMetaInfo: AppMetaInfo
+    installedAppId: number
+    projectList: ChartValuesOptionType[]
+    getAppMetaInfoRes: () => Promise<void>
 }

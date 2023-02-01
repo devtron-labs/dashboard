@@ -3,6 +3,10 @@ import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState
 import YAML from 'yaml'
 import { Collection } from 'yaml/types'
 import { showError } from '../../../common'
+import {
+    ChartDeploymentManifestDetailResponse,
+    getDeploymentManifestDetails,
+} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -48,6 +52,46 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
     }
 }
 
+export const getCompareValuesSelectStyles = () => {
+    return {
+        control: (base) => ({
+            ...base,
+            backgroundColor: 'var(--N100)',
+            border: 'none',
+            boxShadow: 'none',
+            minHeight: '32px',
+        }),
+        option: (base, state) => ({
+            ...base,
+            color: 'var(--N900)',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        }),
+        menu: (base) => ({
+            ...base,
+            marginTop: '2px',
+            minWidth: '240px',
+        }),
+        menuList: (base) => ({
+            ...base,
+            position: 'relative',
+            paddingBottom: 0,
+            paddingTop: 0,
+            maxHeight: '250px',
+        }),
+        dropdownIndicator: (base, state) => ({
+            ...base,
+            padding: 0,
+            color: 'var(--N400)',
+            transition: 'all .2s ease',
+            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        }),
+        noOptionsMessage: (base) => ({
+            ...base,
+            color: 'var(--N600)',
+        }),
+    }
+}
+
 const generateManifestGenerationKey = (
     isCreateValueView: boolean,
     isExternalApp: boolean,
@@ -58,18 +102,23 @@ const generateManifestGenerationKey = (
     return isCreateValueView
         ? `0_${valueName}_${commonState.chartValues?.id}_default_${commonState.selectedVersionUpdatePage?.id}`
         : isExternalApp
-            ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
-            : `${commonState.selectedEnvironment?.value || 0}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment?.namespace || 'default'}_${commonState.selectedVersionUpdatePage?.id}`
+        ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
+        : `${commonState.selectedEnvironment?.value || 0}_${appName}_${commonState.chartValues?.id}_${
+              commonState.selectedEnvironment?.namespace || 'default'
+          }_${commonState.selectedVersionUpdatePage?.id}`
 }
 
 export const updateGeneratedManifest = (
     isCreateValueView: boolean,
+    isUnlinkedCLIApp: boolean,
     isExternalApp: boolean,
     isDeployChartView: boolean,
     appName: string,
     valueName: string,
     commonState: ChartValuesViewState,
     appStoreApplicationVersionId: number,
+    appId: string,
+    deploymentVersion: number,
     valuesYaml: string,
     dispatch: (action: ChartValuesViewAction) => void,
 ) => {
@@ -93,6 +142,24 @@ export const updateGeneratedManifest = (
             valuesEditorError: '',
         },
     })
+
+    if (isUnlinkedCLIApp) {
+        getDeploymentManifestDetails(appId, deploymentVersion, isExternalApp).then(
+            (response: ChartDeploymentManifestDetailResponse) => {
+                dispatch({
+                    type: ChartValuesViewActionTypes.multipleOptions,
+                    payload: {
+                        generatedManifest: response.result.manifest,
+                        valuesYamlUpdated: false,
+                        valuesEditorError: '',
+                        generatingManifest: false,
+                    },
+                })
+            },
+        )
+
+        return
+    }
 
     if (isDeployChartView) {
         getGeneratedHelmManifest(

@@ -9,6 +9,8 @@ import {
     showError,
     useBreadcrumb,
     ToastBodyWithButton,
+    filterImageList,
+    toastAccessDenied,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -18,15 +20,22 @@ import { ReactComponent as Memory } from '../../assets/icons/ic-memory.svg'
 import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
+import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
+import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
+import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import PageHeader from '../common/header/PageHeader'
-import { useParams } from 'react-router'
+import { useParams, useLocation, useHistory } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
+    ClusterListType,
+    ImageList,
     NodeDetail,
     NodeDetailResponse,
     PodType,
@@ -42,15 +51,23 @@ import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
 import { ServerErrors } from '../../modals/commonTypes'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import ClusterTerminal from './ClusterTerminal'
+import EditTaintsModal from './NodeActions/EditTaintsModal'
+import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
+import CordonNodeModal from './NodeActions/CordonNodeModal'
+import DrainNodeModal from './NodeActions/DrainNodeModal'
+import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 
-export default function NodeDetails() {
+export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
+    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
+    const nodeListRef = useRef([nodeName])
     const [loader, setLoader] = useState(false)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
-    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
     const [copied, setCopied] = useState(false)
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
@@ -62,10 +79,18 @@ export default function NodeDetails() {
     const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
+    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const toastId = useRef(null)
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
     const [showAllTaints, setShowAllTaints] = useState(false)
+    const [showCordonNodeDialog, setCordonNodeDialog] = useState(false)
+    const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
+    const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
+    const [showEditTaints, setShowEditTaints] = useState(false)
+    const location = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+    const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -110,6 +135,12 @@ export default function NodeDetails() {
     }, [])
 
     useEffect(() => {
+        if (imageList?.length && nodeDetail?.k8sVersion) {
+            setNodeImageList(filterImageList(imageList, nodeDetail.k8sVersion))
+        }
+    }, [imageList, nodeDetail?.k8sVersion])
+
+    useEffect(() => {
         const _lastDataSyncTime = Date()
         setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
         const interval = setInterval(() => {
@@ -120,43 +151,74 @@ export default function NodeDetails() {
         }
     }, [lastDataSync])
 
+    useEffect(() => {
+        if (queryParams.has('tab')) {
+            const tab = queryParams.get('tab').replace('-', ' ')
+            if (tab === NODE_DETAILS_TABS.summary.toLowerCase()) {
+                setSelectedTabIndex(0)
+            } else if (tab === NODE_DETAILS_TABS.yaml.toLowerCase()) {
+                setSelectedTabIndex(1)
+            } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
+                setSelectedTabIndex(2)
+            } else if (tab === NODE_DETAILS_TABS.debug.toLowerCase()) {
+                setSelectedTabIndex(3)
+            }
+        }
+    }, [location.search])
+
+    const changeNodeTab = (e): void => {
+        const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
+        let _searchParam = '?tab='
+        if (_tabIndex === 0) {
+            _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
+        } else if (_tabIndex === 1) {
+            _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
+        } else if (_tabIndex === 2) {
+            _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
+        } else if (_tabIndex === 3) {
+            _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
+        }
+        push({
+            pathname: location.pathname,
+            search: _searchParam,
+        })
+    }
+
     const renderNodeDetailsTabs = (): JSX.Element => {
         return (
             <ul role="tablist" className="tab-list">
-                <li
-                    className="tab-list__tab pointer"
-                    onClick={() => {
-                        setSelectedTabIndex(0)
-                    }}
-                >
+                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                        Summary
+                        {NODE_DETAILS_TABS.summary}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                <li
-                    className="tab-list__tab pointer"
-                    onClick={() => {
-                        setSelectedTabIndex(1)
-                    }}
-                >
+                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
-                        YAML
+                        {NODE_DETAILS_TABS.yaml}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
-                <li
-                    className="tab-list__tab pointer"
-                    onClick={() => {
-                        setSelectedTabIndex(2)
-                    }}
-                >
+                <li className="tab-list__tab pointer" data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                        Node conditions
+                        {NODE_DETAILS_TABS.nodeConditions}
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
+                {isSuperAdmin && (
+                    <li className="tab-list__tab pointer" data-tab-index="3" onClick={changeNodeTab}>
+                        <div
+                            className={`mb-6 flexbox fs-13 tab-hover${
+                                selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
+                            }`}
+                        >
+                            <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
+                            {NODE_DETAILS_TABS.debug}
+                        </div>
+                        {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
+                    </li>
+                )}
             </ul>
         )
     }
@@ -685,8 +747,36 @@ export default function NodeDetails() {
                 <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
                     <div className="fw-6">
                         <div className="fs-16 cn-9">{nodeDetail.name}</div>
-                        <div className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
-                            {nodeDetail.status}
+                        <div className="flex left mt-4">
+                            <span className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
+                                {nodeDetail.status}
+                            </span>
+                            <span className="cn-2 mr-16 ml-16">|</span>
+                            <span className="flex left fw-6 cb-5 fs-13 cursor" onClick={showCordonNodeModal}>
+                                {nodeDetail.unschedulable ? (
+                                    <>
+                                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                                    </>
+                                ) : (
+                                    <>
+                                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
+                                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                                    </>
+                                )}
+                            </span>
+                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showDrainNodeModal}>
+                                <DrainIcon className="icon-dim-16 mr-5 scb-5" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.drain}
+                            </span>
+                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showEditTaintsModal}>
+                                <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.taints}
+                            </span>
+                            <span className="flex left fw-6 cr-5 ml-16 fs-13 cursor" onClick={showDeleteNodeModal}>
+                                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.delete}
+                            </span>
                         </div>
                     </div>
                     <div className="fs-13">
@@ -865,13 +955,87 @@ export default function NodeDetails() {
         )
     }
 
+    const renderTerminal = () => {
+        return (
+            <ClusterTerminal
+                clusterId={Number(clusterId)}
+                nodeList={nodeListRef.current}
+                clusterImageList={nodeImageList}
+                isNodeDetailsPage={true}
+                namespaceList={namespaceList[nodeDetail.clusterName]}
+            />
+        )
+    }
+
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
         } else if (selectedTabIndex === 2) {
             return renderConditions()
+        } else if (selectedTabIndex === 3) {
+            return renderTerminal()
         } else {
             return renderSummary()
+        }
+    }
+
+    const isAuthorized = (): boolean => {
+        if (!isSuperAdmin) {
+            toastAccessDenied()
+            return false
+        }
+        return true
+    }
+
+    const showCordonNodeModal = (): void => {
+        if (isAuthorized()) {
+            setCordonNodeDialog(true)
+        }
+    }
+
+    const hideCordonNodeModal = (refreshData?: boolean): void => {
+        setCordonNodeDialog(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
+    const showDrainNodeModal = (): void => {
+        if (isAuthorized()) {
+            setDrainNodeDialog(true)
+        }
+    }
+
+    const hideDrainNodeModal = (refreshData?: boolean): void => {
+        setDrainNodeDialog(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
+    const showDeleteNodeModal = (): void => {
+        if (isAuthorized()) {
+            setDeleteNodeDialog(true)
+        }
+    }
+
+    const hideDeleteNodeModal = (refreshData?: boolean): void => {
+        setDeleteNodeDialog(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
+    const showEditTaintsModal = (): void => {
+        if (isAuthorized()) {
+            setShowEditTaints(true)
+        }
+    }
+
+    const hideEditTaintsModal = (refreshData?: boolean): void => {
+        setShowEditTaints(false)
+        if (refreshData) {
+            getData([])
         }
     }
 
@@ -888,6 +1052,41 @@ export default function NodeDetails() {
                 renderHeaderTabs={renderNodeDetailsTabs}
             />
             {renderTabs()}
+
+            {showCordonNodeDialog && (
+                <CordonNodeModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    unschedulable={nodeDetail.unschedulable}
+                    closePopup={hideCordonNodeModal}
+                />
+            )}
+            {showDrainNodeDialog && (
+                <DrainNodeModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    closePopup={hideDrainNodeModal}
+                />
+            )}
+            {showDeleteNodeDialog && (
+                <DeleteNodeModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    closePopup={hideDeleteNodeModal}
+                />
+            )}
+            {showEditTaints && (
+                <EditTaintsModal
+                    name={nodeName}
+                    version={nodeDetail.version}
+                    kind={nodeDetail.kind}
+                    taints={nodeDetail.taints}
+                    closePopup={hideEditTaintsModal}
+                />
+            )}
         </div>
     )
 }

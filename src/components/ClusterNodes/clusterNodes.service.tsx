@@ -1,12 +1,16 @@
 import { Routes } from '../../config'
-import { get, put } from '../../services/api'
+import { get, post, put, trash } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
+    NodeCordonRequest,
+    NodeActionRequest,
     NodeDetailResponse,
+    NodeDrainRequest,
     NodeListResponse,
     UpdateNodeRequestBody,
+    EditTaintsRequest,
 } from './types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -25,10 +29,62 @@ export const getNodeCapacity = (clusterId: string, nodeName: string): Promise<No
     return get(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
 }
 
+export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<ResponseType> => {
+    return put(`${Routes.NODE_CAPACITY}/cordon`, requestPayload)
+}
+
+export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> => {
+    return put(`${Routes.NODE_CAPACITY}/drain`, requestPayload)
+}
+
+export const deleteNodeCapacity = (requestPayload: NodeActionRequest): Promise<ResponseType> => {
+    return trash(Routes.NODE_CAPACITY, requestPayload)
+}
+
 export const updateNodeManifest = (
     clusterId: string,
     nodeName: string,
     nodeData: UpdateNodeRequestBody,
 ): Promise<ResponseType> => {
     return put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
+}
+
+export const clusterTerminalStart = (data): Promise<ResponseType> => {
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
+}
+
+export const clusterTerminalUpdate = (data): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
+}
+
+export const clusterTerminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT}?terminalAccessId=${terminalAccessId}`, null)
+}
+
+export const clusterDisconnectAndRetry = (data): Promise<ResponseType> => {
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT_RETRY}`, data)
+}
+
+export const clusterTerminalStop = (terminalAccessId): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
+}
+
+export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE_SHELL}`, data)
+}
+
+export const clusterNamespaceList = (): Promise<ResponseType> => {
+    return get(Routes.CLUSTER_NAMESPACE)
+}
+
+export const getClusterManifest = (terminalAccessId: number): Promise<ResponseType> => {
+    return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_MANIFEST}?terminalAccessId=${terminalAccessId}`)
+}
+
+export const getClusterEvents = (terminalAccessId: number): Promise<ResponseType> => {
+    return get(`${Routes.CLUSTER_TERMINAL}/${Routes.POD_EVENTS}?terminalAccessId=${terminalAccessId}`)
+}
+
+export const updateTaints = (taintData: EditTaintsRequest): Promise<ResponseType> => {
+    return put(Routes.TAINTS_EDIT, taintData)
 }

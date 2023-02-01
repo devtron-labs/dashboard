@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import { ConfirmationDialog, DeleteDialog, showError } from '../components/common';
-import { ServerErrors } from '../modals/commonTypes';
-import info from '../assets/icons/ic-info-filled.svg';
-import { useHistory } from 'react-router';
+import React, { useState } from 'react'
+import { toast } from 'react-toastify'
+import { ConfirmationDialog, DeleteDialog } from '../components/common'
+import { ServerErrors } from '../modals/commonTypes'
+import { useHistory } from 'react-router'
+import { DeleteComponentProps } from '../components/app/types'
+import info from '../assets/icons/ic-info-filled.svg'
 
 function DeleteComponent({
     setDeleting,
@@ -12,45 +13,43 @@ function DeleteComponent({
     title,
     component,
     payload,
-    confirmationDialogDescription =  '',
+    confirmationDialogDescription = '',
     redirectTo = false,
     url = '',
     reload,
     configuration = '',
-}) {
-    const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false);
-    const { push } = useHistory();
+}: DeleteComponentProps) {
+    const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)
+    const { push } = useHistory()
 
     async function handleDelete() {
-        setDeleting(true);
+        setDeleting(true)
         try {
-            await deleteComponent(payload);
-            toast.success('Successfully deleted');
-            toggleConfirmation(false);
-            setDeleting(false);
+            await deleteComponent(payload)
+            toast.success('Successfully deleted')
+            toggleConfirmation(false)
             if (redirectTo) {
-                push(url);
+                push(url)
             } else {
-                reload();
+                reload()
             }
         } catch (serverError) {
-            setDeleting(false);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
-                setCannotDeleteDialogModal(true);
+                setCannotDeleteDialogModal(true)
             }
         } finally {
-            setDeleting(false);
+            setDeleting(false)
         }
     }
 
     const handleConfirmation = () => {
-        setCannotDeleteDialogModal(false);
-        toggleConfirmation(false);
-    };
+        setCannotDeleteDialogModal(false)
+        toggleConfirmation(false)
+    }
 
     const renderCannotDeleteDialogModal = () => {
         return (
-            <ConfirmationDialog className="confirmation-dialog__body--w-400">
+            <ConfirmationDialog className="confirmation-dialog__body--w-360">
                 <ConfirmationDialog.Icon src={info} />
                 <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
@@ -60,8 +59,8 @@ function DeleteComponent({
                     </button>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>
-        );
-    };
+        )
+    }
 
     const renderDeleteDialog = () => {
         return (
@@ -74,14 +73,14 @@ function DeleteComponent({
                     <p>Are you sure you want to delete this {configuration ? configuration : component}? </p>
                 </DeleteDialog.Description>
             </DeleteDialog>
-        );
-    };
+        )
+    }
     return (
         <div>
             {!showCannotDeleteDialogModal && renderDeleteDialog()}
             {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
         </div>
-    );
+    )
 }
 
-export default DeleteComponent;
+export default DeleteComponent

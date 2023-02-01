@@ -246,6 +246,9 @@ export interface ChartGroupState {
     loading: boolean;
     chartGroupDetailsLoading: boolean;
     noGitOpsConfigAvailable?: boolean
+    pageOffset?: number,
+    pageSize?: number,
+    hasMoreCharts?: boolean,
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {
@@ -284,8 +287,9 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     discardValuesYamlChanges: (index: number) => void;
     updateChartGroupEntriesFromResponse: () => void;
     reloadState: () => void;
-    applyFilterOnCharts: (qs: string) => Promise<void>;
+    applyFilterOnCharts: (qs: string, resetPage?: boolean) => Promise<void>;
     setCharts: (charts: ChartGroupEntry[]) => void;
+    resetPaginationOffset: ()=> void;
 }
 
 export interface HelmTemplateChartRequest {
@@ -321,4 +325,10 @@ export interface EmptyCharts {
     styles?: {}
     showChartGroupModal?: boolean
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface HelmProjectUpdatePayload {
+    appId: string
+    appName: string
+    teamId: number
 }

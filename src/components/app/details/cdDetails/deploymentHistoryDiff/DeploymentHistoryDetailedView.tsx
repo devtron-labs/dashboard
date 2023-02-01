@@ -3,18 +3,13 @@ import { Progressing, showError } from '../../../../common'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'
-import {
-    DeploymentTemplateOptions,
-    CompareViewDeploymentType,
-    DeploymentHistoryDetail,
-    DeploymentHistoryParamsType,
-} from '../cd.type'
+import { DeploymentHistoryDetail } from '../cd.type'
+import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryParamsType } from './types'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
 export default function DeploymentHistoryDetailedView({
-    showTemplate,
-    setShowTemplate,
+    setFullScreenView,
     deploymentHistoryList,
     setDeploymentHistoryList,
 }: CompareViewDeploymentType) {
@@ -73,16 +68,11 @@ export default function DeploymentHistoryDetailedView({
 
     useEffect(() => {
         //show template showing historical diff detailed view
-        //in case if !shoowTemplate CD detail component being rendered
-
-        if (!showTemplate) {
-            setShowTemplate(true)
-        }
+        //in case if !showTemplate CD detail component being rendered
+        setFullScreenView(true)
 
         return (): void => {
-            if (showTemplate) {
-                setShowTemplate(false)
-            }
+            setFullScreenView(false)
         }
     }, [])
 
@@ -91,7 +81,7 @@ export default function DeploymentHistoryDetailedView({
             <DeploymentHistoryHeader
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}
-                setShowTemplate={setShowTemplate}
+                setFullScreenView={setFullScreenView}
                 setLoader={setLoader}
                 setPreviousConfigAvailable={setPreviousConfigAvailable}
             />

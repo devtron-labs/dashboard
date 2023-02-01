@@ -17,10 +17,12 @@ import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
+    isExternalApp,
     appDeleteError,
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    isExternalApp: boolean
     appDeleteError: string
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
@@ -69,7 +71,7 @@ const AppDetailsComponent = ({
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
-                <EnvironmentSelectorComponent />
+                <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
                 <EnvironmentStatusComponent appStreamData={streamData}/>
             </div>
 

@@ -8,16 +8,19 @@ import {
     handleUTCTime,
     Pagination,
     Progressing,
+    filterImageList,
     showError,
     useBreadcrumb,
 } from '../common'
 import {
     ClusterCapacityType,
     ClusterListResponse,
-    COLUMN_METADATA,
     ColumnMetadataType,
     TEXT_COLOR_CLASS,
     ERROR_TYPE,
+    ClusterListType,
+    NodeDetail,
+    ImageList,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -30,9 +33,12 @@ import NodeListSearchFilter from './NodeListSearchFilter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
+import ClusterTerminal from './ClusterTerminal'
+import { COLUMN_METADATA } from './constants'
+import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 
-export default function NodeList() {
+export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
@@ -63,11 +69,23 @@ export default function NodeList() {
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
+    const [showTerminal, setTerminal] = useState<boolean>(false)
+    const nodeList = filteredFlattenNodeList.map((node) => node['name'])
+    const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
+    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
+    const [selectedNode, setSelectedNode] = useState<string>()
     const pageSize = 15
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
-            const appliedColumnDerivedWidth = appliedColumns.length * 116 + 180 + 65
+            /*
+          116 is standard with of every column for calculations
+          65 is width of left nav
+          180 is the diff of node column
+          80 is the diff of status column
+          */
+
+            const appliedColumnDerivedWidth = appliedColumns.length * 116 + 65 + 180 + 80
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
@@ -118,6 +136,9 @@ export default function NodeList() {
                         const _flattenNodeData = flattenObject(data)
                         if (data['errors']) {
                             _flattenNodeData['errorCount'] = Object.keys(data['errors']).length
+                        }
+                        if (data['taints']) {
+                            _flattenNodeData['taintCount'] = Object.keys(data['taints']).length
                         }
                         return _flattenNodeData
                     })
@@ -475,7 +496,9 @@ export default function NodeList() {
                         </div>
                         <div className="mr-16 w-25">
                             <div className="dc__align-center fs-13 fw-4 cn-7">Memory Capacity</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">{clusterCapacityData?.memory?.capacity}</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
+                                {clusterCapacityData?.memory?.capacity}
+                            </div>
                         </div>
                         <div className="mr-16 w-25">
                             <div className="dc__align-center fs-13 fw-4 cn-7">Memory Requests</div>
@@ -501,11 +524,13 @@ export default function NodeList() {
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
                     column.label === 'Node'
-                        ? `${fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''} w-280 pl-20`
+                        ? `${
+                              fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
+                          } w-280 pl-20`
                         : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
-                }`}
+                } ${column.value === 'status' && 'w-180'}`}
                 onClick={() => {
                     column.isSortingAllowed && handleSortClick(column)
                 }}
@@ -548,22 +573,37 @@ export default function NodeList() {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44"
-                style={{ width: 'max-content', minWidth: '100%' }}
+                className={`dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover ${
+                    isSuperAdmin ? 'dc__visible-hover--parent' : ''
+                }`}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
-                            className={`w-280 dc__inline-block dc__ellipsis-right mr-16 pl-20 pt-12 pb-12${
+                            className={`w-280 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
-                            <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
+                            <div className="w-100 flex left">
+                                <div className="w-250 pr-4 dc__ellipsis-right">
+                                    <NavLink to={`${match.url}/${nodeData[column.value]}`}>
+                                        {nodeData[column.value]}
+                                    </NavLink>
+                                </div>
+                                <NodeActionsMenu
+                                    nodeData={nodeData as NodeDetail}
+                                    openTerminal={openTerminal}
+                                    getNodeListData={getNodeListData}
+                                    isSuperAdmin={isSuperAdmin}
+                                />
+                            </div>
                         </div>
                     ) : (
                         <div
-                            className={`w-100-px dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
-                                column.value === 'status' ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7' : ''
+                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
+                                column.value === 'status'
+                                    ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
+                                    : 'w-100-px'
                             }`}
                         >
                             {column.value === 'errorCount' ? (
@@ -580,7 +620,15 @@ export default function NodeList() {
                                     condition={column.value.indexOf('.usagePercentage') > 0}
                                     wrap={(children) => renderPercentageTippy(nodeData, column, children)}
                                 >
-                                    {nodeData[column.value]}
+                                    {column.value === 'status' && nodeData['unschedulable'] ? (
+                                        <span className="flex left">
+                                            <span>{nodeData[column.value]}</span>
+                                            <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                                            <span className="cr-5"> SchedulingDisabled</span>
+                                        </span>
+                                    ) : (
+                                        nodeData[column.value]
+                                    )}
                                 </ConditionalWrap>
                             ) : (
                                 '-'
@@ -610,10 +658,23 @@ export default function NodeList() {
         return <Progressing pageLoader />
     }
 
+    const openTerminal = (clusterData): void => {
+        setSelectedNode(clusterData.name)
+        setNodeImageList(filterImageList(imageList, clusterData.k8sVersion))
+        setTerminal(true)
+    }
+
+    const closeTerminal = (): void => {
+        setTerminal(false)
+    }
+
     return (
         <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div className="node-list">
+            <div
+                className="node-list dc__overflow-scroll"
+                style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 61px)` }}
+            >
                 {renderClusterSummary()}
                 <div
                     className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
@@ -651,11 +712,22 @@ export default function NodeList() {
                                     .slice(nodeListOffset, nodeListOffset + pageSize)
                                     ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {renderPagination()}
+                            {!showTerminal && renderPagination()}
                         </>
                     )}
                 </div>
             </div>
+            {showTerminal && selectedNode && (
+                <ClusterTerminal
+                    clusterId={Number(clusterId)}
+                    nodeList={nodeList}
+                    closeTerminal={closeTerminal}
+                    clusterImageList={nodeImageList}
+                    namespaceList={namespaceList[clusterName]}
+                    node={selectedNode}
+                    setSelectedNode={setSelectedNode}
+                />
+            )}
         </div>
     )
 }

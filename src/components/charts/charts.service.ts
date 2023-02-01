@@ -1,8 +1,9 @@
 import { get, post, put, trash } from '../../services/api'
 import { Routes } from '../../config'
 import { handleUTCTime, sortCallback } from '../common'
-import { ChartValuesType, ChartGroup, HelmTemplateChartRequest } from './charts.types'
+import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
+import {ResponseType} from "../../services/service.types";
 
 interface RootObject {
     code: number
@@ -228,6 +229,7 @@ interface appName {
     suggestedName?: string
 }
 
+
 interface AppNameValidated extends RootObject {
     result?: appName[]
 }
@@ -242,4 +244,8 @@ export function getChartsByKeyword(input: string) {
 
 export function deleteChartGroup(request) {
     return trash(Routes.CHART_GROUP, request)
+}
+
+export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise<ResponseType> {
+    return put(Routes.UPDATE_HELM_APP_META_INFO, payload)
 }

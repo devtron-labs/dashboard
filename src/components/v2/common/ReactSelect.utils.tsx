@@ -94,7 +94,7 @@ export const styles = {
 }
 
 export function Option(props) {
-    const { selectProps, data, showTippy, style } = props
+    const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
@@ -105,7 +105,12 @@ export function Option(props) {
     }
 
     return showTippy ? (
-        <Tippy className="default-white" arrow={false} placement="right" content={data.label}>
+        <Tippy
+            className={tippyClass || "default-white"}
+            arrow={false}
+            placement={placement || 'right'}
+            content={tippyContent || data.label}
+        >
             {getOption()}
         </Tippy>
     ) : (
@@ -151,5 +156,71 @@ export function ValueContainerWithIcon(props) {
                 <>{props.children}</>
             )}
         </components.ValueContainer>
+    )
+}
+
+export const noMatchingOptions = () => 'No matching results'
+
+export const formatOptionLabel = (option): JSX.Element => {
+    return (
+        <div className="flex left column">
+            <span className="w-100 dc__ellipsis-right">
+                {option.label}
+            </span>
+            {option.infoText && <small className="cn-6">{option.infoText}</small>}
+        </div>
+    )
+}
+
+export const CustomValueContainer = (props): JSX.Element => {
+    return (
+        <components.ValueContainer {...props}>
+            {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
+                (props.selectProps.value?.label ? (
+                    <span className="dc__position-abs cn-9 ml-2">{props.selectProps.value.label}</span>
+                ) : (
+                    <span className="dc__position-abs cn-5 ml-2">{props.selectProps.placeholder}</span>
+                ))}
+            {React.cloneElement(props.children[1])}
+        </components.ValueContainer>
+    )
+}
+
+export const menuComponent = (props,text) => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                {`Type to enter custom ${text}`}
+            </div>
+            {props.children}
+        </components.MenuList>
+    )
+}
+
+export const noMatchingPlatformOptions = (): string => {
+    return 'No matching options'
+}
+
+export function GroupHeading(props) {
+    if (!props.data.label) return null
+    return (
+        <components.GroupHeading {...props}>
+            <div className="flex dc__uppercase flex-justify h-100">
+                {`Cluster : ${props.data.label}`}
+            </div>
+        </components.GroupHeading>
+    )
+}
+
+export function EnvFormatOptions(props) {
+    const { data, environmentfieldName } = props
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            <div className="flex left column">
+            <span className="w-100 dc__ellipsis-right">{data[environmentfieldName]}</span>
+            {data.clusterName && data.namespace && <small className="cn-6">{data.clusterName}/{data.namespace}</small>}
+        </div>
+        </components.Option>
     )
 }

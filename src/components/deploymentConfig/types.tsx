@@ -79,6 +79,7 @@ export interface DeploymentChartVersionType {
     version: string
     name: string
     description?: string
+    isAppMetricsSupported: boolean
 }
 
 export type DeploymentChartOptionkind = 'base' | 'env' | 'chartVersion' | 'deployment'
@@ -102,8 +103,8 @@ export interface DeploymentConfigFormCTAProps {
     isCiPipeline?: boolean
     disableCheckbox?: boolean
     disableButton?: boolean
-    currentChart: DeploymentChartVersionType
     toggleAppMetrics: () => void
+    selectedChart: DeploymentChartVersionType,
 }
 
 export interface CompareWithDropdownProps {
@@ -211,7 +212,9 @@ export interface SecretData {
 
 export interface EsoSecretData {
     secretStore: any
+    secretStoreRef: any
     esoData: EsoData[]
+    refreshInterval: string
 }
 export interface SecretFormProps {
     id: number

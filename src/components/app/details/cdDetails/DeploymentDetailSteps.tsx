@@ -8,11 +8,15 @@ import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreak
 import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
+import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
+import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
+
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
-    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus !== 'Aborted')
+    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus.toUpperCase() !== TIMELINE_STATUS.ABORTED)
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
 
@@ -23,7 +27,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
                     deploymentStatusDetailRes.result,
                 )
-                if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+                if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
                     initTimer = setTimeout(() => {
                         getDeploymentDetailStepsData()
                     }, 10000)
@@ -54,19 +58,40 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         }
     }, [])
 
-    return deploymentStatus === 'Aborted' ? (
+    const redirectToDeploymentStatus = () => {
+        history.push({
+            pathname: `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`,
+            search: DEPLOYMENT_STATUS_QUERY_PARAM
+        })
+    }
+
+    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED || deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted">
             <CDEmptyState
-                title="This deployment was aborted"
-                subtitle="This deployment was aborted as a successive deployment was triggered before this deployment could complete."
+                title="Deployment failed"
+                subtitle="A new deployment was initiated before this deployment completed."
             />
         </div>
     ) : deploymentListLoader ? (
         <Progressing pageLoader />
+    ) : !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
+        <div className="h-100 flex">
+            <CDEmptyState
+                title="Deployment in progress"
+                imgSource={mechanicalOperation}
+                actionButtonClass="bcb-5 cn-0"
+                ActionButtonIcon={Arrow}
+                actionHandler={redirectToDeploymentStatus}
+                subtitle="This deployment is in progress. Click on Check status to know the live status."
+                actionButtonText="Check live status"
+                actionButtonIconRight={true}
+            />
+        </div>
     ) : (
-        <div className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 m-16" style={{ width: 'min( 100%, 800px )' }}>
+        <div className="dc__mxw-1000 min-w-800">
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                streamData={null}
             />
         </div>
     )

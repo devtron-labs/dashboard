@@ -17,6 +17,7 @@ import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import PageHeader from '../common/header/PageHeader'
+import DetectBottom from '../common/DetectBottom'
 
 export default function ChartGroupUpdate({}) {
     const history = useHistory()
@@ -42,6 +43,7 @@ export default function ChartGroupUpdate({}) {
         updateChartGroupNameAndDescription,
         reloadState,
         applyFilterOnCharts,
+        resetPaginationOffset,
     } = useChartGroup(Number(groupId))
     const isLeavingPageNotAllowed = useRef(false)
     const [selectedChartRepo, setSelectedChartRepo] = useState([])
@@ -52,7 +54,7 @@ export default function ChartGroupUpdate({}) {
     const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
-    const [isGrid, setIsGrid] = useState<boolean>(false)
+    const [isGrid, setIsGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -111,8 +113,9 @@ export default function ChartGroupUpdate({}) {
 
     useEffect(() => {
         if (!state.loading) {
+            resetPaginationOffset()
             initialiseFromQueryParams(state.chartRepos)
-            callApplyFilterOnCharts()
+            callApplyFilterOnCharts(true)
         }
     }, [location.search, state.loading])
 
@@ -164,10 +167,15 @@ export default function ChartGroupUpdate({}) {
         if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
-    async function callApplyFilterOnCharts() {
+    async function callApplyFilterOnCharts(resetPage?: boolean) {
         setChartListLoading(true)
-        await applyFilterOnCharts(location.search)
+        await applyFilterOnCharts(location.search, resetPage)
         setChartListLoading(false)
+    }
+
+
+    async function reloadNextAfterBottom() {
+        await applyFilterOnCharts(location.search, false)
     }
 
     const renderBreadcrumbs = () => {
@@ -262,6 +270,8 @@ export default function ChartGroupUpdate({}) {
                                             selectedInstances={state.selectedInstances}
                                             isGrid={isGrid}
                                         />
+                                        {state.hasMoreCharts && <Progressing/>}
+                                        {state.hasMoreCharts &&  <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
                                 )}
                             </div>

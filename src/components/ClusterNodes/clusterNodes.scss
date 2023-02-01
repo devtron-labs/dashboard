@@ -5,7 +5,7 @@
     }
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 150px 50px 90px 100px 100px 120px;
+        grid-template-columns: auto 150px 50px 90px 100px 100px 120px 30px;
         column-gap: 16px;
         .cluster-status {
             height: 12px;
@@ -57,6 +57,12 @@
         left: 0;
         z-index: 1;
         background-color: var(--N0);
+    }
+
+    .node-actions-menu-icon {
+        path:nth-child(2) {
+            fill: var(--N600);
+        }
     }
 }
 
@@ -246,6 +252,11 @@
                         stroke: var(--B500);
                     }
                 }
+                .terminal-icon {
+                    path {
+                        fill: var(--B500)
+                    }
+                }
             }
         }
         .node-details__active-tab {
@@ -254,5 +265,74 @@
             border-radius: 2px 2px 0px 0px;
             margin-top: -1px;
         }
+    }
+}
+
+.cluster-terminal-view-container {
+    height: calc(50vh + 13px);
+}
+
+.cluster-terminal__wrapper {
+    position: relative;
+    background: var(--terminal-bg);
+    flex: 1 1;
+    height: calc(100% - 60px);
+    
+    &.full-screen-terminal {
+        height: calc(100vh - 108px);
+    }
+
+    &.node-details-full-screen {
+        height: calc(100vh - 137px);
+    }
+}
+
+.cluster-full_screen {
+    position: absolute;
+    width: calc(100vw - 64px);
+    height: 0;
+    z-index: 1;
+
+    &.node-terminal {
+       top: 48px;
+       height: calc(100vh - 48px);
+    }
+}
+
+.drain-node-options-container {
+    .grace-period-timer-icon {
+        margin-left: -3px;
+    }
+
+    .grace-period-input-wrapper {
+
+        .grace-period-input,
+        .grace-period-input-unit {
+            padding: 6px 10px;
+        }
+
+        .grace-period-input {
+            width: 98px;
+            background-color: var(--N50);
+            outline: none;
+        }
+
+        .grace-period-input-unit {
+            background-color: white;
+            border-left: none;
+        }
+    }
+
+    .drain-option-help-icon {
+        margin-top: -3px;
+    }
+
+    .form__checkbox-container {
+        margin-left: -5px;
+    }
+
+    .form__checkbox-label {
+        display: flex;
+        margin-left: 8px;
     }
 }

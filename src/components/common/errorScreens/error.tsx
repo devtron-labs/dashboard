@@ -3,7 +3,13 @@ import EmptyState from '../../EmptyState/EmptyState'
 import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
 
-export class ErrorScreenManager extends Component<{ code?: number; reload?: (...args) => any; subtitle?: string ;reloadClass?: string}> {
+export class ErrorScreenManager extends Component<{
+    code?: number
+    reload?: (...args) => any
+    subtitle?: React.ReactChild
+    subtitleClass?: string
+    reloadClass?: string
+}> {
     getMessage() {
         switch (this.props.code) {
             case 400:
@@ -11,7 +17,9 @@ export class ErrorScreenManager extends Component<{ code?: number; reload?: (...
             case 401:
                 return 'Unauthorized'
             case 403:
-                return <ErrorScreenNotAuthorized subtitle={this.props.subtitle} />
+                return (
+                    <ErrorScreenNotAuthorized subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass} />
+                )
             case 404:
                 return 'Not Found'
             case 500:
@@ -34,7 +42,7 @@ export class ErrorScreenManager extends Component<{ code?: number; reload?: (...
     }
 }
 
-export class ErrorScreenNotAuthorized extends Component<{ subtitle: string }> {
+export class ErrorScreenNotAuthorized extends Component<{ subtitle: React.ReactChild; subtitleClass?: string }> {
     render() {
         return (
             <EmptyState>
@@ -44,7 +52,7 @@ export class ErrorScreenNotAuthorized extends Component<{ subtitle: string }> {
                 <EmptyState.Title>
                     <h3 className="title">Not authorized</h3>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>
+                <EmptyState.Subtitle className={this.props.subtitleClass}>
                     {this.props.subtitle
                         ? this.props.subtitle
                         : "Looks like you don't have access to information on this page. Please contact your manager to request access."}

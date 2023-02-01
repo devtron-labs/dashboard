@@ -45,6 +45,7 @@ import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWa
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import DetectBottom from '../../common/DetectBottom'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -88,6 +89,7 @@ function DiscoverChartList() {
         discardValuesYamlChanges,
         chartListing,
         applyFilterOnCharts,
+        resetPaginationOffset,
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -102,20 +104,28 @@ function DiscoverChartList() {
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const isLeavingPageNotAllowed = useRef(false)
     const [showChartGroupModal, toggleChartGroupModal] = useState(false)
-    const [isGrid, setIsGrid] = useState<boolean>(false)
+    const [isGrid, setIsGrid] = useState<boolean>(true)
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
+
+
     const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
 
+
     useEffect(() => {
         if (!state.loading) {
-            initialiseFromQueryParams(state.chartRepos)
-            callApplyFilterOnCharts()
+
+            resetPaginationOffset()
+            initialiseFromQueryParams(state.chartRepos);
+            callApplyFilterOnCharts(true);
+
         }
     }, [location.search, state.loading])
+
+
 
     const handleDeployButtonClick= (): void => {
       handleActionButtonClick(false)
@@ -214,10 +224,14 @@ function DiscoverChartList() {
         if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
-    async function callApplyFilterOnCharts() {
+    async function callApplyFilterOnCharts(resetPage?: boolean) {
         setChartListloading(true)
-        await applyFilterOnCharts(location.search)
+        await applyFilterOnCharts(location.search, resetPage)
         setChartListloading(false)
+    }
+
+    async function callPaginationOnCharts(){
+        await applyFilterOnCharts(location.search, false)
     }
 
     function handleViewAllCharts(): void {
@@ -269,6 +283,10 @@ function DiscoverChartList() {
                 </span>
             </div>
         )
+    }
+
+    async function reloadNextAfterBottom() {
+        callPaginationOnCharts()
     }
 
     const clearSearch = (): void => {
@@ -391,8 +409,14 @@ function DiscoverChartList() {
                                                                                     : selectChart(chartId)
                                                                             }
                                                                         />
+
                                                                     ))}
+                                                                {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
+
+
                                                             </div>
+                                                            {state.hasMoreCharts && <Progressing size={25} styles={{height:'0%', paddingBottom:'5px'}}/>}
+
                                                         </>
                                                     ) : (
                                                         <ChartEmptyState onClickViewChartButton={clearSearch}>
