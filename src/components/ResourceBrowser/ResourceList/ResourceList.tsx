@@ -29,6 +29,7 @@ import {
 import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
+    ALL_OPTION_LABEL,
     ERROR_SCREEN_LEARN_MORE,
     ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
@@ -58,11 +59,12 @@ import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
-    const { clusterId, namespace, nodeType, node } = useParams<{
+    const { clusterId, namespace, nodeType, node, group } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
+        group: string
     }>()
     const { replace, push } = useHistory()
     const location = useLocation()
@@ -152,10 +154,12 @@ export default function ResourceList() {
             AppDetailsStore.updateK8sResourcesTabUrl(
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
                     selectedNamespace.value
-                }/${selectedResource.gvk.Kind.toLowerCase()}`,
+                }/${selectedResource.gvk.Kind.toLowerCase()}/${
+                    selectedResource.gvk.Group.toLowerCase() || ALL_OPTION_LABEL
+                }`,
             )
         }
-    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
+    }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
         if (clusterId && selectedResource) {
@@ -274,11 +278,18 @@ export default function ResourceList() {
                 const parentNode = _k8SObjectList[0]
                 const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
                 let isResourceGroupPresent = false
+                let groupedChild = null
                 if (nodeType) {
                     for (const _parentNode of _k8SObjectList) {
                         for (const _childNode of _parentNode.child) {
-                            if (_childNode.gvk.Kind.toLowerCase() === nodeType) {
+                            if (
+                                _childNode.gvk.Kind.toLowerCase() === nodeType &&
+                                (_childNode.gvk.Group.toLowerCase() === group ||
+                                    SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
+                                    ALL_OPTION_LABEL === group)
+                            ) {
                                 isResourceGroupPresent = true
+                                groupedChild = _childNode
                                 break
                             }
                         }
@@ -291,17 +302,18 @@ export default function ResourceList() {
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
-                        }/${_selectedResourceParam}`,
+                        }/${_selectedResourceParam}/${childNode.gvk.Group.toLowerCase() || ALL_OPTION_LABEL}`,
                     })
                 }
-                setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList))
 
-                const defaultSelected = processedData.selectedResource ?? {
-                    namespaced: childNode.namespaced,
-                    gvk: childNode.gvk,
-                }
+                const defaultSelected = groupedChild ??
+                    processedData.selectedResource ?? {
+                        namespaced: childNode.namespaced,
+                        gvk: childNode.gvk,
+                    }
+                setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList))
                 setSelectedResource(defaultSelected)
-                updateResourceSelectionData(defaultSelected)
+                updateResourceSelectionData(defaultSelected, true)
                 setShowErrorState(false)
                 setErrorMsg('')
                 setErrorStatusCode(0)
@@ -467,7 +479,7 @@ export default function ResourceList() {
 
         if (!skipRedirection) {
             const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}${
-                nodeType ? `/${nodeType}` : ``
+                nodeType ? `/${nodeType}/${group || ALL_OPTION_LABEL}` : ''
             }`
             if (fromClusterSelect) {
                 replace({
@@ -488,14 +500,13 @@ export default function ResourceList() {
         getSidebarData(selectedCluster.value)
     }
 
-    const updateResourceSelectionData = (_selected: ApiResourceGroupType) => {
+    const updateResourceSelectionData = (_selected: ApiResourceGroupType, initSelection?: boolean) => {
         if (_selected) {
             setResourceSelectionData((prevData) => ({
                 ...prevData,
-                [_selected.gvk.Kind.toLowerCase()]: {
-                    namespaced: _selected.namespaced,
-                    gvk: _selected.gvk,
-                },
+                [`${_selected.gvk.Kind.toLowerCase()}_${
+                    (initSelection && group) || _selected.gvk.Group.toLowerCase() || ALL_OPTION_LABEL
+                }`]: _selected,
             }))
         }
     }
@@ -506,12 +517,12 @@ export default function ResourceList() {
                 const _resourceName = _selected.name.split('_')[1]
                 setNodeSelectionData((prevData) => ({
                     ...prevData,
-                    [`${_selected.name}`]: { ..._selected, name: _resourceName },
+                    [`${_selected.name}_${group}`]: { ..._selected, name: _resourceName },
                 }))
             } else {
                 setNodeSelectionData((prevData) => ({
                     ...prevData,
-                    [`${nodeType}_${_selected.name}`]: _selected,
+                    [`${nodeType}_${_selected.name}_${group}`]: _selected,
                 }))
             }
         }
@@ -541,14 +552,18 @@ export default function ResourceList() {
     }
 
     const getSelectedResourceData = () => {
+        if (resourceListLoader) {
+            return null
+        }
+
         const selectedNode =
-            nodeSelectionData?.[`${nodeType}_${node}`] ??
+            nodeSelectionData?.[`${nodeType}_${node}_${group}`] ??
             resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = selectedNode?.isFromEvent
             ? getEventObjectTypeGVK()
-            : resourceSelectionData?.[nodeType]?.gvk ?? selectedResource?.gvk
+            : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
 
-        if (!nodeSelectionData?.[`${nodeType}_${node}`]) {
+        if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
 

@@ -3,6 +3,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { Pagination, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
+    ALL_OPTION_LABEL,
     K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
@@ -40,11 +41,12 @@ export function K8SResourceList({
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
-    const { clusterId, namespace, nodeType, node } = useParams<{
+    const { clusterId, namespace, nodeType, node, group } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
+        group: string
     }>()
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -80,19 +82,24 @@ export function K8SResourceList({
         let resourceParam, kind, resourceName, _nodeSelectionData
 
         if (origin === 'event') {
-            resourceParam = name
             const [_kind, _resourceName] = name.split('/')
+            resourceParam = `${_kind}/${
+                selectedResource?.gvk?.Group?.toLowerCase() || ALL_OPTION_LABEL
+            }/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
             _nodeSelectionData = { name: kind + '_' + resourceName, namespace, isFromEvent: true }
         } else {
-            resourceParam = `${nodeType}/${name}`
+            resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || ALL_OPTION_LABEL}/${name}`
             kind = nodeType
             resourceName = name
             _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
         }
 
-        const _url = `${url.split('/').slice(0, -1).join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
+        const _url = `${url
+            .split('/')
+            .slice(0, group ? -2 : -1)
+            .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
 
         const isAdded = AppDetailsStore.addAppDetailsTab(kind, resourceName, _url)
 
@@ -296,6 +303,7 @@ export function K8SResourceList({
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                isSearchInputDisabled={resourceListLoader}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>

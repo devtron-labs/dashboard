@@ -4,7 +4,7 @@ import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ApiResourceGroupType, SidebarType } from '../Types'
 import { AggregationKeys } from '../../app/types'
-import { SIDEBAR_KEYS } from '../Constants'
+import { ALL_OPTION_LABEL, SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
 
 export function Sidebar({
@@ -22,10 +22,9 @@ export function Sidebar({
         node: string
     }>()
     const selectNode = (e): void => {
-        const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         push(
-            `${URLS.RESOURCE_BROWSER}/${clusterId}${namespace ? `/${namespace}` : ''}${
-                _selectedKind ? `/${_selectedKind}` : ''
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${e.currentTarget.dataset.kind.toLowerCase()}/${
+                e.currentTarget.dataset.group.toLowerCase() || ALL_OPTION_LABEL
             }`,
         )
         const _selectedResource = {

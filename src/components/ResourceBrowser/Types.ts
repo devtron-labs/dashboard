@@ -125,6 +125,7 @@ export interface ResourceFilterOptionsProps {
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
     clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
+    isSearchInputDisabled?: boolean
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
