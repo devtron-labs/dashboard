@@ -83,14 +83,26 @@ export const ChartEnvironmentSelector = ({
                     IndicatorSeparator: null,
                     DropdownIndicator,
                     SingleValue: singleOption,
-                    GroupHeading
+                    GroupHeading,
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
                 styles={{
                     ...groupStyle(),
-                    control: (base) => ({ ...base, border: '1px solid #d6dbdf', background: 'var(--N50)'}),
+                    control: (base) => ({
+                        ...base,
+                        border: '1px solid #d6dbdf',
+                        background: 'var(--N50)',
+                        minHeight: '32px',
+                    }),
+                    dropdownIndicator: (base, state) => ({
+                        ...base,
+                        color: 'var(--N400)',
+                        padding: '0 8px',
+                        transition: 'all .2s ease',
+                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    }),
                 }}
                 onChange={handleEnvironmentSelection}
                 options={environments}
