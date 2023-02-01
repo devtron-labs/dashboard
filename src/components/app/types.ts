@@ -424,3 +424,7 @@ export interface DeleteComponentProps {
     reload?: () => void
     configuration?: string
 }
+
+export interface AppStatusType { 
+    appStatus: string 
+}
