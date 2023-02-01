@@ -28,4 +28,7 @@ COPY --from=builder /app/health.html .
 
 # Make our shell script executable
 RUN chmod +x env.sh
-CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
+RUN useradd -ms /bin/bash devtron
+RUN chown -R devtron:devtron /usr/share/nginx/html
+USER devtron
+CMD ["su", "devtron", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
