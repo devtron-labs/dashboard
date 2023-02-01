@@ -90,6 +90,7 @@ export interface AppEnvironment {
     prod: boolean;
     chartRefId?: number
     lastDeployed?: string
+    appStatus?: string
 }
 
 export interface AppOtherEnvironment extends ResponseType {
@@ -117,7 +118,7 @@ export interface LastExecutionResponseType {
             moderate: number;
             low: number;
         },
-        vulnerabilities: VulnerabilityType[]
+        vulnerabilities: VulnerabilityType[];
     }
 }
 
