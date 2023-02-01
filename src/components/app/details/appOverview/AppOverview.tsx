@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
-import { Moment12HourFormat, URLS } from '../../../../config'
+import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
 import { handleUTCTime, Progressing, showError, sortOptionsByValue, useAsync } from '../../../common'
 import { AppDetails, AppOverviewProps, LabelTagsType } from '../../types'
@@ -19,6 +19,10 @@ import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/Ext
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
+import AppStatus from '../../AppStatus'
+import { StatusConstants } from '../../list-new/Constants'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -36,7 +40,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         externalLinks: [],
         monitoringTools: [],
     })
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(appId), [appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]), [appId])
+    const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -195,6 +200,54 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         )
     }
 
+    const renderDeployedTime = (_env) => {
+        if (_env.lastDeployed) {
+            return handleUTCTime(_env.lastDeployed, true)
+        } else {
+            return isAgroInstalled ? '' : 'Not deployed'
+        }
+    }
+
+    const renderDeploymentComponent = () => {
+        if(otherEnvsResult[0].result?.length > 0){
+            return (
+                <div className="env-deployments-info-wrapper w-100">
+                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
+                        <span>Environment</span>
+                        {isAgroInstalled && <span>App status</span>}
+                        <span>Last deployed</span>
+                    </div>
+                    <div className="env-deployments-info-body">
+                        {otherEnvsResult[0].result.map((_env) => (
+                            <div
+                                key={`${_env.environmentName}-${_env.environmentId}`}
+                                className="env-deployments-info-row display-grid dc__align-items-center"
+                            >
+                                <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
+                                    {_env.environmentName}
+                                </Link>
+                                {isAgroInstalled && (
+                                    <AppStatus
+                                        appStatus={
+                                            _env.lastDeployed
+                                                ? _env.appStatus
+                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                        }
+                                    />
+                                )}
+                                <span className="fs-13 fw-4 cn-7">
+                                    {renderDeployedTime(_env)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )
+        } 
+
+        return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
+    }
+
     const renderEnvironmentDeploymentsStatus = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20">
@@ -204,31 +257,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 </div>
                 {otherEnvsLoading ? (
                     <div className="dc__loading-dots" />
-                ) : otherEnvsResult.result?.length > 0 ? (
-                    <div className="env-deployments-info-wrapper w-100">
-                        <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
-                            <span>Environment</span>
-                            <span>Last deployed</span>
-                        </div>
-                        <div className="env-deployments-info-body">
-                            {otherEnvsResult.result.map((_env) => (
-                                <div
-                                    key={`${_env.environmentName}-${_env.environmentId}`}
-                                    className="env-deployments-info-row display-grid dc__align-items-center"
-                                >
-                                    <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
-                                        {_env.environmentName}
-                                    </Link>
-                                    <span className="fs-13 fw-4 cn-7">
-                                        {_env.lastDeployed ? handleUTCTime(_env.lastDeployed, true) : 'Not deployed'}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
-                )}
+                ) : renderDeploymentComponent()}
             </div>
         )
     }
