@@ -334,6 +334,7 @@ export const AppListConstants = {
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
+        APP_STATUS: 'appStatus'
     },
 }
 // APP LIST ENDS

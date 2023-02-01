@@ -983,6 +983,10 @@ button.anchor {
     &.not-triggered {
         background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
+        &.not-deployed--node {
+            background: url('../assets/icons/ic-close.svg'), transparent;
+            background-size: contain, contain;
+        }
     }
 
     &.suspended {
@@ -1327,6 +1331,23 @@ button.anchor {
     }
 }
 
+.dc__hover-icon {
+    .dc__show-first--icon {
+       display: inherit;
+    }
+    .dc__show-second--icon {
+       display: none;
+    }
+    &:hover {
+        .dc__show-first--icon {
+            display: none;
+         }
+         .dc__show-second--icon {
+            display: inherit;
+         }
+    }
+}
+
 .grayscale {
     filter: grayscale(1);
 }
@@ -1484,7 +1505,6 @@ button.anchor {
     border-radius: 4px;
     border: solid 1px #72767a;
     background-color: var(--white);
-    text-transform: lowercase;
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -2448,6 +2468,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+}
+
+.dc__flip-90 {
+    transform: rotate(-90deg);
 }
 
 textarea::-webkit-input-placeholder {
