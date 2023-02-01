@@ -46,6 +46,7 @@ import {
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
+import AppStatus from '../AppStatus';
 
 export default function HelmAppList({
     serverMode,
@@ -57,6 +58,8 @@ export default function HelmAppList({
     updateDataSyncing,
     setShowPulsatingDotState,
     masterFilters,
+    syncListData,
+    isArgoInstalled
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -66,6 +69,7 @@ export default function HelmAppList({
     const [sortBy, setSortBy] = useState(SortBy.APP_NAME)
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
+    const [appStatus, setAppStatus] = useState('');
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined)
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
@@ -80,9 +84,9 @@ export default function HelmAppList({
 
     // it means filter/sorting has been applied
     useEffect(() => {
-        if (dataStateType == AppListViewType.LIST) {
-            if (clusterIdsCsv == _getClusterIdsFromRequestUrl()) {
-                handleFilteration()
+        if (dataStateType === AppListViewType.LIST) {
+            if (clusterIdsCsv === _getClusterIdsFromRequestUrl() && appStatus === _getAppStatusFromRequestUrl()) {
+                handleFilteration();
             } else {
                 init()
             }
@@ -105,6 +109,7 @@ export default function HelmAppList({
 
     useEffect(() => {
         updateDataSyncing(true)
+        setDataStateType(AppListViewType.LOADING)
         if (serverMode == SERVER_MODE.EA_ONLY) {
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
@@ -112,7 +117,7 @@ export default function HelmAppList({
                 updateDataSyncing(false)
             }
         } else {
-            getDevtronInstalledHelmApps(clusterIdsCsv)
+            getDevtronInstalledHelmApps(clusterIdsCsv,appStatus)
                 .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
                     setDevtronInstalledHelmAppsList(
                         devtronInstalledHelmAppsListResponse.result
@@ -131,7 +136,8 @@ export default function HelmAppList({
                     updateDataSyncing(false)
                 })
         }
-    }, [clusterIdsCsv])
+
+    }, [clusterIdsCsv,appStatus,syncListData]);
 
     // reset data
     function init() {
@@ -139,6 +145,7 @@ export default function HelmAppList({
         setDevtronInstalledHelmAppsList([])
         setFilteredHelmAppsList([])
         setClusterIdsCsv(_getClusterIdsFromRequestUrl())
+        setAppStatus(_getAppStatusFromRequestUrl())
         setExternalHelmAppsList([])
         if (sseConnection) {
             sseConnection.close()
@@ -177,6 +184,10 @@ export default function HelmAppList({
 
     function _getClusterIdsFromRequestUrl() {
         return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',')
+    }
+
+    function _getAppStatusFromRequestUrl() {
+        return payloadParsedFromUrl.appStatuses.join(',')
     }
 
     function _onExternalAppDataFromSse(
@@ -351,16 +362,21 @@ export default function HelmAppList({
                 <div className="app-list__cell app-list__cell--name">
                     {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
                     {!sseConnection && (
-                        <button className="app-list__cell-header" onClick={sortByAppName}>
+                        <button className="app-list__cell-header flex" onClick={sortByAppName}>
                             {APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
-                                <span className={`${sortOrder == OrderBy.ASC ? 'sort-up' : 'sort-down'}`}></span>
+                                <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
                             ) : (
-                                <span className="sort-col"></span>
+                                <span className="sort-col ml-4"></span>
                             )}
                         </button>
                     )}
                 </div>
+                {isArgoInstalled && (
+                    <div className="app-list__cell app-list__cell--app_status">
+                        <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
+                    </div>
+                )}
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy
@@ -416,8 +432,13 @@ export default function HelmAppList({
                 </div>
                 <div className="app-list__cell app-list__cell--name flex column left">
                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
-                    <div className="dc__truncate-text  m-0">{app.chartName}</div>
+                    <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
                 </div>
+                {isArgoInstalled && (
+                    <div className="app-list__cell app-list__cell--namespace">
+                        <AppStatus appStatus={app.appStatus} />
+                    </div>
+                )}
                 <div className="app-list__cell app-list__cell--env">
                     <p className="dc__truncate-text  m-0">
                         {app.environmentDetail.environmentName
