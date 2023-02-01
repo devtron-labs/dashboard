@@ -62,6 +62,7 @@ function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse
 
     for (const material of gitMaterials) {
         for (const ciPipeline of filteredCIPipelines) {
+            //if linked pipeline then local git material should not be visible in pipeline.
             if (configuredMaterialList[ciPipeline.name].has(material.gitMaterialId) || ciPipeline.parentCiPipeline) {
                 continue
             }
