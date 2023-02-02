@@ -54,8 +54,15 @@ export default function ClusterTerminal({
     const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
-    const queryParamsData = getClusterTerminalParamsData(queryParams,imageList,defaultNamespaceList,clusterNodeList,clusterShellTypes)
-    const [selectedNodeName, setSelectedNodeName] = useState(queryParamsData.selectedNode || (node ? { label: node, value: node } : clusterNodeList[0]))
+    const queryParamsData = getClusterTerminalParamsData(
+        queryParams,
+        imageList,
+        defaultNamespaceList,
+        clusterNodeList,
+        clusterShellTypes,
+        node,
+    )
+    const [selectedNodeName, setSelectedNodeName] = useState(queryParamsData.selectedNode)
     const [selectedTerminalType, setSelectedtTerminalType] = useState(queryParamsData.selectedShell || shellTypes[1])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
@@ -246,10 +253,10 @@ export default function ClusterTerminal({
 
     const handleUrlChanges = () => {
         const queryParams = new URLSearchParams(location.search)
-        queryParams.set('image',selectedImage.value)
-        queryParams.set('namespace',selectedNamespace.value)
+        queryParams.set('image', selectedImage.value)
+        queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
-        if(!isNodeDetailsPage){
+        if (!isNodeDetailsPage) {
             queryParams.set('node', selectedNodeName.value)
         }
         history.push({
@@ -511,17 +518,18 @@ export default function ClusterTerminal({
                             content={isFullScreen ? 'Restore height' : 'Maximise height'}
                         >
                             {isFullScreen ? (
-                                <ExitScreen className="mr-12 dc__hover-n100 br-4  cursor fcn-6" onClick={toggleScreenView} />
+                                <ExitScreen
+                                    className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+                                    onClick={toggleScreenView}
+                                />
                             ) : (
-                                <FullScreen className="mr-12 dc__hover-n100 br-4  cursor fcn-6" onClick={toggleScreenView} />
+                                <FullScreen
+                                    className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+                                    onClick={toggleScreenView}
+                                />
                             )}
                         </Tippy>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={'Close'}
-                        >
+                        <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
                             <Close
                                 className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
                                 onClick={closeTerminalModal}

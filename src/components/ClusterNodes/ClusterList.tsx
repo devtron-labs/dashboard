@@ -55,10 +55,10 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     }, [])
 
     useEffect(() => {
-        if(filteredClusterList && imageList && namespaceList){
+        if (filteredClusterList && imageList && namespaceList) {
             handleUrlChange(filteredClusterList)
         }
-    },[filteredClusterList,imageList,namespaceList])
+    }, [filteredClusterList, imageList, namespaceList])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -73,9 +73,10 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
 
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
-        const clusterID = queryParams.get('clusterId')
-        const selectedCluster = sortedResult.find((item) => item.id == clusterID && item.nodeCount > 0)
-        if(selectedCluster){
+        const selectedCluster = sortedResult.find(
+            (item) => item.id == queryParams.get('clusterId') && item.nodeCount > 0,
+        )
+        if (selectedCluster) {
             openTerminal(selectedCluster)
         }
     }
@@ -136,7 +137,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
 
     const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData)
-        setNodeImageList(filterImageList(imageList,clusterData.serverVersion))
+        setNodeImageList(filterImageList(imageList, clusterData.serverVersion))
         setShowTerminal(true)
     }
 
@@ -144,7 +145,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('clusterId', clusterData.id)
         history.push({
-            search: queryParams.toString()
+            search: queryParams.toString(),
         })
         openTerminal(clusterData)
     }
@@ -173,7 +174,10 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     >
                         {clusterData.name}
                     </NavLink>
-                    <TerminalIcon className="cursor icon-dim-16 dc__visible-hover--child ml-8" onClick={() => openTerminalComponent(clusterData)} />
+                    <TerminalIcon
+                        className="cursor icon-dim-16 dc__visible-hover--child ml-8"
+                        onClick={() => openTerminalComponent(clusterData)}
+                    />
                 </div>
                 <div>
                     {clusterData.errorInNodeListing ? (

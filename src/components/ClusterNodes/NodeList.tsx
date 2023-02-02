@@ -97,10 +97,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }, [appliedColumns])
 
     useEffect(() => {
-        if(filteredFlattenNodeList && imageList && namespaceList){
+        if (filteredFlattenNodeList && imageList && namespaceList) {
             handleUrlChange(filteredFlattenNodeList)
         }
-    },[filteredFlattenNodeList,imageList,namespaceList])
+    }, [filteredFlattenNodeList, imageList, namespaceList])
 
     useEffect(() => {
         let appliedColumnsFromLocalStorage
@@ -258,9 +258,8 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
-        const clusterNode = queryParams.get('node')
-        const selectedNode = sortedResult.find((item) => item.name === clusterNode)
-        if(selectedNode){
+        const selectedNode = sortedResult.find((item) => item.name === queryParams.get('node'))
+        if (selectedNode) {
             openTerminal(selectedNode)
         }
     }
@@ -397,6 +396,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
     }
 
+    const headerTerminalIcon = (): void => {
+        openTerminalComponent(filteredFlattenNodeList[0])
+    }
+
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
@@ -476,10 +479,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         {isSuperAdmin && (
                             <>
                                 <span className="dc__divider ml-12 h-16"></span>
-                                <div
-                                    className="flex left cursor pl-12 pr-12 cb-5"
-                                    onClick={() => openTerminalComponent(filteredFlattenNodeList[0])}
-                                >
+                                <div className="flex left cursor pl-12 pr-12 cb-5" onClick={headerTerminalIcon}>
                                     <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
                                     <span className="h-20">Terminal</span>
                                 </div>
@@ -608,6 +608,54 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         )
     }
 
+    const renderConditionalWrap = (column, nodeData) => {
+        if (column.value === 'status' && nodeData['unschedulable']) {
+            return (
+                <span className="flex left">
+                    <span>{nodeData[column.value]}</span>
+                    <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                    <span className="cr-5"> SchedulingDisabled</span>
+                </span>
+            )
+        } else {
+            if (column.value === 'k8sVersion') {
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
+                        <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
+                    </Tippy>
+                )
+            } else {
+                return nodeData[column.value]
+            }
+        }
+    }
+
+    const renderNodeRow = (column, nodeData) => {
+        if (column.value === 'errorCount') {
+            return (
+                nodeData['errorCount'] > 0 && (
+                    <>
+                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>
+                    </>
+                )
+            )
+        } else if (column.sortType === 'boolean') {
+            return nodeData[column.value] + ''
+        } else if (nodeData[column.value] !== undefined) {
+            return (
+                <ConditionalWrap
+                    condition={column.value.indexOf('.usagePercentage') > 0}
+                    wrap={(children) => renderPercentageTippy(nodeData, column, children)}
+                >
+                    {renderConditionalWrap(column, nodeData)}
+                </ConditionalWrap>
+            )
+        } else {
+            return '-'
+        }
+    }
+
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
@@ -645,44 +693,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     : 'w-100-px'
                             }`}
                         >
-                            {column.value === 'errorCount' ? (
-                                nodeData['errorCount'] > 0 && (
-                                    <>
-                                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>{' '}
-                                    </>
-                                )
-                            ) : column.sortType === 'boolean' ? (
-                                nodeData[column.value] + ''
-                            ) : nodeData[column.value] !== undefined ? (
-                                <ConditionalWrap
-                                    condition={column.value.indexOf('.usagePercentage') > 0}
-                                    wrap={(children) => renderPercentageTippy(nodeData, column, children)}
-                                >
-                                    {column.value === 'status' && nodeData['unschedulable'] ? (
-                                        <span className="flex left">
-                                            <span>{nodeData[column.value]}</span>
-                                            <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
-                                            <span className="cr-5"> SchedulingDisabled</span>
-                                        </span>
-                                    ) : column.value === 'k8sVersion' ? (
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content={nodeData[column.value]}
-                                        >
-                                            <span className="dc__inline-block dc__ellipsis-right mw-85px ">
-                                                {nodeData[column.value]}
-                                            </span>
-                                        </Tippy>
-                                    ) : (
-                                        nodeData[column.value]
-                                    )}
-                                </ConditionalWrap>
-                            ) : (
-                                '-'
-                            )}
+                            {renderNodeRow(column, nodeData)}
                         </div>
                     )
                 })}
@@ -712,7 +723,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
         history.push({
-            search: queryParams.toString()
+            search: queryParams.toString(),
         })
         openTerminal(nodeData)
     }
@@ -733,10 +744,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     return (
         <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div
-                className="node-list dc__overflow-scroll"
-                style={{ height: `calc(${showTerminal ? '50vh - 61px' : '100vh - 48px'})` }}
-            >
+            <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
                 {renderClusterSummary()}
                 <div
                     className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${

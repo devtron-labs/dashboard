@@ -14,6 +14,8 @@
     }
 }
 .node-list {
+    height: calc(100vh - 48px);
+
     .list-min-height {
         min-height: calc(100vh - 250px);
         &.no-result-container {
@@ -63,6 +65,10 @@
         path:nth-child(2) {
             fill: var(--N600);
         }
+    }
+
+    &.show-terminal {
+        height: calc(50vh - 61px) !important;
     }
 }
 

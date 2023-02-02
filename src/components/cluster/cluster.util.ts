@@ -1,6 +1,5 @@
 import { OptionType } from '../app/types';
-import { convertToOptionsList } from '../common';
-import { ClusterComponentType, ClusterComponentStatusType, ClusterComponentStatus } from './cluster.type';
+import { ClusterComponentType, ClusterComponentStatusType, ClusterComponentStatus, ClusterTerminalParamsType } from './cluster.type';
 
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
 
@@ -29,11 +28,14 @@ export function getClusterTerminalParamsData(
     namespaceList: OptionType[],
     nodeList: OptionType[],
     clusterShellList: OptionType[],
-): { selectedImage: OptionType; selectedNamespace: OptionType; selectedNode: OptionType; selectedShell: OptionType } {
-    const _selectedImage = imageList?.find((image) => image.value === params.get('image'))
-    const _selectedNamespace = namespaceList?.find((namespace) => namespace.value === params.get('namespace'))
-    const _selectedNode = nodeList?.find((node) => node.value === params.get('node'))
-    const _selectedShell = clusterShellList?.find((shell) => shell.value === params.get('shell'))
+    node: string,
+): ClusterTerminalParamsType {
+    const _selectedImage = imageList.find((image) => image.value === params.get('image'))
+    const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
+    const _selectedNode =
+        nodeList.find((node) => node.value === params.get('node')) ||
+        (node ? { label: node, value: node } : nodeList[0])
+    const _selectedShell = clusterShellList.find((shell) => shell.value === params.get('shell'))
 
     return {
         selectedImage: _selectedImage,
@@ -42,5 +44,3 @@ export function getClusterTerminalParamsData(
         selectedShell: _selectedShell,
     }
 }
-
-  
