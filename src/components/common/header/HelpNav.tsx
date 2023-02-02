@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useContext } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
@@ -11,6 +11,7 @@ import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dot
 import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
+import { mainContext } from '../navigation/NavigationRoutes'
 
 function HelpNav({
     className,
@@ -20,6 +21,9 @@ function HelpNav({
     setGettingStartedClicked,
     showHelpCard,
 }: HelpNavType) {
+
+    const { currentServerInfo } = useContext(mainContext)
+    const isEnterPrise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
 
     const HelpOptions: HelpOptionType[] = [
         {
@@ -32,7 +36,7 @@ function HelpNav({
             name: 'Chat with support',
             link: 'https://discord.devtron.ai/',
             icon: Chat,
-            showSeparator: false,
+            showSeparator: isEnterPrise ? false : true,
         },
         {
             name: 'Join discord community',
@@ -65,7 +69,7 @@ function HelpNav({
                 setShowHelpCard(!showHelpCard)
             }}
         >
-            <div className={`help-card pt-4 pb-4 ${className}`}>
+            <div className={`help-card pt-4 pb-4 ${className} ${ isEnterPrise ? `help-grid__feedback` : ''}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
                     className="help-card__option dc__no-decor help-card__link flex left cn-9"
@@ -97,12 +101,17 @@ function HelpNav({
                     )
                 })}
 
-                <div onClick={(e) => e.stopPropagation()} className="help-card__option help-card__link flex left cn-9">
-                    <Feedback />
-                    <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
-                        Give feedback
-                    </SliderButton>
-                </div>
+                {isEnterPrise && (
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="help-card__option help-card__link flex left cn-9"
+                    >
+                        <Feedback />
+                        <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
+                            Give feedback
+                        </SliderButton>
+                    </div>
+                )}
 
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">

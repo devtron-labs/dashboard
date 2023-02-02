@@ -256,9 +256,13 @@
     left: 68px;
 }
 
+.help-grid__feedback{
+  grid-template-rows: 36px 36px 1px 36px 36px 1px 36px 36px auto !important;
+}
+
 .help-card {
     display: grid;
-    grid-template-rows: 36px 36px 1px 36px 36px 1px 36px 36px auto;
+    grid-template-rows: 36px 36px 1px 36px 1px 36px 1px 36px auto;
     align-items: center;
     z-index: var(--modal-index);
     .help-card__option {
