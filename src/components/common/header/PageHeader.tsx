@@ -12,7 +12,12 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
-import { handlePostHogEventUpdate, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
+import {
+    handlePostHogEventUpdate,
+    MAX_LOGIN_COUNT,
+    POSTHOG_EVENT_ONBOARDING,
+} from '../../onboardingGuide/onboarding.utils'
+
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
@@ -118,10 +123,7 @@ function PageHeader({
     const renderLogoutHelpSection = () => {
         return (
             <>
-                <div
-                    className="flex left cursor mr-16"
-                    onClick={onClickHelp}
-                >
+                <div className="flex left cursor mr-16" onClick={onClickHelp}>
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>

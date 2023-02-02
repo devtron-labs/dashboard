@@ -6,8 +6,9 @@ import { ReactComponent as Discord } from '../../assets/icons/ic-discord-fill.sv
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
 import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { NavLink, useHistory } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { ReactComponent as GettingStartedIcon } from '../../assets/icons/ic-onboarding.svg'
+import { SliderButton } from '@typeform/embed-react'
 
 export interface HelpNavType {
     className: string
@@ -18,8 +19,14 @@ export interface HelpNavType {
     setGettingStartedClicked: (isClicked: boolean) => void
 }
 
-function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo, setGettingStartedClicked }: HelpNavType) {
-  const history = useHistory()
+function HelpNav({
+    className,
+    showHelpCard,
+    setShowHelpCard,
+    serverInfo,
+    fetchingServerInfo,
+    setGettingStartedClicked,
+}: HelpNavType) {
 
     const HelpOptions = [
         {
@@ -48,11 +55,11 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
     ]
 
     const onClickGettingStarted = () => {
-      setGettingStartedClicked(true)
+        setGettingStartedClicked(true)
     }
 
     return (
-        <div className="dc__transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
+        <div className="dc__transparent-div" onClick={() => setShowHelpCard(true)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
@@ -63,6 +70,12 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
+
+                <div className="help-card__option help-card__link flex left cn-9">
+                    <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
+                        <div >Give feedback</div>
+                    </SliderButton>
+                </div>
 
                 {HelpOptions.map((option) => {
                     return (
