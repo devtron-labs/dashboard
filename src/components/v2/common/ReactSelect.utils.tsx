@@ -219,7 +219,7 @@ export function EnvFormatOptions(props) {
 
 export function formatHighlightedText(option, { inputValue }, environmentfieldName) {
     return (
-        <div className="flex left column dc__high-light-text">
+        <div className="flex left column dc__highlight-text">
             <span
                 className="w-100 dc__ellipsis-right"
                 dangerouslySetInnerHTML={{
