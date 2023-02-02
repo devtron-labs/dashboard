@@ -1,3 +1,4 @@
+import { OptionType } from '../app/types';
 import { convertToOptionsList } from '../common';
 import { ClusterComponentType, ClusterComponentStatusType, ClusterComponentStatus } from './cluster.type';
 
@@ -22,7 +23,13 @@ export function getEnvName(components: ClusterComponentType[], agentInstallation
     return c?.envName;
 }
 
-export function getClusterTerminalParamsData(params,imageList,namespaceList,nodeList,clusterShellList){
+export function getClusterTerminalParamsData(
+    params: URLSearchParams,
+    imageList: OptionType[],
+    namespaceList: OptionType[],
+    nodeList: OptionType[],
+    clusterShellList: OptionType[],
+): { selectedImage: OptionType; selectedNamespace: OptionType; selectedNode: OptionType; selectedShell: OptionType } {
     const _selectedImage = imageList?.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList?.find((namespace) => namespace.value === params.get('namespace'))
     const _selectedNode = nodeList?.find((node) => node.value === params.get('node'))
@@ -32,7 +39,7 @@ export function getClusterTerminalParamsData(params,imageList,namespaceList,node
         selectedImage: _selectedImage,
         selectedNamespace: _selectedNamespace,
         selectedNode: _selectedNode,
-        selectedShell: _selectedShell
+        selectedShell: _selectedShell,
     }
 }
 
