@@ -4,7 +4,6 @@ import ReactSelect from 'react-select'
 import { DropdownIndicator, EnvFormatOptions, formatHighlightedText, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { DeleteDialog, Progressing, Select } from '../../../common'
 import {
@@ -27,18 +26,17 @@ import {
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import EmptyState from '../../../EmptyState/EmptyState'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DELETE_CHART_APP_DESCRIPTION_LINES,
     DELETE_PRESET_VALUE_DESCRIPTION_LINES,
     UPDATE_APP_BUTTON_TEXTS,
 } from './ChartValuesView.constants'
-import { groupStyle } from '../../../../components/secrets/secret.utils'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
+import { envGroupStyle } from './ChartValuesView.utils'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -88,22 +86,7 @@ export const ChartEnvironmentSelector = ({
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={{
-                    ...groupStyle(),
-                    control: (base) => ({
-                        ...base,
-                        border: '1px solid #d6dbdf',
-                        background: 'var(--N50)',
-                        minHeight: '32px',
-                    }),
-                    dropdownIndicator: (base, state) => ({
-                        ...base,
-                        color: 'var(--N400)',
-                        padding: '0 8px',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }),
-                }}
+                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
                 formatOptionLabel={handleFormatHighlightedText}
