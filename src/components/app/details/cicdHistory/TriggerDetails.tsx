@@ -93,7 +93,7 @@ export const TriggerDetails = React.memo(
 const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
     const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
     const durationStr = (diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's';
-    // const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
+    console.log(finishedOn, diff, durationStr)
     return (
         <div className="flex column left">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
@@ -160,7 +160,6 @@ const ProgressingStatus = React.memo(
         }, []);
         useEffect(()=>{
             let diff : moment.Duration = moment.duration(moment(time).diff(moment(startedOn)))
-            
             setDurationStr((diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's')
         },[time])
         const { buildId, triggerId, pipelineId } = useParams<{
@@ -247,7 +246,7 @@ const CurrentStatus = React.memo(
     ({ status, startedOn, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
-                <ProgressingStatus startedOn={startedOn} status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
+                <ProgressingStatus status={status} startedOn={startedOn} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
