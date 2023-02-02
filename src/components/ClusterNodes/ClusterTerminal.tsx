@@ -31,6 +31,8 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.s
 import { ClusterTerminalType } from './types'
 import { clusterSelectStyle, CLUSTER_STATUS, IMAGE_LIST } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
+import { getClusterTerminalParamsData } from '../cluster/cluster.util'
+import { useHistory, useLocation } from 'react-router-dom'
 
 export default function ClusterTerminal({
     clusterId,
@@ -43,19 +45,23 @@ export default function ClusterTerminal({
     node,
     setSelectedNode,
 }: ClusterTerminalType) {
+    const location = useLocation()
+    const history = useHistory()
+    const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
     const clusterNodeList = convertToOptionsList(nodeList)
     const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
-    const [selectedNodeName, setSelectedNodeName] = useState(node ? { label: node, value: node } : clusterNodeList[0])
-    const [selectedTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
+    const queryParamsData = getClusterTerminalParamsData(queryParams,imageList,defaultNamespaceList,clusterNodeList,clusterShellTypes)
+    const [selectedNodeName, setSelectedNodeName] = useState(queryParamsData.selectedNode || (node ? { label: node, value: node } : clusterNodeList[0]))
+    const [selectedTerminalType, setSelectedtTerminalType] = useState(queryParamsData.selectedShell || shellTypes[1])
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
-    const [selectedImage, setImage] = useState<OptionType>(imageList[0])
-    const [selectedNamespace, setNamespace] = useState(defaultNameSpace)
+    const [selectedImage, setImage] = useState<OptionType>(queryParamsData.selectedImage || imageList[0])
+    const [selectedNamespace, setNamespace] = useState(queryParamsData.selectedNamespace || defaultNameSpace)
     const [update, setUpdate] = useState<boolean>(false)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
     const [isFetchRetry, setRetry] = useState<boolean>(false)
@@ -76,6 +82,10 @@ export default function ClusterTerminal({
             updateSelectedContainerName()
         }
     }, [clusterId, nodeList, node])
+
+    useEffect(() => {
+        handleUrlChanges()
+    }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
         try {
@@ -159,7 +169,7 @@ export default function ClusterTerminal({
     // Disconnect terminal on unmount of the component
     useEffect(() => {
         return (): void => {
-            closeTerminalModal()
+            closeTerminalModal(null, true)
         }
     }, [])
 
@@ -175,10 +185,10 @@ export default function ClusterTerminal({
         }
     }
 
-    async function closeTerminalModal(): Promise<void> {
+    async function closeTerminalModal(e: any, skipRedirection?: boolean): Promise<void> {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
-                closeTerminal()
+                closeTerminal(skipRedirection)
             }
             setConnectTerminal(false)
             if (isPodCreated && terminalAccessIdRef.current) {
@@ -232,6 +242,19 @@ export default function ClusterTerminal({
                 }
             })
         }
+    }
+
+    const handleUrlChanges = () => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('image',selectedImage.value)
+        queryParams.set('namespace',selectedNamespace.value)
+        queryParams.set('shell', selectedTerminalType.value)
+        if(!isNodeDetailsPage){
+            queryParams.set('node', selectedNodeName.value)
+        }
+        history.push({
+            search: queryParams.toString(),
+        })
     }
 
     const reconnectTerminal = (): void => {
@@ -578,7 +601,7 @@ export default function ClusterTerminal({
                                 <ReactSelect
                                     placeholder="Select Shell"
                                     options={clusterShellTypes}
-                                    defaultValue={clusterShellTypes[1]}
+                                    defaultValue={selectedTerminalType}
                                     onChange={onChangeTerminalType}
                                     styles={clusterSelectStyle}
                                     components={{

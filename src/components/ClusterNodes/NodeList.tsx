@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import {
@@ -43,6 +43,7 @@ import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwi
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
+    const location = useLocation()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -94,6 +95,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
+
+    useEffect(() => {
+        if(filteredFlattenNodeList && imageList && namespaceList){
+            handleUrlChange(filteredFlattenNodeList)
+        }
+    },[filteredFlattenNodeList,imageList,namespaceList])
 
     useEffect(() => {
         let appliedColumnsFromLocalStorage
@@ -248,6 +255,15 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    const handleUrlChange = (sortedResult) => {
+        const queryParams = new URLSearchParams(location.search)
+        const clusterNode = queryParams.get('node')
+        const selectedNode = sortedResult.find((item) => item.name === clusterNode)
+        if(selectedNode){
+            openTerminal(selectedNode)
+        }
+    }
 
     const handleFilterChanges = (): void => {
         let _flattenNodeList = []
@@ -453,23 +469,31 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             <>
                 <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 mt-16 mb-16 ml-20 mr-20 bcn-0 br-4 en-2 bw-1">
                     <div className="flex fw-6 fs-13">
-                        <div className="fw-6 fs-14 cn-9 h-20 cursor flex cg-5">
-                            <CloudIcon className="icon-dim-16 mr-4" /><span className="h-20 flex">Connected</span>
+                        <div className="fw-6 fs-14 cn-9 h-20 flex cg-5">
+                            <CloudIcon className="icon-dim-16 mr-4" />
+                            <span className="h-20 flex">Connected</span>
                         </div>
-                        <span className='dc__divider ml-12 h-16'></span>
-                        <div
-                            className="flex left cursor pl-12 pr-12 cb-5"
-                            onClick={() => openTerminal(filteredFlattenNodeList[0])}
-                        >
-                            <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
-                            <span className="h-20">Terminal</span>
-                        </div>
+                        {isSuperAdmin && (
+                            <>
+                                <span className="dc__divider ml-12 h-16"></span>
+                                <div
+                                    className="flex left cursor pl-12 pr-12 cb-5"
+                                    onClick={() => openTerminalComponent(filteredFlattenNodeList[0])}
+                                >
+                                    <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
+                                    <span className="h-20">Terminal</span>
+                                </div>
+                            </>
+                        )}
                     </div>
                     <div className="fs-13 h-20">
                         {lastDataSyncTimeString && (
-                            <div className='flex h-20'>
+                            <div className="flex h-20">
                                 {lastDataSyncTimeString}
-                                <button className="btn flex btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getNodeListData}>
+                                <button
+                                    className="btn flex btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                    onClick={getNodeListData}
+                                >
                                     <SyncIcon className="icon-dim-16" />
                                 </button>
                             </div>
@@ -607,7 +631,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 </div>
                                 <NodeActionsMenu
                                     nodeData={nodeData as NodeDetail}
-                                    openTerminal={openTerminal}
+                                    openTerminal={openTerminalComponent}
                                     getNodeListData={getNodeListData}
                                     isSuperAdmin={isSuperAdmin}
                                 />
@@ -684,14 +708,26 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         return <Progressing pageLoader />
     }
 
-    const openTerminal = (clusterData): void => {
+    const openTerminalComponent = (nodeData) => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('node', nodeData.name)
+        history.push({
+            search: queryParams.toString()
+        })
+        openTerminal(nodeData)
+    }
+
+    function openTerminal(clusterData): void {
         setSelectedNode(clusterData.name)
         setNodeImageList(filterImageList(imageList, clusterData.k8sVersion))
         setTerminal(true)
     }
 
-    const closeTerminal = (): void => {
+    const closeTerminal = (skipRedirection: boolean): void => {
         setTerminal(false)
+        if (!skipRedirection) {
+            history.push(match.url)
+        }
     }
 
     return (

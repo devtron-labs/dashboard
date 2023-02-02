@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -15,10 +15,11 @@ import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
-import { OptionType } from '../app/types'
 
 export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
+    const location = useLocation()
+    const history = useHistory()
     const [loader, setLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -54,6 +55,12 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     }, [])
 
     useEffect(() => {
+        if(filteredClusterList && imageList && namespaceList){
+            handleUrlChange(filteredClusterList)
+        }
+    },[filteredClusterList,imageList,namespaceList])
+
+    useEffect(() => {
         const _lastDataSyncTime = Date()
         setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
         const interval = setInterval(() => {
@@ -63,6 +70,15 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    const handleUrlChange = (sortedResult) => {
+        const queryParams = new URLSearchParams(location.search)
+        const clusterID = queryParams.get('clusterId')
+        const selectedCluster = sortedResult.find((item) => item.id == clusterID && item.nodeCount > 0)
+        if(selectedCluster){
+            openTerminal(selectedCluster)
+        }
+    }
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
@@ -124,8 +140,20 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
         setShowTerminal(true)
     }
 
-    const closeTerminal = (): void => {
+    const openTerminalComponent = (clusterData): void => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('clusterId', clusterData.id)
+        history.push({
+            search: queryParams.toString()
+        })
+        openTerminal(clusterData)
+    }
+
+    const closeTerminal = (skipRedirection: boolean): void => {
         setShowTerminal(false)
+        if (!skipRedirection) {
+            history.push(match.url)
+        }
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
@@ -145,7 +173,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     >
                         {clusterData.name}
                     </NavLink>
-                    <TerminalIcon className="cursor icon-dim-16 dc__visible-hover--child ml-8" onClick={() => openTerminal(clusterData)} />
+                    <TerminalIcon className="cursor icon-dim-16 dc__visible-hover--child ml-8" onClick={() => openTerminalComponent(clusterData)} />
                 </div>
                 <div>
                     {clusterData.errorInNodeListing ? (

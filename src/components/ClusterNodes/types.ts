@@ -1,3 +1,4 @@
+import { ParsedQuery } from 'query-string'
 import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
@@ -146,7 +147,7 @@ export interface ClusterTerminalType {
     clusterId: number
     clusterName?: string
     nodeList: string[]
-    closeTerminal?: () => void
+    closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
