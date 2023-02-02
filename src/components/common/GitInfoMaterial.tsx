@@ -249,7 +249,7 @@ export default function GitInfoMaterial({
                                     baseText="configured filters"
                                     showIcons={false}
                                 />
-                                .
+                                .&nbsp;
                                 <span className="dc__link cursor" onClick={_toggleWebhookModal}>
                                     View all incoming webhook payloads
                                 </span>
@@ -271,7 +271,7 @@ export default function GitInfoMaterial({
         return (
             <div>
                 <CiWebhookModal
-                    context={context}
+                    context={triggerViewContext}
                     webhookPayloads={webhookPayloads}
                     ciPipelineMaterialId={material[0].id}
                     ciPipelineId={pipelineId}
