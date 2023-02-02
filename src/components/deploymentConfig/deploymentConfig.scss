@@ -182,6 +182,10 @@
             border-top-right-radius: 4px;
             margin: 0;
         }
+
+        .compare-template-values-select__option--is-disabled {
+            color: var(--N500);
+        }
     }
 }
 
