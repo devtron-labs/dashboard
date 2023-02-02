@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog, not } from '../../../common'
 import { toast } from 'react-toastify'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
@@ -6,6 +6,8 @@ import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
+import { ReactComponent as TimerIcon } from '../../../../assets/icons/ic-timer.svg'
+
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
 import {
@@ -74,6 +76,7 @@ export const TriggerDetails = React.memo(
                     />
                     <CurrentStatus
                         status={status}
+                        startedOn={startedOn}
                         finishedOn={finishedOn}
                         artifact={artifact}
                         message={message}
@@ -87,18 +90,30 @@ export const TriggerDetails = React.memo(
     },
 )
 
-const Finished = React.memo(({ status, finishedOn, artifact }: FinishedType): JSX.Element => {
+const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
+    const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
+    const durationStr = (diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's';
+    // const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
     return (
         <div className="flex column left">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>
+            
             <div className="flex left">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
-                    <time className="cn-7 fs-12 mr-12">
-                        {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                    </time>
-                )}
+                    <div className="mr-12">            
+                        <time className="mr-6 dc__vertical-align-middle">
+                            {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                        </time>
+                        <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
+                        <time className="dc__vertical-align-middle">
+                           {durationStr}
+                        </time>
+                    </div>
+                        
+                        
+                        )}
                 {artifact && (
                     <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
@@ -107,6 +122,7 @@ const Finished = React.memo(({ status, finishedOn, artifact }: FinishedType): JS
                 )}
             </div>
         </div>
+        
     )
 })
 
@@ -131,9 +147,22 @@ const WorkerStatus = React.memo(({ message, podStatus, stage }: WorkerStatusType
 })
 
 const ProgressingStatus = React.memo(
-    ({ status, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
+    ({ status, startedOn, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
+        const [time, setTime] = useState(moment.now());
+        const [durationStr, setDurationStr] = useState('0s');
+        useEffect(() => {
+        const interval = setInterval(() => setTime(moment.now()), 1000);
+        return () => {
+            clearInterval(interval);
+        };
+        }, []);
+        useEffect(()=>{
+            let diff : moment.Duration = moment.duration(moment(time).diff(moment(startedOn)))
+            
+            setDurationStr((diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's')
+        },[time])
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -163,12 +192,19 @@ const ProgressingStatus = React.memo(
         return (
             <>
                 <div className="flex left">
-                    <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
-                        In progress
+                    <div>
+                        <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
+                            In progress
+                        </div>
+                        <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
+                        <time className="dc__vertical-align-middle">
+                        {durationStr}
+                        </time>
                     </div>
+                    
                     {abort && (
                         <button
-                            className="cta cancel ml-16"
+                            className="cta cancel ml-16 abort-status-color"
                             style={{ minWidth: '72px' }}
                             onClick={toggleAbortConfiguration}
                         >
@@ -208,15 +244,15 @@ const ProgressingStatus = React.memo(
 )
 
 const CurrentStatus = React.memo(
-    ({ status, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
+    ({ status, startedOn, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
-                <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
+                <ProgressingStatus startedOn={startedOn} status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
                 <div className="flex left">
-                    <Finished status={status} finishedOn={finishedOn} artifact={artifact} />
+                    <Finished status={status} startedOn={startedOn} finishedOn={finishedOn} artifact={artifact} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
             )
