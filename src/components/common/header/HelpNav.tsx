@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef } from 'react'
+import React, { Fragment } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
@@ -20,14 +20,6 @@ function HelpNav({
     setGettingStartedClicked,
     showHelpCard,
 }: HelpNavType) {
-
-    const feedbackRef = useRef(null)
-
-    useEffect(() => {
-        if (feedbackRef.current) {
-            feedbackRef.current = true
-        }
-    }, [showHelpCard])
 
     const HelpOptions: HelpOptionType[] = [
         {
@@ -59,13 +51,7 @@ function HelpNav({
         setGettingStartedClicked(true)
     }
 
-    const onHideHelpCard = () => {
-        setShowHelpCard(false)
-    }
-
     const onClickHelpOptions = (option: HelpOptionType): void => {
-        onHideHelpCard()
-
         ReactGA.event({
             category: 'Main Navigation',
             action: `${option.name} Clicked`,
@@ -73,7 +59,12 @@ function HelpNav({
     }
 
     return (
-        <div className="dc__transparent-div">
+        <div
+            className="dc__transparent-div"
+            onClick={(e) => {
+                setShowHelpCard(!showHelpCard)
+            }}
+        >
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
@@ -106,7 +97,7 @@ function HelpNav({
                     )
                 })}
 
-                <div ref={feedbackRef} className="help-card__option help-card__link flex left cn-9">
+                <div onClick={(e) => e.stopPropagation()} className="help-card__option help-card__link flex left cn-9">
                     <Feedback />
                     <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
                         Give feedback
