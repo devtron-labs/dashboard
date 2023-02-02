@@ -8,6 +8,8 @@ import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.s
 import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as GettingStartedIcon } from '../../assets/icons/ic-onboarding.svg'
+import { ReactComponent as Feedback } from '../../assets/icons/ic-feedback.svg'
+
 import { SliderButton } from '@typeform/embed-react'
 
 export interface HelpNavType {
@@ -72,6 +74,7 @@ function HelpNav({
                 </NavLink>
 
                 <div className="help-card__option help-card__link flex left cn-9">
+                    <Feedback />
                     <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
                         <div >Give feedback</div>
                     </SliderButton>
