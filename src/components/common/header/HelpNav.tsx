@@ -1,32 +1,16 @@
 import React, { Fragment, useEffect, useRef } from 'react'
 import ReactGA from 'react-ga4'
-import { DOCUMENTATION, URLS } from '../../config'
-import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Discord } from '../../assets/icons/ic-discord-fill.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
-import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { NavLink } from 'react-router-dom'
-import { ReactComponent as GettingStartedIcon } from '../../assets/icons/ic-onboarding.svg'
-import { ReactComponent as Feedback } from '../../assets/icons/ic-feedback.svg'
-
 import { SliderButton } from '@typeform/embed-react'
-
-export interface HelpNavType {
-    className: string
-    setShowHelpCard: React.Dispatch<React.SetStateAction<boolean>>
-    serverInfo: ServerInfo
-    fetchingServerInfo: boolean
-    setGettingStartedClicked: (isClicked: boolean) => void
-    showHelpCard: boolean
-}
-
-export interface HelpOptionType {
-    name: string
-    link: string
-    icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
-    showSeparator?: boolean
-}
+import { DOCUMENTATION, URLS } from '../../../config'
+import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
+import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
+import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
+import { HelpNavType, HelpOptionType } from './header.type'
 
 function HelpNav({
     className,
@@ -36,7 +20,9 @@ function HelpNav({
     setGettingStartedClicked,
     showHelpCard,
 }: HelpNavType) {
+
     const feedbackRef = useRef(null)
+
     useEffect(() => {
         if (feedbackRef.current) {
             feedbackRef.current = true
@@ -120,9 +106,9 @@ function HelpNav({
                     )
                 })}
 
-                <div  ref={feedbackRef} className="help-card__option help-card__link flex left cn-9">
+                <div ref={feedbackRef} className="help-card__option help-card__link flex left cn-9">
                     <Feedback />
-                    <SliderButton  className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
+                    <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
                         Give feedback
                     </SliderButton>
                 </div>

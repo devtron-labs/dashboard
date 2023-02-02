@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import HelpNav from '../HelpNav'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
 import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
@@ -16,24 +13,10 @@ import {
     MAX_LOGIN_COUNT,
     POSTHOG_EVENT_ONBOARDING,
 } from '../../onboardingGuide/onboarding.utils'
-
-export interface PageHeaderType {
-    headerName?: string
-    additionalHeaderInfo?: () => JSX.Element
-    isTippyShown?: boolean
-    tippyRedirectLink?: string
-    showTabs?: boolean
-    renderHeaderTabs?: () => JSX.Element
-    isBreadcrumbs?: boolean
-    breadCrumbs?: () => JSX.Element
-    TippyIcon?: React.FunctionComponent<any>
-    tippyMessage?: string
-    onClickTippybutton?: () => void
-    renderActionButtons?: () => JSX.Element
-    showCloseButton?: boolean
-    onClose?: () => void
-    markAsBeta?: boolean
-}
+import HelpNav from './HelpNav'
+import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { PageHeaderType } from './header.type'
 
 function PageHeader({
     headerName,
@@ -57,7 +40,6 @@ function PageHeader({
         setLoginCount,
         showGettingStartedCard,
         setShowGettingStartedCard,
-        isGettingStartedClicked,
         setGettingStartedClicked,
     } = useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
