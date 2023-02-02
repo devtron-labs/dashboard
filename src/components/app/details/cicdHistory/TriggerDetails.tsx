@@ -203,7 +203,7 @@ const ProgressingStatus = React.memo(
                     
                     {abort && (
                         <button
-                            className="cta cancel ml-16 abort-status-color"
+                            className=" cta cancel ml-16 abort-status-color"
                             style={{ minWidth: '72px' }}
                             onClick={toggleAbortConfiguration}
                         >
