@@ -95,8 +95,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
         <div className="flex column left">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
-            </div>
-            
+            </div>            
             <div className="flex left">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
                     <>            
