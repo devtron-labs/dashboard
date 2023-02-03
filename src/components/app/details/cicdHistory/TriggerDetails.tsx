@@ -146,7 +146,7 @@ const ProgressingStatus = React.memo(
     ({ status, startedOn, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
-        const [durationStr, setDurationStr] = useState('');
+        const [durationStr, setDurationStr] = useState<string>('');
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
