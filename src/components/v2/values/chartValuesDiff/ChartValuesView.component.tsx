@@ -55,7 +55,7 @@ export const ChartEnvironmentSelector = ({
     }
 
     const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, { inputValue }, 'label')
+        return formatHighlightedText(opt, inputValue, 'label')
     }
 
     return !isDeployChartView ? (

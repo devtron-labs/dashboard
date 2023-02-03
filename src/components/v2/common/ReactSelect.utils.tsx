@@ -3,6 +3,7 @@ import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { noop } from '../../common'
+import { Environment } from '../../cdPipeline/cdPipeline.types'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -106,7 +107,7 @@ export function Option(props) {
 
     return showTippy ? (
         <Tippy
-            className={tippyClass || "default-white"}
+            className={tippyClass || 'default-white'}
             arrow={false}
             placement={placement || 'right'}
             content={tippyContent || data.label}
@@ -164,9 +165,7 @@ export const noMatchingOptions = () => 'No matching results'
 export const formatOptionLabel = (option): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">
-                {option.label}
-            </span>
+            <span className="w-100 dc__ellipsis-right">{option.label}</span>
             {option.infoText && <small className="cn-6">{option.infoText}</small>}
         </div>
     )
@@ -186,7 +185,7 @@ export const CustomValueContainer = (props): JSX.Element => {
     )
 }
 
-export const menuComponent = (props,text) => {
+export const menuComponent = (props, text) => {
     return (
         <components.MenuList {...props}>
             <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
@@ -205,9 +204,7 @@ export function GroupHeading(props) {
     if (!props.data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">
-                {`Cluster : ${props.data.label}`}
-            </div>
+            <div className="flex dc__no-text-transform flex-justify h-100">Cluster : {props.data.label}</div>
         </components.GroupHeading>
     )
 }
@@ -217,26 +214,22 @@ export function EnvFormatOptions(props) {
     return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
 }
 
-export function formatHighlightedText(option, { inputValue }, environmentfieldName) {
+export function formatHighlightedText(option: Environment, inputValue, environmentfieldName: string) {
+    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const regex = new RegExp(inputValue, 'gi')
     return (
         <div className="flex left column dc__highlight-text">
             <span
                 className="w-100 dc__ellipsis-right"
                 dangerouslySetInnerHTML={{
-                    __html: option[environmentfieldName].replace(
-                        new RegExp(inputValue, 'gi'),
-                        (highlighted) => `<mark>${highlighted}</mark>`,
-                    ),
+                    __html: option[environmentfieldName].replace(regex, highLightText),
                 }}
             />
             {option.clusterName && option.namespace && (
                 <small
                     className="cn-6"
                     dangerouslySetInnerHTML={{
-                        __html: (option.clusterName + '/' + option.namespace).replace(
-                            new RegExp(inputValue, 'gi'),
-                            (highlighted) => `<mark>${highlighted}</mark>`,
-                        ),
+                        __html: (option.clusterName + '/' + option.namespace).replace(regex, highLightText),
                     }}
                 ></small>
             )}

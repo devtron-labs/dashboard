@@ -1089,8 +1089,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return <EnvFormatOptions {...props} environmentfieldName="name" />
     }
 
-    handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, { inputValue }, 'name')
+    handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
+        return formatHighlightedText(opt, inputValue, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
