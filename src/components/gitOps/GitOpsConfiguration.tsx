@@ -283,7 +283,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
-            username: this.state.form.username,
+            username: this.state.form.username.replace(/\s/g, ''),
             host: this.state.form.host.replace(/\s/g, ''),
             token: this.state.form.token,
             gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
