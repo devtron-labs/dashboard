@@ -106,19 +106,19 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
             
             <div className="flex left">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
-                    <div className="mr-12">            
-                        <time className="mr-6 dc__vertical-align-middle">
+                    <>            
+                        <time className="dc__vertical-align-middle">
                             {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
-                        <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
-                        <time className="dc__vertical-align-middle">
+                        <div className="dc__bullet mr-6 ml-6"></div>
+                        <TimerIcon className="mb-1 grace-period-timer-icon icon-dim-20 mr-4 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
+                        <time className="dc__vertical-align-middle mr-12">
                             {/* display of duration */}
                            {durationStr}
                         </time>
-                    </div>
                         
-                        
-                        )}
+                    </>           
+                )}
                 {artifact && (
                     <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
@@ -209,7 +209,7 @@ const ProgressingStatus = React.memo(
                     
                     {abort && (
                         <button
-                            className=" cta cancel ml-16 abort-status-color"
+                            className="flex cta cancel abort-status-color h-28 ml-16"
                             style={{ minWidth: '72px' }}
                             onClick={toggleAbortConfiguration}
                         >
