@@ -14,11 +14,12 @@ export default function LogsRenderer({
     parentType,
 }: LogsRendererType): JSX.Element {
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
-    const logsURL = parentType === HistoryComponentType.CI
-    ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
-    : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
+    const logsURL =
+        parentType === HistoryComponentType.CI
+            ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
+            : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(
-        triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && logsURL
+        triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && logsURL,
     )
     function createMarkup(log) {
         try {
@@ -37,7 +38,12 @@ export default function LogsRenderer({
     ) : (
         <div className="logs__body">
             {logs.map((log, index) => {
-                return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
+                return (
+                    <div className="flex left" key={`logs-${index}`}>
+                        <span className="cn-4 m-auto col-2 pr-10 mt-1">{index + 1}</span>
+                        <p className="col-10 mono fs-14" dangerouslySetInnerHTML={createMarkup(log)} />
+                    </div>
+                )
             })}
             {(triggerDetails.podStatus === POD_STATUS.PENDING || (eventSource && eventSource.readyState <= 1)) && (
                 <div className="flex left event-source-status">
