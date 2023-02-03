@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Clear } from '../../assets/icons/ic-error-exclamation.svg'
 import {
     useAsync,
     NavigationArrow,
@@ -22,6 +24,7 @@ import {
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
     ErrorScreenNotAuthorized,
+    ErrorScreenManager,
 } from '../common'
 import {
     getUserList,
@@ -64,6 +67,11 @@ import ApiTokens from '../apiTokens/ApiTokens.component'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
+import NoResults from '../../assets/img/empty-noresult@2x.png'
+import { getSSOConfigList } from '../login/login.service'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import ErrorBar from '../common/error/ErrorBar'
+import { windowWhen } from 'rxjs'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -162,7 +170,7 @@ export function useUserGroupContext() {
 
 function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
-
+   
     return (
         <div className="auth-page__header">
             <h2 className="auth-page__header-title form__title">
@@ -337,6 +345,7 @@ const UserGroupList: React.FC<{
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
+    const [isActive,setIsActive]=useState<boolean>(false);
     const { roles } = useUserGroupContext()
 
     useEffect(() => {
@@ -351,6 +360,7 @@ const UserGroupList: React.FC<{
         if (!error) return
         showError(error,true,true)
     }, [error])
+
 
     useEffectAfterMount(() => {
         if (type === 'user') {
@@ -544,7 +554,12 @@ const UserGroupList: React.FC<{
             userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
+    
+    getSSOConfigList().then(({result})=>result.every( a=>{if(a.active===true){setIsActive(true);}}));
+   
+        if(isActive){
     return (
+        
         <div id="auth-page__body" className="auth-page__body-users__list-container">
             {renderHeaders(type)}
             {result.length > 0 && (
@@ -592,7 +607,16 @@ const UserGroupList: React.FC<{
                 <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
             )}
         </div>
-    )
+    )}
+    else if(isActive===false){
+        return (
+           
+           <NoSSO onClick={null}></NoSSO>
+           
+        )
+    
+
+    }
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
@@ -1462,6 +1486,7 @@ export function GroupRow({ name, description, removeRow }) {
 
 function NoUsers({ onClick }) {
     return (
+        
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
@@ -1477,6 +1502,32 @@ function NoUsers({ onClick }) {
                 </button>
             </EmptyState.Button>
         </EmptyState>
+       
+
+    )
+}
+function NoSSO({ onClick }) {
+    return (
+
+        <div style={{alignItems:'center',justifyContent:'center',display:'flex',flexDirection:'column'}}>
+        <EmptyState>
+            <EmptyState.Image>
+                <img src={EmptyImage} alt="so empty" />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h4>No users</h4>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>Add users and assign group or direct permissions</EmptyState.Subtitle>
+            
+        </EmptyState>
+       
+        <div className="flex cra" style={{width:305, justifyContent:'center'}}>
+
+        <InfoColourBar message={`SSO Login not configured: Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services`} classname="error_bar cn-9 mb-40 lh-20 mr-2 " linkText ={"Go to SSO login services"} redirectLink={"/global-config/login-service"} internalLink={true} Icon={Clear}/>
+        </div>
+       
+        </div>
+        
     )
 }
 
