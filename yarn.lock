@@ -2086,7 +2086,7 @@
 
 "@typeform/embed-react@^2.15.0":
   version "2.15.0"
-  resolved "https://registry.npmjs.org/@typeform/embed-react/-/embed-react-2.15.0.tgz"
+  resolved "https://registry.yarnpkg.com/@typeform/embed-react/-/embed-react-2.15.0.tgz#4f283c311ae8a5f75a563291747faebbd4f2e5a4"
   integrity sha512-OO3gT96yMv+vMflXjYbsSS84qizjfkdCO39Y5kPalpRVvydCgT3KoxM+tdrWY6L2ciD1q+yQs1NZbYh63xFkuw==
   dependencies:
     "@typeform/embed" "2.8.0"
@@ -2094,7 +2094,7 @@
 
 "@typeform/embed@2.8.0":
   version "2.8.0"
-  resolved "https://registry.npmjs.org/@typeform/embed/-/embed-2.8.0.tgz"
+  resolved "https://registry.yarnpkg.com/@typeform/embed/-/embed-2.8.0.tgz#45456b47103d27e818e426d782e0af0976909db8"
   integrity sha512-+64uxHXbOefA9euw9gQUZ3WAvh+61wH6Vbl3x9WYQ3tAY2iM9gPTYhfxPDMdx/79KuRMIbHUKWpTD6PflaWy8w==
 
 "@types/aria-query@^4.2.0":
