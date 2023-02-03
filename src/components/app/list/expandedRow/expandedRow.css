@@ -15,16 +15,9 @@
 
 .expanded-row__close {
     border: none;
-    color: var(--white);
-    display: flex;
-    justify-content: space-between;
     flex: 1;
-    padding-right: 24px;
-    padding-left: 24px;
-    align-items: center;
-    height: 56px;
-    cursor: pointer;
-    background-image: linear-gradient(to left, #009fe8, var(--B500));
+    height: 48px;
+    background-color: var(--N50);
 }
 
 .expanded-row__title {
@@ -51,6 +44,7 @@
 
 .app-list__row--expanded {
     box-shadow: inset 0 -1px 0 0 #d1d1d1;
+    background-color: var(--N50) !important;
     position: relative;
 }
 
@@ -72,4 +66,8 @@
 
 .expanded-row .dc__app-commit__hash:hover {
     color: var(--B500);
+}
+
+.app-list__row--expanded:hover {
+    background-color: var(--N100) !important
 }
