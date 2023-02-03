@@ -12,6 +12,7 @@ import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-o
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
 import { mainContext } from '../navigation/NavigationRoutes'
+import { stopPropagation } from '../helpers/Helpers'
 
 function HelpNav({
     className,
@@ -61,13 +62,12 @@ function HelpNav({
         })
     }
 
+    const toggleHelpCard = () => {
+        setShowHelpCard(!showHelpCard)
+    }
+
     return (
-        <div
-            className="dc__transparent-div"
-            onClick={(e) => {
-                setShowHelpCard(!showHelpCard)
-            }}
-        >
+        <div className="dc__transparent-div" onClick={toggleHelpCard}>
             <div className={`help-card pt-4 pb-4 ${className} ${isEnterprise ? `help-grid__feedback` : ''}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
@@ -78,7 +78,6 @@ function HelpNav({
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
-
                 {HelpOptions.map((option) => {
                     return (
                         <Fragment key={option.name}>
@@ -88,7 +87,7 @@ function HelpNav({
                                 href={option.link}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                onClick={(event) => {
+                                onClick={() => {
                                     onClickHelpOptions(option)
                                 }}
                             >
@@ -99,25 +98,18 @@ function HelpNav({
                         </Fragment>
                     )
                 })}
-
                 {isEnterprise && (
-                    <div
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            setShowHelpCard(!showHelpCard)
-                        }}
-                        className="help-card__option help-card__link flex left cn-9"
-                    >
+                    <div onClick={stopPropagation} className="help-card__option help-card__link flex left cn-9">
                         <Feedback />
                         <SliderButton
                             className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
                             id={`UheGN3KJ#source=${window.location.hostname}`}
+                            onClose={toggleHelpCard}
                         >
                             Give feedback
                         </SliderButton>
                     </div>
                 )}
-
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
                         {fetchingServerInfo ? (
