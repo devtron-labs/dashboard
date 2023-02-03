@@ -557,7 +557,7 @@ const UserGroupList: React.FC<{
     
     getSSOConfigList().then(({result})=>result.every( a=>{if(a.active===true){setIsActive(true);}}));
    
-        if(isActive){
+        if(!isActive){
     return (
         
         <div id="auth-page__body" className="auth-page__body-users__list-container">
@@ -608,7 +608,7 @@ const UserGroupList: React.FC<{
             )}
         </div>
     )}
-    else if(isActive===false){
+    else {
         return (
            
            <NoSSO onClick={null}></NoSSO>
@@ -1509,7 +1509,7 @@ function NoUsers({ onClick }) {
 function NoSSO({ onClick }) {
     return (
 
-        <div style={{alignItems:'center',justifyContent:'center',display:'flex',flexDirection:'column'}}>
+        <div className="flex column ">
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
