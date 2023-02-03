@@ -26,6 +26,10 @@ import {
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
 
+const formatDuration = (diff : moment.Duration) =>
+    (diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's'
+
+
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
         <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +96,7 @@ export const TriggerDetails = React.memo(
 
 const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
     const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
-    const durationStr = (diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's';
+    const durationStr = formatDuration(diff)
     
     return (
         <div className="flex column left">
@@ -161,7 +165,7 @@ const ProgressingStatus = React.memo(
         }, []);
         useEffect(()=>{
             let diff : moment.Duration = moment.duration(moment(time).diff(moment(startedOn)))
-            setDurationStr((diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's')
+            setDurationStr(formatDuration(diff))
         },[time])
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
