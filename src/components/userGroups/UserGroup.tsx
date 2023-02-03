@@ -559,9 +559,7 @@ const UserGroupList: React.FC<{
             userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
-    
-
-   //Checking the isSSOConfigured has been set or not, if not then show loading
+    //Checking the isSSOConfigured has been set or not, if not then show loading
     if(fetchingSSOConfigList){
         return (
             <div className="w-100 flex" style={{ minHeight: '600px' }}>
@@ -572,7 +570,7 @@ const UserGroupList: React.FC<{
     //If not set then Show Empty State
     else if(!isSSOConfigured){
         return(
-            <NoSSO onClick={null} ></NoSSO>
+            <NoSSO></NoSSO>
         );
 
     }
@@ -1519,10 +1517,8 @@ function NoUsers({ onClick }) {
 
     )
 }
-function NoSSO({ onClick }) {
+function NoSSO() {
     return (
-        
-
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
@@ -1531,25 +1527,9 @@ function NoSSO({ onClick }) {
                 <h4>No users</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle className='w-320 '>Add users and assign group or direct permissions
-                <InfoColourBar
-                    message={`Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services`}
-                    classname="error_bar m-t-17 text-align-left info-colour-bar svg  "
-                    linkText ={"Go to SSO login services"}
-                    redirectLink={"/global-config/login-service"}
-                    boldmessage={"SSO Login not configured:"}
-                    internalLink={true}
-                    Icon={ErrorIcon}
-                />
-
-            </EmptyState.Subtitle>
-
-        </EmptyState>
-        
-
-       
-
-        
-        
+                <InfoColourBar message={`Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services`} classname="error_bar mt-16 text-align-left info-colour-bar svg  " linkText ={"Go to SSO login services"} redirectLink={"/global-config/login-service"} boldmessage={"SSO Login not configured:"} internalLink={true} Icon={ErrorIcon}  />
+          </EmptyState.Subtitle>
+        </EmptyState>  
     )
 }
 
