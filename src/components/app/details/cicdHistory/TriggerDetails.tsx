@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog, not } from '../../../common'
+import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog, not, formatDurationDiff } from '../../../common'
 import { toast } from 'react-toastify'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import { statusColor as colorMap } from '../../config'
@@ -25,10 +25,6 @@ import {
 } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
-
-const formatDuration = (diff : moment.Duration) =>
-    (diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's'
-
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -95,9 +91,6 @@ export const TriggerDetails = React.memo(
 )
 
 const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
-    const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
-    const durationStr = formatDuration(diff)
-    
     return (
         <div className="flex column left">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
@@ -113,10 +106,8 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                         <div className="dc__bullet mr-6 ml-6"></div>
                         <TimerIcon className="mb-1 grace-period-timer-icon icon-dim-20 mr-4 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle mr-12">
-                            {/* display of duration */}
-                           {durationStr}
-                        </time>
-                        
+                           { formatDurationDiff(startedOn, finishedOn) }
+                        </time>                        
                     </>           
                 )}
                 {artifact && (
@@ -155,18 +146,7 @@ const ProgressingStatus = React.memo(
     ({ status, startedOn, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
-        const [time, setTime] = useState(moment.now());
-        const [durationStr, setDurationStr] = useState('0s');
-        useEffect(() => {
-        const interval = setInterval(() => setTime(moment.now()), 1000);
-        return () => {
-            clearInterval(interval);
-        };
-        }, []);
-        useEffect(()=>{
-            let diff : moment.Duration = moment.duration(moment(time).diff(moment(startedOn)))
-            setDurationStr(formatDuration(diff))
-        },[time])
+        const [durationStr, setDurationStr] = useState('');
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -178,6 +158,20 @@ const ProgressingStatus = React.memo(
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
+
+        useEffect(() => {
+            setDurationStr(formatDurationDiff(startedOn, Date()))
+            const intervalTimer = setInterval(() => {
+                setDurationStr(formatDurationDiff(startedOn, Date()))
+            }, 1000) 
+
+            return () => {
+                if (intervalTimer) {
+                    clearInterval(intervalTimer)
+                }
+            }
+        }, [])
+
         async function abortRunning() {
             setAborting(true)
             const [error] = await asyncWrap(abort())
@@ -202,15 +196,13 @@ const ProgressingStatus = React.memo(
                         </div>
                         <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle">
-                            {/* display of duration  */}
-                        {durationStr}
+                            {durationStr}
                         </time>
                     </div>
                     
                     {abort && (
                         <button
                             className="flex cta cancel abort-status-color h-28 ml-16"
-                            style={{ minWidth: '72px' }}
                             onClick={toggleAbortConfiguration}
                         >
                             Abort
