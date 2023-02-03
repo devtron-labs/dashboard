@@ -340,12 +340,15 @@ const UserGroupList: React.FC<{
     renderHeaders: (type: string) => JSX.Element
 }> = ({ type, reloadLists, renderHeaders }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
+    const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList,[type],type === 'user')
     const result = (data && data['result']) || []
+    const isSSOConfigured=(ssoConfigListdata && ssoConfigListdata.result.some((a)=> a.active))||false;
+    
     const [searchString, setSearchString] = useState('')
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
-    const [isActive,setIsActive]=useState<boolean>(false);
+   
     const { roles } = useUserGroupContext()
 
     useEffect(() => {
@@ -555,9 +558,22 @@ const UserGroupList: React.FC<{
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
     
-    getSSOConfigList().then(({result})=>result.every( a=>{if(a.active===true){setIsActive(true);}}));
+
    
-        if(!isActive){
+    if(fetchingSSOConfigList){
+        return (
+            <div className="w-100 flex" style={{ minHeight: '600px' }}>
+                <Progressing pageLoader />
+            </div>
+        )
+    }
+    else if(isSSOConfigured){
+        return(
+            <NoSSO onClick={null}></NoSSO>
+        );
+
+    }
+    else{ 
     return (
         
         <div id="auth-page__body" className="auth-page__body-users__list-container">
@@ -607,16 +623,9 @@ const UserGroupList: React.FC<{
                 <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
             )}
         </div>
-    )}
-    else {
-        return (
-           
-           <NoSSO onClick={null}></NoSSO>
-           
-        )
-    
+    )
+}
 
-    }
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
@@ -1508,8 +1517,8 @@ function NoUsers({ onClick }) {
 }
 function NoSSO({ onClick }) {
     return (
-
-        <div className="flex column ">
+        
+        <div className="flex column User-Group-height">
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
@@ -1521,7 +1530,7 @@ function NoSSO({ onClick }) {
             
         </EmptyState>
        
-        <div className="flex cra" style={{width:305, justifyContent:'center'}}>
+        <div className="flex cra " style={{width:305, justifyContent:'center'}}>
 
         <InfoColourBar message={`SSO Login not configured: Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services`} classname="error_bar cn-9 mb-40 lh-20 mr-2 " linkText ={"Go to SSO login services"} redirectLink={"/global-config/login-service"} internalLink={true} Icon={Clear}/>
         </div>
