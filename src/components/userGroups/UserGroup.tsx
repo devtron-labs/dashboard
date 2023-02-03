@@ -639,13 +639,13 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={email_id === 'admin' ? noop : (e) => setCollapsed(not)}
+                    onClick={(email_id === 'admin'||email_id==='system') ? noop : (e) => setCollapsed(not)}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
                         condition={email_id === 'admin'}
                         wrap={(children) => (
-                            <Tippy
+                            <Tippy 
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
@@ -654,13 +654,36 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 <div className="flex">{children}</div>
                             </Tippy>
                         )}
+                        
                     >
-                        {email_id === 'admin' ? (
+                        {email_id==='admin'? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
                         ) : (
-                            <NavigationArrow className="arrow-svg" />
+                            <NavigationArrow className="tippyg" />
+                        )}
+                    </ConditionalWrap>
+                    <ConditionalWrap
+                        condition={email_id === 'system'}
+                        wrap={(children) => (
+                            <Tippy 
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content="System user cannot be edited"
+                            >
+                                <div className="flex">{children}</div>
+                            </Tippy>
+                        )}
+                        
+                    >
+                        {email_id==='system'? (
+                            <Lock />
+                        ) : dataLoading ? (
+                            <Progressing />
+                        ) : (
+                            <NavigationArrow className="tippyg" />
                         )}
                     </ConditionalWrap>
                 </span>
