@@ -214,7 +214,7 @@ export function EnvFormatOptions(props) {
     return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
 }
 
-export function formatHighlightedText(option: Environment, inputValue, environmentfieldName: string) {
+export function formatHighlightedText(option: Environment, inputValue: string, environmentfieldName: string) {
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
