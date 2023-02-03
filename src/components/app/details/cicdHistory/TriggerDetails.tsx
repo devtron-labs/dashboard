@@ -202,7 +202,7 @@ const ProgressingStatus = React.memo(
                     
                     {abort && (
                         <button
-                            className="flex cta cancel abort-status-color h-28 ml-16"
+                            className="flex cta delete er-5 bw-1 fw-6 fs-13 h-28 ml-16"
                             onClick={toggleAbortConfiguration}
                         >
                             Abort
