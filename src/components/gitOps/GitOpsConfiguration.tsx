@@ -285,7 +285,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             provider: this.state.form.provider,
             username: this.state.form.username.replace(/\s/g, ''),
             host: this.state.form.host.replace(/\s/g, ''),
-            token: this.state.form.token,
+            token: this.state.form.token.replace(/\s/g, ''),
             gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
             gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
