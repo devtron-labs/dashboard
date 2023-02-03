@@ -72,6 +72,7 @@ import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import ErrorBar from '../common/error/ErrorBar'
 import { windowWhen } from 'rxjs'
+import FlexSearch from 'flexsearch'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -299,7 +300,7 @@ export default function UserGroupRoute() {
     if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
-        <div>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
@@ -1518,7 +1519,7 @@ function NoUsers({ onClick }) {
 function NoSSO({ onClick }) {
     return (
         
-        <div className="flex column User-Group-height">
+        <div className="flex column">
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
@@ -1529,13 +1530,14 @@ function NoSSO({ onClick }) {
             <EmptyState.Subtitle>Add users and assign group or direct permissions</EmptyState.Subtitle>
             
         </EmptyState>
-       
-        <div className="flex cra " style={{width:305, justifyContent:'center'}}>
+        
+        <div className="flex cra loader  " style={{width:305, justifyContent:'center'}} >
 
         <InfoColourBar message={`SSO Login not configured: Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services`} classname="error_bar cn-9 mb-40 lh-20 mr-2 " linkText ={"Go to SSO login services"} redirectLink={"/global-config/login-service"} internalLink={true} Icon={Clear}/>
         </div>
        
         </div>
+        
         
     )
 }
