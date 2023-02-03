@@ -40,7 +40,7 @@ export default function LogsRenderer({
             {logs.map((log, index) => {
                 return (
                     <div className="flex left" key={`logs-${index}`}>
-                        <span className="cn-4 m-auto col-2 pr-10 mt-1">{index + 1}</span>
+                        <span className="cn-4 dc__mb-auto col-2 pr-10 mt-1">{index + 1}</span>
                         <p className="col-10 mono fs-14" dangerouslySetInnerHTML={createMarkup(log)} />
                     </div>
                 )
