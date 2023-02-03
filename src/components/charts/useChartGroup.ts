@@ -239,12 +239,11 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         });
             let validated = true
             let tempCharts = state.charts.map((chart) => {
-                console.log(isNotValid.indexOf(chart.name.value));
                 if (!chart.isEnabled) {
                     // dont consider disabled charts
                     return chart
                 }
-                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id ||isNotValid.length>0 )  {
+                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id || isNotValid?.length>0 )  {
                     validated = false
                 }
                 return {
@@ -252,7 +251,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     name: {
                         value: chart.name.value,
                         error: nameRegexp.test(chart.name.value)
-                            ? (isNotValid.indexOf(chart.name.value)==-1?'':'Duplicate names found')
+                            ? (isNotValid.indexOf(chart.name.value) === -1?'':'Duplicate names found')
                             : 'name must follow `^[a-z]+[a-z0-9-?]*[a-z0-9]+$` pattern',
                     },
                     environment: {

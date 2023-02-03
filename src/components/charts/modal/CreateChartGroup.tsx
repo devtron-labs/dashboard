@@ -10,7 +10,7 @@ interface ChartGroupCreateState {
     name: { value: string; error: any[]; };
     description: string;
     loading: boolean;
-    result:ChartGroup[]
+    charts:ChartGroup[]
 }
 
 export default class CreateChartGroup extends Component<CreateChartGroupProps, ChartGroupCreateState> {
@@ -21,7 +21,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             name: { value: "", error: [] },
             description: "",
             loading: false,
-            result:[]
+            charts:[]
         }
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
@@ -83,7 +83,6 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             })
         }
 
-
         if(this.state.name.value.length<5){
             showError({
                 message:`Error: Minimum 5 characters required in names`
@@ -91,17 +90,13 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             return;
         }
 
-        let isNameUsed = this.state.result.some((r)=>r.name===this.state.name.value);
+        let isNameUsed = this.state.charts.some((r)=>r.name===this.state.name.value);
         if(isNameUsed){
             showError({
                 message:'A chart group with this name already exists!'
             });
             return;
         }
-
-
-
-
 
         let requestBody = {
             name: this.state.name.value.trim(),
@@ -135,7 +130,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         if (this.props.chartGroupId && this.props.name) {
             this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || "" })
         }
-        getChartGroups().then((res) => (this.setState({result:res.result.groups})))
+        getChartGroups().then((res) => (this.setState({charts:res.result.groups})))
     }
 
     render() {
