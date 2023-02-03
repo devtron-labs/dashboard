@@ -93,7 +93,7 @@ export const TriggerDetails = React.memo(
 const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
     const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
     const durationStr = (diff.hours() > 0 ? diff.hours() + 'h ' : '') + (diff.minutes() ? diff.minutes() + 'm ': '') + diff.seconds() + 's';
-    console.log(finishedOn, diff, durationStr)
+    
     return (
         <div className="flex column left">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
