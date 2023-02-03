@@ -21,7 +21,9 @@ export default function LogsRenderer({
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(
         triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && logsURL,
     )
-    function createMarkup(log) {
+    function createMarkup(log: string): {
+        __html: string
+    } {
         try {
             log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
             const ansi_up = new AnsiUp()
@@ -37,11 +39,11 @@ export default function LogsRenderer({
         renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <div className="logs__body">
-            {logs.map((log, index) => {
+            {logs.map((log: string, index: number) => {
                 return (
                     <div className="flex left" key={`logs-${index}`}>
                         <span className="cn-4 dc__mb-auto col-2 pr-10 mt-1">{index + 1}</span>
-                        <p className="col-10 mono fs-14" dangerouslySetInnerHTML={createMarkup(log)} />
+                        <p className="col-10 mono fs-14 mh-24" dangerouslySetInnerHTML={createMarkup(log)} />
                     </div>
                 )
             })}
