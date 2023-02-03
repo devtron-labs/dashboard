@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { CreateChartGroupProps } from '../charts.types';
+import { ChartGroup, CreateChartGroupProps } from '../charts.types';
 import { showError, Progressing, DialogForm } from '../../common';
-import { saveChartGroup, updateChartGroup } from '../charts.service';
+import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service';
 import { getChartGroupEditURL } from '../charts.helper';
 import { toast } from 'react-toastify';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
@@ -10,6 +10,7 @@ interface ChartGroupCreateState {
     name: { value: string; error: any[]; };
     description: string;
     loading: boolean;
+    result:ChartGroup[]
 }
 
 export default class CreateChartGroup extends Component<CreateChartGroupProps, ChartGroupCreateState> {
@@ -19,7 +20,8 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         this.state = {
             name: { value: "", error: [] },
             description: "",
-            loading: false
+            loading: false,
+            result:[]
         }
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
@@ -81,6 +83,26 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             })
         }
 
+
+        if(this.state.name.value.length<5){
+            showError({
+                message:`Error: Minimum 5 characters required in names`
+            })
+            return;
+        }
+
+        let isNameUsed = this.state.result.some((r)=>r.name===this.state.name.value);
+        if(isNameUsed){
+            showError({
+                message:'A chart group with this name already exists!'
+            });
+            return;
+        }
+
+
+
+
+
         let requestBody = {
             name: this.state.name.value.trim(),
             description: this.state.description
@@ -113,6 +135,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         if (this.props.chartGroupId && this.props.name) {
             this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || "" })
         }
+        getChartGroups().then((res) => (this.setState({result:res.result.groups})))
     }
 
     render() {
