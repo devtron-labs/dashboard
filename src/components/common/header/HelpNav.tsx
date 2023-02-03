@@ -23,7 +23,7 @@ function HelpNav({
 }: HelpNavType) {
 
     const { currentServerInfo } = useContext(mainContext)
-    const isEnterPrise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+    const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
 
     const HelpOptions: HelpOptionType[] = [
         {
@@ -36,7 +36,7 @@ function HelpNav({
             name: 'Chat with support',
             link: 'https://discord.devtron.ai/',
             icon: Chat,
-            showSeparator: isEnterPrise ? false : true,
+            showSeparator: isEnterprise ? false : true,
         },
         {
             name: 'Join discord community',
@@ -69,7 +69,7 @@ function HelpNav({
                 setShowHelpCard(!showHelpCard)
             }}
         >
-            <div className={`help-card pt-4 pb-4 ${className} ${ isEnterPrise ? `help-grid__feedback` : ''}`}>
+            <div className={`help-card pt-4 pb-4 ${className} ${ isEnterprise ? `help-grid__feedback` : ''}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
                     className="help-card__option dc__no-decor help-card__link flex left cn-9"
@@ -101,9 +101,11 @@ function HelpNav({
                     )
                 })}
 
-                {isEnterPrise && (
+                {isEnterprise && (
                     <div
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setShowHelpCard(!showHelpCard)}}
                         className="help-card__option help-card__link flex left cn-9"
                     >
                         <Feedback />
