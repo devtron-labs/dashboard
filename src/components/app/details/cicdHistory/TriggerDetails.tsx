@@ -108,6 +108,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                         </time>
                         <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle">
+                            {/* display of duration */}
                            {durationStr}
                         </time>
                     </div>
@@ -197,6 +198,7 @@ const ProgressingStatus = React.memo(
                         </div>
                         <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle">
+                            {/* display of duration  */}
                         {durationStr}
                         </time>
                     </div>
