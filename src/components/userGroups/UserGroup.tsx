@@ -643,20 +643,20 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={email_id === 'admin'}
+                        condition={email_id === 'admin'||email_id==='system'}
                         wrap={(children) => (
                             <Tippy 
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
-                                content="Admin user cannot be edited"
+                                content={`${email_id === 'admin' ? 'Admin' : 'System'} user cannot be edited`}
                             >
                                 <div className="flex">{children}</div>
                             </Tippy>
                         )}
                         
                     >
-                        {email_id==='admin'? (
+                        {email_id==='admin'||email_id==='system'? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
@@ -664,28 +664,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                             <NavigationArrow className="tippyg" />
                         )}
                     </ConditionalWrap>
-                    <ConditionalWrap
-                        condition={email_id === 'system'}
-                        wrap={(children) => (
-                            <Tippy 
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content="System user cannot be edited"
-                            >
-                                <div className="flex">{children}</div>
-                            </Tippy>
-                        )}
-                        
-                    >
-                        {email_id==='system'? (
-                            <Lock />
-                        ) : dataLoading ? (
-                            <Progressing />
-                        ) : (
-                            <NavigationArrow className="tippyg" />
-                        )}
-                    </ConditionalWrap>
+                    
                 </span>
             </div>
             {!collapsed && data && !dataLoading && (
