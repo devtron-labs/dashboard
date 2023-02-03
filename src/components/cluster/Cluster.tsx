@@ -402,7 +402,6 @@ function Cluster({
                     cluster_name={cluster_name}
                     {...environment}
                     handleClose={handleClose}
-                    isNamespaceMandatory={Array.isArray(environments) && environments.length > 0}
                 />
             )}
         </>
@@ -816,12 +815,9 @@ function Environment({
     handleClose,
     prometheus_endpoint,
     isProduction,
-    isNamespaceMandatory = true,
     reload,
 }) {
     const [loading, setLoading] = useState(false)
-    const [ignore, setIngore] = useState(false)
-    const [ignoreError, setIngoreError] = useState('')
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             environment_name: { value: environment_name, error: '' },
@@ -839,7 +835,7 @@ function Environment({
                 ],
             },
             namespace: {
-                required: isNamespaceMandatory,
+                required: true,
                 validators: [
                     { error: 'Namespace is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
@@ -869,10 +865,6 @@ function Environment({
         }
     }
     async function onValidation() {
-        if (!state.namespace.value && !ignore) {
-            setIngoreError('Enter a namespace or select ignore namespace')
-            return
-        }
         let payload = getEnvironmentPayload()
 
         const api = id ? updateEnvironment : saveEnvironment
@@ -915,33 +907,14 @@ function Environment({
                 </div>
                 <div className="form__row form__row--namespace">
                     <CustomInput
-                        disabled={!!namespace || ignore}
+                        disabled={!!namespace}
                         name="namespace"
                         value={state.namespace.value}
                         error={state.namespace.error}
                         onChange={handleOnChange}
-                        label={`Enter Namespace ${isNamespaceMandatory ? '*' : ''}`}
+                        label="Enter Namespace*"
                     />
                 </div>
-                {!isNamespaceMandatory && (
-                    <>
-                        <div className="form__row form__row--ignore-namespace">
-                            <input
-                                type="checkbox"
-                                onChange={(e) => {
-                                    setIngore((t) => !t)
-                                    setIngoreError('')
-                                }}
-                                checked={ignore}
-                            />
-                            <div className="form__label dc__bold">Ignore namespace</div>
-                        </div>
-                        <div className="form__row form__row--warn">
-                            If left empty, you won't be able to add more environments to this cluster
-                        </div>
-                        {ignoreError && <div className="form__row form__error">{ignoreError}</div>}
-                    </>
-                )}
                 <div className="form__row">
                     <div className="form__label">Environment type*</div>
                     <div className="environment-type pointer">
