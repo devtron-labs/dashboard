@@ -107,7 +107,7 @@ function HelpNav({
                         className="help-card__option help-card__link flex left cn-9"
                     >
                         <Feedback />
-                        <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id="UheGN3KJ">
+                        <SliderButton className="dc__transparent help-card__option-name ml-12 cn-9 fs-14" id={`UheGN3KJ#source=${window.location.hostname}`}>
                             Give feedback
                         </SliderButton>
                     </div>
