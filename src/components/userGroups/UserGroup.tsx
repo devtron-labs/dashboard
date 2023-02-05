@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, ChangeEvent } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import {
@@ -627,6 +627,14 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         setData((state) => ({ ...state, result: data }))
         updateCallback(index, data)
     }
+    const decision=email_id==="admin"||email_id==="system";
+    function onClickHandler(e){
+        if(decision)
+             noop();
+        else
+        setCollapsed(not);
+
+    }
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
             <div className="user-list__header w-100">
@@ -639,11 +647,11 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={(email_id === 'admin'||email_id==='system') ? noop : (e) => setCollapsed(not)}
+                    onClick={onClickHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={email_id === 'admin'||email_id==='system'}
+                        condition={decision}
                         wrap={(children) => (
                             <Tippy 
                                 className="default-tt"
@@ -656,7 +664,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                         )}
                         
                     >
-                        {email_id==='admin'||email_id==='system'? (
+                        {decision? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
