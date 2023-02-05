@@ -193,7 +193,7 @@ export function Build({
     const renderPipelineName = () => {
         return (
             <label className="form__row">
-                <span className="form__label">Pipeline Name*</span>
+                <span className="form__label">Pipeline Name<span className="cr-5"> *</span></span>
                 <input
                     className="form__input"
                     autoComplete="off"

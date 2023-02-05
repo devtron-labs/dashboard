@@ -128,7 +128,7 @@ export default function CIContainerRegistryConfig({
             <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label">
-                        Container Registry*
+                        Container Registry<span className="cr-5"> *</span>
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">

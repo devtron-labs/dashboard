@@ -268,7 +268,7 @@ export default function CIDockerFileConfig({
                 </div>
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label">
-                        Dockerfile Path (Relative)*
+                        Dockerfile Path (Relative)<span className="cr-5"> *</span>
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">
