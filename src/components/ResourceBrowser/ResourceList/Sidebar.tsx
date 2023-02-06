@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useRef } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -21,6 +21,14 @@ export function Sidebar({
         nodeType: string
         node: string
     }>()
+    const sideBarElementRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (k8SObjectMap?.size && sideBarElementRef.current) {
+            sideBarElementRef.current.scrollIntoView({ block: 'center' })
+        }
+    }, [k8SObjectMap])
+
     const selectNode = (e): void => {
         push(
             `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${e.currentTarget.dataset.kind.toLowerCase()}/${
@@ -39,8 +47,11 @@ export function Sidebar({
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
     }
-    if (!k8SObjectMap?.size) {
-        return <Progressing pageLoader />
+
+    const updateRef = (_node: HTMLDivElement) => {
+        if (_node?.dataset?.selected === 'true') {
+            sideBarElementRef.current = _node
+        }
     }
 
     const renderChild = (childData: ApiResourceGroupType, useGroupName?: boolean) => {
@@ -61,6 +72,7 @@ export function Sidebar({
         return (
             <div
                 key={nodeName}
+                ref={updateRef}
                 className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                     useGroupName ? 'ml-16' : ''
                 } ${isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'}`}
@@ -69,6 +81,7 @@ export function Sidebar({
                 data-kind={childData.gvk.Kind}
                 data-namespaced={childData.namespaced}
                 data-grouped={useGroupName}
+                data-selected={isSelected}
                 onClick={selectNode}
             >
                 {nodeName}
@@ -76,7 +89,9 @@ export function Sidebar({
         )
     }
 
-    return (
+    return !k8SObjectMap?.size ? (
+        <Progressing pageLoader />
+    ) : (
         <div className="k8s-object-container p-8 dc__user-select-none">
             {[...k8SObjectMap.values()].map((k8sObject) =>
                 k8sObject.name === AggregationKeys.Events ? null : (
@@ -136,6 +151,7 @@ export function Sidebar({
                 {SIDEBAR_KEYS.eventGVK.Version && (
                     <div
                         key={SIDEBAR_KEYS.eventGVK.Kind}
+                        ref={updateRef}
                         className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                             nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                                 ? 'bcb-1 cb-5'
@@ -145,6 +161,7 @@ export function Sidebar({
                         data-version={SIDEBAR_KEYS.eventGVK.Version}
                         data-kind={SIDEBAR_KEYS.eventGVK.Kind}
                         data-namespaced={true}
+                        data-selected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                         onClick={selectNode}
                     >
                         {SIDEBAR_KEYS.events}
@@ -153,6 +170,7 @@ export function Sidebar({
                 {SIDEBAR_KEYS.namespaceGVK.Version && (
                     <div
                         key={SIDEBAR_KEYS.namespaceGVK.Kind}
+                        ref={updateRef}
                         className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                             nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
                                 ? 'bcb-1 cb-5'
@@ -162,6 +180,7 @@ export function Sidebar({
                         data-version={SIDEBAR_KEYS.namespaceGVK.Version}
                         data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
                         data-namespaced={false}
+                        data-selected={nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
                         onClick={selectNode}
                     >
                         {SIDEBAR_KEYS.namespaces}
