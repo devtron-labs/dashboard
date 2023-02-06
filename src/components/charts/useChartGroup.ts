@@ -238,7 +238,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     function isValidName(value: string, invalidNames: string[]): string {
-        let err = invalidNames.indexOf(value) === -1 ? '' : 'Duplicate names found'
+        let err = invalidNames.indexOf(value) !== -1 &&'Duplicate names found'
         return err
     }
 
