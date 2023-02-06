@@ -30,7 +30,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
     handleNameChange(event) {
         const lowercaseRegex = new RegExp('^[a-z0-9-. ]*$')
         const startAndEndAlphanumericRegex = new RegExp(`^[a-zA-Z0-9 ].*[a-zA-Z0-9 ]$`)
-        let errors = []
+        const errors = []
 
         if (!event.target.value) {
             errors.push('This is a required field')
@@ -69,6 +69,21 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         this.setState({ description: event.target.value })
     }
 
+    checkValid() {
+        if (this.state.name.value.length < 5) {
+            return false
+        }
+
+        let isNameUsed = this.state.charts.some((r) => r.name === this.state.name.value)
+        if (isNameUsed) {
+            showError({
+                message: 'A chart group with name ' + this.state.name.value + ' already exists!',
+            })
+            return false
+        }
+        return true
+    }
+
     async saveChartGroup(e) {
         if (!this.state.name.value) {
             this.setState({
@@ -79,15 +94,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             })
         }
 
-        if (this.state.name.value.length < 5) {
-            return
-        }
+        const isValid = this.checkValid()
 
-        let isNameUsed = this.state.charts.some((r) => r.name === this.state.name.value)
-        if (isNameUsed) {
-            showError({
-                message: 'A chart group with name' + this.state.name.value + 'already exists!',
-            })
+        if (!isValid) {
             return
         }
 
@@ -175,15 +184,11 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         value={this.state.description}
                         placeholder="Enter a short description for this group."
                         autoFocus={true}
-                        tabIndex={1}
+                        tabIndex={2}
                         onChange={this.handleDescriptionChange}
                         required
                     />
-                    <span className="form__error">
-                        {/* {showError && !this.state.isValid.appName
-                        ? <><Error className="form__icon form__icon--error" />{errorObject[0].message} <br /></>
-                        : null} */}
-                    </span>
+                    <span className="form__error"></span>
                 </label>
                 <button type="button" className="cta dc__align-right" onClick={this.saveChartGroup}>
                     {this.state.loading ? <Progressing /> : this.props.chartGroupId ? 'Update Group' : 'Create Group'}
