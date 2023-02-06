@@ -1,6 +1,6 @@
-import { RouteComponentProps } from 'react-router';
-import { Teams } from '../../services/service.types';
-import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
+import { RouteComponentProps } from 'react-router'
+import { Teams } from '../../services/service.types'
+import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -23,17 +23,17 @@ export interface LabelTags {
 }
 
 export interface TagType {
-  key:string
-  value?: string
-  description?: string
-  propagate: boolean
-  isInvalidKey?: boolean
-  isInvalidValue?: boolean
+    key: string
+    value?: string
+    description?: string
+    propagate: boolean
+    isInvalidKey?: boolean
+    isInvalidValue?: boolean
 }
 
-export interface TagErrorType{
-  isValid: boolean
-  messages: string[]
+export interface TagErrorType {
+    isValid: boolean
+    messages: string[]
 }
 export interface TagLabelSelectType {
     isCreateApp?: boolean
@@ -43,22 +43,24 @@ export interface TagLabelSelectType {
 }
 
 export interface TagDetailType {
-  index: number
-  tagData: TagType
-  setTagData: (index: number, tagData: TagType) => void
-  removeTag: (index: number) => void
-  tabIndex?: number
+    index: number
+    tagData: TagType
+    setTagData: (index: number, tagData: TagType) => void
+    removeTag: (index: number) => void
+    tabIndex?: number
 }
 
 export interface TagLabelValueSelectorType {
-selectedTagIndex: number
-tagData: TagType
-setTagData: (index: number, tagData: TagType) => void
-tagOptions?: OptionType[]
-isRequired?: boolean
-type?: string
-placeholder?: string
-tabIndex?: number
+    selectedTagIndex: number
+    tagData: TagType
+    setTagData: (index: number, tagData: TagType) => void
+    tagOptions?: OptionType[]
+    isRequired?: boolean
+    type?: string
+    placeholder?: string
+    tabIndex?: number
+    refVar?: React.MutableRefObject<any>
+    dependentRef?: React.MutableRefObject<any>
 }
 
 export interface AddNewAppState {
@@ -463,6 +465,6 @@ export interface DeleteComponentProps {
     configuration?: string
 }
 
-export interface AppStatusType { 
-    appStatus: string 
+export interface AppStatusType {
+    appStatus: string
 }

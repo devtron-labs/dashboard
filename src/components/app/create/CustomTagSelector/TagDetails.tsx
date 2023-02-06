@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { ReactComponent as DeleteCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
 import { stopPropagation } from '../../../common'
 import { TagDetailType } from '../../types'
 import TagLabelValueSelector from './TagLabelValueSelector'
 
-export default function TagDetails({ index, tagData, setTagData, removeTag, tabIndex=1 }: TagDetailType) {
+export default function TagDetails({ index, tagData, setTagData, removeTag, tabIndex = 1 }: TagDetailType) {
+    const keyRef = useRef(null)
+    const valueRef = useRef(null)
+
     const deleteTag = (e): void => {
         stopPropagation(e)
         removeTag(index)
@@ -29,7 +32,9 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
                 setTagData={setTagData}
                 type="key"
                 placeholder="Enter key"
-                tabIndex={tabIndex-1}
+                tabIndex={tabIndex - 1}
+                refVar={keyRef}
+                dependentRef={valueRef}
             />
             <TagLabelValueSelector
                 selectedTagIndex={index}
@@ -38,9 +43,11 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
                 type="value"
                 placeholder="Enter value"
                 tabIndex={tabIndex}
+                refVar={valueRef}
+                dependentRef={keyRef}
             />
-            <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer" onClick={deleteTag}>
-                <DeleteCross className="icon-dim-20 mt-3" />
+            <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer flex top" onClick={deleteTag}>
+                <DeleteCross className="icon-dim-20 mt-4" />
             </div>
         </div>
     )

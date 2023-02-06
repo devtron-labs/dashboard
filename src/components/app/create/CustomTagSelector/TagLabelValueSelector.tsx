@@ -14,6 +14,8 @@ export default function TagLabelValueSelector({
     type,
     placeholder,
     tabIndex = null,
+    refVar,
+    dependentRef,
 }: TagLabelValueSelectorType) {
     const [selectedValue, setSelectedValue] = useState<string>('')
     const [isPopupOpen, togglePopup] = useState<boolean>(false)
@@ -114,15 +116,13 @@ export default function TagLabelValueSelector({
 
     return (
         <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoPosition>
-            <PopupMenu.Button
-                rootClassName="dc__bg-n50 flex top dc__no-border"
-            >
+            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border">
                 <ResizableTextarea
-                    className={`form__input pt-4-imp pb-3-imp fs-13 mh-100-per ${
-                      type === 'key'
-                          ? `dc__no-right-radius`
-                          : `dc__no-border-radius dc__no-right-border dc__no-left-border`
-                  } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
+                    className={`form__input pt-4-imp pb-4-imp fs-13 ${
+                        type === 'key'
+                            ? `dc__no-right-radius`
+                            : `dc__no-border-radius dc__no-right-border dc__no-left-border`
+                    } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
@@ -131,6 +131,8 @@ export default function TagLabelValueSelector({
                     lineHeight={20}
                     maxHeight={80}
                     defaultRows={1}
+                    refVar={refVar}
+                    dependentRef={dependentRef}
                 />
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true} preventWheelDisable={true}>
