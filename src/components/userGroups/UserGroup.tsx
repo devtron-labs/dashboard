@@ -538,9 +538,9 @@ const UserGroupList: React.FC<{
         })
     }
 
-    if (loading)
+    if (loading || fetchingSSOConfigList)
         return (
-            <div className="w-100 flex" style={{ minHeight: '600px' }}>
+            <div className="w-100 flex mh-600" >
                 <Progressing pageLoader />
             </div>
         )
@@ -553,17 +553,9 @@ const UserGroupList: React.FC<{
             userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
-    //Checking the isSSOConfigured has been set or not, if not then show loading
-    if (fetchingSSOConfigList) {
-        return (
-            <div className="w-100 flex min-height-600">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
-    //If not set then Show Empty State
-    else if (!isSSOConfigured) {
-        return <NoSSO />
+  
+    if (isSSOConfigured) {
+        return <SSONotConfiguredState />
     }
     //Show User can add User
     else {
@@ -1504,32 +1496,35 @@ function NoUsers({ onClick }) {
     )
 }
 
-const MSGOBJ={
-    boldmsg:"SSO Login not configured:",
-    msg:" Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services"
+const SSOMessageText={
+    SSOmsg:"SSO Login not configured:",
+    InfoText:" Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services"
 }
-
+const RedirectText={
+    redirectmsg:'Go to SSO login services',
+    redirectLink:'/global-config/login-service'
+}
 const renderEmptySSOMessage=(): JSX.Element=>{
-    return<>   <span className="dc__bold">{MSGOBJ.boldmsg}</span>
-        {MSGOBJ.msg}</>
+    return<> <span className="dc__bold">{SSOMessageText.SSOmsg}</span>
+        {SSOMessageText.InfoText}</>
    }
 
-function NoSSO() {
+function SSONotConfiguredState() {
     return (
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4>No users</h4>
+                <h4 className='fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp'>No users Added</h4>
             </EmptyState.Title>
-            <EmptyState.Subtitle className="w-320 ">
+            <EmptyState.Subtitle className="w-300 fw-400 fs-13">
                 Add users and assign group or direct permissions
                 <InfoColourBar
                     message={renderEmptySSOMessage()}
-                    classname="error_bar mt-16 dc__align-left info-colour-bar svg  "
-                    linkText={'Go to SSO login services'}
-                    redirectLink={'/global-config/login-service'}
+                    classname="error_bar mt-8 dc__align-left info-colour-bar svg padding-8px-8px "
+                    linkText={RedirectText.redirectmsg}
+                    redirectLink={RedirectText.redirectLink}
                     internalLink={true}
                     Icon={ErrorIcon}
                 />

@@ -29,10 +29,16 @@
     .search {
         margin-bottom: 16px !important;
     }
+    .empty-state {
+        .info-bar-container {
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
 }
-.min-height-600 {
-    min-width: 600px;
-}
+
 .auth-page__body-users__list-container {
     margin: 0 42px;
     padding: 0 24px;
@@ -94,9 +100,7 @@
             fill: #999;
         }
     }
-    .info-Colour-bar-error-width {
-        width: 307px;
-    }
+    
     .add-svg {
         path {
             fill: #06c;
@@ -184,6 +188,10 @@
 
 .tab-list__tab-link {
     padding: 6px 0;
+}
+
+.padding-8px-8px{
+    padding: 8px 8px !important;
 }
 
 .kubernetes-header {

@@ -2108,17 +2108,14 @@ textarea,
     width: 303px;
 }
 
-.w-320 {
-    width: 320px !important;
+.w-350 {
+    width: 320px ;
 }
 
 .w-332 {
     width: 332px;
 }
 
-.w-340 {
-    width: 340px
-}
 .w-400 {
     width: 400px;
 }
@@ -2271,6 +2268,10 @@ textarea,
 
 .mh-66 {
     min-height: 66px;
+}
+
+.mh-600{
+    min-height:600px;
 }
 
 // Height in percentage
