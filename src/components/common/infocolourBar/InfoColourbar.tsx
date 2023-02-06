@@ -4,7 +4,7 @@ import './infoColourBar.scss'
 
 interface InfoColourBarType {
     message: React.ReactNode
-    boldmessage?:React.ReactNode
+    
     classname: string
     Icon
     iconClass?: string
@@ -19,7 +19,7 @@ interface InfoColourBarType {
 }
 
 function InfoColourBar({
-    boldmessage,
+    
     message,
     classname,
     Icon,
@@ -81,7 +81,7 @@ function InfoColourBar({
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass || ''} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
-                    <span className={linkText && redirectLink ? 'mr-5 dc__bold ' : ''}>{boldmessage}</span>
+                       
                         <span className={linkText && redirectLink ? 'mr-5' : ''}>{message}</span>
                         {renderLink()}
                     </div>

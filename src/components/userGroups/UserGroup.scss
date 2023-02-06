@@ -30,7 +30,9 @@
         margin-bottom: 16px !important;
     }
 }
-
+.min-height-600 {
+    min-width: 600px;
+}
 .auth-page__body-users__list-container {
     margin: 0 42px;
     padding: 0 24px;
@@ -92,15 +94,18 @@
             fill: #999;
         }
     }
-    .info-Colour-bar-error-width{
-        width:307px;
+    .info-Colour-bar-error-width {
+        width: 307px;
     }
     .add-svg {
         path {
             fill: #06c;
         }
     }
-
+    .info-colour-bar svg {
+        height: 25px;
+        width: 25px;
+    }
     .user-list__title {
         font-size: 14px;
         color: var(--N900);

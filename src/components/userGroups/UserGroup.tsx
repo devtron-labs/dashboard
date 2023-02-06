@@ -34,7 +34,7 @@ import {
     getEnvironmentListHelmApps,
     getUsersDataToExport,
     getGroupsDataToExport,
-    getUserRole
+    getUserRole,
 } from './userGroup.service'
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
@@ -172,7 +172,7 @@ export function useUserGroupContext() {
 
 function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
-   
+
     return (
         <div className="auth-page__header">
             <h2 className="auth-page__header-title form__title">
@@ -186,11 +186,7 @@ function HeaderSection(type: string) {
                 <a
                     className="dc__link"
                     rel="noreferrer noopener"
-                    href={
-                        isUserPremissions
-                            ? DOCUMENTATION.GLOBAL_CONFIG_USER
-                            : DOCUMENTATION.GLOBAL_CONFIG_GROUPS
-                    }
+                    href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
                     target="_blank"
                 >
                     Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
@@ -263,7 +259,6 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
@@ -342,15 +337,15 @@ const UserGroupList: React.FC<{
     renderHeaders: (type: string) => JSX.Element
 }> = ({ type, reloadLists, renderHeaders }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
-    const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList,[type],type === 'user')
+    const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
-    const isSSOConfigured=(ssoConfigListdata && ssoConfigListdata.result.some((a)=> a.active))||false;
-    
+    const isSSOConfigured = (ssoConfigListdata && ssoConfigListdata.result.some((a) => a.active)) || false
+
     const [searchString, setSearchString] = useState('')
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
-   
+
     const { roles } = useUserGroupContext()
 
     useEffect(() => {
@@ -363,9 +358,8 @@ const UserGroupList: React.FC<{
 
     useEffect(() => {
         if (!error) return
-        showError(error,true,true)
+        showError(error, true, true)
     }, [error])
-
 
     useEffectAfterMount(() => {
         if (type === 'user') {
@@ -550,7 +544,7 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
-        
+
     if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
     if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result.filter(
@@ -560,74 +554,69 @@ const UserGroupList: React.FC<{
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
     //Checking the isSSOConfigured has been set or not, if not then show loading
-    if(fetchingSSOConfigList){
+    if (fetchingSSOConfigList) {
         return (
-            <div className="w-100 flex" style={{ minHeight: '600px' }}>
+            <div className="w-100 flex min-height-600">
                 <Progressing pageLoader />
             </div>
         )
     }
     //If not set then Show Empty State
-    else if(!isSSOConfigured){
-        return(
-            <NoSSO></NoSSO>
-        );
-
+    else if (!isSSOConfigured) {
+        return <NoSSO />
     }
-    //Show User can add User 
-        else{ 
-    return (
-        
-        <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {renderHeaders(type)}
-            {result.length > 0 && (
-                <div className="flex dc__content-space">
-                    <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
-                        <Search className="search__icon icon-dim-18" />
-                        <input
-                            value={searchString}
-                            autoComplete="off"
-                            ref={searchRef}
-                            type="search"
-                            placeholder={`Search ${type}`}
-                            className="search__input bcn-0"
-                            onChange={(e) => setSearchString(e.target.value)}
-                        />
+    //Show User can add User
+    else {
+        return (
+            <div id="auth-page__body" className="auth-page__body-users__list-container">
+                {renderHeaders(type)}
+                {result.length > 0 && (
+                    <div className="flex dc__content-space">
+                        <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
+                            <Search className="search__icon icon-dim-18" />
+                            <input
+                                value={searchString}
+                                autoComplete="off"
+                                ref={searchRef}
+                                type="search"
+                                placeholder={`Search ${type}`}
+                                className="search__input bcn-0"
+                                onChange={(e) => setSearchString(e.target.value)}
+                            />
+                        </div>
+                        {roles?.indexOf('role:super-admin___') !== -1 && (
+                            <ExportToCsv
+                                className="mb-16"
+                                apiPromise={getPermissionsDataToExport}
+                                fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
+                            />
+                        )}
                     </div>
-                    {roles?.indexOf('role:super-admin___') !== -1 && (
-                        <ExportToCsv
-                            className="mb-16"
-                            apiPromise={getPermissionsDataToExport}
-                            fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
-                        />
-                    )}
-                </div>
-            )}
-            {!(filteredAndSorted.length === 0 && result.length > 0) && (
-                <AddUser
-                    cancelCallback={cancelCallback}
-                    key={addHash}
-                    text={`Add ${type}`}
-                    type={type}
-                    open={!result || result?.length === 0}
-                    {...{ createCallback, updateCallback, deleteCallback }}
-                />
-            )}
-            {filteredAndSorted.map((data, index) => (
-                <CollapsedUserOrGroup
-                    key={data.id}
-                    {...data}
-                    type={type}
-                    {...{ updateCallback, deleteCallback, createCallback, index }}
-                />
-            ))}
-            {filteredAndSorted.length === 0 && result.length > 0 && (
-                <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
-            )}
-        </div>
-    )
-}
-
+                )}
+                {!(filteredAndSorted.length === 0 && result.length > 0) && (
+                    <AddUser
+                        cancelCallback={cancelCallback}
+                        key={addHash}
+                        text={`Add ${type}`}
+                        type={type}
+                        open={!result || result?.length === 0}
+                        {...{ createCallback, updateCallback, deleteCallback }}
+                    />
+                )}
+                {filteredAndSorted.map((data, index) => (
+                    <CollapsedUserOrGroup
+                        key={data.id}
+                        {...data}
+                        type={type}
+                        {...{ updateCallback, deleteCallback, createCallback, index }}
+                    />
+                ))}
+                {filteredAndSorted.length === 0 && result.length > 0 && (
+                    <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
+                )}
+            </div>
+        )
+    }
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
@@ -1497,7 +1486,6 @@ export function GroupRow({ name, description, removeRow }) {
 
 function NoUsers({ onClick }) {
     return (
-        
         <EmptyState>
             <EmptyState.Image>
                 <img src={EmptyImage} alt="so empty" />
@@ -1513,10 +1501,19 @@ function NoUsers({ onClick }) {
                 </button>
             </EmptyState.Button>
         </EmptyState>
-       
-
     )
 }
+
+const MSGOBJ={
+    boldmsg:"SSO Login not configured:",
+    msg:" Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services"
+}
+
+const renderEmptySSOMessage=(): JSX.Element=>{
+    return<>   <span className="dc__bold">{MSGOBJ.boldmsg}</span>
+        {MSGOBJ.msg}</>
+   }
+
 function NoSSO() {
     return (
         <EmptyState>
@@ -1526,10 +1523,18 @@ function NoSSO() {
             <EmptyState.Title>
                 <h4>No users</h4>
             </EmptyState.Title>
-            <EmptyState.Subtitle className='w-320 '>Add users and assign group or direct permissions
-                <InfoColourBar message={`Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services`} classname="error_bar mt-16 text-align-left info-colour-bar svg  " linkText ={"Go to SSO login services"} redirectLink={"/global-config/login-service"} boldmessage={"SSO Login not configured:"} internalLink={true} Icon={ErrorIcon}  />
-          </EmptyState.Subtitle>
-        </EmptyState>  
+            <EmptyState.Subtitle className="w-320 ">
+                Add users and assign group or direct permissions
+                <InfoColourBar
+                    message={renderEmptySSOMessage()}
+                    classname="error_bar mt-16 text-align-left info-colour-bar svg  "
+                    linkText={'Go to SSO login services'}
+                    redirectLink={'/global-config/login-service'}
+                    internalLink={true}
+                    Icon={ErrorIcon}
+                />
+            </EmptyState.Subtitle>
+        </EmptyState>
     )
 }
 
