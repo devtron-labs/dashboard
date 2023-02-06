@@ -38,7 +38,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
     }, [popupPosition])
 
     useEffect(() => {
-        if (buttonRef?.current && autoPosition) {
+        if (buttonRef?.current && autoPosition && popupPosition) {
             const { height, x, y } = buttonRef.current.getBoundingClientRect()
             setPopupPosition({ left: x, top: y + height })
         }
@@ -77,7 +77,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
     const handleOpen = (e)=>{
         e.stopPropagation();
         setOpacity(0)
-        const { bottom,height,left,right,top,width,x,y } = e.currentTarget.getBoundingClientRect()
+        const { height, x, y } = e.currentTarget.getBoundingClientRect()
         setPopupPosition({left: x, top: y + height})
     }
 

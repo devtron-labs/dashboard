@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { TagLabelValueSelectorType } from '../../../app/types'
-import { PopupMenu, stopPropagation, ResizableTextarea } from '../../../common'
+import { PopupMenu, stopPropagation } from '../../../common'
 import { ValidationRules } from '../validationRules'
-import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-outlined.svg'
 import { KEY_VALUE } from '../../../../config'
+import { ResizableTagTextArea } from './ResizableTagTextArea'
 
 export default function TagLabelValueSelector({
     selectedTagIndex,
@@ -74,7 +75,7 @@ export default function TagLabelValueSelector({
             return (
                 <div className="p-4" onClick={stopPropagation}>
                     {field.messages.map((error) => (
-                        <div key={error} className="flexbox p-4">
+                        <div key={error} className="flexbox pr-4 pl-4">
                             <span>
                                 <ErrorCross className="icon-dim-14 scr-5 mt-3 mr-4" />
                             </span>
@@ -82,7 +83,7 @@ export default function TagLabelValueSelector({
                         </div>
                     ))}
                     {tagInputType === KEY_VALUE.KEY && (
-                        <div className="flexbox p-4">
+                        <div className="flexbox pr-4 pl-4">
                             <span>
                                 <Info className="icon-dim-14 mt-3 mr-4" />
                             </span>
@@ -118,20 +119,19 @@ export default function TagLabelValueSelector({
     return (
         <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoPosition>
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border">
-                <ResizableTextarea
+                <ResizableTagTextArea
+                    minHeight={30}
+                    maxHeight={80}
                     className={`form__input pt-4-imp pb-4-imp fs-13 ${
-                        tagInputType === KEY_VALUE.KEY
-                            ? `dc__no-right-radius`
-                            : `dc__no-border-radius dc__no-right-border dc__no-left-border`
-                    } ${tagData[tagInputType === KEY_VALUE.KEY ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
+                      tagInputType === KEY_VALUE.KEY
+                          ? `dc__no-right-radius`
+                          : `dc__no-border-radius dc__no-right-border dc__no-left-border`
+                  } ${tagData[tagInputType === KEY_VALUE.KEY ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
                     placeholder={placeholder}
                     tabIndex={tabIndex}
-                    lineHeight={20}
-                    maxHeight={80}
-                    defaultRows={1}
                     refVar={refVar}
                     dependentRef={dependentRef}
                 />
