@@ -1496,17 +1496,17 @@ function NoUsers({ onClick }) {
     )
 }
 
-const SSOMessageText={
+const SSO_MESSAGE_TEXT={
     SSOmsg:"SSO Login not configured:",
     InfoText:" Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services"
 }
-const RedirectText={
+const REDIRECT_TEXT={
     redirectmsg:'Go to SSO login services',
     redirectLink:'/global-config/login-service'
 }
 const renderEmptySSOMessage=(): JSX.Element=>{
-    return<> <span className="dc__bold">{SSOMessageText.SSOmsg}</span>
-        {SSOMessageText.InfoText}</>
+    return<> <span className="dc__bold">{SSO_MESSAGE_TEXT.SSOmsg}</span>
+        {SSO_MESSAGE_TEXT.InfoText}</>
    }
 
 function SSONotConfiguredState() {
@@ -1523,8 +1523,8 @@ function SSONotConfiguredState() {
                 <InfoColourBar
                     message={renderEmptySSOMessage()}
                     classname="error_bar mt-8 dc__align-left info-colour-bar svg padding-8px-8px "
-                    linkText={RedirectText.redirectmsg}
-                    redirectLink={RedirectText.redirectLink}
+                    linkText={REDIRECT_TEXT.redirectmsg}
+                    redirectLink={REDIRECT_TEXT.redirectLink}
                     internalLink={true}
                     Icon={ErrorIcon}
                 />
