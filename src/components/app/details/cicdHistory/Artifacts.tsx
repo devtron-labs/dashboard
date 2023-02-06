@@ -94,7 +94,7 @@ const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextTyp
             >
                 <CopyIcon
                     data-copy-text={copyText}
-                    className="pointer  ml-6 icon-dim-16"
+                    className="pointer ml-6 icon-dim-16"
                     onClick={onClickCopyToClipboard}
                 />
             </Tippy>
