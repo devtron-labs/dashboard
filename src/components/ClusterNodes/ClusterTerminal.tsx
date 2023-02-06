@@ -91,6 +91,12 @@ export default function ClusterTerminal({
     }, [clusterId, nodeList, node])
 
     useEffect(() => {
+        if(!location.search && !isNodeDetailsPage){
+            closeTerminal(false)
+        }
+    },[location.search])
+
+    useEffect(() => {
         handleUrlChanges()
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
@@ -260,7 +266,7 @@ export default function ClusterTerminal({
         if (!isNodeDetailsPage) {
             queryParams.set('node', selectedNodeName.value)
         }
-        history.push({
+        history.replace({
             search: queryParams.toString(),
         })
     }
