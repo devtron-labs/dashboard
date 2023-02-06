@@ -56,6 +56,8 @@ import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
+import searchWorker from '../../../config/searchWorker'
+import WebWorker from '../../app/WebWorker'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -101,6 +103,7 @@ export default function ResourceList() {
         prev: null,
         new: new AbortController(),
     })
+    const searchWorkerRef = useRef(null)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -385,20 +388,37 @@ export default function ResourceList() {
         ]
     }
 
+    const stopSearchWorker = () => {
+        if (searchWorkerRef.current) {
+            searchWorkerRef.current.postMessage({ type: 'stop' })
+        }
+    }
+
     const handleFilterChanges = (_searchText: string, _resourceList: ResourceDetailType): void => {
-        const lowerCaseSearchText = _searchText.toLowerCase()
-        const _filteredData = _resourceList.data.filter(
-            (resource) =>
-                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
-        )
-        setFilteredResourceList(_filteredData)
+        if (!searchWorkerRef.current) {
+            searchWorkerRef.current = new WebWorker(searchWorker)
+            searchWorkerRef.current.onmessage = (e) => {
+                setFilteredResourceList(e.data)
+            }
+        }
+
+        searchWorkerRef.current.postMessage({
+            type: 'start',
+            payload: {
+                searchText: _searchText,
+                list: _resourceList.data,
+                searchInKeys: [
+                    'name',
+                    'namespace',
+                    'status',
+                    'message',
+                    EVENT_LIST.dataKeys.involvedObject,
+                    'source',
+                    'reason',
+                    'type',
+                ],
+            },
+        })
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
@@ -502,6 +522,7 @@ export default function ResourceList() {
 
     const updateResourceSelectionData = (_selected: ApiResourceGroupType, initSelection?: boolean) => {
         if (_selected) {
+            stopSearchWorker()
             setResourceSelectionData((prevData) => ({
                 ...prevData,
                 [`${_selected.gvk.Kind.toLowerCase()}_${

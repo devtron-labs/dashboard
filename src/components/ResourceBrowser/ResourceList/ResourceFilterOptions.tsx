@@ -37,7 +37,7 @@ export default function ResourceFilterOptions({
 
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
-        if (theKeyCode === 'Backspace' && searchText.length === 1) {
+        if (theKeyCode === 'Backspace' && searchText.length === 0) {
             clearSearch()
         } else {
             handleFilterChanges(event.target.value, resourceList)

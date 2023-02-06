@@ -15,11 +15,12 @@ export function Sidebar({
     updateResourceSelectionData,
 }: SidebarType) {
     const { push } = useHistory()
-    const { clusterId, namespace, nodeType } = useParams<{
+    const { clusterId, namespace, nodeType, group } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
+        group: string
     }>()
     const sideBarElementRef = useRef<HTMLDivElement>(null)
 
@@ -30,10 +31,15 @@ export function Sidebar({
     }, [k8SObjectMap])
 
     const selectNode = (e): void => {
+        const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
+        const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
+
+        if (_selectedKind === nodeType && (group === _selectedGroup || group === ALL_OPTION_LABEL)) {
+            return
+        }
+
         push(
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${e.currentTarget.dataset.kind.toLowerCase()}/${
-                e.currentTarget.dataset.group.toLowerCase() || ALL_OPTION_LABEL
-            }`,
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || ALL_OPTION_LABEL}`,
         )
         const _selectedResource = {
             namespaced: e.currentTarget.dataset.namespaced === 'true',
