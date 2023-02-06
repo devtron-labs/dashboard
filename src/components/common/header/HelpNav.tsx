@@ -52,7 +52,7 @@ function HelpNav({
         },
     ]
 
-    const onClickGettingStarted = (): void  => {
+    const onClickGettingStarted = (): void => {
         setGettingStartedClicked(true)
     }
 
@@ -69,18 +69,16 @@ function HelpNav({
 
     const renderHelpFeedback = (): JSX.Element => {
         return (
-            <>
-                <div onClick={stopPropagation} className="help-card__option help-card__link flex left cn-9">
-                    <Feedback />
-                    <SliderButton
-                        className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
-                        id={FEEDBACK_FORM_ID}
-                        onClose={toggleHelpCard}
-                    >
-                        Give feedback
-                    </SliderButton>
-                </div>
-            </>
+            <div onClick={stopPropagation} className="help-card__option help-card__link flex left cn-9">
+                <Feedback />
+                <SliderButton
+                    className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
+                    id={FEEDBACK_FORM_ID}
+                    onClose={toggleHelpCard}
+                >
+                    Give feedback
+                </SliderButton>
+            </div>
         )
     }
 
