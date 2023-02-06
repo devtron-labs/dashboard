@@ -250,7 +250,7 @@ function Cluster({
         try {
             const { result } = await getCluster(clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setConfig(result.config)
+            setConfig({ ...result.config, ...(clusterId != 1 ? { bearer_token: '********' } : null) })
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
@@ -488,7 +488,7 @@ function ClusterForm({
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
             },
-            token: isDefaultCluster()
+            token: isDefaultCluster() || id
                 ? {}
                 : {
                       required: true,
@@ -502,11 +502,23 @@ function ClusterForm({
         onValidation,
     )
 
+    const handleOnFocus = (e):void =>{
+      if(e.target.value === '********'){
+        e.target.value = ''
+      }
+    }
+
+    const handleOnBlur = (e):void =>{
+      if(id && id!= 1 && !e.target.value){
+        e.target.value = '********'
+      }
+    }
+
     const getClusterPayload = () => {
         return {
             id,
             cluster_name: state.cluster_name.value,
-            config: { bearer_token: state.token.value },
+            config: { bearer_token: state.token.value && state.token.value !== '********' ? state.token.value : '' },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
@@ -608,7 +620,7 @@ function ClusterForm({
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            render={() => 
+                            render={() =>
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}
@@ -677,6 +689,8 @@ function ClusterForm({
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
+                        onBlur={handleOnBlur}
+                        onFocus={handleOnFocus}
                         placeholder="Enter bearer token"
                     />
                 </div>
