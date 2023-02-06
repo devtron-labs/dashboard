@@ -3,6 +3,7 @@ import PropagateTagInfo from '../create/CustomTagSelector/PropagateTagInfo'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import TagDetails from '../create/CustomTagSelector/TagDetails'
 import { TagLabelSelectType } from '../types'
+import { DEFAULT_TAG_DATA } from '../config'
 
 export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags, tabIndex = 0 }: TagLabelSelectType) {
     const setTagData = (index, tagValue): void => {
@@ -13,7 +14,7 @@ export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags, t
 
     const addNewTag = (): void => {
         const _tags = [...labelTags]
-        _tags.splice(0, 0, { key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false })
+        _tags.splice(0, 0, DEFAULT_TAG_DATA)
         setLabelTags(_tags)
     }
 

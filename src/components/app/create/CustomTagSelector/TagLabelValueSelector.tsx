@@ -4,6 +4,7 @@ import { PopupMenu, stopPropagation, ResizableTextarea } from '../../../common'
 import { ValidationRules } from '../validationRules'
 import { ReactComponent as ErrorCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-outlined.svg'
+import { KEY_VALUE } from '../../../../config'
 
 export default function TagLabelValueSelector({
     selectedTagIndex,
@@ -11,7 +12,7 @@ export default function TagLabelValueSelector({
     setTagData,
     tagOptions,
     isRequired,
-    type,
+    tagInputType,
     placeholder,
     tabIndex = null,
     refVar,
@@ -23,8 +24,8 @@ export default function TagLabelValueSelector({
     const validationRules = new ValidationRules()
 
     useEffect(() => {
-        setSelectedValue(tagData?.[type] || '')
-    }, [selectedTagIndex, tagData, type])
+        setSelectedValue(tagData?.[tagInputType] || '')
+    }, [selectedTagIndex, tagData, tagInputType])
 
     const handleOnBlur = (e) => {
         if (
@@ -33,8 +34,8 @@ export default function TagLabelValueSelector({
             !e.relatedTarget.classList.value.includes(`tag-${selectedTagIndex}-class`)
         ) {
             const _tagData = { ...tagData }
-            _tagData[type] = selectedValue
-            if (type === 'key') {
+            _tagData[tagInputType] = selectedValue
+            if (tagInputType === KEY_VALUE.KEY) {
                 _tagData.isInvalidKey = selectedValue
                     ? !validationRules.propagateTagKey(selectedValue).isValid
                     : _tagData.value !== ''
@@ -56,13 +57,13 @@ export default function TagLabelValueSelector({
     const onSelectValue = (e): void => {
         stopPropagation(e)
         const _tagData = { ...tagData }
-        _tagData[type] = e.currentTarget.dataset.key
+        _tagData[tagInputType] = e.currentTarget.dataset.key
         setTagData(selectedTagIndex, _tagData)
     }
 
     const renderValidationsSuggestions = (): JSX.Element => {
         let field = { isValid: true, messages: [] }
-        if (type === 'key') {
+        if (tagInputType === KEY_VALUE.KEY) {
             if (selectedValue || tagData.value) {
                 field = validationRules.propagateTagKey(selectedValue)
             }
@@ -80,7 +81,7 @@ export default function TagLabelValueSelector({
                             <span>{error}</span>
                         </div>
                     ))}
-                    {type === 'key' && (
+                    {tagInputType === KEY_VALUE.KEY && (
                         <div className="flexbox p-4">
                             <span>
                                 <Info className="icon-dim-14 mt-3 mr-4" />
@@ -119,10 +120,10 @@ export default function TagLabelValueSelector({
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border">
                 <ResizableTextarea
                     className={`form__input pt-4-imp pb-4-imp fs-13 ${
-                        type === 'key'
+                        tagInputType === KEY_VALUE.KEY
                             ? `dc__no-right-radius`
                             : `dc__no-border-radius dc__no-right-border dc__no-left-border`
-                    } ${tagData[type === 'key' ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
+                    } ${tagData[tagInputType === KEY_VALUE.KEY ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}

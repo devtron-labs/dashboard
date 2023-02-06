@@ -19,6 +19,7 @@ import Reload from '../../Reload/Reload'
 import './createApp.scss'
 import TagLabelSelect from '../details/TagLabelSelect'
 import { ServerErrors } from '../../../modals/commonTypes'
+import { DEFAULT_TAG_DATA } from '../config'
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -40,7 +41,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneId: 0,
                 appCreationType: AppCreationType.Blank,
             },
-            tags: [{ key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false }],
+            tags: [DEFAULT_TAG_DATA],
             isValid: {
                 projectId: false,
                 appName: false,
@@ -127,12 +128,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         const labelTags = []
         let invalidLabels = false
         for (let index = 0; index < this.state.tags.length; index++) {
-            const element = this.state.tags[index]
-            if (element.isInvalidKey || element.isInvalidValue) {
+            const currentTag = this.state.tags[index]
+            if (currentTag.isInvalidKey || currentTag.isInvalidValue) {
                 invalidLabels = true
                 break
-            } else if (element.key) {
-                labelTags.push({ key: element.key, value: element.value, propagate: element.propagate })
+            } else if (currentTag.key) {
+                labelTags.push({ key: currentTag.key, value: currentTag.value, propagate: currentTag.propagate })
             }
         }
         this.setState({ showErrors: true, appNameErrors: true })

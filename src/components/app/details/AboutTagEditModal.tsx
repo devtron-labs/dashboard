@@ -5,6 +5,7 @@ import TagLabelSelect from './TagLabelSelect'
 import { AboutAppInfoModalProps, TagType } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
+import { DEFAULT_TAG_DATA } from '../config'
 
 export default function AboutTagEditModal({
     isLoading,
@@ -16,9 +17,7 @@ export default function AboutTagEditModal({
     const editLabelRef = useRef(null)
     const [submitting, setSubmitting] = useState(false)
     const [labelTags, setLabelTags] = useState<TagType[]>(
-        currentLabelTags?.length
-            ? currentLabelTags
-            : [{ key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false }],
+        currentLabelTags?.length ? currentLabelTags : [DEFAULT_TAG_DATA],
     )
 
     const escKeyPressHandler = (evt): void => {

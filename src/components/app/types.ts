@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router'
+import { KEY_VALUE } from '../../config'
 import { Teams } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 
@@ -56,7 +57,7 @@ export interface TagLabelValueSelectorType {
     setTagData: (index: number, tagData: TagType) => void
     tagOptions?: OptionType[]
     isRequired?: boolean
-    type?: string
+    tagInputType?: KEY_VALUE
     placeholder?: string
     tabIndex?: number
     refVar?: React.MutableRefObject<any>

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { ReactComponent as DeleteCross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
+import { KEY_VALUE } from '../../../../config'
 import { stopPropagation } from '../../../common'
 import { TagDetailType } from '../../types'
 import TagLabelValueSelector from './TagLabelValueSelector'
@@ -30,7 +31,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
                 selectedTagIndex={index}
                 tagData={tagData}
                 setTagData={setTagData}
-                type="key"
+                tagInputType={KEY_VALUE.KEY}
                 placeholder="Enter key"
                 tabIndex={tabIndex - 1}
                 refVar={keyRef}
@@ -40,7 +41,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
                 selectedTagIndex={index}
                 tagData={tagData}
                 setTagData={setTagData}
-                type="value"
+                tagInputType={KEY_VALUE.VALUE}
                 placeholder="Enter value"
                 tabIndex={tabIndex}
                 refVar={valueRef}
