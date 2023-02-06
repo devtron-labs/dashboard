@@ -24,6 +24,7 @@ function HelpNav({
 }: HelpNavType) {
     const { currentServerInfo } = useContext(mainContext)
     const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+    const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`
 
     const HelpOptions: HelpOptionType[] = [
         {
@@ -73,7 +74,7 @@ function HelpNav({
                     <Feedback />
                     <SliderButton
                         className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
-                        id={`UheGN3KJ#source=${window.location.hostname}`}
+                        id={FEEDBACK_FORM_ID}
                         onClose={toggleHelpCard}
                     >
                         Give feedback
