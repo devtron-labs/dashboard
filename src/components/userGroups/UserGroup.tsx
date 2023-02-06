@@ -633,8 +633,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
             case 'admin': return "Admin user cannot be edited"
             case 'system': return "System user cannot be edited"
             default : return
-        }
-        
+        } 
     }
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
