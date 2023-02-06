@@ -627,12 +627,14 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         setData((state) => ({ ...state, result: data }))
         updateCallback(index, data)
     }
-    const decision=email_id==="admin"||email_id==="system";
-    function onClickHandler(e){
-        if(decision)
+    const isEmailIDAdminOrSystem=email_id==="admin"||email_id==="system";
+    function onClickUserDropdownHandler(e){
+        if(isEmailIDAdminOrSystem){
              noop();
-        else
+        }
+        else{
         setCollapsed(not);
+        }
 
     }
     return (
@@ -647,11 +649,11 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={onClickHandler}
+                    onClick={onClickUserDropdownHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={decision}
+                        condition={isEmailIDAdminOrSystem}
                         wrap={(children) => (
                             <Tippy 
                                 className="default-tt"
@@ -664,12 +666,12 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                         )}
                         
                     >
-                        {decision? (
+                        {isEmailIDAdminOrSystem? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
                         ) : (
-                            <NavigationArrow className="tippyg" />
+                            <NavigationArrow className="arrow-svg" />
                         )}
                     </ConditionalWrap>
                     
