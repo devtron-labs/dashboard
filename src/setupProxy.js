@@ -20,4 +20,3 @@ module.exports = function (app) {
         }),
     )
 }
-//'http://demo.devtron.info:32080/'
