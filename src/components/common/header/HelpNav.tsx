@@ -62,7 +62,7 @@ function HelpNav({
         })
     }
 
-    const toggleHelpCard = () => {
+    const toggleHelpCard = (): void => {
         setShowHelpCard(!showHelpCard)
     }
 
