@@ -627,6 +627,15 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         setData((state) => ({ ...state, result: data }))
         updateCallback(index, data)
     }
+
+    function getToolTipContent(user) {
+        switch (user) {
+            case 'admin': return "Admin user cannot be edited"
+            case 'system': return "System user cannot be edited"
+            default : return
+        }
+        
+    }
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
             <div className="user-list__header w-100">
@@ -639,23 +648,23 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={email_id === 'admin' ? noop : (e) => setCollapsed(not)}
+                    onClick={email_id === 'admin' || email_id === 'system' ? noop : (e) => setCollapsed(not)}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={email_id === 'admin'}
+                        condition={email_id === 'admin' || email_id === 'system'}
                         wrap={(children) => (
                             <Tippy
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
-                                content="Admin user cannot be edited"
+                                content={getToolTipContent(email_id)}
                             >
                                 <div className="flex">{children}</div>
                             </Tippy>
                         )}
                     >
-                        {email_id === 'admin' ? (
+                        {email_id === 'admin' || email_id === 'system'? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
