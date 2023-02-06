@@ -562,7 +562,7 @@ const UserGroupList: React.FC<{
         )
     }
     //If not set then Show Empty State
-    else if (isSSOConfigured) {
+    else if (!isSSOConfigured) {
         return <NoSSO />
     }
     //Show User can add User
