@@ -75,6 +75,7 @@ function HelpNav({
                     className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
                     id={FEEDBACK_FORM_ID}
                     onClose={toggleHelpCard}
+                    autoClose={2000}
                 >
                     Give feedback
                 </SliderButton>
