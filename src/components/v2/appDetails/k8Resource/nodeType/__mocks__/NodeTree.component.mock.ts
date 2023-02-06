@@ -1,27 +1,31 @@
 import { iNode } from '../../../appDetails.type'
 
+const commonTreeNodesData = {
+    _treeNodes: [
+        {
+            name: 'Workloads',
+            childNodes: [
+                {
+                    name: 'Deployment',
+                },
+                {
+                    name: 'ReplicaSet',
+                },
+                {
+                    name: 'Pod',
+                    childNodes: [{ name: 'Deployment1' }, { name: 'Deployment2' }],
+                } as iNode,
+            ],
+        } as iNode,
+    ],
+    _node: 'pod',
+    parents: ['Workloads'],
+}
+
 export const testData1 = {
     arguments: {
         clickedNodes: new Map<string, string>(),
-        _treeNodes: [
-            {
-                name: 'Workloads',
-                childNodes: [
-                    {
-                        name: 'Deployment',
-                    },
-                    {
-                        name: 'ReplicaSet',
-                    },
-                    {
-                        name: 'Pod',
-                        childNodes: [{ name: 'Deployment1' }, { name: 'Deployment2' }],
-                    } as iNode,
-                ],
-            } as iNode,
-        ],
-        _node: 'pod',
-        parents: ['Workloads'],
+        ...commonTreeNodesData,
     },
     response: {
         clickedNodes: new Map<string, string>([
@@ -37,25 +41,7 @@ export const testData2 = {
             ['networking', ''],
             ['service', ''],
         ]),
-        _treeNodes: [
-            {
-                name: 'Workloads',
-                childNodes: [
-                    {
-                        name: 'Deployment',
-                    },
-                    {
-                        name: 'ReplicaSet',
-                    },
-                    {
-                        name: 'Pod',
-                        childNodes: [{ name: 'Deployment1' }, { name: 'Deployment2' }],
-                    } as iNode,
-                ],
-            } as iNode,
-        ],
-        _node: 'pod',
-        parents: ['Workloads'],
+        ...commonTreeNodesData,
     },
     response: {
         clickedNodes: new Map<string, string>([

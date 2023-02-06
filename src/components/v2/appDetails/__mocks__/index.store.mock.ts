@@ -60,37 +60,7 @@ export const nodesWithStatefulSet = [
     } as iNode,
 ]
 
-export const nodesWithMultiDeployment = [
-    {
-        name: 'pod1',
-        kind: 'Pod',
-        parentRefs: [
-            {
-                name: 'ReplicaSet1',
-                kind: 'ReplicaSet',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        name: 'pod2',
-        kind: 'Pod',
-        parentRefs: [
-            {
-                name: 'ReplicaSet2',
-                kind: 'ReplicaSet',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        name: 'pod3',
-        kind: 'Pod',
-        parentRefs: [
-            {
-                name: 'ReplicaSet3',
-                kind: 'ReplicaSet',
-            } as Node,
-        ],
-    } as iNode,
+const commonReplicaSetMultiDeployment = [
     {
         name: 'ReplicaSet1',
         kind: 'ReplicaSet',
@@ -136,7 +106,13 @@ export const nodesWithMultiDeployment = [
     } as iNode,
 ]
 
-export const nodesWithMultiDeploymentAndStatefulSet = [
+const commonStatefulSetDeployment = {
+    group: 'apps/v1',
+    name: 'StatefulSet1',
+    kind: 'StatefulSet',
+} as iNode
+
+export const nodesWithMultiDeployment = [
     {
         name: 'pod1',
         kind: 'Pod',
@@ -158,21 +134,26 @@ export const nodesWithMultiDeploymentAndStatefulSet = [
         ],
     } as iNode,
     {
-        name: 'pod5',
-        kind: 'Pod',
-        parentRefs: [
-            {
-                name: 'ReplicaSet2',
-                kind: 'ReplicaSet',
-            } as Node,
-        ],
-    } as iNode,
-    {
         name: 'pod3',
         kind: 'Pod',
         parentRefs: [
             {
                 name: 'ReplicaSet3',
+                kind: 'ReplicaSet',
+            } as Node,
+        ],
+    } as iNode,
+    ...commonReplicaSetMultiDeployment,
+]
+
+export const nodesWithMultiDeploymentAndStatefulSet = [
+    ...nodesWithMultiDeployment,
+    {
+        name: 'pod5',
+        kind: 'Pod',
+        parentRefs: [
+            {
+                name: 'ReplicaSet2',
                 kind: 'ReplicaSet',
             } as Node,
         ],
@@ -188,54 +169,7 @@ export const nodesWithMultiDeploymentAndStatefulSet = [
             } as Node,
         ],
     } as iNode,
-    {
-        group: 'apps/v1',
-        name: 'StatefulSet1',
-        kind: 'StatefulSet',
-    } as iNode,
-    {
-        name: 'ReplicaSet1',
-        kind: 'ReplicaSet',
-        parentRefs: [
-            {
-                group: 'apps/v1',
-                name: 'Deployment',
-                kind: 'Deployment',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        name: 'ReplicaSet2',
-        kind: 'ReplicaSet',
-        parentRefs: [
-            {
-                group: 'apps/v1',
-                name: 'Deployment',
-                kind: 'Deployment',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        name: 'ReplicaSet3',
-        kind: 'ReplicaSet',
-        parentRefs: [
-            {
-                group: 'apps/v1',
-                name: 'Deployment2',
-                kind: 'Deployment',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        group: 'apps/v1',
-        name: 'Deployment',
-        kind: 'Deployment',
-    } as iNode,
-    {
-        group: 'apps/v1',
-        name: 'Deployment2',
-        kind: 'Deployment',
-    } as iNode,
+    commonStatefulSetDeployment,
 ]
 
 export const nodesWithMultiDeploymentAndStatefulSetAndStatus = [
@@ -299,54 +233,8 @@ export const nodesWithMultiDeploymentAndStatefulSetAndStatus = [
             } as Node,
         ],
     } as iNode,
-    {
-        group: 'apps/v1',
-        name: 'StatefulSet1',
-        kind: 'StatefulSet',
-    } as iNode,
-    {
-        name: 'ReplicaSet1',
-        kind: 'ReplicaSet',
-        parentRefs: [
-            {
-                group: 'apps/v1',
-                name: 'Deployment',
-                kind: 'Deployment',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        name: 'ReplicaSet2',
-        kind: 'ReplicaSet',
-        parentRefs: [
-            {
-                group: 'apps/v1',
-                name: 'Deployment',
-                kind: 'Deployment',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        name: 'ReplicaSet3',
-        kind: 'ReplicaSet',
-        parentRefs: [
-            {
-                group: 'apps/v1',
-                name: 'Deployment2',
-                kind: 'Deployment',
-            } as Node,
-        ],
-    } as iNode,
-    {
-        group: 'apps/v1',
-        name: 'Deployment',
-        kind: 'Deployment',
-    } as iNode,
-    {
-        group: 'apps/v1',
-        name: 'Deployment2',
-        kind: 'Deployment',
-    } as iNode,
+    ...commonReplicaSetMultiDeployment,
+    commonStatefulSetDeployment,
 ]
 
 export const statefulSeWithChildren = [
