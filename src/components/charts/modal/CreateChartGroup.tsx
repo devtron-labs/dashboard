@@ -131,13 +131,18 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 this.setState({ loading: false })
             })
     }
+    async getCharts(){
+        const { result } = await getChartGroups();
+        return result.groups;
+    }
 
     //TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
-    componentDidMount() {
+    async componentDidMount() {
         if (this.props.chartGroupId && this.props.name) {
             this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || '' })
         }
-        getChartGroups().then((res) => this.setState({ charts: res.result.groups }))
+        const groups = await this.getCharts();
+        this.setState({ charts: groups });
     }
 
     render() {
