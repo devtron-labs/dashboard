@@ -31,7 +31,7 @@ import {
     getEnvironmentListHelmApps,
     getUsersDataToExport,
     getGroupsDataToExport,
-    getUserRole
+    getUserRole,
 } from './userGroup.service'
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
@@ -176,11 +176,7 @@ function HeaderSection(type: string) {
                 <a
                     className="dc__link"
                     rel="noreferrer noopener"
-                    href={
-                        isUserPremissions
-                            ? DOCUMENTATION.GLOBAL_CONFIG_USER
-                            : DOCUMENTATION.GLOBAL_CONFIG_GROUPS
-                    }
+                    href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
                     target="_blank"
                 >
                     Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
@@ -253,7 +249,6 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
@@ -349,7 +344,7 @@ const UserGroupList: React.FC<{
 
     useEffect(() => {
         if (!error) return
-        showError(error,true,true)
+        showError(error, true, true)
     }, [error])
 
     useEffectAfterMount(() => {
@@ -535,7 +530,7 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
-        
+
     if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
     if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     const filteredAndSorted = result.filter(
@@ -612,6 +607,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
+    const isEmailIDAdminOrSystem = email_id === 'admin' || email_id === 'system'
 
     useEffect(() => {
         if (!dataError) return
@@ -627,16 +623,15 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         setData((state) => ({ ...state, result: data }))
         updateCallback(index, data)
     }
-    const isEmailIDAdminOrSystem=email_id==="admin"||email_id==="system";
-    function onClickUserDropdownHandler(e){
-        if(isEmailIDAdminOrSystem){
-             noop();
-        }
-        else{
-        setCollapsed(not);
-        }
 
+    const onClickUserDropdownHandler = () => {
+        if (isEmailIDAdminOrSystem) {
+            noop()
+        } else {
+            setCollapsed(not)
+        }
     }
+
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
             <div className="user-list__header w-100">
@@ -655,7 +650,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                     <ConditionalWrap
                         condition={isEmailIDAdminOrSystem}
                         wrap={(children) => (
-                            <Tippy 
+                            <Tippy
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
@@ -664,9 +659,8 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 <div className="flex">{children}</div>
                             </Tippy>
                         )}
-                        
                     >
-                        {isEmailIDAdminOrSystem? (
+                        {isEmailIDAdminOrSystem ? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
@@ -674,7 +668,6 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                             <NavigationArrow className="arrow-svg" />
                         )}
                     </ConditionalWrap>
-                    
                 </span>
             </div>
             {!collapsed && data && !dataLoading && (
