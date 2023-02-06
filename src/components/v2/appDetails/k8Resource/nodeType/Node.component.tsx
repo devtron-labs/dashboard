@@ -19,6 +19,7 @@ import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 import { NoPod } from '../../../../app/ResourceTreeNodes';
+import { log } from 'console';
 
 function NodeComponent({
     handleFocusTabs,
@@ -31,7 +32,8 @@ function NodeComponent({
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
-    const [copied, setCopied] = useState<Record<number, boolean>>({});
+    // store the state of clipboard with respect to the selected nodes using it's Node Name as key 
+    const [copied, setCopied] = useState<Record<string, boolean>>({});
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState('');
     const [podType, setPodType] = useState(false);
@@ -78,12 +80,12 @@ function NodeComponent({
         }
     }, [externalLinks])
 
-    const toggleClipBoard = (index: number) => {
+    const toggleClipBoard = (name: string) => {
         setCopied((prevMapping) => ({
           ...prevMapping,
-          [index]: true
+          [name]: true
         }));
-        setTimeout(() => setCopied({ [index]: false }), 2000);
+        setTimeout(() => setCopied({ [name]: false }), 2000);
     };
 
     useEffect(() => {
@@ -197,7 +199,6 @@ function NodeComponent({
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
             const _isSelected = markedNodes.current.get(node.name)
-
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
 
@@ -242,7 +243,7 @@ function NodeComponent({
                                 </div>
 
                                 <div>
-                                {copied[index] ? (
+                                {node?.name ? copied[node?.name] ? (
                                         <Tippy
                                             className="default-tt"
                                             hideOnClick={false}
@@ -259,10 +260,10 @@ function NodeComponent({
                                             className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                copyToClipboard(node?.name, () => toggleClipBoard(index))
+                                                copyToClipboard(node?.name, () => toggleClipBoard(node?.name))
                                             }}
                                         />
-                                    )}
+                                    ): null}
 
                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
@@ -290,7 +291,7 @@ function NodeComponent({
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
                                 {nodeName}
-                                {copied[index] ? (
+                                {nodeName ? copied[nodeName] ? (
                                     <Tippy
                                         className="default-tt"
                                         hideOnClick={false}
@@ -307,10 +308,10 @@ function NodeComponent({
                                         className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            copyToClipboard(nodeName, () => toggleClipBoard(index))
+                                            copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
                                         }}
                                     />
-                                )}
+                                ): null}
                             </div>
                         )}
 
