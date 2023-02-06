@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useContext} from 'react'
-import {ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart} from './charts.types'
+import React, { useState, useEffect, useContext } from 'react'
+import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart, ChartGroup } from './charts.types'
 import {
     getChartVersionsMin,
     validateAppNames,
@@ -8,14 +8,19 @@ import {
     getChartGroupDetail,
     createChartValues as createChartValuesService,
 } from './charts.service'
-import { getChartRepoList, getAvailableCharts, getTeamList, getEnvironmentListMin, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
-import {mapByKey, showError, sortOptionsByLabel} from '../common'
+import {
+    getChartRepoList,
+    getAvailableCharts,
+    getTeamList,
+    getEnvironmentListMin,
+    isGitOpsModuleInstalledAndConfigured,
+} from '../../services/service'
+import { mapByKey, showError, sortOptionsByLabel } from '../common'
 import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
-import {PaginationParams} from "./charts.util";
-
+import { PaginationParams } from './charts.util'
 
 function getSelectedInstances(charts) {
     return charts.reduce((agg, curr, idx) => {
@@ -45,29 +50,25 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         noGitOpsConfigAvailable: false,
         pageOffset: PaginationParams.pageOffset,
         pageSize: PaginationParams.pageSize,
-        hasMoreCharts: true
+        hasMoreCharts: true,
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
-
 
     useEffect(() => {
         async function populateCharts() {
             try {
                 await Promise.allSettled([
                     getChartRepoList(),
-                    serverMode == SERVER_MODE.FULL ? getChartGroups() : { value:{ status: "fulfilled",result: undefined} },
+                    serverMode == SERVER_MODE.FULL
+                        ? getChartGroups()
+                        : { value: { status: 'fulfilled', result: undefined } },
                     getTeamList(),
                     getEnvironmentListMin(),
                     isGitOpsModuleInstalledAndConfigured(),
                 ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
-                    const [
-                        chartRepoList,
-                        chartGroup,
-                        projects,
-                        environments,
-                        gitOpsModuleInstalledAndConfigured,
-                    ] = responses.map((response) => response?.value?.result || [])
-                  
+                    const [chartRepoList, chartGroup, projects, environments, gitOpsModuleInstalledAndConfigured] =
+                        responses.map((response) => response?.value?.result || [])
+
                     let chartRepos = chartRepoList
                         .map((chartRepo) => {
                             return {
@@ -111,7 +112,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                 ...initialState,
                 availableCharts: state.availableCharts,
                 projects: state.projects,
-                environments: state.environments
+                environments: state.environments,
             })
             const {
                 result: { name, description, chartGroupEntries },
@@ -170,33 +171,41 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, selectedInstances: getSelectedInstances(state.charts) }))
     }, [state.charts])
 
-
     async function applyFilterOnCharts(queryString: string, resetPage?: boolean): Promise<any> {
         try {
+            if (resetPage) {
+                const { result: availableCharts } = await getAvailableCharts(
+                    queryString,
+                    PaginationParams.pageOffset,
+                    state.pageSize,
+                )
 
-            if (resetPage){
-                const { result: availableCharts } = await getAvailableCharts(queryString, PaginationParams.pageOffset, state.pageSize)
-
-                if (availableCharts.length < state.pageSize){
-                    setState((state)=>({...state, hasMoreCharts: false}))
+                if (availableCharts.length < state.pageSize) {
+                    setState((state) => ({ ...state, hasMoreCharts: false }))
                 }
 
-                setState((state) => ({ ...state,
-                    availableCharts: mapByKey(availableCharts,'id'),
-                    pageOffset: state.pageOffset + state.pageSize}))
-            }
-            else{
-                const { result: availableCharts } = await getAvailableCharts(queryString,state.pageOffset, state.pageSize)
+                setState((state) => ({
+                    ...state,
+                    availableCharts: mapByKey(availableCharts, 'id'),
+                    pageOffset: state.pageOffset + state.pageSize,
+                }))
+            } else {
+                const { result: availableCharts } = await getAvailableCharts(
+                    queryString,
+                    state.pageOffset,
+                    state.pageSize,
+                )
 
-                if (availableCharts.length < state.pageSize){
-                    setState((state)=>({...state, hasMoreCharts: false}))
+                if (availableCharts.length < state.pageSize) {
+                    setState((state) => ({ ...state, hasMoreCharts: false }))
                 }
 
-                setState((state) => ({ ...state,
-                    availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts,'id')]),
-                    pageOffset: state.pageOffset + state.pageSize }))
+                setState((state) => ({
+                    ...state,
+                    availableCharts: new Map([...state.availableCharts, ...mapByKey(availableCharts, 'id')]),
+                    pageOffset: state.pageOffset + state.pageSize,
+                }))
             }
-
         } catch (err) {
             showError(err)
         } finally {
@@ -204,12 +213,14 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-
-    function resetPaginationOffset(): void{
-        setState((state)=>( {...state, pageOffset: 0, hasMoreCharts: true, availableCharts: new Map<number, Chart>()} ))
+    function resetPaginationOffset(): void {
+        setState((state) => ({
+            ...state,
+            pageOffset: 0,
+            hasMoreCharts: true,
+            availableCharts: new Map<number, Chart>(),
+        }))
     }
-
-
 
     async function getChartVersionsAndValues(chartId: number, index: number): Promise<void> {
         try {
@@ -225,25 +236,25 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             showError(err)
         }
     }
-    
+
     async function validateData() {
         try {
-
             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
-            const allNames = state.charts.map((chart) => ( chart.name.value ))
-        let isNotValid  = allNames.filter((name,index)=>{
-             if(allNames.indexOf(name)!=index){
-                return index;
-             }
-             return false;
-        });
+            
+            const allNames = state.charts.map((chart) => chart.name.value)
+            let isNotValid = allNames.filter((name, index) => {
+                if (allNames.indexOf(name) != index) {
+                    return index
+                }
+                return false
+            })
             let validated = true
             let tempCharts = state.charts.map((chart) => {
                 if (!chart.isEnabled) {
                     // dont consider disabled charts
                     return chart
                 }
-                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id || isNotValid?.length>0 )  {
+                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id || isNotValid?.length > 0) {
                     validated = false
                 }
                 return {
@@ -251,7 +262,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     name: {
                         value: chart.name.value,
                         error: nameRegexp.test(chart.name.value)
-                            ? (isNotValid.indexOf(chart.name.value) === -1?'':'Duplicate names found')
+                            ? isNotValid.indexOf(chart.name.value) === -1
+                                ? ''
+                                : 'Duplicate names found'
                             : 'name must follow `^[a-z]+[a-z0-9-?]*[a-z0-9]+$` pattern',
                     },
                     environment: {
@@ -572,6 +585,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         updateChartGroupEntriesFromResponse: clearUnsaved,
         updateChartGroupNameAndDescription,
         reloadState,
-        setCharts
+        setCharts,
     }
 }
