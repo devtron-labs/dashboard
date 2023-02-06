@@ -630,10 +630,13 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 
     function getToolTipContent(user) {
         switch (user) {
-            case 'admin': return "Admin user cannot be edited"
-            case 'system': return "System user cannot be edited"
-            default : return
-        } 
+            case 'admin':
+                return 'Admin user cannot be edited'
+            case 'system':
+                return 'System user cannot be edited'
+            default:
+                return
+        }
     }
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
@@ -663,7 +666,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                             </Tippy>
                         )}
                     >
-                        {email_id === 'admin' || email_id === 'system'? (
+                        {email_id === 'admin' || email_id === 'system' ? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
