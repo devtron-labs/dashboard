@@ -30,7 +30,7 @@ export default function TagLabelValueSelector({
     const handleOnFocus = (e) => {
         setTimeout(() => {
             setActiveElement(`tag-${tagInputType}-${selectedTagIndex}`)
-        }, 100)
+        }, 300)
     }
     const handleOnBlur = (e) => {
         setActiveElement('')
