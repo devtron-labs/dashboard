@@ -2253,10 +2253,8 @@ textarea,
     height: 300px !important;
 }
 
-.mh-300 {
-    min-height: 300px;
-}
 
+// Minimum Height
 .mh-28 {
     min-height: 28px;
 }
@@ -2268,6 +2266,11 @@ textarea,
 .mh-66 {
     min-height: 66px;
 }
+
+.mh-300 {
+    min-height: 300px;
+}
+
 .mh-600{
     min-height:600px;
 }

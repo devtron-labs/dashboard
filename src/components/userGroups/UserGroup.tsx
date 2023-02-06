@@ -540,7 +540,7 @@ const UserGroupList: React.FC<{
 
     if (loading || fetchingSSOConfigList)
         return (
-            <div className="w-100 flex mh-600" >
+            <div className="w-100 flex mh-600">
                 <Progressing pageLoader />
             </div>
         )
@@ -553,8 +553,8 @@ const UserGroupList: React.FC<{
             userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
-  
-    if (!isSSOConfigured) {
+
+    if (isSSOConfigured) {
         return <SSONotConfiguredState />
     }
     //Show User can add User
@@ -1508,7 +1508,6 @@ const REDIRECT_TEXT = {
 const renderEmptySSOMessage = (): JSX.Element => {
     return (
         <>
-            {' '}
             <span className="dc__bold">{SSO_MESSAGE_TEXT.SSOmsg}</span>
             {SSO_MESSAGE_TEXT.InfoText}
         </>
@@ -1528,11 +1527,12 @@ function SSONotConfiguredState() {
                 Add users and assign group or direct permissions
                 <InfoColourBar
                     message={renderEmptySSOMessage()}
-                    classname="error_bar mt-8 dc__align-left info-colour-bar svg padding-8px-8px "
+                    classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
                     linkText={REDIRECT_TEXT.redirectmsg}
                     redirectLink={REDIRECT_TEXT.redirectLink}
                     internalLink={true}
                     Icon={ErrorIcon}
+                    iconWrapper="mr-0-imp"
                 />
             </EmptyState.Subtitle>
         </EmptyState>
