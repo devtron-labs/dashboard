@@ -20,6 +20,11 @@ export enum ActionTypes {
     EDIT = 'edit',
 }
 
+export enum UserLocked {
+    SYSTEM = 'system',
+    ADMIN = 'admin',
+}
+
 export const ACTION_LABEL = {
     [ActionTypes.ADMIN]: 'Admin',
     [ActionTypes.VIEW]: 'View',

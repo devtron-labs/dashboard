@@ -45,6 +45,7 @@ import {
     CollapsedUserOrGroupProps,
     CreateGroup,
     CreateUser,
+    UserLocked,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -612,6 +613,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
+    const isUserLocked = email_id === UserLocked.ADMIN || email_id === UserLocked.SYSTEM
 
     useEffect(() => {
         if (!dataError) return
@@ -630,9 +632,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 
     function getToolTipContent(user) {
         switch (user) {
-            case 'admin':
+            case UserLocked.ADMIN :
                 return 'Admin user cannot be edited'
-            case 'system':
+            case UserLocked.SYSTEM :
                 return 'System user cannot be edited'
             default:
                 return
@@ -650,11 +652,11 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={email_id === 'admin' || email_id === 'system' ? noop : (e) => setCollapsed(not)}
+                    onClick={isUserLocked ? noop : (e) => setCollapsed(not)}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={email_id === 'admin' || email_id === 'system'}
+                        condition={isUserLocked}
                         wrap={(children) => (
                             <Tippy
                                 className="default-tt"
@@ -666,7 +668,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                             </Tippy>
                         )}
                     >
-                        {email_id === 'admin' || email_id === 'system' ? (
+                        {isUserLocked ? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
