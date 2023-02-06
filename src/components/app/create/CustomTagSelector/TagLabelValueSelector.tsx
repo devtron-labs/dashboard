@@ -20,15 +20,20 @@ export default function TagLabelValueSelector({
     dependentRef,
 }: TagLabelValueSelectorType) {
     const [selectedValue, setSelectedValue] = useState<string>('')
-    const [isPopupOpen, togglePopup] = useState<boolean>(false)
-
+    const [activeElement, setActiveElement] = useState<string>('')
     const validationRules = new ValidationRules()
 
     useEffect(() => {
         setSelectedValue(tagData?.[tagInputType] || '')
     }, [selectedTagIndex, tagData, tagInputType])
 
+    const handleOnFocus = (e) => {
+        setTimeout(() => {
+            setActiveElement(`tag-${tagInputType}-${selectedTagIndex}`)
+        }, 100)
+    }
     const handleOnBlur = (e) => {
+        setActiveElement('')
         if (
             !e.relatedTarget ||
             !e.relatedTarget.classList.value ||
@@ -117,19 +122,24 @@ export default function TagLabelValueSelector({
     }
 
     return (
-        <PopupMenu onToggleCallback={(isOpen) => togglePopup(isOpen)} autoClose autoPosition>
+        <PopupMenu autoClose autoPosition>
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border">
                 <ResizableTagTextArea
                     minHeight={30}
                     maxHeight={80}
                     className={`form__input pt-4-imp pb-4-imp fs-13 ${
-                      tagInputType === KEY_VALUE.KEY
-                          ? `dc__no-right-radius`
-                          : `dc__no-border-radius dc__no-right-border dc__no-left-border`
-                  } ${tagData[tagInputType === KEY_VALUE.KEY ? 'isInvalidKey' : 'isInvalidValue'] ? 'form__input--error' : ''}`}
+                        tagInputType === KEY_VALUE.KEY
+                            ? `dc__no-right-radius`
+                            : `dc__no-border-radius dc__no-right-border dc__no-left-border`
+                    } ${
+                        tagData[tagInputType === KEY_VALUE.KEY ? 'isInvalidKey' : 'isInvalidValue']
+                            ? 'form__input--error'
+                            : ''
+                    }`}
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
+                    onFocus={handleOnFocus}
                     placeholder={placeholder}
                     tabIndex={tabIndex}
                     refVar={refVar}
@@ -137,7 +147,7 @@ export default function TagLabelValueSelector({
                 />
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true} preventWheelDisable={true}>
-                {isPopupOpen && renderSuggestions()}
+                {activeElement === `tag-${tagInputType}-${selectedTagIndex}` && renderSuggestions()}
             </PopupMenu.Body>
         </PopupMenu>
     )

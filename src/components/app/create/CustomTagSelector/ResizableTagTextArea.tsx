@@ -8,6 +8,7 @@ export function ResizableTagTextArea({
     value,
     onChange,
     onBlur,
+    onFocus,
     placeholder,
     tabIndex,
     refVar,
@@ -38,11 +39,8 @@ export function ResizableTagTextArea({
         if (maxHeight && nextHeight > maxHeight) {
             nextHeight = maxHeight
         }
-
         refVar.current.style.height = nextHeight + 'px'
-        if (dependentRef) {
-            dependentRef.current.style.height = nextHeight + 'px'
-        }
+        dependentRef.current.style.height = nextHeight + 'px'
     }
 
     useThrottledEffect(reInitHeight, 500, [text])
@@ -51,6 +49,11 @@ export function ResizableTagTextArea({
         refVar.current.style.height = 'auto'
         dependentRef.current.style.height = 'auto'
         onBlur(event)
+    }
+
+    const handleOnFocus = (event) => {
+        reInitHeight()
+        onFocus(event)
     }
 
     return (
@@ -63,7 +66,7 @@ export function ResizableTagTextArea({
             style={{ resize: 'none' }}
             onChange={handleChange}
             onBlur={handleOnBlur}
-            onFocus={reInitHeight}
+            onFocus={handleOnFocus}
             tabIndex={tabIndex}
         />
     )
