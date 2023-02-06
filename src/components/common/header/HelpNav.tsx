@@ -36,7 +36,7 @@ function HelpNav({
             name: 'Chat with support',
             link: 'https://discord.devtron.ai/',
             icon: Chat,
-            showSeparator: isEnterprise ? false : true,
+            showSeparator: !isEnterprise,
         },
         {
             name: 'Join discord community',
@@ -51,19 +51,36 @@ function HelpNav({
         },
     ]
 
-    const onClickGettingStarted = () => {
+    const onClickGettingStarted = (): void  => {
         setGettingStartedClicked(true)
     }
 
     const onClickHelpOptions = (option: HelpOptionType): void => {
         ReactGA.event({
-            category: 'Main Navigation',
+            category: 'Help Nav',
             action: `${option.name} Clicked`,
         })
     }
 
     const toggleHelpCard = () => {
         setShowHelpCard(!showHelpCard)
+    }
+
+    const renderHelpFeedback = (): JSX.Element => {
+        return (
+            <>
+                <div onClick={stopPropagation} className="help-card__option help-card__link flex left cn-9">
+                    <Feedback />
+                    <SliderButton
+                        className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
+                        id={`UheGN3KJ#source=${window.location.hostname}`}
+                        onClose={toggleHelpCard}
+                    >
+                        Give feedback
+                    </SliderButton>
+                </div>
+            </>
+        )
     }
 
     return (
@@ -98,18 +115,7 @@ function HelpNav({
                         </Fragment>
                     )
                 })}
-                {isEnterprise && (
-                    <div onClick={stopPropagation} className="help-card__option help-card__link flex left cn-9">
-                        <Feedback />
-                        <SliderButton
-                            className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
-                            id={`UheGN3KJ#source=${window.location.hostname}`}
-                            onClose={toggleHelpCard}
-                        >
-                            Give feedback
-                        </SliderButton>
-                    </div>
-                )}
+                {isEnterprise && renderHelpFeedback()}
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
                         {fetchingServerInfo ? (
