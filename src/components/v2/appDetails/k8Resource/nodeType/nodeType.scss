@@ -64,6 +64,18 @@
     .resource-action-tabs__active{
        visibility: hidden;
     }
+    .green-tick {
+        path {
+            stroke: var(--G500);
+        }
+    }
+    .resource-action-tabs__clipboard {
+        &:hover {
+            path {
+                stroke: var(--B500);
+            }
+        }
+    }
 }
 
 .resource-tree__nodes:hover {

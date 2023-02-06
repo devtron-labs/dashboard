@@ -5,6 +5,7 @@ import Tippy from '@tippyjs/react';
 import { copyToClipboard, getElapsedTime } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
+import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg';
 import PodHeaderComponent from './PodHeader.component';
 import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type';
 import './nodeType.scss';
@@ -30,7 +31,7 @@ function NodeComponent({
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
-    const [copied, setCopied] = useState(false);
+    const [copied, setCopied] = useState<Record<number, boolean>>({});
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState('');
     const [podType, setPodType] = useState(false);
@@ -77,10 +78,13 @@ function NodeComponent({
         }
     }, [externalLinks])
 
-    useEffect(() => {
-        if (!copied) return;
-        setTimeout(() => setCopied(false), 2000);
-    }, [copied]);
+    const toggleClipBoard = (index: number) => {
+        setCopied((prevMapping) => ({
+          ...prevMapping,
+          [index]: true
+        }));
+        setTimeout(() => setCopied({ [index]: false }), 2000);
+    };
 
     useEffect(() => {
         if (params.nodeType) {
@@ -238,21 +242,28 @@ function NodeComponent({
                                 </div>
 
                                 <div>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                        trigger="mouseenter click"
-                                    >
+                                {copied[index] ? (
+                                        <Tippy
+                                            className="default-tt"
+                                            hideOnClick={false}
+                                            arrow={false}
+                                            placement="bottom"
+                                            content="Copied!"
+                                            duration={[100, 2000]}
+                                            trigger="mouseenter click"
+                                        >
+                                            <Check className="resource-action-tabs__active icon-dim-12 green-tick ml-8 mr-8" />
+                                        </Tippy>
+                                    ) : (
                                         <Clipboard
-                                            className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
+                                            className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                             onClick={(e) => {
-                                                e.stopPropagation();
-                                                copyToClipboard(node?.name, () => setCopied(true));
+                                                e.stopPropagation()
+                                                copyToClipboard(node?.name, () => toggleClipBoard(index))
                                             }}
                                         />
-                                    </Tippy>
+                                    )}
+
                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
                                             <a
@@ -279,21 +290,27 @@ function NodeComponent({
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
                                 {nodeName}
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
+                                {copied[index] ? (
+                                    <Tippy
+                                        className="default-tt"
+                                        hideOnClick={false}
+                                        arrow={false}
+                                        placement="bottom"
+                                        content="Copied!"
+                                        duration={[100, 200]}
+                                        trigger="mouseenter click"
+                                    >
+                                        <Check className="resource-action-tabs__active pl-4 icon-dim-12 green-tick" />
+                                    </Tippy>
+                                ) : (
                                     <Clipboard
                                         className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
                                         onClick={(e) => {
-                                            e.stopPropagation();
-                                            copyToClipboard(nodeName, () => setCopied(true));
+                                            e.stopPropagation()
+                                            copyToClipboard(nodeName, () => toggleClipBoard(index))
                                         }}
                                     />
-                                </Tippy>
+                                )}
                             </div>
                         )}
 
