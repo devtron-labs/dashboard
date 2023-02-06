@@ -16,7 +16,7 @@ import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { Option } from '../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
@@ -189,6 +189,7 @@ export default function ClusterTerminal({
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
             setSelectedNodeName(clusterNodeList[0])
+            setSelectedtTerminalType(shellTypes[1])
         }
     }
 
