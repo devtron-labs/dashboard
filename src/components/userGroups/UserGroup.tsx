@@ -1496,18 +1496,24 @@ function NoUsers({ onClick }) {
     )
 }
 
-const SSO_MESSAGE_TEXT={
-    SSOmsg:"SSO Login not configured:",
-    InfoText:" Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services"
+const SSO_MESSAGE_TEXT = {
+    SSOmsg: 'SSO Login not configured:',
+    InfoText:
+        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
 }
-const REDIRECT_TEXT={
-    redirectmsg:'Go to SSO login services',
-    redirectLink:'/global-config/login-service'
+const REDIRECT_TEXT = {
+    redirectmsg: 'Go to SSO login services',
+    redirectLink: '/global-config/login-service',
 }
-const renderEmptySSOMessage=(): JSX.Element=>{
-    return<> <span className="dc__bold">{SSO_MESSAGE_TEXT.SSOmsg}</span>
-        {SSO_MESSAGE_TEXT.InfoText}</>
-   }
+const renderEmptySSOMessage = (): JSX.Element => {
+    return (
+        <>
+            {' '}
+            <span className="dc__bold">{SSO_MESSAGE_TEXT.SSOmsg}</span>
+            {SSO_MESSAGE_TEXT.InfoText}
+        </>
+    )
+}
 
 function SSONotConfiguredState() {
     return (
@@ -1516,7 +1522,7 @@ function SSONotConfiguredState() {
                 <img src={EmptyImage} alt="so empty" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className='fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp'>No users Added</h4>
+                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp">No users Added</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle className="w-300 fw-400 fs-13">
                 Add users and assign group or direct permissions
