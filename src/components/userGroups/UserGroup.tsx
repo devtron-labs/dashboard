@@ -562,7 +562,7 @@ const UserGroupList: React.FC<{
         )
     }
     //If not set then Show Empty State
-    else if (!isSSOConfigured) {
+    else if (isSSOConfigured) {
         return <NoSSO />
     }
     //Show User can add User
@@ -1527,7 +1527,7 @@ function NoSSO() {
                 Add users and assign group or direct permissions
                 <InfoColourBar
                     message={renderEmptySSOMessage()}
-                    classname="error_bar mt-16 text-align-left info-colour-bar svg  "
+                    classname="error_bar mt-16 dc__align-left info-colour-bar svg  "
                     linkText={'Go to SSO login services'}
                     redirectLink={'/global-config/login-service'}
                     internalLink={true}
