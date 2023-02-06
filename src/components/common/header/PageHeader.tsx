@@ -17,6 +17,7 @@ import HelpNav from './HelpNav'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
+import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 
 function PageHeader({
     headerName,
@@ -104,6 +105,7 @@ function PageHeader({
                         <Question />
                     </span>
                     <span className="fs-13 cn-9">Help</span>
+                    <Arrow className="icon-dim-24 p-2 fcn-7 " />
                 </div>
                 <div
                     className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
