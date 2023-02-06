@@ -41,9 +41,9 @@ export default function LogsRenderer({
         <div className="logs__body">
             {logs.map((log: string, index: number) => {
                 return (
-                    <div className="flex left" key={`logs-${index}`}>
-                        <span className="cn-4 dc__mb-auto col-2 pr-10 mt-1">{index + 1}</span>
-                        <p className="mono fs-14 mh-24" dangerouslySetInnerHTML={createMarkup(log)} />
+                    <div className="flex top left mb-10 lh-24" key={`logs-${index}`}>
+                        <span className="cn-4 col-2 pr-10">{index + 1}</span>
+                        <p className="mono fs-14 mb-0-imp" dangerouslySetInnerHTML={createMarkup(log)} />
                     </div>
                 )
             })}
