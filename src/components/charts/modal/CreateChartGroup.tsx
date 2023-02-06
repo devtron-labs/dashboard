@@ -77,7 +77,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         let isNameUsed = this.state.charts.some((r) => r.name === this.state.name.value)
         if (isNameUsed) {
             showError({
-                message: 'A chart group with name ' + this.state.name.value + ' already exists!',
+                message: `A chart group with name ${this.state.name.value} already exists!`,
             })
             return false
         }
@@ -165,11 +165,10 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         required
                     />
                     <span className="form__error">
-                        {this.state.name.error.map((itm) => {
+                        {this.state.name.error.map((err) => {
                             return (
                                 <div>
-                                    {' '}
-                                    <Error className="form__icon form__icon--error" /> {itm}{' '}
+                                    <Error className="form__icon form__icon--error" /> {err}
                                 </div>
                             )
                         })}
