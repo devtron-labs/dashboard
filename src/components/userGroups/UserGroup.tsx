@@ -339,7 +339,7 @@ const UserGroupList: React.FC<{
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
-    const isSSOConfigured = (ssoConfigListdata && ssoConfigListdata.result.some((a) => a.active)) || false
+    const isSSOConfigured = ssoConfigListdata?.result?.some((a) => a.active) || false
 
     const [searchString, setSearchString] = useState('')
     const searchRef = useRef(null)
@@ -554,7 +554,7 @@ const UserGroupList: React.FC<{
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
   
-    if (isSSOConfigured) {
+    if (!isSSOConfigured) {
         return <SSONotConfiguredState />
     }
     //Show User can add User
