@@ -11,6 +11,7 @@ import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
 import { dashboardAccessed } from '../../services/service'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -148,6 +149,13 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
+                <InfoColourBar
+                    classname="warn cn-9 lh-20 pt-8 pr-12"
+                    Icon={Error}
+                    message={""}
+                    iconClass="warning-icon"
+                />
+
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
