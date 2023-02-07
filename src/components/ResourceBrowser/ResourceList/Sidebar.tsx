@@ -28,7 +28,7 @@ export function Sidebar({
         if (k8SObjectMap?.size && sideBarElementRef.current) {
             sideBarElementRef.current.scrollIntoView({ block: 'center' })
         }
-    }, [k8SObjectMap])
+    }, [k8SObjectMap?.size])
 
     const selectNode = (e): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
