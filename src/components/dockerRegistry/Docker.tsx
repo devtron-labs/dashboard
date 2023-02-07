@@ -272,7 +272,7 @@ function DockerForm({
             value:
                 state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
                     ? password.substring(1, password.length - 1)
-                    : password.replace(/\s/g, ''),
+                    : password,
             error: '',
         },
     })
