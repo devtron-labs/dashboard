@@ -554,7 +554,7 @@ const UserGroupList: React.FC<{
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
 
-    if (isSSOConfigured) {
+    if (!isSSOConfigured) {
         return <SSONotConfiguredState />
     }
     //Show User can add User
