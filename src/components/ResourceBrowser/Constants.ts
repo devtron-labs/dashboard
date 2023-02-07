@@ -44,8 +44,8 @@ export const RESOURCE_ACTION_MENU = {
     delete: 'Delete',
 }
 
-export const ALL_OPTION_LABEL = 'all'
-export const ALL_NAMESPACE_OPTION = { value: ALL_OPTION_LABEL, label: 'All namespaces' }
+export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
+export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',

@@ -29,10 +29,10 @@ import {
 import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
-    ALL_OPTION_LABEL,
     ERROR_SCREEN_LEARN_MORE,
     ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
+    K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     MARK_AS_STALE_DATA_CUT_OFF_MINS,
     ORDERED_AGGREGATORS,
@@ -158,7 +158,7 @@ export default function ResourceList() {
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
                     selectedNamespace.value
                 }/${selectedResource.gvk.Kind.toLowerCase()}/${
-                    selectedResource.gvk.Group.toLowerCase() || ALL_OPTION_LABEL
+                    selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
                 }`,
             )
         }
@@ -289,7 +289,7 @@ export default function ResourceList() {
                                 _childNode.gvk.Kind.toLowerCase() === nodeType &&
                                 (_childNode.gvk.Group.toLowerCase() === group ||
                                     SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
-                                    ALL_OPTION_LABEL === group)
+                                    K8S_EMPTY_GROUP === group)
                             ) {
                                 isResourceGroupPresent = true
                                 groupedChild = _childNode
@@ -305,7 +305,7 @@ export default function ResourceList() {
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
-                        }/${_selectedResourceParam}/${childNode.gvk.Group.toLowerCase() || ALL_OPTION_LABEL}`,
+                        }/${_selectedResourceParam}/${childNode.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP}`,
                     })
                 }
 
@@ -499,7 +499,7 @@ export default function ResourceList() {
 
         if (!skipRedirection) {
             const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}${
-                nodeType ? `/${nodeType}/${group || ALL_OPTION_LABEL}` : ''
+                nodeType ? `/${nodeType}/${group || K8S_EMPTY_GROUP}` : ''
             }`
             if (fromClusterSelect) {
                 replace({
@@ -526,7 +526,7 @@ export default function ResourceList() {
             setResourceSelectionData((prevData) => ({
                 ...prevData,
                 [`${_selected.gvk.Kind.toLowerCase()}_${
-                    (initSelection && group) || _selected.gvk.Group.toLowerCase() || ALL_OPTION_LABEL
+                    (initSelection && group) || _selected.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
                 }`]: _selected,
             }))
         }
