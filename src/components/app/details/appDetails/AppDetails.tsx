@@ -363,28 +363,7 @@ export const Details: React.FC<{
             const isUnHibernateReq = ['hibernating', 'hibernated'].includes(
                 appDetails.resourceTree.status.toLowerCase(),
             )
-            if (appDetails.deploymentAppType === DeploymentAppType.helm) {
-                const rolloutNode = appDetails.resourceTree.nodes?.filter((_n) => _n.kind === NodeTypes.Rollout)?.[0]
-                if (rolloutNode) {
-                    const _stopStartApp = isUnHibernateReq ? unhibernateApp : hibernateApp
-                    const requestPayload: HibernateRequest = {
-                        appId: `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}-${appDetails.environmentName}`,
-                        resources: [
-                            {
-                                kind: rolloutNode.kind,
-                                name: rolloutNode.name,
-                                group: rolloutNode.group,
-                                version: rolloutNode.version,
-                                namespace: rolloutNode.namespace,
-                            },
-                        ],
-                    }
-
-                    await _stopStartApp(requestPayload)
-                }
-            } else {
-                await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
-            }
+            await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             await callAppDetailsAPI()
             toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
             setHibernateConfirmationModal('')
