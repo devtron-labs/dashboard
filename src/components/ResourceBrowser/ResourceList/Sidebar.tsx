@@ -4,7 +4,7 @@ import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ApiResourceGroupType, SidebarType } from '../Types'
 import { AggregationKeys } from '../../app/types'
-import { ALL_OPTION_LABEL, SIDEBAR_KEYS } from '../Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
 
 export function Sidebar({
@@ -15,11 +15,12 @@ export function Sidebar({
     updateResourceSelectionData,
 }: SidebarType) {
     const { push } = useHistory()
-    const { clusterId, namespace, nodeType } = useParams<{
+    const { clusterId, namespace, nodeType, group } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
+        group: string
     }>()
     const sideBarElementRef = useRef<HTMLDivElement>(null)
 
@@ -30,11 +31,14 @@ export function Sidebar({
     }, [k8SObjectMap])
 
     const selectNode = (e): void => {
-        push(
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${e.currentTarget.dataset.kind.toLowerCase()}/${
-                e.currentTarget.dataset.group.toLowerCase() || ALL_OPTION_LABEL
-            }`,
-        )
+        const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
+        const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
+
+        if (_selectedKind === nodeType && (group === _selectedGroup || group === K8S_EMPTY_GROUP)) {
+            return
+        }
+
+        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`)
         const _selectedResource = {
             namespaced: e.currentTarget.dataset.namespaced === 'true',
             gvk: {

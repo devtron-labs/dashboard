@@ -3,7 +3,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { Pagination, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
-    ALL_OPTION_LABEL,
+    K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
@@ -84,13 +84,13 @@ export function K8SResourceList({
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
             resourceParam = `${_kind}/${
-                selectedResource?.gvk?.Group?.toLowerCase() || ALL_OPTION_LABEL
+                selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
             }/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
             _nodeSelectionData = { name: kind + '_' + resourceName, namespace, isFromEvent: true }
         } else {
-            resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || ALL_OPTION_LABEL}/${name}`
+            resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             kind = nodeType
             resourceName = name
             _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
