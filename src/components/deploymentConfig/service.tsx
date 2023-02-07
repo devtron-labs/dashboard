@@ -11,6 +11,10 @@ export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultT
     }
 }
 
+export function getDefaultDeploymentTemplate(appId, chartId){
+    return get(`${Routes.DEPLOYMENT_TEMPLATE}/default/${appId}/${chartId}`)
+}
+
 export const updateDeploymentTemplate = (request) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE_UPDATE}`;
     return post(URL, request);

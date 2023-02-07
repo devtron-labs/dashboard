@@ -1,13 +1,15 @@
-import React, { Component } from 'react'
-import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import React, { Component } from 'react';
 import { showError, Progressing, ErrorScreenManager, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
-import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants } from '../../config'
-import { withRouter } from 'react-router'
-import { CreateMaterial } from './CreateMaterial'
-import { UpdateMaterial } from './UpdateMaterial'
-import { MaterialListProps, MaterialListState } from './material.types'
-import './material.css'
-import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg'
+import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
+import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config';
+import { withRouter } from 'react-router';
+import { CreateMaterial } from './CreateMaterial';
+import { UpdateMaterial } from './UpdateMaterial';
+import { MaterialListProps, MaterialListState } from './material.types';
+import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
+import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
+import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
+import './material.css';
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
@@ -108,46 +110,50 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h1 className="form__title form__title--artifacts">Git Repositories</h1>
+                <h2 className="form__title form__title--artifacts">Git Repositories</h2>
                 <p className="form__subtitle form__subtitle--artifacts">
-                    Manage source code repositories for this application.
-                    <span>
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="dc__link"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
-                        >
-                            {' '}
-                            Learn more
-                        </a>{' '}
-                    </span>
+                    Manage source code repositories for this application.&nbsp;
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                        href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
+                    >
+                        Learn more
+                    </a>
                 </p>
             </>
         )
     }
 
     renderSampleApp() {
-        if (this.state.materials.length) {
-            return ''
-        }
         return (
             <div className="sample-repo-container br-8 p-16 flexbox">
                 <span className="mr-16 icon-container">
                     <GitHub />
                 </span>
                 <div>
-                    <h1 className="sample-title fs-14 fw-6">Looking to deploy a sample application?</h1>
-                    <span className="cb-5 fs-13">
+                    <h2 className="sample-title fs-14 fw-6">Looking to deploy a sample application?</h2>
+                    <div className="flex left cb-5 fs-13">
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className="dc__link"
+                            className="flex left dc__link mr-16"
                             href={AppListConstants.SAMPLE_NODE_REPO_URL}
                         >
-                            Check git repository for a simple Node.js application
+                            <Folder className="icon-dim-16 mr-4" />
+                            View sample app git repository
                         </a>
-                    </span>
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className="flex left dc__link"
+                            href={DEVTRON_NODE_DEPLOY_VIDEO}
+                        >
+                            <PlayMedia className="icon-dim-16 mr-4" />
+                            Watch how to configure sample application
+                        </a>
+                    </div>
                 </div>
             </div>
         )
@@ -161,7 +167,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             return (
                 <div className="form__app-compose">
                     {this.renderPageHeader()}
-                    {this.renderSampleApp()}
+                    {!this.state.materials.length && this.renderSampleApp()}
                     <CreateMaterial
                         key={this.state.materials.length}
                         appId={Number(this.props.match.params.appId)}

@@ -49,6 +49,8 @@ export interface InstalledAppInfo {
     appStoreChartName: string
     appStoreChartRepoName: string
     clusterId: number
+    teamId: number
+    teamName: string
 }
 
 export interface HelmAppDetail {

@@ -8,7 +8,7 @@ import {
     MATERIAL_TYPE,
     STAGE_TYPE,
 } from './types'
-import { GitTriggers } from '../cIDetails/types'
+import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
 import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'

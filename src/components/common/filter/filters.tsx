@@ -43,7 +43,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         let _searchKey = this._getSearchKey();
         let searchStr = event.target.value;
         let filteredList = this.state.list.filter((item) => {
-            if (item[_searchKey].search(replaceLastOddBackslash(searchStr).toLocaleLowerCase()) != -1) {
+            if (item[_searchKey].toLowerCase().search(replaceLastOddBackslash(searchStr).toLocaleLowerCase()) != -1) {
                 return {
                     key: item.key,
                     label: item.label,
@@ -115,7 +115,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         let badge = this.props.badgeCount ? this.props.badgeCount : this.getSavedFilter();
 
         let filterOptions = this.state.filteredList.map((env, index) => {
-            return <label key={index} className={`filter-element ${!env.key ? 'fw-6' : 'fw-4'}`}>
+            return <label key={index} className={`filter-element ${this.props.isFirstLetterCapitalize ? 'dc__first-letter-capitalize' : ''} ${!env.key ? 'fw-6' : 'fw-4'}`}>
                 <input type="checkbox" className="filter-element__input" value={env.key}
                     checked={env.isChecked} onChange={this.handleSelection} />
                 {

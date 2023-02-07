@@ -1,6 +1,6 @@
 .create-app-container {
   .scrollable-content {
-      max-height: calc(100vh - 125px);
+      height: calc(100vh - 120px);
       overflow: auto;
 
       .info-container--create-app {

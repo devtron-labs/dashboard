@@ -3,293 +3,288 @@ import { RouteComponentProps } from 'react-router';
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
-    close: () => void;
+    close: (e) => void
 }
 
 export interface OptionType {
-    label: string;
-    value: string;
+    label: string
+    value: string
 }
 
 export interface NumberOptionType {
-    label: string;
-    value: number;
+    label: string
+    value: number
 }
 
 export interface LabelTags {
-    tags: OptionType[];
-    inputTagValue: string;
-    tagError: string;
-}
-
-export interface TagErrorType{
-  isValid: boolean
-  messages: string[]
+    tags: OptionType[]
+    inputTagValue: string
+    tagError: string
 }
 
 export interface AddNewAppState {
-    view: string;
-    code: number;
-    disableForm: boolean;
-    projects: { id: number; name: string }[];
+    view: string
+    code: number
+    disableForm: boolean
+    projects: { id: number; name: string }[]
     appNameErrors: boolean
-    showErrors: boolean;
+    showErrors: boolean
     form: {
-        appName: string;
-        appId: number;
-        projectId: number;
-        cloneId: number;
-        appCreationType: string;
-    };
-    tags: TagType[];
+        appName: string
+        appId: number
+        projectId: number
+        cloneId: number
+        appCreationType: string
+    }
+    tags: TagType[]
     isValid: {
-        projectId: boolean;
-        appName: boolean;
-        cloneAppId: boolean;
-    };
+        projectId: boolean
+        appName: boolean
+        cloneAppId: boolean
+    }
 }
 
 export interface AppDetails {
-    appId: number;
-    appName: string;
-    environmentId: number;
-    environmentName: string;
-    namespace: string;
-    lastDeployedTime: string;
-    lastDeployedBy: string;
-    materialInfo: MaterialInfo[];
-    releaseVersion: string;
-    dataSource: string;
-    lastDeployedPipeline: string;
-    instanceDetail?: any;
-    otherEnvironment: OtherEnvironment[];
-    resourceTree: ResourceTree;
-    projectName?: string;
-    clusterId?: number;
+    appId: number
+    appName: string
+    environmentId: number
+    environmentName: string
+    namespace: string
+    lastDeployedTime: string
+    lastDeployedBy: string
+    materialInfo: MaterialInfo[]
+    releaseVersion: string
+    dataSource: string
+    lastDeployedPipeline: string
+    instanceDetail?: any
+    otherEnvironment: OtherEnvironment[]
+    resourceTree: ResourceTree
+    projectName?: string
+    clusterId?: number
     deploymentAppType?: DeploymentAppType
 }
 
 export interface LabelTag {
-    key: string;
-    value: string;
+    key: string
+    value: string
 }
 export interface AppMetaInfo {
-    appId: number;
-    appName: string;
-    createdBy: string;
-    createdOn: string;
-    projectId?: number;
-    projectName?: string;
-    labels?: TagType[];
+    appId: number
+    appName: string
+    createdBy: string
+    createdOn: string
+    projectId?: number
+    projectName?: string
+    labels?: TagType[]
 }
 
 interface ResourceTree {
-    nodes: Node[];
-    newGenerationReplicaSet: string;
-    status: string;
-    podMetadata: PodMetadatum[];
-    conditions?: any;
+    nodes: Node[]
+    newGenerationReplicaSet: string
+    status: string
+    podMetadata: PodMetadatum[]
+    conditions?: any
 }
 
 export interface PodMetadatum {
-    name: string;
-    uid: string;
-    containers: string[];
-    isNew: boolean;
+    name: string
+    uid: string
+    containers: string[]
+    isNew: boolean
 }
 
 interface Node {
-    version: string;
-    kind: string;
-    namespace: string;
-    name: string;
-    uid: string;
-    status?: string;
-    networkingInfo?: NetworkingInfo;
-    resourceVersion: string;
+    version: string
+    kind: string
+    namespace: string
+    name: string
+    uid: string
+    status?: string
+    networkingInfo?: NetworkingInfo
+    resourceVersion: string
     health?: {
-        status: string;
-        message?: string;
-    };
+        status: string
+        message?: string
+    }
     parentRefs?: {
-        kind: string;
-        namespace: string;
-        name: string;
-        uid: string;
-        group?: string;
-    }[];
-    group?: string;
+        kind: string
+        namespace: string
+        name: string
+        uid: string
+        group?: string
+    }[]
+    group?: string
     info?: {
-        name: string;
-        value: string;
-    }[];
-    images?: string[];
-    url?: string;
+        name: string
+        value: string
+    }[]
+    images?: string[]
+    url?: string
 }
 
 export interface Pod extends Node {
-    containers: any[];
-    ready?: number;
+    containers: any[]
+    ready?: number
 }
 
 interface NetworkingInfo {
     targetLabels?: {
-        app: string;
-    };
+        app: string
+    }
     targetRefs?: {
-        kind: string;
-        namespace: string;
-        name: string;
-    }[];
+        kind: string
+        namespace: string
+        name: string
+    }[]
     ingress?: {
-        ip: string;
-    }[];
-    externalURLs?: string[];
+        ip: string
+    }[]
+    externalURLs?: string[]
     labels?: {
-        app: string;
-        appId: string;
-        envId: string;
-        release: string;
-        'rollouts-pod-template-hash': string;
-    };
+        app: string
+        appId: string
+        envId: string
+        release: string
+        'rollouts-pod-template-hash': string
+    }
 }
 
 export interface OtherEnvironment {
-    environmentId: number;
-    environmentName: string;
-    appMetrics: boolean;
-    infraMetrics: boolean;
-    prod: boolean;
+    environmentId: number
+    environmentName: string
+    appMetrics: boolean
+    infraMetrics: boolean
+    prod: boolean
 }
 
 interface MaterialInfo {
-    author: string;
-    branch: string;
-    message: string;
-    modifiedTime: string;
-    revision: string;
-    url: string;
-    webhookData: string;
+    author: string
+    branch: string
+    message: string
+    modifiedTime: string
+    revision: string
+    url: string
+    webhookData: string
 }
 
 interface Source {
-    repoURL: string;
-    path: string;
-    targetRevision: string;
+    repoURL: string
+    path: string
+    targetRevision: string
     helm: {
-        valueFiles?: string[];
-        status?: string;
-    };
-    chart?: any;
+        valueFiles?: string[]
+        status?: string
+    }
+    chart?: any
 }
 
 interface Health {
-    status: string;
-    message?: string;
+    status: string
+    message?: string
 }
 
 export interface Resource {
-    group: string;
-    version: string;
-    kind: string;
-    namespace: string;
-    name: string;
-    status: string;
-    message: string;
-    hookPhase: string;
-    syncPhase: string;
-    health?: Health;
+    group: string
+    version: string
+    kind: string
+    namespace: string
+    name: string
+    status: string
+    message: string
+    hookPhase: string
+    syncPhase: string
+    health?: Health
 }
 
 interface Destination {
-    server: string;
-    namespace: string;
+    server: string
+    namespace: string
 }
 
 interface Sync {
-    status?: string;
+    status?: string
     comparedTo?: {
-        source: Source;
-        destination: Destination;
-    };
-    revision: string;
+        source: Source
+        destination: Destination
+    }
+    revision: string
 }
 
 export interface Application {
     metadata: {
-        name: string;
-        namespace: string;
-        selfLink: string;
-        uid: string;
-        resourceVersion: string;
-        generation: number;
-        creationTimestamp: Date;
-        deletionTimestamp?: string;
-    };
+        name: string
+        namespace: string
+        selfLink: string
+        uid: string
+        resourceVersion: string
+        generation: number
+        creationTimestamp: Date
+        deletionTimestamp?: string
+    }
     spec: {
-        source: Source;
-        destination: Destination;
-        project: string;
+        source: Source
+        destination: Destination
+        project: string
         syncPolicy: {
             automated: {
-                prune: boolean;
-            };
-        };
-    };
+                prune: boolean
+            }
+        }
+    }
     status: {
-        resources: Resource[];
-        sync: Sync;
-        health: Health;
+        resources: Resource[]
+        sync: Sync
+        health: Health
         history: {
-            revision: string;
-            deployedAt: Date;
-            id: number;
-            source: Source;
-        }[];
-        reconciledAt: Date;
+            revision: string
+            deployedAt: Date
+            id: number
+            source: Source
+        }[]
+        reconciledAt: Date
         operationState: {
             operation: {
-                sync: Sync;
-            };
-            phase: string;
-            message: string;
+                sync: Sync
+            }
+            phase: string
+            message: string
             syncResult: {
-                resources: Resource[];
-                revision: string;
-                source: Source;
-            };
-            startedAt: Date;
-            finishedAt: Date;
-        };
-        observedAt: Date;
-        sourceType: string;
+                resources: Resource[]
+                revision: string
+                source: Source
+            }
+            startedAt: Date
+            finishedAt: Date
+        }
+        observedAt: Date
+        sourceType: string
         summary: {
-            externalURLs: string[];
-            images: string[];
-        };
+            externalURLs: string[]
+            images: string[]
+        }
         conditions?: {
-            type: string;
-            message: string;
-            lastTransitionTime?: string;
-        }[];
-    };
-    operation?: any;
+            type: string
+            message: string
+            lastTransitionTime?: string
+        }[]
+    }
+    operation?: any
 }
 
 export interface AppStreamData {
     result: {
-        type: string;
-        application: Application;
-    };
+        type: string
+        application: Application
+    }
 }
 
 export interface GenericNode<T> {
-    group?: string;
-    version: string;
-    kind: T;
-    name: string;
-    appName?: string;
-    namespace?: string;
+    group?: string
+    version: string
+    kind: T
+    name: string
+    appName?: string
+    namespace?: string
 }
 
 export enum Nodes {
@@ -333,7 +328,7 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
 }
-export type NodeType = keyof typeof Nodes;
+export type NodeType = keyof typeof Nodes
 
 export enum AggregationKeys {
     Workloads = 'Workloads',
@@ -345,32 +340,32 @@ export enum AggregationKeys {
     'Other Resources' = 'Other Resources',
     Events = 'Events',
 }
-export type AggregationKeysType = keyof typeof AggregationKeys;
+export type AggregationKeysType = keyof typeof AggregationKeys
 
 type Aggregation = {
-    [key in AggregationKeys]: NodesMap;
-};
+    [key in AggregationKeys]: NodesMap
+}
 
 type NodesMap = {
-    [key in NodeType]?: Map<string, any>;
-};
+    [key in NodeType]?: Map<string, any>
+}
 
 export interface AggregatedNodes {
-    nodes: NodesMap;
-    aggregation: Aggregation;
+    nodes: NodesMap
+    aggregation: Aggregation
     statusCount: {
-        [status: string]: number;
-    };
+        [status: string]: number
+    }
     nodeStatusCount: {
         [node in NodeType]?: {
-            [status: string]: number;
-        };
-    };
+            [status: string]: number
+        }
+    }
     aggregatorStatusCount: {
         [aggregator in AggregationKeys]?: {
-            [status: string]: number;
-        };
-    };
+            [status: string]: number
+        }
+    }
 }
 
 export enum NodeDetailTabs {
@@ -380,11 +375,11 @@ export enum NodeDetailTabs {
     DESCRIBE = 'DESCRIBE',
     TERMINAL = 'TERMINAL',
 }
-export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
+export type NodeDetailTabsType = keyof typeof NodeDetailTabs
 
 export enum SortingOrder {
     ASC = 'ASC',
-    DESC = 'DESC'
+    DESC = 'DESC',
 }
 
 export interface CreateAppLabelsRequest {
@@ -407,7 +402,7 @@ export interface AppOverviewProps {
 export interface AboutAppInfoModalProps {
     isLoading: boolean
     appId: string
-    onClose: () => void
+    onClose: (e) => void
     appMetaInfo: AppMetaInfo
     currentLabelTags?: TagType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
@@ -427,4 +422,8 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
+}
+
+export interface AppStatusType {
+    appStatus: string
 }

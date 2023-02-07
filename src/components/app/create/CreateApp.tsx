@@ -1,6 +1,15 @@
 import React, { Component } from 'react'
 import { sortObjectArrayAlphabetically, multiSelectStyles } from '../../common'
-import { ServerErrors, showError, Progressing, Drawer, TagType, TagLabelSelect, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerErrors,
+    showError,
+    Progressing,
+    Drawer,
+    TagType,
+    TagLabelSelect,
+    getTeamListMin,
+    DEFAULT_TAG_DATA,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
@@ -22,8 +31,7 @@ import './createApp.scss'
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
-    timeoutId
-    createAppRef: HTMLDivElement
+    createAppRef = null
     constructor(props) {
         super(props)
         this.state = {
@@ -40,7 +48,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneId: 0,
                 appCreationType: AppCreationType.Blank,
             },
-            tags: [],
+            tags: [DEFAULT_TAG_DATA],
             isValid: {
                 projectId: false,
                 appName: false,
@@ -50,6 +58,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
         this.handleProject = this.handleProject.bind(this)
+        this.escKeyPressHandler = this.escKeyPressHandler.bind(this)
+        this.outsideClickHandler = this.outsideClickHandler.bind(this)
+        this.createAppRef = React.createRef()
     }
 
     async componentDidMount() {
@@ -62,6 +73,29 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             showError(err)
         } finally {
             if (this._inputAppName) this._inputAppName.focus()
+        }
+        document.addEventListener('keydown', this.escKeyPressHandler)
+        document.addEventListener('click', this.outsideClickHandler)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.escKeyPressHandler)
+        document.removeEventListener('click', this.outsideClickHandler)
+    }
+
+    escKeyPressHandler(evt): void {
+        if (evt && evt.key === 'Escape' && typeof this.props.close === 'function') {
+            evt.preventDefault()
+            this.props.close(evt)
+        }
+    }
+    outsideClickHandler(evt): void {
+        if (
+            this.createAppRef.current &&
+            !this.createAppRef.current.contains(evt.target) &&
+            typeof this.props.close === 'function'
+        ) {
+            this.props.close(evt)
         }
     }
 
@@ -101,12 +135,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         const labelTags = []
         let invalidLabels = false
         for (let index = 0; index < this.state.tags.length; index++) {
-            const element = this.state.tags[index]
-            if (element.isInvalidKey || element.isInvalidValue) {
+            const currentTag = this.state.tags[index]
+            if (currentTag.isInvalidKey || currentTag.isInvalidValue) {
                 invalidLabels = true
                 break
-            } else if (element.key) {
-                labelTags.push({ key: element.key, value: element.value, propagate: element.propagate })
+            } else if (currentTag.key) {
+                labelTags.push({ key: currentTag.key, value: currentTag.value, propagate: currentTag.propagate })
             }
         }
         this.setState({ showErrors: true, appNameErrors: true })
@@ -157,7 +191,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             })
             .catch((errors: ServerErrors) => {
                 if (Array.isArray(errors.errors)) {
-                    errors.errors.map(({ userMessage }) => toast.error(userMessage))
+                    errors.errors.forEach((element) => {
+                        toast.error(element.userMessage)
+                    })
                     this.setState({ code: errors.code })
                 } else {
                     showError(errors)
@@ -226,8 +262,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.rules.team(this.state.form.projectId),
             this.rules.cloneApp(this.state.form.cloneId),
         ]
-        let showError = this.state.showErrors
-        let appNameErrors = this.state.appNameErrors
+        const showError = this.state.showErrors
+        const appNameErrors = this.state.appNameErrors
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
@@ -284,8 +320,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 components={{
                                     IndicatorSeparator: null,
                                     LoadingIndicator: null,
+                                    Option,
                                 }}
                                 placeholder="Select app"
+                                tabIndex={3}
                             />
                             <span className="form__error">
                                 {showError && !this.state.isValid.cloneAppId ? (
@@ -312,7 +350,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label">Project*</span>
                     <ReactSelect
                         className="m-0"
-                        tabIndex={2}
+                        tabIndex={4}
                         isMulti={false}
                         isClearable={false}
                         options={this.state.projects}
@@ -337,7 +375,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagLabelSelect labelTags={this.state.tags} setLabelTags={this.setTags} />
+                <TagLabelSelect isCreateApp={true} labelTags={this.state.tags} setLabelTags={this.setTags} tabIndex={5} />
             </div>
         )
     }
@@ -370,7 +408,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     render() {
         return (
             <Drawer position="right" width="800px">
-                <div className="h-100 bcn-0 create-app-container" ref={(node) => (this.createAppRef = node)}>
+                <div className="h-100 bcn-0 create-app-container" ref={this.createAppRef}>
                     {this.renderHeaderSection()}
                     {this.renderPageDetails()}
                 </div>

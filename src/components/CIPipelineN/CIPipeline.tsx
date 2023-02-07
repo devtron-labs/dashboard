@@ -500,6 +500,10 @@ export default function CIPipeline({
                             })
                         }
                     }
+                } else {
+                    taskData.pluginRefStepDetail.outputVariables?.forEach((element, index) => {
+                        outputVarMap.set(element.name, true)
+                    })
                 }
 
                 taskErrorobj[currentStepTypeVariable]['conditionDetails'] = []

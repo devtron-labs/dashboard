@@ -81,7 +81,6 @@ export const URLS = {
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
-    DEPLOYMENT_STATUS: '/deployment-status',
 }
 
 export enum APP_COMPOSE_STAGE {

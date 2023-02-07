@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
     Select,
@@ -21,7 +20,8 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
-    ForceDeleteDialog
+    ForceDeleteDialog,
+    ServerErrors
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -50,13 +50,15 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
+import { EnvFormatOptions, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap } from '../common/helpers/Helpers'
+import { ConditionalWrap, createClusterEnvGroup } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
+import { groupStyle } from '../secrets/secret.utils'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -189,6 +191,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     list = list.map((env) => {
                                         return {
                                             id: env.id,
+                                            clusterName: env.cluster_name,
                                             name: env.environment_name,
                                             namespace: env.namespace || '',
                                             active: false,
@@ -1084,12 +1087,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
+    selectOption = (props) => {
+        return <EnvFormatOptions {...props} environmentfieldName="name" />
+    }
+
     renderEnvNamespaceAndTriggerType() {
         let envId = this.state.pipelineConfig.environmentId
         let selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
         let namespaceEditable = false
         let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
+        const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
+
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1100,7 +1109,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
                             placeholder="Select Environment"
-                            options={this.state.environments}
+                            options={envList}
                             value={selectedEnv}
                             getOptionLabel={(option) => `${option.name}`}
                             getOptionValue={(option) => `${option.id}`}
@@ -1109,9 +1118,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
-                                Option,
+                                Option: this.selectOption,
+                                GroupHeading,
                             }}
-                            styles={{ ...styles }}
+                            styles={{
+                                ...groupStyle(),
+                                control: (base) => ({ ...base, border: '1px solid #d6dbdf'}),
+                            }}
                         />
                         {this.state.showError && !envErrorObj.isValid ? (
                             <span className="form__error">

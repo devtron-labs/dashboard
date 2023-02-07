@@ -2,20 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
-import { DeploymentHistoryParamsType, DeploymentTemplateList } from '../cd.type'
+import { DeploymentTemplateList } from '../cd.type'
+import { DeploymentHistoryParamsType } from './types'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
 import CDEmptyState from '../CDEmptyState'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 interface TemplateConfiguration {
-    setShowTemplate: (boolean) => void
+  setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 
 export default function DeploymentHistoryConfigList({
-    setShowTemplate,
+  setFullScreenView,
     deploymentHistoryList,
     setDeploymentHistoryList: setDeploymentHistoryList,
 }: TemplateConfiguration) {
@@ -42,7 +43,7 @@ export default function DeploymentHistoryConfigList({
                 to={configURL}
                 activeClassName="active"
                 onClick={() => {
-                    setShowTemplate(true)
+                  setFullScreenView(false)
                 }}
                 className="bcb-1 dc__no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex dc__content-space cursor lh-20"
             >

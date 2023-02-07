@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib';
 import { buildInitState, appListModal } from './appList.modal';
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
-import { App, AppListProps, AppListState, OrderBy, SortBy } from './types';
+import { AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
 import { getAppList } from '../service';
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
@@ -29,8 +28,9 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             showCommandBar: false,
             offset: 0,
             pageSize: 20,
-            expandedRow: false,
-            appData: null,
+            expandedRow: null,
+            isAllExpanded: false,
+            isAllExpandable: false,
         }
     }
 
@@ -90,25 +90,38 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         this.props.history.push(url);
     }
 
-    expandRow = (app: App | null): void => {
-        this.setState({ expandedRow: true, appData: app });
+    expandRow = (id: number): void => {
+        this.setState((prevState) => ({ expandedRow: {...prevState.expandedRow, [id]: true} }));
     }
 
-    closeExpandedRow = (): void => {
-        this.setState({ expandedRow: false, appData: null });
+    closeExpandedRow = (id: number): void => {
+        this.setState((prevState) => ({ expandedRow: {...prevState.expandedRow, [id]: false} }));
+    }
+
+    toggleExpandAllRow = (): void => {
+        this.setState((prevState) => {
+            const _expandedRow = {}
+            if (!prevState.isAllExpanded) {
+                for (const _app of prevState.apps) {
+                    _expandedRow[_app.id] = _app.environments.length > 1
+                }
+            }
+
+            return { expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
+        })
     }
 
     getAppList = (request): void => {
         this.props.updateDataSyncing(true);
-        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length;
+        let isSearchOrFilterApplied = request.environments?.length || request.teams?.length || request.namespaces?.length || request.appNameSearch?.length || request.appStatuses?.length;
         let state = { ...this.state };
         state.view = AppListViewType.LOADING;
         state.sortRule = {
             key: request.sortBy,
             order: request.sortOrder,
         }
-        state.expandedRow = false;
-        state.appData = null;
+        state.expandedRow = {};
+        state.isAllExpanded = false
         this.setState(state);
         if (this.abortController) {
             this.abortController.abort();
@@ -124,8 +137,10 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 else view = AppListViewType.EMPTY;
             }
             let state = { ...this.state };
+            const apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : []
             state.code = response.code;
-            state.apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : [];
+            state.apps = apps;
+            state.isAllExpandable = apps.filter((app) => app.environments.length > 1).length > 0
             state.view = view;
             state.offset = request.offset;
             state.size = response.result.appCount;
@@ -174,6 +189,8 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             appListCount={this.props.appListCount}
             openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
             updateDataSyncing= {this.props.updateDataSyncing}
+            toggleExpandAllRow={this.toggleExpandAllRow}
+            isArgoInstalled={this.props.isArgoInstalled}
         />
     }
 }

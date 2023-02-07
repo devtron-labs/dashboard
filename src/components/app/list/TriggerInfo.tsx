@@ -4,7 +4,7 @@ import { getCITriggerInfoModal } from '../service';
 import { ViewType } from '../../../config';
 import close from '../../../assets/icons/ic-close.svg';
 import { MaterialHistory, CIMaterialType } from '../details/triggerView/MaterialHistory';
-import { MaterialSource } from '../details/triggerView/MaterialSource';
+import MaterialSource from '../details/triggerView/MaterialSource';
 
 interface TriggerInfoModalState {
     statusCode: number;

@@ -68,6 +68,7 @@ export interface AppEnvironment {
     prod: boolean;
     chartRefId?: number
     lastDeployed?: string
+    appStatus?: string
 }
 
 export interface AppOtherEnvironment extends ResponseType {
@@ -95,7 +96,7 @@ export interface LastExecutionResponseType {
             moderate: number;
             low: number;
         },
-        vulnerabilities: VulnerabilityType[]
+        vulnerabilities: VulnerabilityType[];
     }
 }
 
@@ -159,9 +160,10 @@ export interface ClusterListResponse extends ResponseType {
 }
 
 export interface Cluster {
-    id: number,
-    cluster_name : string,
+    id: number
+    cluster_name: string
     active: boolean
+    errorInConnecting?: string
 }
 export interface LoginCountType extends ResponseType {
   result?: LoginCount

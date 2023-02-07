@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
-import { Moment12HourFormat, URLS } from '../../../../config'
+import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, sortOptionsByValue, useAsync } from '../../../common'
+import { handleUTCTime, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
 import { showError, Progressing, TagType } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -21,6 +22,11 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
 import AboutTagEditModal from '../AboutTagEditModal'
+import Tippy from '@tippyjs/react'
+import AppStatus from '../../AppStatus'
+import { StatusConstants } from '../../list-new/Constants'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -34,7 +40,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         externalLinks: [],
         monitoringTools: [],
     })
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(appId), [appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]), [appId])
+    const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -76,11 +83,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             })
     }
 
-    const toggleChangeProjectModal = () => {
+    const toggleChangeProjectModal = (e) => {
+        stopPropagation(e)
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
-    const toggleTagsUpdateModal = () => {
+    const toggleTagsUpdateModal = (e) => {
+        stopPropagation(e)
         setShowUpdateTagModal(!showUpdateTagModal)
     }
 
@@ -157,16 +166,35 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         currentLabelTags.map((tag) => (
                             <div className="flex">
                                 <div
-                                    className={`bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                                    className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                                         !tag.value ? ' br-4' : ' dc__left-radius-4'
                                     }`}
                                 >
-                                    {tag.key}
+                                    {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.key}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="dc__mxw-400 dc__ellipsis-right">{tag.key}</div>
+                                    </Tippy>
                                 </div>
                                 {tag.value && (
-                                    <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
-                                        {tag.value}
-                                    </div>
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.value}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right">
+                                            {tag.value}
+                                        </div>
+                                    </Tippy>
                                 )}
                             </div>
                         ))
@@ -205,6 +233,54 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         )
     }
 
+    const renderDeployedTime = (_env) => {
+        if (_env.lastDeployed) {
+            return handleUTCTime(_env.lastDeployed, true)
+        } else {
+            return isAgroInstalled ? '' : 'Not deployed'
+        }
+    }
+
+    const renderDeploymentComponent = () => {
+        if(otherEnvsResult[0].result?.length > 0){
+            return (
+                <div className="env-deployments-info-wrapper w-100">
+                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
+                        <span>Environment</span>
+                        {isAgroInstalled && <span>App status</span>}
+                        <span>Last deployed</span>
+                    </div>
+                    <div className="env-deployments-info-body">
+                        {otherEnvsResult[0].result.map((_env) => (
+                            <div
+                                key={`${_env.environmentName}-${_env.environmentId}`}
+                                className="env-deployments-info-row display-grid dc__align-items-center"
+                            >
+                                <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
+                                    {_env.environmentName}
+                                </Link>
+                                {isAgroInstalled && (
+                                    <AppStatus
+                                        appStatus={
+                                            _env.lastDeployed
+                                                ? _env.appStatus
+                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                        }
+                                    />
+                                )}
+                                <span className="fs-13 fw-4 cn-7">
+                                    {renderDeployedTime(_env)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )
+        }
+
+        return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
+    }
+
     const renderEnvironmentDeploymentsStatus = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20">
@@ -214,31 +290,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 </div>
                 {otherEnvsLoading ? (
                     <div className="dc__loading-dots" />
-                ) : otherEnvsResult.result?.length > 0 ? (
-                    <div className="env-deployments-info-wrapper w-100">
-                        <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
-                            <span>Environment</span>
-                            <span>Last deployed</span>
-                        </div>
-                        <div className="env-deployments-info-body">
-                            {otherEnvsResult.result.map((_env) => (
-                                <div
-                                    key={`${_env.environmentName}-${_env.environmentId}`}
-                                    className="env-deployments-info-row display-grid dc__align-items-center"
-                                >
-                                    <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
-                                        {_env.environmentName}
-                                    </Link>
-                                    <span className="fs-13 fw-4 cn-7">
-                                        {_env.lastDeployed ? handleUTCTime(_env.lastDeployed, true) : 'Not deployed'}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
-                )}
+                ) : renderDeploymentComponent()}
             </div>
         )
     }

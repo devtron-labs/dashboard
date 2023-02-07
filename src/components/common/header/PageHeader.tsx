@@ -1,35 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import HelpNav from '../HelpNav'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
 import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
-import { handlePostHogEventUpdate, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
-export interface PageHeaderType {
-    headerName?: string
-    additionalHeaderInfo?: () => JSX.Element
-    isTippyShown?: boolean
-    tippyRedirectLink?: string
-    showTabs?: boolean
-    renderHeaderTabs?: () => JSX.Element
-    isBreadcrumbs?: boolean
-    breadCrumbs?: () => JSX.Element
-    TippyIcon?: React.FunctionComponent<any>
-    tippyMessage?: string
-    onClickTippybutton?: () => void
-    renderActionButtons?: () => JSX.Element
-    showCloseButton?: boolean
-    onClose?: () => void
-    markAsBeta?: boolean
-}
+import {
+    handlePostHogEventUpdate,
+    MAX_LOGIN_COUNT,
+    POSTHOG_EVENT_ONBOARDING,
+} from '../../onboardingGuide/onboarding.utils'
+import HelpNav from './HelpNav'
+import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { PageHeaderType } from './header.type'
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg';
 
 function PageHeader({
     headerName,
@@ -48,14 +36,8 @@ function PageHeader({
     onClose,
     markAsBeta,
 }: PageHeaderType) {
-    const {
-        loginCount,
-        setLoginCount,
-        showGettingStartedCard,
-        setShowGettingStartedCard,
-        isGettingStartedClicked,
-        setGettingStartedClicked,
-    } = useContext(mainContext)
+    const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, setGettingStartedClicked } =
+        useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
     const loginInfo = getLoginInfo()
@@ -118,14 +100,15 @@ function PageHeader({
     const renderLogoutHelpSection = () => {
         return (
             <>
-                <div
-                    className="flex left cursor mr-16"
-                    onClick={onClickHelp}
-                >
+                <div className="flex left cursor mr-16" onClick={onClickHelp}>
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>
                     <span className="fs-13 cn-9">Help</span>
+                    <DropDownIcon
+                    style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
+                    className="fcn-9 icon-dim-20 rotate pointer"
+                />
                 </div>
                 <div
                     className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
@@ -201,11 +184,11 @@ function PageHeader({
             {showHelpCard && (
                 <HelpNav
                     className={'help-card__more-option'}
-                    showHelpCard={showHelpCard}
                     setShowHelpCard={setShowHelpCard}
                     serverInfo={currentServerInfo.serverInfo}
                     fetchingServerInfo={currentServerInfo.fetchingServerInfo}
                     setGettingStartedClicked={setGettingStartedClicked}
+                    showHelpCard={showHelpCard}
                 />
             )}
             {showGettingStartedCard && loginCount >= 0 && loginCount < MAX_LOGIN_COUNT && getExpired() && (

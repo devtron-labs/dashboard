@@ -15,8 +15,9 @@ export interface AppListState {
     size: number;
     offset: number;
     pageSize: number;
-    expandedRow: boolean;
-    appData: App | null;
+    expandedRow: Record<number,boolean>;
+    isAllExpanded: boolean
+    isAllExpandable: boolean
 }
 
 export interface App {
@@ -30,6 +31,7 @@ export interface Environment {
     id: number;
     name: string;
     status: string;
+    appStatus: string
     lastDeployedTime: string;
     materialInfo: {
         author: string;
@@ -56,11 +58,12 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     openDevtronAppCreateModel: (event) => void
     setAppCount: React.Dispatch<React.SetStateAction<number>>
     updateDataSyncing: (loading: boolean) => void
+    isArgoInstalled: boolean
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
-  expandRow: (app: App | null) => void;
-  closeExpandedRow: () => void;
+  expandRow: (id: number | null) => void;
+  closeExpandedRow: (id: number | null) => void;
   sort: (key: string) => void;
   handleEditApp: (appId: number) => void;
   redirectToAppDetails: (app, envId: number) => string;
@@ -71,6 +74,8 @@ export interface AppListViewProps extends AppListState, RouteComponentProps<{}> 
   isSuperAdmin: boolean
   openDevtronAppCreateModel: (event) => void
   updateDataSyncing: (loading: boolean) => void
+  toggleExpandAllRow: () => void
+  isArgoInstalled: boolean
 }
 
 export interface AppListResponse {
@@ -128,6 +133,7 @@ export const SortBy = {
 export interface AppListPropType {
   isSuperAdmin: boolean
   appListCount: number
+  isArgoInstalled: boolean
 }
 
 export interface TriggerURL {

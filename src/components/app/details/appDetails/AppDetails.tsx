@@ -1,12 +1,16 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { fetchAppDetailsInTime } from '../../service';
+import React, { useEffect, useState, useMemo } from 'react'
+import { showError, Progressing, ConfirmationDialog, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { fetchAppDetailsInTime } from '../../service'
 import {
     URLS,
     getAppDetailsURL,
     getAppTriggerURL,
     DOCUMENTATION,
     DEFAULT_STATUS,
-} from '../../../../config';
+    DEPLOYMENT_STATUS_QUERY_PARAM,
+    DEPLOYMENT_STATUS,
+    HELM_DEPLOYMENT_STATUS_TEXT,
+} from '../../../../config'
 import {
     NavigationArrow,
     useEffectAfterMount,
@@ -18,61 +22,61 @@ import {
     multiSelectStyles,
     useAsync,
     ScanDetailsModal,
-} from '../../../common';
-import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { Option } from './../../../v2/common/ReactSelect.utils';
-import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
-import { Link, Switch } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
-//@ts-check
-import moment from 'moment';
-import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png';
-import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png';
-import restoreIcon from '../../../../assets/icons/ic-restore.svg';
-import warningIcon from '../../../../assets/icons/ic-warning.svg';
-import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
-import { ReactComponent as Connect } from '../../../../assets/icons/ic-connected.svg';
-import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg';
-import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
-import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
-import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
-import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import Tippy from '@tippyjs/react';
-import ReactGA from 'react-ga4';
-import Select, { components } from 'react-select';
-import { SourceInfo } from './SourceInfo'
+} from '../../../common'
+import { Option } from './../../../v2/common/ReactSelect.utils'
 import {
-    AppStreamData,
-    Application,
-    Nodes,
-    NodeType,
-    AggregatedNodes,
-    NodeDetailTabs,
-    NodeDetailTabsType
-} from '../../types';
-import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix, processDeploymentStatusDetailsData } from './utils';
-import { AppMetrics } from './AppMetrics';
-import IndexStore from '../../../v2/appDetails/index.store';
-import { TriggerInfoModal } from '../../list/TriggerInfo';
-import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
-import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
-import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type';
-import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
-import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
+    getAppConfigStatus,
+    getAppOtherEnvironment,
+    stopStartApp,
+    getLastExecutionMinByAppAndEnv,
+} from '../../../../services/service'
+import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
+//@ts-check
+import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
+import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
+import restoreIcon from '../../../../assets/icons/ic-restore.svg'
+import warningIcon from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg'
+import { ReactComponent as Connect } from '../../../../assets/icons/ic-connected.svg'
+import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
+import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
+import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
+import Tippy from '@tippyjs/react'
+import Select, { components } from 'react-select'
+import { SourceInfo } from './SourceInfo'
+import { AppStreamData, Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
+import {
+    aggregateNodes,
+    SecurityVulnerabilitites,
+    getSelectedNodeItems,
+    getPodNameSuffix,
+    processDeploymentStatusDetailsData,
+} from './utils'
+import { AppMetrics } from './AppMetrics'
+import IndexStore from '../../../v2/appDetails/index.store'
+import { TriggerInfoModal } from '../../list/TriggerInfo'
+import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
+import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
+import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
+import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
+import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type';
-import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
-import { getDeploymentStatusDetail } from './appDetails.service';
-import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
-import { TriggerUrlModal } from '../../list/TriggerUrl';
-import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal';
-import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type';
-import { hibernateApp, unhibernateApp } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service';
-import SyncErrorComponent from '../../../v2/appDetails/SyncError.component';
-import { Host } from '@devtron-labs/devtron-fe-common-lib';
+import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type'
+import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
+import { getDeploymentStatusDetail } from './appDetails.service'
+import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type'
+import { TriggerUrlModal } from '../../list/TriggerUrl'
+import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
+import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
+import {
+    hibernateApp,
+    unhibernateApp,
+} from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service'
+import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -189,11 +193,10 @@ export const Details: React.FC<{
     }, [appDetails]);
 
     const getDeploymentDetailStepsData = (): void => {
-      getDeploymentStatusDetail(params.appId, params.envId)
-          .then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
-          })
-  }
+        })
+    }
 
   const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
       const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(deploymentStatusDetailRes)
@@ -245,7 +248,25 @@ export const Details: React.FC<{
                                     }))
                                     .sort(sortOptionsByValue) || [],
                         })
-                        processDeploymentStatusData(deploymentStatusDetailRes.result)
+
+                        if (deploymentStatusDetailRes.result) {
+                            if (response.result?.deploymentAppType === DeploymentAppType.helm) {
+                                setDeploymentStatusDetailsBreakdownData({
+                                    ...deploymentStatusDetailsBreakdownData,
+                                    deploymentStatus:
+                                        DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
+                                    deploymentStatusText:
+                                        deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
+                                            ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
+                                            : deploymentStatusDetailRes.result.wfrStatus,
+                                    deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
+                                    deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
+                                    triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
+                                })
+                            } else {
+                                processDeploymentStatusData(deploymentStatusDetailRes.result)
+                            }
+                        }
                         setAppDetailsLoading(false)
                     })
                     .catch((e) => {
@@ -449,16 +470,14 @@ export const Details: React.FC<{
                               showAppStatusMessage={false}
                           />
                     )}
-                    <Switch>
-                        <Route exact path={`${path}${URLS.DEPLOYMENT_STATUS}`}>
-                            <DeploymentStatusDetailModal
-                                appName={appDetails.appName}
-                                environmentName={appDetails.environmentName}
-                                streamData={streamData}
-                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            />
-                        </Route>
-                    </Switch>
+                    {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
+                        <DeploymentStatusDetailModal
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            streamData={streamData}
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        />
+                    )}
                     {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}

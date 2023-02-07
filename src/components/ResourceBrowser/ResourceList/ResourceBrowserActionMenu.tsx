@@ -60,7 +60,7 @@ export default function ResourceBrowserActionMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">

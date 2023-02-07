@@ -302,7 +302,7 @@ export interface TargetPlatformSelectorType {
   setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
   showCustomPlatformWarning: boolean
   setShowCustomPlatformWarning: (value: boolean) => void
-  targetPlatformMap: any
+  targetPlatformMap: Map<string, boolean>
   targetPlatform?: string
   configOverrideView?: boolean
   updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void

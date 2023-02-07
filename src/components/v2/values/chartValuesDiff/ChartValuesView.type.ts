@@ -3,6 +3,8 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
+import {Teams} from "../../../../services/service.types";
+import {AppMetaInfo, LabelTagsType} from "../../../app/types";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -71,7 +73,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     isDeployChartView?: boolean
     selectedEnvironment?: ChartEnvironmentOptionType
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
-    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
+    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[] 
     invalidaEnvironment: boolean
 }
 
@@ -83,7 +85,6 @@ export interface DeploymentAppSelectorType {
 }
 
 export interface ChartProjectSelectorType {
-    isDeployChartView: boolean
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void
     projects: ChartValuesOptionType[]
@@ -357,12 +358,6 @@ export interface ChaartValuesGUIFormType {
     formValidationError: Record<string, boolean>
 }
 
-export interface ConnectToHelmChartTippyProps {
-    condition: boolean
-    hideConnectToChartTippy: () => void
-    children: React.ReactElement<any>
-}
-
 export interface ActiveReadmeColumnProps {
     fetchingReadMe: boolean
     activeReadMe: string
@@ -414,4 +409,13 @@ export interface UpdateApplicationButtonProps {
 
 export interface ErrorScreenWithInfoProps {
     info: string
+}
+
+export interface ProjectSelectorTypes {
+    appId: string
+    onClose: () => void
+    appMetaInfo: AppMetaInfo
+    installedAppId: number
+    projectList: ChartValuesOptionType[]
+    getAppMetaInfoRes: () => Promise<void>
 }

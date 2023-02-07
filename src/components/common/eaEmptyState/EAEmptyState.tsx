@@ -12,7 +12,29 @@ export enum EAEmptyStateType {
     BULKEDIT = 'bulk_edit',
 }
 
-function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefined }) {
+interface EAEmptyStateProps {
+    title: string
+    msg: string
+    stateType: EAEmptyStateType
+    knowMoreLink: string
+    headerText?: string
+}
+
+export default function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText }: EAEmptyStateProps) {
+    const getImage = () => {
+        switch (stateType) {
+            case EAEmptyStateType.DEVTRONAPPS:
+                return <img className="ea-empty-img" src={appDetailEmpty} width="800" alt="no apps found" />
+            case EAEmptyStateType.BULKEDIT:
+                return <img className="ea-empty-img" src={appDetailEmpty} width="800" alt="no apps found" />
+            case EAEmptyStateType.DEPLOYMENTGROUPS:
+                return <img src={appDetailEmpty} alt="no apps found" width="800" />
+            case EAEmptyStateType.SECURITY:
+                return <img className="ea-empty-img" src={securityEmpty} width="800" alt="no apps found" />
+            default:
+                return null
+        }
+    }
     return (
         <div>
             {headerText && (
@@ -30,39 +52,8 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                         </button>
                     </NavLink>
                 </div>
-                <div className="m-tb-20">
-                    {(() => {
-                        switch (stateType) {
-                            case EAEmptyStateType.DEVTRONAPPS:
-                                return (
-                                    <img
-                                        className="ea-empty-img"
-                                        src={appDetailEmpty}
-                                        width="800"
-                                        alt="no apps found"
-                                    />
-                                )
-                            case EAEmptyStateType.BULKEDIT:
-                                return (
-                                    <img
-                                        className="ea-empty-img"
-                                        src={appDetailEmpty}
-                                        width="800"
-                                        alt="no apps found"
-                                    />
-                                )
-                            case EAEmptyStateType.DEPLOYMENTGROUPS:
-                                return <img src={appDetailEmpty} alt="no apps found" width="800" />
-                            case EAEmptyStateType.SECURITY:
-                                return (
-                                    <img className="ea-empty-img" src={securityEmpty} width="800" alt="no apps found" />
-                                )
-                        }
-                    })()}
-                </div>
+                <div className="m-tb-20 pb-20">{getImage()}</div>
             </div>
         </div>
     )
 }
-
-export default EAEmptyState

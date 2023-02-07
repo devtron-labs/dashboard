@@ -3,6 +3,10 @@ import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState
 import YAML from 'yaml'
 import { Collection } from 'yaml/types'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ChartDeploymentManifestDetailResponse,
+    getDeploymentManifestDetails,
+} from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -106,12 +110,15 @@ const generateManifestGenerationKey = (
 
 export const updateGeneratedManifest = (
     isCreateValueView: boolean,
+    isUnlinkedCLIApp: boolean,
     isExternalApp: boolean,
     isDeployChartView: boolean,
     appName: string,
     valueName: string,
     commonState: ChartValuesViewState,
     appStoreApplicationVersionId: number,
+    appId: string,
+    deploymentVersion: number,
     valuesYaml: string,
     dispatch: (action: ChartValuesViewAction) => void,
 ) => {
@@ -135,6 +142,24 @@ export const updateGeneratedManifest = (
             valuesEditorError: '',
         },
     })
+
+    if (isUnlinkedCLIApp) {
+        getDeploymentManifestDetails(appId, deploymentVersion, isExternalApp).then(
+            (response: ChartDeploymentManifestDetailResponse) => {
+                dispatch({
+                    type: ChartValuesViewActionTypes.multipleOptions,
+                    payload: {
+                        generatedManifest: response.result.manifest,
+                        valuesYamlUpdated: false,
+                        valuesEditorError: '',
+                        generatingManifest: false,
+                    },
+                })
+            },
+        )
+
+        return
+    }
 
     if (isDeployChartView) {
         getGeneratedHelmManifest(

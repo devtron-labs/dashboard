@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, EnvFormatOptions, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
@@ -17,7 +17,6 @@ import {
     ChartValuesViewActionTypes,
     ChartVersionSelectorType,
     ChartVersionValuesSelectorType,
-    ConnectToHelmChartTippyProps,
     DeleteApplicationButtonProps,
     DeleteChartDialogProps,
     DeploymentAppSelectorType,
@@ -51,6 +50,11 @@ export const ChartEnvironmentSelector = ({
     environments,
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
+
+    const selectOption = (props) => {
+        return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
             <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7">Environment</h2>
@@ -73,7 +77,8 @@ export const ChartEnvironmentSelector = ({
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
-                    Option,
+                    Option: selectOption,
+                    GroupHeading
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
@@ -134,18 +139,13 @@ export const DeploymentAppSelector = ({
 }
 
 export const ChartProjectSelector = ({
-    isDeployChartView,
     selectedProject,
     handleProjectSelection,
     projects,
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
-    return !isDeployChartView ? (
-        <div className="chart-values__project-container mb-12">
-            <h2 className="chart-values__project-label fs-13 fw-4 lh-20 cn-7">Project</h2>
-            <span className="chart-values__project-name fs-13 fw-6 lh-20 cn-9">{selectedProject.label}</span>
-        </div>
-    ) : (
+    return  (
+
         <label className="form__row form__row--w-100 fw-4">
             <span className="form__label required-field">Project</span>
             <ReactSelect
@@ -162,7 +162,8 @@ export const ChartProjectSelector = ({
             />
             {invalidProject && renderValidationErrorLabel()}
         </label>
-    )
+        )
+
 }
 
 export const ChartVersionSelector = ({
@@ -444,33 +445,5 @@ export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
             </EmptyState.Image>
             <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
         </EmptyState>
-    )
-}
-
-export const ConnectToHelmChartTippy = ({
-    condition,
-    hideConnectToChartTippy,
-    children,
-}: ConnectToHelmChartTippyProps) => {
-    return (
-        <TippyCustomized
-            theme={TippyTheme.black}
-            visible={condition}
-            className="w-300 ml-4 dc__border-radius-8-imp"
-            placement="right"
-            Icon={LinkIcon}
-            iconClass="link-chart-icon"
-            iconSize={32}
-            infoTextHeading={CONNECT_TO_HELM_CHART_TEXTS.InfoTextHeading}
-            infoText={CONNECT_TO_HELM_CHART_TEXTS.InfoText}
-            showCloseButton={true}
-            trigger="manual"
-            interactive={true}
-            arrow={true}
-            animation="shift-toward-subtle"
-            onClose={hideConnectToChartTippy}
-        >
-            <div>{children}</div>
-        </TippyCustomized>
     )
 }

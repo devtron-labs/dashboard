@@ -5,8 +5,8 @@ import { NavLink } from 'react-router-dom'
 import moment from 'moment'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, Moment12HourFormat, URLS } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
-import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from '../cd.type'
-import { Option, styles } from '../cd.utils'
+import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from './types'
+import { Option, styles } from './utils'
 import { getDeploymentDiffSelector } from '../service'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -14,7 +14,7 @@ import Tippy from '@tippyjs/react'
 export default function DeploymentHistoryHeader({
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
-    setShowTemplate,
+    setFullScreenView,
     setLoader,
     setPreviousConfigAvailable,
 }: CompareWithBaseConfiguration) {
@@ -76,7 +76,7 @@ export default function DeploymentHistoryHeader({
                 className="flex"
                 onClick={(e) => {
                     e.preventDefault()
-                    setShowTemplate(false)
+                    setFullScreenView(false)
                     history.push(
                         `${url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
                             URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS

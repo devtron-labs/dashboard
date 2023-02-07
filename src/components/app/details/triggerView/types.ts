@@ -34,13 +34,13 @@ export interface CDMaterialProps {
 export enum DeploymentWithConfigType {
     LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
     LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
-    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG'
+    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG',
 }
 
 export interface ConfigToDeployOptionType {
-    label: string,
-    value: DeploymentWithConfigType,
-    infoText: string,
+    label: string
+    value: DeploymentWithConfigType
+    infoText: string
 }
 
 export interface CDMaterialState {
@@ -124,8 +124,13 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isCacheAvailable?: boolean
 }
 
+export interface RegexValueType {
+    value: string
+    isInvalid: boolean
+}
+
 export interface CIMaterialState {
-    regexValue: Record<number, { value: string; isInvalid: boolean }>
+    regexValue: Record<number, RegexValueType>
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -244,6 +249,22 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     nodes: NodeAttr[]
 }
 
+export interface TriggerViewContextType {
+    invalidateCache: boolean
+    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+    onClickTriggerCINode: () => void
+    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
+    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
+    closeCIModal: () => void
+    selectCommit: (materialId: string, hash: string) => void
+    selectMaterial: (materialId) => void
+    toggleChanges: (materialId: string, hash: string) => void
+    toggleInvalidateCache: () => void
+    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
+}
+
 export interface TriggerViewRouterProps {
     appId: string
     envId: string
@@ -254,6 +275,8 @@ export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterP
 export interface WorkflowType {
     id: string
     name: string
+    gitMaterials?: Material[]
+    ciConfiguredGitMaterialId?: number
     startX: number
     startY: number
     width: number
@@ -327,17 +350,17 @@ export interface ApplicationConditionResponse {
 export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK'
+    WEBHOOK = 'WEBHOOK',
 }
 
 export enum CIPipelineNodeType {
-  EXTERNAL_CI ='EXTERNAL-CI',
-  CI='CI',
-  LINKED_CI='LINKED-CI'
+    EXTERNAL_CI = 'EXTERNAL-CI',
+    CI = 'CI',
+    LINKED_CI = 'LINKED-CI',
 }
 
 export enum WorkflowNodeType {
-    GIT= 'GIT',
+    GIT = 'GIT',
     CI = 'CI',
     WEBHOOK = 'WEBHOOK',
     PRE_CD = 'PRECD',
@@ -528,8 +551,7 @@ export interface BranchRegexModalProps {
     showWebhookModal: boolean
     title: string
     isChangeBranchClicked: boolean
-    context
-    onClickNextButton: (context) => void
+    onClickNextButton: () => void
     onShowCIModal: () => void
     handleRegexInputValue: (id, value, mat) => void
     regexValue
@@ -558,7 +580,7 @@ export interface TriggerViewConfigDiffProps {
 export const MATERIAL_TYPE = {
     rollbackMaterialList: 'rollbackMaterialList',
     inputMaterialList: 'inputMaterialList',
-    none: 'none'
+    none: 'none',
 }
 
 export const STAGE_TYPE = {
@@ -568,4 +590,33 @@ export const STAGE_TYPE = {
     PRECD: 'PRECD',
     POSTCD: 'POSTCD',
     ROLLBACK: 'ROLLBACK',
+}
+
+export interface EmptyStateCIMaterialProps {
+    isRepoError: boolean;
+    isBranchError: boolean;
+    gitMaterialName: string;
+    sourceValue: string;
+    repoUrl: string;
+    branchErrorMsg: string;
+    repoErrorMsg: string;
+    isMaterialLoading: boolean;
+    onRetry: (...args) => void;
+    anyCommit: boolean;
+    isWebHook?: boolean;
+    noSearchResults?: boolean
+    noSearchResultsMsg?: string
+    toggleWebHookModal?: () => void;
+    clearSearch?: () => void
+    handleGoToWorkFlowEditor?: (e?: any) => void
+  }
+
+export interface MaterialSourceProps {
+    material: CIMaterialType[]
+    selectMaterial: (materialId: string) => void
+    refreshMaterial?: {
+        pipelineId: number
+        title: string
+        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+    }
 }

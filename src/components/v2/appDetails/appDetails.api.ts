@@ -13,7 +13,7 @@ export const getInstalledAppDetail = (_appId: number, _envId: number) => {
 }
 
 export const getSaveTelemetry = (appId: string) => {
-  return get(`${Routes.HELM_RELEASE_APP_DETAIL_API}/save-telemetry/?appId=${appId}`)
+    return get(`${Routes.HELM_RELEASE_APP_DETAIL_API}/save-telemetry/?appId=${appId}`)
 }
 
 export const deleteResource = (nodeDetails: any, appDetails: any, envId: string, forceDelete: boolean) => {
@@ -22,8 +22,14 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
     }
 
     if (appDetails.appType === AppType.EXTERNAL_HELM_CHART || appDetails.deploymentAppType === DeploymentAppType.helm) {
-        let data = {
-            appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
+        const data = {
+            appId: getAppId(
+                appDetails.clusterId,
+                appDetails.namespace,
+                appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
+                    ? `${appDetails.appName}-${appDetails.environmentName}`
+                    : appDetails.appName,
+            ),
             k8sRequest: {
                 resourceIdentifier: {
                     groupVersionKind: {

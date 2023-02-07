@@ -1,3 +1,22 @@
+import { createContext } from 'react'
+import { TriggerViewContextType } from './types'
+
+export const TriggerViewContext = createContext<TriggerViewContextType>({
+    invalidateCache: false,
+    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => {},
+    onClickTriggerCINode: () => {},
+    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
+    onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
+    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
+    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
+    closeCIModal: () => {},
+    selectCommit: (materialId: string, hash: string) => {},
+    selectMaterial: (materialId) => {},
+    toggleChanges: (materialId: string, hash: string) => {},
+    toggleInvalidateCache: () => {},
+    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => {},
+})
+
 export enum WorkflowDimensionType {
     TRIGGER = 'trigger',
     CREATE = 'create',

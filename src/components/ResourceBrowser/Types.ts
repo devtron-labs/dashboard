@@ -77,7 +77,7 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 }
 
 export interface ClusterSelectionType {
-    clusterOptions: OptionType[]
+    clusterOptions: ClusterOptionType[]
     onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
 }
 
@@ -93,25 +93,31 @@ export interface SidebarType {
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
 }
 
-export interface K8SResourceListType {
+export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
-    filteredResourceList: Record<string, any>[]
-    setFilteredResourceList: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
-    noResults: boolean
     clusterOptions: OptionType[]
     selectedCluster: OptionType
     onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
     namespaceOptions: OptionType[]
     selectedNamespace: OptionType
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
-    resourceListLoader: boolean
-    getResourceListData: () => Promise<void>
-    updateNodeSelectionData: (_selected: Record<string, any>) => void
+    hideSearchInput?: boolean
     searchText: string
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
+    clearSearch: () => void
+    isNamespaceSelectDisabled?: boolean
+}
+
+export interface K8SResourceListType extends ResourceFilterOptionsProps {
+    filteredResourceList: Record<string, any>[]
+    noResults: boolean
+    resourceListLoader: boolean
+    getResourceListData: () => Promise<void>
+    updateNodeSelectionData: (_selected: Record<string, any>) => void
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -132,6 +138,26 @@ export interface ResourceListEmptyStateType {
 }
 
 export interface EventListType {
+    listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: Record<string, any>[]
     handleResourceClick: (e: any) => void
+    paginatedView: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
+}
+
+export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProps {
+    loader: boolean
+    errorMsg: string
+    setErrorMsg: React.Dispatch<React.SetStateAction<string>>
+    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
+    showSelectClusterState: boolean
+    setShowSelectClusterState: React.Dispatch<React.SetStateAction<boolean>>
+    handleRetry: (e) => void
+    sideDataAbortController: {
+        prev: AbortController
+        new: AbortController
+    }
 }

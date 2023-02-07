@@ -2,6 +2,7 @@ import { getEnvironmentListMin as getEnvironmentList, getClusterListMinWithoutAu
 import {Routes, SERVER_MODE} from '../../../config';
 import {get, ResponseType, getTeamListMin as getProjectList} from '@devtron-labs/devtron-fe-common-lib';
 import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
+import { APP_STATUS } from '../config';
 
 
 export interface AppListResponse extends ResponseType{
@@ -26,7 +27,8 @@ export interface HelmApp {
     chartAvatar: string,
     projectId: number,
     lastDeployedAt: string,
-    environmentDetail: AppEnvironmentDetail
+    environmentDetail: AppEnvironmentDetail,
+    appStatus: string
 }
 
 export interface AppEnvironmentDetail {
@@ -58,6 +60,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
             teams: new Set(payloadParsedFromUrl.teams),
             environments: new Set(payloadParsedFromUrl.environments),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
+            appStatus: new Set(payloadParsedFromUrl.appStatuses)
         };
 
         let filters = {
@@ -65,6 +68,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
             environments: [],
             clusters: [],
             namespaces: [],
+            appStatus: []
         };
 
         // set filter projects starts
@@ -110,6 +114,17 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         filters.namespaces = _namespaces.sort((a, b) => { return sortByLabel(a, b) });
         //set filter namespace ends
 
+        //set filter appStatus starts
+
+        filters.appStatus = Object.entries(APP_STATUS).map(([keys,values]) => {
+            return {
+                key: values,
+                label: keys,
+                isSaved: true,
+                isChecked: filterApplied.appStatus.has(values)
+            }
+        })
+
         ////// set master filters data ends (check/uncheck)
 
         return {
@@ -126,10 +141,13 @@ export const getNamespaces = (clusterIdCsv : string, clusterVsNamespaceMap : Map
     })
 }
 
-export const getDevtronInstalledHelmApps = (clusterIdsCsv: string) : Promise<AppListResponse> => {
+export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string) : Promise<AppListResponse> => {
     let url = `${Routes.CHART_INSTALLED}`
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
+    }
+    if (appStatuses) {
+        url = `${url}${clusterIdsCsv ? '&' : '?'}appStatuses=${appStatuses}`
     }
     return get(url);
 }

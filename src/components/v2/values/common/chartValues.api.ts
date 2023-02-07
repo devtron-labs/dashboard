@@ -8,8 +8,8 @@ import {
     getChartVersionsMin,
     getReadme,
 } from '../../../charts/charts.service'
-import { sortObjectArrayAlphabetically } from '../../../common'
 import { showError, Teams, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import { createClusterEnvGroup, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
 
@@ -161,15 +161,15 @@ export async function fetchProjectsAndEnvironments(
         let envList = []
 
         if (serverMode === SERVER_MODE.FULL) {
-            envList = environmentListRes.map((env) => {
+            envList = createClusterEnvGroup(environmentListRes.map((env) => {
                 return {
                     value: env.id,
                     label: env.environment_name,
                     active: env.active,
                     namespace: env.namespace,
+                    clusterName: env.cluster_name
                 }
-            })
-            envList = envList.sort((a, b) => sortCallback('label', a, b, true))
+            }), 'clusterName')
         } else {
             const _sortedResult = (
                 environmentListRes ? sortObjectArrayAlphabetically(environmentListRes, 'clusterName') : []
@@ -198,6 +198,25 @@ export async function fetchProjectsAndEnvironments(
             type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 environments: envList,
+                projects: projectList,
+            },
+        })
+    })
+}
+
+export async function fetchProjects(dispatch: (action: ChartValuesViewAction) => void): Promise<void> {
+    getTeamListMin().then((response) => {
+        const projectListRes: Teams[] = response.result || []
+
+        const projectList = projectListRes
+            .map((p) => {
+                return { value: p.id, label: p.name }
+            })
+            .sort((a, b) => sortCallback('label', a, b, true))
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
                 projects: projectList,
             },
         })

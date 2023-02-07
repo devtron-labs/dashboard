@@ -96,7 +96,7 @@ export default function AboutAppInfoModal({
                 showError(err)
             }
         } finally {
-            onClose()
+            onClose(e)
             setSubmitting(false)
         }
     }

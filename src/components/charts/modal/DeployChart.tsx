@@ -221,7 +221,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 onHide(true)
             } else {
                 let payload = {
-                    teamId: serverMode == SERVER_MODE.FULL ? selectedProject.value : 0,
+                    teamId: selectedProject.value ,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
                     environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
@@ -512,27 +512,27 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     onChange={(e) => setAppName(e.target.value)}
                                 />
                             </label>
-                            {serverMode == SERVER_MODE.FULL && (
-                                <label className="form__row form__row--w-100">
-                                    <span className="form__label">Project</span>
-                                    <ReactSelect
-                                        components={{
-                                            IndicatorSeparator: null,
-                                            DropdownIndicator,
-                                            Option,
-                                        }}
-                                        isDisabled={!!isUpdate}
-                                        placeholder="Select Project"
-                                        value={selectedProject}
-                                        styles={{
-                                            ...styles,
-                                            ...menuList,
-                                        }}
-                                        onChange={selectProject}
-                                        options={projects}
-                                    />
-                                </label>
-                            )}
+
+                            <label className="form__row form__row--w-100">
+                                <span className="form__label">Project</span>
+                                <ReactSelect
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                    }}
+                                    isDisabled={!!isUpdate}
+                                    placeholder="Select Project"
+                                    value={selectedProject}
+                                    styles={{
+                                        ...styles,
+                                        ...menuList,
+                                    }}
+                                    onChange={selectProject}
+                                    options={projects}
+                                />
+                            </label>
+
                             <div className="form__row form__row--w-100">
                                 <span className="form__label">Environment</span>
                                 {serverMode == SERVER_MODE.FULL && (

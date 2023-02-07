@@ -10,7 +10,7 @@ import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { DEPLOYMENT_STATUS, TIMELINE_STATUS, URLS } from '../../../../config'
+import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
 
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
@@ -59,8 +59,10 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     }, [])
 
     const redirectToDeploymentStatus = () => {
-        const newUrl = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}${URLS.DEPLOYMENT_STATUS}`
-        history.push(newUrl)
+        history.push({
+            pathname: `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`,
+            search: DEPLOYMENT_STATUS_QUERY_PARAM
+        })
     }
 
     return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED || deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
