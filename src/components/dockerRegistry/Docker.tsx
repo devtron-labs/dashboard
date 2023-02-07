@@ -267,12 +267,12 @@ function DockerForm({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
         registryUrl: { value: registryUrl, error: '' },
-        username: { value: username, error: '' },
+        username: { value: username.replace(/\s/g, ''), error: '' },
         password: {
             value:
                 state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
                     ? password.substring(1, password.length - 1)
-                    : password,
+                    : password.replace(/\s/g, ''),
             error: '',
         },
     })
