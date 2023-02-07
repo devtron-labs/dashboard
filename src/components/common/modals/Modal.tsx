@@ -21,7 +21,7 @@ export const Modal = ({
 
     function disableWheel(e) {
         if (!preventWheelDisable) {
-            if (innerRef && innerRef.current.contains(e.target)) {
+            if (innerRef?.current.contains(e.target)) {
                 if (innerRef.current.clientHeight === innerRef.current.scrollHeight) {
                     e.preventDefault()
                 }
