@@ -275,7 +275,7 @@ a:focus {
 }
 
 .dc__right-0 {
-  right: 0;
+    right: 0;
 }
 
 .dc__vertical-align-middle {
@@ -568,7 +568,7 @@ button.anchor {
     &.f-switchedtoactiveservice,
     &.f-containercreating,
     &.f-pending,
-    &[class*="f-init__"]:not(.f-init__crashloopbackoff) {
+    &[class*='f-init__']:not(.f-init__crashloopbackoff) {
         color: var(--O500);
     }
 
@@ -1334,18 +1334,18 @@ button.anchor {
 
 .dc__hover-icon {
     .dc__show-first--icon {
-       display: inherit;
+        display: inherit;
     }
     .dc__show-second--icon {
-       display: none;
+        display: none;
     }
     &:hover {
         .dc__show-first--icon {
             display: none;
-         }
-         .dc__show-second--icon {
+        }
+        .dc__show-second--icon {
             display: inherit;
-         }
+        }
     }
 }
 
@@ -2058,8 +2058,8 @@ textarea,
     min-width: 385px;
 }
 
-.mw-4{
-  min-width: 4px !important;
+.mw-4 {
+    min-width: 4px !important;
 }
 
 .w-100-px {
@@ -2101,7 +2101,6 @@ textarea,
 .w-300 {
     width: 300px !important;
 }
-
 
 .w-303 {
     width: 303px;
@@ -2170,13 +2169,13 @@ textarea,
 
 //min width
 .min-w-200 {
-  min-width: 200px
+    min-width: 200px;
 }
 
 // width fix content
 
 .dc__w-fit-content {
-  width: fit-content;
+    width: fit-content;
 }
 
 // Height in pixels
@@ -2253,7 +2252,6 @@ textarea,
     height: 300px !important;
 }
 
-
 // Minimum Height
 .mh-28 {
     min-height: 28px;
@@ -2271,8 +2269,8 @@ textarea,
     min-height: 300px;
 }
 
-.mh-600{
-    min-height:600px;
+.mh-600 {
+    min-height: 600px;
 }
 
 // Height in percentage
@@ -2348,7 +2346,7 @@ textarea,
     padding-right: 12px !important;
 }
 
-.pl-8-imp{
+.pl-8-imp {
     padding-left: 8px !important;
 }
 
@@ -2391,7 +2389,7 @@ textarea,
     margin-top: 0px !important;
 }
 
-.mr-0-imp{
+.mr-0-imp {
     margin-right: 0px !important;
 }
 
@@ -2418,7 +2416,7 @@ textarea,
 }
 
 .dc__overflow-auto {
-  overflow: auto !important;
+    overflow: auto !important;
 }
 
 .dc__overflow-scroll {
@@ -2486,7 +2484,7 @@ textarea::placeholder {
 }
 // opacity
 .dc__opacity-0_5 {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 .dc__hover-n50:hover {

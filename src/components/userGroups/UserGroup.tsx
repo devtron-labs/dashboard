@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
-import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
+import { Switch, Route, Redirect} from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import {
     useAsync,
@@ -24,7 +23,6 @@ import {
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
     ErrorScreenNotAuthorized,
-    ErrorScreenManager,
 } from '../common'
 import {
     getUserList,
@@ -70,10 +68,7 @@ import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import ErrorBar from '../common/error/ErrorBar'
-import { windowWhen } from 'rxjs'
-import FlexSearch from 'flexsearch'
-import { spanStatusfromHttpCode } from '@sentry/tracing'
+import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -538,15 +533,19 @@ const UserGroupList: React.FC<{
         })
     }
 
-    if (loading || fetchingSSOConfigList)
+    if (loading || fetchingSSOConfigList){
         return (
             <div className="w-100 flex mh-600">
                 <Progressing pageLoader />
             </div>
         )
+    }
+    else if (error && (error.code === 403 || error.code === 401)) {
+        return <ErrorScreenNotAuthorized subtitle="" />}
 
-    if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
-    if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
+    else if (!addHash) {
+        return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />}
+
     const filteredAndSorted = result.filter(
         (userOrGroup) =>
             userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
@@ -554,10 +553,9 @@ const UserGroupList: React.FC<{
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
 
-    if (!isSSOConfigured) {
+    if (isSSOConfigured) {
         return <SSONotConfiguredState />
     }
-    //Show User can add User
     else {
         return (
             <div id="auth-page__body" className="auth-page__body-users__list-container">
@@ -1496,20 +1494,12 @@ function NoUsers({ onClick }) {
     )
 }
 
-const SSO_MESSAGE_TEXT = {
-    SSOmsg: 'SSO Login not configured:',
-    InfoText:
-        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
-}
-const REDIRECT_TEXT = {
-    redirectmsg: 'Go to SSO login services',
-    redirectLink: '/global-config/login-service',
-}
+
 const renderEmptySSOMessage = (): JSX.Element => {
     return (
         <>
-            <span className="dc__bold">{SSO_MESSAGE_TEXT.SSOmsg}</span>
-            {SSO_MESSAGE_TEXT.InfoText}
+            <span className="dc__bold">{SSO_NOT_CONFIGURED_STATE_TEXTS.notConfigured}</span>
+            {SSO_NOT_CONFIGURED_STATE_TEXTS.infoText}
         </>
     )
 }
@@ -1521,15 +1511,15 @@ function SSONotConfiguredState() {
                 <img src={EmptyImage} alt="so empty" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp">No users Added</h4>
+                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">{SSO_NOT_CONFIGURED_STATE_TEXTS.title}</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle className="w-300 fw-400 fs-13">
-                Add users and assign group or direct permissions
+                {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
                 <InfoColourBar
                     message={renderEmptySSOMessage()}
                     classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
-                    linkText={REDIRECT_TEXT.redirectmsg}
-                    redirectLink={REDIRECT_TEXT.redirectLink}
+                    linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
+                    redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
                     internalLink={true}
                     Icon={ErrorIcon}
                 />
