@@ -334,12 +334,10 @@ const UserGroupList: React.FC<{
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
     const isSSOConfigured = ssoConfigListdata?.result?.some((a) => a.active) || false
-
     const [searchString, setSearchString] = useState('')
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
-
     const { roles } = useUserGroupContext()
 
     useEffect(() => {
