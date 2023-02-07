@@ -1,16 +1,21 @@
-import { PATTERNS } from '../../config'
+import { PATTERNS } from '../../config';
 import { RefVariableType } from './types'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
-        const re = new RegExp('^[a-z][a-z0-9-.]+[a-z0-9]$')
-        if (value && value.length < 1) {
-            return { message: 'This is required', isValid: false }
-        } else if (!re.test(value)) {
-            return { message: `Min of 3 characters; Start with lowercase; Use (a-z), (0-9), (-), (.)`, isValid: false }
-        } else {
-            return { message: null, isValid: true }
-        }
+        let re = PATTERNS.APP_NAME
+        let regExp = new RegExp(re)
+        let test = regExp.test(value)
+        if (value.length === 0) return { isValid: false, message: 'Please provide pipeline-name' }
+        if (value.length < 2) return { isValid: false, message: 'Atleast 2 characters required' }
+        if (value.length > 50) return { isValid: false, message: 'Max 50 characters allowed' }
+        else if (!test)
+            return {
+                isValid: false,
+                message:
+                    "Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'",
+            }
+        else return { isValid: true, message: '' }
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {

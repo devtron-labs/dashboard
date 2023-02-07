@@ -37,6 +37,7 @@ import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { log } from 'console'
 
 export const ciPipelineContext = createContext(null)
 
@@ -212,6 +213,10 @@ export default function CIPipeline({
         }
     }, [location.pathname])
 
+    useEffect(() => {
+        validateStage(activeStageName, formData)
+    }, [formData.name])
+
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
@@ -317,7 +322,7 @@ export default function CIPipeline({
             )
         }
     }
-
+  console.log(formData.materials)
     const checkUniqueness = (): boolean => {
         const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
         const stageNameList = list.map((taskData) => {
@@ -355,7 +360,6 @@ export default function CIPipeline({
         // Below code is to check if all the task name from pre-stage and post-stage is unique
         return stageNameList.length === new Set(stageNameList).size
     }
-
     const savePipeline = () => {
         const isUnique = checkUniqueness()
         if (!isUnique) {
@@ -378,10 +382,22 @@ export default function CIPipeline({
             !formDataErrorObj.preBuildStage.isValid ||
             !formDataErrorObj.postBuildStage.isValid
         ) {
+            let branchNamePresent = true
+
             setLoadingData(false)
-            toast.error('Some Required Fields are missing')
+
+            branchNamePresent = formData.materials?.reduce((branchNamePresent, obj) => {
+                branchNamePresent = branchNamePresent && !!obj?.value
+                return branchNamePresent
+            }, !!formData.materials.length)
+            if (formData.name === '' || !branchNamePresent) {
+                toast.error('Some required fields are missing')
+            }
+
             return
         }
+              
+        
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
         // Reset allow override flag to false if config matches with global
