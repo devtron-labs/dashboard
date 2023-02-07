@@ -74,11 +74,6 @@ import { getDeploymentStatusDetail } from './appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import { HibernateRequest } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
-import {
-    hibernateApp,
-    unhibernateApp,
-} from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
