@@ -469,3 +469,17 @@ export interface DeleteComponentProps {
 export interface AppStatusType {
     appStatus: string
 }
+
+export interface ResizableTagTextAreaProps {
+  className?: string
+  minHeight?: number
+  maxHeight?: number
+  value?: string
+  onChange?: (e) => void
+  onBlur?: (e) => void
+  onFocus?: (e) => void
+  placeholder?: string
+  tabIndex?: number
+  refVar?: React.MutableRefObject<HTMLElement>
+  dependentRef?: React.MutableRefObject<HTMLElement>
+}

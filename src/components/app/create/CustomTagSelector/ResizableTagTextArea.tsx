@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useThrottledEffect } from '../../../common'
+import { ResizableTagTextAreaProps } from '../../types'
 
 export function ResizableTagTextArea({
     className,
@@ -13,7 +14,7 @@ export function ResizableTagTextArea({
     tabIndex,
     refVar,
     dependentRef,
-}) {
+}: ResizableTagTextAreaProps) {
     const [text, setText] = useState('')
 
     useEffect(() => {
