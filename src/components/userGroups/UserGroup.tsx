@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
-import { Switch, Route, Redirect} from 'react-router-dom'
+import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import {
@@ -65,7 +65,6 @@ import ApiTokens from '../apiTokens/ApiTokens.component'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
@@ -533,18 +532,17 @@ const UserGroupList: React.FC<{
         })
     }
 
-    if (loading || fetchingSSOConfigList){
+    if (loading || fetchingSSOConfigList) {
         return (
             <div className="w-100 flex mh-600">
                 <Progressing pageLoader />
             </div>
         )
+    } else if (error && (error.code === 403 || error.code === 401)) {
+        return <ErrorScreenNotAuthorized subtitle="" />
+    } else if (!addHash) {
+        return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     }
-    else if (error && (error.code === 403 || error.code === 401)) {
-        return <ErrorScreenNotAuthorized subtitle="" />}
-
-    else if (!addHash) {
-        return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />}
 
     const filteredAndSorted = result.filter(
         (userOrGroup) =>
@@ -555,8 +553,7 @@ const UserGroupList: React.FC<{
 
     if (!isSSOConfigured) {
         return <SSONotConfiguredState />
-    }
-    else {
+    } else {
         return (
             <div id="auth-page__body" className="auth-page__body-users__list-container">
                 {renderHeaders(type)}
@@ -1494,7 +1491,6 @@ function NoUsers({ onClick }) {
     )
 }
 
-
 const renderEmptySSOMessage = (): JSX.Element => {
     return (
         <>
@@ -1511,7 +1507,9 @@ function SSONotConfiguredState() {
                 <img src={EmptyImage} alt="so empty" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">{SSO_NOT_CONFIGURED_STATE_TEXTS.title}</h4>
+                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">
+                    {SSO_NOT_CONFIGURED_STATE_TEXTS.title}
+                </h4>
             </EmptyState.Title>
             <EmptyState.Subtitle className="w-300 fw-400 fs-13">
                 {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}

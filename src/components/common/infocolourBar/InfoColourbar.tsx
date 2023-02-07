@@ -88,4 +88,5 @@ function InfoColourBar({
         </div>
     )
 }
+
 export default InfoColourBar
