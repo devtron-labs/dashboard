@@ -38,7 +38,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     value: '',
                     active: true,
                 }
-
+                
                 if (!form.value) {
                     const payload = {
                         id: form.id,
@@ -62,6 +62,9 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                         view: ViewType.FORM,
                         form: form,
                     })
+                }
+                if(!this.props.isSuperAdmin){
+                    this.setState({ view: ViewType.ERROR, statusCode: 403 })
                 }
             })
             .catch((error) => {

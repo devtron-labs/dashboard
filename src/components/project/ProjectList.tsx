@@ -136,8 +136,8 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} reloadClass="dc__align-reload-center" />
+        else if (this.state.view === ViewType.ERROR || !this.props.isSuperAdmin) {
+            return <ErrorScreenManager code={this.props.isSuperAdmin ? this.state.code: 403} reloadClass="dc__align-reload-center" />
         }
         else {
             return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
