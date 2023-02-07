@@ -480,6 +480,6 @@ export interface ResizableTagTextAreaProps {
   onFocus?: (e) => void
   placeholder?: string
   tabIndex?: number
-  refVar?: React.MutableRefObject<HTMLElement>
-  dependentRef?: React.MutableRefObject<HTMLElement>
+  refVar?: React.MutableRefObject<HTMLTextAreaElement>
+  dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
 }
