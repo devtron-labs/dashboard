@@ -253,6 +253,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
+        
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
