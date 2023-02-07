@@ -91,8 +91,8 @@ export default function GitProvider({ ...props }) {
     if (isPageLoading) {
         return <Progressing pageLoader />;
     }
-    if (isErrorLoading) {
-        return <ErrorScreenManager code={error?.code} reloadClass="dc__align-reload-center" />;
+    if (isErrorLoading || !props.isSuperAdmin) {
+        return <ErrorScreenManager code={!props.isSuperAdmin ? 403 : error?.code} reloadClass="dc__align-reload-center" />;
     }
 
     let allProviders = [
