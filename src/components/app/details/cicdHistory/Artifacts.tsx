@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { showError, copyToClipboard } from '../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'

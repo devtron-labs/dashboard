@@ -1,3 +1,4 @@
+import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'Checking Status...'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
@@ -261,7 +262,6 @@ export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 
-const DOCUMENTATION_HOME_PAGE = 'https://docs.devtron.ai'
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
     APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application`,

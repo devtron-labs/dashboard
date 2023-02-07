@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { Progressing, showError, VisibleModal } from '../../../common'
 import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
 import ReactSelect from 'react-select'
 import InfoColourbar from '../../../common/infocolourBar/InfoColourbar'

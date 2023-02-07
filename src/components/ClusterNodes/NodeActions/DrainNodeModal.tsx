@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Checkbox, CHECKBOX_VALUE, stopPropagation } from '../../common'
-import { showError, Progressing, ConfirmationDialog, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE } from '../../common'
+import { showError, Progressing, ConfirmationDialog, TippyCustomized, TippyTheme, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'

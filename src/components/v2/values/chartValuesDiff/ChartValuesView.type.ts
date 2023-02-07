@@ -3,8 +3,7 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
-import {Teams} from "../../../../services/service.types";
-import {AppMetaInfo, LabelTagsType} from "../../../app/types";
+import {AppMetaInfo} from "../../../app/types";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -73,7 +72,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     isDeployChartView?: boolean
     selectedEnvironment?: ChartEnvironmentOptionType
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
-    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[] 
+    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
 }
 

@@ -1371,19 +1371,12 @@
   "resolved" "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   "version" "9.0.1"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.6-beta-20":
-  "integrity" "sha512-v1W3YpsQPpd9CXFU4j46UZvzUoV7Juni/AOHfR/nBX8J6hkLxTIsphHe2qAnneJZbpM8IEX8qwzqVRb78H4SbQ=="
-  "resolved" "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.6-beta-20/b2320ecbed4b3c84751eba91436faa8eea3bebb9"
+"@devtron-labs/devtron-fe-common-lib@file:../devtron-fe-common-lib":
+  "resolved" "file:../devtron-fe-common-lib"
   "version" "0.0.6-beta-20"
   dependencies:
     "sass" "^1.56.2"
     "tslib" "^2.4.1"
-
-"@devtron-labs/devtron-fe-lib@file:../devtron-fe-lib":
-  "resolved" "file:../devtron-fe-lib"
-  "version" "0.0.5-beta-1"
-  dependencies:
-    "sass" "^1.56.2"
 
 "@emotion/babel-plugin@^11.7.1":
   "integrity" "sha512-6mGSCWi9UzXut/ZAN6lGFu33wGR3SJisNl3c0tvlmb8XChH1b2SUvxvnOh7hvLpqyRdHHU9AiazV3Cwbk5SXKQ=="
@@ -2184,17 +2177,17 @@
   "version" "1.0.2"
 
 "@typeform/embed-react@^2.15.0":
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/@typeform/embed-react/-/embed-react-2.15.0.tgz#4f283c311ae8a5f75a563291747faebbd4f2e5a4"
-  integrity sha512-OO3gT96yMv+vMflXjYbsSS84qizjfkdCO39Y5kPalpRVvydCgT3KoxM+tdrWY6L2ciD1q+yQs1NZbYh63xFkuw==
+  "integrity" "sha512-OO3gT96yMv+vMflXjYbsSS84qizjfkdCO39Y5kPalpRVvydCgT3KoxM+tdrWY6L2ciD1q+yQs1NZbYh63xFkuw=="
+  "resolved" "https://registry.npmjs.org/@typeform/embed-react/-/embed-react-2.15.0.tgz"
+  "version" "2.15.0"
   dependencies:
     "@typeform/embed" "2.8.0"
-    fast-deep-equal "^3.1.3"
+    "fast-deep-equal" "^3.1.3"
 
 "@typeform/embed@2.8.0":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@typeform/embed/-/embed-2.8.0.tgz#45456b47103d27e818e426d782e0af0976909db8"
-  integrity sha512-+64uxHXbOefA9euw9gQUZ3WAvh+61wH6Vbl3x9WYQ3tAY2iM9gPTYhfxPDMdx/79KuRMIbHUKWpTD6PflaWy8w==
+  "integrity" "sha512-+64uxHXbOefA9euw9gQUZ3WAvh+61wH6Vbl3x9WYQ3tAY2iM9gPTYhfxPDMdx/79KuRMIbHUKWpTD6PflaWy8w=="
+  "resolved" "https://registry.npmjs.org/@typeform/embed/-/embed-2.8.0.tgz"
+  "version" "2.8.0"
 
 "@types/aria-query@^4.2.0":
   "integrity" "sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig=="
@@ -6927,19 +6920,12 @@
     "snapdragon" "^0.8.1"
     "to-regex" "^3.0.1"
 
-<<<<<<< HEAD
 "extsprintf@^1.2.0", "extsprintf@1.3.0":
   "integrity" "sha1-lpGEQOMEGnpBT4xS48V06zw+HgU="
   "resolved" "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
   "version" "1.3.0"
-=======
-fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
-  integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
->>>>>>> main
 
-"fast-deep-equal@^3.1.1":
+"fast-deep-equal@^3.1.1", "fast-deep-equal@^3.1.3":
   "integrity" "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="
   "resolved" "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
   "version" "3.1.3"
@@ -7617,14 +7603,12 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
     "path-is-absolute" "^1.0.0"
 
 "glob@^7.1.6":
-  "integrity" "sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q=="
-  "resolved" "https://registry.npmjs.org/glob/-/glob-7.2.3.tgz"
-  "version" "7.2.3"
+  "version" "7.1.6"
   dependencies:
     "fs.realpath" "^1.0.0"
     "inflight" "^1.0.4"
     "inherits" "2"
-    "minimatch" "^3.1.1"
+    "minimatch" "^3.0.4"
     "once" "^1.3.0"
     "path-is-absolute" "^1.0.0"
 
@@ -10661,11 +10645,6 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   dependencies:
     "brace-expansion" "^1.1.7"
 
-"minimatch@^3.1.1":
-  "version" "3.0.4"
-  dependencies:
-    "brace-expansion" "^1.1.7"
-
 "minimatch@3.0.4":
   "integrity" "sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA=="
   "resolved" "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz"
@@ -13160,12 +13139,9 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
     "strict-uri-encode" "^1.0.0"
 
 "query-string@^6.8.2":
-  "integrity" "sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw=="
-  "resolved" "https://registry.npmjs.org/query-string/-/query-string-6.14.1.tgz"
-  "version" "6.14.1"
+  "version" "6.8.2"
   dependencies:
     "decode-uri-component" "^0.2.0"
-    "filter-obj" "^1.1.0"
     "split-on-first" "^1.0.0"
     "strict-uri-encode" "^2.0.0"
 
@@ -13573,7 +13549,7 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
     "tiny-invariant" "^1.0.2"
     "tiny-warning" "^1.0.0"
 
-"react-router@^5.3.0", "react-router@5.2.1":
+"react-router@5.2.1":
   "integrity" "sha512-lIboRiOtDLFdg1VTemMwud9vRVuOCZmUIT/7lUoZiSpPODiiH1UQlfXy+vPLC/7IWdFYnhRwAyNqA/+I7wnvKQ=="
   "resolved" "https://registry.npmjs.org/react-router/-/react-router-5.2.1.tgz"
   "version" "5.2.1"
@@ -14511,7 +14487,7 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
     "pify" "^4.0.1"
     "semver" "^5.5.0"
 
-"sass@^1.55.0", "sass@^1.56.2":
+"sass@^1.55.0":
   "integrity" "sha512-O2+LwLS79op7GI0xZ8fqzF7X2m/m8WFfI02dHOdsK5R2ECeS5F62zrwg/relM1rjSLy7Vd/DiMNIvPrQGsA0jw=="
   "resolved" "https://registry.npmjs.org/sass/-/sass-1.57.1.tgz"
   "version" "1.57.1"
@@ -15945,11 +15921,6 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   "integrity" "sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw=="
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.3.1.tgz"
   "version" "2.3.1"
-
-"tslib@^2.4.1":
-  "integrity" "sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA=="
-  "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.4.1.tgz"
-  "version" "2.4.1"
 
 "tsutils@^3.21.0":
   "integrity" "sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA=="

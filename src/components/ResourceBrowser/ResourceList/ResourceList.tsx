@@ -7,7 +7,7 @@ import {
     sortObjectArrayAlphabetically,
     eventAgeComparator,
 } from '../../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -49,7 +49,6 @@ import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetai
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
-import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import '../ResourceBrowser.scss'
 

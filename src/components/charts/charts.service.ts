@@ -1,9 +1,8 @@
-import { get, post, put, trash, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash, sortCallback, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { handleUTCTime } from '../common'
 import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
-import {ResponseType} from "../../services/service.types";
 
 interface RootObject {
     code: number

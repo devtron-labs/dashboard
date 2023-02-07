@@ -7,9 +7,8 @@ import {
     Modal,
     handleUTCTime,
     useAsync,
-    stopPropagation,
 } from '../../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -639,7 +638,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
-    const getAppListDataToExport = () => { 
+    const getAppListDataToExport = () => {
         return getAppList(
             typeof parsedPayloadOnUrlChange === 'object'
                 ? {

@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { showError, Progressing, Drawer, TagLabelSelect, TagType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, TagLabelSelect, TagType, DEFAULT_TAG_DATA } from '@devtron-labs/devtron-fe-common-lib'
 import { AboutAppInfoModalProps } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
-import { DEFAULT_TAG_DATA } from '../config'
 
 export default function AboutTagEditModal({
     isLoading,

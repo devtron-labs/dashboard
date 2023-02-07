@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
-import { showError } from '@devtron-labs/devtron-fe-common-lib';
+import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
@@ -781,24 +781,6 @@ export function useDebouncedEffect(callback, delay, deps = []) {
     }, [delay, ...deps])
 }
 
-export function useThrottledEffect(callback, delay, deps = []) {
-    //function will be executed only once in a given time interval.
-    const lastRan = useRef(Date.now())
-
-    useEffect(() => {
-        const handler = setTimeout(function () {
-            if (Date.now() - lastRan.current >= delay) {
-                callback()
-                lastRan.current = Date.now()
-            }
-        }, delay - (Date.now() - lastRan.current))
-
-        return () => {
-            clearTimeout(handler)
-        }
-    }, [delay, ...deps])
-}
-
 interface UseSize {
     x: number
     y: number
@@ -991,10 +973,6 @@ export const elementDidMount = (identifier: string): Promise<unknown> => {
 // Setting expiry time in local storage for specified action key
 export const setActionWithExpiry = (key: string, days: number): void => {
     localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
-}
-
-export const stopPropagation = (event): void => {
-    event.stopPropagation()
 }
 
 export const preventBodyScroll = (lock: boolean): void => {

@@ -12,7 +12,7 @@ import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-o
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
 import { mainContext } from '../navigation/NavigationRoutes'
-import { stopPropagation } from '../helpers/Helpers'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 function HelpNav({
     className,
