@@ -15,7 +15,6 @@ interface InfoColourBarType {
     linkClass?: string
     internalLink?: boolean
     styles?: CSSProperties
-    iconWrapper?:string
 }
 
 function InfoColourBar({
@@ -31,7 +30,6 @@ function InfoColourBar({
     linkClass,
     internalLink,
     styles,
-    iconWrapper,
 }: InfoColourBarType) {
     const renderLink = () => {
         if (!linkText) {
@@ -73,11 +71,11 @@ function InfoColourBar({
     return (
         <div className="info-bar-container">
             <div
-                className={`info_text flex dc__content-space pt-8 pb-8 pl-16 pr-16 br-4 top fs-13 fw-4 ${classname} `}
+                className={`${classname} info_text flex dc__content-space pt-8 pb-8 pl-16 pr-16 br-4 top fs-13 fw-4`}
                 style={styles}
             >
                 <div className={`flex top ${typeof renderActionButton === 'function' ? 'mr-5' : ''}`}>
-                    <div className={` mr-10 ${iconWrapper}`}>
+                    <div className={`icon-dim-${iconSize ?? '20'} mr-10`}>
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass || ''} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>

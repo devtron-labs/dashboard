@@ -554,7 +554,7 @@ const UserGroupList: React.FC<{
             userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
     )
 
-    if (!isSSOConfigured) {
+    if (isSSOConfigured) {
         return <SSONotConfiguredState />
     }
     //Show User can add User
@@ -1532,7 +1532,6 @@ function SSONotConfiguredState() {
                     redirectLink={REDIRECT_TEXT.redirectLink}
                     internalLink={true}
                     Icon={ErrorIcon}
-                    iconWrapper="mr-0-imp"
                 />
             </EmptyState.Subtitle>
         </EmptyState>

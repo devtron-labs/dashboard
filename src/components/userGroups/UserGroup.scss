@@ -29,7 +29,15 @@
     .search {
         margin-bottom: 16px !important;
     }
-    
+    .empty-state {
+        .info-bar-container {
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+
 }
 
 .auth-page__body-users__list-container {
@@ -184,10 +192,6 @@
     padding: 6px 0;
 }
 
-.pl-8-imp{
-    padding-left: 8px !important;
-}
-
 .kubernetes-header {
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr 1fr 1fr;
@@ -198,6 +202,4 @@
     background-color: var(--window-bg);
     height: calc(100vh - 116px);
 }
-.mr-0-imp{
-    margin-right: 0px !important;
-}
+
