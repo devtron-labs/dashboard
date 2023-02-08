@@ -74,12 +74,15 @@ export default function Docker({ ...props }) {
     useEffect(() => {
         _getInit()
     }, [])
-    if(!props.isSuperAdmin){
-        return <div className="error-screen-wrapper flex column h-100">
+    if (!props.isSuperAdmin) {
+        return (
+            <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenNotAuthorized
                     subtitle="Information on this page is available only to superadmin users."
+                    className="dc__align-reload-center"
                 />
             </div>
+        )
     }
     if ((loading && !result) || clusterLoader) return <Progressing pageLoader />
     if (error) {

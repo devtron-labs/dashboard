@@ -18,7 +18,7 @@ export class ErrorScreenManager extends Component<{
                 return 'Unauthorized'
             case 403:
                 return (
-                    <ErrorScreenNotAuthorized subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass} />
+                    <ErrorScreenNotAuthorized className={this.props.reloadClass} subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass} />
                 )
             case 404:
                 return 'Not Found'
@@ -42,10 +42,14 @@ export class ErrorScreenManager extends Component<{
     }
 }
 
-export class ErrorScreenNotAuthorized extends Component<{ subtitle: React.ReactChild; subtitleClass?: string }> {
+export class ErrorScreenNotAuthorized extends Component<{
+    subtitle: React.ReactChild
+    subtitleClass?: string
+    className?: string
+}> {
     render() {
         return (
-            <EmptyState>
+            <EmptyState className={this.props.className}>
                 <EmptyState.Image>
                     <img src={notAuthorized} alt="Not Authorized" />
                 </EmptyState.Image>

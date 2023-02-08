@@ -137,18 +137,26 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR || !this.props.isSuperAdmin) {
-            return <ErrorScreenManager code={this.props.isSuperAdmin ? this.state.code: 403} reloadClass="dc__align-reload-center" />
-        }
-        else {
-            return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-                {this.renderPageHeader()}
-                {this.renderAddProject()}
-                {this.state.projects.map((project, index) => {
-                    return <React.Fragment key={`${project.name}-${index}`}>
-                        {this.renderProjects(project, index)}
-                    </React.Fragment>
-                })}
-            </section>
+            return (
+                <ErrorScreenManager
+                    code={this.props.isSuperAdmin ? this.state.code : 403}
+                    reloadClass="dc__align-reload-center"
+                />
+            )
+        } else {
+            return (
+                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                    {this.renderPageHeader()}
+                    {this.renderAddProject()}
+                    {this.state.projects.map((project, index) => {
+                        return (
+                            <React.Fragment key={`${project.name}-${index}`}>
+                                {this.renderProjects(project, index)}
+                            </React.Fragment>
+                        )
+                    })}
+                </section>
+            )
         }
     }
 }

@@ -3,7 +3,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
-import { ErrorScreenManager, Progressing, showError } from '../common';
+import { ErrorScreenManager, ErrorScreenNotAuthorized, Progressing, showError } from '../common';
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
@@ -62,9 +62,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                         view: ViewType.FORM,
                         form: form,
                     })
-                }
-                if(!this.props.isSuperAdmin){
-                    this.setState({ view: ViewType.ERROR, statusCode: 403 })
                 }
             })
             .catch((error) => {
@@ -140,6 +137,14 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
+        }
+        else if(!this.props.isSuperAdmin){
+            return <div className="error-screen-wrapper flex column h-100">
+                    <ErrorScreenNotAuthorized
+                        subtitle="Information on this page is available only to superadmin users."
+                        className="dc__align-reload-center"
+                    />
+                </div>
         }
         else if (this.state.view === ViewType.ERROR) {
             return <section className="global-configuration__component flex" >
