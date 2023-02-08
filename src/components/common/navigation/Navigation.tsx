@@ -23,6 +23,7 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-environment.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 const NavigationList = [
@@ -33,6 +34,14 @@ const NavigationList = [
         icon: ApplicationsIcon,
         href: URLS.APP,
         isAvailableInEA: true,
+    },
+    {
+        title: 'Environments',
+        type: 'link',
+        iconClass: 'nav-short-env',
+        icon: EnvIcon,
+        href: URLS.ENVIRONMENT,
+        isAvailableInEA: false,
     },
     {
         title: 'Resource Browser',

@@ -9,6 +9,7 @@ export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
+    ENVIRONMENT: '/environment',
     RESOURCE_BROWSER: '/resource-browser',
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
