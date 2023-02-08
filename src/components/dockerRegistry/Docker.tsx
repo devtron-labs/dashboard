@@ -267,7 +267,7 @@ function DockerForm({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
         registryUrl: { value: registryUrl, error: '' },
-        username: { value: username.replace(/\s/g, ''), error: '' },
+        username: { value: username, error: '' },
         password: {
             value:
                 state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
@@ -381,6 +381,8 @@ function DockerForm({
     const getRegistryPayload = (awsRegion?: string) => {
         let appliedClusterIdsCsv = whiteList?.map((cluster) => cluster?.value)?.join(',')
         let ignoredClusterIdsCsv = blackList?.map((cluster) => cluster?.value)?.join(',')
+        const trimmedUsername = customState.username.value.replace(/\s/g, '')
+
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -395,16 +397,16 @@ function DockerForm({
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'artifact-registry' || selectedDockerRegistryType.value === 'gcr'
-                ? { username: customState.username.value, password: `'${customState.password.value}'` }
+                ? { username: trimmedUsername, password: `'${customState.password.value}'` }
                 : {}),
             ...(selectedDockerRegistryType.value === 'docker-hub' ||
             selectedDockerRegistryType.value === 'acr' ||
             selectedDockerRegistryType.value === 'quay'
-                ? { username: customState.username.value, password: customState.password.value }
+                ? { username: trimmedUsername, password: customState.password.value }
                 : {}),
             ...(selectedDockerRegistryType.value === 'other'
                 ? {
-                      username: customState.username.value,
+                      username: trimmedUsername,
                       password: customState.password.value,
                       connection: state.advanceSelect.value,
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
