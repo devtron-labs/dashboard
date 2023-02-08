@@ -120,6 +120,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? "" : DeploymentAppType.Helm,
+                deploymentAppDeleteRequest: true //It will be false
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -152,7 +153,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.props.close()
         }
     }
-
+ isdeploymentAppDeleteRequest = true
     getDeploymentStrategies(): void {
         getDeploymentStrategyList(this.props.match.params.appId)
             .then((response) => {
@@ -656,7 +657,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     deleteCD = (force) => {
         let payload = {
-            action: CD_PATCH_ACTION.DELETE,
+            action: this.state.pipelineConfig.deploymentAppDeleteRequest ? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id,
@@ -1096,7 +1097,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
-        
+
         return (
             <>
                 <div className="form__row form__row--flex">

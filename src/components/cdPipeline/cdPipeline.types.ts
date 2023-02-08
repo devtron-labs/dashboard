@@ -3,6 +3,7 @@ import { RouteComponentProps } from 'react-router';
 export const CD_PATCH_ACTION = {
     DELETE: 1,
     UPDATE: 2,
+    DEPLOYMENT_DELETE: 3
 };
 
 export interface DeploymentStrategy {
@@ -77,6 +78,7 @@ export interface CDPipelineState {
         parentPipelineId: number;
         parentPipelineType: string;
         deploymentAppType: string;
+        deploymentAppDeleteRequest?: boolean //remove later optional check
     };
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
