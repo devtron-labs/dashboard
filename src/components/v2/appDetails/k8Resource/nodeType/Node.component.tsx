@@ -225,9 +225,9 @@ function NodeComponent({
                                     )}
                                     <div>
                                         <div>{node.name}</div>
-                                        <span className="display-inline-block">
+                                        <span className="flex-left">
                                             <span
-                                                className={` app-summary__status-name f-${(
+                                                className={`mr-4 app-summary__status-name f-${(
                                                     node?.status ||
                                                     node?.health?.status ||
                                                     ''
@@ -235,7 +235,7 @@ function NodeComponent({
                                             >
                                                 {getNodeStatus(node)}
                                             </span>
-                                            {getNodeMessage(node)}
+                                            {getNodeMessage(node).length>0 && (<ul className='pl-12 mb-0'><li>{getNodeMessage(node)}</li></ul>)}
                                         </span>
                                     </div>
                                 </div>
