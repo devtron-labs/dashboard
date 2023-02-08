@@ -63,6 +63,10 @@ export interface CDPipelineState {
         postStage: CDStageType & { switch: string };
         strategies: SavedDeploymentStrategy[];
         namespace: string;
+        nameErrorObj:{
+            isValid:boolean;
+            message:string;
+        };
         preStageConfigMapSecretNames: {
             configMaps: string[];
             secrets: string[];
@@ -100,6 +104,10 @@ export interface PipelineConfig {
     postStage: CDStageType & { switch: string };
     strategies: SavedDeploymentStrategy[];
     namespace: string;
+    nameErrorObj:{
+        isValid:boolean;
+        message:string;
+    };
     preStageConfigMapSecretNames: {
         configMaps: string[];
         secrets: string[];

@@ -29,11 +29,13 @@ export function Build({
         setFormData,
         formDataErrorObj,
         setLoadingData,
+        setFormDataErrorObj
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         formDataErrorObj: FormErrorObjectType
         setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
+        setFormDataErrorObj:React.Dispatch<React.SetStateAction<FormErrorObjectType>>        
     } = useContext(ciPipelineContext)
     const validationRules = new ValidationRules()
 
@@ -188,6 +190,9 @@ export function Build({
         const _form = { ...formData }
         _form.name = event.target.value
         setFormData(_form)
+         const _formDataErrorObj={...formDataErrorObj}
+         _formDataErrorObj.name=validationRules.name(_form.name)
+         setFormDataErrorObj(_formDataErrorObj);
     }
 
     const renderPipelineName = () => {

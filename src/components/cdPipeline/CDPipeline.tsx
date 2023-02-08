@@ -96,6 +96,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 name: '',
                 strategies: [],
                 namespace: '',
+                nameErrorObj:{
+                    isValid:true,
+                    message:''
+                },
                 preStage: {
                     config: '',
                     triggerType: TriggerType.Auto,
@@ -494,14 +498,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handlePipelineName = (event) => {
-        let { pipelineConfig } = { ...this.state }
+        let { pipelineConfig,showError } = { ...this.state }
         pipelineConfig.name = event.target.value
-        this.setState({ pipelineConfig })
+        pipelineConfig.nameErrorObj=this.validationRules.name(this.state.pipelineConfig.name)
+        if(!pipelineConfig.nameErrorObj.isValid) showError=true;
+        this.setState({ pipelineConfig,showError })
     }
-
+  
     handleNamespaceChange(event, environment): void {
-        let { pipelineConfig } = { ...this.state }
+        let { pipelineConfig ,showError} = { ...this.state }
         pipelineConfig.namespace = event.target.value
+        
+
         this.setState({ pipelineConfig })
     }
 
@@ -548,7 +556,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     savePipeline() {
-        this.setState({ showError: true, loadingData: true })
+        this.setState({showError:true,loadingData: true })
         let pipeline = {
             appWorkflowId: +this.props.match.params.workflowId,
             ...this.state.pipelineConfig,
@@ -579,7 +587,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         if (!valid) {
             this.setState({ loadingData: false })
+            if(this.state.pipelineConfig.name===""||!!!this.state.pipelineConfig.namespace)
+            {
             toast.error('Some required fields are missing')
+            }
             return
         }
 
@@ -1101,7 +1112,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <div className="form__row form__row--flex">
                     <div className="w-50 mr-8">
-                        <div className="form__label">Environment</div>
+                        <div className="form__label">Environment*</div>
                         <ReactSelect
                             menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
@@ -1213,7 +1224,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderAdvancedCD() {
-        let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name)
+       // let nameErrorObj = this.validationRules.name(this.state.pipelineConfig.name)
         return (
             <>
                 <div className="form__row">
@@ -1227,10 +1238,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         value={this.state.pipelineConfig.name}
                         onChange={this.handlePipelineName}
                     />
-                    {this.state.showError && !nameErrorObj.isValid ? (
+                    {this.state.showError && !this.state.pipelineConfig.nameErrorObj.isValid ? (
                         <span className="form__error">
                             <img src={error} className="form__icon" />
-                            {nameErrorObj.message}
+                            {this.state.pipelineConfig.nameErrorObj.message}
                         </span>
                     ) : null}
                 </div>

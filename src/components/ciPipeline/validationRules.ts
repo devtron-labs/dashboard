@@ -3,13 +3,11 @@ import { RefVariableType } from './types'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
-        let re = PATTERNS.APP_NAME
-        let regExp = new RegExp(re)
-        let test = regExp.test(value)
-        if (value.length === 0) return { isValid: false, message: 'Please provide pipeline-name' }
-        if (value.length < 2) return { isValid: false, message: 'Atleast 2 characters required' }
+        let regExp = new RegExp(PATTERNS.APP_NAME)
+        if (value.length === 0) return { isValid: false, message: 'This is required' }
+        if (value.length < 2) return { isValid: false, message: 'At least 2 characters required' }
         if (value.length > 50) return { isValid: false, message: 'Max 50 characters allowed' }
-        else if (!test)
+        else if (!regExp.test(value))
             return {
                 isValid: false,
                 message:

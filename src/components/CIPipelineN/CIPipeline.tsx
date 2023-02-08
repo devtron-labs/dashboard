@@ -213,10 +213,6 @@ export default function CIPipeline({
         }
     }, [location.pathname])
 
-    useEffect(() => {
-        validateStage(activeStageName, formData)
-    }, [formData.name])
-
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
@@ -322,7 +318,6 @@ export default function CIPipeline({
             )
         }
     }
-  console.log(formData.materials)
     const checkUniqueness = (): boolean => {
         const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
         const stageNameList = list.map((taskData) => {
@@ -382,15 +377,10 @@ export default function CIPipeline({
             !formDataErrorObj.preBuildStage.isValid ||
             !formDataErrorObj.postBuildStage.isValid
         ) {
-            let branchNamePresent = true
-
             setLoadingData(false)
-
-            branchNamePresent = formData.materials?.reduce((branchNamePresent, obj) => {
-                branchNamePresent = branchNamePresent && !!obj?.value
-                return branchNamePresent
-            }, !!formData.materials.length)
-            if (formData.name === '' || !branchNamePresent) {
+            const checkBranch=(obj)=>obj.value===""
+            let branchNameNotPresent = formData.materials.some(checkBranch)
+            if (formData.name === '' || branchNameNotPresent) {
                 toast.error('Some required fields are missing')
             }
 
