@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ApiResourceGroupType, SidebarType } from '../Types'
+import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, SidebarType } from '../Types'
 import { AggregationKeys } from '../../app/types'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
@@ -59,20 +59,11 @@ export function Sidebar({
     }
 
     const renderChild = (childData: ApiResourceGroupType, useGroupName?: boolean) => {
-        const _kindLowerCased = childData.gvk.Kind.toLowerCase()
-        if (
-            _kindLowerCased === 'node' ||
-            _kindLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-            _kindLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-        ) {
-            return null
-        }
-
         const nodeName = useGroupName && childData.gvk.Group ? childData.gvk.Group : childData.gvk.Kind
         const isSelected =
             useGroupName && childData.gvk.Group
                 ? selectedResource?.gvk?.Group === childData.gvk.Group
-                : nodeType === _kindLowerCased
+                : nodeType === childData.gvk.Kind.toLowerCase()
         return (
             <div
                 key={nodeName}
@@ -91,6 +82,40 @@ export function Sidebar({
                 {nodeName}
             </div>
         )
+    }
+
+    const renderK8sResourceChildren = (key: string, value: K8SObjectChildMapType, k8sObject: K8SObjectMapType) => {
+        const keyLowerCased = key.toLowerCase()
+        if (
+            keyLowerCased === 'node' ||
+            keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+            keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+        ) {
+            return null
+        } else if (value.data.length === 1) {
+            return renderChild(value.data[0])
+        } else {
+            return (
+                <>
+                    <div
+                        className="flex pointer"
+                        data-group-name={`${k8sObject.name}/${key}`}
+                        onClick={handleGroupHeadingClick}
+                    >
+                        <DropDown
+                            className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
+                            style={{
+                                ['--rotateBy' as any]: value.isExpanded ? '0deg' : '-90deg',
+                            }}
+                        />
+                        <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>
+                            {key}
+                        </span>
+                    </div>
+                    {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+                </>
+            )
+        }
     }
 
     return !k8SObjectMap?.size ? (
@@ -113,39 +138,9 @@ export function Sidebar({
                         </div>
                         {k8sObject.isExpanded && (
                             <div className="pl-20">
-                                {[...k8sObject.child.entries()].map(([key, value]) => {
-                                    if (value.data.length === 1) {
-                                        return renderChild(value.data[0])
-                                    } else {
-                                        return (
-                                            <>
-                                                <div
-                                                    className="flex pointer"
-                                                    data-group-name={`${k8sObject.name}/${key}`}
-                                                    onClick={handleGroupHeadingClick}
-                                                >
-                                                    <DropDown
-                                                        className={`${
-                                                            value.isExpanded ? 'fcn-9' : 'fcn-5'
-                                                        }  rotate icon-dim-24 pointer`}
-                                                        style={{
-                                                            ['--rotateBy' as any]: value.isExpanded ? '0deg' : '-90deg',
-                                                        }}
-                                                    />
-                                                    <span
-                                                        className={`fs-14 ${
-                                                            value.isExpanded ? 'fw-6' : 'fw-4'
-                                                        } pointer w-100 pt-6 pb-6`}
-                                                    >
-                                                        {key}
-                                                    </span>
-                                                </div>
-                                                {value.isExpanded &&
-                                                    value.data.map((_child) => renderChild(_child, true))}
-                                            </>
-                                        )
-                                    }
-                                })}
+                                {[...k8sObject.child.entries()].map(([key, value]) =>
+                                    renderK8sResourceChildren(key, value, k8sObject),
+                                )}
                             </div>
                         )}
                     </Fragment>

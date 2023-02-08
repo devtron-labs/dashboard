@@ -1,61 +1,52 @@
-import React, { useMemo } from 'react';
-import Creatable from 'react-select/creatable';
-import { ClearIndicator, MultiValueRemove, MultiValueChipContainer } from '../../common';
+import React from 'react'
+import PropagateTagInfo from '../create/CustomTagSelector/PropagateTagInfo'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import TagDetails from '../create/CustomTagSelector/TagDetails'
+import { TagLabelSelectType } from '../types'
+import { DEFAULT_TAG_DATA } from '../config'
 
-export default function TagLabelSelect({ validateTags, labelTags, onInputChange, onKeyDown, onTagsChange, onCreatableBlur }) {
-    const creatableOptions = useMemo(() => ([]), [])
-    const CreatableChipStyle = {
-        multiValue: (base, state) => {
-            return ({
-                ...base,
-                border: validateTags(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
-                borderRadius: `4px`,
-                background: validateTags(state.data.value) ? 'white' : 'var(--R100)',
-                minHeight: '28px',
-                margin: '8px 8px 4px 0px',
-                paddingLeft: '4px',
-                paddingRight: '2px',
-                fontSize: '12px',
-            })
-        },
-        control: (base, state) => ({
-            ...base,
-            border: state.isFocused ? '1px solid #06c' : '1px solid var(--N200)', // default border color
-            boxShadow: 'none', // no box-shadow
-            minHeight: '72px',
-            alignItems: "end",
-        }),
+export default function TagLabelSelect({ isCreateApp, labelTags, setLabelTags, tabIndex = 0 }: TagLabelSelectType) {
+    const setTagData = (index, tagValue): void => {
+        const _tags = [...labelTags]
+        _tags[index] = tagValue
+        setLabelTags(_tags)
+    }
+
+    const addNewTag = (): void => {
+        const _tags = [...labelTags]
+        _tags.splice(0, 0, DEFAULT_TAG_DATA)
+        setLabelTags(_tags)
+    }
+
+    const removeTag = (index: number): void => {
+        const _tags = [...labelTags]
+        _tags.splice(index, 1)
+        setLabelTags(_tags)
     }
 
     return (
         <div>
-            <span className="form__label cn-6"> Tags (only key:value allowed)</span>
-            <Creatable
-                className={"create-app_tags"}
-                options={creatableOptions}
-                components={{
-                    DropdownIndicator: () => null,
-                    ClearIndicator,
-                    MultiValueRemove,
-                    MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateTags} />,
-                    IndicatorSeparator: () => null,
-                    Menu: () => null,
-                }}
-                styles={CreatableChipStyle}
-                autoFocus
-                isMulti
-                isClearable
-                inputValue={labelTags.inputTagValue}
-                placeholder="Add a tag..."
-                isValidNewOption={() => false}
-                backspaceRemovesValue
-                value={labelTags.tags}
-                onBlur={onCreatableBlur}
-                onInputChange={onInputChange}
-                onKeyDown={onKeyDown}
-                onChange={onTagsChange}
-            />
+            <div className="flexbox dc__content-space mb-8">
+                <span>Tags</span>
+                <PropagateTagInfo isCreateApp={isCreateApp} />
+            </div>
+            <div>
+                <div className="dc_width-max-content cb-5 fw-6 fs-13 flexbox mr-20 mb-8 cursor" onClick={addNewTag}>
+                    <Add className="icon-dim-20 fcb-5" /> Add tag
+                </div>
+                <div className="mb-8">
+                    {labelTags?.map((tagData, index) => (
+                        <TagDetails
+                            key={`tag-${index}`}
+                            index={index}
+                            tagData={tagData}
+                            setTagData={setTagData}
+                            removeTag={removeTag}
+                            tabIndex={tabIndex + (index + 2)}
+                        />
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }
-
