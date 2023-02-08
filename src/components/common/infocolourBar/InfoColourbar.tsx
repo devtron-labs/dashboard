@@ -79,7 +79,7 @@ function InfoColourBar({
                         <Icon className={`icon-dim-${iconSize ?? '20'} ${iconClass || ''} mr-8`} />
                     </div>
                     <div className={`info-bar-message-wrapper ${linkClass || ''}`}>
-                        <span className={linkText && redirectLink ? 'mr-5' : ''}>{message}</span>
+                    <span className={linkText && redirectLink ? 'mr-5' : ''}>{message}</span>
                         {renderLink()}
                     </div>
                 </div>
