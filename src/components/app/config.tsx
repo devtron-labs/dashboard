@@ -74,3 +74,5 @@ export const APP_STATUS = {
     Missing: 'Missing',
     Progressing : 'Progressing',
 }
+
+export const DEFAULT_TAG_DATA = { key: '', value: '', propagate: false, isInvalidKey: false, isInvalidValue: false }

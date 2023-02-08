@@ -48,3 +48,13 @@ export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR = "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."
+
+export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
+    title: 'No users Added',
+    subTitle: 'Add users and assign group or direct permissions',
+    notConfigured: 'SSO Login not configured:',
+    infoText:
+        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
+    linkText: 'Go to SSO login services',
+    redirectLink: '/global-config/login-service',
+}
