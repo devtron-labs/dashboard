@@ -74,7 +74,7 @@ export default function Docker({ ...props }) {
     useEffect(() => {
         _getInit()
     }, [])
-    if(props.isSuperAdmin){
+    if(!props.isSuperAdmin){
         return <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenNotAuthorized
                     subtitle="Information on this page is available only to superadmin users."
