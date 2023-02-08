@@ -47,8 +47,8 @@
     "scripts": {
         "lint": "eslint src/**/*.tsx",
         "lint-fix": "eslint --fix src/**/*.tsx",
-        "start": "react-app-rewired --openssl-legacy-provider start",
-        "build": "react-app-rewired --openssl-legacy-provider build",
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
         "test": "react-app-rewired test --env=jest-environment-jsdom-sixteen",
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
