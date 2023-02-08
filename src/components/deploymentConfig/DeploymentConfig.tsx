@@ -314,7 +314,7 @@ export default function DeploymentConfig({
                 onSubmit={handleSubmit}
             >
                 <DeploymentTemplateOptionsTab
-                    isComparisonAvailable={environments.length > 0}
+                    isComparisonAvailable={true}
                     openComparison={openComparison}
                     handleComparisonClick={handleComparisonClick}
                     chartConfigLoading={chartConfigLoading}
