@@ -240,7 +240,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 ) : (
                     <div
                         className="dc__overflow-scroll"
-                        style={{ height: `calc(${showTerminalModal ? '50vh' : '100vh'} - 125px)` }}
+                        style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
                     >
                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>

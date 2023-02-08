@@ -687,7 +687,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
+                            className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
                                 column.value === 'status'
                                     ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
                                     : 'w-100-px'
