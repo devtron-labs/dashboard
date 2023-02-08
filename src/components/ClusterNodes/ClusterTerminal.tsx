@@ -76,6 +76,7 @@ export default function ClusterTerminal({
     const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+    const [stopShellCall, setStopShellCall] = useState<boolean>(true)
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage.value,
@@ -157,7 +158,7 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         try {
-            if (update) {
+            if (update && stopShellCall) {
                 socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
@@ -177,6 +178,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
+        setStopShellCall(true)
     }, [selectedTerminalType.value])
 
     // Disconnect terminal on unmount of the component
@@ -196,6 +198,7 @@ export default function ClusterTerminal({
             setImage(imageList[0])
             setSelectedNodeName(clusterNodeList[0])
             setSelectedtTerminalType(shellTypes[1])
+            setStopShellCall(false)
         }
     }
 
@@ -617,6 +620,7 @@ export default function ClusterTerminal({
                                     placeholder="Select Shell"
                                     options={clusterShellTypes}
                                     defaultValue={selectedTerminalType}
+                                    value={selectedTerminalType}
                                     onChange={onChangeTerminalType}
                                     styles={clusterSelectStyle}
                                     components={{
