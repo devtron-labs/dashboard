@@ -3,7 +3,7 @@ import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
-import { toast } from 'react-toastify'
+import { Icons, toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
 import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
 import { Progressing, showError , getCookie} from '../common'
@@ -12,7 +12,6 @@ import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
 import { dashboardAccessed } from '../../services/service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { ReactComponent as InfoIcon } from '../v2/assets/icons/ic-errorInfo.svg'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -150,10 +149,11 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                <InfoColourBar
-                        classname="error_bar dc__empty-title cn-9 lh-20 pt-8 pr-12"
-                        Icon={InfoIcon}
-                        message={"User does not exits"}
+            <InfoColourBar
+                    classname={"warn cn-9 lh-20 dc__cd-trigger-status pt-80"}
+                    Icon={Icons.error} 
+                    message={"User Does not exits"}
+                    iconClass="warning-icon"
                     />
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
