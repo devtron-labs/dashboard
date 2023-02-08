@@ -253,7 +253,6 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
@@ -541,10 +540,7 @@ const UserGroupList: React.FC<{
         return <ErrorScreenNotAuthorized subtitle="" />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-
-       
-    }
-     else if (!isSSOConfigured) {
+    } else if (!isSSOConfigured) {
         return <SSONotConfiguredState />
     } else {
         const filteredAndSorted = result.filter(
@@ -579,7 +575,7 @@ const UserGroupList: React.FC<{
                         )}
                     </div>
                 )}
-                
+
                 {!(filteredAndSorted.length === 0 && result.length > 0) && (
                     <AddUser
                         cancelCallback={cancelCallback}
