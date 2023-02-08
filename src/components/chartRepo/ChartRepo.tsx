@@ -35,7 +35,7 @@ export default function ChartRepo(isSuperAdmin) {
             setFetching(false);
         })
     }
-    if(isSuperAdmin){
+    if(!isSuperAdmin){
         return <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenNotAuthorized
                     subtitle="Information on this page is available only to superadmin users."
