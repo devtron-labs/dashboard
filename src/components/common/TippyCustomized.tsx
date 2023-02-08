@@ -137,7 +137,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
                             href={documentationLink}
                             target="_blank"
                             rel="noreferrer noopener"
-                            className="cb-5"
+                            className="fs-13 cb-5"
                             onClick={closeTippy}
                         >
                             {documentationLinkText || 'Learn more'}
