@@ -13,7 +13,7 @@ import { AggregationKeys, OptionType } from '../../app/types'
 import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -898,10 +898,12 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-    const availableArrayMap = mapByKey(availableArray, matchKey)
-    const actualSelectedArray = selectedArray.filter((item) => availableArrayMap.has(item[matchKey]))
-    const selectedArrayMap = mapByKey(actualSelectedArray, matchKey)
+    const selectedArrayMap = mapByKey(selectedArray, matchKey)
+
+    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
+
     const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
+
     return [
         ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
         ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
@@ -1024,6 +1026,18 @@ export const stopPropagation = (event): void => {
     event.stopPropagation()
 }
 
+export const preventBodyScroll = (lock: boolean): void => {
+    if (lock) {
+        document.body.style.overflowY = 'hidden'
+        document.body.style.height = '100vh'
+        document.documentElement.style.overflow = 'initial'
+    } else {
+        document.body.style.overflowY = null
+        document.body.style.height = null
+        document.documentElement.style.overflow = null
+    }
+}
+
 // Creates object of arrays containing items grouped by item value of provided key
 export const createGroupedItemsByKey = (arr: any[], key: string) => {
     return arr.reduce((prevObj, currentObj) => {
@@ -1049,12 +1063,23 @@ export const filterImageList = (imageList: ClusterImageList[], serverVersion: st
     return nodeImageList?.imageList || []
 }
 
-export const convertToOptionsList = (arr: any[], customLabel?: string, customValue?: string): OptionType[] => {
+export const convertToOptionsList = (
+    arr: any[],
+    customLabel?: string,
+    customValue?: string,
+    customFieldKey?: string,
+): OptionType[] => {
     return arr.map((ele) => {
-        return {
+        const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
         }
+
+        if (customFieldKey) {
+            _option[customFieldKey] = ele[customFieldKey] ?? ''
+        }
+
+        return _option
     })
 }
 
@@ -1133,4 +1158,53 @@ export const processK8SObjects = (
         _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
+}
+
+export function createClusterEnvGroup<T>(list: T[], propKey: string): { label: string; options: T[] }[] {
+    const objList: Record<string, T[]> = list.reduce((acc, obj) => {
+        const key = obj[propKey]
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push(obj)
+        return acc
+    }, {})
+
+    return Object.entries(objList).map(([key, value]) => ({
+        label: key,
+        options: value,
+    }))
+}
+
+export const k8sStyledAgeToSeconds = (duration: string): number => {
+    let totalTimeInSec: number = 0
+    if (!duration) {
+        return totalTimeInSec
+    }
+    //Parses time(format:- ex. 4h20m) in second
+    const matchesNumber = duration.match(/\d+/g)
+    const matchesChar = duration.match(/[dhms]/g)
+    for (let i = 0; i < matchesNumber.length; i++) {
+        let _unit = matchesChar[i]
+        let _unitVal = +matchesNumber[i]
+        switch (_unit) {
+            case 'd':
+                totalTimeInSec += _unitVal * 24 * 60 * 60
+                break
+            case 'h':
+                totalTimeInSec += _unitVal * 60 * 60
+                break
+            case 'm':
+                totalTimeInSec += _unitVal * 60
+                break
+            default:
+                totalTimeInSec += _unitVal
+                break
+        }
+    }
+    return totalTimeInSec
+}
+
+export const eventAgeComparator = <T,>(key: string): any => {
+    return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }

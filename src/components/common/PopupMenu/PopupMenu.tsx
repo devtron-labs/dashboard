@@ -12,7 +12,7 @@ function usePopupContext() {
     return context
 }
 
-function PopupMenu({ children = null, onToggleCallback = null, autoClose = false}) {
+function PopupMenu({ children = null, onToggleCallback = null, autoClose = false, autoPosition = false}) {
     const [popupPosition, setPopupPosition]=React.useState(null)
     const [opacity, setOpacity] = React.useState(0)
     const observer = React.useRef<IntersectionObserver | null>(null);
@@ -36,6 +36,13 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
             }
         }
     }, [popupPosition])
+
+    useEffect(() => {
+        if (buttonRef?.current && autoPosition && popupPosition) {
+            const { height, x, y } = buttonRef.current.getBoundingClientRect()
+            setPopupPosition({ left: x, top: y + height })
+        }
+    }, [buttonRef?.current?.clientHeight])
 
     let options = {
         root: null,
@@ -70,7 +77,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
     const handleOpen = (e)=>{
         e.stopPropagation();
         setOpacity(0)
-        const { bottom,height,left,right,top,width,x,y } = e.currentTarget.getBoundingClientRect()
+        const { height, x, y } = e.currentTarget.getBoundingClientRect()
         setPopupPosition({left: x, top: y + height})
     }
 
@@ -118,9 +125,9 @@ function Button({ children = null, disabled = false, rootClassName = "", tabInde
     </button>
 }
 
-function Body({children=null, rootClassName="", style={}, autoWidth=false}){
+function Body({children=null, rootClassName="", style={}, autoWidth=false, preventWheelDisable = false}){
     const {handleClose, popupPosition, opacity, callbackRef, buttonWidth} = usePopupContext()
-    return popupPosition ? <Modal callbackRef={callbackRef} onClick={handleClose} rootClassName={`${rootClassName} popup-body ${!children ? 'popup-body--empty' : ''} ${Object.keys(popupPosition).join(" ")}`}  style={{...popupPosition, ...style,...(autoWidth ? {width: buttonWidth.current} : {}), opacity:opacity}}>
+    return popupPosition ? <Modal callbackRef={callbackRef} onClick={handleClose} rootClassName={`${rootClassName} popup-body ${!children ? 'popup-body--empty' : ''} ${Object.keys(popupPosition).join(" ")}`}  style={{...popupPosition, ...style,...(autoWidth ? {width: buttonWidth.current} : {}), opacity:opacity}} preventWheelDisable={preventWheelDisable}>
         {children}
     </Modal> : null
 }

@@ -4,15 +4,16 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import emptyCustomChart from '../../../assets/img/terminal@2x.png'
-import '../ResourceBrowser.scss'
-import { OptionType } from '../../app/types'
-import { ClusterSelectionType } from '../Types'
+import { ClusterOptionType, ClusterSelectionType } from '../Types'
 import { CLUSTER_SELECTION_MESSAGING } from '../Constants'
+import ReactGA from 'react-ga4'
+import Tippy from '@tippyjs/react'
+import { clusterUnreachableTippyContent } from './ResourceList.component'
 
 export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSelectionType) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [filteredClusterList, setFilteredClusterList] = useState<OptionType[]>(clusterOptions)
+    const [filteredClusterList, setFilteredClusterList] = useState<ClusterOptionType[]>(clusterOptions)
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = clusterOptions.filter((resource) => resource.label.indexOf(_searchText) >= 0)
@@ -43,6 +44,10 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
     const selectCluster = (e): void => {
         const data = e.currentTarget.dataset
         onChangeCluster({ label: data.label, value: data.value }, true)
+        ReactGA.event({
+            category: 'Resource Browser',
+            action: 'Resource Browser - Cluster Selected',
+        })
     }
 
     const renderSearch = (): JSX.Element => {
@@ -84,6 +89,7 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
             <>
                 {filteredClusterList?.map((cluster, index) => (
                     <div
+                        key={cluster.label}
                         className={`flex left pt-12 pr-16 pb-12 pl-16 pointer dc__hover-n50 ${
                             index === filteredClusterList.length - 1 ? 'dc__bottom-radius-4' : ' dc__border-bottom-n1'
                         }`}
@@ -93,6 +99,19 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                     >
                         <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
                         <div className="fw-4 fs-13 cb-5">{cluster.label}</div>
+                        {cluster.errorInConnecting && (
+                            <Tippy
+                                className="default-tt w-200"
+                                placement="top"
+                                arrow={false}
+                                content={clusterUnreachableTippyContent(cluster.errorInConnecting)}
+                            >
+                                <div className="flex left ml-auto">
+                                    <Error className="icon-dim-16 mr-4" />
+                                    <span className="fs-13 fw-4 lh-20 cr-5">Unreachable</span>
+                                </div>
+                            </Tippy>
+                        )}
                     </div>
                 ))}
             </>

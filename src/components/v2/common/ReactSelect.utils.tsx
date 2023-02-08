@@ -2,7 +2,7 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop } from '../../common'
+import { noop, stopPropagation } from '../../common'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -98,7 +98,7 @@ export function Option(props) {
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
-            <div>
+            <div onClick={stopPropagation}>
                 <components.Option {...props} />
             </div>
         )
@@ -194,5 +194,33 @@ export const menuComponent = (props,text) => {
             </div>
             {props.children}
         </components.MenuList>
+    )
+}
+
+export const noMatchingPlatformOptions = (): string => {
+    return 'No matching options'
+}
+
+export function GroupHeading(props) {
+    if (!props.data.label) return null
+    return (
+        <components.GroupHeading {...props}>
+            <div className="flex dc__uppercase flex-justify h-100">
+                {`Cluster : ${props.data.label}`}
+            </div>
+        </components.GroupHeading>
+    )
+}
+
+export function EnvFormatOptions(props) {
+    const { data, environmentfieldName } = props
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            <div className="flex left column">
+            <span className="w-100 dc__ellipsis-right">{data[environmentfieldName]}</span>
+            {data.clusterName && data.namespace && <small className="cn-6">{data.clusterName}/{data.namespace}</small>}
+        </div>
+        </components.Option>
     )
 }

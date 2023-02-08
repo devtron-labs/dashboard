@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
@@ -8,9 +8,16 @@ import {
     Progressing,
     showError,
     sortObjectArrayAlphabetically,
+    eventAgeComparator,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import { ApiResourceGroupType, K8SObjectType, ResourceDetailType, ResourceListPayloadType } from '../Types'
+import {
+    ApiResourceGroupType,
+    ClusterOptionType,
+    K8SObjectType,
+    ResourceDetailType,
+    ResourceListPayloadType,
+} from '../Types'
 import {
     getClusterList,
     getResourceGroupList,
@@ -18,20 +25,34 @@ import {
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, K8S_RESOURCE_LIST, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
-import { URLS } from '../../../config'
+import {
+    ALL_NAMESPACE_OPTION,
+    ERROR_SCREEN_LEARN_MORE,
+    ERROR_SCREEN_SUBTITLE,
+    EVENT_LIST,
+    K8S_RESOURCE_LIST,
+    MARK_AS_STALE_DATA_CUT_OFF_MINS,
+    ORDERED_AGGREGATORS,
+    SIDEBAR_KEYS,
+    STALE_DATA_WARNING_TEXT,
+} from '../Constants'
+import { DOCUMENTATION, LAST_SEEN, URLS } from '../../../config'
 import { Sidebar } from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { CreateResource } from './CreateResource'
 import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
-import ResourceListEmptyState from './ResourceListEmptyState'
 import Tippy from '@tippyjs/react'
+import moment from 'moment'
+import ConnectingToClusterState from './ConnectingToClusterState'
+import { ServerErrors } from '../../../modals/commonTypes'
+import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -54,9 +75,9 @@ export default function ResourceList() {
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>()
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>()
-    const [selectedCluster, setSelectedCluster] = useState<OptionType>(null)
+    const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>([])
+    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>([])
+    const [selectedCluster, setSelectedCluster] = useState<ClusterOptionType>(null)
     const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
@@ -66,7 +87,17 @@ export default function ResourceList() {
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
-    const abortController = new AbortController()
+    const [errorMsg, setErrorMsg] = useState('')
+    const [showSelectClusterState, setShowSelectClusterState] = useState(false)
+    const isStaleDataRef = useRef<boolean>(false)
+    const resourceListAbortController = new AbortController()
+    const sideDataAbortController = useRef<{
+        prev: AbortController
+        new: AbortController
+    }>({
+        prev: null,
+        new: new AbortController(),
+    })
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -75,70 +106,107 @@ export default function ResourceList() {
 
         getClusterData()
 
+        // Initialize tabs on load
+        AppDetailsStore.initAppDetailsTabs(
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
+            false,
+            false,
+            true,
+            nodeType,
+        )
         return (): void => {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
+            resourceListAbortController.abort()
+            abortReqAndUpdateSideDataController()
         }
     }, [])
+
+    // Mark tab active on path change
+    useEffect(() => {
+        if (selectedResource && !node) {
+            AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        }
+
+        if (location.pathname === URLS.RESOURCE_BROWSER) {
+            abortReqAndUpdateSideDataController()
+            setSelectedCluster(null)
+            setLoader(false)
+        } else if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
+            const _clusterOption = clusterOptions.find((_option) => _option.value == clusterId)
+            if (_clusterOption) {
+                onChangeCluster(
+                    clusterOptions.find((_option) => _option.value == clusterId),
+                    false,
+                    true,
+                )
+            }
+        }
+    }, [location.pathname])
+
+    // Update K8sResources tab url on cluster/namespace/kind changes
+    useEffect(() => {
+        if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
+            AppDetailsStore.updateK8sResourcesTabUrl(
+                `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                    selectedNamespace.value
+                }/${selectedResource.gvk.Kind.toLowerCase()}`,
+            )
+        }
+    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
 
     useEffect(() => {
         if (clusterId && selectedResource) {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
+
             return (): void => {
-                abortController.abort()
+                resourceListAbortController.abort()
             }
         }
     }, [selectedResource])
 
     useEffect(() => {
-        if (clusterId && selectedResource?.namespaced) {
-            getResourceListData()
+        if (!loader && clusterId && selectedResource?.namespaced) {
+            getResourceListData(true)
+
+            return (): void => {
+                resourceListAbortController.abort()
+            }
         }
     }, [namespace])
 
     useEffect(() => {
-        if (selectedCluster?.value && selectedNamespace?.value) {
-            const _clusterId = selectedCluster.value
-            const _namespace = selectedNamespace.value
-
-            if (!nodeType || !selectedResource) {
-                AppDetailsStore.initAppDetailsTabs(
-                    `${URLS.RESOURCE_BROWSER}/${_clusterId}/${_namespace}`,
-                    false,
-                    false,
-                    true,
-                    nodeType,
-                )
-            } else if (selectedResource?.gvk?.Kind) {
-                AppDetailsStore.updateK8sResourcesTabUrl(
-                    `${URLS.RESOURCE_BROWSER}/${_clusterId}/${_namespace}/${selectedResource.gvk.Kind.toLowerCase()}`,
-                )
-            }
-        }
-    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
-
-    useEffect(() => {
-        if (selectedResource && !node) {
-            AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
-        }
-        if (location.pathname === URLS.RESOURCE_BROWSER) {
-            setSelectedCluster(null)
-        }
-    }, [location.pathname])
-
-    useEffect(() => {
         const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Synced ' + handleUTCTime(_lastDataSyncTime, true))
+        const _staleDataCheckTime = moment()
+
+        isStaleDataRef.current = false
+        setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
-            setLastDataSyncTimeString('Synced ' + handleUTCTime(_lastDataSyncTime, true))
+            checkIfDataIsStale(_staleDataCheckTime)
+            setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         }, 1000)
+
         return () => {
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    const checkIfDataIsStale = (_staleDataCheckTime: moment.Moment) => {
+        /**
+         * Stale data warning to be shown after 15 min. However, kept the cut off mins at 13 instead of 15 to,
+         * 1. skip 1st min as render for 1st min has already been started/done
+         * 2. skip maintaining unnecessary state just for re-rendering
+         */
+        if (
+            !isStaleDataRef.current &&
+            moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
+        ) {
+            isStaleDataRef.current = true
+        }
+    }
 
     const getClusterData = async () => {
         try {
@@ -149,8 +217,9 @@ export default function ResourceList() {
                     sortObjectArrayAlphabetically(result, 'cluster_name'),
                     'cluster_name',
                     'id',
+                    'errorInConnecting',
                 )
-                setClusterOptions(_clusterOptions)
+                setClusterOptions(_clusterOptions as ClusterOptionType[])
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
@@ -188,7 +257,8 @@ export default function ResourceList() {
         if (!_clusterId) return
         try {
             setLoader(true)
-            const { result } = await getResourceGroupList(_clusterId)
+            sideDataAbortController.current.new = new AbortController()
+            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
@@ -236,21 +306,30 @@ export default function ResourceList() {
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected)
                 setShowErrorState(false)
+                setErrorMsg('')
                 setErrorStatusCode(0)
             }
-        } catch (err) {
-            showError(err)
-            if (err['code'] === 403) {
-                setErrorStatusCode(err['code'])
-            } else if (err['code'] === 404) {
-                setSelectedCluster(null)
-                replace({
-                    pathname: URLS.RESOURCE_BROWSER,
-                })
-            }
-            setShowErrorState(true)
-        } finally {
             setLoader(false)
+        } catch (err) {
+            if (err['code'] > 0) {
+                if (err['code'] === 403) {
+                    setErrorStatusCode(err['code'])
+                } else if (err['code'] === 404) {
+                    setSelectedCluster(null)
+                    replace({
+                        pathname: URLS.RESOURCE_BROWSER,
+                    })
+                }
+                setShowErrorState(true)
+                setErrorMsg(
+                    (err instanceof ServerErrors && Array.isArray(err.errors)
+                        ? err.errors[0]?.userMessage
+                        : err['message']) ?? SOME_ERROR_MSG,
+                )
+                setLoader(false)
+            } else if (sideDataAbortController.current.prev?.signal.aborted) {
+                sideDataAbortController.current.prev = null
+            }
         }
     }
 
@@ -265,10 +344,29 @@ export default function ResourceList() {
                 otherEvents.push(iterator)
             }
         }
-        return [...warningEvents, ...otherEvents]
+        return [
+            ...warningEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
+            ...otherEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
+        ]
     }
 
-    const getResourceListData = async (): Promise<void> => {
+    const handleFilterChanges = (_searchText: string, _resourceList: ResourceDetailType): void => {
+        const lowerCaseSearchText = _searchText.toLowerCase()
+        const _filteredData = _resourceList.data.filter(
+            (resource) =>
+                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
+                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
+        )
+        setFilteredResourceList(_filteredData)
+    }
+
+    const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
         try {
             setResourceListLoader(true)
             setResourceList(null)
@@ -286,18 +384,23 @@ export default function ResourceList() {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace =
                     namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
-            const { result } = await getResourceList(resourceListPayload, abortController.signal)
+            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
             setLastDataSync(!lastDataSync)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
             }
             setResourceList(result)
-            setFilteredResourceList(result.data)
+
+            if (retainSearched) {
+                handleFilterChanges(searchText, result)
+            } else {
+                setFilteredResourceList(result.data)
+            }
             setNoResults(result.data.length === 0)
             setResourceListLoader(false)
             setShowErrorState(false)
         } catch (err) {
-            if (!abortController.signal.aborted) {
+            if (!resourceListAbortController.signal.aborted) {
                 showError(err)
                 setResourceListLoader(false)
                 setShowErrorState(true)
@@ -315,7 +418,14 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         if (selected.value === selectedCluster?.value) {
             return
+        } else if (showSelectClusterState) {
+            setShowSelectClusterState(false)
         }
+
+        if (sideDataAbortController.current.prev?.signal.aborted) {
+            sideDataAbortController.current.prev = null
+        }
+        abortReqAndUpdateSideDataController()
         setSelectedCluster(selected)
         getSidebarData(selected.value)
         getNamespaceList(selected.value)
@@ -383,19 +493,6 @@ export default function ResourceList() {
         setShowCreateResourceModal(false)
     }
 
-    if (loader || clusterLoader) {
-        return <Progressing pageLoader />
-    } else if (errorStatusCode > 0) {
-        return (
-            <div className="error-screen-wrapper flex column h-100" style={{ height: 'calc(100vh - 92px)' }}>
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                    subtitle="Information on this page is available only to superadmin users."
-                />
-            </div>
-        )
-    }
-
     const getEventObjectTypeGVK = () => {
         const resourceGroup = getAggregator(nodeType as NodeType)
         const groupIndex = k8SObjectListIndexMap.get(resourceGroup)
@@ -430,28 +527,69 @@ export default function ResourceList() {
         } as SelectedResourceType
     }
 
-    const goToClusterList = (): void => {
-        replace({
-            pathname: URLS.RESOURCE_BROWSER,
-        })
+    const clearSearch = (): void => {
+        if (searchApplied) {
+            handleFilterChanges('', resourceList)
+            setSearchApplied(false)
+        }
+        setSearchText('')
     }
 
-    const renderError = (): JSX.Element => {
-        return (
-            <div className="bcn-0" style={{ height: 'calc(100vh - 92px)' }}>
-                <ResourceListEmptyState
-                    title="Some error occured"
-                    subTitle={`Kubernetes resources for the cluster ‘${selectedCluster.label}’ could not be fetched`}
-                    actionButtonText="Change cluster"
-                    actionHandler={goToClusterList}
-                />
-            </div>
-        )
+    const handleRetry = () => {
+        abortReqAndUpdateSideDataController(true)
+        getSidebarData(clusterId)
+    }
+
+    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
+        if (emptyPrev) {
+            sideDataAbortController.current.prev = null
+        } else {
+            sideDataAbortController.current.new.abort()
+            sideDataAbortController.current.prev = sideDataAbortController.current.new
+        }
+        setErrorMsg('')
     }
 
     const renderResourceBrowser = (): JSX.Element => {
-        return showErrorState ? (
-            renderError()
+        if (node) {
+            return (
+                <div className="resource-details-container">
+                    <NodeDetailComponent
+                        loadingResources={resourceListLoader}
+                        isResourceBrowserView={true}
+                        selectedResource={getSelectedResourceData()}
+                        logSearchTerms={logSearchTerms}
+                        setLogSearchTerms={setLogSearchTerms}
+                    />
+                </div>
+            )
+        }
+
+        return showSelectClusterState || errorMsg || loader ? (
+            <ConnectingToClusterState
+                loader={loader}
+                errorMsg={errorMsg}
+                setErrorMsg={setErrorMsg}
+                handleRetry={handleRetry}
+                sideDataAbortController={sideDataAbortController.current}
+                selectedResource={selectedResource}
+                resourceList={resourceList}
+                clusterOptions={clusterOptions}
+                selectedCluster={selectedCluster}
+                setSelectedCluster={setSelectedCluster}
+                onChangeCluster={onChangeCluster}
+                namespaceOptions={namespaceOptions}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchApplied={searchApplied}
+                setSearchApplied={setSearchApplied}
+                handleFilterChanges={handleFilterChanges}
+                clearSearch={clearSearch}
+                showSelectClusterState={showSelectClusterState}
+                setShowSelectClusterState={setShowSelectClusterState}
+            />
         ) : (
             <div className="resource-browser bcn-0">
                 <Sidebar
@@ -464,7 +602,6 @@ export default function ResourceList() {
                     selectedResource={selectedResource}
                     resourceList={resourceList}
                     filteredResourceList={filteredResourceList}
-                    setFilteredResourceList={setFilteredResourceList}
                     noResults={noResults}
                     clusterOptions={clusterOptions}
                     selectedCluster={selectedCluster}
@@ -479,29 +616,64 @@ export default function ResourceList() {
                     setSearchText={setSearchText}
                     searchApplied={searchApplied}
                     setSearchApplied={setSearchApplied}
+                    handleFilterChanges={handleFilterChanges}
+                    clearSearch={clearSearch}
                 />
             </div>
         )
     }
 
-    return (
-        <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" markAsBeta={true} />
-            {!selectedCluster?.value ? (
-                <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
-            ) : (
-                <div>
-                    <div
-                        className="h-44 flexbox dc__content-space pr-20"
-                        style={{
-                            boxShadow: 'inset 0 -1px 0 0 var(--N200)',
-                        }}
-                    >
-                        <div className="resource-browser-tab flex left pt-10">
-                            <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
-                        </div>
-                        <div className="fs-13 flex pt-12 pb-12">
-                            {!showErrorState && (
+    const unauthorizedInfoText = () => {
+        return (
+            <>
+                {ERROR_SCREEN_SUBTITLE}&nbsp;
+                <a
+                    className="dc__link"
+                    href={DOCUMENTATION.K8S_RESOURCES_PERMISSIONS}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                >
+                    {ERROR_SCREEN_LEARN_MORE}
+                </a>
+            </>
+        )
+    }
+
+    const renderResourceListBody = () => {
+        if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
+            return (
+                <div style={{ height: 'calc(100vh - 48px)' }}>
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (errorStatusCode > 0) {
+            return (
+                <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
+                    <ErrorScreenManager
+                        code={errorStatusCode}
+                        subtitle={unauthorizedInfoText()}
+                        subtitleClass="w-300"
+                    />
+                </div>
+            )
+        } else if (!showSelectClusterState && !selectedCluster?.value) {
+            return <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
+        }
+
+        return (
+            <div>
+                <div
+                    className="h-44 flexbox dc__content-space pr-20"
+                    style={{
+                        boxShadow: 'inset 0 -1px 0 0 var(--N200)',
+                    }}
+                >
+                    <div className="resource-browser-tab flex left pt-10">
+                        <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
+                    </div>
+                    <div className="fs-13 flex pt-12 pb-12">
+                        {!loader && !showErrorState && (
+                            <>
                                 <Tippy
                                     className="default-tt"
                                     arrow={false}
@@ -512,30 +684,44 @@ export default function ResourceList() {
                                         <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                                     </div>
                                 </Tippy>
-                            )}
-                            {!node && lastDataSyncTimeString && (
-                                <div className="ml-12 flex pl-12 dc__border-left">
-                                    <span>{lastDataSyncTimeString}</span>
-                                    <RefreshIcon className="icon-dim-16 scb-5 ml-8 cursor" onClick={refreshData} />
-                                </div>
-                            )}
-                        </div>
+                                {!node && lastDataSyncTimeString && (
+                                    <div className="ml-12 flex pl-12 dc__border-left">
+                                        {resourceListLoader ? (
+                                            <span className="dc__loading-dots">Syncing</span>
+                                        ) : (
+                                            <>
+                                                {isStaleDataRef.current && (
+                                                    <Tippy
+                                                        className="default-tt w-200"
+                                                        placement="bottom"
+                                                        arrow={false}
+                                                        content={STALE_DATA_WARNING_TEXT}
+                                                    >
+                                                        <Warning className="icon-dim-16 mr-4" />
+                                                    </Tippy>
+                                                )}
+                                                <span>{lastDataSyncTimeString}</span>
+                                                <RefreshIcon
+                                                    className="icon-dim-16 scb-5 ml-8 cursor"
+                                                    onClick={refreshData}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
-                    {node ? (
-                        <div className="resource-details-container">
-                            <NodeDetailComponent
-                                loadingResources={resourceListLoader}
-                                isResourceBrowserView={true}
-                                selectedResource={getSelectedResourceData()}
-                                logSearchTerms={logSearchTerms}
-                                setLogSearchTerms={setLogSearchTerms}
-                            />
-                        </div>
-                    ) : (
-                        renderResourceBrowser()
-                    )}
                 </div>
-            )}
+                {renderResourceBrowser()}
+            </div>
+        )
+    }
+
+    return (
+        <div className="resource-browser-container">
+            <PageHeader headerName="Kubernetes Resource Browser" markAsBeta={true} />
+            {renderResourceListBody()}
             {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
         </div>
     )

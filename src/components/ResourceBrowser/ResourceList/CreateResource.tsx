@@ -12,7 +12,6 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import '../ResourceBrowser.scss'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
 export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
@@ -123,12 +122,14 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                         Icon={InfoIcon}
                     />
                     <CodeEditor
+                        theme="vs-dark--dt"
                         value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing
                         height={'calc(100vh - 165px)'}
                         onChange={handleEditorValueChange}
                         loading={loader}
+                        focus={true}
                     />
                 </>
             )

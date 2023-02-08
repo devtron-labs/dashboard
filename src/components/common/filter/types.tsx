@@ -27,6 +27,7 @@ export interface FilterProps {
     errorCallbackFunction?: () => void;
     rootClassName?: string
     position?: 'left' | 'right'
+    isFirstLetterCapitalize?: boolean
 }
 
 export interface FilterState {
