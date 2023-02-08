@@ -253,7 +253,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-        
+
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
@@ -541,18 +541,18 @@ const UserGroupList: React.FC<{
         return <ErrorScreenNotAuthorized subtitle="" />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
+
+       
     }
-
-    const filteredAndSorted = result.filter(
-        (userOrGroup) =>
-            userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-            userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-            userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
-    )
-
-    if (!isSSOConfigured) {
+     else if (!isSSOConfigured) {
         return <SSONotConfiguredState />
     } else {
+        const filteredAndSorted = result.filter(
+            (userOrGroup) =>
+                userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+                userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+                userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
+        )
         return (
             <div id="auth-page__body" className="auth-page__body-users__list-container">
                 {renderHeaders(type)}
@@ -579,6 +579,7 @@ const UserGroupList: React.FC<{
                         )}
                     </div>
                 )}
+                
                 {!(filteredAndSorted.length === 0 && result.length > 0) && (
                     <AddUser
                         cancelCallback={cancelCallback}
