@@ -24,7 +24,7 @@ import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
@@ -250,7 +250,7 @@ function Cluster({
         try {
             const { result } = await getCluster(clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setConfig(result.config)
+            setConfig({ ...result.config, ...(clusterId != 1 ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
@@ -488,7 +488,7 @@ function ClusterForm({
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
             },
-            token: isDefaultCluster()
+            token: isDefaultCluster() || id
                 ? {}
                 : {
                       required: true,
@@ -502,11 +502,26 @@ function ClusterForm({
         onValidation,
     )
 
+    const handleOnFocus = (e): void => {
+        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+            e.target.value = ''
+        }
+    }
+
+    const handleOnBlur = (e): void => {
+        if (id && id != 1 && !e.target.value) {
+            e.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
     const getClusterPayload = () => {
         return {
             id,
             cluster_name: state.cluster_name.value,
-            config: { bearer_token: state.token.value },
+            config: {
+                bearer_token:
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+            },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
@@ -608,7 +623,7 @@ function ClusterForm({
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            render={() => 
+                            render={() =>
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}
@@ -677,6 +692,8 @@ function ClusterForm({
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
+                        onBlur={handleOnBlur}
+                        onFocus={handleOnFocus}
                         placeholder="Enter bearer token"
                     />
                 </div>
