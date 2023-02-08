@@ -24,7 +24,7 @@ export class ValidationRules {
     }
 
     environment = (id: number): { isValid: boolean, message: string } => {
-        if (!id) return { isValid: false, message: 'This is a required field' };
+        if (!id) return { isValid: false, message: 'This is a required ' };
         else return { isValid: true, message: null };
     }
 

@@ -46,46 +46,30 @@ export interface Environment {
     clusterName: string
     isClusterCdActive: boolean;
 }
+export interface commonError {
+    isValid: boolean,
+    message: string,
+}
 export interface CDPipelineState {
     environments: Environment[];
     view: string;
     code: number;
     loadingData: boolean;
     strategies: DeploymentStrategy[];
-    pipelineConfig: {
-        id: number;
-        environmentId: number;
+    pipelineConfig: PipelineConfig & {
         environmentName?: string;
-        ciPipelineId: number;
-        triggerType: string;
-        name: string;
-        preStage: CDStageType & { switch: string };
-        postStage: CDStageType & { switch: string };
-        strategies: SavedDeploymentStrategy[];
-        namespace: string;
-        nameErrorObj:{
-            isValid:boolean;
-            message:string;
-        };
-        preStageConfigMapSecretNames: {
-            configMaps: string[];
-            secrets: string[];
-        };
-        postStageConfigMapSecretNames: {
-            configMaps: string[];
-            secrets: string[];
-        };
-        runPreStageInEnv: boolean;
-        runPostStageInEnv: boolean;
-        isClusterCdActive: boolean;
-        parentPipelineId: number;
-        parentPipelineType: string;
         deploymentAppType: string;
     };
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
     showForceDeleteDialog: boolean;
     showError: boolean;
+    errorForm:{
+        pipelineNameError: commonError,
+        envNameError: commonError,
+        nameSpaceError: commonError,
+       // showErrorCommon:boolean,
+    }
     showPreStage: boolean;
     showDeploymentStage: boolean;
     showPostStage: boolean;
@@ -104,10 +88,6 @@ export interface PipelineConfig {
     postStage: CDStageType & { switch: string };
     strategies: SavedDeploymentStrategy[];
     namespace: string;
-    nameErrorObj:{
-        isValid:boolean;
-        message:string;
-    };
     preStageConfigMapSecretNames: {
         configMaps: string[];
         secrets: string[];
