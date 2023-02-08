@@ -150,9 +150,9 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                         )
                     })}
             <InfoColourBar
-                    classname={"warn cn-9 lh-20 dc__cd-trigger-status pt-80"}
+                    classname={"error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp"}
                     Icon={Icons.error} 
-                    message={"User Does not exits"}
+                    message={"User does not exits"}
                     iconClass="warning-icon"
                     />
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
