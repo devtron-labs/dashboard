@@ -3,12 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, Progressing, showError, sortOptionsByValue, useAsync } from '../../../common'
-import { AppDetails, AppOverviewProps, LabelTagsType } from '../../types'
+import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
+import { AppDetails, AppOverviewProps, TagType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -19,6 +20,8 @@ import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/Ext
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import './AppOverview.scss'
+import AboutTagEditModal from '../AboutTagEditModal'
+import Tippy from '@tippyjs/react'
 import AppStatus from '../../AppStatus'
 import { StatusConstants } from '../../list-new/Constants'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -27,14 +30,10 @@ import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManage
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
-    const [currentLabelTags, setCurrentLabelTags] = useState<LabelTagsType>({
-        tags: [],
-        inputTagValue: '',
-        tagError: '',
-    })
+    const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
-    const [isChangeProjectView, setChangeProjectView] = useState(false)
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+    const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -45,13 +44,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
-            const labelOptionRes = appMetaInfo.labels?.map((_label) => {
-                return {
-                    label: `${_label.key.toString()}:${_label.value.toString()}`,
-                    value: `${_label.key.toString()}:${_label.value.toString()}`,
-                }
-            })
-            setCurrentLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+            setCurrentLabelTags(appMetaInfo.labels)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -89,16 +82,14 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             })
     }
 
-    const toggleChangeProjectModal = () => {
-        setChangeProjectView(!isChangeProjectView)
+    const toggleChangeProjectModal = (e) => {
+        stopPropagation(e)
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
-    const toggleTagsUpdateModal = () => {
-        if (isChangeProjectView) {
-            setChangeProjectView(false)
-        }
-        setShowUpdateAppModal(!showUpdateAppModal)
+    const toggleTagsUpdateModal = (e) => {
+        stopPropagation(e)
+        setShowUpdateTagModal(!showUpdateTagModal)
     }
 
     const renderInfoModal = () => {
@@ -106,13 +97,24 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             <AboutAppInfoModal
                 isLoading={isLoading}
                 appId={appId}
-                isChangeProjectView={isChangeProjectView}
                 appMetaInfo={appMetaInfo}
-                onClose={isChangeProjectView ? toggleChangeProjectModal : toggleTagsUpdateModal}
-                currentLabelTags={currentLabelTags}
+                onClose={toggleChangeProjectModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
+            />
+        )
+    }
+
+    const renderEditTagsModal = () => {
+        return (
+            <AboutTagEditModal
+                isLoading={isLoading}
+                appId={appId}
+                appMetaInfo={appMetaInfo}
+                onClose={toggleTagsUpdateModal}
+                getAppMetaInfoRes={getAppMetaInfoRes}
+                currentLabelTags={currentLabelTags}
             />
         )
     }
@@ -159,11 +161,41 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
-                    {currentLabelTags.tags.length > 0 ? (
-                        currentLabelTags.tags.map((tag) => (
-                            <span className="fs-12 fw-4 lh-16 cn-9 pt-4 pb-4 pl-6 pr-6 bc-n50 dc__border br-4">
-                                {tag.label}
-                            </span>
+                    {currentLabelTags.length > 0 ? (
+                        currentLabelTags.map((tag) => (
+                            <div className="flex">
+                                <div
+                                    className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                                        !tag.value ? ' br-4' : ' dc__left-radius-4'
+                                    }`}
+                                >
+                                    {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.key}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="dc__mxw-400 dc__ellipsis-right">{tag.key}</div>
+                                    </Tippy>
+                                </div>
+                                {tag.value && (
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.value}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right">
+                                            {tag.value}
+                                        </div>
+                                    </Tippy>
+                                )}
+                            </div>
                         ))
                     ) : (
                         <span className="fs-13 fw-4 cn-7">No tags added.</span>
@@ -275,6 +307,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 {renderEnvironmentDeploymentsStatus()}
             </div>
             {showUpdateAppModal && renderInfoModal()}
+            {showUpdateTagModal && renderEditTagsModal()}
         </div>
     )
 }
