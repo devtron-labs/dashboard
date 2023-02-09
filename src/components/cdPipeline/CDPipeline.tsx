@@ -85,11 +85,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             view: ViewType.LOADING,
             loadingData: false,
             code: 0,
-            showError:false,
-            errorForm:{
-                pipelineNameError: {isValid: true,message: ''},
-                envNameError: {isValid: true,message: ''},
-                nameSpaceError:{isValid: true,message: ''},
+            showError: false,
+            errorForm: {
+                pipelineNameError: { isValid: true, message: '' },
+                envNameError: { isValid: true, message: '' },
+                nameSpaceError: { isValid: true, message: '' },
             },
             environments: [],
             strategies: [],
@@ -124,7 +124,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
-                deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? "" : DeploymentAppType.Helm,
+                deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -418,7 +418,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     selectEnvironment = (selection: Environment): void => {
-        let { pipelineConfig } = { ...this.state }
+        let { pipelineConfig, errorForm } = { ...this.state }
+
         if (selection) {
             let list = this.state.environments.map((item) => {
                 return {
@@ -428,6 +429,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             })
             pipelineConfig.environmentId = selection.id
             pipelineConfig.namespace = selection.namespace
+            errorForm.envNameError = this.validationRules.environment(selection.id)
+            errorForm.nameSpaceError = this.validationRules.namespace(selection.namespace)
+
             pipelineConfig.preStageConfigMapSecretNames = {
                 configMaps: [],
                 secrets: [],
@@ -439,11 +443,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
             pipelineConfig.runPreStageInEnv = pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv
             pipelineConfig.runPostStageInEnv = pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv
-            this.setState({ environments: list, pipelineConfig }, () => {
+            this.setState({ environments: list, pipelineConfig, errorForm }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
                         this.configMapAndSecrets = response.result
-                        this.setState({ view: ViewType.FORM })
+
+                        this.setState({ view: ViewType.FORM, errorForm: errorForm })
                     })
                     .catch((error: ServerErrors) => {
                         showError(error)
@@ -459,7 +464,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             })
             pipelineConfig.environmentId = 0
             pipelineConfig.namespace = ''
-            this.setState({ environments: list, pipelineConfig })
+            errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
+            this.setState({ environments: list, pipelineConfig, errorForm: errorForm })
         }
     }
 
@@ -499,19 +505,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handlePipelineName = (event) => {
-        const { pipelineConfig,errorForm} = { ...this.state }
-        const _errorForm={...errorForm}
+        const { pipelineConfig, errorForm } = { ...this.state }
+        const _errorForm = { ...errorForm }
         pipelineConfig.name = event.target.value
-        _errorForm.pipelineNameError=this.validationRules.name(pipelineConfig.name)
-        this.setState({ pipelineConfig, errorForm:_errorForm })
+        _errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
+        this.setState({ pipelineConfig, errorForm: _errorForm })
     }
-  
-    handleNamespaceChange(event, environment): void {
-        let { pipelineConfig ,errorForm} = { ...this.state }
-        const _errorForm={...errorForm}
+
+    handleNamespaceChange = (event, environment) => {
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig.namespace = event.target.value
-        _errorForm.nameSpaceError=this.validationRules.namespace(pipelineConfig.namespace)
-         this.setState({ pipelineConfig,errorForm:_errorForm })
+        this.setState({ pipelineConfig })
     }
 
     handleStrategyChange(event, selection: string, key: 'json' | 'yaml'): void {
@@ -557,18 +561,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     savePipeline() {
-        const { pipelineConfig,errorForm} = { ...this.state }
-        const _errorForm={...errorForm}
-        _errorForm.pipelineNameError=this.validationRules.name(pipelineConfig.name)
-        _errorForm.nameSpaceError=this.validationRules.namespace(pipelineConfig.namespace)
-        _errorForm.envNameError=this.validationRules.environment(pipelineConfig.id)
-        this.setState({errorForm:_errorForm})
-        
-        if (this.state.pipelineConfig.name=== ""|| !this.state.pipelineConfig.namespace) {
-           toast.error('Some required fields are missing')
+        const { pipelineConfig, errorForm } = { ...this.state }
+        const _errorForm = { ...errorForm }
+        _errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
+        _errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
+        _errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
+        this.setState({ errorForm: _errorForm })
+
+        if (this.state.pipelineConfig.name === '' || !this.state.pipelineConfig.namespace) {
+            toast.error('Some required fields are missing')
             return
-            }
-            this.setState({loadingData:true})
+        }
+        this.setState({ loadingData: true })
         let pipeline = {
             appWorkflowId: +this.props.match.params.workflowId,
             ...this.state.pipelineConfig,
@@ -595,7 +599,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.validationRules.name(this.state.pipelineConfig.name).isValid &&
             !!this.state.pipelineConfig.namespace &&
             !!this.state.pipelineConfig.triggerType &&
-            !! ( this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
+            !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
 
         if (!valid) {
             this.setState({ loadingData: false })
@@ -688,8 +692,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     toast.success('Pipeline Deleted')
                     this.setState({ loadingData: false })
                     this.props.close()
-                    if(this.isWebhookCD){
-                      this.props.refreshParentWorkflows()
+                    if (this.isWebhookCD) {
+                        this.props.refreshParentWorkflows()
                     }
                     this.props.getWorkflows()
                 }
@@ -745,11 +749,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderHeader() {
-        const title = this.isWebhookCD && this.props.match.params.workflowId === '0'
-            ? 'Deploy image from external source'
-            : this.props.match.params.cdPipelineId
-            ? 'Edit deployment pipeline'
-            : 'Create deployment pipeline'
+        const title =
+            this.isWebhookCD && this.props.match.params.workflowId === '0'
+                ? 'Deploy image from external source'
+                : this.props.match.params.cdPipelineId
+                ? 'Edit deployment pipeline'
+                : 'Create deployment pipeline'
         return (
             <>
                 <div className="p-20 flex flex-align-center flex-justify">
@@ -1007,7 +1012,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <RadioGroup
-                    value={this.state.pipelineConfig.deploymentAppType ? this.state.pipelineConfig.deploymentAppType: DeploymentAppType.Helm}
+                    value={
+                        this.state.pipelineConfig.deploymentAppType
+                            ? this.state.pipelineConfig.deploymentAppType
+                            : DeploymentAppType.Helm
+                    }
                     name="deployment-app-type"
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
@@ -1112,10 +1121,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let envId = this.state.pipelineConfig.environmentId
         let selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
         let namespaceEditable = false
-        let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
-     let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
-        
+
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1140,10 +1147,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             }}
                             styles={{
                                 ...groupStyle(),
-                                control: (base) => ({ ...base, border: '1px solid #d6dbdf'}),
+                                control: (base) => ({ ...base, border: '1px solid #d6dbdf' }),
                             }}
                         />
-                        { !this.state.errorForm.envNameError.isValid ? (
+                        {!this.state.errorForm.envNameError.isValid ? (
                             <span className="form__error">
                                 <img src={error} className="form__icon" />
                                 {this.state.errorForm.envNameError.message}
@@ -1167,8 +1174,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 this.handleNamespaceChange(event, selectedEnv)
                             }}
                         />
-                     
-                        {!this.state.errorForm.nameSpaceError.isValid? (
+
+                        {!this.state.errorForm.nameSpaceError.isValid ? (
                             <span className="form__error">
                                 <img src={error} className="form__icon" />
                                 {this.state.errorForm.nameSpaceError.message}
@@ -1233,7 +1240,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderAdvancedCD() {
-        return (             
+        return (
             <>
                 <div className="form__row">
                     <label className="form__label">Pipeline Name*</label>
@@ -1246,7 +1253,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         value={this.state.pipelineConfig.name}
                         onChange={this.handlePipelineName}
                     />
-                    {  !this.state.errorForm.pipelineNameError.isValid ? (
+                    {!this.state.errorForm.pipelineNameError.isValid ? (
                         <span className="form__error">
                             <img src={error} className="form__icon" />
                             {this.state.errorForm.pipelineNameError.message}
@@ -1422,9 +1429,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     : `auto`,
 
                             maxHeight:
-                            this.props.match.params.cdPipelineId || this.state.isAdvanced
-                                ? `auto`
-                                : `calc(100vh - 164px)`,
+                                this.props.match.params.cdPipelineId || this.state.isAdvanced
+                                    ? `auto`
+                                    : `calc(100vh - 164px)`,
                             overflowY: 'scroll',
                         }}
                     >
