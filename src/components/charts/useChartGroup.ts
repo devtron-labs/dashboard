@@ -21,6 +21,7 @@ import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
 import { PaginationParams } from './charts.util'
+import { APP_NAME_TAKEN, DUPLICATE_NAME, EMPTY_ENV, NAME_REGEX_PATTERN } from './constants'
 
 function getSelectedInstances(charts) {
     return charts.reduce((agg, curr, idx) => {
@@ -238,7 +239,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     function isValidName(value: string, invalidNames: string[]): string {
-        const err = invalidNames.indexOf(value) !== -1 && 'Duplicate names found'
+        const err = invalidNames.indexOf(value) !== -1 && DUPLICATE_NAME;
         return err
     }
 
@@ -268,11 +269,11 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         value: chart.name.value,
                         error: nameRegexp.test(chart.name.value)
                             ? isValidName(chart.name.value, invalidNames)
-                            : 'name must follow `^[a-z]+[a-z0-9-?]*[a-z0-9]+$` pattern',
+                            : NAME_REGEX_PATTERN,
                     },
                     environment: {
                         ...chart.environment,
-                        error: chart?.environment?.id ? '' : 'Environment is mandatory',
+                        error: chart?.environment?.id ? '' : EMPTY_ENV,
                     },
                 }
             })
@@ -294,7 +295,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     environment: { ...chart.environment, error: '' },
                     name: {
                         value: chart.name.value,
-                        error: result[index].exists ? 'App name already taken' : '',
+                        error: result[index].exists ? APP_NAME_TAKEN : '',
                         suggestedName: result[index].exists ? result[index].suggestedName : '',
                     },
                 }

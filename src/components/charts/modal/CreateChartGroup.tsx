@@ -5,7 +5,7 @@ import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.serv
 import { getChartGroupEditURL } from '../charts.helper'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-
+import {REGEX_ERROR_MESSAGES, REQ_FIELD} from '../constants';
 interface ChartGroupCreateState {
     name: { value: string; error: any[] }
     description: string
@@ -33,26 +33,26 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         const errors = []
 
         if (!event.target.value) {
-            errors.push('This is a required field')
+            errors.push(REQ_FIELD)
         } else {
             if (event.target.value.trim().length < 5) {
-                errors.push('Minimum 5 characters required')
+                errors.push(REGEX_ERROR_MESSAGES.MIN_5_CHAR)
             }
 
             if (!lowercaseRegex.test(event.target.value)) {
-                errors.push('Use only lowercase alphanumeric characters "-" or "."')
+                errors.push(REGEX_ERROR_MESSAGES.LOWER_CASE)
             }
 
             if (!startAndEndAlphanumericRegex.test(event.target.value) && !(event.target.value.length == 1)) {
-                errors.push('Start and end with an alphanumeric character only')
+                errors.push(REGEX_ERROR_MESSAGES.START_END_ALPHA)
             }
 
             if (event.target.value.trim().indexOf(' ') >= 0) {
-                errors.push("Do not use 'spaces'")
+                errors.push(REGEX_ERROR_MESSAGES.NO_SPACE)
             }
 
             if (event.target.value.length > 30) {
-                errors.push('Must not exceed 30 characters')
+                errors.push(REGEX_ERROR_MESSAGES.MAX_30_CHAR)
             }
         }
 
@@ -89,7 +89,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             this.setState({
                 name: {
                     ...this.state.name,
-                    error: ['This is a required field'],
+                    error: [REQ_FIELD],
                 },
             })
         }
