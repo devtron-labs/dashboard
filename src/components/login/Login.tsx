@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
-import { Switch, Redirect, NavLink } from 'react-router-dom'
+import { Switch, Redirect, NavLink, Link } from 'react-router-dom'
 import { Route } from 'react-router'
 import { Icons, toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
@@ -12,6 +12,8 @@ import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
 import { dashboardAccessed } from '../../services/service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
+import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -128,7 +130,15 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     renderSSOLoginPage() {
         let search = this.props.location.search
-
+        let renderLoginError = (): JSX.Element => {
+            return (
+                <>
+                <span className="dc__bold">{"Email address "}</span>
+                <span>{SSO_LOGGING_INFO.frontText} <a target="_blank" href={`https://docs.devtron.ai/v/v0.6/global-configurations/authorization/user-access`}>{SSO_LOGGING_INFO.redirectLink}</a>
+                {SSO_LOGGING_INFO.tailText}</span>
+            </>
+            )
+        }
         return (
             <div className="login__control">
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
@@ -149,12 +159,16 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-            <InfoColourBar
-                    classname={"error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp"}
-                    Icon={Icons.error} 
-                    message={"User does not exits"}
-                    iconClass="warning-icon"
+
+            { localStorage.isDashboardLoggedIn &&  <InfoColourBar
+                    classname={"error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"}
+                    message={renderLoginError()}
+                    redirectLink = {SSO_LOGGING_INFO.redirectLink}
+                    internalLink={true}
+                    Icon={ErrorIcon} 
+                    iconClass="warning-icon" 
                     />
+            }
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>

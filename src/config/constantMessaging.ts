@@ -58,3 +58,9 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     linkText: 'Go to SSO login services',
     redirectLink: '/global-config/login-service',
 }
+
+export const SSO_LOGGING_INFO = {
+    frontText: "doesn't have account on this workplace. Please contact your manager for ",
+    tailText: ' or login as adminstration.',
+    redirectLink: 'login Permission'
+}
