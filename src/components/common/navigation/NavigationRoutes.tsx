@@ -205,7 +205,7 @@ export default function NavigationRoutes() {
             }
         }
 
-        if (!window._env_.K8S_CLIENT) {
+        if (window._env_.K8S_CLIENT) {
             setPageState(ViewType.FORM)
             setLoginLoader(false)
             setServerMode(SERVER_MODE.EA_ONLY)
