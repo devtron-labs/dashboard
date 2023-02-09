@@ -1,72 +1,18 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { URLS, Routes, AppListConstants } from '../../../config'
-import { BreadCrumb, useBreadcrumb } from '../../common'
+import { URLS, AppListConstants } from '../../../config'
 import ReactGA from 'react-ga4'
-import { ChartSelector } from '../../AppSelector'
-import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
-import { get } from '../../../services/api'
-import { handleUTCTime } from '../../common'
+import {useRouteMatch} from 'react-router'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import PageHeader from '../../common/header/PageHeader'
+import { DeploymentAppType } from '../appDetails/appDetails.type'
 
 function ChartHeaderComponent() {
     const match = useRouteMatch()
-    const history = useHistory()
-    const params = useParams<{ appId: string; envId: string; appName: string }>()
-    const { path, url } = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
-
-    function handleBreadcrumbChartChange(selected) {
-        const newUrl = generatePath(path, { appId: selected.installedAppId, envId: selected.environmentId })
-        history.push(newUrl)
-    }
-
-    function getInstalledCharts(queryString: string) {
-        let url = `${Routes.CHART_INSTALLED}`
-        if (queryString) {
-            url = `${url}${queryString}`
-        }
-        return get(url).then((response) => {
-            return {
-                ...response,
-                result: Array.isArray(response.result)
-                    ? response.result.map((chart) => {
-                          return {
-                              ...chart,
-                              deployedAt: chart.deployedAt ? handleUTCTime(chart.deployedAt, true) : '',
-                          }
-                      })
-                    : [],
-            }
-        })
-    }
-
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                ':appId(\\d+)': {
-                    component: (
-                        <ChartSelector
-                            //@ts-ignore
-                            api={getInstalledCharts}
-                            primaryKey="appId"
-                            primaryValue="appName"
-                            matchedKeys={['envId']}
-                            apiPrimaryKey="installedAppId"
-                            onChange={handleBreadcrumbChartChange}
-                        />
-                    ),
-                    linked: false,
-                },
-                'chart-store': null,
-                deployments: 'Deployed',
-            },
-        },
-        [params.appId, params.envId],
-    )
+    const isDeploymentAppDeleteRequest = appDetails.deploymentAppType === DeploymentAppType.argo_cd && (appDetails.deploymentAppDeleteRequest)
 
     const renderBreadcrumbs = () => {
         return (
@@ -101,6 +47,8 @@ function ChartHeaderComponent() {
                         App Details
                     </NavLink>
                 </li>
+              {
+                isDeploymentAppDeleteRequest &&
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
@@ -117,6 +65,9 @@ function ChartHeaderComponent() {
                         Configure
                     </NavLink>
                 </li>
+               }
+               {
+                isDeploymentAppDeleteRequest &&
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
@@ -132,6 +83,7 @@ function ChartHeaderComponent() {
                         Deployment history
                     </NavLink>
                 </li>
+             }
             </ul>
         )
     }

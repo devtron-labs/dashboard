@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './appDetails.scss';
 import { useParams } from 'react-router';
-import { AppStreamData, AppType } from './appDetails.type';
+import { AppStreamData, AppType, DeploymentAppType } from './appDetails.type';
 import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
@@ -11,6 +11,7 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
 import { getSaveTelemetry } from './appDetails.api';
+
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -25,6 +26,7 @@ const AppDetailsComponent = ({
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+    const isDeploymentAppDeleteRequest = appDetails.deploymentAppType === DeploymentAppType.argo_cd && (appDetails.deploymentAppDeleteRequest || true)
 
     useEffect(() => {
      if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){
@@ -46,7 +48,7 @@ const AppDetailsComponent = ({
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
                 <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
-                <EnvironmentStatusComponent appStreamData={streamData}/>
+             {!isDeploymentAppDeleteRequest &&  <EnvironmentStatusComponent appStreamData={streamData}/> }
             </div>
 
             <SyncErrorComponent appStreamData={streamData}/>

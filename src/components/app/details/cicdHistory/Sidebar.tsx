@@ -44,9 +44,10 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
-    const selectedFilter = filterOptions?.find(
+    const selectedFilter = filterOptions?.filter(_env => !_env.deploymentAppDeleteRequest).find(
         (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
     )
+
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">

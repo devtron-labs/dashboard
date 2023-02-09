@@ -584,7 +584,7 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
     }
-    const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
+    const sortedEnvironments =  environments && !environments.deploymentAppDeleteRequest ? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>

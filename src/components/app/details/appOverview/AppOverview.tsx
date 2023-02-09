@@ -219,6 +219,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map((_env) => (
+                         !_env.deploymentAppDeleteRequest &&
                             <div
                                 key={`${_env.environmentName}-${_env.environmentId}`}
                                 className="env-deployments-info-row display-grid dc__align-items-center"
@@ -243,7 +244,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                 </div>
             )
-        } 
+        }
 
         return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
     }

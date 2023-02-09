@@ -119,6 +119,8 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
 
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
+    const _deploymentAppDeleteRequest = appDetails?.deploymentAppType === DeploymentAppType.argo_cd && (!appDetails.deploymentAppDeleteRequest || false) //remove false in future
+
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
@@ -217,6 +219,9 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     )}
                 </div>
             </div>
+            {
+              !_deploymentAppDeleteRequest &&
+
             <div className="flex">
                 <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
                     <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
@@ -269,6 +274,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     </div>
                 )}
             </div>
+            }
             {urlInfo && (
                 <TriggerUrlModal
                     installedAppId={params.appId}

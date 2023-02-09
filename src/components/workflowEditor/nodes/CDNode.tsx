@@ -5,6 +5,8 @@ import Tippy from '@tippyjs/react'
 import { CDNodeProps } from '../types'
 
 export class CDNode extends Component<CDNodeProps> {
+    _isdeployment = true
+
     renderReadOnlyCard() {
         return (
             <div className="workflow-node dc__overflow-scroll">
@@ -23,17 +25,26 @@ export class CDNode extends Component<CDNodeProps> {
         )
     }
 
+    _isHighestEnviormment = () => {
+      const isHighestEnviornment = 0
+    }
+
     renderCardContent() {
         return (
             <>
                 <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                     <div className="workflow-node cursor">
+                      {
+                        this._isdeployment ? <div className='workflow-node__delete-type'></div>
+                        :
                         <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
                             {this.props.triggerType}
-                        </div>
+                        </div>}
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
-                                <span className="workflow-node__text-light">{this.props.title}</span>
+                                <span className="workflow-node__text-light">
+                                    {this._isdeployment ? <div className="cr-5 fw-6">Deleting...</div> : this.props.title}
+                                </span>
                                 <span className="dc__ellipsis-right">{this.props.environmentName}</span>
                             </div>
                             <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
