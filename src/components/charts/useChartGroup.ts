@@ -238,7 +238,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     function isValidName(value: string, invalidNames: string[]): string {
-        let err = invalidNames.indexOf(value) !== -1 &&'Duplicate names found'
+        const err = invalidNames.indexOf(value) !== -1 && 'Duplicate names found'
         return err
     }
 
@@ -247,7 +247,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
 
             const allNames = state.charts.map((chart) => chart.name.value)
-            let invalidNames = allNames.filter((name, index) => {
+            const invalidNames = allNames.filter((name, index) => {
                 if (allNames.indexOf(name) != index) {
                     return index
                 }

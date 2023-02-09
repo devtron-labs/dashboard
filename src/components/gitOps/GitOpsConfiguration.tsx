@@ -214,7 +214,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
-            token: this.requiredFieldCheck(form.token),
+            token: !this.state.form.id&&this.requiredFieldCheck(form.token),
             gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
