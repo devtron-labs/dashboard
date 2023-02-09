@@ -301,7 +301,7 @@ function ChartValuesView({
                 .catch((e) => {})
         }
 
-        if (!isDeployChartView) {
+        if (!isDeployChartView && !isCreateValueView) {
             getHelmAppMetaInfoRes()
         }
     }, [])
@@ -1321,7 +1321,7 @@ function ChartValuesView({
                             />
                         )}
 
-                        {!isDeployChartView && (
+                        {!isDeployChartView && !isCreateValueView && (
                             <div className="mb-16">
                                 <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
                                 <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
@@ -1331,7 +1331,7 @@ function ChartValuesView({
                             </div>
                         )}
 
-                        {!isDeployChartView && showUpdateAppModal && (
+                        {!isDeployChartView && showUpdateAppModal && !isCreateValueView &&(
                             <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
                                 <ProjectUpdateModal
                                     appId={appId}
@@ -1366,7 +1366,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && (
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && (
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}
