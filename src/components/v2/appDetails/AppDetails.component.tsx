@@ -48,7 +48,7 @@ const AppDetailsComponent = ({
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
                 <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
-             {!isDeploymentAppDeleteRequest &&  <EnvironmentStatusComponent appStreamData={streamData}/> }
+              {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData}/>}
             </div>
 
             <SyncErrorComponent appStreamData={streamData}/>

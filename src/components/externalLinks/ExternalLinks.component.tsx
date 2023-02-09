@@ -199,7 +199,7 @@ export const AppLevelExternalLinks = ({
     }
 
     return (
-        appLevelExternalLinks.length > 0 && (
+      !details.deploymentAppDeleteRequest &&  appLevelExternalLinks.length > 0 && (
             <div className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">

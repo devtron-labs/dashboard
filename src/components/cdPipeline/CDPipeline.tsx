@@ -657,7 +657,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     deleteCD = (force) => {
         let payload = {
-            action: this.state.pipelineConfig.deploymentAppDeleteRequest ? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DELETE,
+            action: this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DEPLOYMENT_DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id,

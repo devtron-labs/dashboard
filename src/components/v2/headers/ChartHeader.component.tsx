@@ -7,12 +7,10 @@ import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import PageHeader from '../../common/header/PageHeader'
-import { DeploymentAppType } from '../appDetails/appDetails.type'
 
 function ChartHeaderComponent() {
     const match = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
-    const isDeploymentAppDeleteRequest = appDetails.deploymentAppType === DeploymentAppType.argo_cd && (appDetails.deploymentAppDeleteRequest)
 
     const renderBreadcrumbs = () => {
         return (
@@ -48,7 +46,7 @@ function ChartHeaderComponent() {
                     </NavLink>
                 </li>
               {
-                isDeploymentAppDeleteRequest &&
+                !appDetails.deploymentAppDeleteRequest &&
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
@@ -67,7 +65,7 @@ function ChartHeaderComponent() {
                 </li>
                }
                {
-                isDeploymentAppDeleteRequest &&
+                !appDetails.deploymentAppDeleteRequest&&
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"

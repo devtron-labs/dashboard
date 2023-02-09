@@ -12,11 +12,14 @@ import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { ServerErrors } from '../../../modals/commonTypes';
 import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
+import IndexStore from '../../v2/appDetails/index.store';
+import { AppDetails } from '../../v2/appDetails/appDetails.type';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
     const [view, setView] = useState(ViewType.LOADING);
     const timerId = useRef(null)
+    const appDetails:AppDetails = IndexStore.getAppDetails()
 
     async function fetchDeployments() {
         let URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_DEPLOYMENT}/installed-app/${chartId}`
@@ -94,7 +97,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         setDeleting(true)
         try {
             if (force === true) {
-                await deleteInstalledChart(Number(installedAppId), force)
+                await deleteInstalledChart(Number(installedAppId))
             } else {
                 await deleteInstalledChart(Number(installedAppId))
             }
