@@ -35,6 +35,7 @@ export function Sidebar({
         group: string
     }>()
     const sideBarElementRef = useRef<HTMLDivElement>(null)
+    const preventScrollRef = useRef<boolean>(false)
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [isMenuOpen, setMenuOpen] = useState(false)
@@ -42,7 +43,7 @@ export function Sidebar({
 
     useEffect(() => {
         if (k8SObjectMap?.size) {
-            if (sideBarElementRef.current) {
+            if (!preventScrollRef.current && sideBarElementRef.current) {
                 sideBarElementRef.current.scrollIntoView({ block: 'center' })
             }
 
@@ -101,7 +102,14 @@ export function Sidebar({
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
 
+        /**
+         * If groupName present then kind selection is from search dropdown,
+         * - Expand parent group if not already expanded
+         * - Auto scroll to selection
+         * Else reset prevent scroll to true
+         */
         if (groupName) {
+            preventScrollRef.current = false
             handleGroupHeadingClick(
                 {
                     currentTarget: {
@@ -112,6 +120,8 @@ export function Sidebar({
                 },
                 true,
             )
+        } else {
+            preventScrollRef.current = true
         }
     }
 
