@@ -146,7 +146,7 @@ export interface ClusterTerminalType {
     clusterId: number
     clusterName?: string
     nodeList: string[]
-    closeTerminal?: () => void
+    closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]

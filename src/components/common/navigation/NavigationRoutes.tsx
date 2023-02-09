@@ -304,7 +304,7 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route
-                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:node?`}
+                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
                                         >
                                             <ResourceBrowserContainer />
                                         </Route>

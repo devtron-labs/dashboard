@@ -27,6 +27,7 @@ export default function ResourceFilterOptions({
     handleFilterChanges,
     clearSearch,
     isNamespaceSelectDisabled,
+    isSearchInputDisabled,
 }: ResourceFilterOptionsProps) {
     const { push } = useHistory()
     const location = useLocation()
@@ -75,9 +76,10 @@ export default function ResourceFilterOptions({
                         type="text"
                         placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
                         value={searchText}
-                        className="search__input"
+                        className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
                         onChange={handleOnChangeSearchText}
                         onKeyUp={handleFilterKeyPress}
+                        disabled={isSearchInputDisabled}
                     />
                     {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearSearch}>
