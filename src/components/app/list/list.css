@@ -144,6 +144,7 @@
 
 .app-list__cell--icon {
     width: 40px;
+    height: 24px;
 }
 
 .app-list__cell--name {
