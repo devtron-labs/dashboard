@@ -206,12 +206,12 @@ export default function NavigationRoutes() {
         }
 
         if (!window._env_.K8S_CLIENT) {
-            getServerMode()
-            getCurrentServerInfo(null, true)
-        } else {
             setPageState(ViewType.FORM)
             setLoginLoader(false)
             setServerMode(SERVER_MODE.EA_ONLY)
+        } else {
+            getServerMode()
+            getCurrentServerInfo(null, true)
         }
     }, [])
 
