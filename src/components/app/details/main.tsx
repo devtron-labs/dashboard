@@ -103,12 +103,15 @@ export function AppHeader({ appName }: { appName: string }) {
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
-    const appDetailsRef = useRef(null)
-    const buildHistoryRef = useRef(null)
-    const deploymentHistoryRef = useRef(null)
-    const deploymentMetricsRef = useRef(null)
-    const appConfigRef = useRef(null)
 
+
+    function preventLinkDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
+        const linkDisabled = (event.target as Element)?.classList.contains(className)
+        if (linkDisabled) {
+            event.preventDefault()
+        }
+    }
+          
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
@@ -166,15 +169,12 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
-                        ref={appDetailsRef}
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
                                 action: 'App Details Clicked',
                             })
-                            const linkDisabled = appDetailsRef.current?.classList.contains('active')
-                            if (linkDisabled) event.preventDefault()
-            
+                            preventLinkDefault(event, 'active') 
                         }}
                     >
                         App Details
@@ -200,14 +200,12 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
-                        ref={buildHistoryRef}
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
                                 action: 'Build History Clicked',
                             })
-                            const linkDisabled = buildHistoryRef.current?.classList.contains('active')
-                            if (linkDisabled) event.preventDefault()
+                            preventLinkDefault(event, 'active') 
                         }}
                     >
                         Build History
@@ -218,14 +216,12 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
-                        ref={deploymentHistoryRef}
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
                                 action: 'Deployment History Clicked',
                             })
-                            const linkDisabled = deploymentHistoryRef.current?.classList.contains('active')
-                            if (linkDisabled) event.preventDefault()
+                             preventLinkDefault(event, 'active')                             
                         }}
                     >
                         Deployment History
@@ -236,15 +232,12 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
-                        ref={deploymentMetricsRef}
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
                                 action: 'Deployment Metrics Clicked',
                             })
-                            const linkDisabled = deploymentMetricsRef.current?.classList.contains('active')
-                            if (linkDisabled) event.preventDefault()
-
+                            preventLinkDefault(event, 'active') 
                         }}
                     >
                         Deployment Metrics
@@ -256,14 +249,12 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
-                        ref={appConfigRef}
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
                                 action: 'App Configuration Clicked',
                             })
-                            const linkDisabled = appConfigRef.current?.classList.contains('active')
-                            if (linkDisabled) event.preventDefault()
+                            preventLinkDefault(event, 'active')
                         }}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
