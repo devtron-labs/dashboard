@@ -34,6 +34,10 @@ export const COMMON_RESOURCE_FILTER_STYLE = {
         height: '32px',
         padding: '0 6px',
     }),
+    input: (base, state) => ({
+        ...base,
+        paddingLeft: state.value ? '0px' : '24px'
+    }),
 }
 
 export const RESOURCE_ACTION_MENU = {
