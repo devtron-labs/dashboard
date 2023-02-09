@@ -8,10 +8,9 @@ import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import './project.css';
 
-export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
-
+export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             code: 0,
             loadingData: false,
@@ -21,116 +20,133 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 name: true,
             },
             errorMessage: {
-                name: ""
-            }
+                name: '',
+            },
         }
-        this.saveProject = this.saveProject.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.discard = this.discard.bind(this);
-        this.addProject = this.addProject.bind(this);
+        this.saveProject = this.saveProject.bind(this)
+        this.handleChange = this.handleChange.bind(this)
+        this.discard = this.discard.bind(this)
+        this.addProject = this.addProject.bind(this)
     }
 
- getProjectList = () => {
-    getProjectList().then((response) => {
-        this.setState({
-            view: ViewType.FORM,
-            code: response.code,
-            projects: response.result.reverse()
-        })
-    }).catch((errors) => {
-        if (Array.isArray(errors.error)) {
-            errors.error.map((err) => toast.error(err.userMessage));
-            this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
-        }
-    })
- }
+    getProjectList = () => {
+        getProjectList()
+            .then((response) => {
+                this.setState({
+                    view: ViewType.FORM,
+                    code: response.code,
+                    projects: response.result.reverse(),
+                })
+            })
+            .catch((errors) => {
+                if (Array.isArray(errors.error)) {
+                    errors.error.map((err) => toast.error(err.userMessage))
+                    this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+                }
+            })
+    }
 
     componentDidMount() {
         this.getProjectList()
     }
 
     handleChange(event, index: number, key: 'name'): void {
-        let { projects, isValid, errorMessage } = { ...this.state };
+        let { projects, isValid, errorMessage } = { ...this.state }
         if (event.target.value && event.target.value.length > 2) {
-            isValid[key] = true;
-            errorMessage[key] = "";
+            isValid[key] = true
+            errorMessage[key] = ''
+        } else {
+            isValid[key] = false
+            errorMessage[key] = 'Atleast 3 characters required.'
         }
-        else {
-            isValid[key] = false;
-            errorMessage[key] = "Atleast 3 characters required."
-        }
-        projects[index][key] = event.target.value;
-        this.setState({ projects, isValid });
+        projects[index][key] = event.target.value
+        this.setState({ projects, isValid })
     }
 
     discard(index: number): void {
-        let { projects } = { ...this.state };
-        projects.splice(index, 1);
-        this.setState({ projects });
+        let { projects } = { ...this.state }
+        projects.splice(index, 1)
+        this.setState({ projects })
     }
 
     addProject(e): void {
-        let { projects } = { ...this.state };
+        let { projects } = { ...this.state }
         let emptyProject = {
             id: 0,
-            name: "",
+            name: '',
             active: true,
             isCollapsed: false,
         }
-        projects.splice(0, 0, emptyProject);
-        this.setState({ projects });
+        projects.splice(0, 0, emptyProject)
+        this.setState({ projects })
     }
 
     saveProject(index: number): void {
-        this.setState({ loadingData: true });
-        let project = this.state.projects[index];
-        createProject(project).then((response) => {
-            toast.success("Project Created Successfully");
-            let { projects } = { ...this.state };
-            projects[index] = {
-                ...response.result,
-                isCollapsed: true
-            }
-            this.setState({ code: response.code, projects, loadingData: false });
-        }).catch((errors) => {
-            showError(errors);
-            this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
-        })
+        this.setState({ loadingData: true })
+        let project = this.state.projects[index]
+        createProject(project)
+            .then((response) => {
+                toast.success('Project Created Successfully')
+                let { projects } = { ...this.state }
+                projects[index] = {
+                    ...response.result,
+                    isCollapsed: true,
+                }
+                this.setState({ code: response.code, projects, loadingData: false })
+            })
+            .catch((errors) => {
+                showError(errors)
+                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+            })
     }
 
     renderProjects(project: ProjectType & { isCollapsed: boolean }, index: number) {
-        return <Project saveProject={this.saveProject}
-            handleChange={this.handleChange}
-            onCancel={(event) => this.discard(index)}
-            isValid={this.state.isValid}
-            errorMessage={this.state.errorMessage}
-            id={project.id}
-            name={project.name}
-            active={project.active}
-            isCollapsed={project.isCollapsed}
-            index={index}
-            loadingData={this.state.loadingData}
-            reload={this.getProjectList}
-        />
+        return (
+            <Project
+                saveProject={this.saveProject}
+                handleChange={this.handleChange}
+                onCancel={(event) => this.discard(index)}
+                isValid={this.state.isValid}
+                errorMessage={this.state.errorMessage}
+                id={project.id}
+                name={project.name}
+                active={project.active}
+                isCollapsed={project.isCollapsed}
+                index={index}
+                loadingData={this.state.loadingData}
+                reload={this.getProjectList}
+            />
+        )
     }
 
     renderPageHeader() {
-        return <>
-            <h1 className="form__title">Projects</h1>
-            <p className="form__subtitle">Manage your organization's projects.&nbsp;
-                <a className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT} rel="noopener noreferer" target="_blank">Learn more about projects.</a>
-            </p>
-        </>
+        return (
+            <>
+                <h1 className="form__title">Projects</h1>
+                <p className="form__subtitle">
+                    Manage your organization's projects.&nbsp;
+                    <a
+                        className="dc__link"
+                        href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT}
+                        rel="noopener noreferer"
+                        target="_blank"
+                    >
+                        Learn more about projects.
+                    </a>
+                </p>
+            </>
+        )
     }
 
     renderAddProject() {
-        let unSavedItem = this.state.projects.find(item => !item.id);
+        let unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
-            return <div className="white-card white-card--add-new-item mb-16 dashed"
-                onClick={this.addProject}>
-                <Add className="icon-dim-24 fcb-5 mr-16" />
-                <span className="list__add-item">Add Project</span>
-            </div>
+            return (
+                <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.addProject}>
+                    <Add className="icon-dim-24 fcb-5 mr-16" />
+                    <span className="list__add-item">Add Project</span>
+                </div>
+            )
         }
     }
 
@@ -141,6 +157,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 <ErrorScreenManager
                     code={this.props.isSuperAdmin ? this.state.code : 403}
                     reloadClass="dc__align-reload-center"
+                    subtitle={
+                        this.props.isSuperAdmin && 'Information on this page is available only to superadmin users.'
+                    }
                 />
             )
         } else {

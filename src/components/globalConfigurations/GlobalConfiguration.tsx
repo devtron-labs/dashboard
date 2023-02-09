@@ -419,7 +419,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             <Route
                 path={URLS.GLOBAL_CONFIG_CHART}
                 render={(props) => {
-                    return <ChartRepo isSuperAdmin={isSuperAdmin} />
+                    return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                 }}
             />
             <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>

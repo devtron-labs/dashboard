@@ -13,9 +13,9 @@ import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
-export default function ChartRepo(isSuperAdmin) {
+export default function ChartRepo({ isSuperAdmin }) {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
-    const [fetching, setFetching] = useState(false);
+    const [fetching, setFetching] = useState(false)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -24,48 +24,118 @@ export default function ChartRepo(isSuperAdmin) {
 
     async function refetchCharts(e) {
         if (fetching) {
-            return;
+            return
         }
-        setFetching(true);
-        toast.success("Re-sync initiated. It may take upto 5 minutes for it to complete.")
-        await reSyncChartRepo().then((response) => {
-            setFetching(false);
-        }).catch((error) => {
-            showError(error);
-            setFetching(false);
-        })
+        setFetching(true)
+        toast.success('Re-sync initiated. It may take upto 5 minutes for it to complete.')
+        await reSyncChartRepo()
+            .then((response) => {
+                setFetching(false)
+            })
+            .catch((error) => {
+                showError(error)
+                setFetching(false)
+            })
     }
-    if(!isSuperAdmin){
-        return <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenNotAuthorized
-                    subtitle="Information on this page is available only to superadmin users."
-                />
+    if (!isSuperAdmin) {
+        return (
+            <div className="error-screen-wrapper flex column h-100">
+                <ErrorScreenNotAuthorized subtitle="Information on this page is available only to superadmin users." />
             </div>
-    }
-    else{
+        )
+    } else {
         return (
             <section className="global-configuration__component">
                 <h2 className="form__title">Chart Repository</h2>
-                <p className="form__subtitle">Manage your organization’s chart repositories.
-                <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
-                <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
-                <div className="chartRepo_form__subtitle dc__float-left dc__bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
+                <p className="form__subtitle">
+                    Manage your organization’s chart repositories.
+                    <span>
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className="dc__link"
+                            href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
+                        >
+                            {' '}
+                            Learn more
+                        </a>{' '}
+                    </span>
+                </p>
+                <CollapsedList
+                    id={null}
+                    default={true}
+                    url={''}
+                    name={''}
+                    active={true}
+                    authMode={'ANONYMOUS'}
+                    key={Math.random().toString(36).substr(2, 5)}
+                    reload={reload}
+                />
+                <div className="chartRepo_form__subtitle dc__float-left dc__bold">
+                    Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
+                </div>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                     <div className="chartRepo_form__subtitle dc__float-right">
-                        <a rel="noreferrer noopener" target="_blank" className={`dc__link ${fetching? '': 'cursor'}`} onClick={refetchCharts}><span>
-                            <svg width="16" height="16" viewBox="2 -2 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.0105 6.23225H14.0105V3.23225" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M4.11096 4.11091C4.62168 3.60019 5.228 3.19506 5.89529 2.91866C6.56258 2.64226 7.27778 2.5 8.00005 2.5C8.72232 2.5 9.43752 2.64226 10.1048 2.91866C10.7721 3.19506 11.3784 3.60019 11.8891 4.11091L14.0105 6.23223" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M4.9895 9.76775H1.9895V12.7677" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M11.8891 11.8891C11.3784 12.3998 10.7721 12.8049 10.1048 13.0813C9.4375 13.3577 8.7223 13.5 8.00003 13.5C7.27776 13.5 6.56256 13.3577 5.89527 13.0813C5.22798 12.8049 4.62167 12.3998 4.11094 11.8891L1.98962 9.76776" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg></span>
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className={`dc__link ${fetching ? '' : 'cursor'}`}
+                            onClick={refetchCharts}
+                        >
+                            <span>
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="2 -2 18 14"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M11.0105 6.23225H14.0105V3.23225"
+                                        stroke="#0066CC"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    <path
+                                        d="M4.11096 4.11091C4.62168 3.60019 5.228 3.19506 5.89529 2.91866C6.56258 2.64226 7.27778 2.5 8.00005 2.5C8.72232 2.5 9.43752 2.64226 10.1048 2.91866C10.7721 3.19506 11.3784 3.60019 11.8891 4.11091L14.0105 6.23223"
+                                        stroke="#0066CC"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    <path
+                                        d="M4.9895 9.76775H1.9895V12.7677"
+                                        stroke="#0066CC"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    <path
+                                        d="M11.8891 11.8891C11.3784 12.3998 10.7721 12.8049 10.1048 13.0813C9.4375 13.3577 8.7223 13.5 8.00003 13.5C7.27776 13.5 6.56256 13.3577 5.89527 13.0813C5.22798 12.8049 4.62167 12.3998 4.11094 11.8891L1.98962 9.76776"
+                                        stroke="#0066CC"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </span>
                             <span>Refetch Charts</span>
                         </a>
                     </div>
                 </Tippy>
-                {[].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(chart => <CollapsedList {...chart} key={chart.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)}
+                {[]
+                    .concat(result && Array.isArray(result.result) ? result.result : [])
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((chart) => (
+                        <CollapsedList
+                            {...chart}
+                            key={chart.id || Math.random().toString(36).substr(2, 5)}
+                            reload={reload}
+                        />
+                    ))}
             </section>
-        );
+        )
     }
 }
 
