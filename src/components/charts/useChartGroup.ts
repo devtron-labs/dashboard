@@ -238,9 +238,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         }
     }
 
-    function isValidName(value: string, invalidNames: string[]): string {
-        const err = invalidNames.indexOf(value) !== -1 && DUPLICATE_NAME;
-        return err
+    function checkForDuplicate(value: string, duplicateNames: string[]): string {
+        return duplicateNames.indexOf(value) !== -1 ? DUPLICATE_NAME : ''
     }
 
     async function validateData() {
@@ -248,7 +247,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
 
             const allNames = state.charts.map((chart) => chart.name.value)
-            const invalidNames = allNames.filter((name, index) => {
+            const duplicateNames = allNames.filter((name, index) => {
                 if (allNames.indexOf(name) != index) {
                     return index
                 }
@@ -260,7 +259,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     // dont consider disabled charts
                     return chart
                 }
-                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id || invalidNames?.length > 0) {
+                if (!nameRegexp.test(chart.name.value) || !chart?.environment?.id || duplicateNames.length > 0) {
                     validated = false
                 }
                 return {
@@ -268,7 +267,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     name: {
                         value: chart.name.value,
                         error: nameRegexp.test(chart.name.value)
-                            ? isValidName(chart.name.value, invalidNames)
+                            ? checkForDuplicate(chart.name.value, duplicateNames)
                             : NAME_REGEX_PATTERN,
                     },
                     environment: {
