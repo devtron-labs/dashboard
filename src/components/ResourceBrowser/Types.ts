@@ -38,7 +38,7 @@ export interface K8SObjectBaseType {
     isExpanded: boolean
 }
 
-export interface K8SObjectType extends K8SObjectBaseType{
+export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
 }
 
@@ -102,7 +102,7 @@ export interface CreateResourceType {
 
 export interface SidebarType {
     k8SObjectMap: Map<string, K8SObjectMapType>
-    handleGroupHeadingClick: (e) => void
+    handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
@@ -176,4 +176,15 @@ export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProp
         prev: AbortController
         new: AbortController
     }
+}
+
+export interface K8sObjectOptionType extends OptionType {
+    dataset: {
+        group: string
+        version: string
+        kind: string
+        namespaced: string
+        grouped: string
+    }
+    groupName: string
 }

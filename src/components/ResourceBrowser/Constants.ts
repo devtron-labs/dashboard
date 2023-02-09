@@ -1,7 +1,7 @@
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
-export const CLUSTER_SELECT_STYLE = {
+export const COMMON_RESOURCE_FILTER_STYLE = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,

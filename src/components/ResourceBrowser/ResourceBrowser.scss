@@ -21,12 +21,28 @@
         grid-template-columns: 220px auto;
 
         .k8s-object-container {
-            height: calc(100vh - 92px);
-            overflow: auto;
+            .kind-search-select__input-container {
+                position: absolute;
+            }
 
-            .resource-tree-object:hover {
-                background-color: var(--N50);
-                color: var(--N900);
+            .kind-search-select__menu-list {
+                .kind-search-select__option {
+                    mark {
+                        padding: 0;
+                        background-color: var(--Y200);
+                        // font-weight: 600;
+                    }
+                }
+            }
+
+            .k8s-object-wrapper {
+                height: calc(100vh - 152px);
+                overflow: auto;
+
+                .resource-tree-object:hover {
+                    background-color: var(--N50);
+                    color: var(--N900);
+                }
             }
         }
 

@@ -6,7 +6,7 @@ import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, CLUSTER_SELECT_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ALL_NAMESPACE_OPTION, COMMON_RESOURCE_FILTER_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
 
@@ -95,7 +95,7 @@ export default function ResourceFilterOptions({
                     options={clusterOptions}
                     value={selectedCluster}
                     onChange={handleClusterChange}
-                    styles={CLUSTER_SELECT_STYLE}
+                    styles={COMMON_RESOURCE_FILTER_STYLE}
                     components={{
                         IndicatorSeparator: null,
                         Option: ClusterOptionWithIcon,
@@ -116,7 +116,7 @@ export default function ResourceFilterOptions({
                         }
                         onChange={handleNamespaceChange}
                         isDisabled={isNamespaceSelectDisabled ?? !selectedResource?.namespaced}
-                        styles={CLUSTER_SELECT_STYLE}
+                        styles={COMMON_RESOURCE_FILTER_STYLE}
                         components={{
                             IndicatorSeparator: null,
                             Option,

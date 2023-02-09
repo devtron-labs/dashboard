@@ -463,18 +463,26 @@ export default function ResourceList() {
         }
     }
 
-    const handleGroupHeadingClick = (e): void => {
+    const handleGroupHeadingClick = (e: any, preventCollapse?: boolean): void => {
         const splittedKey = e.currentTarget.dataset.groupName.split('/')
         const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
+
         if (splittedKey.length > 1) {
             const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
-            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
+            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
+                return
+            }
 
+            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
             const _childObj = _k8SObjectMap.get(splittedKey[0])
             _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
             _k8SObjectMap.set(splittedKey[0], _childObj)
         } else {
             const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
+            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
+                return
+            }
+
             _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
             _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
         }
