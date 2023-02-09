@@ -78,6 +78,7 @@ export interface CDNodeProps {
     toggleCDMenu: () => void
     cdNamesList?: string[]
     hideWebhookTippy?:  () => void
+    deploymentAppDeleteRequest: boolean
 }
 
 export interface WebhookNodeProps {

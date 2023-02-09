@@ -92,41 +92,45 @@ export function SourceInfo({
                         )}
                     </Tippy>
                 )}
-                <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                    {showUrlInfo && (
-                        <button
-                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                            onClick={(e) => showUrlInfo(true)}
-                        >
-                            <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
-                            URLs
-                        </button>
-                    )}
-                    {showCommitInfo && (
-                        <button
-                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                            onClick={(e) => showCommitInfo(true)}
-                        >
-                            <CommitIcon className="icon-dim-16 mr-6" />
-                            commit info
-                        </button>
-                    )}
-                    {showHibernateModal && (
-                        <button
-                            className="cta cta-with-img small cancel fs-12 fw-6"
-                            onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
-                        >
-                            <ScaleDown
-                                className={`icon-dim-16 mr-6 rotate`}
-                                style={{
-                                    ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
-                                }}
-                            />
-                            {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
-                        </button>
-                    )}
-                </div>
+
+                {!appDetails?.deploymentAppDeleteRequest && (
+                    <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
+                        {showUrlInfo && (
+                            <button
+                                className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                                onClick={(e) => showUrlInfo(true)}
+                            >
+                                <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
+                                URLs
+                            </button>
+                        )}
+                        {showCommitInfo && (
+                            <button
+                                className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                                onClick={(e) => showCommitInfo(true)}
+                            >
+                                <CommitIcon className="icon-dim-16 mr-6" />
+                                commit info
+                            </button>
+                        )}
+                        {showHibernateModal && (
+                            <button
+                                className="cta cta-with-img small cancel fs-12 fw-6"
+                                onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
+                            >
+                                <ScaleDown
+                                    className={`icon-dim-16 mr-6 rotate`}
+                                    style={{
+                                        ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
+                                    }}
+                                />
+                                {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
+            {!appDetails?.deploymentAppDeleteRequest &&
             <div className="flex left w-100">
                 {appDetails?.resourceTree && (
                     <>
@@ -222,7 +226,9 @@ export function SourceInfo({
                                             ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
                                             : '-'}
                                     </span>
-                                    {deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && <Timer className="icon-dim-16 mt-4" />}
+                                    {deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
+                                        <Timer className="icon-dim-16 mt-4" />
+                                    )}
                                 </div>
                                 <div className="fw-4 fs-12 cn-9 dc__ellipsis-right" style={{ maxWidth: 'inherit' }}>
                                     by {triggeredBy || '-'}
@@ -246,6 +252,7 @@ export function SourceInfo({
                     )}
                 </div>
             </div>
+}
         </div>
     )
 }

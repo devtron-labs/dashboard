@@ -336,6 +336,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 to={this.openCDPipeline(node, isWebhookCD)}
                 cdNamesList={cdNamesList}
                 hideWebhookTippy={this.props.hideWebhookTippy}
+                deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
             />
         )
     }

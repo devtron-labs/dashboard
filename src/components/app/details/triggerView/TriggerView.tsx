@@ -317,7 +317,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     })
                 }
                 if (allCDs.length) {
-                  console.log(response?.result )
                     allCDs.forEach((pipeline) => {
                         if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
                         if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status

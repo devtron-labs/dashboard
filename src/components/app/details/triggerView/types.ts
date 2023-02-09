@@ -179,6 +179,7 @@ export interface NodeAttr {
     regex?: string
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface DownStreams {
@@ -521,6 +522,7 @@ export interface CdPipeline {
     isClusterCdActive?: boolean
     parentPipelineId?: number
     parentPipelineType?: string
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface CdPipelineResult {

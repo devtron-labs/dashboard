@@ -132,7 +132,7 @@ export function processWorkflow(
                         wf.nodes.push(webhookNode)
                     } else {
                         const cdPipeline = cdMap.get(branch.componentId)
-                        if (!cdPipeline) {
+                        if (!cdPipeline || (dimensions.type == WorkflowDimensionType.TRIGGER && cdPipeline.deploymentAppDeleteRequest) ) {
                             return
                         }
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
@@ -469,6 +469,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         downstreamNodes: new Array<NodeAttr>(),
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
+        deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest
     } as NodeAttr
     stageIndex++
 

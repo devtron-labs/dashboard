@@ -68,7 +68,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type'
+import {AppDetails, AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type'
@@ -86,15 +86,11 @@ export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' |
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>();
     const { push } = useHistory();
-    const { url, path } = useRouteMatch();
+    const { path } = useRouteMatch();
     const { environmentId, setEnvironmentId } = useAppContext(); // global state for app to synchronise environments
     const [
         otherEnvsLoading,
         otherEnvsResult,
-        otherEnvsError,
-        reloadAppOtherEnv,
-        setState,
-        syncOtherEnvState,
     ] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId]);
     useEffect(() => {
         if (otherEnvsLoading) return;
