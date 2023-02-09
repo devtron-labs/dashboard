@@ -1,4 +1,5 @@
-import { ClusterComponentType, ClusterComponentStatusType, ClusterComponentStatus } from './cluster.type';
+import { OptionType } from '../app/types';
+import { ClusterComponentType, ClusterComponentStatusType, ClusterComponentStatus, ClusterTerminalParamsType } from './cluster.type';
 
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
 
@@ -19,4 +20,27 @@ export function getEnvName(components: ClusterComponentType[], agentInstallation
     let str = nonTerminatingStatus.join('');
     let c = components?.find(c => str.search(c.status) >= 0);
     return c?.envName;
+}
+
+export function getClusterTerminalParamsData(
+    params: URLSearchParams,
+    imageList: OptionType[],
+    namespaceList: OptionType[],
+    nodeList: OptionType[],
+    clusterShellList: OptionType[],
+    node: string,
+): ClusterTerminalParamsType {
+    const _selectedImage = imageList.find((image) => image.value === params.get('image'))
+    const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
+    const _selectedNode =
+        nodeList.find((node) => node.value === params.get('node')) ||
+        (node ? { label: node, value: node } : nodeList[0])
+    const _selectedShell = clusterShellList.find((shell) => shell.value === params.get('shell'))
+
+    return {
+        selectedImage: _selectedImage,
+        selectedNamespace: _selectedNamespace,
+        selectedNode: _selectedNode,
+        selectedShell: _selectedShell,
+    }
 }

@@ -15,7 +15,7 @@ import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
 import { DEPLOYMENT_STATUS, TIMELINE_STATUS } from '../../../../config';
 
-export function getAggregator(nodeType: NodeType): AggregationKeys {
+export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
         case Nodes.DaemonSet:
         case Nodes.Deployment:
@@ -59,7 +59,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
         case Nodes.Event:
             return AggregationKeys.Events
         default:
-            return AggregationKeys['Custom Resource']
+            return defaultAsOtherResources ? AggregationKeys['Other Resources'] : AggregationKeys['Custom Resource']
     }
 }
 export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): AggregatedNodes {
