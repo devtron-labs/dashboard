@@ -176,7 +176,7 @@ export default function CIConfigForm({
             id: ciConfig?.id ?? null,
             appId: +appId ?? null,
             dockerRegistry: registry.value || '',
-            dockerRepository: repository_name.value || '',
+            dockerRepository: repository_name.value?.replace(/\s/g, '') || '',
             beforeDockerBuild: [],
             ciBuildConfig: _ciBuildConfig,
             afterDockerBuild: [],
