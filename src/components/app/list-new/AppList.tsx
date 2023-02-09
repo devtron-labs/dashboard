@@ -10,6 +10,7 @@ import {
     ErrorScreenManager,
     handleUTCTime,
     useAsync,
+    stopPropagation,
 } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
@@ -978,11 +979,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         )
     }
 
-    const closeDevtronAppCreateModal = () => {
-        let _prefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
-        let url = `${_prefix}${location.search}`
-        history.push(`${url}`)
+    const closeDevtronAppCreateModal = (e) => {
+      stopPropagation(e)
+      let _prefix =
+          currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+      let url = `${_prefix}${location.search}`
+      history.push(`${url}`)
     }
 
     function renderAppCreateRouter() {
