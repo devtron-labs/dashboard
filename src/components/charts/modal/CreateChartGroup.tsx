@@ -5,7 +5,7 @@ import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.serv
 import { getChartGroupEditURL } from '../charts.helper'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import {REGEX_ERROR_MESSAGES, REQ_FIELD} from '../constants';
+import { REGEX_ERROR_MESSAGES, REQ_FIELD } from '../constants'
 interface ChartGroupCreateState {
     name: { value: string; error: any[] }
     description: string
@@ -69,16 +69,14 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         this.setState({ description: event.target.value })
     }
 
-    checkValid() {
+    checkIfNameIsValid() {
         if (this.state.name.value.length < 5) {
             return false
         }
 
-        let isNameUsed = this.state.charts.some((r) => r.name === this.state.name.value)
+        const isNameUsed = this.state.charts.some((chart) => chart.name === this.state.name.value)
         if (isNameUsed) {
-            showError({
-                message: `A chart group with name ${this.state.name.value} already exists!`,
-            })
+            toast.error(`A chart group with name ${this.state.name.value} already exists!`)
             return false
         }
         return true
@@ -94,9 +92,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             })
         }
 
-        const isValid = this.checkValid()
-
-        if (!isValid) {
+        if (!this.checkIfNameIsValid()) {
             return
         }
 
@@ -131,21 +127,20 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 this.setState({ loading: false })
             })
     }
-    async getInitCharts(){
+    async getInitCharts() {
         this.setState({
-            loading:true
+            loading: true,
         })
-        try{
-            const { result } = await getChartGroups();
-            this.setState({ charts: result.groups });
-        }catch(err){
-            showError(err);
-        }finally{
+        try {
+            const { result } = await getChartGroups()
+            this.setState({ charts: result.groups })
+        } catch (err) {
+            showError(err)
+        } finally {
             this.setState({
-                loading:false
+                loading: false,
             })
         }
-        
     }
 
     //TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
@@ -153,9 +148,8 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         if (this.props.chartGroupId && this.props.name) {
             this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || '' })
         }
-        
-        this.getInitCharts();
-        
+
+        this.getInitCharts()
     }
 
     render() {
