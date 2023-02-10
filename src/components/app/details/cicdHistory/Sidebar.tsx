@@ -22,6 +22,7 @@ import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE } from './Constants'
 import { triggerStatus } from './History.components'
+
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
@@ -44,9 +45,11 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
-    const selectedFilter = filterOptions?.filter(_env => !_env.deploymentAppDeleteRequest).find(
+    const selectedFilter = filterOptions?.find(
         (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
     )
+
+    const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest )
 
     return (
         <>
@@ -56,7 +59,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                 </label>
                 <ReactSelect
                     value={selectedFilter}
-                    options={filterOptions}
+                    options={_filterOptions}
                     isSearchable={false}
                     onChange={handleFilterChange}
                     components={{

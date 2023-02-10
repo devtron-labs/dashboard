@@ -55,7 +55,6 @@ export default function CDDetails() {
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
-
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
@@ -122,6 +121,8 @@ export default function CDDetails() {
     const pipelines = result[1]['value'].pipelines
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
+    const _deploymentAppDeleteRequest = mapByKey(pipelines, 'deploymentAppDeleteRequest')
+
     if (!triggerId && envId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(
             generatePath(path, {
@@ -138,6 +139,7 @@ export default function CDDetails() {
             value: `${item.environmentId}`,
             label: item.environmentName,
             pipelineId: cdPipelinesMap.get(item.environmentId).id,
+            deploymentAppDeleteRequest: _deploymentAppDeleteRequest.get(item.deploymentAppDeleteRequest).deploymentAppDeleteRequest,
         }
     })
 
@@ -378,6 +380,7 @@ const HistoryLogs: React.FC<{
 
     return (
         <>
+
             <div className="trigger-outputs-container">
                 {loading ? (
                     <Progressing pageLoader />
