@@ -20,25 +20,25 @@ export function getEnvWorkflowList(envId) {
     return get(URL)
 }
 
-export function getCIConfig(appId: number): Promise<ResponseType> {
-    const URL = `${Routes.ENV_WORKFLOW}/${appId}/${URLS.APP_CI_CONFIG}`
+export function getCIConfig(envID: number): Promise<ResponseType> {
+    const URL = `${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}`
     return get(URL)
 }
 
-export function getCDConfig(appId: number | string): Promise<ResponseType> {
-    const URL = `${Routes.ENV_WORKFLOW}/${appId}/${URLS.APP_CD_CONFIG}`
+export function getCDConfig(envID: number | string): Promise<ResponseType> {
+    const URL = `${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CD_CONFIG}`
     return get(URL)
 }
 
-export function getExternalCIList(appId: number | string): Promise<WebhookListResponse> {
-    return get(`${Routes.ENV_WORKFLOW}/${appId}/${URLS.APP_EXTERNAL_CI_CONFIG}`)
+export function getExternalCIList(envID: number | string): Promise<WebhookListResponse> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_EXTERNAL_CI_CONFIG}`)
 }
 
-export const getWorkflows = (id): Promise<{ workflows: WorkflowType[]; filteredCIPipelines }> => {
+export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filteredCIPipelines }> => {
     const _workflows: WorkflowType[] = []
     const _filteredCIPipelines = new Map()
 
-    return Promise.all([getEnvWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+    return Promise.all([getEnvWorkflowList(envID), getCIConfig(envID), getCDConfig(envID), getExternalCIList(envID)]).then(
         ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
             let _ciConfigMap = new Map<number, CiPipelineResult>()
             for (let index = 0; index < ciConfig.result.length; index++) {
@@ -60,10 +60,16 @@ export const getWorkflows = (id): Promise<{ workflows: WorkflowType[]; filteredC
                     WorkflowTrigger.workflow,
                 )
                 //TODO : add the logic to filter out all the child and sibling CD nodes
-                _workflows.push(...processWorkflowData.workflows)
+
+                _workflows.push(filterChildAndSiblingCD(processWorkflowData.workflows[0], envID))
                 _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
             }
             return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
         },
     )
+}
+
+const filterChildAndSiblingCD = (wf: WorkflowType, envID: number): WorkflowType =>{
+
+  return wf
 }
