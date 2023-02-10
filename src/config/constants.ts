@@ -126,6 +126,8 @@ export const Routes = {
     APP_CREATE_CONFIG_MAP: 'config/global/cm',
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',
+    APP_WF: 'app-wf',
+    ENV_WORKFLOW: 'app/environment',
 
     ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',

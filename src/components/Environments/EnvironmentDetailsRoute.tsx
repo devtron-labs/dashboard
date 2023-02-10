@@ -6,6 +6,7 @@ import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
 import { AppSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
+import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
@@ -36,7 +37,7 @@ export default function EnvironmentDetailsRoute() {
                             <div>Env Overview</div>
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <div>Build & Deploy</div>
+                            <EnvTriggerView />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
