@@ -45,43 +45,41 @@ function ChartHeaderComponent() {
                         App Details
                     </NavLink>
                 </li>
-              {
-                !appDetails.deploymentAppDeleteRequest &&
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_VALUES}`}
-                        className="tab-list__tab-link flex"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Values Clicked',
-                            })
-                        }}
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
-                        Configure
-                    </NavLink>
-                </li>
-               }
-               {
-                !appDetails.deploymentAppDeleteRequest&&
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment history Clicked',
-                            })
-                        }}
-                    >
-                        Deployment history
-                    </NavLink>
-                </li>
-             }
+                {!appDetails.deploymentAppDeleteRequest && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            activeClassName="active"
+                            to={`${match.url}/${URLS.APP_VALUES}`}
+                            className="tab-list__tab-link flex"
+                            onClick={(event) => {
+                                ReactGA.event({
+                                    category: 'App',
+                                    action: 'Values Clicked',
+                                })
+                            }}
+                        >
+                            <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                            Configure
+                        </NavLink>
+                    </li>
+                )}
+                {!appDetails.deploymentAppDeleteRequest && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            activeClassName="active"
+                            to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
+                            className="tab-list__tab-link"
+                            onClick={(event) => {
+                                ReactGA.event({
+                                    category: 'App',
+                                    action: 'Deployment history Clicked',
+                                })
+                            }}
+                        >
+                            Deployment history
+                        </NavLink>
+                    </li>
+                )}
             </ul>
         )
     }

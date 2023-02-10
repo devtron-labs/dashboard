@@ -99,7 +99,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
-            return deleteInstalledChart(params.appId, appDetails.deploymentAppDeleteRequest, isGitops)
+            return deleteInstalledChart(params.appId, isGitops)
         }
     }
 

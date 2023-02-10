@@ -4,10 +4,10 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps } from '../types'
 import { toast } from 'react-toastify'
+import {ERR_MESSAGE_ARGOCD} from '../../../config/constantMessaging'
 
 export class CDNode extends Component<CDNodeProps> {
 
-   ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
     renderReadOnlyCard() {
         return (
             <div className="workflow-node dc__overflow-scroll">
@@ -28,7 +28,7 @@ export class CDNode extends Component<CDNodeProps> {
 
     onClickAddNode = (event: any) => {
         if (this.props.deploymentAppDeleteRequest) {
-            toast.error(this.ERR_MESSAGE_ARGOCD)
+            toast.error(ERR_MESSAGE_ARGOCD)
         } else {
            event.stopPropagation()
             let { top, left } = event.target.getBoundingClientRect()
@@ -69,7 +69,7 @@ export class CDNode extends Component<CDNodeProps> {
                     >
                         <Add
                             className="icon-dim-18 fcb-5"
-                            onClick={(event)=>this.onClickAddNode(event)}
+                            onClick={this.onClickAddNode}
                         />
                     </Tippy>
                 </button>

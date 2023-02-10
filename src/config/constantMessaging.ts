@@ -58,3 +58,5 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     linkText: 'Go to SSO login services',
     redirectLink: '/global-config/login-service',
 }
+
+export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
