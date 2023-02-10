@@ -21,6 +21,7 @@ export interface ResourceListResponse extends ResponseType {
 export interface ApiResourceGroupType {
     gvk: GVKType
     namespaced: boolean
+    isGrouped?: boolean
 }
 
 export interface ApiResourceType {
@@ -32,10 +33,23 @@ export interface APIResourceResponse extends ResponseType {
     result?: ApiResourceType
 }
 
-export interface K8SObjectType {
+export interface K8SObjectBaseType {
     name: string
     isExpanded: boolean
+}
+
+export interface K8SObjectType extends K8SObjectBaseType{
     child: ApiResourceGroupType[]
+}
+
+export interface K8SObjectChildMapType {
+    isGrouped?: boolean
+    isExpanded: boolean
+    data: ApiResourceGroupType[]
+}
+
+export interface K8SObjectMapType extends K8SObjectBaseType {
+    child: Map<string, K8SObjectChildMapType>
 }
 
 export interface ResourceListPayloadType {
@@ -87,8 +101,9 @@ export interface CreateResourceType {
 }
 
 export interface SidebarType {
-    k8SObjectList: K8SObjectType[]
+    k8SObjectMap: Map<string, K8SObjectMapType>
     handleGroupHeadingClick: (e) => void
+    selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
 }
@@ -110,6 +125,7 @@ export interface ResourceFilterOptionsProps {
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
     clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
+    isSearchInputDisabled?: boolean
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
