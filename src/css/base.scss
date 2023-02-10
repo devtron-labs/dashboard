@@ -2610,3 +2610,11 @@ textarea::placeholder {
   content: ' *';
   color: var(--R500);
 }
+
+.dc__highlight-text {
+    mark {
+        padding: 0;
+        background-color: var(--Y300) !important;
+        font-weight: 600;
+    }
+  }
