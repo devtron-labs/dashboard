@@ -1,9 +1,10 @@
 import { RouteComponentProps } from 'react-router'
+import { KEY_VALUE } from '../../config'
 import { Teams } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
-    close: () => void
+    close: (e) => void
 }
 
 export interface OptionType {
@@ -22,6 +23,47 @@ export interface LabelTags {
     tagError: string
 }
 
+export interface TagType {
+    key: string
+    value?: string
+    description?: string
+    propagate: boolean
+    isInvalidKey?: boolean
+    isInvalidValue?: boolean
+}
+
+export interface TagErrorType {
+    isValid: boolean
+    messages: string[]
+}
+export interface TagLabelSelectType {
+    isCreateApp?: boolean
+    labelTags: TagType[]
+    setLabelTags: (tagList: TagType[]) => void
+    tabIndex?: number
+}
+
+export interface TagDetailType {
+    index: number
+    tagData: TagType
+    setTagData: (index: number, tagData: TagType) => void
+    removeTag: (index: number) => void
+    tabIndex?: number
+}
+
+export interface TagLabelValueSelectorType {
+    selectedTagIndex: number
+    tagData: TagType
+    setTagData: (index: number, tagData: TagType) => void
+    tagOptions?: OptionType[]
+    isRequired?: boolean
+    tagInputType?: KEY_VALUE
+    placeholder?: string
+    tabIndex?: number
+    refVar?: React.MutableRefObject<any>
+    dependentRef?: React.MutableRefObject<any>
+}
+
 export interface AddNewAppState {
     view: string
     code: number
@@ -36,7 +78,7 @@ export interface AddNewAppState {
         cloneId: number
         appCreationType: string
     }
-    labels: LabelTags
+    tags: TagType[]
     isValid: {
         projectId: boolean
         appName: boolean
@@ -76,7 +118,7 @@ export interface AppMetaInfo {
     createdOn: string
     projectId?: number
     projectName?: string
-    labels?: LabelTag[]
+    labels?: TagType[]
 }
 
 interface ResourceTree {
@@ -185,16 +227,16 @@ interface Health {
 }
 
 export interface Resource {
-    group: string;
-    version: string;
-    kind: string;
-    namespace: string;
-    name: string;
-    status: string;
-    message: string;
-    hookPhase: string;
-    syncPhase: string;
-    health?: Health;
+    group: string
+    version: string
+    kind: string
+    namespace: string
+    name: string
+    status: string
+    message: string
+    hookPhase: string
+    syncPhase: string
+    health?: Health
 }
 
 interface Destination {
@@ -385,8 +427,8 @@ export enum SortingOrder {
 
 export interface CreateAppLabelsRequest {
     id: number
-    labels: { key: string; value: string }[]
-    teamId: number
+    labels?: TagType[]
+    teamId?: number
 }
 
 export interface LabelTagsType {
@@ -403,13 +445,12 @@ export interface AppOverviewProps {
 export interface AboutAppInfoModalProps {
     isLoading: boolean
     appId: string
-    isChangeProjectView: boolean
-    onClose: () => void
+    onClose: (e) => void
     appMetaInfo: AppMetaInfo
-    currentLabelTags: LabelTagsType
+    currentLabelTags?: TagType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
-    fetchingProjects: boolean
-    projectsList: Teams[]
+    fetchingProjects?: boolean
+    projectsList?: Teams[]
 }
 
 export interface DeleteComponentProps {
@@ -428,4 +469,18 @@ export interface DeleteComponentProps {
 
 export interface AppStatusType {
     appStatus: string
+}
+
+export interface ResizableTagTextAreaProps {
+  className?: string
+  minHeight?: number
+  maxHeight?: number
+  value?: string
+  onChange?: (e) => void
+  onBlur?: (e) => void
+  onFocus?: (e) => void
+  placeholder?: string
+  tabIndex?: number
+  refVar?: React.MutableRefObject<HTMLTextAreaElement>
+  dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
 }

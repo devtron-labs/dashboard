@@ -2084,6 +2084,19 @@
   resolved "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.2.tgz"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@typeform/embed-react@^2.15.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@typeform/embed-react/-/embed-react-2.15.0.tgz#4f283c311ae8a5f75a563291747faebbd4f2e5a4"
+  integrity sha512-OO3gT96yMv+vMflXjYbsSS84qizjfkdCO39Y5kPalpRVvydCgT3KoxM+tdrWY6L2ciD1q+yQs1NZbYh63xFkuw==
+  dependencies:
+    "@typeform/embed" "2.8.0"
+    fast-deep-equal "^3.1.3"
+
+"@typeform/embed@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@typeform/embed/-/embed-2.8.0.tgz#45456b47103d27e818e426d782e0af0976909db8"
+  integrity sha512-+64uxHXbOefA9euw9gQUZ3WAvh+61wH6Vbl3x9WYQ3tAY2iM9gPTYhfxPDMdx/79KuRMIbHUKWpTD6PflaWy8w==
+
 "@types/aria-query@^4.2.0":
   version "4.2.2"
   resolved "https://registry.npmjs.org/@types/aria-query/-/aria-query-4.2.2.tgz"
@@ -6630,7 +6643,7 @@ extsprintf@1.3.0, extsprintf@^1.2.0:
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
   integrity sha1-lpGEQOMEGnpBT4xS48V06zw+HgU=
 
-fast-deep-equal@^3.1.1:
+fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==

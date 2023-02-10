@@ -138,12 +138,12 @@ function ManifestComponent({
     }, [isEditmode])
 
     //For External
-
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {
             setModifiedManifest(codeEditorData)
         }
     }
+
     const handleEditLiveManifest = () => {
         setIsEditmode(true)
         markActiveTab('Live manifest')
@@ -162,8 +162,7 @@ function ManifestComponent({
         }
         if (!manifestString) {
             setLoading(false)
-        }
-        manifestString &&
+        } else {
             updateManifestResourceHelmApps(
                 appDetails,
                 params.podName,
@@ -177,7 +176,9 @@ function ManifestComponent({
                     const _manifest = JSON.stringify(response?.result?.manifest)
                     if (_manifest) {
                         setManifest(_manifest)
-                        setErrorText(``)
+                        setActiveManifestEditorData(_manifest)
+                        setModifiedManifest(_manifest)
+                        setErrorText('')
                     }
                     setLoading(false)
                 })
@@ -204,6 +205,7 @@ function ManifestComponent({
                         showError(err)
                     }
                 })
+        }
     }
 
     const recreateResource = () => {
