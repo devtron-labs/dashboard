@@ -98,7 +98,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
-            return deleteInstalledChart(params.appId)
+            return deleteInstalledChart(params.appId, appDetails.deploymentAppDeleteRequest)
         }
     }
 
@@ -224,7 +224,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                     Urls
                 </button>
-}
+            }
                 {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
                     <>
                         {canScaleWorkloads ? (

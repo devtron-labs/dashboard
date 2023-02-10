@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps } from '../types'
+import { toast } from 'react-toastify'
 
 export class CDNode extends Component<CDNodeProps> {
 
+   ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
     renderReadOnlyCard() {
         return (
             <div className="workflow-node dc__overflow-scroll">
@@ -24,13 +26,24 @@ export class CDNode extends Component<CDNodeProps> {
         )
     }
 
+    onClickAddNode = (event: any) => {
+        if (this.props.deploymentAppDeleteRequest) {
+            toast.error(this.ERR_MESSAGE_ARGOCD)
+        } else {
+           event.stopPropagation()
+            let { top, left } = event.target.getBoundingClientRect()
+            top = top + 25
+            this.props.toggleCDMenu()
+        }
+    }
+
     renderCardContent() {
         return (
             <>
                 <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
-                    <div className="workflow-node cursor">
+                    <div className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
                       {
-                        this.props.deploymentAppDeleteRequest ? <div className='workflow-node__delete-type'></div>
+                        this.props.deploymentAppDeleteRequest ? <div className='workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete'></div>
                         :
                         <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
                             {this.props.triggerType}
@@ -38,7 +51,7 @@ export class CDNode extends Component<CDNodeProps> {
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
                                 <span className="workflow-node__text-light">
-                                    {this.props.deploymentAppDeleteRequest  ? <div className="cr-5 fw-6">Deleting...</div> : this.props.title}
+                                    {this.props.deploymentAppDeleteRequest  ? <div className="cr-5">Deleting<span className="dc__loading-dots" /></div> : this.props.title}
                                 </span>
                                 <span className="dc__ellipsis-right">{this.props.environmentName}</span>
                             </div>
@@ -56,12 +69,7 @@ export class CDNode extends Component<CDNodeProps> {
                     >
                         <Add
                             className="icon-dim-18 fcb-5"
-                            onClick={(event: any) => {
-                                event.stopPropagation()
-                                let { top, left } = event.target.getBoundingClientRect()
-                                top = top + 25
-                                this.props.toggleCDMenu()
-                            }}
+                            onClick={(event)=>this.onClickAddNode(event)}
                         />
                     </Tippy>
                 </button>

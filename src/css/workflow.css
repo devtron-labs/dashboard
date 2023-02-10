@@ -90,22 +90,19 @@
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
 }
-.workflow-node__delete-type {
-    height: 2px;
-    opacity: 0.4;
-    background: var(--R900);
-    color: var(--white);
-    margin: 0px;
-    transform: rotate(-90deg);
-    position: absolute;
-    text-align: center;
-    font-size: 10px;
-    text-transform: uppercase;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    width: 64px;
-    left: -25px;
-    bottom: 23px;
+
+.workflow-node__trigger-type-delete {
+  height: 4px;
+  opacity: 0.4;
+  background-color: var(--R500);
+  margin: 0px;
+  transform: rotate(-90deg);
+  position: absolute;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
 
 .workflow-node__details-link {
@@ -138,6 +135,12 @@
     width: 64px;
     left: -25px;
     bottom: 23px;
+}
+
+.workflow-node__trigger-type--create-delete{
+    width: 60px;
+    left: -28px;
+    bottom: 30px;
 }
 
 .workflow-node__btn-grp {

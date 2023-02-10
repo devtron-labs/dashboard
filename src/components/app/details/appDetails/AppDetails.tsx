@@ -149,7 +149,6 @@ export const Details: React.FC<{
     const params = useParams<{ appId: string; envId: string }>();
     const location = useLocation();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
-    const { url, path } = useRouteMatch();
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false);
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
@@ -433,6 +432,8 @@ export const Details: React.FC<{
                         />
                     </div>
                     <SyncErrorComponent showApplicationDetailedModal={showApplicationDetailedModal} appStreamData={streamData} />
+                   {
+                      !appDetails?.deploymentAppDeleteRequest  &&
                     <SecurityVulnerabilitites
                         imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
                         severityCount={lastExecutionDetail.severityCount}
@@ -440,7 +441,8 @@ export const Details: React.FC<{
                             toggleScanDetailsModal(true)
                         }}
                     />
-                    {environment && (
+                    }
+                    {environment && !appDetails?.deploymentAppDeleteRequest && (
                         <AppMetrics
                             appName={appDetails.appName}
                             addExtraSpace={!isExternalToolAvailable}
@@ -449,7 +451,7 @@ export const Details: React.FC<{
                             k8sVersion={appDetails.k8sVersion}
                         />
                     )}
-                    {isExternalToolAvailable && (
+                    {!appDetails?.deploymentAppDeleteRequest && isExternalToolAvailable && (
                         <AppLevelExternalLinks
                             appDetails={appDetails}
                             externalLinks={externalLinksAndTools.externalLinks}

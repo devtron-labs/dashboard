@@ -657,7 +657,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     deleteCD = (force) => {
         let payload = {
-            action: this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DEPLOYMENT_DELETE,
+            action: this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id,
@@ -965,24 +965,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             )
         } else return null
     }
-
-    // renderTriggerType() {
-    //     return (
-    //         <div className="form__row">
-    //             <label className="form__label form__label--sentence dc__bold">
-    //                 When do you want the pipeline to execute?*
-    //             </label>
-    //             <RadioGroup
-    //                 value={this.state.pipelineConfig.triggerType}
-    //                 name="trigger-type"
-    //                 onChange={this.handleTriggerChange}
-    //             >
-    //                 <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
-    //                 <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
-    //             </RadioGroup>
-    //         </div>
-    //     )
-    // }
 
     renderDeploymentAppType() {
         return (

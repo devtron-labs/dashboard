@@ -76,7 +76,12 @@ function ManifestComponent({
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
         setLoading(true)
 
-        if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+        if (
+            isResourceBrowserView ||
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            appDetails.deploymentAppType === DeploymentAppType.helm ||
+            appDetails.deploymentAppDeleteRequest
+        ) {
             markActiveTab('Live manifest')
         }
         try {
