@@ -2605,3 +2605,8 @@ textarea::placeholder {
     min-height: 16px;
     background-color: var(--N200);
 }
+
+.dc__required-field::after {
+  content: ' *';
+  color: var(--R500);
+}
