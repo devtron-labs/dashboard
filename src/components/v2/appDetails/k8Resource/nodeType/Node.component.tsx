@@ -19,7 +19,6 @@ import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 import { NoPod } from '../../../../app/ResourceTreeNodes';
-import { log } from 'console';
 
 function NodeComponent({
     handleFocusTabs,
