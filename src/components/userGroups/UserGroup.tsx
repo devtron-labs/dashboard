@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import {
     useAsync,
     NavigationArrow,
@@ -31,7 +32,7 @@ import {
     getEnvironmentListHelmApps,
     getUsersDataToExport,
     getGroupsDataToExport,
-    getUserRole
+    getUserRole,
 } from './userGroup.service'
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
@@ -65,6 +66,9 @@ import ApiTokens from '../apiTokens/ApiTokens.component'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
+import { getSSOConfigList } from '../login/login.service'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -177,11 +181,7 @@ function HeaderSection(type: string) {
                 <a
                     className="dc__link"
                     rel="noreferrer noopener"
-                    href={
-                        isUserPremissions
-                            ? DOCUMENTATION.GLOBAL_CONFIG_USER
-                            : DOCUMENTATION.GLOBAL_CONFIG_GROUPS
-                    }
+                    href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
                     target="_blank"
                 >
                     Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
@@ -254,7 +254,6 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
@@ -292,7 +291,7 @@ export default function UserGroupRoute() {
     if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
-        <div>
+        <div className="flex h-100">
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
@@ -333,7 +332,9 @@ const UserGroupList: React.FC<{
     renderHeaders: (type: string) => JSX.Element
 }> = ({ type, reloadLists, renderHeaders }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
+    const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
+    const isSSOConfigured = ssoConfigListdata?.result?.some((a) => a.active) || false
     const [searchString, setSearchString] = useState('')
     const searchRef = useRef(null)
     const keys = useKeyDown()
@@ -350,7 +351,7 @@ const UserGroupList: React.FC<{
 
     useEffect(() => {
         if (!error) return
-        showError(error,true,true)
+        showError(error, true, true)
     }, [error])
 
     useEffectAfterMount(() => {
@@ -530,70 +531,76 @@ const UserGroupList: React.FC<{
         })
     }
 
-    if (loading)
+    if (loading || fetchingSSOConfigList) {
         return (
-            <div className="w-100 flex" style={{ minHeight: '600px' }}>
+            <div className="w-100 flex mh-600">
                 <Progressing pageLoader />
             </div>
         )
-        
-    if (error && (error.code === 403 || error.code === 401)) return <ErrorScreenNotAuthorized subtitle="" />
-    if (!addHash) return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    const filteredAndSorted = result.filter(
-        (userOrGroup) =>
-            userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-            userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-            userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
-    )
-    return (
-        <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {renderHeaders(type)}
-            {result.length > 0 && (
-                <div className="flex dc__content-space">
-                    <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
-                        <Search className="search__icon icon-dim-18" />
-                        <input
-                            value={searchString}
-                            autoComplete="off"
-                            ref={searchRef}
-                            type="search"
-                            placeholder={`Search ${type}`}
-                            className="search__input bcn-0"
-                            onChange={(e) => setSearchString(e.target.value)}
-                        />
+    } else if (error && (error.code === 403 || error.code === 401)) {
+        return <ErrorScreenNotAuthorized subtitle="" />
+    } else if (!addHash) {
+        return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
+    } else if (!isSSOConfigured) {
+        return <SSONotConfiguredState />
+    } else {
+        const filteredAndSorted = result.filter(
+            (userOrGroup) =>
+                userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+                userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+                userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
+        )
+        return (
+            <div id="auth-page__body" className="auth-page__body-users__list-container">
+                {renderHeaders(type)}
+                {result.length > 0 && (
+                    <div className="flex dc__content-space">
+                        <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
+                            <Search className="search__icon icon-dim-18" />
+                            <input
+                                value={searchString}
+                                autoComplete="off"
+                                ref={searchRef}
+                                type="search"
+                                placeholder={`Search ${type}`}
+                                className="search__input bcn-0"
+                                onChange={(e) => setSearchString(e.target.value)}
+                            />
+                        </div>
+                        {roles?.indexOf('role:super-admin___') !== -1 && (
+                            <ExportToCsv
+                                className="mb-16"
+                                apiPromise={getPermissionsDataToExport}
+                                fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
+                            />
+                        )}
                     </div>
-                    {roles?.indexOf('role:super-admin___') !== -1 && (
-                        <ExportToCsv
-                            className="mb-16"
-                            apiPromise={getPermissionsDataToExport}
-                            fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
-                        />
-                    )}
-                </div>
-            )}
-            {!(filteredAndSorted.length === 0 && result.length > 0) && (
-                <AddUser
-                    cancelCallback={cancelCallback}
-                    key={addHash}
-                    text={`Add ${type}`}
-                    type={type}
-                    open={!result || result?.length === 0}
-                    {...{ createCallback, updateCallback, deleteCallback }}
-                />
-            )}
-            {filteredAndSorted.map((data, index) => (
-                <CollapsedUserOrGroup
-                    key={data.id}
-                    {...data}
-                    type={type}
-                    {...{ updateCallback, deleteCallback, createCallback, index }}
-                />
-            ))}
-            {filteredAndSorted.length === 0 && result.length > 0 && (
-                <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
-            )}
-        </div>
-    )
+                )}
+
+                {!(filteredAndSorted.length === 0 && result.length > 0) && (
+                    <AddUser
+                        cancelCallback={cancelCallback}
+                        key={addHash}
+                        text={`Add ${type}`}
+                        type={type}
+                        open={!result || result?.length === 0}
+                        {...{ createCallback, updateCallback, deleteCallback }}
+                    />
+                )}
+                {filteredAndSorted.map((data, index) => (
+                    <CollapsedUserOrGroup
+                        key={data.id}
+                        {...data}
+                        type={type}
+                        {...{ updateCallback, deleteCallback, createCallback, index }}
+                    />
+                ))}
+                {filteredAndSorted.length === 0 && result.length > 0 && (
+                    <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
+                )}
+            </div>
+        )
+    }
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
@@ -613,7 +620,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
-    const isUserLocked = email_id === UserLocked.ADMIN || email_id === UserLocked.SYSTEM
+    const isAdminOrSystemUser = email_id === UserLocked.ADMIN || email_id === UserLocked.ADMIN
 
     useEffect(() => {
         if (!dataError) return
@@ -640,6 +647,14 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 return
         }
     }
+    const onClickUserDropdownHandler = () => {
+        if (isAdminOrSystemUser) {
+            noop()
+        } else {
+            setCollapsed(not)
+        }
+    }
+
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
             <div className="user-list__header w-100">
@@ -652,11 +667,11 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={isUserLocked ? noop : (e) => setCollapsed(not)}
+                    onClick={onClickUserDropdownHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={isUserLocked}
+                        condition={isAdminOrSystemUser}
                         wrap={(children) => (
                             <Tippy
                                 className="default-tt"
@@ -668,7 +683,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                             </Tippy>
                         )}
                     >
-                        {isUserLocked ? (
+                        {isAdminOrSystemUser ? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />
@@ -1489,6 +1504,41 @@ function NoUsers({ onClick }) {
                     Add user
                 </button>
             </EmptyState.Button>
+        </EmptyState>
+    )
+}
+
+const renderEmptySSOMessage = (): JSX.Element => {
+    return (
+        <>
+            <span className="dc__bold">{SSO_NOT_CONFIGURED_STATE_TEXTS.notConfigured}</span>
+            {SSO_NOT_CONFIGURED_STATE_TEXTS.infoText}
+        </>
+    )
+}
+
+function SSONotConfiguredState() {
+    return (
+        <EmptyState>
+            <EmptyState.Image>
+                <img src={EmptyImage} alt="so empty" />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">
+                    {SSO_NOT_CONFIGURED_STATE_TEXTS.title}
+                </h4>
+            </EmptyState.Title>
+            <EmptyState.Subtitle className="w-300 fw-400 fs-13">
+                {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
+                <InfoColourBar
+                    message={renderEmptySSOMessage()}
+                    classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
+                    linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
+                    redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
+                    internalLink={true}
+                    Icon={ErrorIcon}
+                />
+            </EmptyState.Subtitle>
         </EmptyState>
     )
 }
