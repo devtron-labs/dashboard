@@ -13,7 +13,7 @@ import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { showError } from '../../../../common'
+import { Checkbox, CHECKBOX_VALUE, showError } from '../../../../common'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
@@ -35,11 +35,19 @@ function NodeDetailComponent({
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
+    const [isManagedFields, setManagedFields] = useState(false)
+    const [showManagedFields, setShowManagedFields] = useState(false)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
     const { path, url } = useRouteMatch()
+    const toggleManagedFields = (managedFieldsExist: boolean) => {
+        if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) setManagedFields(true)
+        else setManagedFields(false)
+    }
 
+    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
@@ -178,6 +186,21 @@ function NodeDetailComponent({
                             </div>
                         )
                     })}
+                {isManagedFields ? (
+                    <>
+                        <div className="mt-6 mb-6 ml-8 mr-4 tab-cell-border"></div>
+                        <div className="pt-6 pb-6 pl-8 pr-8">
+                            <Checkbox
+                                rootClassName="mb-0-imp h-20"
+                                isChecked={showManagedFields}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={() => setShowManagedFields(!showManagedFields)}
+                            >
+                                <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
+                            </Checkbox>
+                        </div>
+                    </>
+                ) : null}
             </div>
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI
@@ -192,6 +215,8 @@ function NodeDetailComponent({
                         <ManifestComponent
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
+                            toggleManagedFields={toggleManagedFields}
+                            showManagedFields={showManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                         />

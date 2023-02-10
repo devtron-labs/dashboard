@@ -14,7 +14,7 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, DeploymentAppType, NodeType, ResourceInfoActionPropsType } from '../../../appDetails.type'
+import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import { showError, ToastBody } from '../../../../../common'
@@ -27,10 +27,12 @@ import { MODES } from '../../../../../../config'
 
 function ManifestComponent({
     selectedTab,
+    showManagedFields,
+    toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
-}: ResourceInfoActionPropsType) {
+}: ManifestActionPropsType) {
     const location = useLocation()
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
@@ -39,6 +41,7 @@ function ManifestComponent({
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
+    const [trimedManifestEditorData, setTrimedManifestEditorData] = useState('')
     const [desiredManifest, setDesiredManifest] = useState('')
     const appDetails = IndexStore.getAppDetails()
     const [loading, setLoading] = useState(true)
@@ -268,6 +271,22 @@ function ManifestComponent({
         }
     }, [params.actionName])
 
+    useEffect(() => {
+        let jsonManifestData = YAML.parse(activeManifestEditorData)
+        if (jsonManifestData?.metadata?.managedFields) {
+            toggleManagedFields(true)
+            if (showManagedFields) {
+                const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
+                    if (key === 'metadata') {
+                        value['managedFields'] = undefined
+                    }
+                    return value
+                })
+                setTrimedManifestEditorData(_trimedManifestData)
+            }
+        }
+    }, [activeManifestEditorData, showManagedFields])
+
     return isDeleted ? (
         <div>
             <MessageUI
@@ -353,7 +372,7 @@ function ManifestComponent({
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
                                 height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
-                                value={activeManifestEditorData}
+                                value={showManagedFields ? trimedManifestEditorData : activeManifestEditorData}
                                 mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
