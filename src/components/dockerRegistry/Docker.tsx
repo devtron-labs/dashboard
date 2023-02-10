@@ -462,7 +462,7 @@ function DockerForm({
     function onValidation() {
         if (selectedDockerRegistryType.value === 'ecr') {
             if (
-                (!isIAMAuthType && (!customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value)) ||
+                (!isIAMAuthType && (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
                 !customState.registryUrl.value
             ) {
                 setCustomState((st) => ({
@@ -470,18 +470,18 @@ function DockerForm({
                     awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
                     awsSecretAccessKey: {
                         ...st.awsSecretAccessKey,
-                        error: st.awsSecretAccessKey.value ? '' : 'Mandatory',
+                        error: (id || st.awsSecretAccessKey.value) ? '' : 'Mandatory',
                     },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
                 return
             }
         } else if (selectedDockerRegistryType.value === 'docker-hub') {
-            if (!customState.username.value || !customState.password.value) {
+            if (!customState.username.value || !(customState.password.value || id)) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
+                    password: { ...st.password, error: (id || st.password.value)? '' : 'Mandatory' },
                 }))
                 return
             }
@@ -489,14 +489,14 @@ function DockerForm({
             selectedDockerRegistryType.value === 'artifact-registry' ||
             selectedDockerRegistryType.value === 'gcr'
         ) {
-            const isValidJsonFile = isValidJson(customState.password.value)
-            if (!customState.username.value || !customState.password.value || !isValidJsonFile) {
+            const isValidJsonFile = (isValidJson(customState.password.value) || id)
+            if (!customState.username.value || !(customState.password.value|| id) || !isValidJsonFile) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                     password: {
                         ...st.password,
-                        error: st.password.value ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',
+                        error: (id || st.password.value) ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',
                     },
                 }))
                 return
@@ -507,11 +507,11 @@ function DockerForm({
             selectedDockerRegistryType.value === 'other'
         ) {
             let error = false
-            if (!customState.username.value || !customState.password.value || !customState.registryUrl.value) {
+            if (!customState.username.value || !(customState.password.value || id) || !customState.registryUrl.value) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
+                    password: { ...st.password, error: (id || st.password.value) ? '' : 'Mandatory' },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
                 error = true

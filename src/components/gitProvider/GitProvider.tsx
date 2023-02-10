@@ -415,10 +415,10 @@ function GitForm({
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
-            if (!customState.password.value || !customState.username.value) {
+            if ((!id && !customState.password.value) || !customState.username.value) {
                 setCustomState((state) => ({
                     ...state,
-                    password: { value: state.password.value, error: 'This is a required field' },
+                    password: { value: state.password.value, error: !id ? 'This is a required field' : '' },
                     username: { value: state.username.value, error: 'Required' },
                 }));
                 return;
@@ -432,8 +432,11 @@ function GitForm({
                 return;
             }
         } else if (state.auth.value === 'SSH') {
-            if (!customState.sshInput.value) {
-                setCustomState((state) => ({ ...state, sshInput: { value: '', error: 'This is a required field' } }));
+            if (!id && !customState.sshInput.value) {
+                setCustomState((state) => ({
+                    ...state,
+                    sshInput: { value: '', error: 'This is a required field' },
+                }))
                 return;
             }
         }
