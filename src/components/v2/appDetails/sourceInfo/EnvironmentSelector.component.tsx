@@ -34,6 +34,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -98,7 +99,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
-            return deleteInstalledChart(params.appId, appDetails.deploymentAppDeleteRequest)
+            return deleteInstalledChart(params.appId, appDetails.deploymentAppDeleteRequest, isGitops)
         }
     }
 
@@ -146,7 +147,6 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     </div>
 
                     <div className="fw-6 fs-14 cb-5">
-                        {/* <div>{appDetails.environmentName}</div> */}
                         <div style={{ minWidth: '200px' }}>
                             {environments && environments.length > 0 && (
                                 <Select
@@ -204,11 +204,9 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content={`Deployed using ${
-                                appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
-                            }`}
+                            content={`Deployed using ${isGitops ? `GitOps` : `Helm`}`}
                         >
-                            {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
+                            {isGitops ? (
                                 <ArgoCD className="icon-dim-32 ml-16" />
                             ) : (
                                 <Helm className="icon-dim-32 ml-16" />
@@ -219,12 +217,12 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
             </div>
 
             <div className="flex">
-            {
-              !appDetails.deploymentAppDeleteRequest && <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
-                    <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
-                    Urls
-                </button>
-            }
+                {!appDetails.deploymentAppDeleteRequest && (
+                    <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
+                        <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
+                        Urls
+                    </button>
+                )}
                 {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
                     <>
                         {canScaleWorkloads ? (
