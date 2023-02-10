@@ -21,16 +21,35 @@
         grid-template-columns: 220px auto;
 
         .k8s-object-container {
-            .kind-search-select__input-container {
-                position: absolute;
-            }
+            .k8s-object-kind-search {
+                .kind-search-select__input-container {
+                    input {
+                        max-width: 135px;
+                    }
+                }
 
-            .kind-search-select__menu-list {
-                .kind-search-select__option {
-                    mark {
-                        padding: 0;
-                        background-color: var(--Y200);
-                        // font-weight: 600;
+                .kind-search-select__menu {
+                    margin-top: 4px;
+
+                    .kind-search-select__menu-list {
+                        .kind-search-select__option {
+                            mark {
+                                padding: 0;
+                                background-color: var(--Y200);
+                            }
+                        }
+                    }
+                }
+
+                .kind-search-select__indicators {
+                    position: absolute;
+                    top: 15px;
+                    right: 0;
+
+                    .clear-kind-search-icon {
+                        rect {
+                            fill: var(--N600);
+                        }
                     }
                 }
             }
@@ -50,6 +69,14 @@
             &.no-result-container {
                 height: calc(100vh - 92px);
                 overflow: hidden;
+            }
+
+            .resource-filter-options-wrapper {
+                .resource-filter-select__input-container {
+                    input {
+                        max-width: 150px;
+                    }
+                }
             }
 
             .scrollable-resource-list {

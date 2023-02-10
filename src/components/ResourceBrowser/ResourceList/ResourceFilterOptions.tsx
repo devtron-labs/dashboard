@@ -6,7 +6,7 @@ import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, COMMON_RESOURCE_FILTER_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ALL_NAMESPACE_OPTION, getCommonResourceFilterStyle, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
 
@@ -65,13 +65,13 @@ export default function ResourceFilterOptions({
 
     return (
         <div
-            className={`flexbox ${
+            className={`resource-filter-options-container flexbox ${
                 hideSearchInput ? 'dc__content-end' : 'dc__content-space'
             } pt-16 pr-20 pb-12 pl-20 w-100`}
         >
             {!hideSearchInput && (
                 <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                    <Search className="search__icon icon-dim-18" />
+                    <Search className="search__icon icon-dim-16" />
                     <input
                         type="text"
                         placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
@@ -88,14 +88,21 @@ export default function ResourceFilterOptions({
                     )}
                 </div>
             )}
-            <div className="flex">
+            <div className="resource-filter-options-wrapper flex">
                 <ReactSelect
                     className="w-220"
+                    classNamePrefix="resource-filter-select"
                     placeholder="Select Cluster"
                     options={clusterOptions}
                     value={selectedCluster}
                     onChange={handleClusterChange}
-                    styles={COMMON_RESOURCE_FILTER_STYLE}
+                    blurInputOnSelect={true}
+                    styles={getCommonResourceFilterStyle({
+                        input: (base, state) => ({
+                            ...base,
+                            paddingLeft: '24px',
+                        }),
+                    })}
                     components={{
                         IndicatorSeparator: null,
                         Option: ClusterOptionWithIcon,
@@ -106,6 +113,7 @@ export default function ResourceFilterOptions({
                     <ReactSelect
                         placeholder="Select Namespace"
                         className="w-220 ml-8"
+                        classNamePrefix="resource-filter-select"
                         options={namespaceOptions}
                         value={
                             isNamespaceSelectDisabled
@@ -115,8 +123,15 @@ export default function ResourceFilterOptions({
                                 : NAMESPACE_NOT_APPLICABLE_OPTION
                         }
                         onChange={handleNamespaceChange}
+                        blurInputOnSelect={true}
                         isDisabled={isNamespaceSelectDisabled ?? !selectedResource?.namespaced}
-                        styles={COMMON_RESOURCE_FILTER_STYLE}
+                        styles={getCommonResourceFilterStyle({
+                            input: (base) => ({
+                                ...base,
+                                paddingLeft: '24px',
+                                maxWidth: '150px',
+                            }),
+                        })}
                         components={{
                             IndicatorSeparator: null,
                             Option,

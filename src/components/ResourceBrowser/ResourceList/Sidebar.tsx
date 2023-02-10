@@ -2,8 +2,6 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import {
     ApiResourceGroupType,
     K8SObjectChildMapType,
@@ -12,12 +10,16 @@ import {
     SidebarType,
 } from '../Types'
 import { AggregationKeys } from '../../app/types'
-import { COMMON_RESOURCE_FILTER_STYLE, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { getCommonResourceFilterStyle, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
 import ReactSelect, { InputActionMeta } from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
-import { ResourceValueContainerWithIcon } from './ResourceList.component'
+import {
+    KindSearchClearIndicator,
+    KindSearchValueContainer,
+    ResourceValueContainerWithIcon,
+} from './ResourceList.component'
 
 export function Sidebar({
     k8SObjectMap,
@@ -37,7 +39,6 @@ export function Sidebar({
     const sideBarElementRef = useRef<HTMLDivElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [k8sObjectOptionsList, setK8sObjectOptionsList] = useState<K8sObjectOptionType[]>([])
 
@@ -191,20 +192,9 @@ export function Sidebar({
         }
     }
 
-    const handleSearchInput = (e) => {
-        setSearchText(e.target.value)
-        setSearchApplied(!!e.target.value)
-    }
-
-    const clearSearchInput = () => {
-        setSearchText('')
-        setSearchApplied(false)
-    }
-
     const handleInputChange = (newValue: string, actionMeta: InputActionMeta): void => {
         if (actionMeta.action === 'input-change') {
             setSearchText(newValue)
-            setSearchApplied(!!newValue)
             setMenuOpen(!!newValue)
         }
     }
@@ -212,11 +202,10 @@ export function Sidebar({
     const hideMenu = () => {
         setMenuOpen(false)
         setSearchText('')
-        setSearchApplied(false)
     }
 
     const handleOnChange = (option: K8sObjectOptionType): void => {
-        hideMenu()
+        if (!option) return
         selectNode(
             {
                 currentTarget: {
@@ -252,32 +241,63 @@ export function Sidebar({
     }
 
     const noOptionsMessage = () => 'No matching kind'
+    const commonSelectStyle = getCommonResourceFilterStyle()
 
     return !k8SObjectMap?.size ? (
         <Progressing pageLoader />
     ) : (
         <div className="k8s-object-container">
-            <div className="bcn-0 pt-16 pb-12 pl-20 pr-20">
+            <div className="k8s-object-kind-search bcn-0 pt-16 pb-12 w-200 dc__m-auto cursor">
                 <ReactSelect
                     placeholder="Search Kind"
                     options={k8sObjectOptionsList}
-                    value={null}
+                    value={k8sObjectOptionsList[0]} // Just to enable clear indicator
                     inputValue={searchText}
                     onInputChange={handleInputChange}
                     onChange={handleOnChange}
                     onBlur={hideMenu}
                     menuIsOpen={isMenuOpen}
+                    openMenuOnFocus={false}
+                    blurInputOnSelect
+                    isSearchable
+                    isClearable
                     formatOptionLabel={formatOptionLabel}
                     filterOption={customFilter}
                     noOptionsMessage={noOptionsMessage}
                     classNamePrefix="kind-search-select"
-                    styles={COMMON_RESOURCE_FILTER_STYLE}
+                    styles={{
+                        ...commonSelectStyle,
+                        input: (base) => ({
+                            ...base,
+                            paddingLeft: '24px',
+                            maxWidth: '135px',
+                        }),
+                        valueContainer: (base) => ({
+                            ...commonSelectStyle.valueContainer(base),
+                            height: 'inherit',
+                        }),
+                        indicatorsContainer: (base) => ({
+                            ...base,
+                            height: '0px',
+                        }),
+                        option: (base, state) => ({
+                            ...base,
+                            backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+                            color: 'var(--N900)',
+                            textOverflow: 'ellipsis',
+                            fontWeight: '500',
+                            overflow: 'hidden',
+                            textAlign: 'left',
+                            whiteSpace: 'nowrap',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                        }),
+                    }}
                     components={{
-                        ClearIndicator: null,
+                        ClearIndicator: KindSearchClearIndicator,
                         IndicatorSeparator: null,
                         DropdownIndicator: null,
-                        Option,
-                        ValueContainer: ResourceValueContainerWithIcon,
+                        ValueContainer: KindSearchValueContainer,
                     }}
                 />
             </div>

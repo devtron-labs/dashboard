@@ -1,43 +1,44 @@
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
-export const COMMON_RESOURCE_FILTER_STYLE = {
-    ...multiSelectStyles,
-    menu: (base) => ({
-        ...base,
-        zIndex: 9999,
-        textAlign: 'left',
-    }),
-    control: (base, state) => ({
-        ...base,
-        height: '28px',
-        minHeight: '32px',
-        border: state.isFocused && !state.isDisabled ? '1px solid #06c' : '1px solid #d6dbdf',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
-        pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-    }),
-    singleValue: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        direction: 'rtl',
-        textAlign: 'left',
-        marginLeft: '2px',
-    }),
-    indicatorsContainer: (base, state) => ({
-        ...base,
-        height: '32px',
-    }),
-    valueContainer: (base, state) => ({
-        ...base,
-        display: 'flex',
-        height: '32px',
-        padding: '0 6px',
-    }),
-    input: (base, state) => ({
-        ...base,
-        paddingLeft: state.value ? '0px' : '24px'
-    }),
+export const getCommonResourceFilterStyle = (styleOverrides = {}) => {
+    return {
+        ...multiSelectStyles,
+        menu: (base) => ({
+            ...base,
+            zIndex: 9999,
+            textAlign: 'left',
+        }),
+        control: (base, state) => ({
+            ...base,
+            height: '28px',
+            minHeight: '32px',
+            borderColor: 'none',
+            boxShadow: 'none',
+            border: state.isFocused && !state.isDisabled ? '1px solid var(--B500)' : '1px solid #d6dbdf',
+            backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
+            pointerEvents: 'auto',
+            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+        }),
+        singleValue: (base) => ({
+            ...base,
+            color: 'var(--N900)',
+            direction: 'rtl',
+            textAlign: 'left',
+            marginLeft: '2px',
+        }),
+        indicatorsContainer: (base) => ({
+            ...base,
+            height: '32px',
+        }),
+        valueContainer: (base) => ({
+            ...base,
+            display: 'flex',
+            height: '32px',
+            padding: '0 6px',
+        }),
+        ...styleOverrides,
+    }
 }
 
 export const RESOURCE_ACTION_MENU = {
