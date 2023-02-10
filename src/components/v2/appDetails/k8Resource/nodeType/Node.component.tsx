@@ -12,7 +12,7 @@ import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
 import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
-import { getNodeStatus } from './nodeType.util';
+import { getNodeMessage, getNodeStatus } from './nodeType.util';
 import { useSharedState } from '../../../utils/useSharedState';
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
@@ -225,14 +225,16 @@ function NodeComponent({
                                     )}
                                     <div>
                                         <div>{node.name}</div>
-                                        <div
-                                            className={` app-summary__status-name f-${(
-                                                node?.status ||
-                                                node?.health?.status ||
-                                                ''
-                                            ).toLowerCase()}`}
-                                        >
-                                            {getNodeStatus(node)}
+                                        <div className="flex left">
+                                            <span className={`mr-4 app-summary__status-name f-${(
+                                                    node?.status ||
+                                                    node?.health?.status ||
+                                                    ''
+                                                ).toLowerCase()}`}
+                                            >
+                                                {getNodeStatus(node)}
+                                            </span>
+                                            {getNodeMessage(node).length>0 &&  <><div className='dc__bullet ml-4 mr-4'></div><span className='dc__truncate-text'>{getNodeMessage(node)}</span>  </>}
                                         </div>
                                     </div>
                                 </div>

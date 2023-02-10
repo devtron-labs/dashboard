@@ -92,14 +92,20 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
-    let requestBody = {
-        appId: getAppId(
-            appDetails.clusterId,
-            appDetails.namespace,
-            appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                ? `${appDetails.appName}-${appDetails.environmentName}`
-                : appDetails.appName,
-        ),
+    const appId =
+        appDetails.deploymentAppType == DeploymentAppType.argo_cd
+            ? ''
+            : getAppId(
+                  appDetails.clusterId,
+                  appDetails.namespace,
+                  appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
+                      ? `${appDetails.appName}-${appDetails.environmentName}`
+                      : appDetails.appName,
+       )
+
+    const requestBody = {
+        appId: appId,
+        clusterId: appDetails.clusterId,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
