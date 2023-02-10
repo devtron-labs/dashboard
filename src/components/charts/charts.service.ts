@@ -37,9 +37,9 @@ export function updateChart(request) {
 export function deleteInstalledChart(installedAppId, deploymentAppDeleteRequest?, force?: boolean) {
     let URL
     if (force) {
-        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}?partialDelete=${deploymentAppDeleteRequest}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}?partialDelete=${deploymentAppDeleteRequest ? 'true' : 'false'}`
     } else {
-        URL = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${deploymentAppDeleteRequest}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${deploymentAppDeleteRequest? 'true' : 'false'}`
     }
     return trash(URL)
 }
