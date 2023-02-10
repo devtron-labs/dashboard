@@ -8,6 +8,7 @@ import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.sv
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { CLUSTER_NOT_REACHABLE, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 
 export const clusterUnreachableTippyContent = (errorMsg: string) => {
     return (
@@ -98,7 +99,7 @@ export const KindSearchValueContainer = (props) => {
         <components.ValueContainer {...props}>
             <div className="flex left dc__position-abs w-100">
                 <span className="flex icon-dim-20">
-                    <SearchIcon className="icon-dim-16" />
+                    <SearchIcon className="kind-search-icon icon-dim-16" />
                 </span>
                 {!selectProps.inputValue && (
                     <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
@@ -116,6 +117,7 @@ export const KindSearchClearIndicator = (props) => {
                 {props.selectProps.inputValue && (
                     <ClearIcon className="clear-kind-search-icon icon-dim-16" onClick={props.selectProps.onBlur} />
                 )}
+                {!props.isFocused && <ShortcutKeyBadge shortcutKey="K" rootClassName="kind-search-shortcut-key" />}
             </div>
         </components.ClearIndicator>
     )

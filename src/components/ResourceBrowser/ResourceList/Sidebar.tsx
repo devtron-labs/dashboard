@@ -10,24 +10,21 @@ import {
     SidebarType,
 } from '../Types'
 import { AggregationKeys } from '../../app/types'
-import { getCommonResourceFilterStyle, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
+import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
-import ReactSelect, { InputActionMeta } from 'react-select'
-import { Option } from '../../v2/common/ReactSelect.utils'
-import { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
-import {
-    KindSearchClearIndicator,
-    KindSearchValueContainer,
-    ResourceValueContainerWithIcon,
-} from './ResourceList.component'
+import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
+import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
+import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
+import { withShortcut, IWithShortcut } from 'react-keybind'
 
-export function Sidebar({
+function Sidebar({
     k8SObjectMap,
     selectedResource,
     handleGroupHeadingClick,
     setSelectedResource,
     updateResourceSelectionData,
-}: SidebarType) {
+    shortcut,
+}: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
         clusterId: string
@@ -36,11 +33,20 @@ export function Sidebar({
         node: string
         group: string
     }>()
-    const sideBarElementRef = useRef<HTMLDivElement>(null)
-    const preventScrollRef = useRef<boolean>(false)
     const [searchText, setSearchText] = useState('')
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [k8sObjectOptionsList, setK8sObjectOptionsList] = useState<K8sObjectOptionType[]>([])
+    const sideBarElementRef = useRef<HTMLDivElement>(null)
+    const preventScrollRef = useRef<boolean>(false)
+    const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
+
+    useEffect(() => {
+        shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
+
+        return (): void => {
+            shortcut.unregisterShortcut(['k'])
+        }
+    }, [])
 
     useEffect(() => {
         if (k8SObjectMap?.size) {
@@ -49,38 +55,50 @@ export function Sidebar({
             }
 
             if (!k8sObjectOptionsList.length) {
-                setK8sObjectOptionsList(
-                    [...k8SObjectMap.values()].flatMap((k8sObject) => {
-                        return [...k8sObject.child.entries()].flatMap(([key, value]) => {
-                            const keyLowerCased = key.toLowerCase()
-                            if (
-                                keyLowerCased === 'node' ||
-                                keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-                                keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                            ) {
-                                return []
-                            }
-
-                            return value.data.map((childData) => {
-                                return {
-                                    label: childData.gvk.Kind,
-                                    value: childData.gvk.Group || K8S_EMPTY_GROUP,
-                                    dataset: {
-                                        group: childData.gvk.Group,
-                                        version: childData.gvk.Version,
-                                        kind: childData.gvk.Kind,
-                                        namespaced: `${childData.namespaced}`,
-                                        grouped: `${k8sObject.child.size > 1}`,
-                                    },
-                                    groupName: value.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
-                                }
-                            })
-                        })
-                    }),
-                )
+                covertK8sMapToOptionsList()
             }
         }
     }, [k8SObjectMap?.size, sideBarElementRef.current])
+
+    const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
+        const _key = e.key
+        if (_key === 'k') {
+            searchInputRef.current?.focus()
+        } else if (_key === 'Escape' || _key === 'Esc') {
+            searchInputRef.current?.blur()
+        }
+    }
+
+    const covertK8sMapToOptionsList = () => {
+        const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
+            return [...k8sObject.child.entries()].flatMap(([key, value]) => {
+                const keyLowerCased = key.toLowerCase()
+                if (
+                    keyLowerCased === 'node' ||
+                    keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+                    keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                ) {
+                    return []
+                }
+
+                return value.data.map((childData) => {
+                    return {
+                        label: childData.gvk.Kind,
+                        value: childData.gvk.Group || K8S_EMPTY_GROUP,
+                        dataset: {
+                            group: childData.gvk.Group,
+                            version: childData.gvk.Version,
+                            kind: childData.gvk.Kind,
+                            namespaced: `${childData.namespaced}`,
+                            grouped: `${k8sObject.child.size > 1}`,
+                        },
+                        groupName: value.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                    }
+                })
+            })
+        })
+        setK8sObjectOptionsList(_k8sObjectOptionsList)
+    }
 
     const selectNode = (e: any, groupName?: string): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
@@ -241,7 +259,6 @@ export function Sidebar({
     }
 
     const noOptionsMessage = () => 'No matching kind'
-    const commonSelectStyle = getCommonResourceFilterStyle()
 
     return !k8SObjectMap?.size ? (
         <Progressing pageLoader />
@@ -249,6 +266,7 @@ export function Sidebar({
         <div className="k8s-object-container">
             <div className="k8s-object-kind-search bcn-0 pt-16 pb-12 w-200 dc__m-auto cursor">
                 <ReactSelect
+                    ref={searchInputRef}
                     placeholder="Search Kind"
                     options={k8sObjectOptionsList}
                     value={k8sObjectOptionsList[0]} // Just to enable clear indicator
@@ -256,6 +274,7 @@ export function Sidebar({
                     onInputChange={handleInputChange}
                     onChange={handleOnChange}
                     onBlur={hideMenu}
+                    onKeyDown={handleInputShortcut}
                     menuIsOpen={isMenuOpen}
                     openMenuOnFocus={false}
                     blurInputOnSelect
@@ -265,34 +284,7 @@ export function Sidebar({
                     filterOption={customFilter}
                     noOptionsMessage={noOptionsMessage}
                     classNamePrefix="kind-search-select"
-                    styles={{
-                        ...commonSelectStyle,
-                        input: (base) => ({
-                            ...base,
-                            paddingLeft: '24px',
-                            maxWidth: '135px',
-                        }),
-                        valueContainer: (base) => ({
-                            ...commonSelectStyle.valueContainer(base),
-                            height: 'inherit',
-                        }),
-                        indicatorsContainer: (base) => ({
-                            ...base,
-                            height: '0px',
-                        }),
-                        option: (base, state) => ({
-                            ...base,
-                            backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
-                            color: 'var(--N900)',
-                            textOverflow: 'ellipsis',
-                            fontWeight: '500',
-                            overflow: 'hidden',
-                            textAlign: 'left',
-                            whiteSpace: 'nowrap',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                        }),
-                    }}
+                    styles={KIND_SEARCH_COMMON_STYLES}
                     components={{
                         ClearIndicator: KindSearchClearIndicator,
                         IndicatorSeparator: null,
@@ -328,7 +320,7 @@ export function Sidebar({
                         </Fragment>
                     ),
                 )}
-                <div className="dc__border-top-n1 pt-8">
+                <div className="dc__border-top-n1 pt-8 mt-8">
                     {SIDEBAR_KEYS.eventGVK.Version && (
                         <div
                             key={SIDEBAR_KEYS.eventGVK.Kind}
@@ -372,3 +364,5 @@ export function Sidebar({
         </div>
     )
 }
+
+export default withShortcut(Sidebar)

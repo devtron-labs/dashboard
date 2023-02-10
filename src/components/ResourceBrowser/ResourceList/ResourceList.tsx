@@ -40,7 +40,7 @@ import {
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
 import { DOCUMENTATION, LAST_SEEN, URLS } from '../../../config'
-import { Sidebar } from './Sidebar'
+import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
@@ -58,6 +58,7 @@ import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import searchWorker from '../../../config/searchWorker'
 import WebWorker from '../../app/WebWorker'
+import { ShortcutProvider } from 'react-keybind'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -800,10 +801,12 @@ export default function ResourceList() {
     }
 
     return (
-        <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" />
-            {renderResourceListBody()}
-            {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
-        </div>
+        <ShortcutProvider>
+            <div className="resource-browser-container">
+                <PageHeader headerName="Kubernetes Resource Browser" />
+                {renderResourceListBody()}
+                {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
+            </div>
+        </ShortcutProvider>
     )
 }

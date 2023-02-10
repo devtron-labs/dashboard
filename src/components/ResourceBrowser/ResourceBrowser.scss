@@ -22,6 +22,14 @@
 
         .k8s-object-container {
             .k8s-object-kind-search {
+                .kind-search-select__value-container {
+                    .kind-search-icon {
+                        path:nth-child(2) {
+                            fill: var(--N600);
+                        }
+                    }
+                }
+
                 .kind-search-select__input-container {
                     input {
                         max-width: 135px;
@@ -51,6 +59,11 @@
                             fill: var(--N600);
                         }
                     }
+
+                    .kind-search-shortcut-key {
+                        right: 10px;
+                        top: -10px;
+                    }
                 }
             }
 
@@ -71,10 +84,31 @@
                 overflow: hidden;
             }
 
-            .resource-filter-options-wrapper {
-                .resource-filter-select__input-container {
-                    input {
-                        max-width: 150px;
+            .resource-filter-options-container {
+                .resource-filter-options-wrapper {
+                    .resource-filter-select__input-container {
+                        input {
+                            max-width: 150px;
+                        }
+                    }
+                }
+
+                .search {
+                    .search__icon {
+                        path:nth-child(2) {
+                            fill: var(--N600);
+                        }
+                    }
+
+                    .search__input {
+                        &:focus {
+                            border: none;
+                        }
+                    }
+
+                    .resource-search-shortcut-key {
+                        right: 8px;
+                        top: 5px;
                     }
                 }
             }
