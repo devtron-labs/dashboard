@@ -2542,6 +2542,14 @@ textarea::placeholder {
     background-color: var(--N50);
 }
 
+.dc__hover-n100:hover {
+    background-color: var(--N100);
+}
+
+.dc__hover-r100:hover {
+    background-color: var(--R100);
+}
+
 .dc__user-select-none {
     user-select: none;
 }
@@ -2593,5 +2601,19 @@ textarea::placeholder {
                 text-transform: none;
             }
         }
+    }
+}
+
+.dc__divider {
+    width: 1px;
+    min-height: 16px;
+    background-color: var(--N200);
+}
+
+.dc__highlight-text {
+    mark {
+        padding: 0;
+        background-color: var(--Y300) !important;
+        font-weight: 600;
     }
 }

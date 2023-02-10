@@ -508,7 +508,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                                         onClick={onClickResume}
                                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
                                     >
-                                        Resume
+                                        {terminalViewProps.isClusterTerminal ? 'Reconnect' : 'Resume'}
                                     </button>
                                 </React.Fragment>
                             )}
