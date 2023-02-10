@@ -620,7 +620,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
-    const isAdminOrSystemUser = email_id === UserLocked.ADMIN || email_id === UserLocked.ADMIN
+    const isAdminOrSystemUser = email_id === UserLocked.ADMIN || email_id === UserLocked.SYSTEM
 
     useEffect(() => {
         if (!dataError) return
