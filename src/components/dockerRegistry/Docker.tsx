@@ -508,8 +508,6 @@ function DockerForm({
         ) {
             const isValidJsonFile = (isValidJson(customState.password.value) || id)
             if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
-                console.log(isValidJsonFile, customState.password.value, id)
-                console.log((id || customState.password.value) ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',)
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
