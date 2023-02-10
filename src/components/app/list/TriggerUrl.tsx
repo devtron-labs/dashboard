@@ -156,7 +156,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     )
 }
 
-export function CopyToClipboardText({ text, iconClass }: { text: string; iconClass?: string }) {
+export function CopyToClipboardText({ text, iconClass , placement = 'bottom' }: { text: string; iconClass?: string; placement?: any }) {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
@@ -168,7 +168,7 @@ export function CopyToClipboardText({ text, iconClass }: { text: string; iconCla
         <Tippy
             className="default-tt"
             arrow={false}
-            placement="bottom"
+            placement={placement}
             content={copied ? 'Copied!' : 'Copy'}
             trigger="mouseenter click"
             onShow={(_tippy) => {

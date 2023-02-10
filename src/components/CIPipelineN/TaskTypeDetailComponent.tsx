@@ -16,16 +16,19 @@ import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
-import { Checkbox, CHECKBOX_VALUE } from '../common'
+import { Checkbox, CHECKBOX_VALUE, copyToClipboard } from '../common'
+import { ReactComponent as CopyIcon } from '../../assets/icons/ic-copy.svg'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import CreatableSelect from 'react-select/creatable'
-import { components } from 'react-select'
+import { components, ControlProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { CopyTippyWithTextType } from '../app/details/cicdHistory/types'
+import { CopyToClipboardText } from '../app/list/TriggerUrl'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -52,6 +55,7 @@ export function TaskTypeDetailComponent() {
         value: containerImage,
     }))
 
+    const [copied, setCopied] = useState(false)
     const [selectedContainerImage, setSelectedContainerImage] = useState<OptionType>()
 
     useEffect(() => {
@@ -206,21 +210,63 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
+    useEffect(() => {
+        if (!copied) return
+        setTimeout(() => setCopied(false), 2000)
+    }, [copied])
+
+    const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
+        const onClickCopyToClipboard = (e): void => {
+            copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
+        }
+        
         return (
+            <>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                    trigger="mouseenter click"
+                    interactive={true}
+                >
+                    <CopyIcon
+                        data-copy-text={copyText}
+                        className="pointer ml-6 icon-dim-16"
+                        onClick={onClickCopyToClipboard}
+                        
+                    />
+                </Tippy>
+            </>
+        )
+        
+    }
+
+    const ValueContainer = ( props) => {
+        let value = props.getValue()[0]?.label
+        return <>
             <components.ValueContainer {...props}>
                 <>
                     {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select or enter image</span>)}
+                        (value ?<div className="cn-7 fs-12 flex left">
+                            {value}
+                        
+                    </div>  : <span className="cn-5">Select or enter image</span>)}
                     {React.cloneElement(props.children[1])}
+                    
+                    
                 </>
             </components.ValueContainer>
-        )
+            <div className='icon-dim-30'>
+                <CopyToClipboardText text={value} placement={"bottom"} />
+            </div>
+            </>
     }
 
+    
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+        
         return (
             <>
                 <div className="row-container mb-12">
@@ -228,6 +274,7 @@ export function TaskTypeDetailComponent() {
                         taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
                         contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                     />
+
                     <div style={{ width: '80% !important' }}>
                         <CreatableSelect
                             tabIndex={1}
@@ -259,7 +306,7 @@ export function TaskTypeDetailComponent() {
                             isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
                         />
-
+                        
                         {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
