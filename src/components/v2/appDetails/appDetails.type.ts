@@ -180,7 +180,7 @@ export interface AppDetails {
     externalCi?: boolean
     clusterName?: string
     dockerRegistryId?: string
-    deploymentAppDeleteRequest?: boolean //Todo remove ?
+    deploymentAppDeleteRequest?: boolean
 }
 
 interface MaterialInfo {

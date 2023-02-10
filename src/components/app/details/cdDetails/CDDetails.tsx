@@ -380,7 +380,6 @@ const HistoryLogs: React.FC<{
 
     return (
         <>
-
             <div className="trigger-outputs-container">
                 {loading ? (
                     <Progressing pageLoader />

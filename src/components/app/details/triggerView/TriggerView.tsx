@@ -45,27 +45,6 @@ import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 
-export interface CDWFStatus {
-    ci_pipeline_id: number
-    deploy_status: string
-    pipeline_id: number
-    post_status: string
-    pre_status: string
-}
-
-export interface CIWFStatus {
-  ciPipelineId: number
-  ciPipelineName: string
-  ciStatus: string
-  storageConfigured: boolean
-}
-
-export interface WorkflowStatus{
-  cdWorkflowStatus: CDWFStatus
-  ciWorkflowStatus: CIWFStatus
-  deploymentAppDeleteRequest?: boolean //Todo remove ?
-}
-
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
     inprogressStatusTimer
@@ -301,8 +280,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let cdMap = {}
                 let preCDMap = {}
                 let postCDMap = {}
-                let allCIs: CIWFStatus[] = response?.result?.ciWorkflowStatus || []
-                let allCDs: CDWFStatus[] = response?.result?.cdWorkflowStatus || []
+                let allCIs = response?.result?.ciWorkflowStatus || []
+                let allCDs = response?.result?.cdWorkflowStatus || []
                 let cicdInProgress = false
                 //Create maps from Array
                 if (allCIs.length) {

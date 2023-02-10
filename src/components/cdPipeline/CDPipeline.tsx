@@ -120,7 +120,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? "" : DeploymentAppType.Helm,
-                deploymentAppDeleteRequest: true //It will be false
             },
             showPreStage: false,
             showDeploymentStage: true,

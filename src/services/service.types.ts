@@ -91,7 +91,7 @@ export interface AppEnvironment {
     chartRefId?: number
     lastDeployed?: string
     appStatus?: string
-    deploymentAppDeleteRequest?: boolean //Todo: remove optional
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface AppOtherEnvironment extends ResponseType {
