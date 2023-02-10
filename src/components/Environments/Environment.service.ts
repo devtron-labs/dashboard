@@ -59,6 +59,7 @@ export const getWorkflows = (id): Promise<{ workflows: WorkflowType[]; filteredC
                     WorkflowTrigger,
                     WorkflowTrigger.workflow,
                 )
+                //TODO : add the logic to filter out all the child and sibling CD nodes
                 _workflows.push(...processWorkflowData.workflows)
                 _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
             }
