@@ -13,7 +13,7 @@ import {
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
-import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List, CustomInput as ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, REGISTRY_TYPE_MAP } from '../../config'
 import Tippy from '@tippyjs/react'
@@ -27,7 +27,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ReactSelect, { components } from 'react-select'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
-import { AuthenticationType } from '../cluster/cluster.type'
+import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
@@ -265,12 +265,17 @@ function DockerForm({
     const [selectedDockerRegistryType, setSelectedDockerRegistryType] = useState(_selectedDockerRegistryType)
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
-        awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
+        awsSecretAccessKey: {
+            value: id && awsSecretAccessKey === '' ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
+            error: '',
+        },
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
             value:
-                state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
+                id && password === ''
+                    ? DEFAULT_SECRET_PLACEHOLDER
+                    : state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
                     ? password.substring(1, password.length - 1)
                     : password,
             error: '',
@@ -327,6 +332,18 @@ function DockerForm({
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
+    }
+
+    const handleOnFocus = (e): void => {
+        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+            e.target.value = ''
+        }
+    }
+
+    const handleOnBlur = (e): void => {
+        if (id && id != 0 && !e.target.value) {
+            e.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
     }
 
     const handleRegistryTypeChange = (selectedRegistry) => {
@@ -490,7 +507,9 @@ function DockerForm({
             selectedDockerRegistryType.value === 'gcr'
         ) {
             const isValidJsonFile = (isValidJson(customState.password.value) || id)
-            if (!customState.username.value || !(customState.password.value|| id) || !isValidJsonFile) {
+            if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
+                console.log(isValidJsonFile, customState.password.value, id)
+                console.log((id || customState.password.value) ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',)
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
@@ -726,6 +745,8 @@ function DockerForm({
                                     tabIndex={6}
                                     value={customState.awsSecretAccessKey.value}
                                     error={customState.awsSecretAccessKey.error}
+                                    onBlur={handleOnBlur}
+                                    onFocus={handleOnFocus}
                                     onChange={customHandleChange}
                                     label={selectedDockerRegistryType.password.label}
                                     type="password"
@@ -761,9 +782,12 @@ function DockerForm({
                                 value={customState.password.value}
                                 error={customState.password.error}
                                 onChange={customHandleChange}
+                                onBlur={handleOnBlur}
+                                onFocus={handleOnFocus}
                                 label={selectedDockerRegistryType.password.label}
                                 placeholder={selectedDockerRegistryType.password.placeholder}
-                                type="password"
+                                autoComplete={'off'}
+                                
                             />
                         )}
                         {(selectedDockerRegistryType.value === 'artifact-registry' ||
@@ -781,7 +805,7 @@ function DockerForm({
                                     onChange={customHandleChange}
                                     placeholder={selectedDockerRegistryType.password.placeholder}
                                 />
-                                {state.password?.error && <div className="form__error">{state.password?.error}</div>}
+                                {customState.password?.error && <div className="form__error"> <Error className="form__icon form__icon--error" />{customState.password?.error}</div>}
                             </>
                         )}
                     </div>

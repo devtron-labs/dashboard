@@ -21,7 +21,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ServerError } from '../../modals/commonTypes';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
-import { AuthenticationType } from '../cluster/cluster.type';
+import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 import { safeTrim } from '../../util/Util';
@@ -359,12 +359,12 @@ function GitForm({
 
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({
-        password: { value: password, error: '' },
+        password: { value: password === '' && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
-        sshInput: { value: sshPrivateKey, error: '' },
-    });
+        sshInput: { value: sshPrivateKey === '' && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
+    })
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
@@ -376,6 +376,18 @@ function GitForm({
             ...state,
             [_name]: { value: _value, error: '' },
         }));
+    }
+
+    const handleOnFocus = (e): void => {
+        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+            e.target.value = ''
+        }
+    }
+
+    const handleOnBlur = (e): void => {
+        if (id && id != 0 && !e.target.value) {
+            e.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
     }
 
     function handleGithostChange(host) {
@@ -394,10 +406,10 @@ function GitForm({
             authMode: state.auth.value,
             active,
             ...(state.auth.value === 'USERNAME_PASSWORD'
-                ? { username: customState.username.value, password: customState.password.value }
+                ? { username: customState.username.value, password: customState.password.value===DEFAULT_SECRET_PLACEHOLDER?"":customState.password.value }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value) } : {}),
+            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value)===DEFAULT_SECRET_PLACEHOLDER?"":safeTrim(customState.sshInput.value) } : {}),
         };
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;
@@ -633,9 +645,11 @@ function GitForm({
                             label="Username*"
                         />
                         <div>
-                            <ProtectedInput
+                            <CustomInput
                                 value={customState.password.value}
                                 onChange={customHandleChange}
+                                onBlur={handleOnBlur}
+                                onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
                                 label="Password/Auth token*"
@@ -655,6 +669,8 @@ function GitForm({
                             className="form__input w-100"
                             style={{ height: '100px', backgroundColor: '#f7fafc' }}
                             onChange={customHandleChange}
+                            onBlur={handleOnBlur}
+                            onFocus={handleOnFocus}
                             name="sshInput"
                             value={customState.sshInput.value}
                         />

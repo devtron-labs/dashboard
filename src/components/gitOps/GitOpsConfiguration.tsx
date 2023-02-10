@@ -8,7 +8,7 @@ import {
     GitOpsOrganisationIdType,
     GitProvider,
 } from './gitops.type'
-import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { ProtectedInput, CustomInput as CustomPassInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
@@ -31,6 +31,7 @@ import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -136,10 +137,18 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         this.handleGitopsTab = this.handleGitopsTab.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this)
+        this.handleOnFocus = this.handleOnFocus.bind(this)
+        this.handleOnBlur = this.handleOnBlur.bind(this)
     }
 
     componentDidMount() {
         this.fetchGitOpsConfigurationList()
+        this.setState({
+            form:{
+                ...this.state.form,
+                token:this.state.form.token==""&&this.state.form.id?DEFAULT_SECRET_PLACEHOLDER:this.state.form.token
+            }
+        })
     }
 
     fetchGitOpsConfigurationList() {
@@ -157,7 +166,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     view: ViewType.FORM,
                     lastActiveGitOp: form,
                     providerTab: form.provider,
-                    form: form,
+                    form: {
+                        ...form,
+                        token:form.id&&form.token===""?DEFAULT_SECRET_PLACEHOLDER:form.token
+                    },
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
                 })
@@ -182,7 +194,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         this.setState({
             providerTab: form.provider,
-            form: form,
+            form: {
+                ...form,
+                token:form.id&&form.token===""?DEFAULT_SECRET_PLACEHOLDER:form.token
+            },
             isError: DefaultShortGitOps,
             isFormEdited: false,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
@@ -198,12 +213,24 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: {
                 ...this.state.isError,
-                [key]: event.target.value.length === 0 ? 'This is a required field' : '',
+                [key]: (key=='token'&&this.state.form.id)||event.target.value.length !== 0 ? '' : 'This is a required field' ,
             },
             isFormEdited: false,
             //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
             isUrlValidationError: key === 'host' ? false : this.state.isUrlValidationError,
         })
+    }
+
+    handleOnFocus(e): void  {
+        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+            e.target.value = ''
+        }
+    }
+
+    handleOnBlur(e): void {
+        if (this.state.form.id && this.state.form.id != 0 && !e.target.value) {
+            e.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
     }
 
     requiredFieldCheck(formValueType: string): string {
@@ -640,12 +667,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                         <div>
-                            <ProtectedInput
+                            <CustomPassInput
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
                                 name="Enter token"
                                 tabIndex={4}
                                 error={this.state.isError.token}
+                                onBlur={this.handleOnBlur}
+                                onFocus={this.handleOnFocus}
                                 label={
                                     <>
                                         {this.state.providerTab === GitProvider.AZURE_DEVOPS
