@@ -152,7 +152,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.props.close()
         }
     }
- isdeploymentAppDeleteRequest = true
     getDeploymentStrategies(): void {
         getDeploymentStrategyList(this.props.match.params.appId)
             .then((response) => {

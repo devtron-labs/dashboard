@@ -1,7 +1,3 @@
-import { DeploymentAppType } from "../components/v2/appDetails/appDetails.type"
-import IndexStore from "../components/v2/appDetails/index.store";
-const appDetails = IndexStore.getAppDetails()
-
 export const RequestTimeout = 60000
 export const DEFAULT_STATUS = 'Checking Status...'
 export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT

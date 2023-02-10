@@ -26,7 +26,6 @@ const AppDetailsComponent = ({
     const [streamData, setStreamData] = useState<AppStreamData>(null);
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-    const isDeploymentAppDeleteRequest = appDetails.deploymentAppType === DeploymentAppType.argo_cd && (appDetails.deploymentAppDeleteRequest || true)
 
     useEffect(() => {
      if( appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId){

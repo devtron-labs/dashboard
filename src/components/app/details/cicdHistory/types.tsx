@@ -196,7 +196,7 @@ export interface StartDetailsType {
 
 export interface CICDSidebarFilterOptionType extends OptionType {
     pipelineId: number
-    deploymentAppDeleteRequest?: boolean //Todo remove in future
+    deploymentAppDeleteRequest: boolean
 }
 
 export enum HistoryComponentType {
