@@ -38,38 +38,39 @@ export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filter
     const _workflows: WorkflowType[] = []
     const _filteredCIPipelines = new Map()
 
-    return Promise.all([getEnvWorkflowList(envID), getCIConfig(envID), getCDConfig(envID), getExternalCIList(envID)]).then(
-        ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
-            let _ciConfigMap = new Map<number, CiPipelineResult>()
-            for (let index = 0; index < ciConfig.result.length; index++) {
-                const _ciConfig = ciConfig.result[index]
-                _ciConfigMap.set(_ciConfig.appId, _ciConfig)
-            }
-            for (let index = 0; index < workflow.result.workflows.length; index++) {
-                const workflowResult = workflow.result.workflows[index]
-                //if (workflowResult.name !== 'viv-test-app') continue
-                const processWorkflowData = processWorkflow(
-                    {
-                        ...workflowResult,
-                        workflows: [workflowResult],
-                    } as WorkflowResult,
-                    _ciConfigMap.get(workflowResult.appId) as CiPipelineResult,
-                    cdConfig.result as CdPipelineResult,
-                    externalCIConfig.result as WebhookDetailsType[],
-                    WorkflowTrigger,
-                    WorkflowTrigger.workflow,
-                )
-                //TODO : add the logic to filter out all the child and sibling CD nodes
-
-                _workflows.push(filterChildAndSiblingCD(processWorkflowData.workflows[0], envID))
-                _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
-            }
-            return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
-        },
-    )
+    return Promise.all([
+        getEnvWorkflowList(envID),
+        getCIConfig(envID),
+        getCDConfig(envID),
+        getExternalCIList(envID),
+    ]).then(([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+        let _ciConfigMap = new Map<number, CiPipelineResult>()
+        for (let index = 0; index < ciConfig.result.length; index++) {
+            const _ciConfig = ciConfig.result[index]
+            _ciConfigMap.set(_ciConfig.appId, _ciConfig)
+        }
+        for (let index = 0; index < workflow.result.workflows.length; index++) {
+            const workflowResult = workflow.result.workflows[index]
+            const processWorkflowData = processWorkflow(
+                {
+                    ...workflowResult,
+                    workflows: [workflowResult],
+                } as WorkflowResult,
+                _ciConfigMap.get(workflowResult.appId) as CiPipelineResult,
+                cdConfig.result as CdPipelineResult,
+                externalCIConfig.result as WebhookDetailsType[],
+                WorkflowTrigger,
+                WorkflowTrigger.workflow,
+            )
+            _workflows.push(filterChildAndSiblingCD(processWorkflowData.workflows[0], envID, workflowResult.appId))
+            _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
+        }
+        return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
+    })
 }
 
-const filterChildAndSiblingCD = (wf: WorkflowType, envID: number): WorkflowType =>{
-
-  return wf
+const filterChildAndSiblingCD = (wf: WorkflowType, envID: number, appId: number): WorkflowType => {
+    //TODO : add the logic to filter out all the child and sibling CD nodes
+    wf.appID = appId
+    return wf
 }
