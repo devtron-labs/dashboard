@@ -60,6 +60,7 @@ function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse
     }
     const gitMaterials = ciResponse?.materials ?? []
 
+    //TODO: check logic with Prakash
     for (const material of gitMaterials) {
         for (const ciPipeline of filteredCIPipelines) {
             //if linked pipeline then local git material should not be visible in pipeline.
@@ -87,6 +88,7 @@ export function processWorkflow(
     externalCIResponse: WebhookDetailsType[],
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
+    filter?: (workflows:WorkflowType[]) => WorkflowType[] 
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
@@ -136,32 +138,26 @@ export function processWorkflow(
                             return
                         }
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
-                        let parentType
-                        if (branch.parentType == PipelineType.CI_PIPELINE) {
-                            parentType = WorkflowNodeType.CI
-                        } else if (branch.parentType == PipelineType.WEBHOOK) {
-                            parentType = PipelineType.WEBHOOK
-                        } else {
-                            parentType = WorkflowNodeType.CD
-                        }
-                        const type = cdNode.preNode ? WorkflowNodeType.PRE_CD : WorkflowNodeType.CD
-                        wf.nodes
-                            .filter((n) => n.id == String(branch.parentId) && n.type == parentType)
-                            .forEach((node) => {
-                                ;(node.postNode ? node.postNode : node).downstreams.push(
-                                    type + '-' + branch.componentId,
-                                )
-                                node.downstreamNodes.push(cdNode)
-                            })
                         wf.nodes.push(cdNode)
                     }
                 })
         })
 
+    addDownstreams(workflows)
+
+    if (filter) {
+        workflows = filter(workflows)
+    }
+
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter((wf) => wf.nodes.length > 0)
     }
 
+    addDimensions(workflows, workflowOffset, dimensions)
+    return { appName, workflows, filteredCIPipelines }
+}
+
+function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimensions: WorkflowDimensions) {
     let maxWorkflowWidth = 0
     //Calculate X and Y of nodes and Workflows
     //delete sourceNodes from CI, downstreamNodes for all nodes and dag from workflows
@@ -172,10 +168,9 @@ export function processWorkflow(
             return
         }
 
-        let ciNode = workflow.nodes[0]
+        let ciNode = workflow.nodes.find(node => node.type == WorkflowNodeType.CI)
         ciNode.sourceNodes?.forEach((s, si) => {
-            let sourceNodeY =
-                startY +
+            let sourceNodeY = startY +
                 workflowOffset.offsetY +
                 si * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY)
             s.x = startX + workflowOffset.offsetX
@@ -197,7 +192,7 @@ export function processWorkflow(
         ciNode.y = startY + workflowOffset.offsetY
 
         if ((ciNode.downstreamNodes?.length ?? 0) > 0) {
-            processDownstreamDeployments(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y)
+            addDimensionsToDownstreamDeployments(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y)
         }
 
         let finalWorkflow = new Array<NodeAttr>()
@@ -213,14 +208,10 @@ export function processWorkflow(
             }
             if (node.type == WorkflowNodeType.CD) {
                 node.downstreamNodes?.forEach((dn) => {
-                    dn.parentPipelineId = node.id
-                    dn.parentPipelineType = WorkflowNodeType.CD
                     dn.parentEnvironmentName = node.environmentName
                 })
-                if (
-                    dimensions.type === WorkflowDimensionType.CREATE &&
-                    node.parentPipelineType === PipelineType.WEBHOOK
-                ) {
+                if (dimensions.type === WorkflowDimensionType.CREATE &&
+                    node.parentPipelineType === PipelineType.WEBHOOK) {
                     node.x = node.x - 40
                 }
                 node.preNode && finalWorkflow.push(node.preNode)
@@ -233,7 +224,7 @@ export function processWorkflow(
 
         let maxY = finalWorkflow.reduce(
             (maxY, node) => Math.max(node.y + node.height + workflowOffset.offsetY, maxY),
-            0,
+            0
         )
         let maxX = finalWorkflow.reduce((maxX, node) => Math.max(node.x + node.width + workflowOffset.offsetX, maxX), 0)
 
@@ -249,10 +240,40 @@ export function processWorkflow(
     })
 
     workflows.forEach((workflow) => (workflow.width = maxWorkflowWidth))
-    return { appName, workflows, filteredCIPipelines }
 }
 
-function processDownstreamDeployments(
+function addDownstreams(workflows: WorkflowType[]) {
+    workflows.map(wf => {
+        let nodes = new Map(wf.nodes.map(node => [node.type + "-" + node.id, node] as [string, NodeAttr]))
+
+        wf.nodes.map(node => {
+            if (!node.parentPipelineId) {
+                return node
+            }
+
+            let parentType = WorkflowNodeType.CD
+            if (node.parentPipelineType == PipelineType.CI_PIPELINE) {
+                parentType = WorkflowNodeType.CI
+            } else if (node.parentPipelineType == PipelineType.WEBHOOK) {
+                parentType = WorkflowNodeType.WEBHOOK
+            }
+
+            let parentNode = nodes.get(parentType + "-" + node.parentPipelineId)
+
+            const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
+
+            if (!!parentNode) {
+                (parentNode.postNode ? parentNode.postNode : parentNode).downstreams.push(
+                    type + '-' + node.id
+                )
+                parentNode.downstreamNodes.push(node)
+            }
+        })
+        return wf
+    })
+}
+
+function addDimensionsToDownstreamDeployments(
     downstreams: Array<NodeAttr>,
     dimensions: WorkflowDimensions,
     startX: number,
@@ -284,7 +305,7 @@ function processDownstreamDeployments(
         lastY = cdNodeY + dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY
 
         if ((element.downstreamNodes?.length ?? 0) > 0) {
-            processDownstreamDeployments(element.downstreamNodes, dimensions, lastX, cdNodeY)
+            addDimensionsToDownstreamDeployments(element.downstreamNodes, dimensions, lastX, cdNodeY)
             lastY =
                 element.downstreamNodes[element.downstreamNodes.length - 1].y +
                 dimensions.cDNodeSizes.nodeHeight +

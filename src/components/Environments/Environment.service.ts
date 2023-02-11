@@ -58,10 +58,11 @@ export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filter
                     externalCIConfig.result as WebhookDetailsType[],
                     WorkflowTrigger,
                     WorkflowTrigger.workflow,
+                    filterChildAndSiblingCD(envID)
                 )
                 //TODO : add the logic to filter out all the child and sibling CD nodes
 
-                _workflows.push(filterChildAndSiblingCD(processWorkflowData.workflows[0], envID))
+                _workflows.push(...processWorkflowData.workflows)
                 _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
             }
             return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
@@ -69,7 +70,78 @@ export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filter
     )
 }
 
-const filterChildAndSiblingCD = (wf: WorkflowType, envID: number): WorkflowType =>{
+const filterChildAndSiblingCD = function(envID: number): (workflows: WorkflowType[]) => WorkflowType[] {
+    return (workflows: WorkflowType[]): WorkflowType[] => {
+        workflows.map(wf => {
+            let nodes = new Map(wf.nodes.map(node => [node.type + "-" + node.id, node] as [string, NodeAttr]))
+            // const finalNodes = wf.nodes.filter(node => !node.parentPipelineId)
 
-  return wf
+            let node = wf.nodes.find(node => node.environmentId == envID)
+            if (!node) {
+                wf.nodes = []
+                return wf
+            }
+            node.downstreamNodes = []
+            node.downstreams = []
+            const finalNodes = [node]
+            while (node) {
+                node = getParentNode(nodes, node)
+                if (node) {
+                    finalNodes.push(node)
+                }
+            }
+            wf.nodes = finalNodes
+            return wf
+        })
+        return workflows
+    }
+}
+
+function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr | undefined {
+    let parentType = WorkflowNodeType.CD
+    if (node.parentPipelineType == PipelineType.CI_PIPELINE) {
+        parentType = WorkflowNodeType.CI
+    } else if (node.parentPipelineType == PipelineType.WEBHOOK) {
+        parentType = WorkflowNodeType.WEBHOOK
+    }
+
+    let parentNode = nodes.get(parentType + "-" + node.parentPipelineId)
+
+    const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
+
+    if (!!parentNode) {
+        (parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [ type + '-' + node.id]
+        parentNode.downstreamNodes = [node]
+    }
+    return parentNode
+}
+
+const filterChildAndSiblingNodeAttr = (nodeAttrs: NodeAttr[], envID: number): NodeAttr[] => {
+
+    if ((nodeAttrs?.length ?? 0) == 0) {
+        return nodeAttrs
+    }
+
+    let node = nodeAttrs.find(n => n.environmentId == envID)
+    if (!!node) {
+        node.downstreamNodes = []
+        node.downstreams = []
+        return [node]
+    }
+    nodeAttrs.map(node => {
+        const downstreamNodes = filterChildAndSiblingNodeAttr(node.downstreamNodes, envID)
+        if (downstreamNodes.length == node.downstreamNodes.length) {
+            return node
+        }
+        node.downstreamNodes = downstreamNodes
+        node.downstreams = node.downstreamNodes.map(downstreamNode => {
+            //TODO: ideally this logic should be owned by workflow.service as someone changes it there
+            //it will break it here
+            const type = downstreamNode.preNode ? WorkflowNodeType.PRE_CD : downstreamNode.type
+            return type + "-" + downstreamNode.id
+        })
+        return node
+    })
+    
+    return nodeAttrs
 }
