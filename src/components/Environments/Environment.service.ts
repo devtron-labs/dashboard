@@ -115,33 +115,3 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     }
     return parentNode
 }
-
-const filterChildAndSiblingNodeAttr = (nodeAttrs: NodeAttr[], envID: number): NodeAttr[] => {
-
-    if ((nodeAttrs?.length ?? 0) == 0) {
-        return nodeAttrs
-    }
-
-    let node = nodeAttrs.find(n => n.environmentId == envID)
-    if (!!node) {
-        node.downstreamNodes = []
-        node.downstreams = []
-        return [node]
-    }
-    nodeAttrs.map(node => {
-        const downstreamNodes = filterChildAndSiblingNodeAttr(node.downstreamNodes, envID)
-        if (downstreamNodes.length == node.downstreamNodes.length) {
-            return node
-        }
-        node.downstreamNodes = downstreamNodes
-        node.downstreams = node.downstreamNodes.map(downstreamNode => {
-            //TODO: ideally this logic should be owned by workflow.service as someone changes it there
-            //it will break it here
-            const type = downstreamNode.preNode ? WorkflowNodeType.PRE_CD : downstreamNode.type
-            return type + "-" + downstreamNode.id
-        })
-        return node
-    })
-    
-    return nodeAttrs
-}
