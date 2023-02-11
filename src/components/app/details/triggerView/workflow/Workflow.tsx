@@ -242,9 +242,21 @@ export class Workflow extends Component<WorkflowProps> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
         return (
-            <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
+            <div
+                className={`workflow workflow--trigger mb-20 ${this.props.isSelected ? 'eb-5' : ''}`}
+                style={{ minWidth: `${this.props.width}px` }}
+            >
                 <div className="workflow__header">
-                    <span className="workflow__name">{this.props.name}</span>
+                    {this.props.isFromENv && (
+                        <input
+                            type="checkbox"
+                            className="mt-0-imp cursor"
+                            data-app-id={this.props.appID}
+                            checked={this.props.isSelected}
+                            onChange={this.props.handleSelectionChange}
+                        />
+                    )}
+                    <span className="workflow__name ml-4">{this.props.name}</span>
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">

@@ -1699,6 +1699,10 @@ button.anchor {
     border-left: solid 1px var(--N200);
 }
 
+.dc__border-left-n3 {
+    border-left: solid 1px var(--N300);
+}
+
 .dc__border-right {
     border-right: solid 1px var(--N200);
 }
@@ -2382,6 +2386,10 @@ textarea,
 
 .pt-0-imp {
     padding-top: 0 !important;
+}
+
+.pr-0-imp {
+    padding-right: 0 !important;
 }
 
 .pb-4-imp {

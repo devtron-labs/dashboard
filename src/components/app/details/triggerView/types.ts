@@ -247,6 +247,10 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
+    appID?: string
+    isSelected?: boolean
+    isFromENv?: boolean
+    handleSelectionChange?: (e)=> void
 }
 
 export interface TriggerViewContextType {
@@ -284,6 +288,8 @@ export interface WorkflowType {
     nodes: NodeAttr[]
     dag: any
     showTippy?: boolean
+    appID?: number
+    isSelected?: boolean
 }
 
 export interface WebhookPayloadDataResponse {

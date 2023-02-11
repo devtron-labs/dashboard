@@ -37,7 +37,6 @@ export function getExternalCIList(envID: number | string): Promise<WebhookListRe
 export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filteredCIPipelines }> => {
     const _workflows: WorkflowType[] = []
     const _filteredCIPipelines = new Map()
-
     return Promise.all([getEnvWorkflowList(envID), getCIConfig(envID), getCDConfig(envID), getExternalCIList(envID)]).then(
         ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
             let _ciConfigMap = new Map<number, CiPipelineResult>()
