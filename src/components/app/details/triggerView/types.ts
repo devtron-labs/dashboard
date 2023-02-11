@@ -247,7 +247,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
-    appID?: string
+    appId?: string
     isSelected?: boolean
     isFromENv?: boolean
     handleSelectionChange?: (e)=> void

@@ -251,7 +251,7 @@ export class Workflow extends Component<WorkflowProps> {
                         <input
                             type="checkbox"
                             className="mt-0-imp cursor"
-                            data-app-id={this.props.appID}
+                            data-app-id={this.props.appId}
                             checked={this.props.isSelected}
                             onChange={this.props.handleSelectionChange}
                         />

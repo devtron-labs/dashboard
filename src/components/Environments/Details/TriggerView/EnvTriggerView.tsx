@@ -187,7 +187,7 @@ export default function EnvTriggerView() {
     const handleSelectionChange = (e): void => {
         const _appId = Number(e.currentTarget.dataset.appId)
         const _workflows = workflows.map((wf) => {
-            if (_appId === wf.appID) {
+            if (_appId === wf.appId) {
                 const selectedAppIndex = selectedAppList.findIndex((app) => app.id === _appId)
                 const _selectedAppList = [...selectedAppList]
                 if (wf.isSelected) {
@@ -218,7 +218,7 @@ export default function EnvTriggerView() {
                             height={workflow.height}
                             width={workflow.width}
                             nodes={workflow.nodes}
-                            appID={workflow.appID}
+                            appId={workflow.appId}
                             isSelected={workflow.isSelected ?? false}
                             handleSelectionChange={handleSelectionChange}
                             isFromENv={true}
@@ -240,8 +240,11 @@ export default function EnvTriggerView() {
                                     {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
                                 </div>
                                 <div className="fs-13 fw-4 cn-7">
-                                    {selectedAppList.map((app) => (
-                                        <span>{app.name}</span>
+                                    {selectedAppList.map((app, index) => (
+                                        <span>
+                                            {app.name}
+                                            {index !== selectedAppList.length - 1 && <span>, </span>}
+                                        </span>
                                     ))}
                                 </div>
                             </div>
@@ -251,7 +254,7 @@ export default function EnvTriggerView() {
                                 {isLoading ? <Progressing /> : 'Build image'}
                             </button>
                             <button
-                                className="cta flex h-36 pr-0-imp"
+                                className="cta flex h-36 dc__no-right-radius"
                                 onClick={() => {
                                     alert('hey')
                                 }}
@@ -264,12 +267,13 @@ export default function EnvTriggerView() {
                                         Deploy
                                     </>
                                 )}
-                                <PopupMenu autoClose>
+                            </button>
+                            <PopupMenu autoClose>
                                     <PopupMenu.Button
                                         isKebab
-                                        rootClassName="h-36 popup-button-kebab dc__border-left-n3 ml-10 pl-4 pr-4 dc__no-left-radius flex"
+                                        rootClassName="h-36 popup-button-kebab dc__border-left-n3 pl-4 pr-4 dc__no-left-radius flex bcb-5"
                                     >
-                                        <Dropdown className="icon-dim-20 mt-2" />
+                                        <Dropdown className="icon-dim-20 fcn-0" />
                                     </PopupMenu.Button>
                                     <PopupMenu.Body>
                                         <div className="flex left p-10 pointer" onClick={(e) => {}}>
@@ -283,7 +287,6 @@ export default function EnvTriggerView() {
                                         </div>
                                     </PopupMenu.Body>
                                 </PopupMenu>
-                            </button>
                         </div>
                     </div>
                 )}
@@ -453,7 +456,7 @@ export default function EnvTriggerView() {
             const _workflows = [...workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
-                        const selectedCIPipeline = filteredCIPipelines[workflow.appID]?.find(
+                        const selectedCIPipeline = filteredCIPipelines[workflow.appId]?.find(
                             (_ci) => _ci.id === +ciNodeId,
                         )
                         if (selectedCIPipeline?.ciMaterial) {
@@ -471,7 +474,7 @@ export default function EnvTriggerView() {
                             }
                         }
                         _workflowId = workflow.id
-                        _appID = workflow.appID
+                        _appID = workflow.appId
                         if (preserveMaterialSelection) {
                             const selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                             node.inputMaterialList = response.result.map((material) => {
@@ -537,7 +540,7 @@ export default function EnvTriggerView() {
                             node[MATERIAL_TYPE.inputMaterialList] = data
                             _selectedNode = node
                             _workflowId = workflow.id
-                            _appID = workflow.appID
+                            _appID = workflow.appId
                         }
                         return node
                     })

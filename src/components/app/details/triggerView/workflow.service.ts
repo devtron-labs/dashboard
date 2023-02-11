@@ -88,7 +88,7 @@ export function processWorkflow(
     externalCIResponse: WebhookDetailsType[],
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
-    filter?: (workflows:WorkflowType[]) => WorkflowType[] 
+    filter?: (workflows:WorkflowType[]) => WorkflowType[]
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
@@ -320,6 +320,7 @@ function addDimensionsToDownstreamDeployments(
 function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): WorkflowType {
     return {
         id: '' + workflow.id,
+        appId: workflow.appId,
         name: workflow.name,
         nodes: new Array<NodeAttr>(),
         gitMaterials: ciResponse.materials ?? [],
