@@ -2605,3 +2605,11 @@ textarea::placeholder {
     min-height: 16px;
     background-color: var(--N200);
 }
+
+.dc__highlight-text {
+    mark {
+        padding: 0;
+        background-color: var(--Y300) !important;
+        font-weight: 600;
+    }
+}
