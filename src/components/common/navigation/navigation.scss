@@ -2,7 +2,7 @@
     width: 100%;
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 56px 1fr;
     overflow-y: hidden;
     &.no-nav{
       grid-template-columns: 1fr;
@@ -65,8 +65,8 @@
             padding: 0 12px 0 0;
 
             .svg-container {
-                height: 40px;
-                width: 40px;
+                height: 36px;
+                width: 36px;
                 border-radius: 8px;
             }
 
@@ -155,12 +155,15 @@
     }
 
     .devtron-logo {
-        width: 40px;
-        height: 40px;
+        width: 38.20px;
+        height: 22.68px;
         opacity: 1;
         fill: #ffffff;
     }
-
+    .pl-12{
+        padding-left: 12px;
+        padding-top: 0;
+    }
     .devtron-logo--text {
         width: 76px;
         height: 16px;
