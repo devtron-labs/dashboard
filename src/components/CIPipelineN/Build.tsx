@@ -190,9 +190,9 @@ export function Build({
         const _form = { ...formData }
         _form.name = event.target.value
         setFormData(_form)
-         const _formDataErrorObj={...formDataErrorObj}
-         _formDataErrorObj.name=validationRules.name(_form.name)
-         setFormDataErrorObj(_formDataErrorObj);
+        const _formDataErrorObj = { ...formDataErrorObj }
+        _formDataErrorObj.name = validationRules.name(_form.name)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderPipelineName = () => {

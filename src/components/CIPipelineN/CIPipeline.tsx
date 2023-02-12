@@ -378,8 +378,7 @@ export default function CIPipeline({
             !formDataErrorObj.postBuildStage.isValid
         ) {
             setLoadingData(false)
-            const checkBranch = (obj) => obj.value === ''
-            let branchNameNotPresent = formData.materials.some(checkBranch)
+            let branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
                 toast.error('Some required fields are missing')
             }

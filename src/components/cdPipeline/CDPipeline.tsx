@@ -506,10 +506,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     handlePipelineName = (event) => {
         const { pipelineConfig, errorForm } = { ...this.state }
-        const _errorForm = { ...errorForm }
         pipelineConfig.name = event.target.value
-        _errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
-        this.setState({ pipelineConfig, errorForm: _errorForm })
+        errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
+        this.setState({ pipelineConfig, errorForm })
     }
 
     handleNamespaceChange = (event, environment) => {
@@ -562,16 +561,26 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     savePipeline() {
         const { pipelineConfig, errorForm } = { ...this.state }
-        const _errorForm = { ...errorForm }
-        _errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
-        _errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
-        _errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
-        this.setState({ errorForm: _errorForm })
+        errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
+        errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
+        errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
+        this.setState({ errorForm })
+        let valid =
+            !!this.state.pipelineConfig.environmentId &&
+            this.validationRules.name(this.state.pipelineConfig.name).isValid &&
+            !!this.state.pipelineConfig.namespace &&
+            !!this.state.pipelineConfig.triggerType &&
+            !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
 
-        if (this.state.pipelineConfig.name === '' || !this.state.pipelineConfig.namespace) {
-            toast.error('Some required fields are missing')
+        if (!valid) {
+            this.setState({ loadingData: false })
+            if (this.state.pipelineConfig.name === '' || !this.state.pipelineConfig.namespace) {
+                toast.error('Some required fields are missing')
+            }
             return
         }
+
+        
         this.setState({ loadingData: true })
         let pipeline = {
             appWorkflowId: +this.props.match.params.workflowId,
@@ -594,18 +603,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
-        let valid =
-            !!this.state.pipelineConfig.environmentId &&
-            this.validationRules.name(this.state.pipelineConfig.name).isValid &&
-            !!this.state.pipelineConfig.namespace &&
-            !!this.state.pipelineConfig.triggerType &&
-            !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
-
-        if (!valid) {
-            this.setState({ loadingData: false })
-            return
-        }
-
+        
         let msg
         if (!this.props.match.params.cdPipelineId) {
             request['pipelines'] = [pipeline]
