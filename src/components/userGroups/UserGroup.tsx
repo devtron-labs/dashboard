@@ -541,7 +541,7 @@ const UserGroupList: React.FC<{
         return <ErrorScreenNotAuthorized subtitle="" />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    } else if (!isSSOConfigured) {
+    } else if (type =='user' && !isSSOConfigured) {
         return <SSONotConfiguredState />
     } else {
         const filteredAndSorted = result.filter(

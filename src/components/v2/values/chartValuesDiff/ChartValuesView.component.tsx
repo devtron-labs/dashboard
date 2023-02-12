@@ -1,10 +1,9 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, EnvFormatOptions, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, EnvFormatOptions, formatHighlightedText, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { DeleteDialog, Progressing, Select } from '../../../common'
 import {
@@ -27,7 +26,6 @@ import {
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import EmptyState from '../../../EmptyState/EmptyState'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DELETE_CHART_APP_DESCRIPTION_LINES,
@@ -38,6 +36,7 @@ import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
+import { envGroupStyle } from './ChartValuesView.utils'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -51,8 +50,12 @@ export const ChartEnvironmentSelector = ({
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
 
-    const selectOption = (props) => {
+    const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
+    const handleFormatHighlightedText = (opt, { inputValue }) => {
+        return formatHighlightedText(opt, inputValue, 'label')
     }
 
     return !isDeployChartView ? (
@@ -77,15 +80,16 @@ export const ChartEnvironmentSelector = ({
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
-                    Option: selectOption,
-                    GroupHeading
+                    SingleValue: singleOption,
+                    GroupHeading,
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={getCommonSelectStyle()}
+                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
+                formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
         </div>
