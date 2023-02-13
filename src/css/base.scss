@@ -2185,6 +2185,7 @@ textarea,
     width: max-content;
 }
 
+
 .dc_max-width__max-content {
     max-width: max-content !important;
 }
@@ -2204,6 +2205,10 @@ textarea,
 
 .dc__height-inherit {
     height: inherit;
+}
+
+.dc__min-width-fit-content{
+    min-width: fit-content!important;
 }
 
 .h-0 {
