@@ -20,6 +20,9 @@ export interface TerminalViewProps {
     sessionError?: (error: any) => void
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    isShellSwitched?: boolean
+    setSelectedNodeName?: any
+    selectedNamespace?: string
 }
 
 export interface EventTableType {

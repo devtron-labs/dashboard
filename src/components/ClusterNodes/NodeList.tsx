@@ -11,6 +11,8 @@ import {
     filterImageList,
     showError,
     useBreadcrumb,
+    createClusterEnvGroup,
+    createGroupSelectList,
 } from '../common'
 import {
     ClusterCapacityType,
@@ -74,7 +76,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
-    const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
@@ -295,7 +296,19 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 if (searchedTextMap.size !== matchedLabelCount) {
                     continue
                 }
+            } else if (selectedSearchTextType === 'nodeGroup') {
+                let matchFound = false
+                for (const [key] of searchedTextMap.entries()) {
+                    if (element['nodeGroup'].indexOf(key) >= 0) {
+                        matchFound = true
+                        break
+                    }
+                }
+                if (!matchFound) {
+                    continue
+                }
             }
+             
             _flattenNodeList.push(element)
         }
         if (sortByColumn) {
@@ -397,7 +410,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const headerTerminalIcon = (): void => {
-        openTerminalComponent(filteredFlattenNodeList[0])
+        openTerminalComponent({name:'autoSelectNode', k8sVersion: 'latest'})
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -790,7 +803,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             {showTerminal && selectedNode && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
-                    nodeList={nodeList}
+                    nodeGroups={createGroupSelectList(filteredFlattenNodeList,'name')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[clusterName]}

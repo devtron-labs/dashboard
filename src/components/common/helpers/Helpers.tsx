@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
-import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
+import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
@@ -1159,13 +1159,13 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export function createClusterEnvGroup<T>(list: T[], propKey: string): { label: string; options: T[] }[] {
+export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionType?: boolean, optionName?: string): { label: string; options: T[] }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(obj)
+        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName]} : obj)
         return acc
     }, {})
 
@@ -1206,4 +1206,24 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
 
 export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
+}
+
+export const createGroupSelectList = (list,nodeLabel): SelectGroupType[] => {
+    const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
+        const key = obj.nodeGroup
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push({label: obj[nodeLabel], value: obj[nodeLabel]})
+        return acc
+    }, {})
+
+    const groupList = Object.entries(objList).map(([key, value]) => {
+        return {
+            label: key,
+            options: value,
+        }
+    })
+
+    return [{label: '',options: [{label:'Auto select' , value:'autoSelectNode'}]},...groupList]
 }

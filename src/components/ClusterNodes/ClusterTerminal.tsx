@@ -14,7 +14,7 @@ import {
 } from './clusterNodes.service'
 import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
-import { Option } from '../../components/v2/common/ReactSelect.utils'
+import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2.svg'
@@ -37,7 +37,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 export default function ClusterTerminal({
     clusterId,
     clusterName,
-    nodeList,
+    nodeGroups,
     closeTerminal,
     clusterImageList,
     isNodeDetailsPage,
@@ -50,7 +50,6 @@ export default function ClusterTerminal({
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
-    const clusterNodeList = convertToOptionsList(nodeList)
     const imageList = convertToOptionsList(clusterImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
     const defaultNamespaceList = convertToOptionsList(namespaceList)
     const defaultNameSpace = defaultNamespaceList.find((item) => item.label === 'default') || defaultNamespaceList[0]
@@ -58,7 +57,7 @@ export default function ClusterTerminal({
         queryParams,
         imageList,
         defaultNamespaceList,
-        clusterNodeList,
+        nodeGroups,
         clusterShellTypes,
         node,
     )
@@ -76,6 +75,8 @@ export default function ClusterTerminal({
     const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+    const isShellSwitched = useRef<boolean>(false)
+    const isAutoSelectNodeRef = useRef<string>('')
   
     const payload = {
         clusterId: clusterId,
@@ -89,7 +90,7 @@ export default function ClusterTerminal({
         if (update && !isNodeDetailsPage) {
             updateSelectedContainerName()
         }
-    }, [clusterId, nodeList, node])
+    }, [clusterId, node])
 
     useEffect(() => {
         if(!location.search && !isNodeDetailsPage){
@@ -98,11 +99,18 @@ export default function ClusterTerminal({
     },[location.search])
 
     useEffect(() => {
+        // if(isAutoSelectNodeRef.current) return
         handleUrlChanges()
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
+        if(isAutoSelectNodeRef.current === 'autoSelectNode') {
+            isAutoSelectNodeRef.current = selectedNodeName.value
+            return
+        }
         try {
+            isShellSwitched.current = false
+            isAutoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
             if (update) {
                 socketDisconnecting()
@@ -159,6 +167,7 @@ export default function ClusterTerminal({
     useEffect(() => {
         try {
             if (update) {
+                isShellSwitched.current = true
                 socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
@@ -195,7 +204,7 @@ export default function ClusterTerminal({
         } else {
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
-            setSelectedNodeName(clusterNodeList[0])
+            setSelectedNodeName(nodeGroups[0].options[0])
         }
     }
 
@@ -293,7 +302,6 @@ export default function ClusterTerminal({
 
     const onChangeNodes = (selected): void => {
         setSelectedNodeName(selected)
-
         if (setSelectedNode) {
             setSelectedNode(selected.value)
         }
@@ -362,6 +370,9 @@ export default function ClusterTerminal({
                 setTerminalTab={setSelectedTabIndex}
                 isPodConnected={connectTerminal}
                 sessionError={sessionError}
+                selectedNamespace={selectedNamespace.value}
+                isShellSwitched={isShellSwitched.current}
+                setSelectedNodeName={setSelectedNodeName}
             />
         )
     }
@@ -398,6 +409,10 @@ export default function ClusterTerminal({
                 tippyContent={tippyText}
             />
         )
+    }
+
+    const groupHeading = (props) => {
+        return <GroupHeading {...props} hideClusterName={true} />
     }
 
     return (
@@ -440,14 +455,31 @@ export default function ClusterTerminal({
                             <div style={{ minWidth: '145px' }}>
                                 <ReactSelect
                                     placeholder="Select Containers"
-                                    options={clusterNodeList}
+                                    options={nodeGroups}
                                     defaultValue={selectedNodeName}
                                     value={selectedNodeName}
                                     onChange={onChangeNodes}
-                                    styles={clusterSelectStyle}
+                                    styles={{...clusterSelectStyle,
+                                        group: (base) => ({
+                                            ...base,
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                        }),
+                                        groupHeading: (base) => ({
+                                            ...base,
+                                            fontWeight: 600,
+                                            fontSize: '12px',
+                                            textTransform: 'lowercase',
+                                            height: '28px',
+                                            color: 'var(--N900)',
+                                            backgroundColor: 'var(--N100)',
+                                            marginBottom: 0,
+                                        }),
+                                    }}
                                     components={{
                                         IndicatorSeparator: null,
-                                        Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
+                                        GroupHeading: groupHeading,
+                                        Option,
                                     }}
                                 />
                             </div>
@@ -613,7 +645,7 @@ export default function ClusterTerminal({
                             <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
                             <div className="cn-6 ml-8 mr-10">Shell </div>
                             <div>
-                                <ReactSelect
+                                <CreatableSelect
                                     placeholder="Select Shell"
                                     options={clusterShellTypes}
                                     defaultValue={selectedTerminalType}

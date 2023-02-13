@@ -149,6 +149,7 @@ export default function NodeListSearchFliter({
                                 {[
                                     { value: 1, label: 'name', type: 'main' },
                                     { value: 2, label: 'label', type: 'main' },
+                                    { value: 2, label: 'nodeGroup', type: 'main' },
                                 ].map((o) => {
                                     return (
                                         <div

@@ -68,9 +68,10 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
         sortingFieldName: 'errorCount',
     },
     { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
+    { sortType: 'string', columnIndex: 5, label: 'Node Group', value: 'nodeGroup', isSortingAllowed: true, isDefault: true },
     {
         sortType: 'number',
-        columnIndex: 5,
+        columnIndex: 6,
         label: 'No.of pods',
         value: 'podCount',
         isDefault: true,
@@ -79,7 +80,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 6,
+        columnIndex: 7,
         label: 'Taints',
         value: 'taintCount',
         isDefault: true,
@@ -88,7 +89,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 7,
+        columnIndex: 8,
         label: 'CPU Usage (%)',
         value: 'cpu.usagePercentage',
         isDefault: true,
@@ -97,7 +98,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 8,
+        columnIndex: 9,
         label: 'CPU Usage (Absolute)',
         value: 'cpu.usage',
         isSortingAllowed: true,
@@ -105,7 +106,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 9,
+        columnIndex: 10,
         label: 'CPU Allocatable',
         value: 'cpu.allocatable',
         isSortingAllowed: true,
@@ -113,7 +114,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 10,
+        columnIndex: 11,
         label: 'Mem Usage (%)',
         value: 'memory.usagePercentage',
         isDefault: true,
@@ -122,7 +123,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 11,
+        columnIndex: 12,
         label: 'Mem Usage (Absolute)',
         value: 'memory.usage',
         isSortingAllowed: true,
@@ -130,7 +131,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'number',
-        columnIndex: 12,
+        columnIndex: 13,
         label: 'Mem Allocatable',
         value: 'memory.allocatable',
         isSortingAllowed: true,
@@ -138,14 +139,14 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
     },
     {
         sortType: 'string',
-        columnIndex: 13,
+        columnIndex: 14,
         label: 'Age',
         value: 'age',
         isDefault: true,
         isSortingAllowed: true,
         sortingFieldName: 'createdAt',
     },
-    { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
+    { sortType: 'boolean', columnIndex: 15, label: 'Unschedulable', value: 'unschedulable' },
 ]
 
 export const NODE_DETAILS_TABS = {
