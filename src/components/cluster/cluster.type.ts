@@ -1,5 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { SERVER_MODE_TYPE } from "../../config";
+import { OptionType } from "../app/types";
 
 export const POLLING_INTERVAL = 30000;
 
@@ -75,4 +76,11 @@ export interface ClusterStepModal {
     subTitle: string
     command: string
     clusterName: string
+}
+
+export interface ClusterTerminalParamsType {
+    selectedImage: OptionType
+    selectedNamespace: OptionType
+    selectedNode: OptionType
+    selectedShell: OptionType
 }

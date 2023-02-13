@@ -1130,9 +1130,8 @@ export const processK8SObjects = (
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
             ? element.gvk.Group
-            : element.gvk.Group.endsWith('.k8s.io')
-            ? AggregationKeys['Other Resources']
-            : getAggregator(element.gvk.Kind)
+            : getAggregator(element.gvk.Kind, element.gvk.Group.endsWith('.k8s.io'))
+
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
         }

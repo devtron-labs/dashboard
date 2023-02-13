@@ -150,7 +150,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                    
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>

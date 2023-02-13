@@ -283,14 +283,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
-            username: this.state.form.username,
-            host: this.state.form.host,
-            token: this.state.form.token,
-            gitLabGroupId: this.state.form.gitLabGroupId,
-            gitHubOrgId: this.state.form.gitHubOrgId,
-            azureProjectName: this.state.form.azureProjectName,
-            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
-            bitBucketProjectKey: this.state.form.bitBucketProjectKey,
+            username: this.state.form.username.replace(/\s/g, ''),
+            host: this.state.form.host.replace(/\s/g, ''),
+            token: this.state.form.token.replace(/\s/g, ''),
+            gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
+            gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
+            azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
+            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
+            bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             active: true,
         }
         return payload
