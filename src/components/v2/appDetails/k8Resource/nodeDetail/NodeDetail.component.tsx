@@ -42,8 +42,11 @@ function NodeDetailComponent({
     )
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
-        if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) setManagedFields(true)
-        else setManagedFields(false)
+        if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
+            setManagedFields(true)
+        } else {
+            setManagedFields(false)
+        }
     }
 
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
