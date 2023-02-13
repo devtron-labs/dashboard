@@ -21,6 +21,7 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import warn from '../../assets/icons/ic-warning.svg';
 import './login.css';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
+import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -108,11 +109,22 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).then(() => {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                 getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase()).then((response) => {
+                    console.log('result',response.result);
                     let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLowerCase()]);
+                    if (response.result?.config?.config?.clientID === '') {
+                        response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
+                    }
+
+                    if (response.result?.config?.config?.clientSecret === '') {
+                        response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+                    }
+
                     if (response.result) {
                         newConfig = this.parseResponse(response.result)
                     }
 
+                    console.log('newConfig',newConfig);
+                    
                     this.setState({
                         view: ViewType.FORM,
                         ssoConfig: newConfig,
@@ -133,8 +145,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
+        console.log('handle')
         let newsso = event.target.value;
         getSSOConfig(newsso).then((response) => {
+            if (response.result?.config?.config?.clientID === '') {
+                response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
+            }
+            if (response.result?.config?.config?.clientSecret === '') {
+                response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+            }
             let newConfig = this.parseResponse(sample[newsso]);
             if (response.result) {
                 newConfig = this.parseResponse(response.result)
@@ -185,6 +204,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
+            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER) {
+                configJSON.clientID = ''
+            }
+            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER) {
+                configJSON.clientSecret = ''
+            }
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error("Invalid Yaml");
@@ -233,6 +258,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
+            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER) {
+                configJSON.clientID = ''
+            }
+            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER) {
+                configJSON.clientSecret = ''
+            }
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error("Invalid Yaml");
@@ -320,6 +351,56 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ configMap: value })
     }
 
+    handleOnBlur(): void {
+        console.log('Blur')
+
+        
+
+        if (this.state.configMap !== SwitchItemValues.Configuration) return
+        let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
+        console.log(newConfig);
+        if (newConfig.clientID === '') {
+            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.clientSecret === '') {
+            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        }
+        let value = yamlJsParser.stringify(newConfig)
+        console.log(value);
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                config: {
+                    ...this.state.ssoConfig.config,
+                    config: value,
+                },
+            },
+        })
+    }
+
+    handleOnFocus(): void {
+        console.log('Focus')
+
+        if (this.state.configMap !== SwitchItemValues.Configuration) return
+        let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
+        if (newConfig.clientID === DEFAULT_SECRET_PLACEHOLDER) {
+            newConfig.clientID = ''
+        }
+        if (newConfig.clientSecret === DEFAULT_SECRET_PLACEHOLDER) {
+            newConfig.clientSecret = ''
+        }
+        let value = yamlJsParser.stringify(newConfig)
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                config: {
+                    ...this.state.ssoConfig.config,
+                    config: value,
+                },
+            },
+        })
+    }
+
     renderSSOCodeEditor() {
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
         let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
@@ -338,7 +419,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    onChange={(event) => { this.handleConfigChange(event) }}>
+                    onChange={(event) => { this.handleConfigChange(event) }}
+                    onBlur={() => { this.handleOnBlur() }}
+                    onFocus={() => { this.handleOnFocus() }}
+                    >
                     <CodeEditor.Header >
                         <Switch value={this.state.configMap} name={'tab'} onChange={(event) => { this.handleCodeEditorTab(event.target.value) }}>
                             <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
