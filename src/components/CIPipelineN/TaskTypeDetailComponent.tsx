@@ -27,7 +27,6 @@ import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { CopyTippyWithTextType } from '../app/details/cicdHistory/types'
 import { CopyToClipboardText } from '../app/list/TriggerUrl'
 
 export function TaskTypeDetailComponent() {
@@ -55,7 +54,6 @@ export function TaskTypeDetailComponent() {
         value: containerImage,
     }))
 
-    const [copied, setCopied] = useState(false)
     const [selectedContainerImage, setSelectedContainerImage] = useState<OptionType>()
 
     useEffect(() => {
@@ -208,36 +206,6 @@ export function TaskTypeDetailComponent() {
         if (event.key === 'Enter' || event.key === 'Tab') {
             event.target.blur()
         }
-    }
-
-    useEffect(() => {
-        if (!copied) return
-        setTimeout(() => setCopied(false), 2000)
-    }, [copied])
-
-    const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
-        const onClickCopyToClipboard = (e): void => {
-            copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
-        }
-
-        return (
-            <>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                    trigger="mouseenter click"
-                    interactive={true}
-                >
-                    <CopyIcon
-                        data-copy-text={copyText}
-                        className="pointer ml-6 icon-dim-16"
-                        onClick={onClickCopyToClipboard}
-                    />
-                </Tippy>
-            </>
-        )
     }
 
     const ValueContainer = (props) => {
