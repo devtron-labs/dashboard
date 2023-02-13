@@ -6,6 +6,8 @@ import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
 import { AppSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
+import EnvConfig from './EnvConfig'
+import { EnvSelector } from '../AppSelector/AppSelector'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
@@ -37,6 +39,9 @@ export default function EnvironmentDetailsRoute() {
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <div>Build & Deploy</div>
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                            <EnvConfig />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
@@ -75,7 +80,7 @@ export function EnvHeader({ envName }: { envName: string }) {
         {
             alias: {
                 ':envId(\\d+)': {
-                    component: <AppSelector onChange={handleEnvChange} appId={envId} appName={envName} />,
+                    component: <EnvSelector onChange={handleEnvChange} envId={envId} appName={envName} />,
                     linked: false,
                 },
                 environment: {
@@ -118,6 +123,21 @@ export function EnvHeader({ envName }: { envName: string }) {
                         }}
                     >
                         Build & Deploy
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_CONFIG}`}
+                        className="tab-list__tab-link"
+                        onClick={(event) => {
+                            ReactGA.event({
+                                category: 'Configuration',
+                                action: 'Configuration Clicked',
+                            })
+                        }}
+                    >
+                        Configuration
                     </NavLink>
                 </li>
             </ul>

@@ -11,6 +11,7 @@ import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
 import { useHistory, useLocation } from 'react-router-dom'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
+import { StatusConstants } from '../../app/list-new/Constants'
 
 export default function EnvironmentsList() {
     const match = useRouteMatch()
@@ -18,7 +19,6 @@ export default function EnvironmentsList() {
     const history = useHistory()
     const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [filteredEnvList, setFilteredEnvList] = useState([])
     const [searchApplied, setSearchApplied] = useState(false)
     const [envList, setEnvList] = useState([])
     const [clusterfilter, setClusterFilter] = useState<FilterOption[]>([])
@@ -64,7 +64,6 @@ export default function EnvironmentsList() {
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = envList.filter((env) => env.name.indexOf(_searchText) >= 0)
-        setFilteredEnvList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }
 
@@ -111,6 +110,36 @@ export default function EnvironmentsList() {
         history.push(url)
     }
 
+    const removeFilter = (filter): void => {
+        const queryParams = new URLSearchParams(location.search)
+        let x = queryParams.get('cluster')
+        let clusterValues = x
+            .toString()
+            .split(',')
+            .map((status) => status)
+
+        let key = clusterValues.filter((value) => value != filter.key)
+        if(key.length){
+            queryParams.set('cluster',key.toString())
+        }else{
+            queryParams.delete('cluster')
+        }
+        let url = `${match.path}?${queryParams.toString()}`
+        history.push(url)
+    }
+
+    const removeAllFilters = (): void => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.delete('cluster')
+        queryParams.delete('search')
+
+        //delete search string
+        setSearchApplied(false)
+        setSearchText('')
+        let url = `${match.path}?${queryParams.toString()}`
+        history.push(url)
+    }
+
     const renderSearch = (): JSX.Element => {
         return (
             <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
@@ -132,6 +161,46 @@ export default function EnvironmentsList() {
                 )}
             </div>
         )
+    }
+
+    function renderAppliedFilters() {
+        let count = 0
+        let appliedFilters = (
+            <div className="saved-filters__wrap dc__position-rel">
+                {clusterfilter.map((filter) => {
+                        if (filter.isChecked) {
+                            count++
+                            
+                            return (
+                                <div key={filter.key} className="saved-filter">
+                                    <span className="fw-6 mr-5">{'Cluster'}</span>
+                                    <span className="saved-filter-divider"></span>
+                                    <span className="ml-5">{filter.label}</span>
+                                    <button
+                                        type="button"
+                                        className="saved-filter__close-btn"
+                                        onClick={(event) => removeFilter(filter)}
+                                    >
+                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            )
+                        }
+                    })
+                }
+                <button
+                    type="button"
+                    className="saved-filters__clear-btn fs-13"
+                    onClick={() => {
+                        removeAllFilters()
+                    }}
+                >
+                    Clear All Filters
+                </button>
+            </div>
+        )
+
+        return <React.Fragment>{count > 0 ? appliedFilters : null}</React.Fragment>
     }
 
     if (loading) {
@@ -174,7 +243,8 @@ export default function EnvironmentsList() {
                     )} */}
                     </div>
                 </div>
-                <EnvironmentsListView filteredEnvList={filteredEnvList} clearSearch={clearSearch} />
+                {renderAppliedFilters()}
+                <EnvironmentsListView clearSearch={clearSearch} />
             </div>
         </div>
     )

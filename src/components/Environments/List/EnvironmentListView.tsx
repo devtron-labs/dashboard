@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-environment.svg'
-import { NavLink, useRouteMatch } from 'react-router-dom'
+import { NavLink, useLocation, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../../config'
+import { useAsync } from '../../common'
 
 
-export default function EnvironmentsListView({filteredEnvList,clearSearch}) {
+export default function EnvironmentsListView({clearSearch}) {
     const match = useRouteMatch()
+    const location = useLocation()
+    const [filteredEnvList, setFilteredEnvList] = useState([])
+    // const [checkingUserRole, userRoleResponse] = useAsync(sxsx, [])
+
+    useEffect(() => {
+
+
+    },[location.search])
 
     return (filteredEnvList?.length != 0 ? (
         <EnvEmptyStates actionHandler={clearSearch} />
@@ -33,7 +42,7 @@ export default function EnvironmentsListView({filteredEnvList,clearSearch}) {
             <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
                 <EnvIcon className="icon-dim-20" />
                 <div className="cb-5 dc__ellipsis-right">
-                    <NavLink to={`${URLS.ENVIRONMENT}/2`}>devtron-demo1</NavLink>
+                    <NavLink to={`${URLS.ENVIRONMENT}/6`}>devtron-demo1</NavLink>
                 </div>
                 <div>devtron-demo1</div>
                 <div>default_cluster</div>
