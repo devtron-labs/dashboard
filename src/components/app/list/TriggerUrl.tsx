@@ -8,7 +8,7 @@ import { KIND } from '../../../config/constants'
 import EmptyState from '../../EmptyState/EmptyState'
 import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
-import { ManifestUrlList, TriggerURL } from './types'
+import { CopyToClipboardTextProps, ManifestUrlList, TriggerURL } from './types'
 
 export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) {
     const [result, setResponse] = useState<ManifestUrlList[]>()
@@ -156,7 +156,12 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     )
 }
 
-export function CopyToClipboardText({ text, iconClass , placement = 'bottom' }: { text: string; iconClass?: string; placement?: any }) {
+export function CopyToClipboardText({
+    text,
+    rootClassName,
+    iconClass,
+    placement = 'bottom',
+}: CopyToClipboardTextProps) {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
@@ -179,8 +184,8 @@ export function CopyToClipboardText({ text, iconClass , placement = 'bottom' }: 
             }}
             interactive={true}
         >
-            <div className="cluster-clipboard cursor" onClick={copyClipboard}>
-                <CopyText className={`${iconClass ? iconClass : 'icon-dim-16'}`} />
+            <div className={`cluster-clipboard cursor ${rootClassName ?? ''}`} onClick={copyClipboard}>
+                <CopyText className={`${iconClass ?? 'icon-dim-16'}`} />
             </div>
         </Tippy>
     )

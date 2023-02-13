@@ -219,7 +219,7 @@ export function TaskTypeDetailComponent() {
         const onClickCopyToClipboard = (e): void => {
             copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
         }
-        
+
         return (
             <>
                 <Tippy
@@ -234,39 +234,43 @@ export function TaskTypeDetailComponent() {
                         data-copy-text={copyText}
                         className="pointer ml-6 icon-dim-16"
                         onClick={onClickCopyToClipboard}
-                        
                     />
                 </Tippy>
             </>
         )
-        
     }
 
-    const ValueContainer = ( props) => {
-        let value = props.getValue()[0]?.label
-        return <>
+    const ValueContainer = (props) => {
+        const value = props.selectProps?.value?.value
+        return (
             <components.ValueContainer {...props}>
                 <>
                     {!props.selectProps.menuIsOpen &&
-                        (value ?<div className="cn-7 fs-12 flex left">
-                            {value}
-                        
-                    </div>  : <span className="cn-5">Select or enter image</span>)}
+                        (value ? (
+                            <div className="cn-7 fs-12 flex left">{value}</div>
+                        ) : (
+                            <span className="cn-5">Select or enter image</span>
+                        ))}
                     {React.cloneElement(props.children[1])}
-                    
-                    
                 </>
             </components.ValueContainer>
-            <div className='icon-dim-30'>
-                <CopyToClipboardText text={value} placement={"bottom"} />
-            </div>
-            </>
+        )
     }
 
-    
+    const MenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+                    Type to enter a custom value. Press Enter to accept.
+                </div>
+                {props.children}
+            </components.MenuList>
+        )
+    }
+
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-        
+
         return (
             <>
                 <div className="row-container mb-12">
@@ -275,7 +279,7 @@ export function TaskTypeDetailComponent() {
                         contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                     />
 
-                    <div style={{ width: '80% !important' }}>
+                    <div className="dc__position-rel" style={{ width: '80% !important' }}>
                         <CreatableSelect
                             tabIndex={1}
                             value={selectedContainerImage}
@@ -285,16 +289,7 @@ export function TaskTypeDetailComponent() {
                             styles={containerImageSelectStyles}
                             classNamePrefix="select"
                             components={{
-                                MenuList: (props) => {
-                                    return (
-                                        <components.MenuList {...props}>
-                                            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                                                Type to enter a custom value. Press Enter to accept.
-                                            </div>
-                                            {props.children}
-                                        </components.MenuList>
-                                    )
-                                },
+                                MenuList,
                                 Option,
                                 IndicatorSeparator: null,
                                 ValueContainer,
@@ -306,7 +301,13 @@ export function TaskTypeDetailComponent() {
                             isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
                         />
-                        
+                        {selectedContainerImage?.label && (
+                            <CopyToClipboardText
+                                text={selectedContainerImage.label}
+                                rootClassName="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20"
+                                placement="bottom"
+                            />
+                        )}
                         {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />

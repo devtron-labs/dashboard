@@ -150,3 +150,10 @@ export interface ManifestUrlList {
     pointsTo: string
     urls: string[]
 }
+
+export interface CopyToClipboardTextProps {
+    text: string
+    rootClassName?: string
+    iconClass?: string
+    placement?: any
+}

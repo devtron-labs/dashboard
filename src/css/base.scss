@@ -254,10 +254,6 @@ a:focus {
     padding: 2px;
 }
 
-.dc__bottom-0 {
-    bottom: 0;
-}
-
 .dc__position-fixed {
     position: fixed;
 }
@@ -274,9 +270,22 @@ a:focus {
     position: sticky;
 }
 
+.dc__top-0 {
+    top: 0;
+}
+
+.dc__bottom-0 {
+    bottom: 0;
+}
+
 .dc__right-0 {
     right: 0;
 }
+
+.dc__right-20 {
+    right: 20px;
+}
+
 
 .dc__vertical-align-middle {
     vertical-align: middle;
