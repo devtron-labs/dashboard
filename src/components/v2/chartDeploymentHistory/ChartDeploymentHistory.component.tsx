@@ -114,7 +114,7 @@ function ChartDeploymentHistory({
         setSelectedDeploymentHistoryIndex(index)
 
         // Resetting the deployment tab selection, loading & error states on version change.
-        setSelectedDeploymentTabIndex(0)
+        // setSelectedDeploymentTabIndex(0)
     }
 
     async function checkAndFetchDeploymentDetail(
@@ -314,9 +314,11 @@ function ChartDeploymentHistory({
                 (selectedDeploymentTabIndex === 2 && !selectedDeploymentManifestDetail.manifest))
         ) {
             return (
-                <CDEmptyState
-                    subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} is not available for this deployment`}
-                />
+                <div className='flex h-100'>
+                    <CDEmptyState
+                        subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} is not available for this deployment`}
+                    />
+                </div>
             )
         } else if (!selectedDeploymentManifestDetail.loading && selectedDeploymentManifestDetail.error) {
             return (
