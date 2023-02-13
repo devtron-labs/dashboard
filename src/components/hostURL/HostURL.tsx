@@ -137,19 +137,16 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        }
-        else if(!this.props.isSuperAdmin){
-            return <div className="error-screen-wrapper flex column h-100">
-                    <ErrorScreenNotAuthorized
+        } else if (this.state.view === ViewType.ERROR || !this.props.isSuperAdmin) {
+            return (
+                <section className="global-configuration__component flex">
+                    <ErrorScreenManager
+                        code={this.props.isSuperAdmin ? this.state.statusCode : 403}
                         subtitle="Information on this page is available only to superadmin users."
-                        className="dc__align-reload-center"
+                        reloadClass="dc__align-reload-center"
                     />
-                </div>
-        }
-        else if (this.state.view === ViewType.ERROR) {
-            return <section className="global-configuration__component flex" >
-                <ErrorScreenManager code={this.state.statusCode} />
-            </section>
+                </section>
+            )
         }
         return (
             <>
