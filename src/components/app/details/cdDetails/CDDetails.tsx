@@ -121,7 +121,6 @@ export default function CDDetails() {
     const pipelines = result[1]['value'].pipelines
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
-    const _deploymentAppDeleteRequest = mapByKey(pipelines, 'deploymentAppDeleteRequest')
 
     if (!triggerId && envId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(
@@ -139,7 +138,7 @@ export default function CDDetails() {
             value: `${item.environmentId}`,
             label: item.environmentName,
             pipelineId: cdPipelinesMap.get(item.environmentId).id,
-            deploymentAppDeleteRequest: _deploymentAppDeleteRequest.get(item.deploymentAppDeleteRequest).deploymentAppDeleteRequest,
+            deploymentAppDeleteRequest: item.deploymentAppDeleteRequest,
         }
     })
 

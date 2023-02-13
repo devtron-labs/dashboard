@@ -27,12 +27,18 @@ interface DeploymentMetricsProps extends RouteComponentProps<{ appId: string; en
 
 }
 
+interface Environment{
+  label: string;
+  value: number;
+  deploymentAppDeleteRequest?: boolean
+}
+
 interface DeploymentMetricsState {
     code: number;
     view: string;
     //used by ReactSelect Menu
     selectedEnvironment: undefined | { label: string; value: number; };
-    environments: Array<{ label: string; value: number; }>;
+    environments: Array<Environment>;
     frequencyAndLeadTimeGraph: {
         startTime: number;
         endTime: number;
@@ -165,10 +171,11 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     callGetAppOtherEnv(prevEnvId: string | undefined) {
         getAppOtherEnvironment(this.props.match.params.appId).then((envResponse) => {
-            let allEnv = envResponse.result?.filter(env => env.prod).map((env) => {
+            let allEnv= envResponse.result?.filter(env => env.prod).map((env) => {
                 return {
                     label: env.environmentName,
                     value: env.environmentId,
+                    deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
                 }
             })
             allEnv = allEnv || [];
@@ -244,7 +251,8 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     renderInputs() {
-        return <div className="deployment-metrics__inputs">
+      const _filteredEnvironment = this.state.environments.filter((_env) => !_env.deploymentAppDeleteRequest)
+        return <div className="deployment-metrics__inputs bcn-0">
             <div style={{ width: "180px" }}>
                 <ReactSelect defaultValue={this.state.selectedEnvironment}
                     value={this.state.selectedEnvironment}
@@ -255,7 +263,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     }}
                     styles={{ ...styles }}
                     onChange={(selected) => { this.handleEnvironmentChange(selected) }}
-                    options={this.state.environments} />
+                    options={_filteredEnvironment} />
             </div>
             <div className="dc__align-right ">
                 {this.props.match.params.envId ?

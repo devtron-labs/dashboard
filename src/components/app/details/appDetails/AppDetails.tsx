@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { fetchAppDetailsInTime } from '../../service'
 import {
     URLS,
@@ -47,6 +47,8 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as Delete } from '../../../../assets/icons/all-delete.svg'
+
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { SourceInfo } from './SourceInfo'
@@ -80,6 +82,7 @@ import {
     unhibernateApp,
 } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
+import EmptyState from '../../../EmptyState/EmptyState'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -169,6 +172,8 @@ export const Details: React.FC<{
         externalLinks: [],
         monitoringTools: [],
     })
+    const appDetailsRef = useRef(null)
+
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...processDeploymentStatusDetailsData(),
@@ -179,6 +184,8 @@ export const Details: React.FC<{
     const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000;
     const appDetails = appDetailsResult?.result;
+    appDetailsRef.current = appDetails.deploymentAppDeleteRequest
+
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
@@ -218,6 +225,20 @@ export const Details: React.FC<{
         clearDeploymentStatusTimer()
       }
   }, [])
+
+  function renderDeploymentEnvironmentDelete() {
+    return (
+        <EmptyState>
+            <EmptyState.Image>
+              <Delete/>
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h2 className="fs-16 fw-4 c-9">Deployment on this environment has been deleted</h2>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>This application is no longer deployed on ‘staging-devtroncd’ environment.</EmptyState.Subtitle>
+        </EmptyState>
+    )
+}
 
     async function callAppDetailsAPI() {
         try {
@@ -275,7 +296,10 @@ export const Details: React.FC<{
                 setAppDetailsLoading(false)
             }
         } catch (error) {
-            if (!appDetailsResult) {
+          if(error['code'] === '404' || appDetailsRef.current){
+            return renderDeploymentEnvironmentDelete()
+          }
+          else if (!appDetailsResult) {
                 setAppDetailsError(error);
             }
         }
@@ -416,149 +440,145 @@ export const Details: React.FC<{
         toggleDetailedStatus(true)
    }
 
-    return (
-        <React.Fragment>
-            <div className="w-100 pt-16 pr-20 pb-16 pl-20">
-                <SourceInfo
-                    appDetails={appDetails}
-                    setDetailed={toggleDetailedStatus}
-                    environments={environments}
-                    showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
-                    showUrlInfo={isAppDeployment ? setUrlInfo : null}
-                    showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
-                    deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                    deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
-                    triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
-                />
-            </div>
-            <SyncErrorComponent
-                showApplicationDetailedModal={showApplicationDetailedModal}
-                appStreamData={streamData}
-            />
-            {!appDetails?.deploymentAppDeleteRequest && (
-                <>
-                    <SecurityVulnerabilitites
-                        imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
-                        severityCount={lastExecutionDetail.severityCount}
-                        onClick={() => {
-                            toggleScanDetailsModal(true)
-                        }}
-                    />
-                    {environment && (
-                        <AppMetrics
-                            appName={appDetails.appName}
-                            addExtraSpace={!isExternalToolAvailable}
-                            environment={environment}
-                            podMap={aggregatedNodes.nodes.Pod}
-                            k8sVersion={appDetails.k8sVersion}
-                        />
-                    )}
-                    {isExternalToolAvailable && (
-                        <AppLevelExternalLinks
-                            appDetails={appDetails}
-                            externalLinks={externalLinksAndTools.externalLinks}
-                            monitoringTools={externalLinksAndTools.monitoringTools}
-                        />
-                    )}
-                </>
-            )}
-            <NodeTreeDetailTab
-                appDetails={appDetails}
-                externalLinks={externalLinksAndTools.externalLinks}
-                monitoringTools={externalLinksAndTools.monitoringTools}
-                isDevtronApp={true}
-            />
-            {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    appStreamData={streamData}
-                    showAppStatusMessage={false}
-                />
-            )}
-            {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
-                <DeploymentStatusDetailModal
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
-                    streamData={streamData}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                />
-            )}
-            {showScanDetailsModal && (
-                <ScanDetailsModal
-                    showAppInfo={false}
-                    uniqueId={{
-                        imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
-                        appId: params.appId,
-                        envId: params.envId,
-                    }}
-                    close={() => {
-                        toggleScanDetailsModal(false)
-                    }}
-                />
-            )}
-            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
-            {commitInfo && (
-                <TriggerInfoModal
-                    appId={appDetails?.appId}
-                    ciArtifactId={appDetails?.ciArtifactId}
-                    close={() => showCommitInfo(false)}
-                />
-            )}
-            {hibernateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
-                    />
-                    <ConfirmationDialog.Body
-                        title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
-                            appDetails.appName
-                        }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be
-                                <b className="mr-4 ml-4">
-                                    scaled
-                                    {hibernateConfirmationModal === 'hibernate'
-                                        ? ' down to 0 '
-                                        : ' up to its original count '}
-                                    on {appDetails.environmentName}
-                                </b>
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p className="mt-16">Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            className="cta cancel"
-                            disabled={hibernating}
-                            onClick={(e) => setHibernateConfirmationModal('')}
-                        >
-                            Cancel
-                        </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hibernateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
-                                'Restore App'
-                            )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
-        </React.Fragment>
-    )
+  return (
+      <React.Fragment>
+          <div className="w-100 pt-16 pr-20 pb-16 pl-20">
+              <SourceInfo
+                  appDetails={appDetails}
+                  setDetailed={toggleDetailedStatus}
+                  environments={environments}
+                  showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
+                  showUrlInfo={isAppDeployment ? setUrlInfo : null}
+                  showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                  deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
+                  deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
+                  deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
+                  triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
+              />
+          </div>
+          <SyncErrorComponent showApplicationDetailedModal={showApplicationDetailedModal} appStreamData={streamData} />
+          {!appDetails?.deploymentAppDeleteRequest && (
+              <>
+                  <SecurityVulnerabilitites
+                      imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
+                      severityCount={lastExecutionDetail.severityCount}
+                      onClick={() => {
+                          toggleScanDetailsModal(true)
+                      }}
+                  />
+                  {environment && (
+                      <AppMetrics
+                          appName={appDetails.appName}
+                          addExtraSpace={!isExternalToolAvailable}
+                          environment={environment}
+                          podMap={aggregatedNodes.nodes.Pod}
+                          k8sVersion={appDetails.k8sVersion}
+                      />
+                  )}
+                  {isExternalToolAvailable && (
+                      <AppLevelExternalLinks
+                          appDetails={appDetails}
+                          externalLinks={externalLinksAndTools.externalLinks}
+                          monitoringTools={externalLinksAndTools.monitoringTools}
+                      />
+                  )}
+              </>
+          )}
+          <NodeTreeDetailTab
+              appDetails={appDetails}
+              externalLinks={externalLinksAndTools.externalLinks}
+              monitoringTools={externalLinksAndTools.monitoringTools}
+              isDevtronApp={true}
+          />
+          {detailedStatus && (
+              <AppStatusDetailModal
+                  close={hideAppDetailsStatus}
+                  appStreamData={streamData}
+                  showAppStatusMessage={false}
+              />
+          )}
+          {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
+              <DeploymentStatusDetailModal
+                  appName={appDetails.appName}
+                  environmentName={appDetails.environmentName}
+                  streamData={streamData}
+                  deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+              />
+          )}
+          {showScanDetailsModal && (
+              <ScanDetailsModal
+                  showAppInfo={false}
+                  uniqueId={{
+                      imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
+                      appId: params.appId,
+                      envId: params.envId,
+                  }}
+                  close={() => {
+                      toggleScanDetailsModal(false)
+                  }}
+              />
+          )}
+          {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
+          {commitInfo && (
+              <TriggerInfoModal
+                  appId={appDetails?.appId}
+                  ciArtifactId={appDetails?.ciArtifactId}
+                  close={() => showCommitInfo(false)}
+              />
+          )}
+          {hibernateConfirmationModal && (
+              <ConfirmationDialog>
+                  <ConfirmationDialog.Icon
+                      src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
+                  />
+                  <ConfirmationDialog.Body
+                      title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
+                          appDetails.appName
+                      }' on '${appDetails.environmentName}'`}
+                      subtitle={
+                          <p>
+                              Pods for this application will be
+                              <b className="mr-4 ml-4">
+                                  scaled
+                                  {hibernateConfirmationModal === 'hibernate'
+                                      ? ' down to 0 '
+                                      : ' up to its original count '}
+                                  on {appDetails.environmentName}
+                              </b>
+                              environment.
+                          </p>
+                      }
+                  >
+                      <p className="mt-16">Are you sure you want to continue?</p>
+                  </ConfirmationDialog.Body>
+                  <ConfirmationDialog.ButtonGroup>
+                      <button
+                          className="cta cancel"
+                          disabled={hibernating}
+                          onClick={(e) => setHibernateConfirmationModal('')}
+                      >
+                          Cancel
+                      </button>
+                      <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                          {hibernating ? (
+                              <Progressing />
+                          ) : hibernateConfirmationModal === 'hibernate' ? (
+                              `Hibernate App`
+                          ) : (
+                              'Restore App'
+                          )}
+                      </button>
+                  </ConfirmationDialog.ButtonGroup>
+              </ConfirmationDialog>
+          )}
+      </React.Fragment>
+  )
 };
 
 export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ environments: any, disabled: boolean, controlStyleOverrides?: React.CSSProperties }) {
     const { push } = useHistory();
     const { path } = useRouteMatch();
     const { appId, envId } = useParams<{ appId: string, envId?: string; }>();
-
     function selectEnvironment(newEnvId) {
 
         const newUrl = generatePath(path, { appId, envId: newEnvId });
