@@ -2,23 +2,38 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { NavLink, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ErrorBoundary, Progressing } from '../common'
+import { ErrorBoundary, Progressing, useAsync } from '../common'
 import EnvironmentOverride from '../EnvironmentOverride/EnvironmentOverride'
+import { getEnvAppList } from './EnvironmentListService'
+import { EnvAppList } from './EnvironmentGroup.types'
 
 export default function EnvConfig() {
+    const params = useParams<{ appId: string; envId: string }>()
     const [environments, setEnvironments] = useState([])
+    const [envAppList, setEnvAppList] = useState<EnvAppList[]>([])
+
+    const [loading,appList] = useAsync(() => getEnvAppList(+params.envId),[params.envId])
+    useEffect(() => {
+        if(appList?.result){
+            setEnvAppList(appList.result)
+        }
+    },[appList])
+
+    if(loading){
+        return <Progressing />
+    }
+
     return <div className='env-compose'>
-        <div className='env-compose__nav flex column left top dc__position-rel dc__overflow-scroll'><EnvApplication /></div>
+        <div className='env-compose__nav flex column left top dc__position-rel dc__overflow-scroll'><EnvApplication appList={envAppList} /></div>
         <div className='env-compose__main'><AppOverrides environments={environments} setEnvironments={setEnvironments} /></div>
     </div>
 }
 
-function EnvApplication() {
-    const apps = [21,19]
+function EnvApplication({appList}) {
     return (
         <div className="pt-4 pb-4 w-100">
             <div className="cn-6 pl-8 pr-8  fs-12 fw-6 w-100">APPLICATION</div>
-            {apps.map((appId) => <ApplicationRoutes appId={appId} />)}
+            {appList.map((app) => <ApplicationRoutes appId={app.id} />)}
         </div>
     )
 }

@@ -42,7 +42,7 @@ export default function EnvironmentsListView({clearSearch}) {
             <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
                 <EnvIcon className="icon-dim-20" />
                 <div className="cb-5 dc__ellipsis-right">
-                    <NavLink to={`${URLS.ENVIRONMENT}/6`}>devtron-demo1</NavLink>
+                    <NavLink to={`${URLS.ENVIRONMENT}/1`}>devtron-demo1</NavLink>
                 </div>
                 <div>devtron-demo1</div>
                 <div>default_cluster</div>
