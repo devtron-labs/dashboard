@@ -19,4 +19,4 @@ module.exports = function (app) {
             secure: false,
         }),
     )
-}//http://demo.devtron.info:32080/
+}
