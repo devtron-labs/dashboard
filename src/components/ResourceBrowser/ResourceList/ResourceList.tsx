@@ -418,6 +418,7 @@ export default function ResourceList() {
                     'reason',
                     'type',
                 ],
+                origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
             },
         })
     }
