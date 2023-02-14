@@ -455,12 +455,11 @@ export default function EnvTriggerView() {
             pipelineId: ciNodeId,
         }
         return getCIMaterialList(params).then((response) => {
-            let _workflowId, _appID
-            let showRegexModal = false
+            let _workflowId, _appID, showRegexModal = false
             const _workflows = [...workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
-                        const selectedCIPipeline = filteredCIPipelines[workflow.appId]?.find(
+                        const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find(
                             (_ci) => _ci.id === +ciNodeId,
                         )
                         if (selectedCIPipeline?.ciMaterial) {
@@ -471,9 +470,6 @@ export default function EnvTriggerView() {
                                 if (mat.isRegex && gitMaterial) {
                                     node.branch = gitMaterial.value
                                     node.isRegex = !!gitMaterial.regex
-                                    if (showRegexModal && !gitMaterial.value) {
-                                        showRegexModal = true
-                                    }
                                 }
                             }
                         }
@@ -494,17 +490,17 @@ export default function EnvTriggerView() {
                 return workflow
             })
 
-            // const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
-            // if (selectedCIPipeline?.ciMaterial) {
-            //     for (const mat of selectedCIPipeline.ciMaterial) {
-            //         showRegexModal = response.result.some((_mat) => {
-            //             return _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !_mat.value
-            //         })
-            //         if (showRegexModal) {
-            //             break
-            //         }
-            //     }
-            // }
+            const selectedCIPipeline = filteredCIPipelines.get(_appID).find((_ci) => _ci.id === +ciNodeId)
+            if (selectedCIPipeline?.ciMaterial) {
+                for (const mat of selectedCIPipeline.ciMaterial) {
+                    showRegexModal = response.result.some((_mat) => {
+                        return _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !_mat.value
+                    })
+                    if (showRegexModal) {
+                        break
+                    }
+                }
+            }
 
             setWorkflows(_workflows)
             setErrorCode(response.code)
@@ -1008,7 +1004,7 @@ export default function EnvTriggerView() {
                     webhhookTimeStampOrder={webhookTimeStampOrder}
                     showMaterialRegexModal={showMaterialRegexModal}
                     onCloseBranchRegexModal={onCloseBranchRegexModal}
-                    filteredCIPipelines={filteredCIPipelines[selectedAppID]}
+                    filteredCIPipelines={filteredCIPipelines.get(_appID)}
                     onClickShowBranchRegexModal={onClickShowBranchRegexModal}
                     showCIModal={showCIModal}
                     onShowCIModal={onShowCIModal}
