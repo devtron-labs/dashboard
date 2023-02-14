@@ -523,6 +523,7 @@ export interface CdPipeline {
     parentPipelineId?: number
     parentPipelineType?: string
     deploymentAppDeleteRequest?: boolean
+    deploymentAppCreated?: boolean
 }
 
 export interface CdPipelineResult {

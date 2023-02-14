@@ -469,7 +469,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         downstreamNodes: new Array<NodeAttr>(),
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
-        deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest
+        deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
     } as NodeAttr
     stageIndex++
 

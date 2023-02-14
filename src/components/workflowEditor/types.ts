@@ -79,6 +79,7 @@ export interface CDNodeProps {
     cdNamesList?: string[]
     hideWebhookTippy?:  () => void
     deploymentAppDeleteRequest: boolean
+    deploymentAppCreated?: boolean
 }
 
 export interface WebhookNodeProps {

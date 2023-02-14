@@ -120,6 +120,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? "" : DeploymentAppType.Helm,
+                deploymentAppCreated: false
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -655,7 +656,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     deleteCD = (force) => {
         let payload = {
-            action: this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DELETE,
+            action: this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps && this.state.pipelineConfig.deploymentAppCreated ? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id,

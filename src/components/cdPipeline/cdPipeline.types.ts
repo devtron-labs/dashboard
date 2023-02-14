@@ -78,6 +78,7 @@ export interface CDPipelineState {
         parentPipelineId: number;
         parentPipelineType: string;
         deploymentAppType: string;
+        deploymentAppCreated: boolean
     };
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
