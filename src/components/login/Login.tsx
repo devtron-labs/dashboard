@@ -5,8 +5,8 @@ import { Switch, Redirect, NavLink, Link } from 'react-router-dom'
 import { Route } from 'react-router'
 import { Icons, toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
-import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
-import { Progressing, showError , getCookie} from '../common'
+import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
+import { Progressing, showError, getCookie } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
@@ -35,16 +35,16 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
-        let queryParam = queryString.get('continue')       
-        
+        let queryParam = queryString.get('continue')
+
         //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
-            //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
-            //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear 
-            //at the time of first login.
+        //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
+        //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear
+        //at the time of first login.
         //2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
-            //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the 
-            //login page with Please login again toast appearing.
-        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != "/")) {
+        //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
+        //login page with Please login again toast appearing.
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {
@@ -72,7 +72,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 })
                 .catch((errors) => {})
         }
-
     }
 
     handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -130,12 +129,17 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     renderSSOLoginPage() {
         let search = this.props.location.search
-        let renderLoginError = (): JSX.Element => {
+        const renderLoginError = (): JSX.Element => {
             return (
                 <>
-                <span>{SSO_LOGGING_INFO.frontText} <a target="_blank" href={`https://docs.devtron.ai/v/v0.6/global-configurations/authorization/user-access`}>{SSO_LOGGING_INFO.redirectLink}</a>
-                {SSO_LOGGING_INFO.tailText}</span>
-            </>
+                    <span>
+                        {SSO_LOGGING_INFO.frontText}{' '}
+                        <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
+                            {SSO_LOGGING_INFO.redirectLink}
+                        </a>
+                        {SSO_LOGGING_INFO.tailText}
+                    </span>
+                </>
             )
         }
         return (
@@ -159,15 +163,16 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                         )
                     })}
 
-            { !localStorage.isDashboardLoggedIn &&  <InfoColourBar
-                    classname={"error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"}
-                    message={renderLoginError()}
-                    redirectLink = {SSO_LOGGING_INFO.redirectLink}
-                    internalLink={true}
-                    Icon={ErrorIcon} 
-                    iconClass="warning-icon" 
+                {localStorage.isDashboardLoggedIn !== 'true' && (
+                    <InfoColourBar
+                        classname={'error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300'}
+                        message={renderLoginError()}
+                        redirectLink={SSO_LOGGING_INFO.redirectLink}
+                        internalLink={true}
+                        Icon={ErrorIcon}
+                        iconClass="warning-icon"
                     />
-            }
+                )}
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
