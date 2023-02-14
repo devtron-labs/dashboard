@@ -150,12 +150,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             if (response.result?.config?.config?.clientSecret === '') {
                 response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
             }
-            console.log('previous',response.result)
             let newConfig = this.parseResponse(sample[newsso]);
             if (response.result) {
                 newConfig = this.parseResponse(response.result)
             }
-            console.log('After',newConfig)
             this.setState({
                 view: ViewType.FORM,
                 sso: newsso,
