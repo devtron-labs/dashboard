@@ -32,7 +32,8 @@ export default function GitInfoMaterial({
     workflowId,
     onClickShowBranchRegexModal,
     isFromEnv,
-    appId
+    appId,
+    isFromBulkCI
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -264,6 +265,7 @@ export default function GitInfoMaterial({
                         <MaterialHistory
                             material={selectedMaterial}
                             pipelineName={pipelineName}
+                            ciPipelineId={pipelineId}
                             selectCommit={triggerViewContext.selectCommit}
                             toggleChanges={triggerViewContext.toggleChanges}
                         />
@@ -295,13 +297,13 @@ export default function GitInfoMaterial({
 
     return (
         <>
-            {renderMaterialHeader()}
-            <div className={`m-lr-0 ${showWebhookModal ? null : 'flexbox'}`}>
+            {!isFromBulkCI && renderMaterialHeader()}
+            <div className={`m-lr-0 ${showWebhookModal || isFromBulkCI ? null : 'flexbox'}`}>
                 {showWebhookModal == true ? (
                     renderWebhookModal()
                 ) : (
                     <>
-                        {renderMaterialSource()}
+                        {!isFromBulkCI && renderMaterialSource()}
                         {renderMaterialHistory(selectedMaterial ?? material)}
                     </>
                 )}

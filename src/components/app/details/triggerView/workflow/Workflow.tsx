@@ -255,16 +255,23 @@ export class Workflow extends Component<WorkflowProps> {
                 style={{ minWidth: `${this.props.width}px` }}
             >
                 <div className="workflow__header">
-                    {this.props.isFromENv && (
-                        <input
-                            type="checkbox"
-                            className="mt-0-imp cursor"
-                            data-app-id={this.props.appId}
-                            checked={this.props.isSelected}
-                            onChange={this.props.handleSelectionChange}
-                        />
+                    {this.props.isFromENv ? (
+                        <>
+                            <input
+                                type="checkbox"
+                                className="mt-0-imp cursor"
+                                data-app-id={this.props.appId}
+                                checked={this.props.isSelected}
+                                onChange={this.props.handleSelectionChange}
+                                id={`chkValidate-${this.props.appId}`}
+                            />
+                            <label className="pt-4 ml-4 cursor" htmlFor={`chkValidate-${this.props.appId}`}>
+                                {this.props.name}
+                            </label>
+                        </>
+                    ) : (
+                        <span className="workflow__name">{this.props.name}</span>
                     )}
-                    <span className="workflow__name ml-4">{this.props.name}</span>
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">

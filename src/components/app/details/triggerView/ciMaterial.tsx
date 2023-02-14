@@ -160,6 +160,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                         isFromEnv={this.props.isFromEnv}
                         appId={this.props.appId}
+                        isFromBulkCI={false}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>

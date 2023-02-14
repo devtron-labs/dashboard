@@ -19,4 +19,12 @@ export const ENV_TRIGGER_VIEW_GA_EVENTS = {
         category: 'Environment Details Trigger View',
         action: `${nodeType} Triggered`,
     }),
+    BulkCITriggered: {
+        category: 'Environment Details Trigger View',
+        action: 'Bulk CI Triggered',
+    },
+    BulkCDTriggered: (nodeType: string) => ({
+        category: 'Environment Details Trigger View',
+        action: `Bulk ${nodeType} Triggered`,
+    }),
 }

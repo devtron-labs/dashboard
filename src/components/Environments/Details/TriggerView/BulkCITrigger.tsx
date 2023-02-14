@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing, useAsync } from '../../../common'
+import { Drawer, noop, Progressing, showError, useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
@@ -7,20 +7,30 @@ import { ModuleNameMap } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
+import GitInfoMaterial from '../../../common/GitInfoMaterial'
 
+interface AppWorkflowDetailsType {
+    workFlowId: number
+    appId: number
+    name: string
+    ciPipelineName: string
+    ciPipelineId: string
+    isFirstTrigger: boolean
+    isCacheAvailable: boolean
+}
 interface BulkCITriggerType {
-    appList: { id: number; name: string; ciPipelineName: string; ciPipelineId: string }[]
-    appId: string
-    envId: number
+    appList: AppWorkflowDetailsType[]
     closePopup: (e) => void
+    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
+    onClickTriggerBulkCI: ()=> void
 }
 
-export default function BulkCITrigger({ appList, appId, envId, closePopup }: BulkCITriggerType) {
+export default function BulkCITrigger({ appList, closePopup, updateBulkInputMaterial , onClickTriggerBulkCI}: BulkCITriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
-    const [selectedAppID, setSelectedAppID] = useState<number>(appList[0].id)
+    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
     const [materialList, setMaterialList] = useState<Record<string, any[]>>(null)
-    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [appId])
+    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
         selectMaterial,
         refreshMaterial,
@@ -65,15 +75,19 @@ export default function BulkCITrigger({ appList, appId, envId, closePopup }: Bul
             }),
         )
         const _materialListMap: Record<string, any[]> = {}
-        Promise.allSettled(_CIMaterialPromiseList).then(
-            (responses: { status: string; value?: any; reason?: any }[]) => {
+        Promise.all(_CIMaterialPromiseList)
+            .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 responses.forEach((res, index) => {
-                    _materialListMap[appList[index]?.id] = res.value['result']
+                    _materialListMap[appList[index]?.appId] = res['result']
                 })
                 setMaterialList(_materialListMap)
+                updateBulkInputMaterial(_materialListMap)
+
                 setLoading(false)
-            },
-        )
+            })
+            .catch((error) => {
+                showError(error)
+            })
     }
 
     useEffect(() => {
@@ -92,22 +106,23 @@ export default function BulkCITrigger({ appList, appId, envId, closePopup }: Bul
     }
 
     const changeApp = (e): void => {
-        setSelectedAppID(+e.currentTarget.dataset.appId)
+        setSelectedApp(appList[e.currentTarget.dataset.index])
     }
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
         }
+        const selectedMaterial = materialList[selectedApp.appId].find((mat) => mat.isSelected)
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0">
-                    {appList.map((app) =>
-                        app.id === selectedAppID ? (
-                            <div className="material-list pr-12 pl-12 dc__window-bg">
-                                <div className="fw-6 fs-13 cn-9 mt-12 mb-12">{app.name}</div>
+                    {appList.map((app, index) =>
+                        app.appId === selectedApp.appId ? (
+                            <div className="material-list pr-12 pl-12 dc__window-bg" key={`app-${index}`}>
+                                <div className="fw-6 fs-13 cn-9 pt-12 pb-12">{app.name}</div>
                                 <MaterialSource
-                                    material={materialList[app.id]}
+                                    material={materialList[app.appId]}
                                     selectMaterial={selectMaterial}
                                     refreshMaterial={{
                                         refresh: refreshMaterial,
@@ -115,11 +130,24 @@ export default function BulkCITrigger({ appList, appId, envId, closePopup }: Bul
                                         pipelineId: +app.ciPipelineId,
                                     }}
                                 />
+                                <div className="flex left mt-12 dc__border-top pt-12 pb-12">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-0-imp cursor"
+                                        data-app-id={app.appId}
+                                        checked={true}
+                                        id={`chkValidate-${app.appId}`}
+                                    />
+                                    <label className="fs-13 fw-4 cn-9 ml-10 mb-0" htmlFor={`chkValidate-${app.appId}`}>
+                                        Ignore cache
+                                    </label>
+                                </div>
                             </div>
                         ) : (
                             <div
+                                key={`app-${index}`}
                                 className="p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor"
-                                data-app-id={app.id}
+                                data-index={index}
                                 onClick={changeApp}
                             >
                                 {app.name}
@@ -128,7 +156,23 @@ export default function BulkCITrigger({ appList, appId, envId, closePopup }: Bul
                     )}
                 </div>
                 <div className="main-content dc__window-bg">
-
+                    <GitInfoMaterial
+                        material={materialList[selectedApp.appId]}
+                        title={selectedApp.ciPipelineName}
+                        pipelineId={selectedApp.ciPipelineId}
+                        pipelineName={selectedApp.ciPipelineName}
+                        selectedMaterial={selectedMaterial}
+                        showWebhookModal={false}
+                        hideWebhookModal={noop}
+                        toggleWebhookModal={noop}
+                        webhookPayloads={{}}
+                        isWebhookPayloadLoading={false}
+                        workflowId={selectedApp.workFlowId}
+                        onClickShowBranchRegexModal={noop}
+                        isFromEnv={true}
+                        appId={selectedApp.appId}
+                        isFromBulkCI={true}
+                    />
                 </div>
             </div>
         )
@@ -142,9 +186,7 @@ export default function BulkCITrigger({ appList, appId, envId, closePopup }: Bul
             >
                 <button
                     className="cta flex h-36"
-                    onClick={() => {
-                        alert('hey CI')
-                    }}
+                    onClick={onClickTriggerBulkCI}
                 >
                     {isLoading ? (
                         <Progressing />

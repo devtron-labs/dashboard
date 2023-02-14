@@ -35,6 +35,7 @@ import {
     createGitCommitUrl,
     ErrorScreenManager,
     ISTTimeModal,
+    mapByKey,
     PopupMenu,
     preventBodyScroll,
     Progressing,
@@ -80,7 +81,9 @@ export default function EnvTriggerView() {
     const [showMaterialRegexModal, setShowMaterialRegexModal] = useState(false)
     const [workflowID, setWorkflowID] = useState<number>()
     const [selectedAppID, setSelectedAppID] = useState<number>()
-    const [selectedAppList, setSelectedAppList] = useState<{ id: number; name: string; ciPipelineName: string; ciPipelineId: string;}[]>([])
+    const [selectedAppList, setSelectedAppList] = useState<
+        { id: number; name: string; ciPipelineName: string; ciPipelineId: string }[]
+    >([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [selectedCDNode, setSelectedCDNode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
     const [selectedCINode, setSelectedCINode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
@@ -89,15 +92,44 @@ export default function EnvTriggerView() {
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
-            const { workflows, filteredCIPipelines } = await getWorkflows(envId)
-            setWorkflows(workflows)
+            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId)
+            if (showCIModal) {
+                _workflows.forEach((wf) =>
+                    wf.nodes.forEach((n) => {
+                        if (+n.id === selectedCINode.id) {
+                            workflows.forEach((sw) =>
+                                sw.nodes.forEach((sn) => {
+                                    if (+sn.id === selectedCINode.id) {
+                                        n.inputMaterialList = sn.inputMaterialList
+                                    }
+                                }),
+                            )
+                        }
+                    }),
+                )
+                // } else if (showBulkCIModal) {
+                //     _workflows.forEach((wf) =>
+                //         wf.nodes.forEach((n) => {
+                //             if (+n.id === selectedCINode.id) {
+                //                 workflows.forEach((sw) =>
+                //                     sw.nodes.forEach((sn) => {
+                //                         if (+sn.id === selectedCINode.id) {
+                //                             n.inputMaterialList = sn.inputMaterialList
+                //                         }
+                //                     }),
+                //                 )
+                //             }
+                //         }),
+                //     )
+            }
+            setWorkflows(_workflows)
             setFilteredCIPipelines(filteredCIPipelines)
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
-            getWorkflowStatusData(workflows)
+            getWorkflowStatusData(_workflows)
             timerRef && clearInterval(timerRef)
             timerRef = setInterval(() => {
-                getWorkflowStatusData(workflows)
+                getWorkflowStatusData(_workflows)
             }, 30000)
         } catch (error) {
             showError(error)
@@ -204,7 +236,12 @@ export default function EnvTriggerView() {
                     wf.isSelected = false
                 } else {
                     const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
-                    _selectedAppList.push({ id: _appId, name: wf.name, ciPipelineName: _ciNode.title, ciPipelineId: _ciNode.id })
+                    _selectedAppList.push({
+                        id: _appId,
+                        name: wf.name,
+                        ciPipelineName: _ciNode.title,
+                        ciPipelineId: _ciNode.id,
+                    })
                     wf.isSelected = true
                 }
                 setSelectedAppList(_selectedAppList)
@@ -251,7 +288,7 @@ export default function EnvTriggerView() {
                                 </div>
                                 <div className="fs-13 fw-4 cn-7">
                                     {selectedAppList.map((app, index) => (
-                                        <span>
+                                        <span key={`selected-app-${index}`}>
                                             {app.name}
                                             {index !== selectedAppList.length - 1 && <span>, </span>}
                                         </span>
@@ -738,10 +775,10 @@ export default function EnvTriggerView() {
             })
     }
 
-    const selectCommit = (materialId: string, hash: string): void => {
+    const selectCommit = (materialId: string, hash: string, ciPipelineId?: string): void => {
         const _workflows = [...workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
-                if (node.type === selectedCINode.type && +node.id == selectedCINode.id) {
+                if (node.type === WorkflowNodeType.CI && +node.id == (ciPipelineId ?? selectedCINode.id)) {
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
@@ -1031,16 +1068,135 @@ export default function EnvTriggerView() {
         return <BulkCDTrigger envId={1} appId="1" closePopup={hideBulkCDModal} isLoading={isLoading} />
     }
 
+    const updateBulkInputMaterial = (materialList: Record<string, any[]>): void => {
+        const _workflows = [...workflows].map((workflow) => {
+            const _appId = workflow.appId
+            workflow.nodes.map((node) => {
+                if (node.type === 'CI') {
+                    node.inputMaterialList = materialList[_appId]
+                    return node
+                } else return node
+            })
+            return workflow
+        })
+        setWorkflows(_workflows)
+    }
+
+    const onClickTriggerBulkCI = () => {
+        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
+        setLoading(true)
+        let node, dockerfileConfiguredGitMaterialId
+        const nodeList: NodeAttr[] = []
+
+        const selectedPipelineMap = mapByKey(selectedAppList, 'ciPipelineId')
+        for (let i = 0; i < workflows.length; i++) {
+            if (!workflows[i].isSelected) {
+                continue
+            }
+            node = workflows[i].nodes.find((node) => {
+                return !!selectedPipelineMap.get(node.id)
+            })
+
+            if (node) {
+                nodeList.push(node)
+                dockerfileConfiguredGitMaterialId = workflows[i].ciConfiguredGitMaterialId
+            }
+        }
+        const _CITriggerPromiseList = []
+        nodeList.forEach((node) => {
+            const gitMaterials = new Map<number, string[]>()
+            const ciPipelineMaterials = []
+            for (let i = 0; i < node.inputMaterialList.length; i++) {
+                gitMaterials[node.inputMaterialList[i].gitMaterialId] = [
+                    node.inputMaterialList[i].gitMaterialName.toLowerCase(),
+                    node.inputMaterialList[i].value,
+                ]
+                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
+                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
+                if (!history.length) {
+                    history.push(node.inputMaterialList[i].history[0])
+                }
+
+                history.forEach((element) => {
+                    const historyItem = {
+                        Id: node.inputMaterialList[i].id,
+                        GitCommit: {
+                            Commit: element.commit,
+                        },
+                    }
+                    if (!element.commit) {
+                        historyItem.GitCommit['WebhookData'] = {
+                            id: element.webhookData.id,
+                        }
+                    }
+                    ciPipelineMaterials.push(historyItem)
+                })
+            }
+            // if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
+            //     toast.error(
+            //         CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
+            //             '$GIT_MATERIAL_ID',
+            //             `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
+            //         ),
+            //     )
+            //     setLoading(false)
+            //     return
+            // }
+            const payload = {
+                pipelineId: +node.id,
+                ciPipelineMaterials: ciPipelineMaterials,
+                invalidateCache: invalidateCache,
+            }
+            _CITriggerPromiseList.push(triggerCINode(payload))
+        })
+
+        Promise.allSettled(_CITriggerPromiseList)
+            .then((response: any) => {
+               // if (response.result) {
+                    toast.success('Pipeline Triggered')
+                    setShowBulkCIModal(false)
+                    setLoading(false)
+                    setErrorCode(response.code)
+                    preventBodyScroll(false)
+                    getWorkflowStatusData(workflows)
+                //}
+            })
+            .catch((errors: ServerErrors) => {
+                showError(errors)
+
+                setLoading(false)
+
+                setErrorCode(errors.code)
+            })
+    }
+
     const renderBulkCIMaterial = (): JSX.Element | null => {
         if (!showBulkCIModal) {
             return null
         }
+        const _selectedAppWorkflowList = []
+        workflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
+                if (_ciNode) {
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        ciPipelineName: _ciNode.title,
+                        ciPipelineId: _ciNode.id,
+                        isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
+                        isCacheAvailable: _ciNode.storageConfigured,
+                    })
+                }
+            }
+        })
         return (
             <BulkCITrigger
-                appList={selectedAppList}
-                envId={1}
-                appId="1"
+                appList={_selectedAppWorkflowList}
                 closePopup={hideBulkCIModal}
+                updateBulkInputMaterial={updateBulkInputMaterial}
+                onClickTriggerBulkCI={onClickTriggerBulkCI}
             />
         )
     }
