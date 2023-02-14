@@ -159,7 +159,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                         )
                     })}
 
-            { localStorage.isDashboardLoggedIn &&  <InfoColourBar
+            { !localStorage.isDashboardLoggedIn &&  <InfoColourBar
                     classname={"error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"}
                     message={renderLoginError()}
                     redirectLink = {SSO_LOGGING_INFO.redirectLink}
