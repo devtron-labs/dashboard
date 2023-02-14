@@ -60,7 +60,7 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
 }
 
 export const SSO_LOGGING_INFO = {
-    frontText: "doesn't have an account on this workplace. Please contact your manager for ",
+    frontText: "You don't have an account on this workplace. Please contact your manager for ",
     tailText: ' or login as adminstration.',
     redirectLink: 'login Permission',
 }

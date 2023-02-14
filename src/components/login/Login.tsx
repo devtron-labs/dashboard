@@ -133,7 +133,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         let renderLoginError = (): JSX.Element => {
             return (
                 <>
-                <span className="dc__bold">{"Email address "}</span>
                 <span>{SSO_LOGGING_INFO.frontText} <a target="_blank" href={`https://docs.devtron.ai/v/v0.6/global-configurations/authorization/user-access`}>{SSO_LOGGING_INFO.redirectLink}</a>
                 {SSO_LOGGING_INFO.tailText}</span>
             </>
