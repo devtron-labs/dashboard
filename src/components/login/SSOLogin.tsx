@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import yamlJsParser from 'yaml';
 import sample from './sampleConfig.json';
 import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
-import Check from '../../assets/icons/ic-outline-check.svg'
+import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Microsoft } from '../../assets/icons/ic-microsoft.svg'
@@ -67,7 +67,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
             <aside className="login__icon-alignment"><SSOTabIcons SSOName={SSOName} /></aside>
             <aside className="login__text-alignment">{SSOName}</aside>
             <label>
-                {lastActiveSSO?.name === value ? <aside className="login__check-icon"><img src={Check} /></aside> : ""}
+                {lastActiveSSO?.name === value ? <aside className="login__selected-icon"><img src={Check} height={'32px'} /></aside> : ""}
             </label>
         </span>
     </label>
@@ -109,7 +109,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }).then(() => {
             if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                 getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase()).then((response) => {
-                    console.log('result',response.result);
                     let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLowerCase()]);
                     if (response.result?.config?.config?.clientID === '') {
                         response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
@@ -122,8 +121,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     if (response.result) {
                         newConfig = this.parseResponse(response.result)
                     }
-
-                    console.log('newConfig',newConfig);
                     
                     this.setState({
                         view: ViewType.FORM,
@@ -145,7 +142,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
-        console.log('handle')
         let newsso = event.target.value;
         getSSOConfig(newsso).then((response) => {
             if (response.result?.config?.config?.clientID === '') {
@@ -154,10 +150,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             if (response.result?.config?.config?.clientSecret === '') {
                 response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
             }
+            console.log('previous',response.result)
             let newConfig = this.parseResponse(sample[newsso]);
             if (response.result) {
                 newConfig = this.parseResponse(response.result)
             }
+            console.log('After',newConfig)
             this.setState({
                 view: ViewType.FORM,
                 sso: newsso,
@@ -204,10 +202,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
-            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER) {
+            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientID) {
                 configJSON.clientID = ''
             }
-            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER) {
+            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientSecret) {
                 configJSON.clientSecret = ''
             }
         } catch (error) {
@@ -258,10 +256,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
-            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER) {
+            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientID) {
                 configJSON.clientID = ''
             }
-            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER) {
+            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientSecret) {
                 configJSON.clientSecret = ''
             }
         } catch (error) {
@@ -352,21 +350,18 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleOnBlur(): void {
-        console.log('Blur')
-
-        
-
         if (this.state.configMap !== SwitchItemValues.Configuration) return
+
         let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
-        console.log(newConfig);
-        if (newConfig.clientID === '') {
+
+        if (newConfig.clientID === '' || !newConfig.clientID) {
             newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.clientSecret === '') {
+        if (newConfig.clientSecret === '' || !newConfig.clientSecret) {
             newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
         let value = yamlJsParser.stringify(newConfig)
-        console.log(value);
+
         this.setState({
             ssoConfig: {
                 ...this.state.ssoConfig,
@@ -379,15 +374,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleOnFocus(): void {
-        console.log('Focus')
-
         if (this.state.configMap !== SwitchItemValues.Configuration) return
         let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         if (newConfig.clientID === DEFAULT_SECRET_PLACEHOLDER) {
-            newConfig.clientID = ''
+            newConfig.clientID = null
         }
         if (newConfig.clientSecret === DEFAULT_SECRET_PLACEHOLDER) {
-            newConfig.clientSecret = ''
+            newConfig.clientSecret = null
         }
         let value = yamlJsParser.stringify(newConfig)
         this.setState({
