@@ -23,8 +23,8 @@ export default function ChartRepo({ isSuperAdmin }) {
     }
     
     function getRandomInt(): number {
-        var max = Number.MAX_SAFE_INTEGER
-        var min = Number.MIN_SAFE_INTEGER
+        const max = Number.MAX_SAFE_INTEGER
+        const min = Number.MIN_SAFE_INTEGER
         const randomBytes = new Uint32Array(1)
         window.crypto.getRandomValues(randomBytes)
         const range = max - min + 1
