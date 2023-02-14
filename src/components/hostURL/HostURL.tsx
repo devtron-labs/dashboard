@@ -3,7 +3,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
-import { ErrorScreenManager, ErrorScreenNotAuthorized, Progressing, showError } from '../common';
+import { ErrorScreenManager, Progressing, showError } from '../common'
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
