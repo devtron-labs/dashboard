@@ -283,7 +283,11 @@ function ManifestComponent({
                     return value
                 })
                 setTrimedManifestEditorData(_trimedManifestData)
+            } else {
+                setTrimedManifestEditorData(activeManifestEditorData)
             }
+        } else {
+            setTrimedManifestEditorData(activeManifestEditorData)
         }
     }, [activeManifestEditorData, showManagedFields])
 
@@ -372,7 +376,7 @@ function ManifestComponent({
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
                                 height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
-                                value={showManagedFields ? trimedManifestEditorData : activeManifestEditorData}
+                                value={trimedManifestEditorData}
                                 mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
