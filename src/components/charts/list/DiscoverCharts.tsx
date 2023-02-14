@@ -459,7 +459,7 @@ function DiscoverChartList() {
                             >
                                 {state.advanceVisited && (
                                     <div>
-                                        <label>Project*</label>
+                                        <label className='dc__required-field'>Project</label>
                                         <Select
                                             rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                             value={project.id}

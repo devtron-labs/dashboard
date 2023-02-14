@@ -235,7 +235,7 @@ export function BulkActionEdit() {
                 <div className="form-container">
                     <h2 className="form__title">{`${Number(id) === 0 ? 'Create' : 'Update'} Deployment Group`}</h2>
                     <div className="form__label">
-                        <label>Group name*</label>
+                        <label className='dc__required-field'>Group name</label>
                         <input autoComplete="off" disabled={Number(id) > 0} type="text" value={state.groupName} onChange={e => dispatch({ type: 'editGroupName', value: e.target.value })} placeholder="Deployment group" className="form__input" />
                         {state.groupNameError && <label className="form__error flex left"><Info color="#f33e3e" style={{height:'16px', width:'16px'}}/>{state.groupNameError}</label>}
                     </div>

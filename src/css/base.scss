@@ -2606,6 +2606,11 @@ textarea::placeholder {
     background-color: var(--N200);
 }
 
+.dc__required-field::after {
+  content: ' *';
+  color: var(--R500);
+}
+
 .dc__highlight-text {
     mark {
         padding: 0;
