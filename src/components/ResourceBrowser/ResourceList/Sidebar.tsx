@@ -9,7 +9,7 @@ import {
     K8sObjectOptionType,
     SidebarType,
 } from '../Types'
-import { AggregationKeys } from '../../app/types'
+import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { Progressing } from '../../common'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
@@ -100,6 +100,30 @@ function Sidebar({
                 })
             })
         })
+        _k8sObjectOptionsList.push({
+            label: SIDEBAR_KEYS.events as Nodes,
+            value: K8S_EMPTY_GROUP,
+            dataset: {
+                group: SIDEBAR_KEYS.eventGVK.Group,
+                version: SIDEBAR_KEYS.eventGVK.Version,
+                kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
+                namespaced: 'true',
+                grouped: 'false',
+            },
+            groupName: '',
+        })
+        _k8sObjectOptionsList.push({
+            label: SIDEBAR_KEYS.namespaces as Nodes,
+            value: K8S_EMPTY_GROUP,
+            dataset: {
+                group: SIDEBAR_KEYS.namespaceGVK.Group,
+                version: SIDEBAR_KEYS.namespaceGVK.Version,
+                kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
+                namespaced: 'false',
+                grouped: 'false',
+            },
+            groupName: '',
+        })
         setK8sObjectOptionsList(_k8sObjectOptionsList)
     }
 
@@ -157,11 +181,13 @@ function Sidebar({
         const nodeName = useGroupName && childData.gvk.Group ? childData.gvk.Group : childData.gvk.Kind
         const isSelected =
             useGroupName && childData.gvk.Group
-                ? selectedResource?.gvk?.Group === childData.gvk.Group
-                : nodeType === childData.gvk.Kind.toLowerCase()
+                ? selectedResource?.gvk?.Group === childData.gvk.Group &&
+                  selectedResource?.gvk?.Kind === childData.gvk.Kind
+                : nodeType === childData.gvk.Kind.toLowerCase() &&
+                  (group === childData.gvk.Group.toLowerCase() || group === K8S_EMPTY_GROUP)
         return (
             <div
-                key={nodeName}
+                key={`${nodeName}-child`}
                 ref={updateRef}
                 className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                     useGroupName ? 'ml-16' : ''
@@ -191,7 +217,7 @@ function Sidebar({
             return renderChild(value.data[0])
         } else {
             return (
-                <>
+                <Fragment key={`${k8sObject.name}/${key}-child`}>
                     <div
                         className="flex pointer"
                         data-group-name={`${k8sObject.name}/${key}`}
@@ -208,7 +234,7 @@ function Sidebar({
                         </span>
                     </div>
                     {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
-                </>
+                </Fragment>
             )
         }
     }
@@ -267,7 +293,7 @@ function Sidebar({
         <Progressing pageLoader />
     ) : (
         <div className="k8s-object-container">
-            <div className="k8s-object-kind-search bcn-0 pt-16 pb-12 w-200 dc__m-auto cursor">
+            <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
                 <ReactSelect
                     ref={searchInputRef}
                     placeholder="Search Kind"
@@ -299,16 +325,14 @@ function Sidebar({
             <div className="k8s-object-wrapper p-8 dc__user-select-none">
                 {[...k8SObjectMap.values()].map((k8sObject) =>
                     k8sObject.name === AggregationKeys.Events ? null : (
-                        <Fragment key={k8sObject.name}>
+                        <Fragment key={`${k8sObject.name}-parent`}>
                             <div
                                 className="flex pointer"
                                 data-group-name={k8sObject.name}
                                 onClick={handleGroupHeadingClick}
                             >
                                 <DropDown
-                                    className={`${
-                                        k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'
-                                    }  rotate icon-dim-24 pointer`}
+                                    className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
                                 />
                                 <span className="fs-14 fw-6 pointer w-100 pt-6 pb-6">{k8sObject.name}</span>
