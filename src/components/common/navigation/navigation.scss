@@ -79,7 +79,7 @@
             .short-nav__divider {
                 width: 20px;
                 height: 1px;
-                background-color: rgba(255, 255, 255, 0.25);
+                background-color: hsla(0,0%,100%,.25);
                 margin: -14px 0 10px 21px;
             }
 
@@ -315,7 +315,7 @@
 
 .short-nav--flex {
     display: flex;
-    margin-left: 12px;
+    margin-left: 10px;
 
     &:hover {
         .svg-container,
