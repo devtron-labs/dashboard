@@ -125,6 +125,7 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
+            stopSearchWorker()
             resourceListAbortController.abort()
             abortReqAndUpdateSideDataController()
         }
@@ -392,6 +393,7 @@ export default function ResourceList() {
     const stopSearchWorker = () => {
         if (searchWorkerRef.current) {
             searchWorkerRef.current.postMessage({ type: 'stop' })
+            searchWorkerRef.current = null
         }
     }
 
