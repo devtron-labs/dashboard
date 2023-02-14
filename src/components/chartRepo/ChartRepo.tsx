@@ -21,6 +21,17 @@ export default function ChartRepo({ isSuperAdmin }) {
         showError(error)
         if (!result) return null
     }
+    
+    function getRandomInt(): number {
+        var max = Number.MAX_SAFE_INTEGER
+        var min = Number.MIN_SAFE_INTEGER
+        const randomBytes = new Uint32Array(1)
+        window.crypto.getRandomValues(randomBytes)
+        const range = max - min + 1
+        const maxRange = 4294967296
+        const num = randomBytes[0] / maxRange
+        return Math.floor(num * range) + min
+    }
 
     async function refetchCharts(e) {
         if (fetching) {
@@ -68,7 +79,7 @@ export default function ChartRepo({ isSuperAdmin }) {
                     name={''}
                     active={true}
                     authMode={'ANONYMOUS'}
-                    key={Math.random().toString(36).substr(2, 5)}
+                    key={getRandomInt().toString()}
                     reload={reload}
                 />
                 <div className="chartRepo_form__subtitle dc__float-left dc__bold">
