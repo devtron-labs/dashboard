@@ -76,7 +76,7 @@ export default function ClusterTerminal({
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const isShellSwitched = useRef<boolean>(false)
-    const isAutoSelectNodeRef = useRef<string>('')
+    const autoSelectNodeRef = useRef(null)
   
     const payload = {
         clusterId: clusterId,
@@ -99,18 +99,17 @@ export default function ClusterTerminal({
     },[location.search])
 
     useEffect(() => {
-        // if(isAutoSelectNodeRef.current) return
         handleUrlChanges()
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
-        if(isAutoSelectNodeRef.current === 'autoSelectNode') {
-            isAutoSelectNodeRef.current = selectedNodeName.value
+        if(autoSelectNodeRef.current === 'autoSelectNode' && selectedNodeName.value != 'autoSelectNode') {
+            autoSelectNodeRef.current = selectedNodeName.value
             return
         }
         try {
             isShellSwitched.current = false
-            isAutoSelectNodeRef.current = selectedNodeName.value
+            autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
             if (update) {
                 socketDisconnecting()
@@ -197,6 +196,8 @@ export default function ClusterTerminal({
     }, [])
 
     function updateSelectedContainerName() {
+        autoSelectNodeRef.current = null
+        setReconnect(!isReconnect)
         if (node) {
             if (node !== selectedNodeName.value) {
                 setSelectedNodeName({ label: node, value: node })
