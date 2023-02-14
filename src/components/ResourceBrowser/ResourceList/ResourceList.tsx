@@ -682,6 +682,7 @@ export default function ResourceList() {
                     selectedResource={selectedResource}
                     setSelectedResource={setSelectedResource}
                     updateResourceSelectionData={updateResourceSelectionData}
+                    isCreateModalOpen={showCreateResourceModal}
                 />
                 <K8SResourceList
                     selectedResource={selectedResource}
@@ -703,6 +704,7 @@ export default function ResourceList() {
                     setSearchApplied={setSearchApplied}
                     handleFilterChanges={handleFilterChanges}
                     clearSearch={clearSearch}
+                    isCreateModalOpen={showCreateResourceModal}
                 />
             </div>
         )

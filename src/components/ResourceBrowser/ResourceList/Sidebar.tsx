@@ -24,6 +24,7 @@ function Sidebar({
     setSelectedResource,
     updateResourceSelectionData,
     shortcut,
+    isCreateModalOpen,
 }: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -41,12 +42,14 @@ function Sidebar({
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
 
     useEffect(() => {
-        shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
+        if (!isCreateModalOpen) {
+            shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
+        }
 
         return (): void => {
             shortcut.unregisterShortcut(['k'])
         }
-    }, [])
+    }, [isCreateModalOpen])
 
     useEffect(() => {
         if (k8SObjectMap?.size) {

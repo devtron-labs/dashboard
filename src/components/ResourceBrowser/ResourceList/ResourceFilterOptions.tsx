@@ -31,6 +31,7 @@ function ResourceFilterOptions({
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
+    isCreateModalOpen,
 }: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
     const location = useLocation()
@@ -41,12 +42,14 @@ function ResourceFilterOptions({
     const searchInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
-        shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
+        if (!isCreateModalOpen) {
+            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
+        }
 
         return (): void => {
             shortcut.unregisterShortcut(['r'])
         }
-    }, [])
+    }, [isCreateModalOpen])
 
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()

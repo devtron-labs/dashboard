@@ -106,6 +106,7 @@ export interface SidebarType {
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
+    isCreateModalOpen: boolean
 }
 
 export interface ResourceFilterOptionsProps {
@@ -126,6 +127,7 @@ export interface ResourceFilterOptionsProps {
     clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
+    isCreateModalOpen?: boolean
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
@@ -134,14 +136,14 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>) => void
+    isCreateModalOpen: boolean
 }
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
-    namespace: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: () => Promise<void>
+    getResourceListData: (retainSearched?: boolean) => Promise<void>
     handleResourceClick: (e: any) => void
 }
 
