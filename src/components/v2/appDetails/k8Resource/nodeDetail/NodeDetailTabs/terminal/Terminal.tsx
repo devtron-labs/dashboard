@@ -374,7 +374,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     preFetchData('create',status,'failed')
                     setErrorMessage({message: response.result?.errorReason, reason: ''})
                 } else if (status === 'Terminated'){
-                    setErrorMessage({message: status, reason: response.result?.reason })
+                    setErrorMessage({message: status, reason: response.result?.errorReason })
                 } else if (!sessionId && count) {
                     preFetchData('create',status,'')
                     clusterTimeOut = setTimeout(() => {
