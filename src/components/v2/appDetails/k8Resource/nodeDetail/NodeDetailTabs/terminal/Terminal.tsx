@@ -28,7 +28,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const isOnline = useOnline()
-    const [errorMessage, setErrorMessage] = useState<string>('')
+    const [errorMessage, setErrorMessage] = useState({message: '', reason: ''})
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
 
@@ -246,7 +246,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }
         }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
-            setErrorMessage('')
+            setErrorMessage({message: '', reason: ''})
             getNewSession() 
         }
     }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
@@ -372,8 +372,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 let status = response.result.status
                 if(status === 'Running' && !response.result?.isValidShell){
                     preFetchData('create',status,'failed')
-                    setErrorMessage(response.result?.errorReason)
-                }else if (!sessionId && count) {
+                    setErrorMessage({message: response.result?.errorReason, reason: ''})
+                } else if (status === 'Terminated'){
+                    setErrorMessage({message: status, reason: response.result?.reason })
+                } else if (!sessionId && count) {
                     preFetchData('create',status,'')
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
@@ -389,7 +391,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     }
                 } else {
                     preFetchData('create',CLUSTER_STATUS.FAILED, 'timedOut')
-                    setErrorMessage('timedOut')
+                    setErrorMessage({message: 'timedOut', reason: ''})
                 }
             })
             .catch((err) => {
@@ -448,7 +450,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                         const _invalidNameErr = err.errors[0].userMessage
                         if (_invalidNameErr.includes('Unauthorized')) {
-                            setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                            setErrorMessage({message: ERROR_MESSAGE.UNAUTHORIZED, reason: ''})
                         }
                     }
                 })
@@ -466,11 +468,34 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const renderErrorMessageStrip = (errorMessage) => {
-        
-        if(errorMessage === 'timedOut'){
-            return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">Connection timed out. Please <u className='cursor' onClick={switchTOPodEventTab}>check pod events</u> for errors. <u className='cursor' onClick={onClickResume}>Retry connection</u> in case of no error.</div>
+        if (errorMessage.message === 'timedOut') {
+            return (
+                <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
+                    Connection timed out. Please
+                    <u className="cursor" onClick={switchTOPodEventTab}>
+                        check pod events
+                    </u>
+                    for errors.
+                    <u
+                        className="cursor"
+                        onClick={() => terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING)}
+                    >
+                        Retry connection
+                    </u>
+                    in case of no error.
+                </div>
+            )
+        } else if (errorMessage.message === 'Terminated') {
+            return (
+                <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
+                    Pod was terminated. Reason: {errorMessage.reason}
+                    <u className="cursor" onClick={terminalViewProps.reconnectTerminal}>
+                        Initiate new connection
+                    </u>
+                </div>
+            )
         }
-        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
+        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
     }
 
     const clusterSocketConnecting: boolean =
@@ -500,8 +525,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             )
         } else {
             return (
-                <div className="terminal-strip dc__first-letter-capitalize">
-                    {errorMessage && errorMessage.length > 0 ? (
+                <div className="terminal-strip">
+                    {errorMessage.message && errorMessage.message.length > 0 ? (
                         renderErrorMessageStrip(errorMessage)
                     ) : (
                         <div

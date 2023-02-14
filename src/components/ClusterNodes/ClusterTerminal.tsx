@@ -197,6 +197,7 @@ export default function ClusterTerminal({
 
     function updateSelectedContainerName() {
         autoSelectNodeRef.current = null
+        setSocketConnection(SocketConnectionType.DISCONNECTED)
         setReconnect(!isReconnect)
         if (node) {
             if (node !== selectedNodeName.value) {
@@ -287,6 +288,11 @@ export default function ClusterTerminal({
         setConnectTerminal(true)
         setReconnect(!isReconnect)
     }
+    
+    const reconnectStart = () => {
+        reconnectTerminal()
+        selectTerminalTab()
+    }
 
     const socketConnecting = (): void => {
         setSocketConnection(SocketConnectionType.CONNECTING)
@@ -374,6 +380,7 @@ export default function ClusterTerminal({
                 selectedNamespace={selectedNamespace.value}
                 isShellSwitched={isShellSwitched.current}
                 setSelectedNodeName={setSelectedNodeName}
+                reconnectTerminal={reconnectTerminal}
             />
         )
     }
@@ -670,7 +677,7 @@ export default function ClusterTerminal({
                 <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
-                        <ClusterEvents terminalAccessId={terminalAccessIdRef.current} />
+                        <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
                     </div>
                 )}
                 {selectedTabIndex === 2 && (

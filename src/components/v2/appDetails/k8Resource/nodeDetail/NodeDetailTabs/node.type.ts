@@ -23,12 +23,21 @@ export interface TerminalViewProps {
     isShellSwitched?: boolean
     setSelectedNodeName?: any
     selectedNamespace?: string
+    reconnectTerminal?: () => void
 }
 
 export interface EventTableType {
     loading: boolean
     eventsList: any[]
     isResourceBrowserView?: boolean
+    reconnect?: () => void
+    errorValue?: PodEventsType
+}
+
+export interface PodEventsType {
+    status: string
+    errorReason: string
+    eventsResponse: any
 }
 
 export enum SocketConnectionType {

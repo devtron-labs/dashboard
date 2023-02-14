@@ -4,7 +4,7 @@ import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { EventTableType } from './node.type'
 
-export function EventsTable({ loading, eventsList, isResourceBrowserView }: EventTableType) {
+export function EventsTable({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) {
     const renderEventsTable = () => {
         if (loading) {
             return (
@@ -19,9 +19,18 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView }: Even
             if (eventsList && eventsList.length > 0) {
                 return (
                     <div className="cn-0 ">
+                        {errorValue.status === 'Terminated' && <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
+                            Pod was terminated. Reason: {errorValue.errorReason}
+                            <u className="cursor" onClick={reconnect}>
+                                 Initiate new connection
+                            </u>
+                        </div>}
                         <table className="table pl-20">
                             <thead
-                                style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)' }}
+                                style={{
+                                    minHeight: isResourceBrowserView ? '200px' : '600px',
+                                    background: 'var(--terminal-bg)',
+                                }}
                             >
                                 <tr className="no-events-border pl-20 event-row">
                                     {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
