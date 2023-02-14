@@ -80,7 +80,7 @@ export default function EnvTriggerView() {
     const [showMaterialRegexModal, setShowMaterialRegexModal] = useState(false)
     const [workflowID, setWorkflowID] = useState<number>()
     const [selectedAppID, setSelectedAppID] = useState<number>()
-    const [selectedAppList, setSelectedAppList] = useState<{ id: number; name: string }[]>([])
+    const [selectedAppList, setSelectedAppList] = useState<{ id: number; name: string; ciPipelineName: string; ciPipelineId: string;}[]>([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [selectedCDNode, setSelectedCDNode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
     const [selectedCINode, setSelectedCINode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
@@ -203,7 +203,8 @@ export default function EnvTriggerView() {
                     _selectedAppList.splice(selectedAppIndex, 1)
                     wf.isSelected = false
                 } else {
-                    _selectedAppList.push({ id: _appId, name: wf.name })
+                    const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
+                    _selectedAppList.push({ id: _appId, name: wf.name, ciPipelineName: _ciNode.title, ciPipelineId: _ciNode.id })
                     wf.isSelected = true
                 }
                 setSelectedAppList(_selectedAppList)
@@ -455,13 +456,13 @@ export default function EnvTriggerView() {
             pipelineId: ciNodeId,
         }
         return getCIMaterialList(params).then((response) => {
-            let _workflowId, _appID, showRegexModal = false
+            let _workflowId,
+                _appID,
+                showRegexModal = false
             const _workflows = [...workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
-                        const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find(
-                            (_ci) => _ci.id === +ciNodeId,
-                        )
+                        const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
                                 const gitMaterial = response.result.find(
@@ -1034,7 +1035,14 @@ export default function EnvTriggerView() {
         if (!showBulkCIModal) {
             return null
         }
-        return <BulkCITrigger envId={1} appId="1" closePopup={hideBulkCIModal} isLoading={isLoading} />
+        return (
+            <BulkCITrigger
+                appList={selectedAppList}
+                envId={1}
+                appId="1"
+                closePopup={hideBulkCIModal}
+            />
+        )
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
