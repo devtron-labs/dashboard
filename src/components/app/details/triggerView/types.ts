@@ -122,6 +122,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setLoader: (isLoading) => void
     isFirstTrigger?: boolean
     isCacheAvailable?: boolean
+    isFromEnv?: boolean
+    appId: string
 }
 
 export interface RegexValueType {
@@ -247,7 +249,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
-    appId?: string
+    appId?: number
     isSelected?: boolean
     isFromENv?: boolean
     handleSelectionChange?: (e)=> void
@@ -288,7 +290,7 @@ export interface WorkflowType {
     nodes: NodeAttr[]
     dag: any
     showTippy?: boolean
-    appID?: number
+    appId?: number
     isSelected?: boolean
 }
 

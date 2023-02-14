@@ -128,7 +128,7 @@ export const Routes = {
     WORKFLOW: 'app/app-wf',
     APP_WF: 'app-wf',
     ENV_WORKFLOW: 'app/environment',
-
+    WORKFLOW_STATUS: 'workflow/status',
     ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',

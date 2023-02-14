@@ -158,6 +158,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
+                        isFromEnv={this.props.isFromEnv}
+                        appId={this.props.appId}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>

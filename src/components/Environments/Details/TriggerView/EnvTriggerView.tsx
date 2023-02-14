@@ -27,7 +27,6 @@ import {
     getCIMaterialList,
     getGitMaterialByCommitHash,
     getRollbackMaterialList,
-    getWorkflowStatus,
     refreshGitMaterial,
     triggerCDNode,
     triggerCINode,
@@ -40,8 +39,9 @@ import {
     preventBodyScroll,
     Progressing,
     showError,
+    stopPropagation,
 } from '../../../common'
-import { getWorkflows } from '../../Environment.service'
+import { getWorkflows, getWorkflowStatus } from '../../Environment.service'
 import { TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
@@ -53,6 +53,8 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
 import './EnvTriggerView.scss'
+import BulkCDTrigger from './BulkCDTrigger'
+import BulkCITrigger from './BulkCITrigger'
 
 let timerRef
 let inprogressStatusTimer
@@ -67,6 +69,8 @@ export default function EnvTriggerView() {
     const [errorCode, setErrorCode] = useState(0)
     const [showCIModal, setShowCIModal] = useState(false)
     const [showCDModal, setShowCDModal] = useState(false)
+    const [showBulkCDModal, setShowBulkCDModal] = useState(false)
+    const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showWebhookModal, setShowWebhookModal] = useState(false)
     const [isWebhookPayloadLoading, setWebhookPayloadLoading] = useState(false)
     const [invalidateCache, setInvalidateCache] = useState(false)
@@ -77,7 +81,7 @@ export default function EnvTriggerView() {
     const [workflowID, setWorkflowID] = useState<number>()
     const [selectedAppID, setSelectedAppID] = useState<number>()
     const [selectedAppList, setSelectedAppList] = useState<{ id: number; name: string }[]>([])
-    const [workflows, setWorkflows] = useState([])
+    const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [selectedCDNode, setSelectedCDNode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
     const [selectedCINode, setSelectedCINode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
@@ -90,6 +94,11 @@ export default function EnvTriggerView() {
             setFilteredCIPipelines(filteredCIPipelines)
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
+            getWorkflowStatusData(workflows)
+            timerRef && clearInterval(timerRef)
+            timerRef = setInterval(() => {
+                getWorkflowStatusData(workflows)
+            }, 30000)
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
@@ -97,7 +106,7 @@ export default function EnvTriggerView() {
         }
     }
 
-    const getWorkflowStatusData = () => {
+    const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
         getWorkflowStatus(envId)
             .then((response) => {
                 let ciMap = {}
@@ -137,7 +146,7 @@ export default function EnvTriggerView() {
                     })
                 }
                 //Update Workflow using maps
-                const _workflows = [...workflows].map((wf) => {
+                const _workflows = workflowsList.map((wf) => {
                     wf.nodes = wf.nodes.map((node) => {
                         switch (node.type) {
                             case 'CI':
@@ -161,7 +170,7 @@ export default function EnvTriggerView() {
                 inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
                 if (cicdInProgress) {
                     inprogressStatusTimer = setTimeout(() => {
-                        getWorkflowStatusData()
+                        getWorkflowStatusData(_workflows)
                     }, 10000)
                 }
                 setWorkflows(_workflows)
@@ -250,15 +259,10 @@ export default function EnvTriggerView() {
                             </div>
                         </div>
                         <div className="flex">
-                            <button className="cta flex h-36 mr-12" onClick={() => {}}>
+                            <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
                                 {isLoading ? <Progressing /> : 'Build image'}
                             </button>
-                            <button
-                                className="cta flex h-36 dc__no-right-radius"
-                                onClick={() => {
-                                    alert('hey')
-                                }}
-                            >
+                            <button className="cta flex h-36 dc__no-right-radius" onClick={onShowBulkCDModal}>
                                 {isLoading ? (
                                     <Progressing />
                                 ) : (
@@ -269,24 +273,24 @@ export default function EnvTriggerView() {
                                 )}
                             </button>
                             <PopupMenu autoClose>
-                                    <PopupMenu.Button
-                                        isKebab
-                                        rootClassName="h-36 popup-button-kebab dc__border-left-n3 pl-4 pr-4 dc__no-left-radius flex bcb-5"
-                                    >
-                                        <Dropdown className="icon-dim-20 fcn-0" />
-                                    </PopupMenu.Button>
-                                    <PopupMenu.Body>
-                                        <div className="flex left p-10 pointer" onClick={(e) => {}}>
-                                            Trigger Pre-deployment stage
-                                        </div>
-                                        <div className="flex left p-10 pointer" onClick={(e) => {}}>
-                                            Trigger Deployment
-                                        </div>
-                                        <div className="flex left p-10 pointer" onClick={(e) => {}}>
-                                            Trigger Post-deployment stage
-                                        </div>
-                                    </PopupMenu.Body>
-                                </PopupMenu>
+                                <PopupMenu.Button
+                                    isKebab
+                                    rootClassName="h-36 popup-button-kebab dc__border-left-n3 pl-4 pr-4 dc__no-left-radius flex bcb-5"
+                                >
+                                    <Dropdown className="icon-dim-20 fcn-0" />
+                                </PopupMenu.Button>
+                                <PopupMenu.Body>
+                                    <div className="flex left p-10 pointer" onClick={(e) => {}}>
+                                        Trigger Pre-deployment stage
+                                    </div>
+                                    <div className="flex left p-10 pointer" onClick={onShowBulkCDModal}>
+                                        Trigger Deployment
+                                    </div>
+                                    <div className="flex left p-10 pointer" onClick={(e) => {}}>
+                                        Trigger Post-deployment stage
+                                    </div>
+                                </PopupMenu.Body>
+                            </PopupMenu>
                         </div>
                     </div>
                 )}
@@ -510,7 +514,7 @@ export default function EnvTriggerView() {
             setShowMaterialRegexModal(showRegexModal)
             setWorkflowID(_workflowId)
             setSelectedAppID(_appID)
-            getWorkflowStatusData()
+            getWorkflowStatusData(_workflows)
             preventBodyScroll(true)
         })
     }
@@ -599,7 +603,7 @@ export default function EnvTriggerView() {
                 setShowCDModal(true)
                 setLoading(false)
                 preventBodyScroll(true)
-                getWorkflowStatusData()
+                getWorkflowStatusData(_workflows)
                 if (callback && response.result) {
                     callback(false, response.result.length < 20)
                 }
@@ -638,16 +642,14 @@ export default function EnvTriggerView() {
                         toast.success(msg)
                         setShowCDModal(false)
                         setLoading(false)
-
                         setErrorCode(response.code)
                         preventBodyScroll(false)
-                        getWorkflowStatusData()
+                        getWorkflowStatusData(workflows)
                     }
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
                     setLoading(false)
-
                     setErrorCode(errors.code)
                 })
         } else {
@@ -724,11 +726,10 @@ export default function EnvTriggerView() {
                     toast.success('Pipeline Triggered')
                     setShowCIModal(false)
                     setLoading(false)
-
                     setErrorCode(response.code)
                     setInvalidateCache(false)
                     preventBodyScroll(false)
-                    getWorkflowStatusData()
+                    getWorkflowStatusData(workflows)
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -952,9 +953,27 @@ export default function EnvTriggerView() {
         setChangeBranchClicked(isChangedBranch)
     }
 
+    const hideBulkCDModal = () => {
+        setShowBulkCDModal(false)
+    }
+
+    const onShowBulkCDModal = (e) => {
+        setTimeout(() => {
+            setShowBulkCDModal(true)
+        }, 100)
+    }
+
+    const hideBulkCIModal = () => {
+        setShowBulkCIModal(false)
+    }
+
+    const onShowBulkCIModal = () => {
+        setShowBulkCIModal(true)
+    }
+
     const renderCIMaterial = (): JSX.Element | null => {
         if ((selectedCINode?.id && showCIModal) || showMaterialRegexModal) {
-            let nd: NodeAttr
+            let nd: NodeAttr, _appID
             const configuredMaterialList = new Map<number, Set<number>>()
             for (let i = 0; i < workflows.length; i++) {
                 nd = workflows[i].nodes.find(
@@ -963,6 +982,7 @@ export default function EnvTriggerView() {
 
                 if (nd) {
                     configuredMaterialList[workflows[i].name] = new Set<number>()
+                    _appID = workflows[i].appId
                     handleSourceNotConfigured(configuredMaterialList, workflows[i], nd[materialType])
                     break
                 }
@@ -998,11 +1018,27 @@ export default function EnvTriggerView() {
                     setLoader={setLoader}
                     isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                     isCacheAvailable={nd?.storageConfigured}
+                    isFromEnv={true}
+                    appId={_appID.toString()}
                 />
             )
         }
 
         return null
+    }
+
+    const renderBulkCDMaterial = (): JSX.Element | null => {
+        if (!showBulkCDModal) {
+            return null
+        }
+        return <BulkCDTrigger envId={1} appId="1" closePopup={hideBulkCDModal} isLoading={isLoading} />
+    }
+
+    const renderBulkCIMaterial = (): JSX.Element | null => {
+        if (!showBulkCIModal) {
+            return null
+        }
+        return <BulkCITrigger envId={1} appId="1" closePopup={hideBulkCIModal} isLoading={isLoading} />
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
@@ -1076,6 +1112,8 @@ export default function EnvTriggerView() {
                 {renderWorkflow()}
                 {renderCIMaterial()}
                 {renderCDMaterial()}
+                {renderBulkCDMaterial()}
+                {renderBulkCIMaterial()}
             </TriggerViewContext.Provider>
             <div></div>
         </div>

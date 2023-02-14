@@ -31,8 +31,9 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     onClickShowBranchRegexModal,
+    isFromEnv,
+    appId
 }) {
-    const { appId } = useParams<{ appId: string }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const { push } = useHistory()
@@ -164,7 +165,12 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        push(getCIPipelineURL(appId, workflowId, true, pipelineId))
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
+        if(isFromEnv){
+          window.open(ciPipelineURL, '_blank', 'noreferrer')
+        } else{
+          push(ciPipelineURL)
+        }
     }
 
     const renderSearch = (): JSX.Element => {
