@@ -82,15 +82,19 @@ export class ValidationRules {
         }
     }
 
-    sourceValue = (value: string): { message: string | null; isValid: boolean } => {
+    sourceValue = (value: string, isValidateRegex = true): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: `This is required`, isValid: false }
         } else {
-            try {
-                new RegExp(value)
+            if (isValidateRegex) {
+                try {
+                    new RegExp(value)
+                    return { message: null, isValid: true }
+                } catch (err) {
+                    return { message: 'This is not a valid regular expression.', isValid: false }
+                }
+            } else {
                 return { message: null, isValid: true }
-            } catch (err) {
-                return { message: 'This is not a valid regular expression.', isValid: false }
             }
         }
     }
