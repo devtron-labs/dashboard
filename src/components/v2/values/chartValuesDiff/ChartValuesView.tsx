@@ -94,6 +94,7 @@ import {
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO
 } from './ChartValuesView.constants'
+import { DeploymentAppType } from '../../appDetails/appDetails.type'
 
 function ChartValuesView({
     appId,
@@ -118,6 +119,7 @@ function ChartValuesView({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -404,7 +406,7 @@ function ChartValuesView({
                     (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
                 )
             })
-            
+
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -608,7 +610,7 @@ function ChartValuesView({
         } else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
         } else {
-            return deleteInstalledChart(commonState.installedConfig.installedAppId, force)
+            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops,  force)
         }
     }
 
