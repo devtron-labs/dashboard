@@ -197,17 +197,22 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
     }
 
+    checkConfigJson(ssoConfig) {
+        if (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID) {
+            ssoConfig.clientID = ''
+        }
+        if (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret) {
+            ssoConfig.clientSecret = ''
+        }
+        return ssoConfig
+    }
+
     saveNewSSO(): void {
         this.setState({ saveLoading: true });
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
-            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientID) {
-                configJSON.clientID = ''
-            }
-            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientSecret) {
-                configJSON.clientSecret = ''
-            }
+            configJSON = this.checkConfigJson(configJSON)
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error("Invalid Yaml");
@@ -256,12 +261,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let configJSON: any = {};
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config);
-            if (configJSON?.clientID === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientID) {
-                configJSON.clientID = ''
-            }
-            if (configJSON?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !configJSON.clientSecret) {
-                configJSON.clientSecret = ''
-            }
+            configJSON = this.checkConfigJson(configJSON);
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error("Invalid Yaml");
