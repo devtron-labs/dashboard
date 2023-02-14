@@ -59,7 +59,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                 </label>
                 <ReactSelect
                     value={selectedFilter}
-                    options={_filterOptions}
+                    options={type === HistoryComponentType.CI ? filterOptions : _filterOptions}
                     isSearchable={false}
                     onChange={handleFilterChange}
                     components={{
