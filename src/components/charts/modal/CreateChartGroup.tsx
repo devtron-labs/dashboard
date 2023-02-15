@@ -163,7 +163,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 onSave={this.saveChartGroup}
             >
                 <label className="form__row">
-                    <span className="form__label">Name*</span>
+                    <span className="form__label dc__required-field">Name</span>
                     <input
                         className="form__input"
                         autoComplete="off"

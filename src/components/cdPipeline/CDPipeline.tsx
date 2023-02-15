@@ -1204,7 +1204,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <>
                 <div className="form__row">
-                    <label className="form__label">Pipeline Name*</label>
+                    <label className="form__label dc__required-field">Pipeline Name</label>
                     <input
                         className="form__input"
                         autoComplete="off"
