@@ -16,6 +16,7 @@ import warningIcon from '../../assets/icons/ic-warning.svg';
 import restoreIcon from '../../assets/icons/ic-restore.svg'
 import Tippy from '@tippyjs/react';
 import {ReactComponent as DropDown} from '../../assets/icons/appstatus/ic-chevron-down.svg';
+import { DeploymentNodeType } from '../app/details/triggerView/types';
 
 export default function BulkActionDetails() {
     const { id: deploymentGroupId } = useParams<{id: string}>()
@@ -216,12 +217,12 @@ export default function BulkActionDetails() {
         {showCDModal && <CDMaterial material={materials}
             isLoading={isLoading}
             envName={""}
-            stageType="CD"
+            stageType={DeploymentNodeType.CD}
             materialType="none"
             triggerDeploy={triggerDeploy}
             toggleSourceInfo={toggleSourceInfo}
             selectImage={selectImage}
-            closeCDModal={() => { toggleShowCDModal(false) }}
+            closeCDModal={(e) => { toggleShowCDModal(false) }}
         />}
     </>
 }

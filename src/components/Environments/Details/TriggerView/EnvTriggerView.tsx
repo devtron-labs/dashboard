@@ -15,6 +15,7 @@ import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import {
     CIMaterialRouterProps,
+    DeploymentNodeType,
     MATERIAL_TYPE,
     NodeAttr,
     WorkflowNodeType,
@@ -88,6 +89,7 @@ export default function EnvTriggerView() {
     const [selectedCDNode, setSelectedCDNode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
     const [selectedCINode, setSelectedCINode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
+    const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
 
     const getWorkflowsData = async (): Promise<void> => {
@@ -300,7 +302,11 @@ export default function EnvTriggerView() {
                             <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
                                 {isLoading ? <Progressing /> : 'Build image'}
                             </button>
-                            <button className="cta flex h-36 dc__no-right-radius" onClick={onShowBulkCDModal}>
+                            <button
+                                className="cta flex h-36 dc__no-right-radius"
+                                data-trigger-type={'CD'}
+                                onClick={onShowBulkCDModal}
+                            >
                                 {isLoading ? (
                                     <Progressing />
                                 ) : (
@@ -318,13 +324,25 @@ export default function EnvTriggerView() {
                                     <Dropdown className="icon-dim-20 fcn-0" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <div className="flex left p-10 pointer" onClick={(e) => {}}>
+                                    <div
+                                        className="flex left p-10 pointer"
+                                        data-trigger-type={'PRECD'}
+                                        onClick={onShowBulkCDModal}
+                                    >
                                         Trigger Pre-deployment stage
                                     </div>
-                                    <div className="flex left p-10 pointer" onClick={onShowBulkCDModal}>
+                                    <div
+                                        className="flex left p-10 pointer"
+                                        data-trigger-type={'CD'}
+                                        onClick={onShowBulkCDModal}
+                                    >
                                         Trigger Deployment
                                     </div>
-                                    <div className="flex left p-10 pointer" onClick={(e) => {}}>
+                                    <div
+                                        className="flex left p-10 pointer"
+                                        data-trigger-type={'POSTCD'}
+                                        onClick={onShowBulkCDModal}
+                                    >
                                         Trigger Post-deployment stage
                                     </div>
                                 </PopupMenu.Body>
@@ -566,7 +584,7 @@ export default function EnvTriggerView() {
             })
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => {
+    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType) => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         let _workflowId, _appID
         getCDMaterialList(cdNodeId, nodeType)
@@ -652,8 +670,11 @@ export default function EnvTriggerView() {
             })
     }
 
-    // stageType'PRECD' | 'CD' | 'POSTCD'
-    const onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
+    const onClickTriggerCDNode = (
+        nodeType: DeploymentNodeType,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ): void => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         setLoading(true)
         let node
@@ -821,10 +842,17 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
     }
 
-    const selectImage = (index: number, materialType: string): void => {
+    const selectImage = (
+        index: number,
+        materialType: string,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+    ): void => {
         const _workflows = [...workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
-                if (selectedCDNode.id == +node.id && node.type === selectedCDNode.type) {
+                if (
+                    (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
+                    (selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
+                ) {
                     const artifacts = node[materialType].map((artifact, i) => {
                         return {
                             ...artifact,
@@ -862,10 +890,16 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
     }
 
-    const toggleSourceInfo = (materialIndex: number): void => {
+    const toggleSourceInfo = (
+        materialIndex: number,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+    ): void => {
         const _workflows = [...workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
-                if (+node.id == selectedCDNode.id && node.type === selectedCDNode.type) {
+                if (
+                    (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
+                    (selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
+                ) {
                     node[materialType][materialIndex].showSourceInfo = !node[materialType][materialIndex].showSourceInfo
                 }
                 return node
@@ -881,11 +915,19 @@ export default function EnvTriggerView() {
     }
 
     //TODO: refactor
-    const changeTab = (materialIndex, artifactId: number, tab): void => {
+    const changeTab = (
+        materialIndex,
+        artifactId: number,
+        tab,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+    ): void => {
         if (tab === CDModalTab.Changes) {
             const _workflows = [...workflows].map((workflow) => {
                 const nodes = workflow.nodes.map((node) => {
-                    if (+node.id == selectedCDNode.id && node.type === selectedCDNode.type) {
+                    if (
+                        (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
+                        (selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
+                    ) {
                         node[materialType][materialIndex].tab = tab
                     }
                     return node
@@ -947,12 +989,15 @@ export default function EnvTriggerView() {
         setShowMaterialRegexModal(false)
     }
 
-    const closeCDModal = (): void => {
+    const closeCDModal = (e): void => {
         preventBodyScroll(false)
         setShowCDModal(false)
     }
 
-    const hideWebhookModal = () => {
+    const hideWebhookModal = (e?) => {
+        if (e) {
+            stopPropagation(e)
+        }
         setShowWebhookModal(false)
     }
 
@@ -992,6 +1037,7 @@ export default function EnvTriggerView() {
     }
 
     const onShowBulkCDModal = (e) => {
+        setBulkTriggerType(e.currentTarget.dataset.triggerType)
         setTimeout(() => {
             setShowBulkCDModal(true)
         }, 100)
@@ -1065,19 +1111,125 @@ export default function EnvTriggerView() {
         if (!showBulkCDModal) {
             return null
         }
-        return <BulkCDTrigger envId={1} appId="1" closePopup={hideBulkCDModal} isLoading={isLoading} />
+
+        const _selectedAppWorkflowList = []
+        workflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _cdNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CD)
+                let _selectedNode: NodeAttr
+                if (bulkTriggerType === 'PRECD') {
+                    _selectedNode = _cdNode.preNode
+                } else if (bulkTriggerType === 'CD') {
+                    _selectedNode = _cdNode
+                } else if (bulkTriggerType === 'POSTCD') {
+                    _selectedNode = _cdNode.preNode
+                }
+                if (_cdNode) {
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        cdPipelineName: _cdNode.title,
+                        cdPipelineId: _cdNode.id,
+                        stageType: _selectedNode.type,
+                        envName: _selectedNode.environmentName,
+                        parentPipelineId: _selectedNode.parentPipelineId,
+                        parentPipelineType: _selectedNode.parentPipelineType,
+                        parentEnvironmentName: _selectedNode.parentEnvironmentName,
+                    })
+                }
+            }
+        })
+        return (
+            <BulkCDTrigger
+                stage={bulkTriggerType}
+                appList={_selectedAppWorkflowList}
+                closePopup={hideBulkCDModal}
+                updateBulkInputMaterial={updateBulkCDInputMaterial}
+                onClickTriggerBulkCD={onClickTriggerBulkCD}
+                changeTab={changeTab}
+                toggleSourceInfo={toggleSourceInfo}
+                selectImage={selectImage}
+            />
+        )
     }
 
-    const updateBulkInputMaterial = (materialList: Record<string, any[]>): void => {
-        const _workflows = [...workflows].map((workflow) => {
-            const _appId = workflow.appId
-            workflow.nodes.map((node) => {
-                if (node.type === 'CI') {
-                    node.inputMaterialList = materialList[_appId]
-                    return node
-                } else return node
-            })
-            return workflow
+    const updateBulkCDInputMaterial = (materialList: Record<string, any[]>): void => {
+        const _workflows = workflows.map((wf) => {
+            if (wf.isSelected) {
+                const _appId = wf.appId
+                const _cdNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CD)
+                let _selectedNode: NodeAttr
+                if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                    _selectedNode = _cdNode.preNode
+                } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                    _selectedNode = _cdNode
+                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                    _selectedNode = _cdNode.preNode
+                }
+                if (_cdNode) {
+                    _selectedNode.inputMaterialList = materialList[_appId]
+                }
+            }
+            return wf
+        })
+        setWorkflows(_workflows)
+    }
+
+    const onClickTriggerBulkCD = () => {
+        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
+        alert('hey CD Trigger' + bulkTriggerType)
+    }
+
+    const renderBulkCIMaterial = (): JSX.Element | null => {
+        if (!showBulkCIModal) {
+            return null
+        }
+        const _selectedAppWorkflowList = []
+        workflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
+                if (_ciNode) {
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        ciPipelineName: _ciNode.title,
+                        ciPipelineId: _ciNode.id,
+                        isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
+                        isCacheAvailable: _ciNode.storageConfigured,
+                        isLinkedCI: _ciNode.isLinkedCI,
+                        parentAppId: _ciNode.parentAppId,
+                        parentCIPipelineId: _ciNode.parentCiPipeline,
+                    })
+                }
+            }
+        })
+        return (
+            <BulkCITrigger
+                appList={_selectedAppWorkflowList}
+                closePopup={hideBulkCIModal}
+                updateBulkInputMaterial={updateBulkCIInputMaterial}
+                onClickTriggerBulkCI={onClickTriggerBulkCI}
+                showWebhookModal={showWebhookModal}
+                hideWebhookModal={hideWebhookModal}
+                toggleWebhookModal={toggleWebhookModal}
+                webhookPayloads={webhookPayloads}
+                isWebhookPayloadLoading={isWebhookPayloadLoading}
+                onClickWebhookTimeStamp={onClickWebhookTimeStamp}
+                webhookTimeStampOrder={webhookTimeStampOrder}
+            />
+        )
+    }
+
+    const updateBulkCIInputMaterial = (materialList: Record<string, any[]>): void => {
+        const _workflows = [...workflows].map((wf) => {
+            const _appId = wf.appId
+            const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
+            if (_ciNode) {
+                _ciNode.inputMaterialList = materialList[_appId]
+            }
+            return wf
         })
         setWorkflows(_workflows)
     }
@@ -1097,7 +1249,7 @@ export default function EnvTriggerView() {
                 return !!selectedPipelineMap.get(node.id)
             })
 
-            if (node) {
+            if (node && !node.isLinkedCI) {
                 nodeList.push(node)
                 dockerfileConfiguredGitMaterialId = workflows[i].ciConfiguredGitMaterialId
             }
@@ -1152,13 +1304,13 @@ export default function EnvTriggerView() {
 
         Promise.allSettled(_CITriggerPromiseList)
             .then((response: any) => {
-               // if (response.result) {
-                    toast.success('Pipeline Triggered')
-                    setShowBulkCIModal(false)
-                    setLoading(false)
-                    setErrorCode(response.code)
-                    preventBodyScroll(false)
-                    getWorkflowStatusData(workflows)
+                // if (response.result) {
+                toast.success('Pipeline Triggered')
+                setShowBulkCIModal(false)
+                setLoading(false)
+                setErrorCode(response.code)
+                preventBodyScroll(false)
+                getWorkflowStatusData(workflows)
                 //}
             })
             .catch((errors: ServerErrors) => {
@@ -1168,37 +1320,6 @@ export default function EnvTriggerView() {
 
                 setErrorCode(errors.code)
             })
-    }
-
-    const renderBulkCIMaterial = (): JSX.Element | null => {
-        if (!showBulkCIModal) {
-            return null
-        }
-        const _selectedAppWorkflowList = []
-        workflows.forEach((wf) => {
-            if (wf.isSelected) {
-                const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
-                if (_ciNode) {
-                    _selectedAppWorkflowList.push({
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        ciPipelineName: _ciNode.title,
-                        ciPipelineId: _ciNode.id,
-                        isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
-                        isCacheAvailable: _ciNode.storageConfigured,
-                    })
-                }
-            }
-        })
-        return (
-            <BulkCITrigger
-                appList={_selectedAppWorkflowList}
-                closePopup={hideBulkCIModal}
-                updateBulkInputMaterial={updateBulkInputMaterial}
-                onClickTriggerBulkCI={onClickTriggerBulkCI}
-            />
-        )
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
@@ -1218,7 +1339,7 @@ export default function EnvTriggerView() {
                 <CDMaterial
                     appId={selectedAppID}
                     pipelineId={selectedCDNode.id}
-                    stageType={selectedCDNode.type}
+                    stageType={DeploymentNodeType[selectedCDNode.type]}
                     material={material}
                     materialType={materialType}
                     envName={node.environmentName}

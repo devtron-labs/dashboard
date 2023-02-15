@@ -15,12 +15,15 @@
         display: grid;
         grid-template-columns: 234px 1fr;
         min-height: calc(100vh - 128px);
+        &.webhook-modal {
+            grid-template-columns: 1fr;
+        }
         .sidebar {
             .material-list {
                 .material-list__item {
-                  padding: 10px;
-                  border-radius: 4px;
-                  border: 1px solid var(--N200);
+                    padding: 10px;
+                    border-radius: 4px;
+                    border: 1px solid var(--N200);
                     &.material-selected {
                         box-shadow: none;
                         border-color: var(--B500);
@@ -29,9 +32,15 @@
             }
         }
         .main-content {
-          .material-history{
-            width: auto;
-          }
+            .material-history {
+                width: auto;
+            }
         }
     }
+}
+
+.env-modal-width {
+    width: 75%;
+    min-width: 1024px;
+    max-width: 1200px;
 }

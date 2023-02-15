@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TriggerCDNodeProps } from '../../types';
+import { DeploymentNodeType, TriggerCDNodeProps } from '../../types';
 import { statusColor, statusIcon } from '../../../../config';
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
 import { URLS, DEFAULT_STATUS } from '../../../../../../config';
@@ -91,7 +91,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()
-                                        context.onClickCDMaterial(this.props.id, this.props.type)
+                                        context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
                                     }}
                                 >
                                     Select Image

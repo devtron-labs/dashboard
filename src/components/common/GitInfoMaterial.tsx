@@ -286,6 +286,8 @@ export default function GitInfoMaterial({
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     hideWebhookModal={hideWebhookModal}
                     workflowId={workflowId}
+                    isFromEnv={isFromEnv}
+                    appId={appId}
                 />
             </div>
         )
@@ -297,7 +299,7 @@ export default function GitInfoMaterial({
 
     return (
         <>
-            {!isFromBulkCI && renderMaterialHeader()}
+            {(!isFromBulkCI || showWebhookModal) && renderMaterialHeader()}
             <div className={`m-lr-0 ${showWebhookModal || isFromBulkCI ? null : 'flexbox'}`}>
                 {showWebhookModal == true ? (
                     renderWebhookModal()

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service';
-import { Pagination, Progressing, showError, sortCallback } from '../../../common';
+import { getCIPipelineURL, Pagination, Progressing, showError, sortCallback, stopPropagation } from '../../../common';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
@@ -11,7 +11,7 @@ import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info
 import './ciWebhookModal.css';
 import moment from 'moment';
 
-export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId }) {
+export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId, isFromEnv , appId}) {
 
     const [showDetailedIncomingPayload, setShowDetailedIncomingPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
@@ -21,22 +21,26 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     const history = useHistory()
     const onEditShowEditableCiModal = (ciPipelineId, workflowId) => {
-        let link = `edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`;
-        history.push(link);
+        if (isFromEnv) {
+            window.open(getCIPipelineURL(appId, workflowId, true, ciPipelineId), '_blank', 'noreferrer')
+        } else {
+            history.push(`edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`)
+        }
     }
 
-    const getCIWebhookPayloadRes = (pipelineMaterialId, parsedDataId) => {
-        setParsedDataId(parsedDataId)
-        setShowDetailedIncomingPayload(true);
-        setIsPayloadLoading(true)
-        try {
-            getCIWebhookPayload(pipelineMaterialId, parsedDataId).then((result) => {
-                setWebhookIncomingPayloadRes(result)
-                setIsPayloadLoading(false)
-            })
-        } catch (err) {
-            showError(err)
-        }
+    const getCIWebhookPayloadRes = (e, pipelineMaterialId, parsedDataId) => {
+      stopPropagation(e)
+      setParsedDataId(parsedDataId)
+      setShowDetailedIncomingPayload(true)
+      setIsPayloadLoading(true)
+      try {
+          getCIWebhookPayload(pipelineMaterialId, parsedDataId).then((result) => {
+              setWebhookIncomingPayloadRes(result)
+              setIsPayloadLoading(false)
+          })
+      } catch (err) {
+          showError(err)
+      }
     }
 
     const onClose = () => {
@@ -103,7 +107,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
                         {webhookPayloads?.payloads?.map((payload, index) =>
                             <div key={index} className="cn-5 pt-8 pb-8 fs-13" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                                <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
+                                <div className="cb-5 cursor" onClick={(e) => getCIWebhookPayloadRes(e, ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
                                 <div>{payload.failedFiltersCount}</div>
                                 <div className={payload.matchedFilters == false ? `dc__deprecated-warn-text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
@@ -117,7 +121,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
     const renderTimeStampDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
             <div className="flex left">
-                <button type="button" className="dc__transparent flex" onClick={() => { setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
+                <button type="button" className="dc__transparent flex" onClick={(e) => { stopPropagation(e); setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
                     <Back />
                 </button>
                 <h1 className="modal__title fs-16 pl-16 flex left">All incoming webhook payloads
@@ -134,7 +138,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     const renderTimeStampDetailedDescription = () => {
         return (
-            <div style={{ height: "calc(100vh - 94px" }} className="bcn-0 pl-16 mt-20">
+            <div style={{ height: "calc(100vh - 84px" }} className="bcn-0 pl-16 mt-20">
                 <div style={{ background: "#f2f4f7", }}>
                     <div className="cn-9 fs-12 fw-6 pt-12 pl-12">Incoming Payload</div>
                     <div className={`${expandIncomingPayload ? `expand-incoming-payload` : `collapsed-incoming-payload`} cn-9 fs-13 pl-12 pr-12 pb-20`} style={{ overflow: "scroll" }}>
@@ -195,16 +199,19 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     const renderTimeStampDetailedIncomingModal = () => {
         return (
-            <div className="bcn-0" style={{ position: "fixed", top: "0", right: "0", width: '800px', background: 'var(--N000)', zIndex: 100 }}>
+            <div
+                className={`bcn-0 w-800 bcn-0 dc__position-fixed dc__top-0 dc__right-0 timestamp-detail-container ${
+                    isFromEnv ? 'env-modal-width' : ''
+                }`}
+                style={{ zIndex: 100 }}
+            >
                 <div>{renderTimeStampDetailedHeader(context)}</div>
 
-                {
-                    isPayloadLoading ?
-                        <div className="flex payload-wrapper-no-header">
-                            {renderWebhookPayloadLoader()}
-                        </div> :
-                        renderTimeStampDetailedDescription()
-                }
+                {isPayloadLoading ? (
+                    <div className="flex payload-wrapper-no-header">{renderWebhookPayloadLoader()}</div>
+                ) : (
+                    renderTimeStampDetailedDescription()
+                )}
             </div>
         )
     }

@@ -21,7 +21,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { DeploymentNodeType, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import {
@@ -430,7 +430,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType) {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         getCDMaterialList(cdNodeId, nodeType)
             .then((data) => {
@@ -518,8 +518,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    // stageType'PRECD' | 'CD' | 'POSTCD'
-    onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
+    onClickTriggerCDNode = (nodeType: DeploymentNodeType, deploymentWithConfig?: string, wfrId?: number): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
         const appId = this.props.match.params.appId
@@ -823,7 +822,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
-    closeCDModal = (): void => {
+    closeCDModal = (e): void => {
         preventBodyScroll(false)
         this.setState({ showCDModal: false })
     }
@@ -982,7 +981,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 <CDMaterial
                     appId={Number(this.props.match.params.appId)}
                     pipelineId={this.state.cdNodeId}
-                    stageType={this.state.nodeType}
+                    stageType={DeploymentNodeType[this.state.nodeType]}
                     material={material}
                     materialType={this.state.materialType}
                     envName={node.environmentName}

@@ -11,12 +11,12 @@ export interface CDMaterialProps {
     materialType: string
     envName: string
     redirectToCD?: () => void
-    stageType: string
-    changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType) => void
-    triggerDeploy: (stageType: string, deploymentWithConfig?: string, wfrId?: number) => void
-    selectImage: (index: number, materialType: string) => void
-    toggleSourceInfo: (materialIndex: number) => void
-    closeCDModal: () => void
+    stageType:  DeploymentNodeType
+    changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType, selectedCDDetail?: {id: number; type:  DeploymentNodeType}) => void
+    triggerDeploy: (stageType: DeploymentNodeType, deploymentWithConfig?: string, wfrId?: number) => void
+    selectImage: (index: number, materialType: string, selectedCDDetail?: {id: number; type:  DeploymentNodeType}) => void
+    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: {id: number; type:  DeploymentNodeType}) => void
+    closeCDModal: (e) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
         offset?: number,
@@ -29,6 +29,7 @@ export interface CDMaterialProps {
     hideInfoTabsContainer?: boolean
     appId?: number
     pipelineId?: number
+    isFromBulkCD?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -107,7 +108,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     toggleWebhookModal: (id, webhookTimeStampOrder) => void
     webhookPayloads: WebhookPayloads
     isWebhookPayloadLoading: boolean
-    hideWebhookModal: () => void
+    hideWebhookModal: (e?) => void
     onClickWebhookTimeStamp: () => void
     webhhookTimeStampOrder: string
     showMaterialRegexModal: boolean
@@ -230,7 +231,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     triggerType: string
     colourCode: string
     stageIndex: number
-    type: 'PRECD' | 'CD' | 'POSTCD'
+    type: DeploymentNodeType
     downstreams?: string[]
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
@@ -259,9 +260,9 @@ export interface TriggerViewContextType {
     invalidateCache: boolean
     refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
     onClickTriggerCINode: () => void
-    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickTriggerCDNode: (nodeType: DeploymentNodeType) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
-    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
     closeCIModal: () => void
     selectCommit: (materialId: string, hash: string) => void
@@ -374,6 +375,12 @@ export enum WorkflowNodeType {
     PRE_CD = 'PRECD',
     CD = 'CD',
     POST_CD = 'POSTCD',
+}
+
+export enum DeploymentNodeType {
+    PRECD = 'PRECD',
+    CD = 'CD',
+    POSTCD = 'POSTCD',
 }
 
 export interface Task {
