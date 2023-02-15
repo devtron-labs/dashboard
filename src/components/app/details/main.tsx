@@ -104,6 +104,20 @@ export function AppHeader({ appName }: { appName: string }) {
     const location = useLocation()
     const currentPathname = useRef('')
 
+    function trackEvent(category: string, action: string): void {
+        ReactGA.event({
+            category: category,
+            action: action,
+        });
+    }
+
+    function preventLinkDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
+        const linkDisabled = (event.target as Element)?.classList.contains(className)
+        if (linkDisabled) {
+            event.preventDefault()
+        }
+    }
+
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
@@ -147,11 +161,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Overview Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'Overview Clicked');
+                          }} 
                     >
                         Overview
                     </NavLink>
@@ -162,11 +173,9 @@ export function AppHeader({ appName }: { appName: string }) {
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Details Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'App Details Clicked');
+                            preventLinkDefault(event, 'active')
+                          }}    
                     >
                         App Details
                     </NavLink>
@@ -177,11 +186,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Build & Deploy Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'Build & Deploy Clicked');
+                          }} 
                     >
                         Build & Deploy
                     </NavLink>
@@ -192,11 +198,9 @@ export function AppHeader({ appName }: { appName: string }) {
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Build History Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'Build History Clicked');
+                            preventLinkDefault(event, 'active')
+                          }} 
                     >
                         Build History
                     </NavLink>
@@ -207,11 +211,9 @@ export function AppHeader({ appName }: { appName: string }) {
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment History Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'Deployment History Clicked');
+                            preventLinkDefault(event, 'active')
+                          }} 
                     >
                         Deployment History
                     </NavLink>
@@ -222,27 +224,22 @@ export function AppHeader({ appName }: { appName: string }) {
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment Metrics Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'Deployment Metrics Clicked');
+                            preventLinkDefault(event, 'active')
+                          }} 
                     >
                         Deployment Metrics
                     </NavLink>
                 </li>
-
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
                         onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Configuration Clicked',
-                            })
-                        }}
+                            trackEvent('App', 'App Configuration Clicked');
+                            preventLinkDefault(event, 'active')
+                          }} 
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         App Configuration
