@@ -16,6 +16,7 @@ import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import './terminal.css'
+import { TERMINAL_TEXT } from './constants'
 
 let socket = undefined
 let terminal = undefined
@@ -129,7 +130,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onopen = function () {
             if (terminalViewProps.isClusterTerminal) {
-                preFetchData('create', CLUSTER_STATUS.RUNNING, 'Succeded')
+                preFetchData(CLUSTER_STATUS.RUNNING, 'Succeded')
             }
             const startData = { Op: 'bind', SessionID: sessionId }
             _socket.send(JSON.stringify(startData))
@@ -188,40 +189,38 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }
 
-    const preFetchData = (first, second, third) => {  
+    const preFetchData = (podState = '', status = '') => {  
         const _terminal = terminal
-
+        let startingText = 'create'
         if (!_terminal) return
 
         _terminal?.reset()
 
         if(terminalViewProps.isShellSwitched){
-            first = 'shell'
-        }else{
-            first = 'create'
+            startingText = 'shell'
         }
 
-        if(first){
-            if(first === 'create'){
+        if(startingText){
+            if(startingText === 'create'){
                 _terminal.write('Creating pod.')
-            } else if(first === 'shell'){
+            } else if(startingText === 'shell'){
                 _terminal.write(`Switching shell to ${terminalViewProps.shell.value}.`)
             }
         }
-        if(first !== 'shell' && second){
-            if (second === CLUSTER_STATUS.RUNNING) {
+        if(startingText !== 'shell' && podState){
+            if (podState === CLUSTER_STATUS.RUNNING) {
                 _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
                 _terminal.writeln('')
                 _terminal.write('Connecting to pod terminal.')
             }
         }
 
-        if(third){
-            if (third === 'timedOut') {
+        if(status){
+            if (status === 'timedOut') {
                 _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
-            } else if (third === 'failed'){
+            } else if (status === 'failed'){
                 _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
-            } else if (third === 'Succeded') {
+            } else if (status === 'Succeded') {
                 _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
             }
             _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
@@ -363,7 +362,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (!terminal) {
             elementDidMount('#terminal-id').then(() => {
                 createNewTerminal()
-                preFetchData('create','','')
+                preFetchData()
             })
         }
         get(url)
@@ -371,12 +370,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 let sessionId = response.result.userTerminalSessionId
                 let status = response.result.status
                 if(status === 'Running' && !response.result?.isValidShell){
-                    preFetchData('create',status,'failed')
+                    preFetchData(status,'failed')
                     setErrorMessage({message: response.result?.errorReason, reason: ''})
                 } else if (status === 'Terminated'){
                     setErrorMessage({message: status, reason: response.result?.errorReason })
                 } else if (!sessionId && count) {
-                    preFetchData('create',status,'')
+                    preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
                     }, 5000)
@@ -387,10 +386,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     }
                     if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
                         postInitialize(sessionId)
-                        preFetchData('create',status,'')
+                        preFetchData(status)
                     }
                 } else {
-                    preFetchData('create',CLUSTER_STATUS.FAILED, 'timedOut')
+                    preFetchData(CLUSTER_STATUS.FAILED, 'timedOut')
                     setErrorMessage({message: 'timedOut', reason: ''})
                 }
             })
@@ -471,26 +470,26 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (errorMessage.message === 'timedOut') {
             return (
                 <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
-                    Connection timed out. Please
+                    {TERMINAL_TEXT.CONNECTION_TIMEOUT}
                     <u className="cursor" onClick={switchTOPodEventTab}>
-                        check pod events
+                        {TERMINAL_TEXT.CHECK_POD_EVENTS}
                     </u>
-                    for errors.
+                    {TERMINAL_TEXT.FOR_ERRORS}
                     <u
                         className="cursor"
-                        onClick={() => terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING)}
+                        onClick={terminalViewProps.reconnectTerminal}
                     >
-                        Retry connection
+                        {TERMINAL_TEXT.RETRY_CONNECTION}
                     </u>
-                    in case of no error.
+                    {TERMINAL_TEXT.CASE_OF_ERROR}
                 </div>
             )
         } else if (errorMessage.message === 'Terminated') {
             return (
                 <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
-                    Pod was terminated. Reason: {errorMessage.reason}
+                    {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}
                     <u className="cursor" onClick={terminalViewProps.reconnectTerminal}>
-                        Initiate new connection
+                        {TERMINAL_TEXT.INITIATE_CONNECTION}
                     </u>
                 </div>
             )
@@ -505,7 +504,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (!isOnline) {
             return (
                 <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
-                    You’re offline. Please check your internet connection.
+                    {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
                 </div>
             )
         } else if (terminalViewProps.isClusterTerminal && !terminalViewProps.isPodConnected) {
@@ -513,13 +512,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         } else if (terminalViewProps.isFetchRetry) {
             return (
                 <div className="bcr-7 pl-20 cn-0">
-                    Concurrent connection limit reached.&nbsp;
+                    {TERMINAL_TEXT.CONCURRENT_LIMIT_REACH}&nbsp;
                     <button
                         type="button"
                         onClick={terminalViewProps.disconnectRetry}
                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
                     >
-                        Terminate all and retry
+                        {TERMINAL_TEXT.TERMINATE_RETRY}
                     </button>
                 </div>
             )

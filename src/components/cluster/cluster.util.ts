@@ -26,15 +26,19 @@ export function getClusterTerminalParamsData(
     params: URLSearchParams,
     imageList: OptionType[],
     namespaceList: OptionType[],
-    nodeList: {options: OptionType[],label: string}[],
+    nodeList: { options: OptionType[]; label: string }[],
     clusterShellList: OptionType[],
     node: string,
 ): ClusterTerminalParamsType {
     const _selectedImage = imageList.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
-    let _selectedNode: OptionType 
-    nodeList?.forEach((item) => _selectedNode = item.options.find((node) => node.value === params.get('node')) ||
-        (node ? { label: node, value: node } : nodeList[0].options[0]))
+    let nodeOptionList: OptionType[] = []
+    nodeList?.forEach((item) => nodeOptionList.push(...item.options))
+
+    const _selectedNode: OptionType =
+        nodeOptionList.find((data) => data.value === params.get('node')) ||
+        (node ? nodeOptionList.find((item) => item.value === node) : nodeList[0].options[0])
+
     const _selectedShell = clusterShellList.find((shell) => shell.value === params.get('shell'))
 
     return {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { shellTypes } from '../../config/constants'
+import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import { SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
 import {
@@ -29,7 +29,14 @@ import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
-import { clusterSelectStyle, CLUSTER_STATUS, IMAGE_LIST } from './constants'
+import {
+    AUTO_SELECT,
+    clusterSelectStyle,
+    CLUSTER_STATUS,
+    CLUSTER_TERMINAL_MESSAGING,
+    IMAGE_LIST,
+    SELECT_TITLE,
+} from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -61,8 +68,10 @@ export default function ClusterTerminal({
         clusterShellTypes,
         node,
     )
-    const [selectedNodeName, setSelectedNodeName] = useState(queryParamsData.selectedNode)
-    const [selectedTerminalType, setSelectedtTerminalType] = useState(queryParamsData.selectedShell || shellTypes[1])
+    const [selectedNodeName, setSelectedNodeName] = useState<OptionType>(queryParamsData.selectedNode)
+    const [selectedTerminalType, setSelectedTerminalType] = useState<OptionType>(
+        queryParamsData.selectedShell || shellTypes[1],
+    )
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
@@ -77,7 +86,7 @@ export default function ClusterTerminal({
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
-  
+
     const payload = {
         clusterId: clusterId,
         baseImage: selectedImage.value,
@@ -93,17 +102,17 @@ export default function ClusterTerminal({
     }, [clusterId, node])
 
     useEffect(() => {
-        if(!location.search && !isNodeDetailsPage){
+        if (!location.search && !isNodeDetailsPage) {
             closeTerminal(false)
         }
-    },[location.search])
+    }, [location.search])
 
     useEffect(() => {
         handleUrlChanges()
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
-        if(autoSelectNodeRef.current === 'autoSelectNode' && selectedNodeName.value != 'autoSelectNode') {
+        if (autoSelectNodeRef.current === AUTO_SELECT.value && selectedNodeName.value !== AUTO_SELECT.value) {
             autoSelectNodeRef.current = selectedNodeName.value
             return
         }
@@ -288,7 +297,7 @@ export default function ClusterTerminal({
         setConnectTerminal(true)
         setReconnect(!isReconnect)
     }
-    
+
     const reconnectStart = () => {
         reconnectTerminal()
         selectTerminalTab()
@@ -315,10 +324,13 @@ export default function ClusterTerminal({
     }
 
     const onChangeTerminalType = (selected): void => {
-        setSelectedtTerminalType(selected)
+        setSelectedTerminalType(selected)
     }
 
     const onChangeImages = (selected): void => {
+        if (imageList.some((image) => image.value === selected.value)) {
+            setSelectedTerminalType(clusterShellTypes[0])
+        }
         setImage(selected)
     }
 
@@ -350,7 +362,7 @@ export default function ClusterTerminal({
         return (
             <components.MenuList {...props}>
                 <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
-                    Use custom image: Enter path for publicly available image
+                    {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
                 </div>
                 {props.children}
             </components.MenuList>
@@ -388,19 +400,18 @@ export default function ClusterTerminal({
     const imageTippyInfo = () => {
         return (
             <div className="p-12 fs-13">
-                Select image you want to run inside the pod. Images contain utility tools (eg. kubectl, helm,
-                curl,&nbsp;
-                <a href="https://github.com/nicolaka/netshoot" target="_blank">
-                    netshoot
+                {CLUSTER_TERMINAL_MESSAGING.SELECT_UTILITY}&nbsp;
+                <a href={NETSHOOT_LINK} target="_blank">
+                    {CLUSTER_TERMINAL_MESSAGING.NETSHOOT}
                 </a>
                 ,&nbsp;
-                <a href="https://busybox.net/" target="_blank">
-                    busybox
+                <a href={BUSYBOX_LINK} target="_blank">
+                    {CLUSTER_TERMINAL_MESSAGING.BUSYBOX}
                 </a>
-                ) which can be used to debug clusters and workloads.
+                {CLUSTER_TERMINAL_MESSAGING.DEBUG_CLUSTER}
                 <br />
                 <br />
-                You can use publicly available custom images as well.
+                {CLUSTER_TERMINAL_MESSAGING.PUBLIC_IMAGE}
             </div>
         )
     }
@@ -433,7 +444,7 @@ export default function ClusterTerminal({
                 <div className="flex left">
                     {clusterName && (
                         <>
-                            <div className="cn-6 mr-16">Cluster</div>
+                            <div className="cn-6 mr-16">{SELECT_TITLE.CLUSTER}</div>
                             <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
                             <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
                         </>
@@ -459,7 +470,7 @@ export default function ClusterTerminal({
 
                     {!isNodeDetailsPage && (
                         <>
-                            <div className="cn-6 mr-10">Node</div>
+                            <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
                             <div style={{ minWidth: '145px' }}>
                                 <ReactSelect
                                     placeholder="Select Containers"
@@ -467,11 +478,16 @@ export default function ClusterTerminal({
                                     defaultValue={selectedNodeName}
                                     value={selectedNodeName}
                                     onChange={onChangeNodes}
-                                    styles={{...clusterSelectStyle,
+                                    styles={{
+                                        ...clusterSelectStyle,
                                         group: (base) => ({
                                             ...base,
                                             paddingTop: 0,
                                             paddingBottom: 0,
+                                        }),
+                                        menu: (base) => ({
+                                            ...base,
+                                            width: '300px',
                                         }),
                                         groupHeading: (base) => ({
                                             ...base,
@@ -495,7 +511,7 @@ export default function ClusterTerminal({
                     )}
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">Namespace</div>
+                    <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.NAMESPACE}</div>
                     <div>
                         <CreatableSelect
                             placeholder="Select Namespace"
@@ -512,7 +528,7 @@ export default function ClusterTerminal({
                     </div>
 
                     <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-4">Image</div>
+                    <div className="cn-6 ml-8 mr-4">{SELECT_TITLE.IMAGE}</div>
                     <TippyCustomized
                         theme={TippyTheme.white}
                         heading="Image"
@@ -590,14 +606,14 @@ export default function ClusterTerminal({
                 <ul role="tablist" className="tab-list">
                     <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
-                            Terminal
+                            {SELECT_TITLE.TERMINAL}
                         </div>
                         {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
                     {terminalAccessIdRef.current && connectTerminal && (
                         <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
-                                Pod Events
+                                {SELECT_TITLE.POD_EVENTS}
                             </div>
                             {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                         </li>
@@ -605,7 +621,7 @@ export default function ClusterTerminal({
                     {terminalAccessIdRef.current && connectTerminal && (
                         <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
-                                Pod Manifest
+                                {SELECT_TITLE.POD_MANIFEST}
                             </div>
                             {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                         </li>
@@ -651,7 +667,7 @@ export default function ClusterTerminal({
                                 </div>
                             </Tippy>
                             <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                            <div className="cn-6 ml-8 mr-10">Shell </div>
+                            <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.SHELL} </div>
                             <div>
                                 <CreatableSelect
                                     placeholder="Select Shell"

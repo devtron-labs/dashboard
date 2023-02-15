@@ -3,6 +3,7 @@ import React from 'react'
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { EventTableType } from './node.type'
+import { TERMINAL_TEXT } from './terminal/constants'
 
 export function EventsTable({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) {
     const renderEventsTable = () => {
@@ -20,9 +21,9 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView, errorV
                 return (
                     <div className="cn-0 ">
                         {errorValue.status === 'Terminated' && <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
-                            Pod was terminated. Reason: {errorValue.errorReason}
+                            {TERMINAL_TEXT.POD_TERMINATED} {errorValue.errorReason}
                             <u className="cursor" onClick={reconnect}>
-                                 Initiate new connection
+                                 {TERMINAL_TEXT.INITIATE_CONNECTION}
                             </u>
                         </div>}
                         <table className="table pl-20">

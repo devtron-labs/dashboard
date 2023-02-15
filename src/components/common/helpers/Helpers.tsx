@@ -14,6 +14,7 @@ import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { AUTO_SELECT } from '../../ClusterNodes/constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1210,7 +1211,7 @@ export const eventAgeComparator = <T,>(key: string): any => {
 
 export const createGroupSelectList = (list,nodeLabel): SelectGroupType[] => {
     const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
-        const key = obj.nodeGroup
+        const key = obj.nodeGroup ? obj.nodeGroup : 'Independent nodes'
         if (!acc[key]) {
             acc[key] = []
         }
@@ -1225,5 +1226,5 @@ export const createGroupSelectList = (list,nodeLabel): SelectGroupType[] => {
         }
     })
 
-    return [{label: '',options: [{label:'Auto select' , value:'autoSelectNode'}]},...groupList]
+    return [{label: '',options: [AUTO_SELECT]},...groupList]
 }

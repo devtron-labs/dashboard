@@ -8,7 +8,7 @@ export const clusterSelectStyle = {
         zIndex: 9999,
         textAlign: 'left',
         minWidth: '150px',
-        maxWidth: '380px',
+        maxWidth: '300px',
     }),
     control: (base, state) => ({
         ...base,
@@ -272,3 +272,25 @@ export const IMAGE_LIST = {
     IMAGE: 'image',
     DESCRIPTION: 'description',
 }
+
+export const CLUSTER_TERMINAL_MESSAGING = {
+    CUSTOM_PATH: 'Use custom image: Enter path for publicly available image',
+    SELECT_UTILITY: 'Select image you want to run inside the pod. Images contain utility tools (eg. kubectl, helm,curl,',
+    NETSHOOT: 'netshoot',
+    BUSYBOX: 'busybox',
+    DEBUG_CLUSTER: ') which can be used to debug clusters and workloads.',
+    PUBLIC_IMAGE: 'You can use publicly available custom images as well.'
+}
+
+export const SELECT_TITLE = {
+    CLUSTER: 'Cluster',
+    NODE: 'Node',
+    NAMESPACE: 'Namespace',
+    IMAGE: 'Image',
+    TERMINAL: 'Terminal',
+    POD_EVENTS: 'Pod Events',
+    POD_MANIFEST: 'Pod Manifest',
+    SHELL: 'Shell'
+}
+
+export const AUTO_SELECT = { label: 'Auto select', value: 'autoSelectNode' }
