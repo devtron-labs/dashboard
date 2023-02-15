@@ -162,7 +162,7 @@ export default function IdentifierSelector({
         <div className="link-identifiers">
             {link.type === ExternalLinkScopeType.ClusterLevel ? (
                 <>
-                    <label className='dc__required-field'>Clusters</label>
+                    <label className="dc__required-field">Clusters</label>
                     <CreatableSelect
                         value={selectedIdentifiers}
                         options={clusters}
@@ -194,7 +194,7 @@ export default function IdentifierSelector({
                 </>
             ) : (
                 <>
-                    <label className='dc__required-field'>Applications</label>
+                    <label className="dc__required-field">Applications</label>
                     <CreatableSelect
                         value={selectedIdentifiers}
                         options={allApps}

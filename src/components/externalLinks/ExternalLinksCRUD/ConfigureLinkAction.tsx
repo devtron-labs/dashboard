@@ -194,7 +194,7 @@ export default function ConfigureLinkAction({
                     />
                 )}
                 <div className="link-text-area">
-                    <label className='dc__required-field'>URL Template</label>
+                    <label className="dc__required-field">URL Template</label>
                     <textarea
                         name={LinkValidationKeys.urlTemplate}
                         rows={1}

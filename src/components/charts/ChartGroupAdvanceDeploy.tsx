@@ -174,7 +174,7 @@ export default function ChartGroupAdvanceDeploy() {
                             />
                             <div className={`deployment-buttons`} style={{ gridTemplateColumns: '1fr' }}>
                                 <div className="mb-12">
-                                    <label className='dc__required-field'>Project</label>
+                                    <label className="dc__required-field">Project</label>
                                     <Select
                                         rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                         value={project.id}
