@@ -29,6 +29,7 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import { clearTimeout } from 'timers'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
+  workflowTimer = null
     constructor(props) {
         super(props)
         this.state = {
@@ -64,6 +65,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     componentWillUnmount() {
         this.removeTakeMeThereClickedItem()
+       if (this.workflowTimer) {
+           clearTimeout(this.workflowTimer)
+       }
     }
 
     removeTakeMeThereClickedItem = () => {
@@ -102,7 +106,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }
                 }
                  if(isDeletionInProgress){
-                   setTimeout(() => {
+                  this.workflowTimer =   setTimeout(() => {
                       this.getWorkflows()
                    }, 10000)
                  }
