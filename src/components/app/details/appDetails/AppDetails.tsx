@@ -47,7 +47,7 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as Delete } from '../../../../assets/icons/all-delete.svg'
+
 
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
@@ -83,6 +83,7 @@ import {
 } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import EmptyState from '../../../EmptyState/EmptyState'
+import {AppEmptyState} from "../../../common/AppEmptyState";
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
@@ -113,23 +114,6 @@ export default function AppDetail() {
         setEnvironmentId(Number(params.envId))
     }, [params.envId])
 
-    function renderDeploymentEnvironmentDelete() {
-        console.log('inside error')
-        return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <Delete />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">Deployment on this environment has been deleted</h2>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    This application is no longer deployed on ‘staging-devtroncd’ environment.
-                </EmptyState.Subtitle>
-            </EmptyState>
-        )
-    }
-
     return !isAppDeleted ? (
         <div className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
@@ -157,7 +141,7 @@ export default function AppDetail() {
             )}
         </div>
     ) : (
-        renderDeploymentEnvironmentDelete()
+        <AppEmptyState></AppEmptyState>
     )
 }
 
