@@ -1,3 +1,4 @@
+import React from 'react'
 import EmptyState from '../EmptyState/EmptyState'
 import { ReactComponent as Delete } from '../../assets/icons/all-delete.svg'
 

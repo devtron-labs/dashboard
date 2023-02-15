@@ -141,7 +141,9 @@ export default function AppDetail() {
             )}
         </div>
     ) : (
-        <AppEmptyState></AppEmptyState>
+
+        <AppEmptyState/>
+
     )
 }
 
