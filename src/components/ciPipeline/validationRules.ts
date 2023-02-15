@@ -82,11 +82,11 @@ export class ValidationRules {
         }
     }
 
-    sourceValue = (value: string, isValidateRegex = true): { message: string | null; isValid: boolean } => {
+    sourceValue = (value: string, skipRegexValidation = true): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: `This is required`, isValid: false }
         } else {
-            if (isValidateRegex) {
+            if (skipRegexValidation) {
                 try {
                     new RegExp(value)
                     return { message: null, isValid: true }
