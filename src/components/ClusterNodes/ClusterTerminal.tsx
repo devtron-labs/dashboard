@@ -328,9 +328,6 @@ export default function ClusterTerminal({
     }
 
     const onChangeImages = (selected): void => {
-        if (imageList.some((image) => image.value === selected.value)) {
-            setSelectedTerminalType(clusterShellTypes[0])
-        }
         setImage(selected)
     }
 
