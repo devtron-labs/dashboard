@@ -337,6 +337,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 cdNamesList={cdNamesList}
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
+                match = {this.props.match}
             />
         )
     }

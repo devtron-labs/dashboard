@@ -5,8 +5,29 @@ import Tippy from '@tippyjs/react'
 import { CDNodeProps } from '../types'
 import { toast } from 'react-toastify'
 import {ERR_MESSAGE_ARGOCD} from '../../../config/constantMessaging'
+import { ConfirmationDialog } from '../../common'
+import warningIconSrc from '../../../assets/icons/ic-warning-y6.svg'
+import { URLS } from '../../../config'
 
-export class CDNode extends Component<CDNodeProps> {
+interface CDNodeState{
+  showDeletePipelinePopup: boolean
+}
+
+export class CDNode extends Component<CDNodeProps, CDNodeState> {
+  constructor(props) {
+    super(props)
+    this.state = {
+      showDeletePipelinePopup: false,
+    }
+  }
+
+  onClickShowDeletePipelinePopup = () =>{
+    this.setState({showDeletePipelinePopup: true})
+  }
+
+  onClickHideDeletePipelinePopup = () =>{
+    this.setState({showDeletePipelinePopup: false})
+  }
 
     renderReadOnlyCard() {
         return (
@@ -37,10 +58,34 @@ export class CDNode extends Component<CDNodeProps> {
         }
     }
 
+     getAppDetailsURL(): string {
+       return  `${this.props.match.url.replace('edit/workflow', `details/${this.props.environmentId}/`)}`
+     }
+
+     renderConfirmationModal = (): JSX.Element => {
+      return (
+          <ConfirmationDialog>
+              <ConfirmationDialog.Icon src={warningIconSrc} />
+              <ConfirmationDialog.Body title="Deployment pipeline for staging-devtroncd environment is being deleted" />
+              <p className="fs-13 cn-7 lh-1-54 mt-20">
+                  Deployment pipeline configurations cannot be edited when deletion is in progress.
+              </p>
+              <ConfirmationDialog.ButtonGroup>
+                  <button type="button" className="cta cancel" onClick={this.onClickHideDeletePipelinePopup}>
+                      Cancel
+                  </button>
+                  <Link to={this.getAppDetailsURL()}>
+                    <button className="cta ml-12 dc__no-decor">View deletion status</button>
+                  </Link>
+              </ConfirmationDialog.ButtonGroup>
+          </ConfirmationDialog>
+      )
+  }
+
     renderCardContent() {
         return (
             <>
-                <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
+                <Link to={!this.props.deploymentAppDeleteRequest && this.props.to} onClick={() => this.props.deploymentAppDeleteRequest ? this.onClickShowDeletePipelinePopup() : this.props.hideWebhookTippy()} className="dc__no-decor">
                     <div className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
                       {
                         this.props.deploymentAppDeleteRequest ? <div className='workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete'></div>
@@ -73,6 +118,7 @@ export class CDNode extends Component<CDNodeProps> {
                         />
                     </Tippy>
                 </button>
+                {this.state.showDeletePipelinePopup && this.renderConfirmationModal()}
             </>
         )
     }
