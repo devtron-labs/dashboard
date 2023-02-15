@@ -315,8 +315,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             return
         }
 
-        console.log(node)
-
         return (
             <CDNode
                 key={node.id}

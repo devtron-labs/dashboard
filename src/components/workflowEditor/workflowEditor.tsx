@@ -26,10 +26,9 @@ import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
-import { clearTimeout } from 'timers'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
-  workflowTimer = null
+    workflowTimer = null
     constructor(props) {
         super(props)
         this.state = {
@@ -98,18 +97,16 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             ) {
                                 workFlow.showTippy = true
                             }
-                            if(!isDeletionInProgress && node.deploymentAppDeleteRequest){
-                              isDeletionInProgress = true
+                            if (!isDeletionInProgress && node.deploymentAppDeleteRequest) {
+                                isDeletionInProgress = true
                             }
                             allDeploymentNodeMap.set(node.id, node)
                         }
                     }
                 }
-                 if(isDeletionInProgress){
-                  this.workflowTimer =   setTimeout(() => {
-                      this.getWorkflows()
-                   }, 10000)
-                 }
+                if (isDeletionInProgress) {
+                    this.workflowTimer = setTimeout(this.getWorkflows, 10000)
+                }
                 this.setState({
                     appName: result.appName,
                     workflows: result.workflows,
