@@ -1100,7 +1100,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
-       
+
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1222,7 +1222,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <>
                 <div className="form__row">
-                    <label className="form__label">Pipeline Name*</label>
+                    <label className="form__label dc__required-field">Pipeline Name</label>
                     <input
                         className="form__input"
                         autoComplete="off"
