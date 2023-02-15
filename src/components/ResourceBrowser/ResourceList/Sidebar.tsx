@@ -127,7 +127,7 @@ function Sidebar({
         setK8sObjectOptionsList(_k8sObjectOptionsList)
     }
 
-    const selectNode = (e: any, groupName?: string): void => {
+    const selectNode = (e: any, groupName?: string, preventScroll?: boolean): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
@@ -167,7 +167,7 @@ function Sidebar({
                 true,
             )
         } else {
-            preventScrollRef.current = true
+            preventScrollRef.current = preventScroll ?? true
         }
     }
 
@@ -260,6 +260,7 @@ function Sidebar({
                 },
             },
             option.groupName,
+            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes),
         )
     }
 
