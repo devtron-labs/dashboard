@@ -6,7 +6,7 @@ import { SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import { MaterialSourceProps } from './types'
 
-export default function MaterialSource({ material, refreshMaterial, selectMaterial }: MaterialSourceProps) {
+export default function MaterialSource({ material, refreshMaterial, selectMaterial, ciPipelineId }: MaterialSourceProps) {
     const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
         if (mat.isMaterialLoading) {
             return (
@@ -54,7 +54,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
 
     const handleSelectMaterialAction = (e) => {
         e.stopPropagation()
-        selectMaterial(e.currentTarget.dataset.id)
+        selectMaterial(e.currentTarget.dataset.id, ciPipelineId)
     }
 
     return (

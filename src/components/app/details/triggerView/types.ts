@@ -640,10 +640,11 @@ export interface EmptyStateCIMaterialProps {
 
 export interface MaterialSourceProps {
     material: CIMaterialType[]
-    selectMaterial: (materialId: string) => void
+    selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: {
         pipelineId: number
         title: string
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
+    ciPipelineId?: number
 }

@@ -487,7 +487,7 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
         refreshGitMaterial(gitMaterialId.toString())
             .then((response) => {
-                updateCIMaterialList(selectedCINode.id.toString(), pipelineName, true).catch((errors: ServerErrors) => {
+                updateCIMaterialList(ciNodeId.toString(), pipelineName, true).catch((errors: ServerErrors) => {
                     showError(errors)
                     setErrorCode(errors.code)
                 })
@@ -557,8 +557,10 @@ export default function EnvTriggerView() {
             setErrorCode(response.code)
             setSelectedCINode({ id: +ciNodeId, name: ciPipelineName, type: WorkflowNodeType.CI })
             setMaterialType(MATERIAL_TYPE.inputMaterialList)
-            setShowCIModal(!showRegexModal)
-            setShowMaterialRegexModal(showRegexModal)
+            if (!showBulkCIModal) {
+                setShowCIModal(!showRegexModal)
+                setShowMaterialRegexModal(showRegexModal)
+            }
             setWorkflowID(_workflowId)
             setSelectedAppID(_appID)
             getWorkflowStatusData(_workflows)
@@ -817,10 +819,10 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
     }
 
-    const selectMaterial = (materialId): void => {
+    const selectMaterial = (materialId, pipelineId?: number): void => {
         const _workflows = [...workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
-                if (node.type === selectedCINode.type && +node.id == selectedCINode.id) {
+                if (node.type === WorkflowNodeType.CI && +node.id == (pipelineId ?? selectedCINode.id)) {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
                         return {
                             ...material,
@@ -1146,7 +1148,7 @@ export default function EnvTriggerView() {
                         parentPipelineId: _selectedNode.parentPipelineId,
                         parentPipelineType: _selectedNode.parentPipelineType,
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
-                        material: _selectedNode[MATERIAL_TYPE.inputMaterialList],
+                        material: _selectedNode.inputMaterialList,
                     })
                 }
             }
@@ -1262,6 +1264,7 @@ export default function EnvTriggerView() {
                         isLinkedCI: _ciNode.isLinkedCI,
                         parentAppId: _ciNode.parentAppId,
                         parentCIPipelineId: _ciNode.parentCiPipeline,
+                        material: _ciNode.inputMaterialList
                     })
                 }
             }
@@ -1277,8 +1280,6 @@ export default function EnvTriggerView() {
                 toggleWebhookModal={toggleWebhookModal}
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
-                onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                webhookTimeStampOrder={webhookTimeStampOrder}
             />
         )
     }

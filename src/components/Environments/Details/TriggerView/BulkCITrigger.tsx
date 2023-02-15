@@ -22,6 +22,7 @@ interface AppWorkflowDetailsType {
     isLinkedCI: boolean
     parentAppId: string
     parentCIPipelineId: boolean
+    material: any[]
 }
 interface BulkCITriggerType {
     appList: AppWorkflowDetailsType[]
@@ -33,8 +34,6 @@ interface BulkCITriggerType {
     webhookPayloads: WebhookPayloads
     isWebhookPayloadLoading: boolean
     hideWebhookModal: (e?) => void
-    onClickWebhookTimeStamp: () => void
-    webhookTimeStampOrder: string
 }
 
 export default function BulkCITrigger({
@@ -47,8 +46,6 @@ export default function BulkCITrigger({
     webhookPayloads,
     isWebhookPayloadLoading,
     hideWebhookModal,
-    onClickWebhookTimeStamp,
-    webhookTimeStampOrder,
 }: BulkCITriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
@@ -59,7 +56,7 @@ export default function BulkCITrigger({
         selectMaterial,
         refreshMaterial,
     }: {
-        selectMaterial: (materialId) => void
+        selectMaterial: (materialId, pipelineId?: number) => void
         refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
     } = useContext(TriggerViewContext)
     const escKeyPressHandler = (evt): void => {
@@ -107,9 +104,7 @@ export default function BulkCITrigger({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res['result']
                     })
-                    setMaterialList(_materialListMap)
                     updateBulkInputMaterial(_materialListMap)
-
                     setLoading(false)
                 })
                 .catch((error) => {
@@ -148,24 +143,26 @@ export default function BulkCITrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const selectedMaterial = materialList?.[selectedApp.appId]?.find((mat) => mat.isSelected)
+        const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
         return (
-            <div className={`bulk-ci-trigger  ${showWebhookModal? 'webhook-modal':''}`}>
+            <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {!showWebhookModal && (
                     <div className="sidebar bcn-0">
                         {appList.map((app, index) =>
                             app.appId === selectedApp.appId ? (
                                 <div className="material-list pr-12 pl-12 dc__window-bg" key={`app-${index}`}>
                                     <div className="fw-6 fs-13 cn-9 pt-12 pb-12">{app.name}</div>
-                                    {materialList?.[app.appId] && (
+                                    {selectedMaterialList && (
                                         <MaterialSource
-                                            material={materialList[app.appId]}
+                                            material={selectedMaterialList}
                                             selectMaterial={selectMaterial}
                                             refreshMaterial={{
                                                 refresh: refreshMaterial,
                                                 title: app.ciPipelineName,
                                                 pipelineId: +app.ciPipelineId,
                                             }}
+                                            ciPipelineId={+app.ciPipelineId}
                                         />
                                     )}
                                     {!selectedApp.isLinkedCI && (
@@ -200,9 +197,9 @@ export default function BulkCITrigger({
                     </div>
                 )}
                 <div className="main-content dc__window-bg">
-                    {materialList?.[selectedApp.appId] ? (
+                    {selectedMaterialList ? (
                         <GitInfoMaterial
-                            material={materialList[selectedApp.appId]}
+                            material={selectedMaterialList}
                             title={selectedApp.ciPipelineName}
                             pipelineId={selectedApp.ciPipelineId}
                             pipelineName={selectedApp.ciPipelineName}
