@@ -11,11 +11,21 @@ export interface CDMaterialProps {
     materialType: string
     envName: string
     redirectToCD?: () => void
-    stageType:  DeploymentNodeType
-    changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType, selectedCDDetail?: {id: number; type:  DeploymentNodeType}) => void
+    stageType: DeploymentNodeType
+    changeTab?: (
+        materrialId: string | number,
+        artifactId: number,
+        tab: CDMdalTabType,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+        appId?: number,
+    ) => void
     triggerDeploy: (stageType: DeploymentNodeType, deploymentWithConfig?: string, wfrId?: number) => void
-    selectImage: (index: number, materialType: string, selectedCDDetail?: {id: number; type:  DeploymentNodeType}) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: {id: number; type:  DeploymentNodeType}) => void
+    selectImage: (
+        index: number,
+        materialType: string,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+    ) => void
+    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeCDModal: (e) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
@@ -217,6 +227,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
+    isFromEnv: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -235,6 +246,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     downstreams?: string[]
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
+    isFromEnv: boolean
 }
 
 export interface TriggerEdgeType {

@@ -27,6 +27,7 @@ import {
     getRandomColor,
     showError,
     ConditionalWrap,
+    stopPropagation,
 } from '../../../common'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
@@ -276,7 +277,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     async handleImageSelection(index: number, selectedMaterial: CDMaterialType) {
-        this.props.selectImage(index, this.props.materialType)
+        this.props.selectImage(
+            index,
+            this.props.materialType,
+            this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+        )
 
         if (this.state.isRollbackTrigger && this.state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
@@ -431,10 +436,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Changes, {
-                                                    id: this.props.pipelineId,
-                                                    type: this.props.stageType,
-                                                })
+                                                this.props.changeTab(
+                                                    index,
+                                                    Number(mat.id),
+                                                    CDModalTab.Changes,
+                                                    {
+                                                        id: this.props.pipelineId,
+                                                        type: this.props.stageType,
+                                                    },
+                                                    this.props.appId,
+                                                )
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                 mat.tab === CDModalTab.Changes ? 'active' : ''
@@ -448,7 +459,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
+                                                this.props.changeTab(
+                                                    index,
+                                                    Number(mat.id),
+                                                    CDModalTab.Security,
+                                                    this.props.isFromBulkCD
+                                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                                        : null,
+                                                    this.props.appId,
+                                                )
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                 mat.tab === CDModalTab.Security ? 'active' : ''
@@ -471,7 +490,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             className="material-history__changes-btn"
                             onClick={(event) => {
                                 event.stopPropagation()
-                                this.props.toggleSourceInfo(index)
+                                this.props.toggleSourceInfo(
+                                    index,
+                                    this.props.isFromBulkCD
+                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                        : null,
+                                )
                             }}
                         >
                             {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
@@ -887,23 +911,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ) : (
                         <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
                     )}
-                    {this.renderTriggerBody()}
                     <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
                         <img alt="close" src={close} />
                     </button>
                 </div>
+                {this.renderTriggerBody()}
                 {this.renderTriggerModalCTA()}
             </>
         )
     }
 
-    stopPropagationOnClick(e) {
-        e.stopPropagation()
-    }
-
     render() {
         if (this.props.isFromBulkCD) {
-            return this.renderTriggerBody()
+          return this.props.material.length > 0 ? (
+              this.renderTriggerBody()
+          ) : (
+              <EmptyStateCdMaterial materialType={this.props.materialType} />
+          )
         } else {
             return (
                 <VisibleModal
@@ -915,7 +939,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         className={`modal-body--cd-material h-100 ${
                             this.state.isRollbackTrigger ? 'contains-diff-view' : ''
                         } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                        onClick={this.stopPropagationOnClick}
+                        onClick={stopPropagation}
                     >
                         {this.props.material.length > 0 ? (
                             this.renderCDModal()

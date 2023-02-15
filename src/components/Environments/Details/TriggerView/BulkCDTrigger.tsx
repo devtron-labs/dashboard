@@ -28,6 +28,7 @@ interface AppWorkflowDetailsType {
     parentPipelineId: string
     parentPipelineType: WorkflowNodeType
     parentEnvironmentName: string
+    material: any[]
 }
 
 interface BulkCDTriggerType {
@@ -69,7 +70,6 @@ export default function BulkCDTrigger({
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
     const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
-    const [materialList, setMaterialList] = useState<Record<string, any[]>>(null)
     const [, isSecurityModuleInstalled] = useAsync(() => getModuleConfigured(ModuleNameMap.SECURITY), [])
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
@@ -111,9 +111,7 @@ export default function BulkCDTrigger({
                 responses.forEach((res, index) => {
                     _materialListMap[appList[index]?.appId] = res
                 })
-                setMaterialList(_materialListMap)
                 updateBulkInputMaterial(_materialListMap)
-
                 setLoading(false)
             })
             .catch((error) => {
@@ -144,7 +142,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const selectedMaterial = materialList[selectedApp.appId].find((mat) => mat.isSelected)
+        const _material = appList.find(app=> app.appId===selectedApp.appId)?.material || []
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0">
@@ -166,7 +164,7 @@ export default function BulkCDTrigger({
                         appId={selectedApp.appId}
                         pipelineId={+selectedApp.cdPipelineId}
                         stageType={selectedApp.stageType}
-                        material={materialList[selectedApp.appId]}
+                        material={_material}
                         materialType={MATERIAL_TYPE.inputMaterialList}
                         envName={selectedApp.envName}
                         isLoading={isLoading}
@@ -197,7 +195,11 @@ export default function BulkCDTrigger({
                         <Progressing />
                     ) : (
                         <>
-                            {stage=== DeploymentNodeType.CD? <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />:<PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />}
+                            {stage === DeploymentNodeType.CD ? (
+                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                            ) : (
+                                <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                            )}
                             {ButtonTitle[stage]}
                         </>
                     )}

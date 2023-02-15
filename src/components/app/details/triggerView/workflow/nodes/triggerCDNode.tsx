@@ -21,7 +21,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     }
 
     redirectToCDDetails() {
-        this.props.history.push(this.getCDNodeDetailsURL())
+      if (this.props.isFromEnv) {
+          return
+      }
+      this.props.history.push(this.getCDNodeDetailsURL())
     }
 
     renderStatus() {
@@ -43,10 +46,14 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
                     <span>{statusText}</span>
-                    <span className="mr-5 ml-5">/</span>
-                    <Link to={url} className="workflow-node__details-link">
-                        Details
-                    </Link>
+                    {!this.props.isFromEnv && (
+                        <>
+                            <span className="mr-5 ml-5">/</span>
+                            <Link to={url} className="workflow-node__details-link">
+                                Details
+                            </Link>
+                        </>
+                    )}
                 </div>
             )
     }

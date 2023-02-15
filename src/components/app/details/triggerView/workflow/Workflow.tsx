@@ -107,6 +107,7 @@ export class Workflow extends Component<WorkflowProps> {
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
+                    isFromEnv={this.props.isFromENv}
                 />
             )
         } else if (node.isExternalCI) {
@@ -157,6 +158,7 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     branch={node.branch}
+                    isFromEnv={this.props.isFromENv}
                 />
             )
         }
@@ -188,6 +190,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineId={node.parentPipelineId}
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
+                isFromEnv={this.props.isFromENv}
             />
         )
     }
@@ -213,6 +216,7 @@ export class Workflow extends Component<WorkflowProps> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
+                isFromEnv={this.props.isFromENv}
             />
         )
     }
