@@ -121,6 +121,7 @@ function RouterComponent({ envType }) {
             setErrorResponseCode(undefined);
         } catch (e: any) {
             showError(e);
+            console.log('hi')
             if(e?.code){
                 setErrorResponseCode(e.code);
             }

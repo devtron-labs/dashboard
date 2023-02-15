@@ -44,7 +44,7 @@ const AppDetailsComponent = ({
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div className='helm-details'>
             <div>
                 <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
               {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData}/>}

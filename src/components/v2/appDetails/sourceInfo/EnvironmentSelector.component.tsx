@@ -112,7 +112,6 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
             await getDeleteApplicationApi()
             setShowDeleteConfirmation(false)
             toast.success('Deletion initiated successfully.')
-            history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
         } catch (error) {
             showError(error)
         }
