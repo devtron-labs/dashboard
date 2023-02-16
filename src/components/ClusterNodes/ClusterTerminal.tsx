@@ -484,6 +484,7 @@ export default function ClusterTerminal({
                                         }),
                                         menu: (base) => ({
                                             ...base,
+                                            zIndex: 9999,
                                             width: '300px',
                                         }),
                                         groupHeading: (base) => ({
