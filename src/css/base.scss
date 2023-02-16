@@ -1348,7 +1348,7 @@ button.anchor {
         }
         .dc__show-second--icon {
             display: inherit;
-         }
+        }
     }
 }
 
@@ -2206,6 +2206,10 @@ textarea,
     height: inherit;
 }
 
+.dc__min-width-fit-content {
+    min-width: fit-content!important;
+}
+
 .h-0 {
     height: 0px;
 }
@@ -2604,6 +2608,11 @@ textarea::placeholder {
     width: 1px;
     min-height: 16px;
     background-color: var(--N200);
+}
+
+.dc__required-field::after {
+  content: ' *';
+  color: var(--R500);
 }
 
 .dc__highlight-text {
