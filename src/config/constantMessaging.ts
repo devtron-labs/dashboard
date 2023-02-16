@@ -60,3 +60,7 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
 }
 
 export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
+
+export const LOCAL_STORAGE = {
+   ISDELTEDAPPFIRSTTIME : 'isDeletedAppFirstTime'
+}

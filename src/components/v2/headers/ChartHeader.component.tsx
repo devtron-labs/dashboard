@@ -21,8 +21,12 @@ function ChartHeaderComponent() {
                 >
                     <span className="cb-5 fs-16">Helm Apps </span>
                 </Link>
-                <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
+               {
+                 Object.keys(appDetails).length > 0 &&
+                <> <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
                 <span className="fs-16 cn-9">{appDetails.appName}</span>
+                </>
+               }
             </div>
         )
     }
@@ -45,7 +49,8 @@ function ChartHeaderComponent() {
                         App Details
                     </NavLink>
                 </li>
-                {!appDetails.deploymentAppDeleteRequest && (
+                {Object.keys(appDetails).length > 0 && !appDetails.deploymentAppDeleteRequest && (
+                  <>
                     <li className="tab-list__tab">
                         <NavLink
                             activeClassName="active"
@@ -62,8 +67,7 @@ function ChartHeaderComponent() {
                             Configure
                         </NavLink>
                     </li>
-                )}
-                {!appDetails.deploymentAppDeleteRequest && (
+
                     <li className="tab-list__tab">
                         <NavLink
                             activeClassName="active"
@@ -79,6 +83,7 @@ function ChartHeaderComponent() {
                             Deployment history
                         </NavLink>
                     </li>
+                    </>
                 )}
             </ul>
         )

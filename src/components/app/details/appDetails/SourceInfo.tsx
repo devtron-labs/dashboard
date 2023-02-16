@@ -72,9 +72,8 @@ export function SourceInfo({
         })
     }
 
-    const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
-    return (
-        <div className="flex left w-100 column source-info-container">
+    const devtronAppsEnvironmentSelector = () => {
+        return (
             <div className="flex left w-100 mb-16">
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
                 {appDetails?.deploymentAppType && (
@@ -138,6 +137,13 @@ export function SourceInfo({
                     </div>
                 )}
             </div>
+        )
+    }
+
+    const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    return (
+        <div className="flex left w-100 column source-info-container">
+            {devtronAppsEnvironmentSelector()}
             {!appDetails?.deploymentAppDeleteRequest && (
                 <div className="flex left w-100">
                     {appDetails?.resourceTree && (

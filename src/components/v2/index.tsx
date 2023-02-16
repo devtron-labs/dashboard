@@ -1,12 +1,12 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-import { URLS } from '../../config';
-import { DetailsProgressing, showError, ErrorScreenManager, sortOptionsByValue } from '../common';
+import { getAppDetailsURL, URLS } from '../../config';
+import { DetailsProgressing, showError, ErrorScreenManager, sortOptionsByValue, useAsync, useAppContext } from '../common';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
-import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
+import { getAppOtherEnvironment, getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
 import { AppType, EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
@@ -17,6 +17,9 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../extern
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
 import ChartValuesView from './values/chartValuesDiff/ChartValuesView';
+import { AppEmptyState } from '../common/AppEmptyState';
+import { LOCAL_STORAGE } from '../../config/constantMessaging';
+import { EnvSelector } from '../app/details/appDetails/AppDetails';
 
 let initTimer = null;
 
@@ -120,8 +123,6 @@ function RouterComponent({ envType }) {
 
             setErrorResponseCode(undefined);
         } catch (e: any) {
-            showError(e);
-            console.log('hi')
             if(e?.code){
                 setErrorResponseCode(e.code);
             }
@@ -149,12 +150,20 @@ function RouterComponent({ envType }) {
     return (
         <React.Fragment>
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
-
-            {!isLoading && errorResponseCode && (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
-            )}
+            {
+                errorResponseCode &&
+                (
+                (typeof Storage !== 'undefined' &&
+                localStorage.getItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)) ? (
+                    <div className='h-100'>
+                       {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+                        <AppEmptyState />
+                    </div>
+                ) : (
+                    <div className="dc__loading-wrapper">
+                        <ErrorScreenManager code={errorResponseCode} />
+                    </div>
+                ))}
 
             {!isLoading && !errorResponseCode && (
                 <>

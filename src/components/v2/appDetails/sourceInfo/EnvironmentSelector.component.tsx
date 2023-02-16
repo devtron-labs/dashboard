@@ -4,7 +4,7 @@ import { multiSelectStyles, PopupMenu, showError } from '../../../common';
 import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';
-import { useParams, useHistory, useRouteMatch } from 'react-router';
+import { useParams, useHistory, useRouteMatch, useLocation } from 'react-router';
 
 import { getAppOtherEnvironment } from '../appDetails.api';
 import { useSharedState } from '../../utils/useSharedState';
@@ -23,6 +23,7 @@ import { toast } from 'react-toastify';
 import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
 import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
+import { LOCAL_STORAGE } from '../../../../config/constantMessaging';
 
 function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean}) {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -35,6 +36,8 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const location = useLocation()
+
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -81,6 +84,19 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         setShowDeleteConfirmation(true)
     }
 
+    //Local storage for the first time empty state show
+
+    useEffect(() => {
+      if (
+          location.pathname.includes(`/details}/`) &&
+          typeof Storage !== 'undefined' &&
+          localStorage.getItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)
+      )
+      return() =>{
+          localStorage.removeItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)
+      }
+  }, [location.pathname])
+
     const Popup = () => {
         return (
             <div className="pod-info__popup-container">
@@ -107,11 +123,15 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         setShowDeleteConfirmation(!showDeleteConfirmation)
     }
 
+
     async function deleteResourceAction() {
         try {
             await getDeleteApplicationApi()
             setShowDeleteConfirmation(false)
             toast.success('Deletion initiated successfully.')
+            if (typeof Storage !== 'undefined') {
+               localStorage.setItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME, 'true')
+            }
         } catch (error) {
             showError(error)
         }

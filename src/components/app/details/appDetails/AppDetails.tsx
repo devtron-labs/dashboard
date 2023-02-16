@@ -94,6 +94,8 @@ export default function AppDetail() {
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId])
+    const [commitInfo, showCommitInfo] = useState<boolean>(false)
+
     useEffect(() => {
         if (otherEnvsLoading) return
         if (
@@ -114,8 +116,7 @@ export default function AppDetail() {
         setEnvironmentId(Number(params.envId))
     }, [params.envId])
 
-    return !isAppDeleted ? (
-        <div className="app-details-page-wrapper">
+    return  <div className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo appDetails={null} environments={otherEnvsResult?.result} />
@@ -129,6 +130,9 @@ export default function AppDetail() {
                     environment={otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)}
                     environments={otherEnvsResult?.result}
                     setIsAppDeleted={setIsAppDeleted}
+                    commitInfo={commitInfo}
+                    showCommitInfo={showCommitInfo}
+                    isAppDeleted={isAppDeleted}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && (
@@ -140,11 +144,7 @@ export default function AppDetail() {
                 </>
             )}
         </div>
-    ) : (
 
-        <AppEmptyState/>
-
-    )
 }
 
 export const Details: React.FC<{
@@ -155,6 +155,9 @@ export const Details: React.FC<{
     environments: any
     isPollingRequired?: boolean
     setIsAppDeleted?: any
+    commitInfo?: boolean
+    isAppDeleted?: boolean
+    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
 }> = ({
     appDetailsAPI,
     setAppDetailResultInParent,
@@ -163,13 +166,15 @@ export const Details: React.FC<{
     environments,
     isPollingRequired = true,
     setIsAppDeleted,
+    commitInfo,
+    showCommitInfo,
+    isAppDeleted
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
-    const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [hibernating, setHibernating] = useState<boolean>(false)
@@ -243,6 +248,7 @@ export const Details: React.FC<{
     }, [])
 
     async function callAppDetailsAPI() {
+      setIsAppDeleted(false)
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000)
             IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
@@ -296,7 +302,6 @@ export const Details: React.FC<{
             }
         } catch (error) {
             if (error['code'] === 404 || appDetailsRef.current) {
-                console.log('here')
                 setIsAppDeleted(true)
                 setAppDetailsLoading(false)
             } else if (!appDetailsResult) {
@@ -429,14 +434,18 @@ export const Details: React.FC<{
                         controlStyleOverrides={{ backgroundColor: 'white' }}
                     />
                 </div>
-                <AppNotConfigured
-                    style={{ height: 'calc(100vh - 150px)' }}
-                    image={noGroups}
-                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                    subtitle={'Once deployed, details for the deployment will be available here.'}
-                    buttonTitle={'Go to deploy'}
-                    appConfigTabs={URLS.APP_TRIGGER}
-                />
+                {!isAppDeleted ? (
+                    <AppNotConfigured
+                        style={{ height: 'calc(100vh - 150px)' }}
+                        image={noGroups}
+                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                        subtitle={'Once deployed, details for the deployment will be available here.'}
+                        buttonTitle={'Go to deploy'}
+                        appConfigTabs={URLS.APP_TRIGGER}
+                    />
+                ) : (
+                    <AppEmptyState />
+                )}
             </>
         )
     }
@@ -1138,7 +1147,6 @@ export function AppNotConfigured({
             <img src={image || AppNotConfiguredIcon} />
             <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
             <p className="mb-20 fs-13 w-300">
-                {' '}
                 {subtitle ? (
                     subtitle
                 ) : (
