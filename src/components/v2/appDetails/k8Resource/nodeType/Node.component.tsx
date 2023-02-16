@@ -31,8 +31,7 @@ function NodeComponent({
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
-    // store the state of clipboard with respect to the selected nodes using it's Node Name as key 
-    const [copied, setCopied] = useState<Record<string, boolean>>({});
+    const [copied, setCopied] = useState<string>('');
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState('');
     const [podType, setPodType] = useState(false);
@@ -79,12 +78,13 @@ function NodeComponent({
         }
     }, [externalLinks])
 
+    useEffect(() => {
+        if (!copied) return
+        setTimeout(() => setCopied(''), 2000);
+    }, [copied])
+    
     const toggleClipBoard = (name: string) => {
-        setCopied((prevMapping) => ({
-          ...prevMapping,
-          [name]: true
-        }));
-        setTimeout(() => setCopied({ [name]: false }), 2000);
+        setCopied(name);
     };
 
     useEffect(() => {
@@ -206,8 +206,12 @@ function NodeComponent({
                     {showHeader && !!_currentNodeHeader && (
                         <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
                             <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
-                            { node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
-                            { node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div> }
+                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                                <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div>
+                            )}
+                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                                <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div>
+                            )}
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
@@ -216,7 +220,7 @@ function NodeComponent({
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
-                                        markNodeSelected(selectedNodes, node.name);
+                                        markNodeSelected(selectedNodes, node.name)
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
@@ -242,27 +246,29 @@ function NodeComponent({
                                 </div>
 
                                 <div>
-                                {node?.name ? copied[node?.name] ? (
-                                        <Tippy
-                                            className="default-tt"
-                                            hideOnClick={false}
-                                            arrow={false}
-                                            placement="bottom"
-                                            content="Copied!"
-                                            duration={[100, 2000]}
-                                            trigger="mouseenter click"
-                                        >
-                                            <Check className="resource-action-tabs__active icon-dim-12 green-tick ml-8 mr-8" />
-                                        </Tippy>
-                                    ) : (
-                                        <Clipboard
-                                            className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                copyToClipboard(node?.name, () => toggleClipBoard(node?.name))
-                                            }}
-                                        />
-                                    ): null}
+                                    {node?.name && (
+                                        copied === node.name ? (
+                                            <Tippy
+                                                className="default-tt"
+                                                hideOnClick={false}
+                                                arrow={false}
+                                                placement="bottom"
+                                                content="Copied!"
+                                                duration={[100, 2000]}
+                                                trigger="mouseenter click"
+                                            >
+                                                <Check className="resource-action-tabs__active icon-dim-12 green-tick ml-8 mr-8" />
+                                            </Tippy>
+                                        ) : (
+                                            <Clipboard
+                                                className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    copyToClipboard(node?.name, () => toggleClipBoard(node?.name))
+                                                }}
+                                            />
+                                        )
+                                    )}
 
                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
@@ -270,18 +276,17 @@ function NodeComponent({
                                                 key={'tab__' + index}
                                                 onClick={() => {
                                                     if (node.kind === NodeType.Containers) {
-                                                        handleActionTabClick(node['pNode'], kind, node.name);
+                                                        handleActionTabClick(node['pNode'], kind, node.name)
                                                     } else {
-                                                        handleActionTabClick(node, kind);
+                                                        handleActionTabClick(node, kind)
                                                     }
-                                                    handleFocusTabs();
+                                                    handleFocusTabs()
                                                 }}
                                                 className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
-
                                             >
                                                 {kind}
                                             </a>
-                                        );
+                                        )
                                     })}
                                 </div>
                             </div>
@@ -290,27 +295,29 @@ function NodeComponent({
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
                                 {nodeName}
-                                {nodeName ? copied[nodeName] ? (
-                                    <Tippy
-                                        className="default-tt"
-                                        hideOnClick={false}
-                                        arrow={false}
-                                        placement="bottom"
-                                        content="Copied!"
-                                        duration={[100, 200]}
-                                        trigger="mouseenter click"
-                                    >
-                                        <Check className="resource-action-tabs__active pl-4 icon-dim-12 green-tick" />
-                                    </Tippy>
-                                ) : (
-                                    <Clipboard
-                                        className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
-                                        }}
-                                    />
-                                ): null}
+                                {nodeName && (
+                                    copied === nodeName ? (
+                                        <Tippy
+                                            className="default-tt"
+                                            hideOnClick={false}
+                                            arrow={false}
+                                            placement="bottom"
+                                            content="Copied!"
+                                            duration={[100, 200]}
+                                            trigger="mouseenter click"
+                                        >
+                                            <Check className="resource-action-tabs__active pl-4 icon-dim-12 green-tick" />
+                                        </Tippy>
+                                    ) : (
+                                        <Clipboard
+                                            className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
+                                            }}
+                                        />
+                                    )
+                                )}
                             </div>
                         )}
 
@@ -332,8 +339,7 @@ function NodeComponent({
                             </div>
                         )}
 
-
-                        {params.nodeType!== NodeType.Service.toLocaleLowerCase() && (
+                        {params.nodeType !== NodeType.Service.toLocaleLowerCase() && (
                             <div className={'flex left col-1 pt-9 pb-9'}>
                                 {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
@@ -367,7 +373,7 @@ function NodeComponent({
                         </div>
                     )}
                 </React.Fragment>
-            );
+            )
         });
     };
 
