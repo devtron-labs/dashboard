@@ -36,7 +36,7 @@ function NodeDetailComponent({
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
-    const [showManagedFields, setShowManagedFields] = useState(false)
+    const [hideManagedFields, setHideManagedFields] = useState(false)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
@@ -195,9 +195,9 @@ function NodeDetailComponent({
                         <div className="pt-6 pb-6 pl-8 pr-8 top">
                             <Checkbox
                                 rootClassName="mb-0-imp h-20"
-                                isChecked={showManagedFields}
+                                isChecked={hideManagedFields}
                                 value={CHECKBOX_VALUE.CHECKED}
-                                onChange={() => setShowManagedFields(!showManagedFields)}
+                                onChange={() => setHideManagedFields(!hideManagedFields)}
                             >
                                 <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
                             </Checkbox>
@@ -219,7 +219,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
-                            showManagedFields={showManagedFields}
+                            hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                         />

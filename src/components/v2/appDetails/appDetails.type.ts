@@ -449,7 +449,7 @@ export interface ResourceInfoActionPropsType {
 }
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
-    showManagedFields: boolean
+    hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
 }
 

@@ -27,7 +27,7 @@ import { MODES } from '../../../../../../config'
 
 function ManifestComponent({
     selectedTab,
-    showManagedFields,
+    hideManagedFields,
     toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
@@ -133,6 +133,19 @@ function ManifestComponent({
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
+        if (isEditmode) {
+            toggleManagedFields(false)
+            let jsonManifestData = YAML.parse(activeManifestEditorData)
+            if (jsonManifestData?.metadata?.managedFields) {
+                const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
+                    if (key === 'metadata') {
+                        value['managedFields'] = undefined
+                    }
+                    return value
+                })
+                setTrimedManifestEditorData(_trimedManifestData)
+            }
+        }
     }, [isEditmode])
 
     //For External
@@ -235,6 +248,9 @@ function ManifestComponent({
     }
 
     const markActiveTab = (_tabName: string) => {
+        if (_tabName !== 'Live manifest') {
+            toggleManagedFields(false)
+        }
         dispatch({
             type: TabActions.MarkActive,
             tabName: _tabName,
@@ -253,7 +269,6 @@ function ManifestComponent({
                 return setTimeout(() => {
                     setActiveManifestEditorData(desiredManifest)
                 }, 0)
-                break
         }
     }
 
@@ -272,24 +287,29 @@ function ManifestComponent({
     }, [params.actionName])
 
     useEffect(() => {
-        let jsonManifestData = YAML.parse(activeManifestEditorData)
-        if (jsonManifestData?.metadata?.managedFields) {
-            toggleManagedFields(true)
-            if (showManagedFields) {
-                const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
-                    if (key === 'metadata') {
-                        value['managedFields'] = undefined
-                    }
-                    return value
-                })
-                setTrimedManifestEditorData(_trimedManifestData)
+        console.log('here')
+        if (activeTab === 'Live manifest') {
+            let jsonManifestData = YAML.parse(activeManifestEditorData)
+            if (jsonManifestData?.metadata?.managedFields) {
+                toggleManagedFields(true)
+                if (hideManagedFields) {
+                    const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
+                        if (key === 'metadata') {
+                            value['managedFields'] = undefined
+                        }
+                        return value
+                    })
+                    setTrimedManifestEditorData(_trimedManifestData)
+                } else {
+                    setTrimedManifestEditorData(activeManifestEditorData)
+                }
             } else {
                 setTrimedManifestEditorData(activeManifestEditorData)
             }
         } else {
             setTrimedManifestEditorData(activeManifestEditorData)
         }
-    }, [activeManifestEditorData, showManagedFields])
+    }, [activeManifestEditorData, hideManagedFields, activeTab])
 
     return isDeleted ? (
         <div>
