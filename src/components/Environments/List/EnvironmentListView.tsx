@@ -23,6 +23,9 @@ export default function EnvironmentsListView({ clearSearch }) {
     }
     const [paramsData, setParamsData] = useState(paramObj)
     const [loading, appList] = useAsync(() => getEnvAppList(paramsData), [paramsData])
+    const emptyStateData = paramObj.clusterIds
+        ? { title: 'No app groups found', subTitle: "We couldn't find any matching app groups." }
+        : { title: '', subTitle: '' }
 
     useEffect(() => {
         setParamsData(paramObj)
@@ -50,7 +53,7 @@ export default function EnvironmentsListView({ clearSearch }) {
     }
 
     const renderPagination = () => {
-        if (filteredEnvList.length > 1) {
+        if (filteredEnvList.length > 20) {
             return (
                 <Pagination
                     size={filteredEnvList.length}
@@ -63,16 +66,24 @@ export default function EnvironmentsListView({ clearSearch }) {
         }
     }
 
-    const handleClusterClick = (e,noApp): void => {
-        if(noApp){
+    const handleClusterClick = (e, noApp): void => {
+        if (noApp) {
             e.preventDefault()
             toast.info('You don’t have access to any application in this app group')
         }
     }
 
     return filteredEnvList.length === 0 || loading ? (
-        <div className="flex" style={{ height: `calc(100vh - 160px)` }}>
-            {loading ? <Progressing /> : <EnvEmptyStates actionHandler={clearSearch} />}
+        <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
+            {loading ? (
+                <Progressing />
+            ) : (
+                <EnvEmptyStates
+                    title={emptyStateData.title}
+                    subTitle={emptyStateData.subTitle}
+                    actionHandler={clearSearch}
+                />
+            )}
         </div>
     ) : (
         <>
@@ -88,7 +99,12 @@ export default function EnvironmentsListView({ clearSearch }) {
                     <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
                         <EnvIcon className="icon-dim-20" />
                         <div className="cb-5 dc__ellipsis-right">
-                            <NavLink to={`/environment/${envData.id}`} onClick={(e) => handleClusterClick(e,!envData.appCount)}>{envData.environment_name}</NavLink>
+                            <NavLink
+                                to={`/environment/${envData.id}`}
+                                onClick={(e) => handleClusterClick(e, !envData.appCount)}
+                            >
+                                {envData.environment_name}
+                            </NavLink>
                         </div>
                         <div>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>

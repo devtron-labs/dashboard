@@ -164,7 +164,7 @@ export default function EnvironmentsList() {
     function renderAppliedFilters() {
         let count = 0
         let appliedFilters = (
-            <div className="saved-env-filters__wrap dc__position-rel">
+            <div className="saved-env-filters__wrap dc__position-rel mb-12">
                 {clusterfilter.map((filter) => {
                     if (filter.isChecked) {
                         count++
