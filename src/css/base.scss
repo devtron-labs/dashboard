@@ -2206,6 +2206,10 @@ textarea,
     height: inherit;
 }
 
+.dc__min-width-fit-content {
+    min-width: fit-content!important;
+}
+
 .h-0 {
     height: 0px;
 }
