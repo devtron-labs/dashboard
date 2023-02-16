@@ -11,8 +11,6 @@ import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
 import { dashboardAccessed } from '../../services/service'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
