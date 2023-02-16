@@ -14,7 +14,6 @@ import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
-
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -150,7 +149,6 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         } else {
             setState({ ...newState })
         }
-        
     }
     return { state, disable, handleOnChange, handleOnSubmit }
 }
