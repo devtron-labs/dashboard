@@ -33,7 +33,8 @@ export default function GitInfoMaterial({
     onClickShowBranchRegexModal,
     isFromEnv,
     appId,
-    isFromBulkCI
+    isFromBulkCI,
+    isHideSearchHeader
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -209,7 +210,7 @@ export default function GitInfoMaterial({
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
         return (
             <div className="select-material select-material--trigger-view">
-                {!isWebhook && (
+                {!isWebhook && !isHideSearchHeader && (
                     <div
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}

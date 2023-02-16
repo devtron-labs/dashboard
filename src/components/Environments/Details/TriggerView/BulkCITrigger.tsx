@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Drawer, noop, Progressing, showError, useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { ModuleNameMap, URLS } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
@@ -23,6 +24,8 @@ interface AppWorkflowDetailsType {
     parentAppId: string
     parentCIPipelineId: boolean
     material: any[]
+    notFoundMessage: string
+    isHideSearchHeader: boolean
 }
 interface BulkCITriggerType {
     appList: AppWorkflowDetailsType[]
@@ -49,7 +52,7 @@ export default function BulkCITrigger({
 }: BulkCITriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
-    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
+    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList.find(app=> !app.notFoundMessage) || appList[0])
     const [materialList, setMaterialList] = useState<Record<string, any[]>>(null)
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
@@ -90,19 +93,19 @@ export default function BulkCITrigger({
     }, [outsideClickHandler])
 
     const getMaterialData = (): void => {
-        const _CIMaterialPromiseList = appList
-            ?.filter((appDetails) => !appDetails.isLinkedCI)
-            ?.map((appDetails) =>
-                getCIMaterialList({
-                    pipelineId: appDetails.ciPipelineId,
-                }),
-            )
+        const _CIMaterialPromiseList = appList.map((appDetails) =>
+            appDetails.notFoundMessage
+                ? null
+                : getCIMaterialList({
+                      pipelineId: appDetails.ciPipelineId,
+                  }),
+        )
         if (_CIMaterialPromiseList?.length) {
             const _materialListMap: Record<string, any[]> = {}
             Promise.all(_CIMaterialPromiseList)
                 .then((responses) => {
                     responses.forEach((res, index) => {
-                        _materialListMap[appList[index]?.appId] = res['result']
+                        _materialListMap[appList[index]?.appId] = res?.['result']
                     })
                     updateBulkInputMaterial(_materialListMap)
                     setLoading(false)
@@ -136,7 +139,11 @@ export default function BulkCITrigger({
     }
 
     const changeApp = (e): void => {
-        setSelectedApp(appList[e.currentTarget.dataset.index])
+        const _selectedApp = appList[e.currentTarget.dataset.index]
+        if (_selectedApp.notFoundMessage) {
+            return
+        }
+        setSelectedApp(_selectedApp)
     }
 
     const renderBodySection = (): JSX.Element => {
@@ -150,7 +157,7 @@ export default function BulkCITrigger({
                 {!showWebhookModal && (
                     <div className="sidebar bcn-0">
                         {appList.map((app, index) =>
-                            app.appId === selectedApp.appId ? (
+                            app.appId === selectedApp.appId && !app.notFoundMessage ? (
                                 <div className="material-list pr-12 pl-12 dc__window-bg" key={`app-${index}`}>
                                     <div className="fw-6 fs-13 cn-9 pt-12 pb-12">{app.name}</div>
                                     {selectedMaterialList && (
@@ -191,6 +198,12 @@ export default function BulkCITrigger({
                                     onClick={changeApp}
                                 >
                                     {app.name}
+                                    {app.notFoundMessage && (
+                                        <span className="flex left cy-7 fw-4 fs-12">
+                                            <Error className="icon-dim-12 warning-icon-y7 mr-4" />
+                                            {app.notFoundMessage}
+                                        </span>
+                                    )}
                                 </div>
                             ),
                         )}
@@ -214,6 +227,7 @@ export default function BulkCITrigger({
                             isFromEnv={true}
                             appId={selectedApp.appId}
                             isFromBulkCI={true}
+                            isHideSearchHeader={selectedApp.isHideSearchHeader}
                         />
                     ) : (
                         <EmptyView

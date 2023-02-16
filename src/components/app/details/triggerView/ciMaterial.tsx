@@ -161,6 +161,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isFromEnv={this.props.isFromEnv}
                         appId={this.props.appId}
                         isFromBulkCI={false}
+                        isHideSearchHeader={false}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>

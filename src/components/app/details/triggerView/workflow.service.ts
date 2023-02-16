@@ -162,13 +162,15 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
     //Calculate X and Y of nodes and Workflows
     //delete sourceNodes from CI, downstreamNodes for all nodes and dag from workflows
     workflows.forEach((workflow, index) => {
-        let startY = 0
-        let startX = 0
+        const startY = 0
+        const startX = 0
         if (workflow.nodes.length == 0) {
             return
         }
 
-        let ciNode = workflow.nodes.find(node => node.type == WorkflowNodeType.CI)
+        const ciNode = workflow.nodes.find(
+            (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
+        )
         ciNode.sourceNodes?.forEach((s, si) => {
             let sourceNodeY = startY +
                 workflowOffset.offsetY +
@@ -195,7 +197,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             addDimensionsToDownstreamDeployments(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y)
         }
 
-        let finalWorkflow = new Array<NodeAttr>()
+        const finalWorkflow = new Array<NodeAttr>()
         workflow.nodes.forEach((node) => {
             if (node.type == WorkflowNodeType.CI) {
                 node.sourceNodes && finalWorkflow.push(...node.sourceNodes)
@@ -222,13 +224,13 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         })
         delete workflow['dag']
 
-        let maxY = finalWorkflow.reduce(
+        const maxY = finalWorkflow.reduce(
             (maxY, node) => Math.max(node.y + node.height + workflowOffset.offsetY, maxY),
             0
         )
-        let maxX = finalWorkflow.reduce((maxX, node) => Math.max(node.x + node.width + workflowOffset.offsetX, maxX), 0)
+        const maxX = finalWorkflow.reduce((maxX, node) => Math.max(node.x + node.width + workflowOffset.offsetX, maxX), 0)
 
-        let workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280
+        const workflowWidth = dimensions.type === WorkflowDimensionType.CREATE ? 840 : 1280
         workflow.height = maxY
         workflow.startY = !index ? 0 : startY
 

@@ -3,6 +3,7 @@ import { Drawer, noop, Progressing, showError, useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { ModuleNameMap } from '../../../../config'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
@@ -29,6 +30,7 @@ interface AppWorkflowDetailsType {
     parentPipelineType: WorkflowNodeType
     parentEnvironmentName: string
     material: any[]
+    notFoundMessage: string
 }
 
 interface BulkCDTriggerType {
@@ -69,7 +71,7 @@ export default function BulkCDTrigger({
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
-    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
+    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList.find(app=> !app.notFoundMessage) || appList[0])
     const [, isSecurityModuleInstalled] = useAsync(() => getModuleConfigured(ModuleNameMap.SECURITY), [])
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
@@ -102,8 +104,8 @@ export default function BulkCDTrigger({
     }, [outsideClickHandler])
 
     const getMaterialData = (): void => {
-        const _CIMaterialPromiseList = appList?.map((appDetails) =>
-            getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType),
+        const _CIMaterialPromiseList = appList.map((appDetails) =>
+            appDetails.notFoundMessage ? null : getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType),
         )
         const _materialListMap: Record<string, any[]> = {}
         Promise.all(_CIMaterialPromiseList)
@@ -135,14 +137,18 @@ export default function BulkCDTrigger({
     }
 
     const changeApp = (e): void => {
-        setSelectedApp(appList[e.currentTarget.dataset.index])
+        const _selectedApp = appList[e.currentTarget.dataset.index]
+        if (_selectedApp.notFoundMessage) {
+            return
+        }
+        setSelectedApp(_selectedApp)
     }
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _material = appList.find(app=> app.appId===selectedApp.appId)?.material || []
+        const _material = appList.find((app) => app.appId === selectedApp.appId)?.material || []
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0">
@@ -156,6 +162,12 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
+                            {app.notFoundMessage && (
+                                <span className="flex left cy-7 fw-4 fs-12">
+                                    <Error className="icon-dim-12 warning-icon-y7 mr-4" />
+                                    {app.notFoundMessage}
+                                </span>
+                            )}
                         </div>
                     ))}
                 </div>

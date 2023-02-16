@@ -1136,7 +1136,7 @@ export default function EnvTriggerView() {
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
                     _selectedNode = _cdNode.preNode
                 }
-                if (_cdNode) {
+                if (_selectedNode) {
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
@@ -1149,6 +1149,21 @@ export default function EnvTriggerView() {
                         parentPipelineType: _selectedNode.parentPipelineType,
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
+                    })
+                } else {
+                    let notFoundMessage = ''
+                    if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                        notFoundMessage = 'No pre-deployment stage'
+                    } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                        notFoundMessage = 'No deployment stage'
+                    } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                        notFoundMessage = 'No post-deployment stage'
+                    }
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        notFoundMessage: notFoundMessage,
                     })
                 }
             }
@@ -1182,7 +1197,7 @@ export default function EnvTriggerView() {
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
                     _selectedNode = _cdNode.preNode
                 }
-                if (_cdNode) {
+                if (_selectedNode) {
                     _selectedNode.inputMaterialList = materialList[_appId]
                 }
             }
@@ -1251,8 +1266,8 @@ export default function EnvTriggerView() {
         const _selectedAppWorkflowList = []
         workflows.forEach((wf) => {
             if (wf.isSelected) {
-                const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
-                if (_ciNode) {
+                const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK)
+                if (_ciNode && !_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
@@ -1264,7 +1279,24 @@ export default function EnvTriggerView() {
                         isLinkedCI: _ciNode.isLinkedCI,
                         parentAppId: _ciNode.parentAppId,
                         parentCIPipelineId: _ciNode.parentCiPipeline,
-                        material: _ciNode.inputMaterialList
+                        material: _ciNode.inputMaterialList,
+                    })
+                } else {
+                    let notFoundMessage = ''
+                    if (_ciNode.isLinkedCI) {
+                        notFoundMessage = 'Has linked build pipeline'
+                    } else {
+                        const _webhookNode = wf.nodes.find((node) => node.type === WorkflowNodeType.WEBHOOK)
+                        if (_webhookNode) {
+                            notFoundMessage = 'Has webhook build pipeline'
+                        }
+                    }
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        notFoundMessage: notFoundMessage,
+                        isHideSearchHeader: true
                     })
                 }
             }
