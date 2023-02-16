@@ -57,7 +57,7 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
                     <Close className="icon-dim-20" />
                 </button>
             </div>
-            <div className="pb-6 pl-20 pr-20">Git host name <span className="cr-5">*</span></div>
+            <div className="pb-6 pl-20 pr-20 dc__required-field">Git host name </div>
             <div className="pb-40 pl-20 pr-20">
                 <input className="form__input " type="text" name="app-name" autoComplete="off" value={this.state.name} onChange={this.handleFilterInput} placeholder="Enter name" autoFocus={true} tabIndex={1} />
             </div>
