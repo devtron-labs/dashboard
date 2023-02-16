@@ -6,12 +6,12 @@ import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-dow
 export default function ApplicationRoutes({ envListData }: { envListData: ConfigAppList }) {
     const { url } = useRouteMatch()
     const location = useLocation()
+    const locat = location.pathname.split('/').splice(1,4).join('/')
     const LINK = `${url}/${envListData.id}`
-    
-    const [collapsed, toggleCollapsed] = useState(location.pathname.includes(`${LINK}/`) ? false : true)
+    const [collapsed, toggleCollapsed] = useState(!(`/${locat}` === LINK))
     
     useEffect(() => {
-        if (!location.pathname.includes(`${LINK}`) && !collapsed) {
+        if (!(`/${locat}` === LINK) && !collapsed) {
             toggleCollapsed(true)
         }
     }, [location.pathname])
