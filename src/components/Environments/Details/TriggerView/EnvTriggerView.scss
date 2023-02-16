@@ -14,7 +14,7 @@
     .bulk-ci-trigger {
         display: grid;
         grid-template-columns: 234px 1fr;
-        min-height: calc(100vh - 128px);
+        height: calc(100vh - 128px);
         &.webhook-modal {
             grid-template-columns: 1fr;
         }

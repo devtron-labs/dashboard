@@ -151,7 +151,7 @@ export default function BulkCDTrigger({
         const _material = appList.find((app) => app.appId === selectedApp.appId)?.material || []
         return (
             <div className="bulk-ci-trigger">
-                <div className="sidebar bcn-0">
+                <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                     {appList.map((app, index) => (
                         <div
                             key={`app-${index}`}
@@ -171,7 +171,7 @@ export default function BulkCDTrigger({
                         </div>
                     ))}
                 </div>
-                <div className="main-content dc__window-bg">
+                <div className="main-content dc__window-bg dc__height-inherit">
                     <CDMaterial
                         appId={selectedApp.appId}
                         pipelineId={+selectedApp.cdPipelineId}

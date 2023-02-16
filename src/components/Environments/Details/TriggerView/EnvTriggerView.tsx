@@ -1268,6 +1268,14 @@ export default function EnvTriggerView() {
         }
     }
 
+    const getWarningMessage = (_ciNode): string => {
+        if (_ciNode.isLinkedCI) {
+            return 'Has linked build pipeline'
+        } else if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
+            return 'Has webhook build pipeline'
+        }
+    }
+
     const renderBulkCIMaterial = (): JSX.Element | null => {
         if (!showBulkCIModal) {
             return null
@@ -1278,7 +1286,7 @@ export default function EnvTriggerView() {
                 const _ciNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
                 )
-                if (_ciNode && !_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
+                if (_ciNode) {
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
@@ -1288,27 +1296,17 @@ export default function EnvTriggerView() {
                         isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
                         isCacheAvailable: _ciNode.storageConfigured,
                         isLinkedCI: _ciNode.isLinkedCI,
+                        isWebhookCI: _ciNode.type === WorkflowNodeType.WEBHOOK,
                         parentAppId: _ciNode.parentAppId,
                         parentCIPipelineId: _ciNode.parentCiPipeline,
                         material: _ciNode.inputMaterialList,
-                    })
-                } else {
-                    let notFoundMessage = ''
-                    if (_ciNode.isLinkedCI) {
-                        notFoundMessage = 'Has linked build pipeline'
-                    } else {
-                        const _webhookNode = wf.nodes.find((node) => node.type === WorkflowNodeType.WEBHOOK)
-                        if (_webhookNode) {
-                            notFoundMessage = 'Has webhook build pipeline'
-                        }
-                    }
-                    _selectedAppWorkflowList.push({
-                        ...(_ciNode ?? null),
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        notFoundMessage: notFoundMessage,
-                        isHideSearchHeader: true,
+                        warningMessage: getWarningMessage(_ciNode),
+                        errorMessage:
+                            _ciNode.inputMaterialList &&
+                            isShowRegexModal(wf.appId, +_ciNode.id, _ciNode.inputMaterialList)
+                                ? 'Primary branch is not set'
+                                : '',
+                        isHideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
                     })
                 }
             }

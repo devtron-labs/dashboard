@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Drawer, noop, Progressing, showError, useAsync } from '../../../common'
+import { Drawer, noop, Progressing, showError, stopPropagation, useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
+import externalCiImg from '../../../../assets/img/external-ci.png'
+import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { ModuleNameMap, URLS } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
@@ -21,10 +24,12 @@ interface AppWorkflowDetailsType {
     isFirstTrigger: boolean
     isCacheAvailable: boolean
     isLinkedCI: boolean
+    isWebhookCI: boolean
     parentAppId: string
     parentCIPipelineId: boolean
     material: any[]
-    notFoundMessage: string
+    warningMessage: string
+    errorMessage: string
     isHideSearchHeader: boolean
 }
 interface BulkCITriggerType {
@@ -55,9 +60,7 @@ export default function BulkCITrigger({
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
     const [showRegexModal, setShowRegexModal] = useState(false)
-    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(
-        appList.find((app) => !app.notFoundMessage) || appList[0],
-    )
+    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
         selectMaterial,
@@ -102,7 +105,7 @@ export default function BulkCITrigger({
 
     const getMaterialData = (): void => {
         const _CIMaterialPromiseList = appList.map((appDetails) =>
-            appDetails.notFoundMessage
+            appDetails.isWebhookCI || appDetails.isLinkedCI
                 ? null
                 : getCIMaterialList({
                       pipelineId: appDetails.ciPipelineId,
@@ -116,13 +119,15 @@ export default function BulkCITrigger({
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
                     updateBulkInputMaterial(_materialListMap)
-                    setShowRegexModal(
-                        isShowRegexModal(
-                            selectedApp.appId,
-                            +selectedApp.ciPipelineId,
-                            _materialListMap[selectedApp.appId],
-                        ),
-                    )
+                    if (!selectedApp.isLinkedCI && !selectedApp.isWebhookCI) {
+                        setShowRegexModal(
+                            isShowRegexModal(
+                                selectedApp.appId,
+                                +selectedApp.ciPipelineId,
+                                _materialListMap[selectedApp.appId],
+                            ),
+                        )
+                    }
                     setLoading(false)
                 })
                 .catch((error) => {
@@ -149,19 +154,47 @@ export default function BulkCITrigger({
         )
     }
 
+    const showBranchEditModal = (): void => {
+        setShowRegexModal(true)
+    }
+
     const changeApp = (e): void => {
+        stopPropagation(e)
         const _selectedApp = appList[e.currentTarget.dataset.index]
-        if (_selectedApp.notFoundMessage) {
-            return
+        if (_selectedApp.appId !== selectedApp.appId) {
+            setSelectedApp(_selectedApp)
+            if (_selectedApp.isLinkedCI || _selectedApp.isWebhookCI) {
+                setShowRegexModal(false)
+            } else {
+                setShowRegexModal(
+                    isShowRegexModal(_selectedApp.appId, +_selectedApp.ciPipelineId, _selectedApp.material),
+                )
+            }
         }
-        setSelectedApp(_selectedApp)
-        setShowRegexModal(isShowRegexModal(_selectedApp.appId, +_selectedApp.ciPipelineId, _selectedApp.material))
     }
 
     const renderMainContent = (selectedMaterialList: any[]): JSX.Element => {
         if (showRegexModal) {
             return <>Regex modal</>
-        } else if (selectedMaterialList) {
+        } else if (selectedApp.isLinkedCI) {
+            return (
+                <EmptyView
+                    imgSrc={linkedCiImg}
+                    title={`${selectedApp.name} is using a linked build pipeline`}
+                    subTitle="You can trigger the parent build pipeline. Triggering the parent build pipeline will trigger all build pipelines linked to it."
+                    link={`${URLS.APP}/${selectedApp.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.parentCIPipelineId}`}
+                    linkText="View Source Pipeline"
+                />
+            )
+        } else if (selectedApp.isWebhookCI) {
+            return (
+                <EmptyView
+                    imgSrc={externalCiImg}
+                    title={`${selectedApp.name} is using a external build pipeline`}
+                    subTitle="Images received from the external service will be available for deployment."
+                />
+            )
+        } else {
             const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
             return (
                 <GitInfoMaterial
@@ -176,20 +209,11 @@ export default function BulkCITrigger({
                     webhookPayloads={webhookPayloads}
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     workflowId={selectedApp.workFlowId}
-                    onClickShowBranchRegexModal={noop}
+                    onClickShowBranchRegexModal={showBranchEditModal}
                     isFromEnv={true}
                     appId={selectedApp.appId}
                     isFromBulkCI={true}
                     isHideSearchHeader={selectedApp.isHideSearchHeader}
-                />
-            )
-        } else {
-            return (
-                <EmptyView
-                    title="This is a Linked CI Pipeline"
-                    subTitle="This is a Linked CI Pipeline"
-                    link={`${URLS.APP}/${selectedApp.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.parentCIPipelineId}`}
-                    linkText="View Source Pipeline"
                 />
             )
         }
@@ -203,61 +227,69 @@ export default function BulkCITrigger({
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {!showWebhookModal && (
-                    <div className="sidebar bcn-0">
-                        {appList.map((app, index) =>
-                            app.appId === selectedApp.appId && !app.notFoundMessage ? (
-                                <div className="material-list pr-12 pl-12 dc__window-bg" key={`app-${index}`}>
-                                    <div className="fw-6 fs-13 cn-9 pt-12 pb-12">{app.name}</div>
-                                    {selectedMaterialList && (
-                                        <MaterialSource
-                                            material={selectedMaterialList}
-                                            selectMaterial={selectMaterial}
-                                            refreshMaterial={{
-                                                refresh: refreshMaterial,
-                                                title: app.ciPipelineName,
-                                                pipelineId: +app.ciPipelineId,
-                                            }}
-                                            ciPipelineId={+app.ciPipelineId}
-                                        />
-                                    )}
-                                    {!selectedApp.isLinkedCI && (
-                                        <div className="flex left mt-12 dc__border-top pt-12 pb-12">
-                                            <input
-                                                type="checkbox"
-                                                className="mt-0-imp cursor"
-                                                data-app-id={app.appId}
-                                                checked={true}
-                                                id={`chkValidate-${app.appId}`}
-                                            />
-                                            <label
-                                                className="fs-13 fw-4 cn-9 ml-10 mb-0"
-                                                htmlFor={`chkValidate-${app.appId}`}
-                                            >
-                                                Ignore cache
-                                            </label>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div
-                                    key={`app-${index}`}
-                                    className="p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor"
-                                    data-index={index}
-                                    onClick={changeApp}
-                                >
+                    <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                        {appList.map((app, index) => (
+                            <div
+                                className={`material-list pr-12 pl-12 ${
+                                    app.appId === selectedApp.appId ? 'dc__window-bg' : 'dc__border-bottom-n1 cursor'
+                                }`}
+                                key={`app-${index}`}
+                            >
+                                <div className="fw-6 fs-13 cn-9 pt-12 pb-12" onClick={changeApp} data-index={index}>
                                     {app.name}
-                                    {app.notFoundMessage && (
+                                    {app.warningMessage && (
                                         <span className="flex left cy-7 fw-4 fs-12">
-                                            <Error className="icon-dim-12 warning-icon-y7 mr-4" />
-                                            {app.notFoundMessage}
+                                            <Warning className="icon-dim-12 warning-icon-y7 mr-4" />
+                                            {app.warningMessage}
+                                        </span>
+                                    )}
+                                    {app.errorMessage && (
+                                        <span className="flex left cr-5 fw-4 fs-12">
+                                            <Error className="icon-dim-12 mr-4" />
+                                            {app.errorMessage}
                                         </span>
                                     )}
                                 </div>
-                            ),
-                        )}
+                                {app.appId === selectedApp.appId && (
+                                    <>
+                                        {!!selectedMaterialList.length && (
+                                            <MaterialSource
+                                                material={selectedMaterialList}
+                                                selectMaterial={selectMaterial}
+                                                refreshMaterial={{
+                                                    refresh: refreshMaterial,
+                                                    title: app.ciPipelineName,
+                                                    pipelineId: +app.ciPipelineId,
+                                                }}
+                                                ciPipelineId={+app.ciPipelineId}
+                                            />
+                                        )}
+                                        {!selectedApp.isLinkedCI && !selectedApp.isWebhookCI && (
+                                            <div className="flex left mt-12 dc__border-top pt-12 pb-12">
+                                                <input
+                                                    type="checkbox"
+                                                    className="mt-0-imp cursor"
+                                                    data-app-id={app.appId}
+                                                    checked={true}
+                                                    id={`chkValidate-${app.appId}`}
+                                                />
+                                                <label
+                                                    className="fs-13 fw-4 cn-9 ml-10 mb-0"
+                                                    htmlFor={`chkValidate-${app.appId}`}
+                                                >
+                                                    Ignore cache
+                                                </label>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 )}
-                <div className="main-content dc__window-bg">{renderMainContent(selectedMaterialList)}</div>
+                <div className="main-content dc__window-bg dc__height-inherit">
+                    {renderMainContent(selectedMaterialList)}
+                </div>
             </div>
         )
     }

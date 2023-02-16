@@ -104,11 +104,11 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     )
 }
 
-export const EmptyView = ({ title, subTitle, link, linkText }: EmptyViewType) => {
+export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
     return (
         <EmptyState>
             <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
+                <img src={imgSrc ?? AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
                 <h4>{title}</h4>

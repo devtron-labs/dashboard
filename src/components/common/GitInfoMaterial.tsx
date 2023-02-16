@@ -13,7 +13,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, noop } from '../common'
+import { getCIPipelineURL, stopPropagation } from '../common'
 import { useHistory } from 'react-router'
 import { useParams } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
@@ -34,7 +34,7 @@ export default function GitInfoMaterial({
     isFromEnv,
     appId,
     isFromBulkCI,
-    isHideSearchHeader
+    isHideSearchHeader,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -103,8 +103,11 @@ export default function GitInfoMaterial({
         )
     }
 
-    const showBranchRegexModal = (): void => {
-        onClickChangebranch(true)
+    const onClickHeader = (e): void => {
+        stopPropagation(e)
+        if (selectedMaterial.regex) {
+            onClickShowBranchRegexModal(true)
+        }
     }
 
     const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
@@ -114,7 +117,7 @@ export default function GitInfoMaterial({
                     selectedMaterial.regex ? 'cursor' : ''
                 } cn-9`}
                 style={{ background: 'var(--window-bg)' }}
-                onClick={selectedMaterial.regex ? showBranchRegexModal : noop}
+                onClick={onClickHeader}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
                 {showWebhookModal ? (
@@ -168,10 +171,10 @@ export default function GitInfoMaterial({
 
     const goToWorkFlowEditor = () => {
         const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
-        if(isFromEnv){
-          window.open(ciPipelineURL, '_blank', 'noreferrer')
-        } else{
-          push(ciPipelineURL)
+        if (isFromEnv) {
+            window.open(ciPipelineURL, '_blank', 'noreferrer')
+        } else {
+            push(ciPipelineURL)
         }
     }
 
@@ -292,10 +295,6 @@ export default function GitInfoMaterial({
                 />
             </div>
         )
-    }
-
-    const onClickChangebranch = (isBranchChangedClicked) => {
-        onClickShowBranchRegexModal(isBranchChangedClicked)
     }
 
     return (
