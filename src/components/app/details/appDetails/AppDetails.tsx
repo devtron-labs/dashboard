@@ -426,6 +426,7 @@ export const Details: React.FC<{
         toggleDetailedStatus(false)
     }
 
+    const isValidEnvironmentId = environments?.find(_env => _env.environmentId === Number(params.envId))?.environmentId === Number(params.envId)
     if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) {
         return (
             <>
@@ -436,8 +437,11 @@ export const Details: React.FC<{
                         controlStyleOverrides={{ backgroundColor: 'white' }}
                     />
                 </div>
-                {!isAppDeleted ? (
-                    <AppNotConfigured
+
+                {isAppDeleted && !isValidEnvironmentId ? (
+                    <AppDetailsEmptyState />
+                ) :(
+                <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
                         image={noGroups}
                         title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
@@ -445,9 +449,7 @@ export const Details: React.FC<{
                         buttonTitle={'Go to deploy'}
                         appConfigTabs={URLS.APP_TRIGGER}
                     />
-                ) : (
-                    <AppDetailsEmptyState />
-                )}
+                ) }
             </>
         )
     }
