@@ -137,18 +137,46 @@ function ManifestComponent({
             toggleManagedFields(false)
             let jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
-                const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
-                    if (key === 'metadata') {
-                        value['managedFields'] = undefined
-                    }
-                    return value
-                })
-                setTrimedManifestEditorData(_trimedManifestData)
+                setTrimedManifestEditorData(trimManifestData(jsonManifestData))
             }
         }
     }, [isEditmode])
 
+    useEffect(() => {
+        if (params.actionName) {
+            markActiveTab(params.actionName)
+        }
+    }, [params.actionName])
+
+    useEffect(() => {
+        if (activeTab === 'Live manifest') {
+            let jsonManifestData = YAML.parse(activeManifestEditorData)
+            if (jsonManifestData?.metadata?.managedFields) {
+                toggleManagedFields(true)
+                if (hideManagedFields) {
+                    setTrimedManifestEditorData(trimManifestData(jsonManifestData))
+                } else {
+                    setTrimedManifestEditorData(activeManifestEditorData)
+                }
+            } else {
+                setTrimedManifestEditorData(activeManifestEditorData)
+            }
+        } else {
+            setTrimedManifestEditorData(activeManifestEditorData)
+        }
+    }, [activeManifestEditorData, hideManagedFields, activeTab])
+
     //For External
+    const trimManifestData = (jsonManifestData: object): string => {
+        const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
+            if (key === 'metadata') {
+                value['managedFields'] = undefined
+            }
+            return value
+        })
+        return _trimedManifestData
+    }
+
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {
             setModifiedManifest(codeEditorData)
@@ -279,37 +307,6 @@ function ManifestComponent({
         markActiveTab(_tab.name)
         updateEditor(_tab.name)
     }
-
-    useEffect(() => {
-        if (params.actionName) {
-            markActiveTab(params.actionName)
-        }
-    }, [params.actionName])
-
-    useEffect(() => {
-        console.log('here')
-        if (activeTab === 'Live manifest') {
-            let jsonManifestData = YAML.parse(activeManifestEditorData)
-            if (jsonManifestData?.metadata?.managedFields) {
-                toggleManagedFields(true)
-                if (hideManagedFields) {
-                    const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
-                        if (key === 'metadata') {
-                            value['managedFields'] = undefined
-                        }
-                        return value
-                    })
-                    setTrimedManifestEditorData(_trimedManifestData)
-                } else {
-                    setTrimedManifestEditorData(activeManifestEditorData)
-                }
-            } else {
-                setTrimedManifestEditorData(activeManifestEditorData)
-            }
-        } else {
-            setTrimedManifestEditorData(activeManifestEditorData)
-        }
-    }, [activeManifestEditorData, hideManagedFields, activeTab])
 
     return isDeleted ? (
         <div>
