@@ -37,6 +37,7 @@ interface BulkCITriggerType {
     webhookPayloads: WebhookPayloads
     isWebhookPayloadLoading: boolean
     hideWebhookModal: (e?) => void
+    isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
 }
 
 export default function BulkCITrigger({
@@ -49,11 +50,14 @@ export default function BulkCITrigger({
     webhookPayloads,
     isWebhookPayloadLoading,
     hideWebhookModal,
+    isShowRegexModal,
 }: BulkCITriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
-    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList.find(app=> !app.notFoundMessage) || appList[0])
-    const [materialList, setMaterialList] = useState<Record<string, any[]>>(null)
+    const [showRegexModal, setShowRegexModal] = useState(false)
+    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(
+        appList.find((app) => !app.notFoundMessage) || appList[0],
+    )
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
         selectMaterial,
@@ -92,6 +96,10 @@ export default function BulkCITrigger({
         }
     }, [outsideClickHandler])
 
+    useEffect(() => {
+        getMaterialData()
+    }, [])
+
     const getMaterialData = (): void => {
         const _CIMaterialPromiseList = appList.map((appDetails) =>
             appDetails.notFoundMessage
@@ -108,6 +116,13 @@ export default function BulkCITrigger({
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
                     updateBulkInputMaterial(_materialListMap)
+                    setShowRegexModal(
+                        isShowRegexModal(
+                            selectedApp.appId,
+                            +selectedApp.ciPipelineId,
+                            _materialListMap[selectedApp.appId],
+                        ),
+                    )
                     setLoading(false)
                 })
                 .catch((error) => {
@@ -118,10 +133,6 @@ export default function BulkCITrigger({
             setLoading(false)
         }
     }
-
-    useEffect(() => {
-        getMaterialData()
-    }, [])
 
     const renderHeaderSection = (): JSX.Element | null => {
         if (showWebhookModal) {
@@ -144,6 +155,44 @@ export default function BulkCITrigger({
             return
         }
         setSelectedApp(_selectedApp)
+        setShowRegexModal(isShowRegexModal(_selectedApp.appId, +_selectedApp.ciPipelineId, _selectedApp.material))
+    }
+
+    const renderMainContent = (selectedMaterialList: any[]): JSX.Element => {
+        if (showRegexModal) {
+            return <>Regex modal</>
+        } else if (selectedMaterialList) {
+            const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+            return (
+                <GitInfoMaterial
+                    material={selectedMaterialList}
+                    title={selectedApp.ciPipelineName}
+                    pipelineId={selectedApp.ciPipelineId}
+                    pipelineName={selectedApp.ciPipelineName}
+                    selectedMaterial={selectedMaterial}
+                    showWebhookModal={showWebhookModal}
+                    hideWebhookModal={hideWebhookModal}
+                    toggleWebhookModal={toggleWebhookModal}
+                    webhookPayloads={webhookPayloads}
+                    isWebhookPayloadLoading={isWebhookPayloadLoading}
+                    workflowId={selectedApp.workFlowId}
+                    onClickShowBranchRegexModal={noop}
+                    isFromEnv={true}
+                    appId={selectedApp.appId}
+                    isFromBulkCI={true}
+                    isHideSearchHeader={selectedApp.isHideSearchHeader}
+                />
+            )
+        } else {
+            return (
+                <EmptyView
+                    title="This is a Linked CI Pipeline"
+                    subTitle="This is a Linked CI Pipeline"
+                    link={`${URLS.APP}/${selectedApp.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.parentCIPipelineId}`}
+                    linkText="View Source Pipeline"
+                />
+            )
+        }
     }
 
     const renderBodySection = (): JSX.Element => {
@@ -151,7 +200,6 @@ export default function BulkCITrigger({
             return <Progressing pageLoader />
         }
         const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
-        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {!showWebhookModal && (
@@ -209,35 +257,7 @@ export default function BulkCITrigger({
                         )}
                     </div>
                 )}
-                <div className="main-content dc__window-bg">
-                    {selectedMaterialList ? (
-                        <GitInfoMaterial
-                            material={selectedMaterialList}
-                            title={selectedApp.ciPipelineName}
-                            pipelineId={selectedApp.ciPipelineId}
-                            pipelineName={selectedApp.ciPipelineName}
-                            selectedMaterial={selectedMaterial}
-                            showWebhookModal={showWebhookModal}
-                            hideWebhookModal={hideWebhookModal}
-                            toggleWebhookModal={toggleWebhookModal}
-                            webhookPayloads={webhookPayloads}
-                            isWebhookPayloadLoading={isWebhookPayloadLoading}
-                            workflowId={selectedApp.workFlowId}
-                            onClickShowBranchRegexModal={noop}
-                            isFromEnv={true}
-                            appId={selectedApp.appId}
-                            isFromBulkCI={true}
-                            isHideSearchHeader={selectedApp.isHideSearchHeader}
-                        />
-                    ) : (
-                        <EmptyView
-                            title="This is a Linked CI Pipeline"
-                            subTitle="This is a Linked CI Pipeline"
-                            link={`${URLS.APP}/${selectedApp.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.parentCIPipelineId}`}
-                            linkText="View Source Pipeline"
-                        />
-                    )}
-                </div>
+                <div className="main-content dc__window-bg">{renderMainContent(selectedMaterialList)}</div>
             </div>
         )
     }

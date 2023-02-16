@@ -320,21 +320,21 @@ export default function EnvTriggerView() {
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
                                     <div
-                                        className="flex left p-10 pointer"
+                                        className="flex left p-10 dc__hover-n50 pointer"
                                         data-trigger-type={'PRECD'}
                                         onClick={onShowBulkCDModal}
                                     >
                                         Trigger Pre-deployment stage
                                     </div>
                                     <div
-                                        className="flex left p-10 pointer"
+                                        className="flex left p-10 dc__hover-n50 pointer"
                                         data-trigger-type={'CD'}
                                         onClick={onShowBulkCDModal}
                                     >
                                         Trigger Deployment
                                     </div>
                                     <div
-                                        className="flex left p-10 pointer"
+                                        className="flex left p-10 dc__hover-n50 pointer"
                                         data-trigger-type={'POSTCD'}
                                         onClick={onShowBulkCDModal}
                                     >
@@ -540,19 +540,7 @@ export default function EnvTriggerView() {
                 })
                 return workflow
             })
-
-            const selectedCIPipeline = filteredCIPipelines.get(_appID).find((_ci) => _ci.id === +ciNodeId)
-            if (selectedCIPipeline?.ciMaterial) {
-                for (const mat of selectedCIPipeline.ciMaterial) {
-                    showRegexModal = response.result.some((_mat) => {
-                        return _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !_mat.value
-                    })
-                    if (showRegexModal) {
-                        break
-                    }
-                }
-            }
-
+            showRegexModal = isShowRegexModal(_appID, +ciNodeId, response.result)
             setWorkflows(_workflows)
             setErrorCode(response.code)
             setSelectedCINode({ id: +ciNodeId, name: ciPipelineName, type: WorkflowNodeType.CI })
@@ -566,6 +554,22 @@ export default function EnvTriggerView() {
             getWorkflowStatusData(_workflows)
             preventBodyScroll(true)
         })
+    }
+
+    const isShowRegexModal = (_appId: number, ciNodeId: number, inputMaterialList: any[]): boolean => {
+        let showRegexModal = false
+        const selectedCIPipeline = filteredCIPipelines.get(_appId).find((_ci) => _ci.id === ciNodeId)
+        if (selectedCIPipeline?.ciMaterial) {
+            for (const mat of selectedCIPipeline.ciMaterial) {
+                showRegexModal = inputMaterialList.some((_mat) => {
+                    return _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !_mat.value
+                })
+                if (showRegexModal) {
+                    break
+                }
+            }
+        }
+        return showRegexModal
     }
 
     const onClickCIMaterial = (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {
@@ -1241,22 +1245,27 @@ export default function EnvTriggerView() {
                 )
             }
         })
-        Promise.allSettled(_CDTriggerPromiseList)
-            .then((response: any) => {
-                //if (response.result) {
-                toast.success('Deployment Initiated')
-                setShowBulkCDModal(false)
-                setLoading(false)
-                setErrorCode(response.code)
-                preventBodyScroll(false)
-                getWorkflowStatusData(workflows)
-                // }
-            })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
-                setLoading(false)
-                setErrorCode(errors.code)
-            })
+        if (_CDTriggerPromiseList.length) {
+            Promise.allSettled(_CDTriggerPromiseList)
+                .then((response: any) => {
+                    //if (response.result) {
+                    toast.success('Deployment Initiated')
+                    setShowBulkCDModal(false)
+                    setLoading(false)
+                    setErrorCode(response.code)
+                    preventBodyScroll(false)
+                    getWorkflowStatusData(workflows)
+                    // }
+                })
+                .catch((errors: ServerErrors) => {
+                    showError(errors)
+                    setLoading(false)
+                    setErrorCode(errors.code)
+                })
+        } else {
+            setLoading(false)
+            setShowBulkCDModal(false)
+        }
     }
 
     const renderBulkCIMaterial = (): JSX.Element | null => {
@@ -1266,7 +1275,9 @@ export default function EnvTriggerView() {
         const _selectedAppWorkflowList = []
         workflows.forEach((wf) => {
             if (wf.isSelected) {
-                const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK)
+                const _ciNode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
                 if (_ciNode && !_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
@@ -1292,11 +1303,12 @@ export default function EnvTriggerView() {
                         }
                     }
                     _selectedAppWorkflowList.push({
+                        ...(_ciNode ?? null),
                         workFlowId: wf.id,
                         appId: wf.appId,
                         name: wf.name,
                         notFoundMessage: notFoundMessage,
-                        isHideSearchHeader: true
+                        isHideSearchHeader: true,
                     })
                 }
             }
@@ -1312,6 +1324,7 @@ export default function EnvTriggerView() {
                 toggleWebhookModal={toggleWebhookModal}
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
+                isShowRegexModal={isShowRegexModal}
             />
         )
     }
@@ -1393,25 +1406,29 @@ export default function EnvTriggerView() {
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
+        if (_CITriggerPromiseList.length) {
+            Promise.allSettled(_CITriggerPromiseList)
+                .then((response: any) => {
+                    // if (response.result) {
+                    toast.success('Pipeline Triggered')
+                    setShowBulkCIModal(false)
+                    setLoading(false)
+                    setErrorCode(response.code)
+                    preventBodyScroll(false)
+                    getWorkflowStatusData(workflows)
+                    //}
+                })
+                .catch((errors: ServerErrors) => {
+                    showError(errors)
 
-        Promise.allSettled(_CITriggerPromiseList)
-            .then((response: any) => {
-                // if (response.result) {
-                toast.success('Pipeline Triggered')
-                setShowBulkCIModal(false)
-                setLoading(false)
-                setErrorCode(response.code)
-                preventBodyScroll(false)
-                getWorkflowStatusData(workflows)
-                //}
-            })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
+                    setLoading(false)
 
-                setLoading(false)
-
-                setErrorCode(errors.code)
-            })
+                    setErrorCode(errors.code)
+                })
+        } else {
+            setLoading(false)
+            setShowBulkCIModal(false)
+        }
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
