@@ -583,6 +583,7 @@ export interface BranchRegexModalProps {
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
+    hideHeaderFooter?: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean

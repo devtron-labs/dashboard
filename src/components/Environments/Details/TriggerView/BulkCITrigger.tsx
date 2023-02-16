@@ -7,13 +7,16 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-trian
 import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { ModuleNameMap, URLS } from '../../../../config'
+import { ModuleNameMap, SourceTypeMap, URLS } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { WebhookPayloads } from '../../../app/details/triggerView/types'
+import { RegexValueType, WebhookPayloads } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
+import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
+import { ServerErrors } from '../../../../modals/commonTypes'
+import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 
 interface AppWorkflowDetailsType {
     workFlowId: number
@@ -31,6 +34,7 @@ interface AppWorkflowDetailsType {
     warningMessage: string
     errorMessage: string
     isHideSearchHeader: boolean
+    filteredCIPipelines: any
 }
 interface BulkCITriggerType {
     appList: AppWorkflowDetailsType[]
@@ -60,6 +64,8 @@ export default function BulkCITrigger({
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
     const [showRegexModal, setShowRegexModal] = useState(false)
+    const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
@@ -156,6 +162,12 @@ export default function BulkCITrigger({
 
     const showBranchEditModal = (): void => {
         setShowRegexModal(true)
+        setChangeBranchClicked(false)
+    }
+
+    const hideBranchEditModal = (): void => {
+        setShowRegexModal(false)
+        setChangeBranchClicked(false)
     }
 
     const changeApp = (e): void => {
@@ -173,9 +185,99 @@ export default function BulkCITrigger({
         }
     }
 
+    const saveBranchName = () => {
+        const payload: any = {
+            appId: selectedApp.appId,
+            id: +selectedApp.workFlowId,
+            ciPipelineMaterial: [],
+        }
+
+        const selectedCIPipeline = selectedApp.filteredCIPipelines?.find(
+            (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
+        )
+        // Populate the ciPipelineMaterial with flatten object
+        if (selectedCIPipeline?.ciMaterial?.length) {
+            for (const _cm of selectedCIPipeline.ciMaterial) {
+                const regVal = regexValue[_cm.gitMaterialId]
+                let _updatedCM
+                if (regVal?.value && _cm.source.regex) {
+                    isRegexValueInvalid(_cm)
+
+                    _updatedCM = {
+                        ..._cm,
+                        type: SourceTypeMap.BranchFixed,
+                        value: regVal.value,
+                        regex: _cm.source.regex,
+                    }
+                } else {
+                    // To maintain the flatten object structure supported by API for unchanged values
+                    // as during update/next click it uses the fetched ciMaterial structure i.e. containing source
+                    _updatedCM = {
+                        ..._cm,
+                        ..._cm.source,
+                    }
+                }
+
+                // Deleting as it's not required in the request payload
+                delete _updatedCM['source']
+                payload.ciPipelineMaterial.push(_updatedCM)
+            }
+        }
+
+        savePipeline(payload, true)
+            .then((response) => {
+                if (response) {
+                    getMaterialData()
+                }
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+            })
+    }
+
+    const isRegexValueInvalid = (_cm): void => {
+        const regExp = new RegExp(_cm.source.regex)
+        const regVal = regexValue[_cm.gitMaterialId]
+        if (!regExp.test(regVal.value)) {
+            const _regexValue = { ...regexValue }
+            _regexValue[_cm.gitMaterialId] = { value: regVal.value, isInvalid: true }
+            setRegexValue(_regexValue)
+        }
+    }
+
+    const handleRegexInputValueChange = (id, value, mat) => {
+        const _regexValue = { ...regexValue }
+        _regexValue[id] = { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) }
+        setRegexValue(_regexValue)
+    }
+
     const renderMainContent = (selectedMaterialList: any[]): JSX.Element => {
         if (showRegexModal) {
-            return <>Regex modal</>
+            const selectedCIPipeline = selectedApp.filteredCIPipelines?.find(
+                (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
+            )
+            return (
+                <>
+                    <BranchRegexModal
+                        material={selectedMaterialList}
+                        selectedCIPipeline={selectedCIPipeline}
+                        showWebhookModal={false}
+                        title={selectedApp.ciPipelineName}
+                        isChangeBranchClicked={isChangeBranchClicked}
+                        onClickNextButton={saveBranchName}
+                        onShowCIModal={noop}
+                        handleRegexInputValue={handleRegexInputValueChange}
+                        regexValue={regexValue}
+                        onCloseBranchRegexModal={hideBranchEditModal}
+                        hideHeaderFooter={true}
+                    />
+                    <div className="flex right pr-20 pb-20">
+                        <button className="cta h-28 lh-28-imp" onClick={saveBranchName}>
+                            Save
+                        </button>
+                    </div>
+                </>
+            )
         } else if (selectedApp.isLinkedCI) {
             return (
                 <EmptyView
@@ -243,7 +345,7 @@ export default function BulkCITrigger({
                                             {app.warningMessage}
                                         </span>
                                     )}
-                                    {app.errorMessage && (
+                                    {app.appId !== selectedApp.appId && app.errorMessage && (
                                         <span className="flex left cr-5 fw-4 fs-12">
                                             <Error className="icon-dim-12 mr-4" />
                                             {app.errorMessage}
@@ -287,7 +389,7 @@ export default function BulkCITrigger({
                         ))}
                     </div>
                 )}
-                <div className="main-content dc__window-bg dc__height-inherit">
+                <div className="main-content dc__window-bg dc__height-inherit dc__overflow-auto">
                     {renderMainContent(selectedMaterialList)}
                 </div>
             </div>

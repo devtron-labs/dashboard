@@ -1307,6 +1307,7 @@ export default function EnvTriggerView() {
                                 ? 'Primary branch is not set'
                                 : '',
                         isHideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
+                        filteredCIPipelines: filteredCIPipelines.get(wf.appId)
                     })
                 }
             }
