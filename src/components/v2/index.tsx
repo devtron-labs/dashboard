@@ -149,19 +149,18 @@ function RouterComponent({ envType }) {
         <React.Fragment>
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
             {
-                errorResponseCode &&
+                errorResponseCode === 404 ?
                 (
-                (typeof Storage !== 'undefined' &&
-                localStorage.getItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)) ? (
                     <div className='h-100'>
                        {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                         <AppDetailsEmptyState />
                     </div>
-                ) : (
+                ) : errorResponseCode ? (
                     <div className="dc__loading-wrapper">
                         <ErrorScreenManager code={errorResponseCode} />
                     </div>
-                ))}
+                ) : null
+              }
 
             {!isLoading && !errorResponseCode && (
                 <>

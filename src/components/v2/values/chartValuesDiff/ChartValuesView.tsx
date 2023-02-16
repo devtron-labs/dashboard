@@ -569,9 +569,7 @@ function ChartValuesView({
                 })
                 toast.success('Successfully deleted.')
                 history.push(
-                    isCreateValueView
-                        ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                        : `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`,
+                    isCreateValueView && getSavedValuesListURL(installedConfigFromParent.appStoreId)
                 )
             })
             .catch((error) => {
