@@ -82,8 +82,7 @@ import {
     unhibernateApp,
 } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
-import EmptyState from '../../../EmptyState/EmptyState'
-import {AppEmptyState} from "../../../common/AppEmptyState";
+import {AppDetailsEmptyState} from "../../../common/AppDetailsEmptyState";
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
@@ -114,14 +113,17 @@ export default function AppDetail() {
     useEffect(() => {
         if (!params.envId) return
         setEnvironmentId(Number(params.envId))
+        setIsAppDeleted(false)
     }, [params.envId])
 
-    return  <div className="app-details-page-wrapper">
+    return (
+        <div className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo appDetails={null} environments={otherEnvsResult?.result} />
                 </div>
             )}
+
             <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
                 <Details
                     key={params.appId + '-' + params.envId}
@@ -144,7 +146,7 @@ export default function AppDetail() {
                 </>
             )}
         </div>
-
+    )
 }
 
 export const Details: React.FC<{
@@ -248,7 +250,6 @@ export const Details: React.FC<{
     }, [])
 
     async function callAppDetailsAPI() {
-      setIsAppDeleted(false)
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000)
             IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
@@ -304,6 +305,7 @@ export const Details: React.FC<{
             if (error['code'] === 404 || appDetailsRef.current) {
                 setIsAppDeleted(true)
                 setAppDetailsLoading(false)
+                setAppDetailsResult(null)
             } else if (!appDetailsResult) {
                 setAppDetailsError(error)
                 setAppDetailsLoading(false)
@@ -444,7 +446,7 @@ export const Details: React.FC<{
                         appConfigTabs={URLS.APP_TRIGGER}
                     />
                 ) : (
-                    <AppEmptyState />
+                    <AppDetailsEmptyState />
                 )}
             </>
         )

@@ -1,12 +1,12 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
-import { getAppDetailsURL, URLS } from '../../config';
-import { DetailsProgressing, showError, ErrorScreenManager, sortOptionsByValue, useAsync, useAppContext } from '../common';
+import { URLS } from '../../config';
+import { DetailsProgressing, ErrorScreenManager, sortOptionsByValue } from '../common';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
-import { getAppOtherEnvironment, getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
+import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
 import { AppType, EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
@@ -16,10 +16,8 @@ import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHist
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
-import ChartValuesView from './values/chartValuesDiff/ChartValuesView';
-import { AppEmptyState } from '../common/AppEmptyState';
+import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState';
 import { LOCAL_STORAGE } from '../../config/constantMessaging';
-import { EnvSelector } from '../app/details/appDetails/AppDetails';
 
 let initTimer = null;
 
@@ -157,7 +155,7 @@ function RouterComponent({ envType }) {
                 localStorage.getItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)) ? (
                     <div className='h-100'>
                        {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
-                        <AppEmptyState />
+                        <AppDetailsEmptyState />
                     </div>
                 ) : (
                     <div className="dc__loading-wrapper">

@@ -6,11 +6,11 @@ import { CDNodeProps } from '../types'
 import { toast } from 'react-toastify'
 import {ERR_MESSAGE_ARGOCD} from '../../../config/constantMessaging'
 import { ConfirmationDialog } from '../../common'
-import warningIconSrc from '../../../assets/icons/ic-warning-y6.svg'
-import { URLS } from '../../../config'
+import warningIconSrc from '../../../assets/icons/info-filled.svg'
 
 interface CDNodeState{
   showDeletePipelinePopup: boolean
+  previousEnvironmentName: string
 }
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
@@ -18,11 +18,15 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     super(props)
     this.state = {
       showDeletePipelinePopup: false,
+      previousEnvironmentName: ''
     }
   }
 
   onClickShowDeletePipelinePopup = () =>{
-    this.setState({showDeletePipelinePopup: true})
+    this.setState({
+      showDeletePipelinePopup: true,
+      previousEnvironmentName: this.props.environmentName
+    })
   }
 
   onClickHideDeletePipelinePopup = () =>{
@@ -66,7 +70,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
       return (
           <ConfirmationDialog>
               <ConfirmationDialog.Icon src={warningIconSrc} />
-              <ConfirmationDialog.Body title="Deployment pipeline for staging-devtroncd environment is being deleted" />
+              <ConfirmationDialog.Body title={`Deployment pipeline for ${this.state.previousEnvironmentName} environment is being deleted`} />
               <p className="fs-13 cn-7 lh-1-54 mt-20">
                   Deployment pipeline configurations cannot be edited when deletion is in progress.
               </p>
