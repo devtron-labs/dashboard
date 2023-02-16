@@ -113,34 +113,3 @@ export const appListOptions = (inputValue: string): Promise<[]> =>
                 })
         }, 300)
     })
-
-    export const envListOptions = (inputValue: string): Promise<[]> =>
-    new Promise((resolve) => {
-        if (timeoutId) {
-            clearTimeout(timeoutId)
-        }
-        timeoutId = setTimeout(() => {
-            if (inputValue.length < 3) {
-                resolve([])
-                return
-            }
-            getAppListMin(null, null, inputValue)
-                .then((response) => {
-                    let appList = []
-                    if (response.result) {
-                        appList = response.result.map((res) => ({
-                            value: res['id'],
-                            label: res['name'],
-                            ...res,
-                        }))
-                    }
-                    resolve(appList as [])
-                })
-                .catch((errors: ServerErrors) => {
-                    resolve([])
-                    if (errors.code) {
-                        showError(errors)
-                    }
-                })
-        }, 300)
-    })

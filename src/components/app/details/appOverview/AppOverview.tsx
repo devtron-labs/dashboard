@@ -232,14 +232,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         )
     }
 
-    const renderDeployedTime = (_env) => {
-        if (_env.lastDeployed) {
-            return handleUTCTime(_env.lastDeployed, true)
-        } else {
-            return isAgroInstalled ? '' : 'Not deployed'
-        }
-    }
-
     const renderDeploymentComponent = () => {
         if(otherEnvsResult[0].result?.length > 0){
             return (
@@ -268,7 +260,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     />
                                 )}
                                 <span className="fs-13 fw-4 cn-7">
-                                    {renderDeployedTime(_env)}
+                                    {renderDeployedTime(_env, isAgroInstalled)}
                                 </span>
                             </div>
                         ))}
@@ -310,4 +302,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
             {showUpdateTagModal && renderEditTagsModal()}
         </div>
     )
+}
+
+export const renderDeployedTime = (_env, isAgroInstalled) => {
+    if (_env.lastDeployed) {
+        return handleUTCTime(_env.lastDeployed, true)
+    } else {
+        return isAgroInstalled ? '' : 'Not deployed'
+    }
 }

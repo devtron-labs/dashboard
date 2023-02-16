@@ -10,8 +10,6 @@ import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
 import { useHistory, useLocation } from 'react-router-dom'
-import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
-import { StatusConstants } from '../../app/list-new/Constants'
 
 export default function EnvironmentsList() {
     const match = useRouteMatch()
@@ -29,17 +27,17 @@ export default function EnvironmentsList() {
             const queryParams = new URLSearchParams(location.search)
             let clusters = queryParams.get('cluster') || ''
             let search = queryParams.get('search') || ''
-            if(search){
+            if (search) {
                 setSearchApplied(true)
             }
-            let clsuterStatus = clusters
-            .toString()
-            .split(',')
-            .filter((status) => status != '')
-            .map((status) => status)
-            let clusterList = new Set<string>(clsuterStatus)
+            let clusterStatus = clusters
+                .toString()
+                .split(',')
+                .filter((status) => status != '')
+                .map((status) => status)
+            let clusterList = new Set<string>(clusterStatus)
+            let clustersfilter: FilterOption[] = []
             if (clusterListRes?.result && Array.isArray(clusterListRes.result)) {
-                let clustersfilter: FilterOption[] = []
                 clusterListRes.result.forEach((cluster: Cluster) => {
                     clustersfilter.push({
                         key: cluster.id,
@@ -48,11 +46,11 @@ export default function EnvironmentsList() {
                         isChecked: clusterList.has(cluster.id.toString()),
                     })
                 })
-                setSearchText(search)
                 setClusterFilter(clustersfilter)
+                setSearchText(search)
             }
         }
-    }, [clusterListRes,location.search])
+    }, [clusterListRes, location.search])
 
     const getData = () => {
         setEnvList([])
@@ -69,7 +67,7 @@ export default function EnvironmentsList() {
 
     const handleSearch = (text) => {
         const queryParams = new URLSearchParams(location.search)
-        queryParams.set('search',text)
+        queryParams.set('search', text)
         let url = `${match.path}?${queryParams.toString()}`
         history.push(url)
     }
@@ -85,7 +83,7 @@ export default function EnvironmentsList() {
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
-            if(searchText.length){
+            if (searchText.length) {
                 handleSearch(event.target.value)
                 setSearchApplied(true)
             }
@@ -119,9 +117,9 @@ export default function EnvironmentsList() {
             .map((status) => status)
 
         let key = clusterValues.filter((value) => value != filter.key)
-        if(key.length){
-            queryParams.set('cluster',key.toString())
-        }else{
+        if (key.length) {
+            queryParams.set('cluster', key.toString())
+        } else {
             queryParams.delete('cluster')
         }
         let url = `${match.path}?${queryParams.toString()}`
@@ -166,31 +164,30 @@ export default function EnvironmentsList() {
     function renderAppliedFilters() {
         let count = 0
         let appliedFilters = (
-            <div className="saved-filters__wrap dc__position-rel">
+            <div className="saved-env-filters__wrap dc__position-rel">
                 {clusterfilter.map((filter) => {
-                        if (filter.isChecked) {
-                            count++
-                            
-                            return (
-                                <div key={filter.key} className="saved-filter">
-                                    <span className="fw-6 mr-5">{'Cluster'}</span>
-                                    <span className="saved-filter-divider"></span>
-                                    <span className="ml-5">{filter.label}</span>
-                                    <button
-                                        type="button"
-                                        className="saved-filter__close-btn"
-                                        onClick={(event) => removeFilter(filter)}
-                                    >
-                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            )
-                        }
-                    })
-                }
+                    if (filter.isChecked) {
+                        count++
+
+                        return (
+                            <div key={filter.key} className="saved-env-filter">
+                                <span className="fw-6 mr-5">{'Cluster'}</span>
+                                <span className="saved-env-filter-divider"></span>
+                                <span className="ml-5">{filter.label}</span>
+                                <button
+                                    type="button"
+                                    className="saved-env-filter__close-btn"
+                                    onClick={(event) => removeFilter(filter)}
+                                >
+                                    <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        )
+                    }
+                })}
                 <button
                     type="button"
-                    className="saved-filters__clear-btn fs-13"
+                    className="saved-env-filters__clear-btn flex fs-13"
                     onClick={() => {
                         removeAllFilters()
                     }}
@@ -207,18 +204,12 @@ export default function EnvironmentsList() {
         return <Progressing pageLoader />
     }
 
-    // const showExportCsvButton =
-    // userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
-    // currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
-    // serverMode !== SERVER_MODE.EA_ONLY
-
     return (
         <div>
             <PageHeader headerName="Environments" />
             <div className={`env-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
-                <div className='flex dc__content-space pl-20 pr-20 pt-16 pb-16'>
+                <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
                     <div>{renderSearch()}</div>
-                    <div>
                     <Filter
                         list={clusterfilter}
                         labelKey="label"
@@ -228,20 +219,7 @@ export default function EnvironmentsList() {
                         placeholder="Search Cluster"
                         type={AppListConstants.FilterType.CLUTSER}
                         applyFilter={applyFilter}
-                        // onShowHideFilterContent={onShowHideFilterContent}
                     />
-                    {/* {showExportCsvButton && (
-                        <>
-                            <span className="filter-divider"></span>
-                            <ExportToCsv
-                                className="ml-10"
-                                apiPromise={getAppListDataToExport}
-                                fileName={FILE_NAMES.Apps}
-                                disabled={!appCount}
-                            />
-                        </>
-                    )} */}
-                    </div>
                 </div>
                 {renderAppliedFilters()}
                 <EnvironmentsListView clearSearch={clearSearch} />

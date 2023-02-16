@@ -7,11 +7,11 @@ export default function ApplicationRoutes({ envListData }: { envListData: Config
     const { url } = useRouteMatch()
     const location = useLocation()
     const LINK = `${url}/${envListData.id}`
-    const [collapsed, toggleCollapsed] = useState(!location.pathname.match(LINK))
     
-
+    const [collapsed, toggleCollapsed] = useState(location.pathname.includes(`${LINK}/`) ? false : true)
+    
     useEffect(() => {
-        if (!!location.pathname.match(LINK) && !collapsed) {
+        if (!location.pathname.includes(`${LINK}`) && !collapsed) {
             toggleCollapsed(true)
         }
     }, [location.pathname])

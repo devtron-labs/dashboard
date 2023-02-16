@@ -1,41 +1,43 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError } from '../common'
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError, useAsync } from '../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
 import { AppSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
-import EnvConfig from './EnvConfig'
-import { EnvSelector } from '../AppSelector/AppSelector'
+import EnvConfig from './EnvironmentConfig/EnvConfig'
+import { getEnvAppList } from './EnvironmentListService'
+import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
+import { EnvSelector } from './EnvSelector'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
+    const { envId } = useParams<{ envId }>()
     const [envName, setEnvName] = useState('')
+    const [loading, envList] = useAsync(() => getEnvAppList({}), [])
 
     useEffect(() => {
-        getEnvMetaInfoRes()
-    }, [appId])
-
-    const getEnvMetaInfoRes = async (): Promise<void> => {
-        try {
-        } catch (err) {
-            showError(err)
+        if(envList?.result){
+            let environmentName = envList.result.find((env) => env.id === +envId)
+            setEnvName(environmentName.environment_name)
         }
-    }
+    },[envList])
+
+    
+
 
     return (
         <div className="app-details-page">
-            <EnvHeader envName={envName} />
+            <EnvHeader envName={envName} setEnvName={setEnvName} />
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}>
+                        <Route path={`${path}/${URLS.APP_DETAILS}`}>
                             <div>Env detail</div>
                         </Route>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <div>Env Overview</div>
+                            <EnvironmentOverview />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <div>Build & Deploy</div>
@@ -51,7 +53,7 @@ export default function EnvironmentDetailsRoute() {
     )
 }
 
-export function EnvHeader({ envName }: { envName: string }) {
+export function EnvHeader({ envName, setEnvName  }: { envName: string, setEnvName: (label: string) => void }) {
     const { envId } = useParams<{ envId }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -64,23 +66,24 @@ export function EnvHeader({ envName }: { envName: string }) {
 
     const handleEnvChange = useCallback(
         ({ label, value }) => {
+            setEnvName(label)
             const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-            const newUrl = generatePath(match.path, { appId: value })
+            const newUrl = generatePath(match.path, { envId: value })
             history.push(`${newUrl}/${tab}`)
             ReactGA.event({
                 category: 'Env Selector',
                 action: 'Env Selection Changed',
-                label: tab,
+                label: label,
             })
         },
         [location.pathname],
     )
-
+    
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ':envId(\\d+)': {
-                    component: <EnvSelector onChange={handleEnvChange} envId={envId} appName={envName} />,
+                ':envId': {
+                    component: <EnvSelector onChange={handleEnvChange} envId={envId} envName={envName} />,
                     linked: false,
                 },
                 environment: {

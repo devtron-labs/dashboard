@@ -26,23 +26,3 @@ export default function AppSelector({ onChange, appId, appName }: AppSelectorTyp
         />
     );
 }
-
-export function EnvSelector({ onChange, envId, appName }) {
-    const defaultOptions = [{ value: envId, label: appName }];
-    let selectedValue = defaultOptions[0];
-    return (
-        <AsyncSelect
-            defaultOptions
-            loadOptions={appListOptions}
-            noOptionsMessage={noOptionsMessage}
-            onChange={onChange}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            value={selectedValue}
-            styles={appSelectorStyle}
-        />
-    );
-}

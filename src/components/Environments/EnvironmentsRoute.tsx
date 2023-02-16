@@ -12,7 +12,7 @@ export default function EnvironmentsRoute() {
     return (
         <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
             <Switch>
-            <Route path={`${path}/${URLS.APP_LIST}`} exact>
+            <Route path={`${path}/${URLS.APP_LIST}`}>
                 <EnvironmentsList />
             </Route>
             <Route path={`${path}/:envId`}>
