@@ -100,7 +100,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             onSave={this.deployChartGroup}>
             <div className="deploy-selected-charts__body">
                 <label className="form__row">
-                    <span className="form__label">Project*</span>
+                    <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
                         autoFocus
                         defaultValue={selectedProject}
@@ -123,7 +123,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     </span>
                 </label>
                 <div className="form__row">
-                    <span className="form__label">Deploy to Environment*</span>
+                    <span className="form__label dc__required-field">Deploy to Environment</span>
                     <ReactSelect
                         defaultValue={selectedEnvironment}
                         components={{
