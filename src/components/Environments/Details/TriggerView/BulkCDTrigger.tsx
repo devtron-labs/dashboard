@@ -8,7 +8,7 @@ import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../Environments.types'
-import { ButtonTitle } from '../../Constants'
+import { BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 
 export default function BulkCDTrigger({
@@ -163,8 +163,7 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
-                style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
+                className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width"
             >
                 <button className="cta flex h-36" onClick={onClickStartDeploy}>
                     {isLoading ? (
@@ -176,7 +175,7 @@ export default function BulkCDTrigger({
                             ) : (
                                 <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
                             )}
-                            {ButtonTitle[stage]}
+                            {BUTTON_TITLE[stage]}
                         </>
                     )}
                 </button>

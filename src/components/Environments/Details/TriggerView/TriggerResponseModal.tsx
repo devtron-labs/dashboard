@@ -47,7 +47,7 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
     }
 
     const handleRetryBuild = (): void => {
-        const appsToRetry: Record<number, boolean> = {}
+        const appsToRetry: Record<string, boolean> = {}
         for (const response of responseList) {
             if (response.status === BulkResponseStatus.FAIL) {
                 appsToRetry[response.appId] = true
@@ -59,10 +59,9 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 ${
+                className={`dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
                     isShowRetryButton ? 'dc__content-space' : 'right'
                 }`}
-                style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 <button className="cta cancel flex h-36" onClick={closePopup}>
                     Cancel

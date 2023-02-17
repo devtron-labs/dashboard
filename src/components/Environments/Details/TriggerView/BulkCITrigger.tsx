@@ -24,6 +24,7 @@ import { BulkCIDetailType, BulkCITriggerType } from '../../Environments.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import Tippy from '@tippyjs/react'
 import TriggerResponseModal from './TriggerResponseModal'
+import { BULK_CI_MESSAGING } from '../../Constants'
 
 export default function BulkCITrigger({
     appList,
@@ -272,18 +273,18 @@ export default function BulkCITrigger({
             return (
                 <EmptyView
                     imgSrc={linkedCiImg}
-                    title={`${selectedApp.name} is using a linked build pipeline`}
-                    subTitle="You can trigger the parent build pipeline. Triggering the parent build pipeline will trigger all build pipelines linked to it."
+                    title={`${selectedApp.name} ${BULK_CI_MESSAGING.emptyLinkedCI.title}`}
+                    subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
                     link={`${URLS.APP}/${selectedApp.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.parentCIPipelineId}`}
-                    linkText="View Source Pipeline"
+                    linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
                 />
             )
         } else if (selectedApp.isWebhookCI) {
             return (
                 <EmptyView
                     imgSrc={externalCiImg}
-                    title={`${selectedApp.name} is using a external build pipeline`}
-                    subTitle="Images received from the external service will be available for deployment."
+                    title={`${selectedApp.name}  ${BULK_CI_MESSAGING.webhookCI.title}`}
+                    subTitle={BULK_CI_MESSAGING.webhookCI.subTitle}
                 />
             )
         } else {
@@ -346,15 +347,15 @@ export default function BulkCITrigger({
         if (!selectedApp.isLinkedCI && !selectedApp.isWebhookCI && !showRegexModal) {
             if (selectedApp.isFirstTrigger) {
                 return renderTippy(
-                    'First pipeline run',
-                    'First pipeline run may take longer than usual',
-                    'Future runs will have shorter build time when cache is used.',
+                    BULK_CI_MESSAGING.isFirstTrigger.infoText,
+                    BULK_CI_MESSAGING.isFirstTrigger.title,
+                    BULK_CI_MESSAGING.isFirstTrigger.subTitle,
                 )
             } else if (!selectedApp.isCacheAvailable) {
                 return renderTippy(
-                    'Cache not available',
-                    'Cache will be generated for this pipeline run',
-                    'Cache will be used in future runs to reduce build time.',
+                    BULK_CI_MESSAGING.cacheNotAvailable.infoText,
+                    BULK_CI_MESSAGING.cacheNotAvailable.title,
+                    BULK_CI_MESSAGING.cacheNotAvailable.subTitle,
                 )
             } else if (blobStorageConfiguration?.result.enabled) {
                 return (
@@ -461,7 +462,7 @@ export default function BulkCITrigger({
         onClickTriggerBulkCI(appIgnoreCache)
     }
 
-    const onClickRetryBuild = (appsToRetry): void => {
+    const onClickRetryBuild = (appsToRetry: Record<string, boolean>): void => {
         onClickTriggerBulkCI(appIgnoreCache, appsToRetry)
     }
 
@@ -472,12 +473,11 @@ export default function BulkCITrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 ${
+                className={`dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
                     !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
                         ? 'dc__content-space'
                         : ''
                 }`}
-                style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 {!blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled && (
                     <div className="flexbox flex-align-center">

@@ -48,7 +48,7 @@ import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMes
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { BulkCIResponseStatusText, BulkResponseStatus, ENV_TRIGGER_VIEW_GA_EVENTS } from '../../Constants'
+import { BULK_CI_RESPONSE_STATUS_TEXT, BulkResponseStatus, ENV_TRIGGER_VIEW_GA_EVENTS } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
@@ -945,7 +945,7 @@ export default function EnvTriggerView() {
                         _responseList.push({
                             appId: triggeredAppList[index].appId,
                             appName: triggeredAppList[index].appName,
-                            statusText: BulkCIResponseStatusText[BulkResponseStatus.PASS],
+                            statusText: BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
                             status: BulkResponseStatus.PASS,
                             message: '',
                         })
@@ -955,7 +955,7 @@ export default function EnvTriggerView() {
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
-                                statusText: BulkCIResponseStatusText[BulkResponseStatus.UNAUTHORIZE],
+                                statusText: BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
                                 status: BulkResponseStatus.UNAUTHORIZE,
                                 message: errorReason.errors[0].userMessage,
                             })
@@ -963,7 +963,7 @@ export default function EnvTriggerView() {
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
-                                statusText: BulkCIResponseStatusText[BulkResponseStatus.FAIL],
+                                statusText: BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].userMessage,
                             })
