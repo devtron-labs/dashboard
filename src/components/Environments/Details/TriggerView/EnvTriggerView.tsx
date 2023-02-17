@@ -979,6 +979,7 @@ export default function EnvTriggerView() {
             setLoading(false)
             setShowBulkCDModal(false)
             setShowBulkCIModal(false)
+            setResponseList([])
         }
     }
 
