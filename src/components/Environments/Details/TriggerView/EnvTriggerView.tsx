@@ -905,7 +905,6 @@ export default function EnvTriggerView() {
             triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of workflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
-                triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                 const _cdNode = _wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
@@ -918,9 +917,10 @@ export default function EnvTriggerView() {
                     _selectedNode = _cdNode.preNode
                 }
 
-                if (_selectedNode) {
+                if (_selectedNode && _selectedNode[materialType]) {
                     nodeList.push(_selectedNode)
                     _appIdMap.set(_selectedNode.id, _wf.appId.toString())
+                    triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                 }
             }
         }
