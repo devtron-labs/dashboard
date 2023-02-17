@@ -56,7 +56,7 @@ import './EnvTriggerView.scss'
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
 import { BulkCDDetailType, BulkCIDetailType, ResponseRowType } from '../../Environments.types'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../TriggerView.utils'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGrouping.utils'
 
 let timerRef
 let inprogressStatusTimer
