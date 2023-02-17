@@ -32,7 +32,7 @@ export default function EnvironmentsListView({ clearSearch }) {
     }, [location.search])
 
     useEffect(() => {
-        if (appList?.result) {
+        if (appList?.result?.envList) {
             setFilteredEnvList(appList.result.envList)
             setEnvCount(appList.result.totalCount)
             setPaginationParamsChange({ pageSize: +params.get('pageSize') || 20, offset: +params.get('offset') })
