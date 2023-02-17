@@ -22,6 +22,7 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                         appList = response.result.envList?.map((res) => ({
                             value: res['id'],
                             label: res['environment_name'],
+                            appCount: res['appCount'],
                             ...res,
                         }))
                     }

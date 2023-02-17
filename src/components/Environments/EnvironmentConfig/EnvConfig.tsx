@@ -22,11 +22,14 @@ export default function EnvConfig() {
                 history.push(`${url}/${envAppList[0].id}`)
             }
         }
-        
     }, [appList])
 
     if (loading) {
-        return <Progressing />
+        return (
+            <div className="loading-state">
+                <Progressing />
+            </div>
+        )
     }
 
     return (

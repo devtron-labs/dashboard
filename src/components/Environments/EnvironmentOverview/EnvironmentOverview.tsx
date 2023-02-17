@@ -67,10 +67,11 @@ export default function EnvironmentOverview() {
     }
 
     if (loading) {
-        return <Progressing />
+        return <div className='loading-state'>
+            <Progressing pageLoader />
+        </div>
     }
     
-
     const renderAppInfoRow = (item,index) => {
         return (
             <div

@@ -4,32 +4,41 @@ import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError, useAs
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
-import { AppSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
 import EnvConfig from './EnvironmentConfig/EnvConfig'
 import { getEnvAppList } from './EnvironmentListService'
 import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
+import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
+import EmptyFolder from '../../assets/img/Empty-folder.png'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId }>()
     const [envName, setEnvName] = useState('')
+    const [showEmpty, setShowEmpty] = useState<boolean>(true)
     const [loading, envList] = useAsync(() => getEnvAppList({}), [])
 
     useEffect(() => {
-        if(envList?.result){
-            const environmentName = envList.result.envList?.find((env) => env.id === +envId)
-            setEnvName(environmentName.environment_name)
+        if (envList?.result) {
+            const environment = envList.result.envList?.find((env) => env.id === +envId)
+            setEnvName(environment.environment_name)
+            setShowEmpty(!environment.appCount)
         }
-    },[envList])
+    }, [envList])
 
-    
-
-
-    return (
-        <div className="app-details-page">
-            <EnvHeader envName={envName} setEnvName={setEnvName} />
+    const renderRoute = () => {
+        if (loading)
+            return ( 
+                <div className='empty-state flex w-100'>
+                    {showEmpty ? <Progressing pageLoader /> : <ResourceListEmptyState
+                        imgSource={EmptyFolder}
+                        title="No applications available"
+                        subTitle="You don’t have access to any application in this app group."
+                    />}
+                </div>
+            )
+        return (
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -49,11 +58,33 @@ export default function EnvironmentDetailsRoute() {
                     </Switch>
                 </Suspense>
             </ErrorBoundary>
+        )
+    }
+
+    return (
+        <div className="env-details-page">
+            <EnvHeader
+                envName={envName}
+                setEnvName={setEnvName}
+                setShowEmpty={setShowEmpty}
+                showEmpty={showEmpty}
+            />
+            {renderRoute()}
         </div>
     )
 }
 
-export function EnvHeader({ envName, setEnvName  }: { envName: string, setEnvName: (label: string) => void }) {
+export function EnvHeader({
+    envName,
+    setEnvName,
+    setShowEmpty,
+    showEmpty,
+}: {
+    envName: string
+    setEnvName: (label: string) => void
+    setShowEmpty: (empty: boolean) => void
+    showEmpty: boolean
+}) {
     const { envId } = useParams<{ envId }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -65,8 +96,9 @@ export function EnvHeader({ envName, setEnvName  }: { envName: string, setEnvNam
     }, [location.pathname])
 
     const handleEnvChange = useCallback(
-        ({ label, value }) => {
+        ({ label, value, appCount }) => {
             setEnvName(label)
+            setShowEmpty(!appCount)
             const tab = currentPathname.current.replace(match.url, '').split('/')[1]
             const newUrl = generatePath(match.path, { envId: value })
             history.push(`${newUrl}/${tab}`)
@@ -78,7 +110,7 @@ export function EnvHeader({ envName, setEnvName  }: { envName: string, setEnvNam
         },
         [location.pathname],
     )
-    
+
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -155,7 +187,7 @@ export function EnvHeader({ envName, setEnvName  }: { envName: string, setEnvNam
         <PageHeader
             breadCrumbs={renderBreadcrumbs}
             isBreadcrumbs={true}
-            showTabs={true}
+            showTabs={!showEmpty}
             renderHeaderTabs={renderEnvDetailsTabs}
         />
     )

@@ -9,7 +9,6 @@ export function EnvSelector({ onChange, envId, envName }: {onChange: (e) => void
     
     return (
         <AsyncSelect
-            defaultOptions={[defaultOptions]}
             loadOptions={envListOptions}
             noOptionsMessage={noOptionsMessage}
             onChange={onChange}
