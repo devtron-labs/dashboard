@@ -26,7 +26,7 @@ import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
 import { LOCAL_STORAGE } from '../../../../config/constantMessaging';
 import  BinWithDots from '../../../../assets/img/delete-bin-with-dots.png'
 
-function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean}) {
+function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
     const params = useParams<{ appId: string; envId?: string }>();
     const { url } = useRouteMatch();
     const history = useHistory();
@@ -130,9 +130,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
             await getDeleteApplicationApi()
             setShowDeleteConfirmation(false)
             toast.success('Deletion initiated successfully.')
-            if (typeof Storage !== 'undefined') {
-               localStorage.setItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME, 'true')
-            }
+            _init()
         } catch (error) {
             showError(error)
         }

@@ -16,11 +16,13 @@ import { getSaveTelemetry } from './appDetails.api';
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
-    isExternalApp
+    isExternalApp,
+    _init
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isExternalApp: boolean
+    _init?:() => void
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -46,7 +48,7 @@ const AppDetailsComponent = ({
     return (
         <div className='helm-details'>
             <div>
-                <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
+                <EnvironmentSelectorComponent isExternalApp={isExternalApp} _init={_init}/>
               {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData}/>}
             </div>
 
