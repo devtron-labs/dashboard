@@ -2071,6 +2071,14 @@ textarea,
     width: 0px;
 }
 
+.mw-4 {
+    min-width: 4px !important;
+}
+
+.mw-14 {
+    min-width: 14px !important;
+}
+
 .w-32 {
     width: 32px !important;
 }
@@ -2085,10 +2093,6 @@ textarea,
 
 .min-w-385 {
     min-width: 385px;
-}
-
-.mw-4 {
-    min-width: 4px !important;
 }
 
 .w-100-px {

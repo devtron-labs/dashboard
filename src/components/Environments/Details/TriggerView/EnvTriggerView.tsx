@@ -1265,6 +1265,28 @@ export default function EnvTriggerView() {
         }
     }
 
+    const getErrorMessage = (_appId, _ciNode): string => {
+        let errorMessage = ''
+        if (_ciNode.inputMaterialList?.length > 0) {
+            if (isShowRegexModal(_appId, +_ciNode.id, _ciNode.inputMaterialList)) {
+                errorMessage = 'Primary branch is not set'
+            } else {
+                const selectedCIPipeline = filteredCIPipelines.get(_appId).find((_ci) => _ci.id === +_ciNode.id)
+                if (selectedCIPipeline?.ciMaterial) {
+                    const invalidInputMaterial = _ciNode.inputMaterialList.find((_mat) => {
+                        return _mat.isBranchError || _mat.isRepoError
+                    })
+                    if (invalidInputMaterial) {
+                        errorMessage = invalidInputMaterial.isBranchError
+                            ? invalidInputMaterial.branchErrorMsg
+                            : invalidInputMaterial.repoErrorMsg
+                    }
+                }
+            }
+        }
+        return errorMessage
+    }
+
     const renderBulkCIMaterial = (): JSX.Element | null => {
         if (!showBulkCIModal) {
             return null
@@ -1290,11 +1312,7 @@ export default function EnvTriggerView() {
                         parentCIPipelineId: _ciNode.parentCiPipeline,
                         material: _ciNode.inputMaterialList,
                         warningMessage: getWarningMessage(_ciNode),
-                        errorMessage:
-                            _ciNode.inputMaterialList &&
-                            isShowRegexModal(wf.appId, +_ciNode.id, _ciNode.inputMaterialList)
-                                ? 'Primary branch is not set'
-                                : '',
+                        errorMessage: getErrorMessage(wf.appId, _ciNode),
                         isHideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
                         filteredCIPipelines: filteredCIPipelines.get(wf.appId),
                     })

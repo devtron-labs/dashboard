@@ -364,8 +364,8 @@ export default function BulkCITrigger({
                                     )}
                                     {app.appId !== selectedApp.appId && app.errorMessage && (
                                         <span className="flex left cr-5 fw-4 fs-12">
-                                            <Error className="icon-dim-12 mr-4" />
-                                            {app.errorMessage}
+                                            <Error className="icon-dim-12 mr-4 mw-14" />
+                                            <span className="dc__block dc__ellipsis-right">{app.errorMessage}</span>
                                         </span>
                                     )}
                                 </div>
@@ -418,13 +418,17 @@ export default function BulkCITrigger({
         onClickTriggerBulkCI(appIgnoreCache)
     }
 
+    const isStartBuildDisabled = (): boolean => {
+        return appList.some((app) => app.errorMessage)
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
                 className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
-                <button className="cta flex h-36" onClick={onClickStartBuild}>
+                <button className="cta flex h-36" onClick={onClickStartBuild} disabled={isStartBuildDisabled()}>
                     {isLoading ? (
                         <Progressing />
                     ) : (
