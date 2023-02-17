@@ -192,9 +192,32 @@ function NodeComponent({
             );
         }
     };
-
+    
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         let _currentNodeHeader = ''
+        const clipBoardInteraction = (nodeName: string): JSX.Element => {
+            return copied === nodeName ? (
+                <Tippy
+                    className="default-tt"
+                    hideOnClick={false}
+                    arrow={false}
+                    placement="bottom"
+                    content="Copied!"
+                    duration={[100, 200]}
+                    trigger="mouseenter click"
+                >
+                    <Check className="resource-action-tabs__active icon-dim-12 green-tick ml-8 mr-8" />
+                </Tippy>
+            ) : (
+                <Clipboard
+                    className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
+                    }}
+                />
+            )
+        }
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
             const _isSelected = markedNodes.current.get(node.name)
@@ -246,30 +269,7 @@ function NodeComponent({
                                 </div>
 
                                 <div>
-                                    {node?.name && (
-                                        copied === node.name ? (
-                                            <Tippy
-                                                className="default-tt"
-                                                hideOnClick={false}
-                                                arrow={false}
-                                                placement="bottom"
-                                                content="Copied!"
-                                                duration={[100, 2000]}
-                                                trigger="mouseenter click"
-                                            >
-                                                <Check className="resource-action-tabs__active icon-dim-12 green-tick ml-8 mr-8" />
-                                            </Tippy>
-                                        ) : (
-                                            <Clipboard
-                                                className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    copyToClipboard(node?.name, () => toggleClipBoard(node?.name))
-                                                }}
-                                            />
-                                        )
-                                    )}
-
+                                    {clipBoardInteraction(node.name)}
                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
                                             <a
@@ -294,30 +294,8 @@ function NodeComponent({
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
-                                {nodeName}
-                                {nodeName && (
-                                    copied === nodeName ? (
-                                        <Tippy
-                                            className="default-tt"
-                                            hideOnClick={false}
-                                            arrow={false}
-                                            placement="bottom"
-                                            content="Copied!"
-                                            duration={[100, 200]}
-                                            trigger="mouseenter click"
-                                        >
-                                            <Check className="resource-action-tabs__active pl-4 icon-dim-12 green-tick" />
-                                        </Tippy>
-                                    ) : (
-                                        <Clipboard
-                                            className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
-                                            }}
-                                        />
-                                    )
-                                )}
+                                { nodeName }
+                                {clipBoardInteraction(nodeName)}
                             </div>
                         )}
 
