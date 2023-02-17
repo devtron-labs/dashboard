@@ -75,7 +75,7 @@ export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filter
 
 const filterChildAndSiblingCD = function(envID: number): (workflows: WorkflowType[]) => WorkflowType[] {
     return (workflows: WorkflowType[]): WorkflowType[] => {
-        workflows.map(wf => {
+        workflows.forEach(wf => {
             let nodes = new Map(wf.nodes.map(node => [node.type + "-" + node.id, node] as [string, NodeAttr]))
             // const finalNodes = wf.nodes.filter(node => !node.parentPipelineId)
 

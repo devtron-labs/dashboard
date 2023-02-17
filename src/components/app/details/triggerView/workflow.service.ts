@@ -245,10 +245,10 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
 }
 
 function addDownstreams(workflows: WorkflowType[]) {
-    workflows.map(wf => {
+    workflows.forEach(wf => {
         let nodes = new Map(wf.nodes.map(node => [node.type + "-" + node.id, node] as [string, NodeAttr]))
 
-        wf.nodes.map(node => {
+        wf.nodes.forEach(node => {
             if (!node.parentPipelineId) {
                 return node
             }
