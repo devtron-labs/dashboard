@@ -176,7 +176,7 @@ function RouterComponent({ envType }) {
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>
-                                <ValuesComponent appId={params.appId} />
+                                <ValuesComponent appId={params.appId} _init={_init} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                                 <ChartDeploymentHistory appId={params.appId} isExternal={false} />

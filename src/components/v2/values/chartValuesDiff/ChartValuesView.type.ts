@@ -24,6 +24,7 @@ export interface ChartValuesViewType {
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
+    _init?: () => void
 }
 
 export interface ChartSelectorType {
