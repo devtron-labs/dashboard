@@ -143,7 +143,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
-                <div className="flexbox">
+                <div className="flex left">
                     <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
                         <svg
                             viewBox="0 0 200 40"

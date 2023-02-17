@@ -110,7 +110,7 @@ function ChartValuesView({
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const { chartValueId, presetValueId } = useParams<{ chartValueId: string; presetValueId: string }>()
+    const { chartValueId, presetValueId, envId } = useParams<{ chartValueId: string; presetValueId: string; envId: string }>()
     const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
@@ -567,9 +567,10 @@ function ChartValuesView({
                     type: ChartValuesViewActionTypes.isDeleteInProgress,
                     payload: false,
                 })
-                toast.success('Successfully deleted.')
+                toast.success('Deletetion intiated.')
                 history.push(
-                    isCreateValueView && getSavedValuesListURL(installedConfigFromParent.appStoreId)
+                    isCreateValueView ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
+                    : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`
                 )
             })
             .catch((error) => {

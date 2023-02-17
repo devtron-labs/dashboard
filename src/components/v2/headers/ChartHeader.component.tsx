@@ -8,7 +8,7 @@ import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import PageHeader from '../../common/header/PageHeader'
 
-function ChartHeaderComponent() {
+function ChartHeaderComponent({errorResponseCode}: {errorResponseCode?: number}) {
     const match = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
@@ -49,7 +49,7 @@ function ChartHeaderComponent() {
                         App Details
                     </NavLink>
                 </li>
-                {Object.keys(appDetails).length > 0 && !appDetails.deploymentAppDeleteRequest && (
+                { !appDetails.deploymentAppDeleteRequest && !errorResponseCode && (
                   <>
                     <li className="tab-list__tab">
                         <NavLink

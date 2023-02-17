@@ -152,7 +152,7 @@ function RouterComponent({ envType }) {
                 errorResponseCode === 404 ?
                 (
                     <div className='h-100'>
-                       {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+                       {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent errorResponseCode={errorResponseCode}/>}
                         <AppDetailsEmptyState />
                     </div>
                 ) : errorResponseCode ? (

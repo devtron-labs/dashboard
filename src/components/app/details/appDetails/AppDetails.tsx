@@ -135,16 +135,11 @@ export default function AppDetail() {
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
                     isAppDeleted={isAppDeleted}
+                    otherEnvsResult={otherEnvsResult}
+                    otherEnvsLoading={otherEnvsLoading}
                 />
             </Route>
-            {otherEnvsResult && !otherEnvsLoading && (
-                <>
-                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && <AppNotConfigured />}
-                    {!params.envId && otherEnvsResult?.result?.length > 0 && (
-                        <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
-                    )}
-                </>
-            )}
+
         </div>
     )
 }
@@ -160,6 +155,8 @@ export const Details: React.FC<{
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    otherEnvsResult?
+    otherEnvsLoading?: boolean
 }> = ({
     appDetailsAPI,
     setAppDetailResultInParent,
@@ -170,7 +167,9 @@ export const Details: React.FC<{
     setIsAppDeleted,
     commitInfo,
     showCommitInfo,
-    isAppDeleted
+    isAppDeleted,
+    otherEnvsLoading,
+    otherEnvsResult
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -426,29 +425,42 @@ export const Details: React.FC<{
         toggleDetailedStatus(false)
     }
 
-    const isValidEnvironmentId = environments?.find(_env => _env.environmentId === Number(params.envId))?.environmentId === Number(params.envId)
-    if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) {
-        return (
-            <>
-                <div className="flex left ml-20 mt-16">
-                    <EnvSelector
-                        environments={environments}
-                        disabled={params.envId && !showCommitInfo}
-                        controlStyleOverrides={{ backgroundColor: 'white' }}
-                    />
-                </div>
-
-                {isAppDeleted && !isValidEnvironmentId ? (
-                    <AppDetailsEmptyState />
-                ) :(
-                <AppNotConfigured
+    const getNotConfigured = () => {
+      return otherEnvsResult && !otherEnvsLoading && (
+        <>
+            {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&  <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
                         image={noGroups}
                         title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
                         subtitle={'Once deployed, details for the deployment will be available here.'}
                         buttonTitle={'Go to deploy'}
                         appConfigTabs={URLS.APP_TRIGGER}
+                    />}
+            {!params.envId && otherEnvsResult?.result?.length > 0 && (
+                <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
+            )}
+        </>
+    )
+    }
+
+    const isValidEnvironmentId = environments?.find(_env => _env.environmentId === Number(params.envId))?.environmentId === Number(params.envId)
+    if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) {
+        return (
+            <>
+               {
+                 environments?.length > 0 &&
+               <div className="flex left ml-20 mt-16">
+                    <EnvSelector
+                        environments={environments}
+                        disabled={params.envId && !showCommitInfo}
+                        controlStyleOverrides={{ backgroundColor: 'white' }}
                     />
+                </div>
+               }
+                {isAppDeleted && !isValidEnvironmentId ? (
+                    <AppDetailsEmptyState />
+                ) :(
+                  getNotConfigured()
                 ) }
             </>
         )
