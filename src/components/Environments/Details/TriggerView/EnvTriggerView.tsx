@@ -204,6 +204,10 @@ export default function EnvTriggerView() {
             setPageViewType(ViewType.LOADING)
             getWorkflowsData()
         }
+        return ()=>{
+          timerRef && clearInterval(timerRef)
+          inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        }
     }, [envId])
 
     const clearAppList = (): void => {
@@ -344,7 +348,7 @@ export default function EnvTriggerView() {
         wf: WorkflowType,
         _materialList: any[],
     ) => {
-        if (_materialList.length > 0) {
+        if (_materialList?.length > 0) {
             _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
         }
         for (const material of wf.gitMaterials) {
@@ -1300,6 +1304,9 @@ export default function EnvTriggerView() {
                     (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
                 )
                 if (_ciNode) {
+                    const configuredMaterialList = new Map<number, Set<number>>()
+                    configuredMaterialList[wf.name] = new Set<number>()
+                    handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,

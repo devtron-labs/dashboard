@@ -4,10 +4,13 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
+import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { ModuleNameMap, SourceTypeMap, URLS } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, URLS } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -18,6 +21,8 @@ import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../Environments.types'
+import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
+import Tippy from '@tippyjs/react'
 
 export default function BulkCITrigger({
     appList,
@@ -38,7 +43,10 @@ export default function BulkCITrigger({
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
-    const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
+    const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
+        () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+        [],
+    )
     const {
         selectMaterial,
         refreshMaterial,
@@ -302,6 +310,107 @@ export default function BulkCITrigger({
         setAppIgnoreCache(_appIgnoreCache)
     }
 
+    const tippyContent = (tippyTile: string, tippyDescription: string): JSX.Element => {
+        return (
+            <div>
+                <div className="fs-12 fw-6 cn-0">{tippyTile}</div>
+                <div className="fs-12 fw-4 cn-0">{tippyDescription}</div>
+            </div>
+        )
+    }
+
+    const renderTippy = (infoText: string, tippyTile: string, tippyDescription: string): JSX.Element | null => {
+        return (
+            <Tippy
+                className="default-tt w-200 fs-12"
+                arrow={false}
+                placement="right"
+                content={tippyContent(tippyTile, tippyDescription)}
+            >
+                <div className="flex left cursor dc_width-max-content">
+                    <InfoIcon className="icon-dim-20 info-icon-n6 mr-4" />
+                    <span className="fw-4 fs-13 cn-9">{infoText}</span>
+                </div>
+            </Tippy>
+        )
+    }
+
+    const renderCacheSection = (): JSX.Element | null => {
+        if (!selectedApp.isLinkedCI && !selectedApp.isWebhookCI && !showRegexModal) {
+            if (selectedApp.isFirstTrigger) {
+                return renderTippy(
+                    'First pipeline run',
+                    'First pipeline run may take longer than usual',
+                    'Future runs will have shorter build time when cache is used.',
+                )
+            } else if (!selectedApp.isCacheAvailable) {
+                return renderTippy(
+                    'Cache not available',
+                    'Cache will be generated for this pipeline run',
+                    'Cache will be used in future runs to reduce build time.',
+                )
+            } else if (blobStorageConfiguration?.result.enabled) {
+                return (
+                    <div className="flex left mt-12 dc__border-top pt-12">
+                        <input
+                            type="checkbox"
+                            className="mt-0-imp cursor"
+                            data-app-id={selectedApp.appId}
+                            checked={appIgnoreCache?.[selectedApp.appId]}
+                            id={`chkValidate-${selectedApp.appId}`}
+                            onChange={handleChange}
+                        />
+                        <label className="fs-13 fw-4 cn-9 ml-10 mb-0">Ignore cache</label>
+                    </div>
+                )
+            } else {
+                return null
+            }
+        }
+    }
+
+    const renderSelectedAppMaterial = (appId: number, selectedMaterialList: any[]): JSX.Element | null => {
+        if (appId === selectedApp.appId && !!selectedMaterialList.length && !showRegexModal) {
+            return (
+                <>
+                    <MaterialSource
+                        material={selectedMaterialList}
+                        selectMaterial={selectMaterial}
+                        refreshMaterial={{
+                            refresh: refreshMaterial,
+                            title: selectedApp.ciPipelineName,
+                            pipelineId: +selectedApp.ciPipelineId,
+                        }}
+                        ciPipelineId={+selectedApp.ciPipelineId}
+                    />
+                    {renderCacheSection()}
+                </>
+            )
+        } else {
+            return null
+        }
+    }
+
+    const renderAppName = (app: BulkCIDetailType, index: number): JSX.Element | null => {
+        return (
+            <div className="fw-6 fs-13 cn-9 pt-12 pb-12" onClick={changeApp} data-index={index}>
+                {app.name}
+                {app.warningMessage && (
+                    <span className="flex left cy-7 fw-4 fs-12">
+                        <Warning className="icon-dim-12 warning-icon-y7 mr-4" />
+                        {app.warningMessage}
+                    </span>
+                )}
+                {app.appId !== selectedApp.appId && app.errorMessage && (
+                    <span className="flex left cr-5 fw-4 fs-12">
+                        <Error className="icon-dim-12 mr-4 mw-14" />
+                        <span className="dc__block dc__ellipsis-right">{app.errorMessage}</span>
+                    </span>
+                )}
+            </div>
+        )
+    }
+
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
@@ -319,60 +428,13 @@ export default function BulkCITrigger({
                         </div>
                         {appList.map((app, index) => (
                             <div
-                                className={`material-list pr-12 pl-12 ${
+                                className={`material-list pr-12 pl-12 pb-12 ${
                                     app.appId === selectedApp.appId ? 'dc__window-bg' : 'dc__border-bottom-n1 cursor'
                                 }`}
                                 key={`app-${index}`}
                             >
-                                <div className="fw-6 fs-13 cn-9 pt-12 pb-12" onClick={changeApp} data-index={index}>
-                                    {app.name}
-                                    {app.warningMessage && (
-                                        <span className="flex left cy-7 fw-4 fs-12">
-                                            <Warning className="icon-dim-12 warning-icon-y7 mr-4" />
-                                            {app.warningMessage}
-                                        </span>
-                                    )}
-                                    {app.appId !== selectedApp.appId && app.errorMessage && (
-                                        <span className="flex left cr-5 fw-4 fs-12">
-                                            <Error className="icon-dim-12 mr-4 mw-14" />
-                                            <span className="dc__block dc__ellipsis-right">{app.errorMessage}</span>
-                                        </span>
-                                    )}
-                                </div>
-                                {app.appId === selectedApp.appId && (
-                                    <>
-                                        {!!selectedMaterialList.length && !showRegexModal && (
-                                            <MaterialSource
-                                                material={selectedMaterialList}
-                                                selectMaterial={selectMaterial}
-                                                refreshMaterial={{
-                                                    refresh: refreshMaterial,
-                                                    title: app.ciPipelineName,
-                                                    pipelineId: +app.ciPipelineId,
-                                                }}
-                                                ciPipelineId={+app.ciPipelineId}
-                                            />
-                                        )}
-                                        {!selectedApp.isLinkedCI && !selectedApp.isWebhookCI && !showRegexModal && (
-                                            <div className="flex left mt-12 dc__border-top pt-12 pb-12">
-                                                <input
-                                                    type="checkbox"
-                                                    className="mt-0-imp cursor"
-                                                    data-app-id={app.appId}
-                                                    checked={appIgnoreCache?.[app.appId]}
-                                                    id={`chkValidate-${app.appId}`}
-                                                    onChange={handleChange}
-                                                />
-                                                <label
-                                                    className="fs-13 fw-4 cn-9 ml-10 mb-0"
-                                                    htmlFor={`chkValidate-${app.appId}`}
-                                                >
-                                                    Ignore cache
-                                                </label>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
+                                {renderAppName(app, index)}
+                                {renderSelectedAppMaterial(app.appId, selectedMaterialList)}
                             </div>
                         ))}
                     </div>
@@ -395,9 +457,32 @@ export default function BulkCITrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
+                className={`dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 ${
+                    !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
+                        ? 'dc__content-space'
+                        : ''
+                }`}
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
+                {!blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled && (
+                    <div className="flexbox flex-align-center">
+                        <Storage className="icon-dim-24 mr-8" />
+                        <div>
+                            <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
+                            <div className="fw-4 fs-12 flexbox">
+                                <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
+                                <a
+                                    className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
+                                    href={DOCUMENTATION.BLOB_STORAGE}
+                                    target="_blank"
+                                >
+                                    {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
+                                </a>
+                                <OpenInNew className="icon-dim-16 mt-3 ml-8" />
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <button className="cta flex h-36" onClick={onClickStartBuild} disabled={isStartBuildDisabled()}>
                     {isLoading ? (
                         <Progressing />
