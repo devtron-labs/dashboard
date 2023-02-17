@@ -87,8 +87,7 @@ export default function BulkCITrigger({
     }, [outsideClickHandler])
 
     useEffect(() => {
-        for (let index = 0; index < appList.length; index++) {
-            const _app = appList[index]
+        for (const _app of appList) {
             appIgnoreCache[_app.ciPipelineId] = false
         }
         getMaterialData()
@@ -439,7 +438,7 @@ export default function BulkCITrigger({
                                 className={`material-list pr-12 pl-12 pb-12 ${
                                     app.appId === selectedApp.appId ? 'dc__window-bg' : 'dc__border-bottom-n1 cursor'
                                 }`}
-                                key={`app-${index}`}
+                                key={`app-${app.appId}`}
                             >
                                 {renderAppName(app, index)}
                                 {renderSelectedAppMaterial(app.appId, selectedMaterialList)}

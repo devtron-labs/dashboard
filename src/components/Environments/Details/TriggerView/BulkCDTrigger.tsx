@@ -114,7 +114,7 @@ export default function BulkCDTrigger({
                     </div>
                     {appList.map((app, index) => (
                         <div
-                            key={`app-${index}`}
+                            key={`app-${app.appId}`}
                             className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 ${
                                 app.appId === selectedApp.appId ? 'dc__window-bg' : ''
                             } ${!app.notFoundMessage && app.appId !== selectedApp.appId ? 'cursor' : ''}`}

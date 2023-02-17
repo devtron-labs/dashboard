@@ -33,7 +33,7 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
                     <div className="fs-12 fw-6 cn-7">Message</div>
                 </div>
                 {responseList.map((response) => (
-                    <div className="response-row pt-8 pb-8">
+                    <div className="response-row pt-8 pb-8" key={`response-${response.appId}`}>
                         <div className="fs-13 fw-4 cn-9">{response.appName}</div>
                         <div className="flex left fs-13 fw-4 cn-9">
                             {renderStatusIcon(response)}
@@ -48,8 +48,7 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
 
     const handleRetryBuild = (): void => {
         const appsToRetry: Record<number, boolean> = {}
-        for (let index = 0; index < responseList.length; index++) {
-            const response = responseList[index]
+        for (const response of responseList) {
             if (response.status === BulkResponseStatus.FAIL) {
                 appsToRetry[response.appId] = true
             }

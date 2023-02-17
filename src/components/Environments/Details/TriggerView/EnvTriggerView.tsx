@@ -36,7 +36,6 @@ import {
     createGitCommitUrl,
     ErrorScreenManager,
     ISTTimeModal,
-    mapByKey,
     PopupMenu,
     preventBodyScroll,
     Progressing,
@@ -280,7 +279,7 @@ export default function EnvTriggerView() {
                                 </div>
                                 <div className="fs-13 fw-4 cn-7">
                                     {selectedAppList.map((app, index) => (
-                                        <span key={`selected-app-${index}`}>
+                                        <span key={`selected-app-${app.id}`}>
                                             {app.name}
                                             {index !== selectedAppList.length - 1 && <span>, </span>}
                                         </span>
@@ -676,14 +675,13 @@ export default function EnvTriggerView() {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         setLoading(true)
         let node
-        for (let i = 0; i < workflows.length; i++) {
-            let workflow = workflows[i]
-            node = workflow.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
+        for (const _wf of workflows) {
+            node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
             if (node) break
         }
 
         const pipelineId = node.id
-        const ciArtifact = node[materialType].find((artifact) => artifact.isSelected == true)
+        const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
         if (selectedAppID && pipelineId && ciArtifact.id) {
             triggerCDNode(pipelineId, ciArtifact.id, selectedAppID.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
@@ -717,33 +715,34 @@ export default function EnvTriggerView() {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CITriggered)
         setLoading(true)
         let node, dockerfileConfiguredGitMaterialId
-        for (let i = 0; i < workflows.length; i++) {
-            node = workflows[i].nodes.find((node) => {
+        for (const wf of workflows) {
+            node = wf.nodes.find((node) => {
                 return node.type === selectedCINode.type && +node.id == selectedCINode.id
             })
 
             if (node) {
-                dockerfileConfiguredGitMaterialId = workflows[i].ciConfiguredGitMaterialId
+                dockerfileConfiguredGitMaterialId = wf.ciConfiguredGitMaterialId
                 break
             }
         }
+
         const gitMaterials = new Map<number, string[]>()
         const ciPipelineMaterials = []
-        for (let i = 0; i < node.inputMaterialList.length; i++) {
-            gitMaterials[node.inputMaterialList[i].gitMaterialId] = [
-                node.inputMaterialList[i].gitMaterialName.toLowerCase(),
-                node.inputMaterialList[i].value,
+        for (const _inputMaterial of node.inputMaterialList) {
+            gitMaterials[_inputMaterial.gitMaterialId] = [
+                _inputMaterial.gitMaterialName.toLowerCase(),
+                _inputMaterial.value,
             ]
-            if (node.inputMaterialList[i]) {
-                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
+            if (_inputMaterial) {
+                if (_inputMaterial.value === DEFAULT_GIT_BRANCH_VALUE) continue
+                const history = _inputMaterial.history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
-                    history.push(node.inputMaterialList[i].history[0])
+                    history.push(_inputMaterial.history[0])
                 }
 
                 history.forEach((element) => {
                     const historyItem = {
-                        Id: node.inputMaterialList[i].id,
+                        Id: _inputMaterial.id,
                         GitCommit: {
                             Commit: element.commit,
                         },
@@ -939,8 +938,8 @@ export default function EnvTriggerView() {
         }
 
         let targetNode
-        for (let i = 0; i < workflows.length; i++) {
-            targetNode = workflows[i].nodes.find(
+        for (const _wf of workflows) {
+            targetNode = _wf.nodes.find(
                 (node) =>
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
                     (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type),
@@ -1068,15 +1067,12 @@ export default function EnvTriggerView() {
         if ((selectedCINode?.id && showCIModal) || showMaterialRegexModal) {
             let nd: NodeAttr, _appID
             const configuredMaterialList = new Map<number, Set<number>>()
-            for (let i = 0; i < workflows.length; i++) {
-                nd = workflows[i].nodes.find(
-                    (node) => +node.id == selectedCINode.id && node.type === selectedCINode.type,
-                )
-
+            for (const _wf of workflows) {
+                nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
                 if (nd) {
-                    configuredMaterialList[workflows[i].name] = new Set<number>()
-                    _appID = workflows[i].appId
-                    handleSourceNotConfigured(configuredMaterialList, workflows[i], nd[materialType])
+                    configuredMaterialList[_wf.name] = new Set<number>()
+                    _appID = _wf.appId
+                    handleSourceNotConfigured(configuredMaterialList, _wf, nd[materialType])
                     break
                 }
             }
@@ -1217,10 +1213,10 @@ export default function EnvTriggerView() {
         const _appIdMap = new Map<string, string>(),
             nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
-        for (let i = 0; i < workflows.length; i++) {
-            if (workflows[i].isSelected && (!appsToRetry || appsToRetry[workflows[i].appId])) {
-                triggeredAppList.push({ appId: workflows[i].appId, appName: workflows[i].name })
-                const _cdNode = workflows[i].nodes.find(
+        for (const _wf of workflows) {
+            if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
+                triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
+                const _cdNode = _wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
                 let _selectedNode: NodeAttr
@@ -1234,7 +1230,7 @@ export default function EnvTriggerView() {
 
                 if (_selectedNode) {
                     nodeList.push(_selectedNode)
-                    _appIdMap.set(_selectedNode.id, workflows[i].appId.toString())
+                    _appIdMap.set(_selectedNode.id, _wf.appId.toString())
                 }
             }
         }
@@ -1396,16 +1392,16 @@ export default function EnvTriggerView() {
         let node, dockerfileConfiguredGitMaterialId
         const nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
-        for (let i = 0; i < workflows.length; i++) {
-            if (workflows[i].isSelected && (!appsToRetry || appsToRetry[workflows[i].appId])) {
-                triggeredAppList.push({ appId: workflows[i].appId, appName: workflows[i].name })
-                node = workflows[i].nodes.find((node) => {
+        for (const _wf of workflows) {
+            if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
+                triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
+                node = _wf.nodes.find((node) => {
                     return node.type === WorkflowNodeType.CI
                 })
 
                 if (node && !node.isLinkedCI) {
                     nodeList.push(node)
-                    dockerfileConfiguredGitMaterialId = workflows[i].ciConfiguredGitMaterialId
+                    dockerfileConfiguredGitMaterialId = _wf.ciConfiguredGitMaterialId
                 }
             }
         }
@@ -1462,12 +1458,12 @@ export default function EnvTriggerView() {
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal && selectedCDNode?.id) {
             let node: NodeAttr, _appID
-            for (let i = 0; i < workflows.length; i++) {
-                node = workflows[i].nodes.find((el) => {
+            for (const _wf of workflows) {
+                node = _wf.nodes.find((el) => {
                     return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
                 })
                 if (node) {
-                    _appID = workflows[i].appId
+                    _appID = _wf.appId
                     break
                 }
             }
