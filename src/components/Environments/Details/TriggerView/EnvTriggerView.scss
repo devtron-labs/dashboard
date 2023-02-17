@@ -42,14 +42,21 @@
             }
         }
     }
+    .response-list-container {
+        .response-row {
+            display: grid;
+            grid-template-columns: repeat(2, 200px) auto;
+            grid-column-gap: 16px;
+        }
+    }
 }
 
 .env-modal-width {
     width: 75%;
     min-width: 1024px;
     max-width: 1200px;
-    &.full-height{
-      z-index: 1;
-      height: calc(100vh - 55px);
+    &.full-height {
+        z-index: 1;
+        height: calc(100vh - 55px);
     }
 }

@@ -50,14 +50,14 @@ import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMes
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { ENV_TRIGGER_VIEW_GA_EVENTS } from '../../Constants'
+import { BulkCIResponseStatusText, BulkResponseStatus, ENV_TRIGGER_VIEW_GA_EVENTS } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
 import './EnvTriggerView.scss'
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
-import { BulkCDDetailType, BulkCIDetailType } from '../../Environments.types'
+import { BulkCDDetailType, BulkCIDetailType, ResponseRowType } from '../../Environments.types'
 
 let timerRef
 let inprogressStatusTimer
@@ -90,6 +90,7 @@ export default function EnvTriggerView() {
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
+    const [responseList, setResponseList] = useState<ResponseRowType[]>([])
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -204,9 +205,9 @@ export default function EnvTriggerView() {
             setPageViewType(ViewType.LOADING)
             getWorkflowsData()
         }
-        return ()=>{
-          timerRef && clearInterval(timerRef)
-          inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        return () => {
+            timerRef && clearInterval(timerRef)
+            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         }
     }, [envId])
 
@@ -350,6 +351,8 @@ export default function EnvTriggerView() {
     ) => {
         if (_materialList?.length > 0) {
             _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
+        } else {
+            _materialList = []
         }
         for (const material of wf.gitMaterials) {
             if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
@@ -1042,6 +1045,7 @@ export default function EnvTriggerView() {
 
     const hideBulkCDModal = () => {
         setShowBulkCDModal(false)
+        setResponseList([])
     }
 
     const onShowBulkCDModal = (e) => {
@@ -1053,6 +1057,7 @@ export default function EnvTriggerView() {
 
     const hideBulkCIModal = () => {
         setShowBulkCIModal(false)
+        setResponseList([])
     }
 
     const onShowBulkCIModal = () => {
@@ -1177,6 +1182,7 @@ export default function EnvTriggerView() {
                 changeTab={changeTab}
                 toggleSourceInfo={toggleSourceInfo}
                 selectImage={selectImage}
+                responseList={responseList}
             />
         )
     }
@@ -1205,30 +1211,31 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
     }
 
-    const onClickTriggerBulkCD = () => {
+    const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
         setLoading(true)
-        const _appIdMap = new Map<string, string>()
-        const nodeList: NodeAttr[] = []
+        const _appIdMap = new Map<string, string>(),
+            nodeList: NodeAttr[] = [],
+            triggeredAppList: { appId: number; appName: string }[] = []
         for (let i = 0; i < workflows.length; i++) {
-            if (!workflows[i].isSelected) {
-                continue
-            }
-            const _cdNode = workflows[i].nodes.find(
-                (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-            )
-            let _selectedNode: NodeAttr
-            if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                _selectedNode = _cdNode.preNode
-            } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                _selectedNode = _cdNode
-            } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                _selectedNode = _cdNode.preNode
-            }
+            if (workflows[i].isSelected && (!appsToRetry || appsToRetry[workflows[i].appId])) {
+                triggeredAppList.push({ appId: workflows[i].appId, appName: workflows[i].name })
+                const _cdNode = workflows[i].nodes.find(
+                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
+                )
+                let _selectedNode: NodeAttr
+                if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                    _selectedNode = _cdNode.preNode
+                } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                    _selectedNode = _cdNode
+                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                    _selectedNode = _cdNode.preNode
+                }
 
-            if (_selectedNode) {
-                nodeList.push(_selectedNode)
-                _appIdMap.set(_selectedNode.id, workflows[i].appId.toString())
+                if (_selectedNode) {
+                    nodeList.push(_selectedNode)
+                    _appIdMap.set(_selectedNode.id, workflows[i].appId.toString())
+                }
             }
         }
         const _CDTriggerPromiseList = []
@@ -1240,26 +1247,52 @@ export default function EnvTriggerView() {
                 )
             }
         })
-        if (_CDTriggerPromiseList.length) {
-            Promise.allSettled(_CDTriggerPromiseList)
-                .then((response: any) => {
-                    //if (response.result) {
-                    toast.success('Deployment Initiated')
-                    setShowBulkCDModal(false)
-                    setLoading(false)
-                    setErrorCode(response.code)
-                    preventBodyScroll(false)
-                    getWorkflowStatusData(workflows)
-                    // }
+        handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList)
+    }
+
+    const handleBulkTrigger = (promiseList: any[], triggeredAppList: { appId: number; appName: string }[]): void => {
+        if (promiseList.length) {
+            Promise.allSettled(promiseList).then((responses: any) => {
+                const _responseList = []
+                responses.forEach((response, index) => {
+                    if (response.status === 'fulfilled') {
+                        _responseList.push({
+                            appId: triggeredAppList[index].appId,
+                            appName: triggeredAppList[index].appName,
+                            statusText: BulkCIResponseStatusText[BulkResponseStatus.PASS],
+                            status: BulkResponseStatus.PASS,
+                            message: '',
+                        })
+                    } else {
+                        const errorReason = response.reason
+                        if (errorReason.code === 403) {
+                            _responseList.push({
+                                appId: triggeredAppList[index].appId,
+                                appName: triggeredAppList[index].appName,
+                                statusText: BulkCIResponseStatusText[BulkResponseStatus.UNAUTHORIZE],
+                                status: BulkResponseStatus.UNAUTHORIZE,
+                                message: errorReason.errors[0].userMessage,
+                            })
+                        } else {
+                            _responseList.push({
+                                appId: triggeredAppList[index].appId,
+                                appName: triggeredAppList[index].appName,
+                                statusText: BulkCIResponseStatusText[BulkResponseStatus.FAIL],
+                                status: BulkResponseStatus.FAIL,
+                                message: errorReason.errors[0].userMessage,
+                            })
+                        }
+                    }
                 })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-                    setLoading(false)
-                    setErrorCode(errors.code)
-                })
+                setResponseList(_responseList)
+                setLoading(false)
+                preventBodyScroll(false)
+                getWorkflowStatusData(workflows)
+            })
         } else {
             setLoading(false)
             setShowBulkCDModal(false)
+            setShowBulkCIModal(false)
         }
     }
 
@@ -1340,6 +1373,7 @@ export default function EnvTriggerView() {
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
+                responseList={responseList}
             />
         )
     }
@@ -1356,22 +1390,23 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
     }
 
-    const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>) => {
+    const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setLoading(true)
         let node, dockerfileConfiguredGitMaterialId
-        const nodeList: NodeAttr[] = []
+        const nodeList: NodeAttr[] = [],
+            triggeredAppList: { appId: number; appName: string }[] = []
         for (let i = 0; i < workflows.length; i++) {
-            if (!workflows[i].isSelected) {
-                continue
-            }
-            node = workflows[i].nodes.find((node) => {
-                return node.type === WorkflowNodeType.CI
-            })
+            if (workflows[i].isSelected && (!appsToRetry || appsToRetry[workflows[i].appId])) {
+                triggeredAppList.push({ appId: workflows[i].appId, appName: workflows[i].name })
+                node = workflows[i].nodes.find((node) => {
+                    return node.type === WorkflowNodeType.CI
+                })
 
-            if (node && !node.isLinkedCI) {
-                nodeList.push(node)
-                dockerfileConfiguredGitMaterialId = workflows[i].ciConfiguredGitMaterialId
+                if (node && !node.isLinkedCI) {
+                    nodeList.push(node)
+                    dockerfileConfiguredGitMaterialId = workflows[i].ciConfiguredGitMaterialId
+                }
             }
         }
         const _CITriggerPromiseList = []
@@ -1421,29 +1456,7 @@ export default function EnvTriggerView() {
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
-        if (_CITriggerPromiseList.length) {
-            Promise.allSettled(_CITriggerPromiseList)
-                .then((response: any) => {
-                    // if (response.result) {
-                    toast.success('Pipeline Triggered')
-                    setShowBulkCIModal(false)
-                    setLoading(false)
-                    setErrorCode(response.code)
-                    preventBodyScroll(false)
-                    getWorkflowStatusData(workflows)
-                    //}
-                })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-
-                    setLoading(false)
-
-                    setErrorCode(errors.code)
-                })
-        } else {
-            setLoading(false)
-            setShowBulkCIModal(false)
-        }
+        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList)
     }
 
     const renderCDMaterial = (): JSX.Element | null => {

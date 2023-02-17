@@ -1,25 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, noop, Progressing, showError, useAsync } from '../../../common'
+import { Drawer, noop, Progressing, showError } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { ModuleNameMap } from '../../../../config'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
-import {
-    DeploymentNodeType,
-    MATERIAL_TYPE,
-} from '../../../app/details/triggerView/types'
+import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../Environments.types'
-
-
-const ButtonTitle = {
-    [DeploymentNodeType.PRECD]: 'Trigger pre-deployment stage',
-    [DeploymentNodeType.CD]: 'Deploy',
-    [DeploymentNodeType.POSTCD]: 'Trigger post-deployment stage',
-}
+import { ButtonTitle } from '../../Constants'
+import TriggerResponseModal from './TriggerResponseModal'
 
 export default function BulkCDTrigger({
     stage,
@@ -30,13 +20,13 @@ export default function BulkCDTrigger({
     changeTab,
     toggleSourceInfo,
     selectImage,
+    responseList
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.notFoundMessage) || appList[0],
     )
-    const [, isSecurityModuleInstalled] = useAsync(() => getModuleConfigured(ModuleNameMap.SECURITY), [])
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
@@ -151,7 +141,7 @@ export default function BulkCDTrigger({
                         envName={selectedApp.envName}
                         isLoading={isLoading}
                         changeTab={changeTab}
-                        triggerDeploy={onClickTriggerBulkCD}
+                        triggerDeploy={onClickStartDeploy}
                         onClickRollbackMaterial={noop}
                         closeCDModal={closePopup}
                         selectImage={selectImage}
@@ -166,13 +156,17 @@ export default function BulkCDTrigger({
         )
     }
 
+    const onClickStartDeploy = (): void => {
+      onClickTriggerBulkCD()
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
                 className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
-                <button className="cta flex h-36" onClick={onClickTriggerBulkCD}>
+                <button className="cta flex h-36" onClick={onClickStartDeploy}>
                     {isLoading ? (
                         <Progressing />
                     ) : (
@@ -194,8 +188,19 @@ export default function BulkCDTrigger({
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="dc__window-bg h-100 bulk-ci-trigger-container" ref={ciTriggerDetailRef}>
                 {renderHeaderSection()}
-                {renderBodySection()}
-                {renderFooterSection()}
+                {responseList.length ? (
+                    <TriggerResponseModal
+                        closePopup={closePopup}
+                        responseList={responseList}
+                        isLoading={isLoading}
+                        onClickRetryBuild={onClickTriggerBulkCD}
+                    />
+                ) : (
+                    <>
+                        {renderBodySection()}
+                        {renderFooterSection()}
+                    </>
+                )}
             </div>
         </Drawer>
     )

@@ -23,6 +23,7 @@ import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../Environments.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import Tippy from '@tippyjs/react'
+import TriggerResponseModal from './TriggerResponseModal'
 
 export default function BulkCITrigger({
     appList,
@@ -35,6 +36,7 @@ export default function BulkCITrigger({
     isWebhookPayloadLoading,
     hideWebhookModal,
     isShowRegexModal,
+    responseList,
 }: BulkCITriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
@@ -148,7 +150,10 @@ export default function BulkCITrigger({
         setChangeBranchClicked(false)
     }
 
-    const hideBranchEditModal = (): void => {
+    const hideBranchEditModal = (e?): void => {
+        if (e) {
+            stopPropagation(e)
+        }
         setShowRegexModal(false)
         setChangeBranchClicked(false)
     }
@@ -255,6 +260,9 @@ export default function BulkCITrigger({
                         hideHeaderFooter={true}
                     />
                     <div className="flex right pr-20 pb-20">
+                        <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal}>
+                            Cancel
+                        </button>
                         <button className="cta h-28 lh-28-imp" onClick={saveBranchName}>
                             Save
                         </button>
@@ -450,6 +458,10 @@ export default function BulkCITrigger({
         onClickTriggerBulkCI(appIgnoreCache)
     }
 
+    const onClickRetryBuild = (appsToRetry): void => {
+        onClickTriggerBulkCI(appIgnoreCache, appsToRetry)
+    }
+
     const isStartBuildDisabled = (): boolean => {
         return appList.some((app) => app.errorMessage)
     }
@@ -501,8 +513,19 @@ export default function BulkCITrigger({
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="dc__window-bg h-100 bulk-ci-trigger-container" ref={ciTriggerDetailRef}>
                 {renderHeaderSection()}
-                {renderBodySection()}
-                {renderFooterSection()}
+                {responseList.length ? (
+                    <TriggerResponseModal
+                        closePopup={closePopup}
+                        responseList={responseList}
+                        isLoading={isLoading}
+                        onClickRetryBuild={onClickRetryBuild}
+                    />
+                ) : (
+                    <>
+                        {renderBodySection()}
+                        {renderFooterSection()}
+                    </>
+                )}
             </div>
         </Drawer>
     )
