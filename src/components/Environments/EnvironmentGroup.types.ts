@@ -3,6 +3,10 @@ export interface ConfigAppList {
     name: string
  }
 
+ export interface EnvApp {
+   totalCount: number
+   envList: EnvAppList[]
+ }
  export interface EnvAppList {
     id: number,
     environment_name: string,

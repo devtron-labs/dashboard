@@ -1,13 +1,13 @@
 import { Routes } from "../../config";
 import { get } from "../../services/api";
 import {ResponseType} from '../../services/service.types';
-import { ConfigAppList, EnvAppList } from "./EnvironmentGroup.types";
+import { ConfigAppList, EnvApp } from "./EnvironmentGroup.types";
 
 export interface ConfigAppListType extends ResponseType {
     result?: ConfigAppList[]
 }
-export interface EnvAppListType extends ResponseType {
-    result?: EnvAppList[]
+export interface EnvAppType extends ResponseType {
+    result?: EnvApp
 }
 
 export const getConfigAppList = (envId: number): Promise<ConfigAppListType> => {
@@ -20,7 +20,7 @@ export const getEnvAppList = (params: {
     clusterIds?: string
     offset?: string
     size?: string
-}): Promise<EnvAppListType> => {
+}): Promise<EnvAppType> => {
     const urlParams = Object.entries(params).map(([key, value]) => {
         if (!value) return
         return `${key}=${value}`

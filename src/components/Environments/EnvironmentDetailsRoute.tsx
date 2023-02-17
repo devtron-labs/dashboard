@@ -19,7 +19,7 @@ export default function EnvironmentDetailsRoute() {
 
     useEffect(() => {
         if(envList?.result){
-            let environmentName = envList.result.find((env) => env.id === +envId)
+            const environmentName = envList.result.envList?.find((env) => env.id === +envId)
             setEnvName(environmentName.environment_name)
         }
     },[envList])

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-environment-list.svg'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { URLS } from '../../../config'
 import { Pagination, Progressing, useAsync } from '../../common'
-import { EnvAppListType, getEnvAppList } from '../EnvironmentListService'
+import { getEnvAppList } from '../EnvironmentListService'
 import { EnvAppList } from '../EnvironmentGroup.types'
 import { toast } from 'react-toastify'
 
@@ -13,6 +12,7 @@ export default function EnvironmentsListView({ clearSearch }) {
     const location = useLocation()
     const history = useHistory()
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
+    const [envCount, setEnvCount] = useState<number>()
     const [paginationParamsChange, setPaginationParamsChange] = useState({ pageSize: 20, offset: 0 })
     const params = new URLSearchParams(location.search)
     const paramObj = {
@@ -33,15 +33,18 @@ export default function EnvironmentsListView({ clearSearch }) {
 
     useEffect(() => {
         if (appList?.result) {
-            setFilteredEnvList(appList.result)
+            setFilteredEnvList(appList.result.envList)
+            setEnvCount(appList.result.totalCount)
             setPaginationParamsChange({ pageSize: +params.get('pageSize') || 20, offset: +params.get('offset') })
         } else {
             setFilteredEnvList([])
         }
-    }, [appList])
+    }, [appList?.result])
 
     const changePage = (pageNo: number): void => {
-        const newOffset = +params.get('pageSize') * (pageNo - 1)
+        const pageSize = params.get('pageSize') || '20'
+        const newOffset = (+pageSize) * (pageNo - 1)
+        params.set('pageSize', pageSize)
         params.set('offset', newOffset.toString())
         history.push(`${match.url}?${params.toString()}`)
     }
@@ -53,10 +56,10 @@ export default function EnvironmentsListView({ clearSearch }) {
     }
 
     const renderPagination = () => {
-        if (filteredEnvList.length > 20) {
+        if (envCount >= 20) {
             return (
                 <Pagination
-                    size={filteredEnvList.length}
+                    size={envCount}
                     pageSize={paginationParamsChange.pageSize}
                     offset={paginationParamsChange.offset}
                     changePage={changePage}
