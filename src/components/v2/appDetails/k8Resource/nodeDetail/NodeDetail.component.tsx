@@ -21,6 +21,7 @@ import './nodeDetail.css'
 function NodeDetailComponent({
     loadingResources,
     isResourceBrowserView,
+    markTabActiveByIdentifier,
     selectedResource,
     logSearchTerms,
     setLogSearchTerms,
@@ -76,7 +77,9 @@ function NodeDetailComponent({
                 }
 
                 if (Array.isArray(result.manifest.spec.initContainers)) {
-                    _resourceContainers.push(...result.manifest.spec.initContainers.map((_container) => _container.name))
+                    _resourceContainers.push(
+                        ...result.manifest.spec.initContainers.map((_container) => _container.name),
+                    )
                 }
             }
             setResourceContainers(_resourceContainers)
@@ -102,11 +105,9 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(
-            isResourceBrowserView ? params.node : params.podName,
-            params.nodeType,
-            _url,
-        )
+        const isTabFound = isResourceBrowserView
+            ? markTabActiveByIdentifier(params.node, params.nodeType, _url)
+            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
 
         if (!isTabFound) {
             setTimeout(() => {

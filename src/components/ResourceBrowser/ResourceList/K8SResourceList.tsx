@@ -12,7 +12,6 @@ import {
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
@@ -39,6 +38,7 @@ export function K8SResourceList({
     handleFilterChanges,
     clearSearch,
     isCreateModalOpen,
+    addTab,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -102,7 +102,7 @@ export function K8SResourceList({
             .slice(0, group ? -2 : -1)
             .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(kind, resourceName, _url)
+        const isAdded = addTab(kind, resourceName, _url)
 
         if (isAdded) {
             updateNodeSelectionData(_nodeSelectionData)

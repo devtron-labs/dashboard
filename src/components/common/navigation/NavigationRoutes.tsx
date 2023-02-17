@@ -208,6 +208,23 @@ export default function NavigationRoutes() {
         getCurrentServerInfo(null, true)
     }, [])
 
+    useEffect(() => {
+        const persistedTabs = localStorage.getItem('persisted-tabs-data')
+        if (persistedTabs) {
+            try {
+                const parsedTabsData = JSON.parse(persistedTabs)
+                if (
+                    location.pathname !== parsedTabsData.key &&
+                    !location.pathname.startsWith(`${parsedTabsData.key}/`)
+                ) {
+                    localStorage.removeItem('persisted-tabs-data')
+                }
+            } catch (e) {
+                localStorage.removeItem('persisted-tabs-data')
+            }
+        }
+    }, [location.pathname])
+
     const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
         if (
             currentServerInfo.fetchingServerInfo ||
@@ -407,7 +424,13 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                 <Switch>
                     <Route
                         path={`${path}/:appType`}
-                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} isArgoInstalled={isArgoInstalled} appListCount={appListCount} />}
+                        render={() => (
+                            <NewAppList
+                                isSuperAdmin={isSuperAdmin}
+                                isArgoInstalled={isArgoInstalled}
+                                appListCount={appListCount}
+                            />
+                        )}
                     />
                     <Route exact path="">
                         <RedirectToAppList />

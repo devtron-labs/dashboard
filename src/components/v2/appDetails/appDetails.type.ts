@@ -377,6 +377,7 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
+    markTabActiveByIdentifier?: (objectName: string, objectKind?: string, tabUrl?: string) => boolean
     selectedResource?: SelectedResourceType
 }
 

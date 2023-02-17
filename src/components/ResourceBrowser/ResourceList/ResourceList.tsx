@@ -47,8 +47,7 @@ import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_c
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { CreateResource } from './CreateResource'
-import AppDetailsStore, { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
-import NodeTreeTabList from '../../v2/appDetails/k8Resource/NodeTreeTabList'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
 import Tippy from '@tippyjs/react'
@@ -60,6 +59,7 @@ import searchWorker from '../../../config/searchWorker'
 import WebWorker from '../../app/WebWorker'
 import { ShortcutProvider } from 'react-keybind'
 import '../ResourceBrowser.scss'
+import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -71,6 +71,9 @@ export default function ResourceList() {
     }>()
     const { replace, push } = useHistory()
     const location = useLocation()
+    const { tabs, initTabs, addTab, markTabActiveByIdentifier, removeTabByIdentifier, updateTabUrl } = useTabs(
+        `${URLS.RESOURCE_BROWSER}`,
+    )
     const [loader, setLoader] = useState(false)
     const [clusterLoader, setClusterLoader] = useState(false)
     const [showErrorState, setShowErrorState] = useState(false)
@@ -114,12 +117,9 @@ export default function ResourceList() {
         getClusterData()
 
         // Initialize tabs on load
-        AppDetailsStore.initAppDetailsTabs(
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}`,
-            false,
-            false,
-            true,
-            nodeType,
+        initTabs(
+            AppDetailsTabs.k8s_Resources,
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
         )
         return (): void => {
             if (typeof window['crate']?.show === 'function') {
@@ -134,7 +134,7 @@ export default function ResourceList() {
     // Mark tab active on path change
     useEffect(() => {
         if (selectedResource && !node) {
-            AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+            markTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
         }
 
         if (location.pathname === URLS.RESOURCE_BROWSER) {
@@ -156,7 +156,8 @@ export default function ResourceList() {
     // Update K8sResources tab url on cluster/namespace/kind changes
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
-            AppDetailsStore.updateK8sResourcesTabUrl(
+            updateTabUrl(
+                AppDetailsTabs.k8s_Resources,
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
                     selectedNamespace.value
                 }/${selectedResource.gvk.Kind.toLowerCase()}/${
@@ -642,6 +643,7 @@ export default function ResourceList() {
                         loadingResources={resourceListLoader}
                         isResourceBrowserView={true}
                         selectedResource={getSelectedResourceData()}
+                        markTabActiveByIdentifier={markTabActiveByIdentifier}
                         logSearchTerms={logSearchTerms}
                         setLogSearchTerms={setLogSearchTerms}
                     />
@@ -705,6 +707,7 @@ export default function ResourceList() {
                     handleFilterChanges={handleFilterChanges}
                     clearSearch={clearSearch}
                     isCreateModalOpen={showCreateResourceModal}
+                    addTab={addTab}
                 />
             </div>
         )
@@ -756,7 +759,12 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left pt-10">
-                        <NodeTreeTabList logSearchTerms={logSearchTerms} setLogSearchTerms={setLogSearchTerms} />
+                        <DynamicTabs
+                            tabs={tabs}
+                            removeTabByIdentifier={removeTabByIdentifier}
+                            showTitleTippyKey={AppDetailsTabs.k8s_Resources}
+                            preventCloseKey={AppDetailsTabs.k8s_Resources}
+                        />
                     </div>
                     <div className="fs-13 flex pt-12 pb-12">
                         {!loader && !showErrorState && (

@@ -137,6 +137,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>) => void
     isCreateModalOpen: boolean
+    addTab: (objectKind: string, objectName: string, tabURL: string) => boolean
 }
 
 export interface ResourceBrowserActionMenuType {
