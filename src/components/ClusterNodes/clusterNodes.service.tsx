@@ -49,12 +49,12 @@ export const updateNodeManifest = (
     return put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 }
 
-export const clusterTerminalStart = (data): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
+export const clusterTerminalStart = (data, option): Promise<ResponseType> => {
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data, option)
 }
 
-export const clusterTerminalUpdate = (data): Promise<ResponseType> => {
-    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
+export const clusterTerminalUpdate = (data, option): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data, option)
 }
 
 export const clusterTerminalDisconnect = (terminalAccessId): Promise<ResponseType> => {

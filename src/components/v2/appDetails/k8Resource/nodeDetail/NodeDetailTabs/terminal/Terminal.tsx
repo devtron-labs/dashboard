@@ -32,7 +32,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [errorMessage, setErrorMessage] = useState({message: '', reason: ''})
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
-
+    const autoSelectNodeRef = useRef('')
+    
     useEffect(() => {
         if (!popupText) return
         setTimeout(() => setPopupText(false), 2000)
@@ -246,7 +247,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             setErrorMessage({message: '', reason: ''})
-            getNewSession() 
+            autoSelectNodeRef.current = terminalViewProps.terminalId
+            getNewSession()
         }
     }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
 
@@ -351,6 +353,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }, [terminalViewProps.isTerminalCleared])
 
     const getClusterData = (url, count) => {
+        if(autoSelectNodeRef.current !== terminalViewProps.terminalId) return
         if (
             clusterTimeOut &&
             (socketConnectionRef.current === SocketConnectionType.DISCONNECTED ||
@@ -469,25 +472,25 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const renderErrorMessageStrip = (errorMessage) => {
         if (errorMessage.message === 'timedOut') {
             return (
-                <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
-                    {TERMINAL_TEXT.CONNECTION_TIMEOUT}
+                <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
+                    {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
                     <u className="cursor" onClick={switchTOPodEventTab}>
                         {TERMINAL_TEXT.CHECK_POD_EVENTS}
-                    </u>
-                    {TERMINAL_TEXT.FOR_ERRORS}
+                    </u>&nbsp;
+                    {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
                     <u
                         className="cursor"
                         onClick={terminalViewProps.reconnectTerminal}
                     >
                         {TERMINAL_TEXT.RETRY_CONNECTION}
-                    </u>
+                    </u>&nbsp;
                     {TERMINAL_TEXT.CASE_OF_ERROR}
                 </div>
             )
         } else if (errorMessage.message === 'Terminated') {
             return (
                 <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
-                    {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}
+                    {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
                     <u className="cursor" onClick={terminalViewProps.reconnectTerminal}>
                         {TERMINAL_TEXT.INITIATE_CONNECTION}
                     </u>

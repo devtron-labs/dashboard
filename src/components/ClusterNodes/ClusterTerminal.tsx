@@ -117,14 +117,18 @@ export default function ClusterTerminal({
             return
         }
         try {
+            const abortController = new AbortController()
             isShellSwitched.current = false
             autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
             if (update) {
                 socketDisconnecting()
-                clusterTerminalUpdate({ ...payload, id: terminalAccessIdRef.current })
+                clusterTerminalUpdate({ ...payload, id: terminalAccessIdRef.current},{signal: abortController.signal})
                     .then((response) => {
                         terminalAccessIdRef.current = response.result.terminalAccessId
+                        if(abortController.signal.aborted) {
+                            return
+                        }
                         setTerminalCleared(true)
                         socketConnecting()
                         setPodCreated(true)
@@ -136,7 +140,7 @@ export default function ClusterTerminal({
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             } else {
-                clusterTerminalStart(payload)
+                clusterTerminalStart(payload,{signal: abortController.signal})
                     .then((response) => {
                         terminalAccessIdRef.current = response.result.terminalAccessId
                         setUpdate(true)
@@ -164,7 +168,10 @@ export default function ClusterTerminal({
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             }
-            toggleOptionChange()
+            
+            return () => {
+                abortController.abort()
+            }
         } catch (error) {
             showError(error)
             setUpdate(false)
@@ -207,12 +214,12 @@ export default function ClusterTerminal({
     function updateSelectedContainerName() {
         autoSelectNodeRef.current = null
         setSocketConnection(SocketConnectionType.DISCONNECTED)
-        setReconnect(!isReconnect)
         if (node) {
             if (node !== selectedNodeName.value) {
                 setSelectedNodeName({ label: node, value: node })
             }
         } else {
+            setReconnect(!isReconnect)
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
             setSelectedNodeName(nodeGroups[0].options[0])
@@ -296,6 +303,7 @@ export default function ClusterTerminal({
         socketConnecting()
         setConnectTerminal(true)
         setReconnect(!isReconnect)
+        setUpdate(false)
     }
 
     const reconnectStart = () => {
@@ -318,6 +326,7 @@ export default function ClusterTerminal({
 
     const onChangeNodes = (selected): void => {
         setSelectedNodeName(selected)
+        autoSelectNodeRef.current = null
         if (setSelectedNode) {
             setSelectedNode(selected.value)
         }
@@ -467,7 +476,7 @@ export default function ClusterTerminal({
 
                     {!isNodeDetailsPage && (
                         <>
-                            <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
+                        <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
                             <div style={{ minWidth: '145px' }}>
                                 <ReactSelect
                                     placeholder="Select Containers"

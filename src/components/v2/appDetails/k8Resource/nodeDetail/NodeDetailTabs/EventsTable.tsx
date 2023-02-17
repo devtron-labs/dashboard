@@ -21,7 +21,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView, errorV
                 return (
                     <div className="cn-0 ">
                         {errorValue.status === 'Terminated' && <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
-                            {TERMINAL_TEXT.POD_TERMINATED} {errorValue.errorReason}
+                            {TERMINAL_TEXT.POD_TERMINATED}&nbsp; {errorValue.errorReason}&nbsp;
                             <u className="cursor" onClick={reconnect}>
                                  {TERMINAL_TEXT.INITIATE_CONNECTION}
                             </u>
