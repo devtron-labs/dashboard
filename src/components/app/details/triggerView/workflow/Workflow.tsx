@@ -20,7 +20,7 @@ export class Workflow extends Component<WorkflowProps> {
                 true,
                 node.downstreams[0].split('-')[1],
             )
-            if (this.props.isFromENv) {
+            if (this.props.fromAppGrouping) {
                 window.open(ciPipelineURL, '_blank', 'noreferrer')
             } else {
                 this.props.history.push(ciPipelineURL)
@@ -107,7 +107,7 @@ export class Workflow extends Component<WorkflowProps> {
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
-                    isFromEnv={this.props.isFromENv}
+                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         } else if (node.isExternalCI) {
@@ -158,7 +158,7 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     branch={node.branch}
-                    isFromEnv={this.props.isFromENv}
+                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         }
@@ -190,7 +190,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineId={node.parentPipelineId}
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
-                isFromEnv={this.props.isFromENv}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -216,7 +216,7 @@ export class Workflow extends Component<WorkflowProps> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
-                isFromEnv={this.props.isFromENv}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -259,7 +259,7 @@ export class Workflow extends Component<WorkflowProps> {
                 style={{ minWidth: `${this.props.width}px` }}
             >
                 <div className="workflow__header">
-                    {this.props.isFromENv ? (
+                    {this.props.fromAppGrouping ? (
                         <>
                             <input
                                 type="checkbox"

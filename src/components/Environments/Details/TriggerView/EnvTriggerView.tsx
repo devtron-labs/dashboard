@@ -5,7 +5,6 @@ import {
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
     SourceTypeMap,
-    SOURCE_NOT_CONFIGURED,
     ViewType,
 } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
@@ -57,6 +56,7 @@ import './EnvTriggerView.scss'
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
 import { BulkCDDetailType, BulkCIDetailType, ResponseRowType } from '../../Environments.types'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../TriggerView.utils'
 
 let timerRef
 let inprogressStatusTimer
@@ -128,71 +128,18 @@ export default function EnvTriggerView() {
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
         getWorkflowStatus(envId)
             .then((response) => {
-                let ciMap = {}
-                let cdMap = {}
-                let preCDMap = {}
-                let postCDMap = {}
-                let allCIs = response?.result?.ciWorkflowStatus || []
-                let allCDs = response?.result?.cdWorkflowStatus || []
-                let cicdInProgress = false
-                //Create maps from Array
-                if (allCIs.length) {
-                    allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = {
-                            status: pipeline.ciStatus,
-                            storageConfigured: pipeline.storageConfigured || false,
-                        }
-                        if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
-                            cicdInProgress = true
-                        }
-                    })
-                }
-                if (allCDs.length) {
-                    allCDs.forEach((pipeline) => {
-                        if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
-                        if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status
-                        if (pipeline.deploy_status) cdMap[pipeline.pipeline_id] = pipeline.deploy_status
-                        if (
-                            !cicdInProgress &&
-                            (pipeline.pre_status === 'Starting' ||
-                                pipeline.pre_status === 'Running' ||
-                                pipeline.deploy_status === 'Progressing' ||
-                                pipeline.post_status === 'Starting' ||
-                                pipeline.post_status === 'Running')
-                        ) {
-                            cicdInProgress = true
-                        }
-                    })
-                }
-                //Update Workflow using maps
-                const _workflows = workflowsList.map((wf) => {
-                    wf.nodes = wf.nodes.map((node) => {
-                        switch (node.type) {
-                            case 'CI':
-                                node['status'] = ciMap[node.id]?.status
-                                node['storageConfigured'] = ciMap[node.id]?.storageConfigured
-                                break
-                            case 'PRECD':
-                                node['status'] = preCDMap[node.id]
-                                break
-                            case 'POSTCD':
-                                node['status'] = postCDMap[node.id]
-                                break
-                            case 'CD':
-                                node['status'] = cdMap[node.id]
-                                break
-                        }
-                        return node
-                    })
-                    return wf
-                })
+                const _processedWorkflowsData = processWorkflowStatuses(
+                    response?.result?.ciWorkflowStatus ?? [],
+                    response?.result?.cdWorkflowStatus ?? [],
+                    workflowsList,
+                )
                 inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-                if (cicdInProgress) {
+                if (_processedWorkflowsData.cicdInProgress) {
                     inprogressStatusTimer = setTimeout(() => {
-                        getWorkflowStatusData(_workflows)
+                        getWorkflowStatusData(_processedWorkflowsData.workflows)
                     }, 10000)
                 }
-                setWorkflows(_workflows)
+                setWorkflows(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -240,143 +187,6 @@ export default function EnvTriggerView() {
         })
         setWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
-    }
-
-    const renderWorkflow = (): JSX.Element => {
-        return (
-            <>
-                {workflows.map((workflow) => {
-                    return (
-                        <Workflow
-                            key={workflow.id}
-                            id={workflow.id}
-                            name={workflow.name}
-                            startX={workflow.startX}
-                            startY={workflow.startY}
-                            height={workflow.height}
-                            width={workflow.width}
-                            nodes={workflow.nodes}
-                            appId={workflow.appId}
-                            isSelected={workflow.isSelected ?? false}
-                            handleSelectionChange={handleSelectionChange}
-                            isFromENv={true}
-                            history={history}
-                            location={location}
-                            match={match}
-                        />
-                    )
-                })}
-                {selectedAppList.length > 0 && (
-                    <div
-                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20"
-                        style={{ paddingLeft: '90px', right: 0 }}
-                    >
-                        <div className="flex">
-                            <Close className="icon-dim-16 scr-5 mr-8 cursor" onClick={clearAppList} />
-                            <div>
-                                <div className="fs-13 fw-6 cn-9">
-                                    {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
-                                </div>
-                                <div className="fs-13 fw-4 cn-7">
-                                    {selectedAppList.map((app, index) => (
-                                        <span key={`selected-app-${app.id}`}>
-                                            {app.name}
-                                            {index !== selectedAppList.length - 1 && <span>, </span>}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex">
-                            <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
-                                {isLoading ? <Progressing /> : 'Build image'}
-                            </button>
-                            <button
-                                className="cta flex h-36 dc__no-right-radius"
-                                data-trigger-type={'CD'}
-                                onClick={onShowBulkCDModal}
-                            >
-                                {isLoading ? (
-                                    <Progressing />
-                                ) : (
-                                    <>
-                                        <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                                        Deploy
-                                    </>
-                                )}
-                            </button>
-                            <PopupMenu autoClose>
-                                <PopupMenu.Button
-                                    isKebab
-                                    rootClassName="h-36 popup-button-kebab dc__border-left-n3 pl-4 pr-4 dc__no-left-radius flex bcb-5"
-                                >
-                                    <Dropdown className="icon-dim-20 fcn-0" />
-                                </PopupMenu.Button>
-                                <PopupMenu.Body>
-                                    <div
-                                        className="flex left p-10 dc__hover-n50 pointer"
-                                        data-trigger-type={'PRECD'}
-                                        onClick={onShowBulkCDModal}
-                                    >
-                                        Trigger Pre-deployment stage
-                                    </div>
-                                    <div
-                                        className="flex left p-10 dc__hover-n50 pointer"
-                                        data-trigger-type={'CD'}
-                                        onClick={onShowBulkCDModal}
-                                    >
-                                        Trigger Deployment
-                                    </div>
-                                    <div
-                                        className="flex left p-10 dc__hover-n50 pointer"
-                                        data-trigger-type={'POSTCD'}
-                                        onClick={onShowBulkCDModal}
-                                    >
-                                        Trigger Post-deployment stage
-                                    </div>
-                                </PopupMenu.Body>
-                            </PopupMenu>
-                        </div>
-                    </div>
-                )}
-            </>
-        )
-    }
-
-    const handleSourceNotConfigured = (
-        configuredMaterialList: Map<number, Set<number>>,
-        wf: WorkflowType,
-        _materialList: any[],
-    ) => {
-        if (_materialList?.length > 0) {
-            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
-        } else {
-            _materialList = []
-        }
-        for (const material of wf.gitMaterials) {
-            if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
-                continue
-            }
-            const ciMaterial: CIMaterialType = {
-                id: 0,
-                gitMaterialId: material.gitMaterialId,
-                gitMaterialName: material.materialName.toLowerCase(),
-                type: '',
-                value: DEFAULT_GIT_BRANCH_VALUE,
-                active: false,
-                gitURL: '',
-                isRepoError: false,
-                repoErrorMsg: '',
-                isBranchError: true,
-                branchErrorMsg: SOURCE_NOT_CONFIGURED,
-                regex: '',
-                history: [],
-                isSelected: false,
-                lastFetchTime: '',
-                isRegex: false,
-            }
-            _materialList.push(ciMaterial)
-        }
     }
 
     const getCommitHistory = (
@@ -1063,126 +873,6 @@ export default function EnvTriggerView() {
         setShowBulkCIModal(true)
     }
 
-    const renderCIMaterial = (): JSX.Element | null => {
-        if ((selectedCINode?.id && showCIModal) || showMaterialRegexModal) {
-            let nd: NodeAttr, _appID
-            const configuredMaterialList = new Map<number, Set<number>>()
-            for (const _wf of workflows) {
-                nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
-                if (nd) {
-                    configuredMaterialList[_wf.name] = new Set<number>()
-                    _appID = _wf.appId
-                    handleSourceNotConfigured(configuredMaterialList, _wf, nd[materialType])
-                    break
-                }
-            }
-            const material = nd?.[materialType] || []
-            return (
-                <CIMaterial
-                    workflowId={workflowID}
-                    history={history}
-                    location={location}
-                    match={match}
-                    material={material}
-                    pipelineName={selectedCINode.name}
-                    isLoading={isLoading}
-                    title={selectedCINode.name}
-                    pipelineId={selectedCINode.id}
-                    showWebhookModal={showWebhookModal}
-                    hideWebhookModal={hideWebhookModal}
-                    toggleWebhookModal={toggleWebhookModal}
-                    webhookPayloads={webhookPayloads}
-                    isWebhookPayloadLoading={isWebhookPayloadLoading}
-                    onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                    webhhookTimeStampOrder={webhookTimeStampOrder}
-                    showMaterialRegexModal={showMaterialRegexModal}
-                    onCloseBranchRegexModal={onCloseBranchRegexModal}
-                    filteredCIPipelines={filteredCIPipelines.get(_appID)}
-                    onClickShowBranchRegexModal={onClickShowBranchRegexModal}
-                    showCIModal={showCIModal}
-                    onShowCIModal={onShowCIModal}
-                    isChangeBranchClicked={isChangeBranchClicked}
-                    getWorkflows={getWorkflowsData}
-                    loader={loader}
-                    setLoader={setLoader}
-                    isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
-                    isCacheAvailable={nd?.storageConfigured}
-                    isFromEnv={true}
-                    appId={_appID.toString()}
-                />
-            )
-        }
-
-        return null
-    }
-
-    const renderBulkCDMaterial = (): JSX.Element | null => {
-        if (!showBulkCDModal) {
-            return null
-        }
-
-        const _selectedAppWorkflowList: BulkCDDetailType[] = []
-        workflows.forEach((wf) => {
-            if (wf.isSelected) {
-                const _cdNode = wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-                )
-                let _selectedNode: NodeAttr
-                if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                    _selectedNode = _cdNode.preNode
-                } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                    _selectedNode = _cdNode
-                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.preNode
-                }
-                if (_selectedNode) {
-                    _selectedAppWorkflowList.push({
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        cdPipelineName: _cdNode.title,
-                        cdPipelineId: _cdNode.id,
-                        stageType: WorkflowNodeType[_selectedNode.type],
-                        envName: _selectedNode.environmentName,
-                        parentPipelineId: _selectedNode.parentPipelineId,
-                        parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
-                        parentEnvironmentName: _selectedNode.parentEnvironmentName,
-                        material: _selectedNode.inputMaterialList,
-                    })
-                } else {
-                    let notFoundMessage = ''
-                    if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                        notFoundMessage = 'No pre-deployment stage'
-                    } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                        notFoundMessage = 'No deployment stage'
-                    } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                        notFoundMessage = 'No post-deployment stage'
-                    }
-                    _selectedAppWorkflowList.push({
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        notFoundMessage: notFoundMessage,
-                        envName: _cdNode.environmentName,
-                    })
-                }
-            }
-        })
-        return (
-            <BulkCDTrigger
-                stage={bulkTriggerType}
-                appList={_selectedAppWorkflowList}
-                closePopup={hideBulkCDModal}
-                updateBulkInputMaterial={updateBulkCDInputMaterial}
-                onClickTriggerBulkCD={onClickTriggerBulkCD}
-                changeTab={changeTab}
-                toggleSourceInfo={toggleSourceInfo}
-                selectImage={selectImage}
-                responseList={responseList}
-            />
-        )
-    }
-
     const updateBulkCDInputMaterial = (materialList: Record<string, any[]>): void => {
         const _workflows = workflows.map((wf) => {
             if (wf.isSelected) {
@@ -1292,88 +982,6 @@ export default function EnvTriggerView() {
         }
     }
 
-    const getWarningMessage = (_ciNode): string => {
-        if (_ciNode.isLinkedCI) {
-            return 'Has linked build pipeline'
-        } else if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
-            return 'Has webhook build pipeline'
-        }
-    }
-
-    const getErrorMessage = (_appId, _ciNode): string => {
-        let errorMessage = ''
-        if (_ciNode.inputMaterialList?.length > 0) {
-            if (isShowRegexModal(_appId, +_ciNode.id, _ciNode.inputMaterialList)) {
-                errorMessage = 'Primary branch is not set'
-            } else {
-                const selectedCIPipeline = filteredCIPipelines.get(_appId).find((_ci) => _ci.id === +_ciNode.id)
-                if (selectedCIPipeline?.ciMaterial) {
-                    const invalidInputMaterial = _ciNode.inputMaterialList.find((_mat) => {
-                        return _mat.isBranchError || _mat.isRepoError
-                    })
-                    if (invalidInputMaterial) {
-                        errorMessage = invalidInputMaterial.isBranchError
-                            ? invalidInputMaterial.branchErrorMsg
-                            : invalidInputMaterial.repoErrorMsg
-                    }
-                }
-            }
-        }
-        return errorMessage
-    }
-
-    const renderBulkCIMaterial = (): JSX.Element | null => {
-        if (!showBulkCIModal) {
-            return null
-        }
-        const _selectedAppWorkflowList: BulkCIDetailType[] = []
-        workflows.forEach((wf) => {
-            if (wf.isSelected) {
-                const _ciNode = wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                )
-                if (_ciNode) {
-                    const configuredMaterialList = new Map<number, Set<number>>()
-                    configuredMaterialList[wf.name] = new Set<number>()
-                    handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
-                    _selectedAppWorkflowList.push({
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        ciPipelineName: _ciNode.title,
-                        ciPipelineId: _ciNode.id,
-                        isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
-                        isCacheAvailable: _ciNode.storageConfigured,
-                        isLinkedCI: _ciNode.isLinkedCI,
-                        isWebhookCI: _ciNode.type === WorkflowNodeType.WEBHOOK,
-                        parentAppId: _ciNode.parentAppId,
-                        parentCIPipelineId: _ciNode.parentCiPipeline,
-                        material: _ciNode.inputMaterialList,
-                        warningMessage: getWarningMessage(_ciNode),
-                        errorMessage: getErrorMessage(wf.appId, _ciNode),
-                        isHideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
-                        filteredCIPipelines: filteredCIPipelines.get(wf.appId),
-                    })
-                }
-            }
-        })
-        return (
-            <BulkCITrigger
-                appList={_selectedAppWorkflowList}
-                closePopup={hideBulkCIModal}
-                updateBulkInputMaterial={updateBulkCIInputMaterial}
-                onClickTriggerBulkCI={onClickTriggerBulkCI}
-                showWebhookModal={showWebhookModal}
-                hideWebhookModal={hideWebhookModal}
-                toggleWebhookModal={toggleWebhookModal}
-                webhookPayloads={webhookPayloads}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                isShowRegexModal={isShowRegexModal}
-                responseList={responseList}
-            />
-        )
-    }
-
     const updateBulkCIInputMaterial = (materialList: Record<string, any[]>): void => {
         const _workflows = [...workflows].map((wf) => {
             const _appId = wf.appId
@@ -1455,6 +1063,229 @@ export default function EnvTriggerView() {
         handleBulkTrigger(_CITriggerPromiseList, triggeredAppList)
     }
 
+    const createBulkCDTriggerData = (): BulkCDDetailType[] => {
+      const _selectedAppWorkflowList: BulkCDDetailType[] = []
+      workflows.forEach((wf) => {
+          if (wf.isSelected) {
+              const _cdNode = wf.nodes.find(
+                  (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
+              )
+              let _selectedNode: NodeAttr
+              if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                  _selectedNode = _cdNode.preNode
+              } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                  _selectedNode = _cdNode
+              } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                  _selectedNode = _cdNode.preNode
+              }
+              if (_selectedNode) {
+                  _selectedAppWorkflowList.push({
+                      workFlowId: wf.id,
+                      appId: wf.appId,
+                      name: wf.name,
+                      cdPipelineName: _cdNode.title,
+                      cdPipelineId: _cdNode.id,
+                      stageType: WorkflowNodeType[_selectedNode.type],
+                      envName: _selectedNode.environmentName,
+                      parentPipelineId: _selectedNode.parentPipelineId,
+                      parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
+                      parentEnvironmentName: _selectedNode.parentEnvironmentName,
+                      material: _selectedNode.inputMaterialList,
+                  })
+              } else {
+                  let notFoundMessage = ''
+                  if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                      notFoundMessage = 'No pre-deployment stage'
+                  } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                      notFoundMessage = 'No deployment stage'
+                  } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                      notFoundMessage = 'No post-deployment stage'
+                  }
+                  _selectedAppWorkflowList.push({
+                      workFlowId: wf.id,
+                      appId: wf.appId,
+                      name: wf.name,
+                      notFoundMessage: notFoundMessage,
+                      envName: _cdNode.environmentName,
+                  })
+              }
+          }
+      })
+      return _selectedAppWorkflowList
+    }
+
+    const getWarningMessage = (_ciNode): string => {
+        if (_ciNode.isLinkedCI) {
+            return 'Has linked build pipeline'
+        } else if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
+            return 'Has webhook build pipeline'
+        }
+    }
+
+    const getErrorMessage = (_appId, _ciNode): string => {
+        let errorMessage = ''
+        if (_ciNode.inputMaterialList?.length > 0) {
+            if (isShowRegexModal(_appId, +_ciNode.id, _ciNode.inputMaterialList)) {
+                errorMessage = 'Primary branch is not set'
+            } else {
+                const selectedCIPipeline = filteredCIPipelines.get(_appId).find((_ci) => _ci.id === +_ciNode.id)
+                if (selectedCIPipeline?.ciMaterial) {
+                    const invalidInputMaterial = _ciNode.inputMaterialList.find((_mat) => {
+                        return _mat.isBranchError || _mat.isRepoError
+                    })
+                    if (invalidInputMaterial) {
+                        errorMessage = invalidInputMaterial.isBranchError
+                            ? invalidInputMaterial.branchErrorMsg
+                            : invalidInputMaterial.repoErrorMsg
+                    }
+                }
+            }
+        }
+        return errorMessage
+    }
+
+    const createBulkCITriggerData = (): BulkCIDetailType[] => {
+      const _selectedAppWorkflowList: BulkCIDetailType[] = []
+        workflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _ciNode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
+                if (_ciNode) {
+                    const configuredMaterialList = new Map<number, Set<number>>()
+                    configuredMaterialList[wf.name] = new Set<number>()
+                    handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        ciPipelineName: _ciNode.title,
+                        ciPipelineId: _ciNode.id,
+                        isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
+                        isCacheAvailable: _ciNode.storageConfigured,
+                        isLinkedCI: _ciNode.isLinkedCI,
+                        isWebhookCI: _ciNode.type === WorkflowNodeType.WEBHOOK,
+                        parentAppId: _ciNode.parentAppId,
+                        parentCIPipelineId: _ciNode.parentCiPipeline,
+                        material: _ciNode.inputMaterialList,
+                        warningMessage: getWarningMessage(_ciNode),
+                        errorMessage: getErrorMessage(wf.appId, _ciNode),
+                        hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
+                        filteredCIPipelines: filteredCIPipelines.get(wf.appId),
+                    })
+                }
+            }
+        })
+        return _selectedAppWorkflowList
+    }
+
+    if (pageViewType === ViewType.LOADING) {
+        return <Progressing pageLoader />
+    } else if (pageViewType === ViewType.ERROR) {
+        return <ErrorScreenManager code={errorCode} />
+    } else if (!workflows.length) {
+        return (
+            <div>
+                <AppNotConfigured />
+            </div>
+        )
+    }
+
+    const renderCIMaterial = (): JSX.Element | null => {
+        if ((selectedCINode?.id && showCIModal) || showMaterialRegexModal) {
+            let nd: NodeAttr, _appID
+            const configuredMaterialList = new Map<number, Set<number>>()
+            for (const _wf of workflows) {
+                nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
+                if (nd) {
+                    configuredMaterialList[_wf.name] = new Set<number>()
+                    _appID = _wf.appId
+                    handleSourceNotConfigured(configuredMaterialList, _wf, nd[materialType])
+                    break
+                }
+            }
+            const material = nd?.[materialType] || []
+            return (
+                <CIMaterial
+                    workflowId={workflowID}
+                    history={history}
+                    location={location}
+                    match={match}
+                    material={material}
+                    pipelineName={selectedCINode.name}
+                    isLoading={isLoading}
+                    title={selectedCINode.name}
+                    pipelineId={selectedCINode.id}
+                    showWebhookModal={showWebhookModal}
+                    hideWebhookModal={hideWebhookModal}
+                    toggleWebhookModal={toggleWebhookModal}
+                    webhookPayloads={webhookPayloads}
+                    isWebhookPayloadLoading={isWebhookPayloadLoading}
+                    onClickWebhookTimeStamp={onClickWebhookTimeStamp}
+                    webhhookTimeStampOrder={webhookTimeStampOrder}
+                    showMaterialRegexModal={showMaterialRegexModal}
+                    onCloseBranchRegexModal={onCloseBranchRegexModal}
+                    filteredCIPipelines={filteredCIPipelines.get(_appID)}
+                    onClickShowBranchRegexModal={onClickShowBranchRegexModal}
+                    showCIModal={showCIModal}
+                    onShowCIModal={onShowCIModal}
+                    isChangeBranchClicked={isChangeBranchClicked}
+                    getWorkflows={getWorkflowsData}
+                    loader={loader}
+                    setLoader={setLoader}
+                    isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
+                    isCacheAvailable={nd?.storageConfigured}
+                    fromAppGrouping={true}
+                    appId={_appID.toString()}
+                />
+            )
+        }
+
+        return null
+    }
+
+    const renderBulkCDMaterial = (): JSX.Element | null => {
+        if (!showBulkCDModal) {
+            return null
+        }
+        const _selectedAppWorkflowList: BulkCDDetailType[] = createBulkCDTriggerData()
+        return (
+            <BulkCDTrigger
+                stage={bulkTriggerType}
+                appList={_selectedAppWorkflowList}
+                closePopup={hideBulkCDModal}
+                updateBulkInputMaterial={updateBulkCDInputMaterial}
+                onClickTriggerBulkCD={onClickTriggerBulkCD}
+                changeTab={changeTab}
+                toggleSourceInfo={toggleSourceInfo}
+                selectImage={selectImage}
+                responseList={responseList}
+            />
+        )
+    }
+
+    const renderBulkCIMaterial = (): JSX.Element | null => {
+        if (!showBulkCIModal) {
+            return null
+        }
+        const _selectedAppWorkflowList: BulkCIDetailType[] = createBulkCITriggerData()
+        return (
+            <BulkCITrigger
+                appList={_selectedAppWorkflowList}
+                closePopup={hideBulkCIModal}
+                updateBulkInputMaterial={updateBulkCIInputMaterial}
+                onClickTriggerBulkCI={onClickTriggerBulkCI}
+                showWebhookModal={showWebhookModal}
+                hideWebhookModal={hideWebhookModal}
+                toggleWebhookModal={toggleWebhookModal}
+                webhookPayloads={webhookPayloads}
+                isWebhookPayloadLoading={isWebhookPayloadLoading}
+                isShowRegexModal={isShowRegexModal}
+                responseList={responseList}
+            />
+        )
+    }
+
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal && selectedCDNode?.id) {
             let node: NodeAttr, _appID
@@ -1494,15 +1325,122 @@ export default function EnvTriggerView() {
         return null
     }
 
-    if (pageViewType === ViewType.LOADING) {
-        return <Progressing pageLoader />
-    } else if (pageViewType === ViewType.ERROR) {
-        return <ErrorScreenManager code={errorCode} />
-    } else if (!workflows.length) {
+    const renderDeployPopupMenu = (): JSX.Element => {
         return (
-            <div>
-                <AppNotConfigured />
+            <PopupMenu autoClose>
+                <PopupMenu.Button
+                    isKebab
+                    rootClassName="h-36 popup-button-kebab dc__border-left-n3 pl-4 pr-4 dc__no-left-radius flex bcb-5"
+                >
+                    <Dropdown className="icon-dim-20 fcn-0" />
+                </PopupMenu.Button>
+                <PopupMenu.Body>
+                    <div
+                        className="flex left p-10 dc__hover-n50 pointer"
+                        data-trigger-type={'PRECD'}
+                        onClick={onShowBulkCDModal}
+                    >
+                        Trigger Pre-deployment stage
+                    </div>
+                    <div
+                        className="flex left p-10 dc__hover-n50 pointer"
+                        data-trigger-type={'CD'}
+                        onClick={onShowBulkCDModal}
+                    >
+                        Trigger Deployment
+                    </div>
+                    <div
+                        className="flex left p-10 dc__hover-n50 pointer"
+                        data-trigger-type={'POSTCD'}
+                        onClick={onShowBulkCDModal}
+                    >
+                        Trigger Post-deployment stage
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+        )
+    }
+
+    const renderBulkTriggerActionButtons = (): JSX.Element => {
+        return (
+            <div className="flex">
+                <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
+                    {isLoading ? <Progressing /> : 'Build image'}
+                </button>
+                <button
+                    className="cta flex h-36 dc__no-right-radius"
+                    data-trigger-type={'CD'}
+                    onClick={onShowBulkCDModal}
+                >
+                    {isLoading ? (
+                        <Progressing />
+                    ) : (
+                        <>
+                            <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                            Deploy
+                        </>
+                    )}
+                </button>
+                {renderDeployPopupMenu()}
             </div>
+        )
+    }
+
+    const renderSelectedApps = (): JSX.Element => {
+        return (
+            <div className="flex">
+                <Close className="icon-dim-16 scr-5 mr-8 cursor" onClick={clearAppList} />
+                <div>
+                    <div className="fs-13 fw-6 cn-9">
+                        {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
+                    </div>
+                    <div className="fs-13 fw-4 cn-7">
+                        {selectedAppList.map((app, index) => (
+                            <span key={`selected-app-${app.id}`}>
+                                {app.name}
+                                {index !== selectedAppList.length - 1 && <span>, </span>}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const renderWorkflow = (): JSX.Element => {
+        return (
+            <>
+                {workflows.map((workflow) => {
+                    return (
+                        <Workflow
+                            key={workflow.id}
+                            id={workflow.id}
+                            name={workflow.name}
+                            startX={workflow.startX}
+                            startY={workflow.startY}
+                            height={workflow.height}
+                            width={workflow.width}
+                            nodes={workflow.nodes}
+                            appId={workflow.appId}
+                            isSelected={workflow.isSelected ?? false}
+                            handleSelectionChange={handleSelectionChange}
+                            fromAppGrouping={true}
+                            history={history}
+                            location={location}
+                            match={match}
+                        />
+                    )
+                })}
+                {!!selectedAppList.length && (
+                    <div
+                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20"
+                        style={{ paddingLeft: '90px', right: 0 }}
+                    >
+                        {renderSelectedApps()}
+                        {renderBulkTriggerActionButtons()}
+                    </div>
+                )}
+            </>
         )
     }
     return (

@@ -16,7 +16,7 @@ export interface BulkCIDetailType {
     material: any[]
     warningMessage: string
     errorMessage: string
-    isHideSearchHeader: boolean
+    hideSearchHeader: boolean
     filteredCIPipelines: any
 }
 

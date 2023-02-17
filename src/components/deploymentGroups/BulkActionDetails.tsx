@@ -222,7 +222,7 @@ export default function BulkActionDetails() {
             triggerDeploy={triggerDeploy}
             toggleSourceInfo={toggleSourceInfo}
             selectImage={selectImage}
-            closeCDModal={(e) => { toggleShowCDModal(false) }}
+            closeCDModal={() => { toggleShowCDModal(false) }}
         />}
     </>
 }

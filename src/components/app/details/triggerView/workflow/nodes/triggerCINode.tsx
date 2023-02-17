@@ -27,7 +27,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     inputMaterialsNew: CIMaterialType[]
     workflowId: string
     branch: string
-    isFromEnv: boolean
+    fromAppGrouping: boolean
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -41,11 +41,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     redirectToCIDetails() {
-      if (this.props.isFromEnv) {
+      if (this.props.fromAppGrouping) {
           return
       }
-      const LINK = this.getCIDetailsURL()
-      this.props.history.push(LINK)
+      this.props.history.push(this.getCIDetailsURL())
     }
 
     renderStatus() {
@@ -65,7 +64,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
-                    {!this.props.isFromEnv && (
+                    {!this.props.fromAppGrouping && (
                         <>
                             <span className="mr-5 ml-5">/</span>
                             <Link to={url} className="workflow-node__details-link">

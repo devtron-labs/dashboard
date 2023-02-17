@@ -11,7 +11,7 @@ import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info
 import './ciWebhookModal.css';
 import moment from 'moment';
 
-export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId, isFromEnv, isFromBulkCI, appId}) {
+export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId, fromAppGrouping, fromBulkCITrigger, appId}) {
 
     const [showDetailedIncomingPayload, setShowDetailedIncomingPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
@@ -21,7 +21,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     const history = useHistory()
     const onEditShowEditableCiModal = (ciPipelineId, workflowId) => {
-        if (isFromEnv) {
+        if (fromAppGrouping) {
             window.open(getCIPipelineURL(appId, workflowId, true, ciPipelineId), '_blank', 'noreferrer')
         } else {
             history.push(`edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`)
@@ -203,7 +203,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return (
             <div
                 className={`bcn-0 w-800 bcn-0 dc__position-fixed dc__top-0 dc__right-0 timestamp-detail-container ${
-                  isFromBulkCI ? 'env-modal-width' : ''
+                  fromBulkCITrigger ? 'env-modal-width' : ''
                 }`}
                 style={{ zIndex: 100 }}
             >

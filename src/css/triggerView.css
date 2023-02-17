@@ -4,13 +4,6 @@
     overflow: auto;
 }
 
-.material-last-update {
-    font-size: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .material__error {
     width: 150px;
     color: var(--R500);

@@ -302,10 +302,10 @@ export default function BulkCITrigger({
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     workflowId={selectedApp.workFlowId}
                     onClickShowBranchRegexModal={showBranchEditModal}
-                    isFromEnv={true}
+                    fromAppGrouping={true}
                     appId={selectedApp.appId}
-                    isFromBulkCI={true}
-                    isHideSearchHeader={selectedApp.isHideSearchHeader}
+                    fromBulkCITrigger={true}
+                    hideSearchHeader={selectedApp.hideSearchHeader}
                 />
             )
         }
@@ -400,7 +400,11 @@ export default function BulkCITrigger({
 
     const renderAppName = (app: BulkCIDetailType, index: number): JSX.Element | null => {
         return (
-            <div className="fw-6 fs-13 cn-9 pt-12 pb-12" onClick={changeApp} data-index={index}>
+            <div
+                className={`fw-6 fs-13 cn-9 pt-12 ${app.appId === selectedApp.appId ? 'pb-12' : ''}`}
+                onClick={changeApp}
+                data-index={index}
+            >
                 {app.name}
                 {app.warningMessage && (
                     <span className="flex left cy-7 fw-4 fs-12">

@@ -31,10 +31,10 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     onClickShowBranchRegexModal,
-    isFromEnv,
+    fromAppGrouping,
     appId,
-    isFromBulkCI,
-    isHideSearchHeader,
+    fromBulkCITrigger,
+    hideSearchHeader,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -58,7 +58,7 @@ export default function GitInfoMaterial({
 
     function renderMaterialHeader() {
         return (
-            <div className={`trigger-modal__header ${isFromBulkCI ? 'bcn-0' : ''}`}>
+            <div className={`trigger-modal__header ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
                 <h1 className="modal__title flex left fs-16">
                     {showWebhookModal ? (
                         <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
@@ -171,7 +171,7 @@ export default function GitInfoMaterial({
 
     const goToWorkFlowEditor = () => {
         const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
-        if (isFromEnv) {
+        if (fromAppGrouping) {
             window.open(ciPipelineURL, '_blank', 'noreferrer')
         } else {
             push(ciPipelineURL)
@@ -213,7 +213,7 @@ export default function GitInfoMaterial({
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
         return (
             <div className="select-material select-material--trigger-view">
-                {!isWebhook && !isHideSearchHeader && (
+                {!isWebhook && !hideSearchHeader && (
                     <div
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
@@ -281,7 +281,7 @@ export default function GitInfoMaterial({
 
     const renderWebhookModal = () => {
         return (
-            <div className={` ${isFromBulkCI ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+            <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
                 <CiWebhookModal
                     context={triggerViewContext}
                     webhookPayloads={webhookPayloads}
@@ -290,8 +290,8 @@ export default function GitInfoMaterial({
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     hideWebhookModal={hideWebhookModal}
                     workflowId={workflowId}
-                    isFromEnv={isFromEnv}
-                    isFromBulkCI={isFromBulkCI}
+                    fromAppGrouping={fromAppGrouping}
+                    fromBulkCITrigger={fromBulkCITrigger}
                     appId={appId}
                 />
             </div>
@@ -300,13 +300,13 @@ export default function GitInfoMaterial({
 
     return (
         <>
-            {(!isFromBulkCI || showWebhookModal) && renderMaterialHeader()}
-            <div className={`m-lr-0 ${showWebhookModal || isFromBulkCI ? '' : 'flexbox'}`}>
+            {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
+            <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
                 {showWebhookModal == true ? (
                     renderWebhookModal()
                 ) : (
                     <>
-                        {!isFromBulkCI && renderMaterialSource()}
+                        {!fromBulkCITrigger && renderMaterialSource()}
                         {renderMaterialHistory(selectedMaterial ?? material)}
                     </>
                 )}

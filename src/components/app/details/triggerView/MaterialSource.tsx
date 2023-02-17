@@ -10,13 +10,13 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
     const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
         if (mat.isMaterialLoading) {
             return (
-                <div className="material-last-update">
+                <div className="flex fs-10">
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
         } else if (mat.isBranchError || mat.isRepoError) {
             return (
-                <div className="material-last-update">
+                <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
                     <div className="material__error dc__ellipsis-right">
                         {mat.isRepoError ? mat.repoErrorMsg : mat.isBranchError ? mat.branchErrorMsg : ''}
@@ -25,7 +25,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
             )
         } else {
             return (
-                <div className="material-last-update">
+                <div className="flex fs-10">
                     {mat.lastFetchTime ? 'Updated' : ''}
                     <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
                 </div>

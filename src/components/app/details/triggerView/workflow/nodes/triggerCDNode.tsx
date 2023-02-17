@@ -21,7 +21,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     }
 
     redirectToCDDetails() {
-      if (this.props.isFromEnv) {
+      if (this.props.fromAppGrouping) {
           return
       }
       this.props.history.push(this.getCDNodeDetailsURL())
@@ -46,7 +46,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
                     <span>{statusText}</span>
-                    {!this.props.isFromEnv && (
+                    {!this.props.fromAppGrouping && (
                         <>
                             <span className="mr-5 ml-5">/</span>
                             <Link to={url} className="workflow-node__details-link">

@@ -24,7 +24,7 @@ export interface CINodeProps extends RouteComponentProps<{}> {
     status: string;
     inputMaterialsNew?: any[];
     colorCode?: string;
-    isFromEnv: boolean
+    fromAppGrouping: boolean
 }
 
 export class TriggerLinkedCINode extends Component<CINodeProps> {
@@ -34,11 +34,10 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
     }
 
     redirectToCIDetails() {
-      if (this.props.isFromEnv) {
+      if (this.props.fromAppGrouping) {
           return
       }
-      const LINK = this.getCIDetailsURL()
-      this.props.history.push(LINK)
+      this.props.history.push(this.getCIDetailsURL())
     }
 
     renderStatus() {
@@ -52,7 +51,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
         else return (
             <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
-                {!this.props.isFromEnv && (
+                {!this.props.fromAppGrouping && (
                     <>
                         <span className="mr-5 ml-5">/</span>
                         <Link to={url} className="workflow-node__details-link">

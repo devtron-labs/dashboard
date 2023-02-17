@@ -29,7 +29,6 @@ import {
     ViewType,
     SourceTypeMap,
     BUILD_STATUS,
-    SOURCE_NOT_CONFIGURED,
     DEFAULT_GIT_BRANCH_VALUE,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
@@ -44,6 +43,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../Environments/TriggerView.utils'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -276,71 +276,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getWorkflowStatus() {
         getWorkflowStatus(this.props.match.params.appId)
             .then((response) => {
-                let ciMap = {}
-                let cdMap = {}
-                let preCDMap = {}
-                let postCDMap = {}
-                let allCIs = response?.result?.ciWorkflowStatus || []
-                let allCDs = response?.result?.cdWorkflowStatus || []
-                let cicdInProgress = false
-                //Create maps from Array
-                if (allCIs.length) {
-                    allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = {
-                            status: pipeline.ciStatus,
-                            storageConfigured: pipeline.storageConfigured || false,
-                        }
-                        if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
-                            cicdInProgress = true
-                        }
-                    })
-                }
-                if (allCDs.length) {
-                    allCDs.forEach((pipeline) => {
-                        if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
-                        if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status
-                        if (pipeline.deploy_status) cdMap[pipeline.pipeline_id] = pipeline.deploy_status
-                        if (
-                            !cicdInProgress &&
-                            (pipeline.pre_status === 'Starting' ||
-                                pipeline.pre_status === 'Running' ||
-                                pipeline.deploy_status === 'Progressing' ||
-                                pipeline.post_status === 'Starting' ||
-                                pipeline.post_status === 'Running')
-                        ) {
-                            cicdInProgress = true
-                        }
-                    })
-                }
-                //Update Workflow using maps
-                const workflows = [...this.state.workflows].map((wf) => {
-                    wf.nodes = wf.nodes.map((node) => {
-                        switch (node.type) {
-                            case 'CI':
-                                node['status'] = ciMap[node.id]?.status
-                                node['storageConfigured'] = ciMap[node.id]?.storageConfigured
-                                break
-                            case 'PRECD':
-                                node['status'] = preCDMap[node.id]
-                                break
-                            case 'POSTCD':
-                                node['status'] = postCDMap[node.id]
-                                break
-                            case 'CD':
-                                node['status'] = cdMap[node.id]
-                                break
-                        }
-                        return node
-                    })
-                    return wf
-                })
+                const _processedWorkflowsData = processWorkflowStatuses(
+                    response?.result?.ciWorkflowStatus ?? [],
+                    response?.result?.cdWorkflowStatus ?? [],
+                    this.state.workflows,
+                )
                 this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
-                if (cicdInProgress) {
+                if (_processedWorkflowsData.cicdInProgress) {
                     this.inprogressStatusTimer = setTimeout(() => {
                         this.getWorkflowStatus()
                     }, 10000)
                 }
-                this.setState({ workflows })
+                this.setState({ workflows: _processedWorkflowsData.workflows })
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -876,40 +823,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    handleSourceNotConfigured = (
-        configuredMaterialList: Map<number, Set<number>>,
-        wf: WorkflowType,
-        _materialList: any[],
-    ) => {
-        if (_materialList.length > 0) {
-            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
-        }
-        for (const material of wf.gitMaterials) {
-            if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
-                continue
-            }
-            const ciMaterial: CIMaterialType = {
-                id: 0,
-                gitMaterialId: material.gitMaterialId,
-                gitMaterialName: material.materialName.toLowerCase(),
-                type: '',
-                value: DEFAULT_GIT_BRANCH_VALUE,
-                active: false,
-                gitURL: '',
-                isRepoError: false,
-                repoErrorMsg: '',
-                isBranchError: true,
-                branchErrorMsg: SOURCE_NOT_CONFIGURED,
-                regex: '',
-                history: [],
-                isSelected: false,
-                lastFetchTime: '',
-                isRegex: false,
-            }
-            _materialList.push(ciMaterial)
-        }
-    }
-
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
@@ -919,7 +832,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
                 if (nd) {
                     configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
-                    this.handleSourceNotConfigured(
+                    handleSourceNotConfigured(
                         configuredMaterialList,
                         this.state.workflows[i],
                         nd[this.state.materialType],

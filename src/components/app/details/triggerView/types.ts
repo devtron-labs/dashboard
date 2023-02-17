@@ -133,7 +133,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setLoader: (isLoading) => void
     isFirstTrigger?: boolean
     isCacheAvailable?: boolean
-    isFromEnv?: boolean
+    fromAppGrouping?: boolean
     appId: string
 }
 
@@ -227,7 +227,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
-    isFromEnv: boolean
+    fromAppGrouping: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -246,7 +246,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     downstreams?: string[]
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
-    isFromEnv: boolean
+    fromAppGrouping: boolean
 }
 
 export interface TriggerEdgeType {
@@ -264,7 +264,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     nodes: NodeAttr[]
     appId?: number
     isSelected?: boolean
-    isFromENv?: boolean
+    fromAppGrouping?: boolean
     handleSelectionChange?: (e)=> void
 }
 
