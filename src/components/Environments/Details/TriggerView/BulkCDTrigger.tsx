@@ -9,46 +9,11 @@ import { ModuleNameMap } from '../../../../config'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import {
-    CDMdalTabType,
     DeploymentNodeType,
     MATERIAL_TYPE,
-    WorkflowNodeType,
 } from '../../../app/details/triggerView/types'
+import { BulkCDDetailType, BulkCDTriggerType } from '../../Environments.types'
 
-interface AppWorkflowDetailsType {
-    workFlowId: number
-    appId: number
-    name: string
-    cdPipelineName: string
-    cdPipelineId: string
-    stageType: DeploymentNodeType
-    envName: string
-    parentPipelineId: string
-    parentPipelineType: WorkflowNodeType
-    parentEnvironmentName: string
-    material: any[]
-    notFoundMessage: string
-}
-
-interface BulkCDTriggerType {
-    stage: DeploymentNodeType
-    appList: AppWorkflowDetailsType[]
-    closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
-    onClickTriggerBulkCD: () => void
-    changeTab: (
-        materrialId: string | number,
-        artifactId: number,
-        tab: CDMdalTabType,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    selectImage: (
-        index: number,
-        materialType: string,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ) => void
-}
 
 const ButtonTitle = {
     [DeploymentNodeType.PRECD]: 'Trigger pre-deployment stage',
@@ -68,7 +33,7 @@ export default function BulkCDTrigger({
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(true)
-    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(
+    const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.notFoundMessage) || appList[0],
     )
     const [, isSecurityModuleInstalled] = useAsync(() => getModuleConfigured(ModuleNameMap.SECURITY), [])

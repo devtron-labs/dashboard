@@ -57,6 +57,7 @@ import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-
 import './EnvTriggerView.scss'
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
+import { BulkCDDetailType, BulkCIDetailType } from '../../Environments.types'
 
 let timerRef
 let inprogressStatusTimer
@@ -1115,7 +1116,7 @@ export default function EnvTriggerView() {
             return null
         }
 
-        const _selectedAppWorkflowList = []
+        const _selectedAppWorkflowList: BulkCDDetailType[] = []
         workflows.forEach((wf) => {
             if (wf.isSelected) {
                 const _cdNode = wf.nodes.find(
@@ -1136,10 +1137,10 @@ export default function EnvTriggerView() {
                         name: wf.name,
                         cdPipelineName: _cdNode.title,
                         cdPipelineId: _cdNode.id,
-                        stageType: _selectedNode.type,
+                        stageType: WorkflowNodeType[_selectedNode.type],
                         envName: _selectedNode.environmentName,
                         parentPipelineId: _selectedNode.parentPipelineId,
-                        parentPipelineType: _selectedNode.parentPipelineType,
+                        parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
                     })
@@ -1157,6 +1158,7 @@ export default function EnvTriggerView() {
                         appId: wf.appId,
                         name: wf.name,
                         notFoundMessage: notFoundMessage,
+                        envName: _cdNode.environmentName,
                     })
                 }
             }
@@ -1291,7 +1293,7 @@ export default function EnvTriggerView() {
         if (!showBulkCIModal) {
             return null
         }
-        const _selectedAppWorkflowList = []
+        const _selectedAppWorkflowList: BulkCIDetailType[] = []
         workflows.forEach((wf) => {
             if (wf.isSelected) {
                 const _ciNode = wf.nodes.find(

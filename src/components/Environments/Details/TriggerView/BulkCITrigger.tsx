@@ -12,42 +12,12 @@ import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { RegexValueType, WebhookPayloads } from '../../../app/details/triggerView/types'
+import { RegexValueType } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-
-interface AppWorkflowDetailsType {
-    workFlowId: number
-    appId: number
-    name: string
-    ciPipelineName: string
-    ciPipelineId: string
-    isFirstTrigger: boolean
-    isCacheAvailable: boolean
-    isLinkedCI: boolean
-    isWebhookCI: boolean
-    parentAppId: string
-    parentCIPipelineId: boolean
-    material: any[]
-    warningMessage: string
-    errorMessage: string
-    isHideSearchHeader: boolean
-    filteredCIPipelines: any
-}
-interface BulkCITriggerType {
-    appList: AppWorkflowDetailsType[]
-    closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
-    onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>) => void
-    showWebhookModal: boolean
-    toggleWebhookModal: (id, webhookTimeStampOrder) => void
-    webhookPayloads: WebhookPayloads
-    isWebhookPayloadLoading: boolean
-    hideWebhookModal: (e?) => void
-    isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
-}
+import { BulkCIDetailType, BulkCITriggerType } from '../../Environments.types'
 
 export default function BulkCITrigger({
     appList,
@@ -67,7 +37,7 @@ export default function BulkCITrigger({
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
-    const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
+    const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
         selectMaterial,
