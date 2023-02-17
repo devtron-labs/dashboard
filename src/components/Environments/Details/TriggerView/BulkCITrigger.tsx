@@ -40,7 +40,7 @@ interface BulkCITriggerType {
     appList: AppWorkflowDetailsType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
-    onClickTriggerBulkCI: () => void
+    onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>) => void
     showWebhookModal: boolean
     toggleWebhookModal: (id, webhookTimeStampOrder) => void
     webhookPayloads: WebhookPayloads
@@ -66,6 +66,7 @@ export default function BulkCITrigger({
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
+    const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [selectedApp, setSelectedApp] = useState<AppWorkflowDetailsType>(appList[0])
     const [, blobStorageConfiguration] = useAsync(() => getModuleConfigured(ModuleNameMap.BLOB_STORAGE), [])
     const {
@@ -106,6 +107,10 @@ export default function BulkCITrigger({
     }, [outsideClickHandler])
 
     useEffect(() => {
+        for (let index = 0; index < appList.length; index++) {
+            const _app = appList[index]
+            appIgnoreCache[_app.ciPipelineId] = false
+        }
         getMaterialData()
     }, [])
 
@@ -321,6 +326,12 @@ export default function BulkCITrigger({
         }
     }
 
+    const handleChange = (e): void => {
+        const _appIgnoreCache = { ...appIgnoreCache }
+        _appIgnoreCache[selectedApp.ciPipelineId] = !_appIgnoreCache[selectedApp.ciPipelineId]
+        setAppIgnoreCache(_appIgnoreCache)
+    }
+
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
@@ -378,8 +389,9 @@ export default function BulkCITrigger({
                                                     type="checkbox"
                                                     className="mt-0-imp cursor"
                                                     data-app-id={app.appId}
-                                                    checked={true}
+                                                    checked={appIgnoreCache?.[app.appId]}
                                                     id={`chkValidate-${app.appId}`}
+                                                    onChange={handleChange}
                                                 />
                                                 <label
                                                     className="fs-13 fw-4 cn-9 ml-10 mb-0"
@@ -402,13 +414,17 @@ export default function BulkCITrigger({
         )
     }
 
+    const onClickStartBuild = (): void => {
+        onClickTriggerBulkCI(appIgnoreCache)
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
                 className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
-                <button className="cta flex h-36" onClick={onClickTriggerBulkCI}>
+                <button className="cta flex h-36" onClick={onClickStartBuild}>
                     {isLoading ? (
                         <Progressing />
                     ) : (

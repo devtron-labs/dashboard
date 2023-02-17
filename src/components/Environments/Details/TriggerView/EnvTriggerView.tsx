@@ -1329,7 +1329,7 @@ export default function EnvTriggerView() {
         setWorkflows(_workflows)
     }
 
-    const onClickTriggerBulkCI = () => {
+    const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>) => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setLoading(true)
         let node, dockerfileConfiguredGitMaterialId
@@ -1390,7 +1390,7 @@ export default function EnvTriggerView() {
             const payload = {
                 pipelineId: +node.id,
                 ciPipelineMaterials: ciPipelineMaterials,
-                invalidateCache: invalidateCache,
+                invalidateCache: appIgnoreCache[+node.id],
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
