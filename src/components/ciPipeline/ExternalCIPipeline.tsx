@@ -333,7 +333,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     <div className="pl-20 pr-20">
                         {this.renderHostErrorMessage()}
                         <div className="form__row">
-                            <span className="form__label  mt-16">Pipeline Name*</span>
+                            <span className="form__label  mt-16 dc__required-field">Pipeline Name</span>
                             <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text" value={this.state.form.name}
                                 onChange={this.handlePipelineName} />
                             {this.state.showError && !errorObj.isValid ? <span className="form__error">
