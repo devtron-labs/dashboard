@@ -303,6 +303,10 @@ a:focus {
     cursor: not-allowed !important;
 }
 
+.cursor-text {
+    cursor: text;
+}
+
 // block
 .dc__block {
     display: block;
