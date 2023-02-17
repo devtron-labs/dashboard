@@ -57,6 +57,12 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         }
     }
 
+    saveProjectData = (event) => {
+        if (!this.props.name) return
+        event.preventDefault()
+        this.props.saveProject(this.props.index)
+    }
+
     renderCollapsedView() {
         return (
             <div className="project__row white-card white-card--add-new-item mb-16">
@@ -98,38 +104,58 @@ export class Project extends Component<ProjectProps, ProjectState>  {
     renderForm() {
         let isValid = this.props.isValid;
         let errorMessage = this.props.errorMessage;
-        return <div>
-            <form onSubmit={(e) => { this.props.saveProject(this.props.index) }} className="white-card p-24 mb-16 dashed" >
-                <div className="white-card__header"> {this.props.id ? "Edit project" : "Add Project"} </div>
-                <label className="form__row">
-                    <span className="form__label">Project name*</span>
-                    <input type="text"
-                        autoComplete="off"
-                        name="name"
-                        value={this.props.name}
-                        placeholder="e.g. My Project"
-                        className="form__input"
-                        autoFocus
-                        onChange={(event) => { this.props.handleChange(event, this.props.index, 'name') }} />
-                    {isValid.name ? null : <span className="form__error">
-                        {errorMessage.name}
-                    </span>}
-                </label>
-                <div>
-                <div className="form__buttons">
-                    <button type="button" className="cta cancel mr-16" onClick={this.props.onCancel} >
-                        Cancel
-                </button>
-                    <ButtonWithLoader rootClassName="cta"
-                        loaderColor="#ffffff"
-                        isLoading={this.props.loadingData}
-                        onClick={(event) => { event.preventDefault(); this.props.saveProject(this.props.index) }}>
-                        Save
-                </ButtonWithLoader>
-                </div>
-                </div>
-            </form >
-        </div>
+        return (
+            <div>
+                <form
+                    onSubmit={(e) => {
+                        this.props.saveProject(this.props.index)
+                    }}
+                    className="white-card p-24 mb-16 dashed"
+                >
+                    <div className="white-card__header"> {this.props.id ? 'Edit project' : 'Add Project'} </div>
+                    <label className="form__row">
+                        <span className="form__label dc__required-field">Project name</span>
+                        <input
+                            type="text"
+                            autoComplete="off"
+                            name="name"
+                            value={this.props.name}
+                            placeholder="e.g. My Project"
+                            className="form__input"
+                            autoFocus
+                            onChange={(event) => {
+                                this.props.handleChange(event, this.props.index, 'name')
+                            }}
+                        />
+                        {isValid.name ? null : (
+                            <span className="form__error">
+                                {errorMessage.name}
+                            </span>
+                        )}
+                        {!this.props.name && isValid.name ? (
+                            <span className="form__error">
+                                This is a required field
+                            </span>
+                        ) : null}
+                    </label>
+                    <div>
+                        <div className="form__buttons">
+                            <button type="button" className="cta cancel mr-16" onClick={this.props.onCancel}>
+                                Cancel
+                            </button>
+                            <ButtonWithLoader
+                                rootClassName="cta"
+                                loaderColor="#ffffff"
+                                isLoading={this.props.loadingData}
+                                onClick={this.saveProjectData}
+                            >
+                                Save
+                            </ButtonWithLoader>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        )
     }
 
     render() {
