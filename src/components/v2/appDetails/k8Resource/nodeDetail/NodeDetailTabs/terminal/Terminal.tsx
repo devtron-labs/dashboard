@@ -393,6 +393,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     }
                 } else {
                     preFetchData(CLUSTER_STATUS.FAILED, 'timedOut')
+                    terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED)
                     setErrorMessage({message: 'timedOut', reason: ''})
                 }
             })
@@ -480,7 +481,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
                     <u
                         className="cursor"
-                        onClick={terminalViewProps.reconnectTerminal}
+                        onClick={onClickResume}
                     >
                         {TERMINAL_TEXT.RETRY_CONNECTION}
                     </u>&nbsp;
