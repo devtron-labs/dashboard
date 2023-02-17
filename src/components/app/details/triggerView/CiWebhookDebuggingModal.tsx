@@ -11,7 +11,7 @@ import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info
 import './ciWebhookModal.css';
 import moment from 'moment';
 
-export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId, isFromEnv , appId}) {
+export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId, isFromEnv, isFromBulkCI, appId}) {
 
     const [showDetailedIncomingPayload, setShowDetailedIncomingPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
@@ -105,7 +105,8 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                             <div>Result</div>
                         </div>
 
-                        {webhookPayloads?.payloads?.map((payload, index) =>
+                       <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 330px)'}}>
+                       {webhookPayloads?.payloads?.map((payload, index) =>
                             <div key={index} className="cn-5 pt-8 pb-8 fs-13" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
                                 <div className="cb-5 cursor" onClick={(e) => getCIWebhookPayloadRes(e, ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
@@ -113,6 +114,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div className={payload.matchedFilters == false ? `dc__deprecated-warn-text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
                             </div>
                         )}
+                       </div>
                     </>}
             </div>
         </div>
@@ -138,7 +140,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
 
     const renderTimeStampDetailedDescription = () => {
         return (
-            <div style={{ height: "calc(100vh - 84px" }} className="bcn-0 pl-16 mt-20">
+            <div style={{ height: "calc(100vh - 75px" }} className="bcn-0 pl-16 mt-20">
                 <div style={{ background: "#f2f4f7", }}>
                     <div className="cn-9 fs-12 fw-6 pt-12 pl-12">Incoming Payload</div>
                     <div className={`${expandIncomingPayload ? `expand-incoming-payload` : `collapsed-incoming-payload`} cn-9 fs-13 pl-12 pr-12 pb-20`} style={{ overflow: "scroll" }}>
@@ -201,7 +203,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return (
             <div
                 className={`bcn-0 w-800 bcn-0 dc__position-fixed dc__top-0 dc__right-0 timestamp-detail-container ${
-                    isFromEnv ? 'env-modal-width' : ''
+                  isFromBulkCI ? 'env-modal-width' : ''
                 }`}
                 style={{ zIndex: 100 }}
             >

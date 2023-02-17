@@ -6,15 +6,9 @@
 
 .material-last-update {
     font-size: 10px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.4;
-    letter-spacing: normal;
-    color: var(--N700);
-    margin-top: 12px;
     display: flex;
-    align-items: flex-end;
+    justify-content: center;
+    align-items: center;
 }
 
 .material__error {
@@ -75,7 +69,7 @@
     border-radius: 50%;
     width: 24px;
     height: 24px;
-    border: solid 1px var(--N600);
+    border: none;
     background: transparent;
     padding: 3px;
     align-self: center;

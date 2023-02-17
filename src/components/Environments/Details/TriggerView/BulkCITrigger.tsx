@@ -330,6 +330,12 @@ export default function BulkCITrigger({
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {!showWebhookModal && (
                     <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                        <div
+                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
+                            style={{ zIndex: 1 }}
+                        >
+                            Applications
+                        </div>
                         {appList.map((app, index) => (
                             <div
                                 className={`material-list pr-12 pl-12 ${
@@ -354,7 +360,7 @@ export default function BulkCITrigger({
                                 </div>
                                 {app.appId === selectedApp.appId && (
                                     <>
-                                        {!!selectedMaterialList.length && (
+                                        {!!selectedMaterialList.length && !showRegexModal && (
                                             <MaterialSource
                                                 material={selectedMaterialList}
                                                 selectMaterial={selectMaterial}
@@ -366,7 +372,7 @@ export default function BulkCITrigger({
                                                 ciPipelineId={+app.ciPipelineId}
                                             />
                                         )}
-                                        {!selectedApp.isLinkedCI && !selectedApp.isWebhookCI && (
+                                        {!selectedApp.isLinkedCI && !selectedApp.isWebhookCI && !showRegexModal && (
                                             <div className="flex left mt-12 dc__border-top pt-12 pb-12">
                                                 <input
                                                     type="checkbox"

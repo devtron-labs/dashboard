@@ -28,6 +28,7 @@
                     &.material-selected {
                         box-shadow: none;
                         border-color: var(--B500);
+                        background: var(--N0);
                     }
                 }
             }
@@ -47,4 +48,8 @@
     width: 75%;
     min-width: 1024px;
     max-width: 1200px;
+    &.full-height{
+      z-index: 1;
+      height: calc(100vh - 55px);
+    }
 }

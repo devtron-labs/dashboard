@@ -26,7 +26,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
         } else {
             return (
                 <div className="material-last-update">
-                    {mat.lastFetchTime ? 'Last Updated' : ''}
+                    {mat.lastFetchTime ? 'Updated' : ''}
                     <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
                 </div>
             )
@@ -81,7 +81,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
                             />
                         </div>
                         {refreshMaterial ? (
-                            <div className="material-info">
+                            <div className="material-info mt-10">
                                 {renderMaterialUpdateInfo(mat)}
                                 {mat.type != SourceTypeMap.WEBHOOK && renderRefreshButton(mat)}
                             </div>

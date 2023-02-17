@@ -58,7 +58,7 @@ export default function GitInfoMaterial({
 
     function renderMaterialHeader() {
         return (
-            <div className="trigger-modal__header">
+            <div className={`trigger-modal__header ${isFromBulkCI ? 'bcn-0' : ''}`}>
                 <h1 className="modal__title flex left fs-16">
                     {showWebhookModal ? (
                         <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
@@ -281,7 +281,7 @@ export default function GitInfoMaterial({
 
     const renderWebhookModal = () => {
         return (
-            <div>
+            <div className={` ${isFromBulkCI ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
                 <CiWebhookModal
                     context={triggerViewContext}
                     webhookPayloads={webhookPayloads}
@@ -291,6 +291,7 @@ export default function GitInfoMaterial({
                     hideWebhookModal={hideWebhookModal}
                     workflowId={workflowId}
                     isFromEnv={isFromEnv}
+                    isFromBulkCI={isFromBulkCI}
                     appId={appId}
                 />
             </div>
@@ -300,7 +301,7 @@ export default function GitInfoMaterial({
     return (
         <>
             {(!isFromBulkCI || showWebhookModal) && renderMaterialHeader()}
-            <div className={`m-lr-0 ${showWebhookModal || isFromBulkCI ? null : 'flexbox'}`}>
+            <div className={`m-lr-0 ${showWebhookModal || isFromBulkCI ? '' : 'flexbox'}`}>
                 {showWebhookModal == true ? (
                     renderWebhookModal()
                 ) : (

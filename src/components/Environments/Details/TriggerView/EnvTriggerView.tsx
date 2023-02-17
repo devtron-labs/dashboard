@@ -107,20 +107,6 @@ export default function EnvTriggerView() {
                         }
                     }),
                 )
-                // } else if (showBulkCIModal) {
-                //     _workflows.forEach((wf) =>
-                //         wf.nodes.forEach((n) => {
-                //             if (+n.id === selectedCINode.id) {
-                //                 workflows.forEach((sw) =>
-                //                     sw.nodes.forEach((sn) => {
-                //                         if (+sn.id === selectedCINode.id) {
-                //                             n.inputMaterialList = sn.inputMaterialList
-                //                         }
-                //                     }),
-                //                 )
-                //             }
-                //         }),
-                //     )
             }
             setWorkflows(_workflows)
             setFilteredCIPipelines(filteredCIPipelines)
@@ -213,8 +199,11 @@ export default function EnvTriggerView() {
     }
 
     useEffect(() => {
-        getWorkflowsData()
-    }, [])
+        if (envId) {
+            setPageViewType(ViewType.LOADING)
+            getWorkflowsData()
+        }
+    }, [envId])
 
     const clearAppList = (): void => {
         setSelectedAppList([])
@@ -1307,7 +1296,7 @@ export default function EnvTriggerView() {
                                 ? 'Primary branch is not set'
                                 : '',
                         isHideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
-                        filteredCIPipelines: filteredCIPipelines.get(wf.appId)
+                        filteredCIPipelines: filteredCIPipelines.get(wf.appId),
                     })
                 }
             }
