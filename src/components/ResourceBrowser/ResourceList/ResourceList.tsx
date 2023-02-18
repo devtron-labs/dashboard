@@ -40,7 +40,7 @@ import {
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
 import { DOCUMENTATION, LAST_SEEN, URLS } from '../../../config'
-import { Sidebar } from './Sidebar'
+import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
@@ -56,6 +56,9 @@ import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
+import searchWorker from '../../../config/searchWorker'
+import WebWorker from '../../app/WebWorker'
+import { ShortcutProvider } from 'react-keybind'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
@@ -101,6 +104,7 @@ export default function ResourceList() {
         prev: null,
         new: new AbortController(),
     })
+    const searchWorkerRef = useRef(null)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -121,6 +125,7 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
+            stopSearchWorker()
             resourceListAbortController.abort()
             abortReqAndUpdateSideDataController()
         }
@@ -385,20 +390,39 @@ export default function ResourceList() {
         ]
     }
 
+    const stopSearchWorker = () => {
+        if (searchWorkerRef.current) {
+            searchWorkerRef.current.postMessage({ type: 'stop' })
+            searchWorkerRef.current = null
+        }
+    }
+
     const handleFilterChanges = (_searchText: string, _resourceList: ResourceDetailType): void => {
-        const lowerCaseSearchText = _searchText.toLowerCase()
-        const _filteredData = _resourceList.data.filter(
-            (resource) =>
-                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
-        )
-        setFilteredResourceList(_filteredData)
+        if (!searchWorkerRef.current) {
+            searchWorkerRef.current = new WebWorker(searchWorker)
+            searchWorkerRef.current.onmessage = (e) => {
+                setFilteredResourceList(e.data)
+            }
+        }
+
+        searchWorkerRef.current.postMessage({
+            type: 'start',
+            payload: {
+                searchText: _searchText,
+                list: _resourceList.data,
+                searchInKeys: [
+                    'name',
+                    'namespace',
+                    'status',
+                    'message',
+                    EVENT_LIST.dataKeys.involvedObject,
+                    'source',
+                    'reason',
+                    'type',
+                ],
+                origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
+            },
+        })
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
@@ -443,18 +467,26 @@ export default function ResourceList() {
         }
     }
 
-    const handleGroupHeadingClick = (e): void => {
+    const handleGroupHeadingClick = (e: any, preventCollapse?: boolean): void => {
         const splittedKey = e.currentTarget.dataset.groupName.split('/')
         const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
+
         if (splittedKey.length > 1) {
             const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
-            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
+            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
+                return
+            }
 
+            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
             const _childObj = _k8SObjectMap.get(splittedKey[0])
             _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
             _k8SObjectMap.set(splittedKey[0], _childObj)
         } else {
             const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
+            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
+                return
+            }
+
             _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
             _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
         }
@@ -502,6 +534,7 @@ export default function ResourceList() {
 
     const updateResourceSelectionData = (_selected: ApiResourceGroupType, initSelection?: boolean) => {
         if (_selected) {
+            stopSearchWorker()
             setResourceSelectionData((prevData) => ({
                 ...prevData,
                 [`${_selected.gvk.Kind.toLowerCase()}_${
@@ -649,6 +682,7 @@ export default function ResourceList() {
                     selectedResource={selectedResource}
                     setSelectedResource={setSelectedResource}
                     updateResourceSelectionData={updateResourceSelectionData}
+                    isCreateModalOpen={showCreateResourceModal}
                 />
                 <K8SResourceList
                     selectedResource={selectedResource}
@@ -670,6 +704,7 @@ export default function ResourceList() {
                     setSearchApplied={setSearchApplied}
                     handleFilterChanges={handleFilterChanges}
                     clearSearch={clearSearch}
+                    isCreateModalOpen={showCreateResourceModal}
                 />
             </div>
         )
@@ -771,10 +806,12 @@ export default function ResourceList() {
     }
 
     return (
-        <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" />
-            {renderResourceListBody()}
-            {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
-        </div>
+        <ShortcutProvider>
+            <div className="resource-browser-container">
+                <PageHeader headerName="Kubernetes Resource Browser" />
+                {renderResourceListBody()}
+                {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
+            </div>
+        </ShortcutProvider>
     )
 }

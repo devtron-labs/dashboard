@@ -21,12 +21,60 @@
         grid-template-columns: 220px auto;
 
         .k8s-object-container {
-            height: calc(100vh - 92px);
-            overflow: auto;
+            .k8s-object-kind-search {
+                .kind-search-select__value-container {
+                    .kind-search-icon {
+                        path:nth-child(2) {
+                            fill: var(--N600);
+                        }
+                    }
+                }
 
-            .resource-tree-object:hover {
-                background-color: var(--N50);
-                color: var(--N900);
+                .kind-search-select__input-container {
+                    input {
+                        max-width: 135px;
+                    }
+                }
+
+                .kind-search-select__menu {
+                    margin-top: 4px;
+
+                    .kind-search-select__menu-list {
+                        .kind-search-select__option {
+                            mark {
+                                padding: 0;
+                                background-color: var(--Y200);
+                            }
+                        }
+                    }
+                }
+
+                .kind-search-select__indicators {
+                    position: absolute;
+                    top: 15px;
+                    right: 0;
+
+                    .clear-kind-search-icon {
+                        rect {
+                            fill: var(--N600);
+                        }
+                    }
+
+                    .kind-search-shortcut-key {
+                        right: 10px;
+                        top: -10px;
+                    }
+                }
+            }
+
+            .k8s-object-wrapper {
+                height: calc(100vh - 152px);
+                overflow: auto;
+
+                .resource-tree-object:hover {
+                    background-color: var(--N50);
+                    color: var(--N900);
+                }
             }
         }
 
@@ -34,6 +82,35 @@
             &.no-result-container {
                 height: calc(100vh - 92px);
                 overflow: hidden;
+            }
+
+            .resource-filter-options-container {
+                .resource-filter-options-wrapper {
+                    .resource-filter-select__input-container {
+                        input {
+                            max-width: 150px;
+                        }
+                    }
+                }
+
+                .search {
+                    .search__icon {
+                        path:nth-child(2) {
+                            fill: var(--N600);
+                        }
+                    }
+
+                    .search__input {
+                        &:focus {
+                            border: none;
+                        }
+                    }
+
+                    .resource-search-shortcut-key {
+                        right: 8px;
+                        top: 5px;
+                    }
+                }
             }
 
             .scrollable-resource-list {

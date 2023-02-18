@@ -5,6 +5,7 @@ import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
 import PageHeader from '../common/header/PageHeader'
+import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './EnvironmentConfig/EnvConfig'
 import { getEnvAppList } from './EnvironmentListService'
 import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
@@ -54,7 +55,7 @@ export default function EnvironmentDetailsRoute() {
                             <EnvironmentOverview />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <div>Build & Deploy</div>
+                            <EnvTriggerView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
                             <EnvConfig />

@@ -46,7 +46,8 @@ export interface CIMaterialType {
 export interface MaterialHistoryProps {
     material: CIMaterialType
     pipelineName: string
-    selectCommit?: (materialId: string, commit: string) => void
+    ciPipelineId?: string
+    selectCommit?: (materialId: string, commit: string, ciPipelineId?: string) => void
     toggleChanges: (materialId: string, commit: string) => void
 }
 
@@ -54,7 +55,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
     onClickMaterialHistory = (e, _commitId) => {
         e.stopPropagation()
         if (this.props.selectCommit) {
-            this.props.selectCommit(this.props.material.id.toString(), _commitId)
+            this.props.selectCommit(this.props.material.id.toString(), _commitId, this.props.ciPipelineId)
         }
     }
     render() {

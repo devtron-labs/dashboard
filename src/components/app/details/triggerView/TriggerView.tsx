@@ -21,7 +21,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { DeploymentNodeType, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import {
@@ -29,7 +29,6 @@ import {
     ViewType,
     SourceTypeMap,
     BUILD_STATUS,
-    SOURCE_NOT_CONFIGURED,
     DEFAULT_GIT_BRANCH_VALUE,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
@@ -44,6 +43,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../Environments/AppGrouping.utils'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -276,71 +276,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getWorkflowStatus() {
         getWorkflowStatus(this.props.match.params.appId)
             .then((response) => {
-                let ciMap = {}
-                let cdMap = {}
-                let preCDMap = {}
-                let postCDMap = {}
-                let allCIs = response?.result?.ciWorkflowStatus || []
-                let allCDs = response?.result?.cdWorkflowStatus || []
-                let cicdInProgress = false
-                //Create maps from Array
-                if (allCIs.length) {
-                    allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = {
-                            status: pipeline.ciStatus,
-                            storageConfigured: pipeline.storageConfigured || false,
-                        }
-                        if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
-                            cicdInProgress = true
-                        }
-                    })
-                }
-                if (allCDs.length) {
-                    allCDs.forEach((pipeline) => {
-                        if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
-                        if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status
-                        if (pipeline.deploy_status) cdMap[pipeline.pipeline_id] = pipeline.deploy_status
-                        if (
-                            !cicdInProgress &&
-                            (pipeline.pre_status === 'Starting' ||
-                                pipeline.pre_status === 'Running' ||
-                                pipeline.deploy_status === 'Progressing' ||
-                                pipeline.post_status === 'Starting' ||
-                                pipeline.post_status === 'Running')
-                        ) {
-                            cicdInProgress = true
-                        }
-                    })
-                }
-                //Update Workflow using maps
-                const workflows = [...this.state.workflows].map((wf) => {
-                    wf.nodes = wf.nodes.map((node) => {
-                        switch (node.type) {
-                            case 'CI':
-                                node['status'] = ciMap[node.id]?.status
-                                node['storageConfigured'] = ciMap[node.id]?.storageConfigured
-                                break
-                            case 'PRECD':
-                                node['status'] = preCDMap[node.id]
-                                break
-                            case 'POSTCD':
-                                node['status'] = postCDMap[node.id]
-                                break
-                            case 'CD':
-                                node['status'] = cdMap[node.id]
-                                break
-                        }
-                        return node
-                    })
-                    return wf
-                })
+                const _processedWorkflowsData = processWorkflowStatuses(
+                    response?.result?.ciWorkflowStatus ?? [],
+                    response?.result?.cdWorkflowStatus ?? [],
+                    this.state.workflows,
+                )
                 this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
-                if (cicdInProgress) {
+                if (_processedWorkflowsData.cicdInProgress) {
                     this.inprogressStatusTimer = setTimeout(() => {
                         this.getWorkflowStatus()
                     }, 10000)
                 }
-                this.setState({ workflows })
+                this.setState({ workflows: _processedWorkflowsData.workflows })
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -430,7 +377,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType) {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         getCDMaterialList(cdNodeId, nodeType)
             .then((data) => {
@@ -518,8 +465,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    // stageType'PRECD' | 'CD' | 'POSTCD'
-    onClickTriggerCDNode = (nodeType: string, deploymentWithConfig?: string, wfrId?: number): void => {
+    onClickTriggerCDNode = (nodeType: DeploymentNodeType, deploymentWithConfig?: string, wfrId?: number): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
         const appId = this.props.match.params.appId
@@ -823,7 +769,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
-    closeCDModal = (): void => {
+    closeCDModal = (e): void => {
         preventBodyScroll(false)
         this.setState({ showCDModal: false })
     }
@@ -877,40 +823,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    handleSourceNotConfigured = (
-        configuredMaterialList: Map<number, Set<number>>,
-        wf: WorkflowType,
-        _materialList: any[],
-    ) => {
-        if (_materialList.length > 0) {
-            _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
-        }
-        for (const material of wf.gitMaterials) {
-            if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
-                continue
-            }
-            const ciMaterial: CIMaterialType = {
-                id: 0,
-                gitMaterialId: material.gitMaterialId,
-                gitMaterialName: material.materialName.toLowerCase(),
-                type: '',
-                value: DEFAULT_GIT_BRANCH_VALUE,
-                active: false,
-                gitURL: '',
-                isRepoError: false,
-                repoErrorMsg: '',
-                isBranchError: true,
-                branchErrorMsg: SOURCE_NOT_CONFIGURED,
-                regex: '',
-                history: [],
-                isSelected: false,
-                lastFetchTime: '',
-                isRegex: false,
-            }
-            _materialList.push(ciMaterial)
-        }
-    }
-
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
@@ -920,7 +832,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
                 if (nd) {
                     configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
-                    this.handleSourceNotConfigured(
+                    handleSourceNotConfigured(
                         configuredMaterialList,
                         this.state.workflows[i],
                         nd[this.state.materialType],
@@ -959,6 +871,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     setLoader={this.setLoader}
                     isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                     isCacheAvailable={nd?.storageConfigured}
+                    appId={this.props.match.params.appId}
                 />
             )
         }
@@ -981,7 +894,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 <CDMaterial
                     appId={Number(this.props.match.params.appId)}
                     pipelineId={this.state.cdNodeId}
-                    stageType={this.state.nodeType}
+                    stageType={DeploymentNodeType[this.state.nodeType]}
                     material={material}
                     materialType={this.state.materialType}
                     envName={node.environmentName}
