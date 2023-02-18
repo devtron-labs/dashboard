@@ -74,8 +74,6 @@ export const handleSourceNotConfigured = (
 ) => {
     if (_materialList?.length > 0) {
         _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
-    } else {
-        _materialList = []
     }
     for (const material of wf.gitMaterials) {
         if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {

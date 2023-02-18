@@ -1177,6 +1177,9 @@ export default function EnvTriggerView() {
                 if (_ciNode) {
                     const configuredMaterialList = new Map<number, Set<number>>()
                     configuredMaterialList[wf.name] = new Set<number>()
+                    if(!_ciNode[MATERIAL_TYPE.inputMaterialList]){
+                      _ciNode[MATERIAL_TYPE.inputMaterialList] = []
+                    }
                     handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
