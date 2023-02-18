@@ -18,7 +18,7 @@ export default function EnvConfig() {
         if (appList?.result) {
             const envAppList = appList.result.sort((a, b) => a.name.localeCompare(b.name))
             setEnvAppList(envAppList)
-            if (!params.appId) {
+            if (!params.envId) {
                 history.push(`${url}/${envAppList[0].id}`)
             }
         }

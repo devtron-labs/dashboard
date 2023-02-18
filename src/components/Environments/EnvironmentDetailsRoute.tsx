@@ -127,6 +127,27 @@ export function EnvHeader({
         [envId, envName],
     )
 
+    const handleOverViewClick = () => {
+        ReactGA.event({
+            category: 'Environment',
+            action: 'Overview Clicked',
+        })
+    }
+
+    const handleBuildClick = () => {
+        ReactGA.event({
+            category: 'Environment',
+            action: 'Build & Deploy Clicked',
+        })
+    }
+
+    const handleConfigClick = () => {
+        ReactGA.event({
+            category: 'Configuration',
+            action: 'Configuration Clicked',
+        })
+    }
+
     const renderEnvDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
@@ -135,12 +156,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'Environment',
-                                action: 'Overview Clicked',
-                            })
-                        }}
+                        onClick={handleOverViewClick}
                     >
                         Overview
                     </NavLink>
@@ -150,12 +166,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'Environment',
-                                action: 'Build & Deploy Clicked',
-                            })
-                        }}
+                        onClick={handleBuildClick}
                     >
                         Build & Deploy
                     </NavLink>
@@ -165,12 +176,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'Configuration',
-                                action: 'Configuration Clicked',
-                            })
-                        }}
+                        onClick={handleConfigClick}
                     >
                         Configuration
                     </NavLink>
