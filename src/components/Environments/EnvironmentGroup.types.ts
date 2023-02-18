@@ -67,3 +67,10 @@ export interface AppOverridesType {
     environments: any
     setEnvironments: any
 }
+
+export interface EnvHeaderType {
+    envName: string
+    setEnvName: (label: string) => void
+    setShowEmpty: (empty: boolean) => void
+    showEmpty: boolean
+}

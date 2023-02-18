@@ -13,10 +13,11 @@ import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
+import { EnvHeaderType } from './EnvironmentGroup.types'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
-    const { envId } = useParams<{ envId }>()
+    const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
     const [showEmpty, setShowEmpty] = useState<boolean>(true)
     const [loading, envList] = useAsync(() => getEnvAppList({ size: '1000' }), [])
@@ -80,13 +81,8 @@ export function EnvHeader({
     setEnvName,
     setShowEmpty,
     showEmpty,
-}: {
-    envName: string
-    setEnvName: (label: string) => void
-    setShowEmpty: (empty: boolean) => void
-    showEmpty: boolean
-}) {
-    const { envId } = useParams<{ envId }>()
+}: EnvHeaderType ) {
+    const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -116,7 +112,7 @@ export function EnvHeader({
         {
             alias: {
                 ':envId': {
-                    component: <EnvSelector onChange={handleEnvChange} envId={envId} envName={envName} />,
+                    component: <EnvSelector onChange={handleEnvChange} envId={+envId} envName={envName} />,
                     linked: false,
                 },
                 environment: {
@@ -128,15 +124,15 @@ export function EnvHeader({
         [envId, envName],
     )
 
-    const handleOverViewClick = () => {
+    const handleOverViewClick = (): void => {
         ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
     }
 
-    const handleBuildClick = () => {
+    const handleBuildClick = (): void => {
         ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
     }
 
-    const handleConfigClick = () => {
+    const handleConfigClick = (): void => {
         ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
     }
 

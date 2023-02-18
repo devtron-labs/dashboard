@@ -70,8 +70,8 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
         }
     }
 
-    const handleClusterClick = (e, noApp): void => {
-        if (noApp) {
+    const handleClusterClick = (e: any): void => {
+        if (e.currentTarget.dataset.noapp === 'true') {
             e.preventDefault()
             toast.info(NO_ACCESS_TOAST_MESSAGE)
         }
@@ -107,7 +107,8 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
                                 to={`/environment/${envData.id}`}
-                                onClick={(e) => handleClusterClick(e, !envData.appCount)}
+                                data-noapp={!envData.appCount}
+                                onClick={handleClusterClick}
                             >
                                 {envData.environment_name}
                             </NavLink>

@@ -12,7 +12,7 @@ import { getDeploymentStatus } from '../EnvironmentListService'
 import './envOverview.scss'
 
 export default function EnvironmentOverview() {
-    const { envId } = useParams<{ envId }>()
+    const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, response] = useAsync(
         () => Promise.all([getAppList({ environments: [+envId], size: 20 }), getDeploymentStatus(+envId)]),
@@ -29,7 +29,7 @@ export default function EnvironmentOverview() {
         }
     }, [response])
 
-    const parseAppListData = (data , statusRecord: Record<string, string>): void => {
+    const parseAppListData = (data: any, statusRecord: Record<string, string>): void => {
         const parsedData = {
             environment: '',
             namespace: '',

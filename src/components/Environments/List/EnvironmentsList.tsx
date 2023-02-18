@@ -146,40 +146,38 @@ export default function EnvironmentsList() {
     }
 
     function renderAppliedFilters(): JSX.Element {
-        let count = 0
-        const appliedFilters = (
-            <div className="saved-env-filters__wrap dc__position-rel mb-12">
-                {clusterfilter.map((filter) => {
-                    if (filter.isChecked) {
-                        count++
-
-                        return (
-                            <div key={filter.key} className="saved-env-filter">
-                                <span className="fw-6 mr-5">{'Cluster'}</span>
-                                <span className="saved-env-filter-divider"></span>
-                                <span className="ml-5">{filter.label}</span>
-                                <button
-                                    type="button"
-                                    className="saved-env-filter__close-btn"
-                                    onClick={() => removeFilter(filter)}
-                                >
-                                    <i className="fa fa-times-circle" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                        )
-                    }
-                })}
-                <button
-                    type="button"
-                    className="saved-env-filters__clear-btn flex fs-13"
-                    onClick={removeAllFilters}
-                >
-                    Clear All Filters
-                </button>
-            </div>
+        const isApplied = clusterfilter.some((filter) => filter.isChecked)
+        return (
+            isApplied && (
+                <div className="saved-env-filters__wrap dc__position-rel mb-12">
+                    {clusterfilter.map((filter) => {
+                        if (filter.isChecked) {
+                            return (
+                                <div key={filter.key} className="saved-env-filter">
+                                    <span className="fw-6 mr-5">{'Cluster'}</span>
+                                    <span className="saved-env-filter-divider"></span>
+                                    <span className="ml-5">{filter.label}</span>
+                                    <button
+                                        type="button"
+                                        className="saved-env-filter__close-btn"
+                                        onClick={() => removeFilter(filter)}
+                                    >
+                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            )
+                        }
+                    })}
+                    <button
+                        type="button"
+                        className="saved-env-filters__clear-btn flex fs-13"
+                        onClick={removeAllFilters}
+                    >
+                        Clear All Filters
+                    </button>
+                </div>
+            )
         )
-
-        return count > 0 && appliedFilters
     }
 
     if (loading) {
