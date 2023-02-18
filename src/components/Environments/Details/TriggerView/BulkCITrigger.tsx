@@ -38,9 +38,10 @@ export default function BulkCITrigger({
     hideWebhookModal,
     isShowRegexModal,
     responseList,
+    isLoading,
+    setLoading,
 }: BulkCITriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
-    const [isLoading, setLoading] = useState(true)
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
@@ -138,7 +139,12 @@ export default function BulkCITrigger({
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Build image</h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePopup}>
+                <button
+                    type="button"
+                    className="dc__transparent flex icon-dim-24"
+                    disabled={isLoading}
+                    onClick={closePopup}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -174,6 +180,7 @@ export default function BulkCITrigger({
     }
 
     const saveBranchName = () => {
+        setLoading(true)
         const payload: any = {
             appId: selectedApp.appId,
             id: +selectedApp.workFlowId,
@@ -216,10 +223,13 @@ export default function BulkCITrigger({
             .then((response) => {
                 if (response) {
                     getMaterialData()
+                } else {
+                    setLoading(true)
                 }
             })
             .catch((error: ServerErrors) => {
                 showError(error)
+                setLoading(false)
             })
     }
 

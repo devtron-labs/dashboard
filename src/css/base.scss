@@ -2085,6 +2085,10 @@ textarea,
     min-width: 14px !important;
 }
 
+.mw-18 {
+    min-width: 18px !important;
+}
+
 .w-32 {
     width: 32px !important;
 }
@@ -2228,7 +2232,7 @@ textarea,
 }
 
 .dc__min-width-fit-content {
-    min-width: fit-content!important;
+    min-width: fit-content !important;
 }
 
 .h-0 {
@@ -2636,8 +2640,8 @@ textarea::placeholder {
 }
 
 .dc__required-field::after {
-  content: ' *';
-  color: var(--R500);
+    content: ' *';
+    color: var(--R500);
 }
 
 .dc__highlight-text {

@@ -61,6 +61,8 @@ export interface BulkCITriggerType {
     hideWebhookModal: (e?) => void
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
     responseList: ResponseRowType[]
+    isLoading: boolean
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface BulkCDTriggerType {
@@ -82,6 +84,8 @@ export interface BulkCDTriggerType {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
     responseList: ResponseRowType[]
+    isLoading: boolean
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ProcessWorkFlowStatusType {

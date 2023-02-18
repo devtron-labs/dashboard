@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import {
-    BUILD_STATUS,
-    DEFAULT_GIT_BRANCH_VALUE,
-    SourceTypeMap,
-    ViewType,
-} from '../../../../config'
+import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -48,7 +43,12 @@ import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMes
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { BULK_CI_RESPONSE_STATUS_TEXT, BulkResponseStatus, ENV_TRIGGER_VIEW_GA_EVENTS } from '../../Constants'
+import {
+    BULK_CI_RESPONSE_STATUS_TEXT,
+    BulkResponseStatus,
+    ENV_TRIGGER_VIEW_GA_EVENTS,
+    BULK_CD_RESPONSE_STATUS_TEXT,
+} from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
@@ -853,11 +853,14 @@ export default function EnvTriggerView() {
     }
 
     const hideBulkCDModal = () => {
-        setShowBulkCDModal(false)
-        setResponseList([])
+        if (!isLoading) {
+            setShowBulkCDModal(false)
+            setResponseList([])
+        }
     }
 
     const onShowBulkCDModal = (e) => {
+        setLoading(true)
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
         setTimeout(() => {
             setShowBulkCDModal(true)
@@ -865,11 +868,14 @@ export default function EnvTriggerView() {
     }
 
     const hideBulkCIModal = () => {
-        setShowBulkCIModal(false)
-        setResponseList([])
+        if (!isLoading) {
+            setShowBulkCIModal(false)
+            setResponseList([])
+        }
     }
 
     const onShowBulkCIModal = () => {
+        setLoading(true)
         setShowBulkCIModal(true)
     }
 
@@ -898,6 +904,7 @@ export default function EnvTriggerView() {
     }
 
     const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
+        if (isLoading) return
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
         setLoading(true)
         const _appIdMap = new Map<string, string>(),
@@ -933,10 +940,14 @@ export default function EnvTriggerView() {
                 )
             }
         })
-        handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList)
+        handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
     }
 
-    const handleBulkTrigger = (promiseList: any[], triggeredAppList: { appId: number; appName: string }[]): void => {
+    const handleBulkTrigger = (
+        promiseList: any[],
+        triggeredAppList: { appId: number; appName: string }[],
+        type: WorkflowNodeType,
+    ): void => {
         if (promiseList.length) {
             Promise.allSettled(promiseList).then((responses: any) => {
                 const _responseList = []
@@ -945,7 +956,10 @@ export default function EnvTriggerView() {
                         _responseList.push({
                             appId: triggeredAppList[index].appId,
                             appName: triggeredAppList[index].appName,
-                            statusText: BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
+                            statusText:
+                                type === WorkflowNodeType.CI
+                                    ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS]
+                                    : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
                             status: BulkResponseStatus.PASS,
                             message: '',
                         })
@@ -955,7 +969,10 @@ export default function EnvTriggerView() {
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
-                                statusText: BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
+                                statusText:
+                                    type === WorkflowNodeType.CI
+                                        ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
+                                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
                                 status: BulkResponseStatus.UNAUTHORIZE,
                                 message: errorReason.errors[0].userMessage,
                             })
@@ -963,7 +980,10 @@ export default function EnvTriggerView() {
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
-                                statusText: BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                statusText:
+                                    type === WorkflowNodeType.CI
+                                        ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
+                                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].userMessage,
                             })
@@ -996,6 +1016,7 @@ export default function EnvTriggerView() {
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
+        if (isLoading) return
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setLoading(true)
         let node, dockerfileConfiguredGitMaterialId
@@ -1061,58 +1082,58 @@ export default function EnvTriggerView() {
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
-        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList)
+        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
     }
 
     const createBulkCDTriggerData = (): BulkCDDetailType[] => {
-      const _selectedAppWorkflowList: BulkCDDetailType[] = []
-      workflows.forEach((wf) => {
-          if (wf.isSelected) {
-              const _cdNode = wf.nodes.find(
-                  (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-              )
-              let _selectedNode: NodeAttr
-              if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                  _selectedNode = _cdNode.preNode
-              } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                  _selectedNode = _cdNode
-              } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                  _selectedNode = _cdNode.preNode
-              }
-              if (_selectedNode) {
-                  _selectedAppWorkflowList.push({
-                      workFlowId: wf.id,
-                      appId: wf.appId,
-                      name: wf.name,
-                      cdPipelineName: _cdNode.title,
-                      cdPipelineId: _cdNode.id,
-                      stageType: WorkflowNodeType[_selectedNode.type],
-                      envName: _selectedNode.environmentName,
-                      parentPipelineId: _selectedNode.parentPipelineId,
-                      parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
-                      parentEnvironmentName: _selectedNode.parentEnvironmentName,
-                      material: _selectedNode.inputMaterialList,
-                  })
-              } else {
-                  let notFoundMessage = ''
-                  if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                      notFoundMessage = 'No pre-deployment stage'
-                  } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                      notFoundMessage = 'No deployment stage'
-                  } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                      notFoundMessage = 'No post-deployment stage'
-                  }
-                  _selectedAppWorkflowList.push({
-                      workFlowId: wf.id,
-                      appId: wf.appId,
-                      name: wf.name,
-                      notFoundMessage: notFoundMessage,
-                      envName: _cdNode.environmentName,
-                  })
-              }
-          }
-      })
-      return _selectedAppWorkflowList
+        const _selectedAppWorkflowList: BulkCDDetailType[] = []
+        workflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _cdNode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
+                )
+                let _selectedNode: NodeAttr
+                if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                    _selectedNode = _cdNode.preNode
+                } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                    _selectedNode = _cdNode
+                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                    _selectedNode = _cdNode.preNode
+                }
+                if (_selectedNode) {
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        cdPipelineName: _cdNode.title,
+                        cdPipelineId: _cdNode.id,
+                        stageType: WorkflowNodeType[_selectedNode.type],
+                        envName: _selectedNode.environmentName,
+                        parentPipelineId: _selectedNode.parentPipelineId,
+                        parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
+                        parentEnvironmentName: _selectedNode.parentEnvironmentName,
+                        material: _selectedNode.inputMaterialList,
+                    })
+                } else {
+                    let notFoundMessage = ''
+                    if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                        notFoundMessage = 'No pre-deployment stage'
+                    } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                        notFoundMessage = 'No deployment stage'
+                    } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                        notFoundMessage = 'No post-deployment stage'
+                    }
+                    _selectedAppWorkflowList.push({
+                        workFlowId: wf.id,
+                        appId: wf.appId,
+                        name: wf.name,
+                        notFoundMessage: notFoundMessage,
+                        envName: _cdNode.environmentName,
+                    })
+                }
+            }
+        })
+        return _selectedAppWorkflowList
     }
 
     const getWarningMessage = (_ciNode): string => {
@@ -1146,7 +1167,7 @@ export default function EnvTriggerView() {
     }
 
     const createBulkCITriggerData = (): BulkCIDetailType[] => {
-      const _selectedAppWorkflowList: BulkCIDetailType[] = []
+        const _selectedAppWorkflowList: BulkCIDetailType[] = []
         workflows.forEach((wf) => {
             if (wf.isSelected) {
                 const _ciNode = wf.nodes.find(
@@ -1261,6 +1282,8 @@ export default function EnvTriggerView() {
                 toggleSourceInfo={toggleSourceInfo}
                 selectImage={selectImage}
                 responseList={responseList}
+                isLoading={isLoading}
+                setLoading={setLoading}
             />
         )
     }
@@ -1283,6 +1306,8 @@ export default function EnvTriggerView() {
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
                 responseList={responseList}
+                isLoading={isLoading}
+                setLoading={setLoading}
             />
         )
     }
@@ -1364,7 +1389,7 @@ export default function EnvTriggerView() {
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {
         return (
-            <div className="flex">
+            <div className="flex dc__min-width-fit-content">
                 <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
                     {isLoading ? <Progressing /> : 'Build image'}
                 </button>
@@ -1390,7 +1415,7 @@ export default function EnvTriggerView() {
     const renderSelectedApps = (): JSX.Element => {
         return (
             <div className="flex">
-                <Close className="icon-dim-16 scr-5 mr-8 cursor" onClick={clearAppList} />
+                <Close className="icon-dim-18 scr-5 mr-8 cursor mw-18" onClick={clearAppList} />
                 <div>
                     <div className="fs-13 fw-6 cn-9">
                         {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
