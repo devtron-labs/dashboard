@@ -59,5 +59,11 @@ export interface ApplicationRouteType {
 }
 
 export interface EnvironmentsListViewType {
-   removeAllFilters: () => void
+    removeAllFilters: () => void
+}
+
+export interface AppOverridesType {
+    appList?: ConfigAppList[]
+    environments: any
+    setEnvironments: any
 }

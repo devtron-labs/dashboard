@@ -28,13 +28,13 @@ export default function EnvironmentsList() {
             if (search) {
                 setSearchApplied(true)
             }
-            let clusterStatus = clusters
+            const clusterStatus = clusters
                 .toString()
                 .split(',')
                 .filter((status) => status != '')
                 .map((status) => status)
             const clusterList = new Set<string>(clusterStatus)
-            let clustersfilter: FilterOption[] = []
+            const clustersfilter: FilterOption[] = []
             if (clusterListRes?.result && Array.isArray(clusterListRes.result)) {
                 clusterListRes.result.forEach((cluster: Cluster) => {
                     clustersfilter.push({
@@ -109,8 +109,7 @@ export default function EnvironmentsList() {
             queryParams.delete('cluster')
         }
         queryParams.set('offset', '0')
-        let url = `${match.path}?${queryParams.toString()}`
-        history.push(url)
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const removeAllFilters = (): void => {
@@ -119,8 +118,7 @@ export default function EnvironmentsList() {
         queryParams.delete('search')
         setSearchApplied(false)
         setSearchText('')
-        let url = `${match.path}?${queryParams.toString()}`
-        history.push(url)
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const handleSearchText = (event) => {

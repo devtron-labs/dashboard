@@ -5,7 +5,7 @@ import { URLS } from '../../../config'
 import AppStatus from '../../app/AppStatus'
 import { StatusConstants } from '../../app/list-new/Constants'
 import { getAppList } from '../../app/service'
-import { Progressing, renderDeployedTime, useAsync } from '../../common'
+import { Progressing, processDeployedTime, useAsync } from '../../common'
 import { AppListDataType } from '../EnvironmentGroup.types'
 import { getDeploymentStatus } from '../EnvironmentListService'
 import './envOverview.scss'
@@ -43,7 +43,7 @@ export default function EnvironmentOverview() {
                     parsedData.namespace = env.namespace
                     parsedData.cluster = env.clusterName
                 }
-                let appInfo = {
+                const appInfo = {
                     appId: env.appId,
                     envId: env.envId,
                     application: env.appName,
@@ -77,7 +77,7 @@ export default function EnvironmentOverview() {
                 </Link>
                 <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
                 <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} />
-                <span className="fs-13 fw-4 cn-7">{renderDeployedTime(item, true)}</span>
+                <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>
             </div>
         )
     }

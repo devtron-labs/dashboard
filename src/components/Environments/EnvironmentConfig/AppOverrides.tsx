@@ -2,18 +2,10 @@ import React, { Suspense } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { ErrorBoundary, Progressing } from '../../common'
 import EnvironmentOverride from '../../EnvironmentOverride/EnvironmentOverride'
-import { ConfigAppList } from '../EnvironmentGroup.types'
+import { AppOverridesType } from '../EnvironmentGroup.types'
 
-export default function AppOverrides({
-    appList,
-    environments,
-    setEnvironments,
-}: {
-    appList?: ConfigAppList[]
-    environments: any
-    setEnvironments: any
-}) {
-    const { path, url } = useRouteMatch()
+export default function AppOverrides({ appList, environments, setEnvironments }: AppOverridesType) {
+    const { path } = useRouteMatch()
     return (
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>

@@ -7,11 +7,11 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
     const { url } = useRouteMatch()
     const location = useLocation()
     const locat = location.pathname.split('/').splice(1, 4).join('/')
-    const LINK = `${url}/${envListData.id}`
-    const [collapsed, toggleCollapsed] = useState(`/${locat}` !== LINK)
+    const link = `${url}/${envListData.id}`
+    const [collapsed, toggleCollapsed] = useState(`/${locat}` !== link)
 
     useEffect(() => {
-        if (`/${locat}` !== LINK && !collapsed) {
+        if (`/${locat}` !== link && !collapsed) {
             toggleCollapsed(true)
         }
     }, [location.pathname])
@@ -33,13 +33,13 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
             </div>
             {!collapsed && (
                 <div className="environment-routes pl-8 w-100">
-                    <NavLink className="env-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
+                    <NavLink className="env-compose__nav-item cursor" to={`${link}/deployment-template`}>
                         Deployment template
                     </NavLink>
-                    <NavLink className="env-compose__nav-item cursor" to={`${LINK}/configmap`}>
+                    <NavLink className="env-compose__nav-item cursor" to={`${link}/configmap`}>
                         ConfigMaps
                     </NavLink>
-                    <NavLink className="env-compose__nav-item cursor" to={`${LINK}/secrets`}>
+                    <NavLink className="env-compose__nav-item cursor" to={`${link}/secrets`}>
                         Secrets
                     </NavLink>
                 </div>

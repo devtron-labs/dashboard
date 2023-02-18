@@ -6,6 +6,7 @@ import { Pagination, Progressing, useAsync } from '../../common'
 import { getEnvAppList } from '../EnvironmentListService'
 import { EnvAppList, EnvironmentsListViewType } from '../EnvironmentGroup.types'
 import { toast } from 'react-toastify'
+import { TOAST_MESSAGE_NO_ACESS } from '../Constants'
 
 export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsListViewType) {
     const match = useRouteMatch()
@@ -72,7 +73,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
     const handleClusterClick = (e, noApp): void => {
         if (noApp) {
             e.preventDefault()
-            toast.info('You don’t have access to any application in this app group')
+            toast.info(TOAST_MESSAGE_NO_ACESS)
         }
     }
 

@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { Progressing, renderDeployedTime, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
+import { Progressing, processDeployedTime, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
 import { AppDetails, AppOverviewProps, TagType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
@@ -260,7 +260,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     />
                                 )}
                                 <span className="fs-13 fw-4 cn-7">
-                                    {renderDeployedTime(_env, isAgroInstalled)}
+                                    {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
                                 </span>
                             </div>
                         ))}
