@@ -72,8 +72,6 @@ const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowTy
     return (workflows: WorkflowType[]): WorkflowType[] => {
         workflows.forEach((wf) => {
             let nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
-            // const finalNodes = wf.nodes.filter(node => !node.parentPipelineId)
-
             let node = wf.nodes.find((node) => node.environmentId === +envID)
             if (!node) {
                 wf.nodes = []
