@@ -4,10 +4,10 @@ import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-environment-
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { Pagination, Progressing, useAsync } from '../../common'
 import { getEnvAppList } from '../EnvironmentListService'
-import { EnvAppList } from '../EnvironmentGroup.types'
+import { EnvAppList, EnvironmentsListViewType } from '../EnvironmentGroup.types'
 import { toast } from 'react-toastify'
 
-export default function EnvironmentsListView({ clearSearch }) {
+export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsListViewType) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -34,7 +34,7 @@ export default function EnvironmentsListView({ clearSearch }) {
     useEffect(() => {
         if (appList?.result?.envList) {
             setFilteredEnvList(appList.result.envList)
-            setEnvCount(appList.result.totalCount)
+            setEnvCount(appList.result.envCount)
             setPaginationParamsChange({ pageSize: +params.get('pageSize') || 20, offset: +params.get('offset') })
         } else {
             setFilteredEnvList([])
@@ -84,7 +84,7 @@ export default function EnvironmentsListView({ clearSearch }) {
                 <EnvEmptyStates
                     title={emptyStateData.title}
                     subTitle={emptyStateData.subTitle}
-                    actionHandler={clearSearch}
+                    actionHandler={removeAllFilters}
                 />
             )}
         </div>

@@ -18,12 +18,9 @@ export default function AppOverrides({
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
-                    <Route
-                        path={`${path}/:appId(\\d+)?`}
-                        render={(props) => (
-                            <EnvironmentOverride environments={environments} setEnvironments={setEnvironments} />
-                        )}
-                    />
+                    <Route path={`${path}/:appId(\\d+)?`}>
+                        <EnvironmentOverride environments={environments} setEnvironments={setEnvironments} />
+                    </Route>
                 </Switch>
             </Suspense>
         </ErrorBoundary>

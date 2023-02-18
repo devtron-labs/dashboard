@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
+import { Progressing, renderDeployedTime, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
 import { AppDetails, AppOverviewProps, TagType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
@@ -304,10 +304,3 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     )
 }
 
-export const renderDeployedTime = (_env, isAgroInstalled) => {
-    if (_env.lastDeployed) {
-        return handleUTCTime(_env.lastDeployed, true)
-    } else {
-        return isAgroInstalled ? '' : 'Not deployed'
-    }
-}

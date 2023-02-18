@@ -1,12 +1,12 @@
 import React from 'react'
-import AsyncSelect from "react-select/async";
-import { appSelectorStyle, DropdownIndicator, noOptionsMessage } from '../AppSelector/AppSelectorUtil';
-import { envListOptions } from './EnvSelector.utils';
+import AsyncSelect from 'react-select/async'
+import { appSelectorStyle, DropdownIndicator, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
+import { EnvSelectorType } from './EnvironmentGroup.types'
+import { envListOptions } from './EnvSelector.utils'
 
-
-export function EnvSelector({ onChange, envId, envName }: {onChange: (e) => void,envId: number, envName: string}) {
+export function EnvSelector({ onChange, envId, envName }: EnvSelectorType) {
     const defaultOptions = { value: envId, label: envName }
-    
+
     return (
         <AsyncSelect
             loadOptions={envListOptions}
@@ -20,5 +20,5 @@ export function EnvSelector({ onChange, envId, envName }: {onChange: (e) => void
             }}
             styles={appSelectorStyle}
         />
-    );
+    )
 }

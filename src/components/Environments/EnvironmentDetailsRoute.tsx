@@ -11,13 +11,14 @@ import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
+import { EMPTY_LIST_MESSAGING } from './constants'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId }>()
     const [envName, setEnvName] = useState('')
     const [showEmpty, setShowEmpty] = useState<boolean>(true)
-    const [loading, envList] = useAsync(() => getEnvAppList({}), [])
+    const [loading, envList] = useAsync(() => getEnvAppList({ size: '1000' }), [])
 
     useEffect(() => {
         if (envList?.result) {
@@ -28,14 +29,18 @@ export default function EnvironmentDetailsRoute() {
     }, [envList])
 
     const renderRoute = () => {
-        if (loading)
-            return ( 
-                <div className='empty-state flex w-100'>
-                    {showEmpty ? <Progressing pageLoader /> : <ResourceListEmptyState
-                        imgSource={EmptyFolder}
-                        title="No applications available"
-                        subTitle="You don’t have access to any application in this app group."
-                    />}
+        if (showEmpty)
+            return (
+                <div className="empty-state flex w-100">
+                    {loading ? (
+                        <Progressing pageLoader />
+                    ) : (
+                        <ResourceListEmptyState
+                            imgSource={EmptyFolder}
+                            title={EMPTY_LIST_MESSAGING.TITLE}
+                            subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+                        />
+                    )}
                 </div>
             )
         return (
@@ -63,12 +68,7 @@ export default function EnvironmentDetailsRoute() {
 
     return (
         <div className="env-details-page">
-            <EnvHeader
-                envName={envName}
-                setEnvName={setEnvName}
-                setShowEmpty={setShowEmpty}
-                showEmpty={showEmpty}
-            />
+            <EnvHeader envName={envName} setEnvName={setEnvName} setShowEmpty={setShowEmpty} showEmpty={showEmpty} />
             {renderRoute()}
         </div>
     )

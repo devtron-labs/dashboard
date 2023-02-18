@@ -15,18 +15,16 @@ export default function EnvironmentsList() {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
-    const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
-    const [envList, setEnvList] = useState([])
     const [clusterfilter, setClusterFilter] = useState<FilterOption[]>([])
     const [loading, clusterListRes] = useAsync(() => getClusterListMinWithoutAuth())
 
     useEffect(() => {
         if (clusterListRes) {
             const queryParams = new URLSearchParams(location.search)
-            let clusters = queryParams.get('cluster') || ''
-            let search = queryParams.get('search') || ''
+            const clusters = queryParams.get('cluster') || ''
+            const search = queryParams.get('search') || ''
             if (search) {
                 setSearchApplied(true)
             }
@@ -35,7 +33,7 @@ export default function EnvironmentsList() {
                 .split(',')
                 .filter((status) => status != '')
                 .map((status) => status)
-            let clusterList = new Set<string>(clusterStatus)
+            const clusterList = new Set<string>(clusterStatus)
             let clustersfilter: FilterOption[] = []
             if (clusterListRes?.result && Array.isArray(clusterListRes.result)) {
                 clusterListRes.result.forEach((cluster: Cluster) => {
@@ -52,32 +50,19 @@ export default function EnvironmentsList() {
         }
     }, [clusterListRes, location.search])
 
-    const getData = () => {
-        setEnvList([])
-    }
-
-    useEffect(() => {
-        getData()
-    }, [])
-
-    const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = envList.filter((env) => env.name.indexOf(_searchText) >= 0)
-        setNoResults(_filteredData.length === 0)
-    }
-
     const handleSearch = (text) => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('search', text)
-        let url = `${match.path}?${queryParams.toString()}`
-        history.push(url)
+        queryParams.set('offset', '0')
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const clearSearch = (): void => {
         setSearchApplied(false)
         const queryParams = new URLSearchParams(location.search)
         queryParams.delete('search')
-        let url = `${match.path}?${queryParams.toString()}`
-        history.push(url)
+        queryParams.set('offset', '0')
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const handleFilterKeyPress = (event): void => {
@@ -91,7 +76,7 @@ export default function EnvironmentsList() {
             clearSearch()
         }
     }
-    const applyFilter = (type: string, list: FilterOption[], selectedAppTab: string = undefined): void => {
+    const applyFilter = (type: string, list: FilterOption[], selectedAppTab?: string): void => {
         const queryParams = new URLSearchParams(location.search)
         const ids = []
         list.forEach((option) => {
@@ -104,24 +89,26 @@ export default function EnvironmentsList() {
         } else {
             queryParams.set(type, ids.toString())
         }
+        queryParams.set('offset', '0')
         let url = `${match.path}?${queryParams.toString()}`
         history.push(url)
     }
 
     const removeFilter = (filter): void => {
         const queryParams = new URLSearchParams(location.search)
-        let x = queryParams.get('cluster')
-        let clusterValues = x
+        const cluster = queryParams.get('cluster')
+        const clusterValues = cluster
             .toString()
             .split(',')
             .map((status) => status)
 
-        let key = clusterValues.filter((value) => value != filter.key)
+        const key = clusterValues.filter((value) => value != filter.key)
         if (key.length) {
             queryParams.set('cluster', key.toString())
         } else {
             queryParams.delete('cluster')
         }
+        queryParams.set('offset', '0')
         let url = `${match.path}?${queryParams.toString()}`
         history.push(url)
     }
@@ -130,12 +117,14 @@ export default function EnvironmentsList() {
         const queryParams = new URLSearchParams(location.search)
         queryParams.delete('cluster')
         queryParams.delete('search')
-
-        //delete search string
         setSearchApplied(false)
         setSearchText('')
         let url = `${match.path}?${queryParams.toString()}`
         history.push(url)
+    }
+
+    const handleSearchText = (event) => {
+        setSearchText(event.target.value)
     }
 
     const renderSearch = (): JSX.Element => {
@@ -147,9 +136,7 @@ export default function EnvironmentsList() {
                     placeholder="Search env"
                     value={searchText}
                     className="search__input"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
-                    }}
+                    onChange={handleSearchText}
                     onKeyDown={handleFilterKeyPress}
                 />
                 {searchApplied && (
@@ -177,7 +164,7 @@ export default function EnvironmentsList() {
                                 <button
                                     type="button"
                                     className="saved-env-filter__close-btn"
-                                    onClick={(event) => removeFilter(filter)}
+                                    onClick={() => removeFilter(filter)}
                                 >
                                     <i className="fa fa-times-circle" aria-hidden="true"></i>
                                 </button>
@@ -188,16 +175,14 @@ export default function EnvironmentsList() {
                 <button
                     type="button"
                     className="saved-env-filters__clear-btn flex fs-13"
-                    onClick={() => {
-                        removeAllFilters()
-                    }}
+                    onClick={removeAllFilters}
                 >
                     Clear All Filters
                 </button>
             </div>
         )
 
-        return <React.Fragment>{count > 0 ? appliedFilters : null}</React.Fragment>
+        return <>{count > 0 ? appliedFilters : null}</>
     }
 
     if (loading) {
@@ -207,9 +192,9 @@ export default function EnvironmentsList() {
     return (
         <div>
             <PageHeader headerName="Environments" />
-            <div className={`env-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
+            <div className="env-list bcn-0">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
-                    <div>{renderSearch()}</div>
+                    {renderSearch()}
                     <Filter
                         list={clusterfilter}
                         labelKey="label"
@@ -222,7 +207,7 @@ export default function EnvironmentsList() {
                     />
                 </div>
                 {renderAppliedFilters()}
-                <EnvironmentsListView clearSearch={clearSearch} />
+                <EnvironmentsListView removeAllFilters={removeAllFilters} />
             </div>
         </div>
     )

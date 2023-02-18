@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useRouteMatch, useLocation, NavLink } from 'react-router-dom'
-import { ConfigAppList } from '../EnvironmentGroup.types'
+import { useRouteMatch, useLocation, NavLink } from 'react-router-dom'
+import { ApplicationRouteType } from '../EnvironmentGroup.types'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 
-export default function ApplicationRoutes({ envListData }: { envListData: ConfigAppList }) {
+export default function ApplicationRoute({ envListData }: ApplicationRouteType) {
     const { url } = useRouteMatch()
     const location = useLocation()
-    const locat = location.pathname.split('/').splice(1,4).join('/')
+    const locat = location.pathname.split('/').splice(1, 4).join('/')
     const LINK = `${url}/${envListData.id}`
-    const [collapsed, toggleCollapsed] = useState(!(`/${locat}` === LINK))
-    
+    const [collapsed, toggleCollapsed] = useState(`/${locat}` !== LINK)
+
     useEffect(() => {
-        if (!(`/${locat}` === LINK) && !collapsed) {
+        if (`/${locat}` !== LINK && !collapsed) {
             toggleCollapsed(true)
         }
     }, [location.pathname])
