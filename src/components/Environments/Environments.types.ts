@@ -1,4 +1,10 @@
-import { CDMdalTabType, DeploymentNodeType, WebhookPayloads, WorkflowNodeType } from '../app/details/triggerView/types'
+import {
+    CDMdalTabType,
+    DeploymentNodeType,
+    WebhookPayloads,
+    WorkflowNodeType,
+    WorkflowType,
+} from '../app/details/triggerView/types'
 import { BulkResponseStatus } from './Constants'
 
 export interface BulkCIDetailType {
@@ -47,7 +53,7 @@ export interface BulkCITriggerType {
     appList: BulkCIDetailType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
-    onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<number, boolean>) => void
+    onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
     showWebhookModal: boolean
     toggleWebhookModal: (id, webhookTimeStampOrder) => void
     webhookPayloads: WebhookPayloads
@@ -55,6 +61,8 @@ export interface BulkCITriggerType {
     hideWebhookModal: (e?) => void
     isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
     responseList: ResponseRowType[]
+    isLoading: boolean
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface BulkCDTriggerType {
@@ -76,4 +84,38 @@ export interface BulkCDTriggerType {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
     responseList: ResponseRowType[]
+    isLoading: boolean
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface ProcessWorkFlowStatusType {
+    cicdInProgress: boolean
+    workflows: WorkflowType[]
+}
+
+export interface CIWorkflowStatusType {
+    ciPipelineId: number
+    ciPipelineName: string
+    ciStatus: string
+    storageConfigured: boolean
+}
+
+export interface CDWorkflowStatusType {
+    ci_pipeline_id: number
+    pipeline_id: number
+    deploy_status: string
+    pre_status: string
+    post_status: string
+}
+
+export interface WorkflowsResponseType {
+    workflows: WorkflowType[]
+    filteredCIPipelines: Map<string, any>
+}
+
+export interface TriggerResponseModalType {
+    closePopup: (e) => void
+    responseList: ResponseRowType[]
+    isLoading: boolean
+    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
 }

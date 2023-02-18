@@ -1,8 +1,13 @@
 import { DEFAULT_GIT_BRANCH_VALUE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
+import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './Environments.types'
 
-export const processWorkflowStatuses = (allCIs, allCDs, workflowsList): { cicdInProgress: boolean; workflows } => {
+export const processWorkflowStatuses = (
+    allCIs: CIWorkflowStatusType[],
+    allCDs: CDWorkflowStatusType[],
+    workflowsList: WorkflowType[],
+): ProcessWorkFlowStatusType => {
     let ciMap = {}
     let cdMap = {}
     let preCDMap = {}

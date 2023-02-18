@@ -31,7 +31,7 @@ export const ENV_TRIGGER_VIEW_GA_EVENTS = {
     }),
 }
 
-export const ButtonTitle = {
+export const BUTTON_TITLE = {
     [DeploymentNodeType.PRECD]: 'Trigger pre-deployment stage',
     [DeploymentNodeType.CD]: 'Deploy',
     [DeploymentNodeType.POSTCD]: 'Trigger post-deployment stage',
@@ -43,14 +43,37 @@ export enum BulkResponseStatus {
     'UNAUTHORIZE' = 'unauthorized',
 }
 
-export const BulkCIResponseStatusText = {
+export const BULK_CI_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Build triggered',
     [BulkResponseStatus.FAIL]: 'Build not triggered',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
 }
 
-export const BulkCDResponseStatusText = {
+export const BULK_CD_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Deployment triggered',
     [BulkResponseStatus.FAIL]: 'Deployment not triggered',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
+export const BULK_CI_MESSAGING = {
+    emptyLinkedCI: {
+        title: 'is using a linked build pipeline',
+        subTitle:
+            'You can trigger the parent build pipeline. Triggering the parent build pipeline will trigger all build pipelines linked to it.',
+        linkText: 'View Source Pipeline',
+    },
+    webhookCI: {
+        title: 'is using a external build pipeline',
+        subTitle: 'Images received from the external service will be available for deployment.',
+    },
+    isFirstTrigger: {
+        infoText: 'First pipeline run',
+        title: 'First pipeline run may take longer than usual',
+        subTitle: 'Future runs will have shorter build time when cache is used.',
+    },
+    cacheNotAvailable: {
+        infoText: 'Cache not available',
+        title: 'Cache will be generated for this pipeline run',
+        subTitle: 'Cache will be used in future runs to reduce build time.',
+    },
 }

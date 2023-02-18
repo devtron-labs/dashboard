@@ -4,10 +4,15 @@ import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-c
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
-import { ResponseRowType } from '../../Environments.types'
+import { ResponseRowType, TriggerResponseModalType } from '../../Environments.types'
 import { BulkResponseStatus } from '../../Constants'
 
-export default function TriggerResponseModal({ closePopup, responseList, isLoading, onClickRetryBuild }) {
+export default function TriggerResponseModal({
+    closePopup,
+    responseList,
+    isLoading,
+    onClickRetryBuild,
+}: TriggerResponseModalType) {
     const isShowRetryButton = responseList?.some((response) => response.status === BulkResponseStatus.FAIL)
     const renderStatusIcon = (response: ResponseRowType): JSX.Element => {
         if (response.status === BulkResponseStatus.UNAUTHORIZE) {
@@ -23,9 +28,9 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
             return <Progressing pageLoader />
         }
         return (
-            <div className="response-list-container bcn-0 dc__height-inherit dc__overflow-auto pt-16 pr-20 pb-16 pl-20">
+            <div className="response-list-container bcn-0 dc__height-inherit dc__overflow-auto pr-20 pb-16 pl-20">
                 <div
-                    className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom response-row dc__border-bottom pt-8 pb-8"
+                    className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom response-row dc__border-bottom pt-24 pb-8"
                     style={{ zIndex: 1 }}
                 >
                     <div className="fs-12 fw-6 cn-7">Application</div>
@@ -47,7 +52,7 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
     }
 
     const handleRetryBuild = (): void => {
-        const appsToRetry: Record<number, boolean> = {}
+        const appsToRetry: Record<string, boolean> = {}
         for (const response of responseList) {
             if (response.status === BulkResponseStatus.FAIL) {
                 appsToRetry[response.appId] = true
@@ -59,10 +64,9 @@ export default function TriggerResponseModal({ closePopup, responseList, isLoadi
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 ${
+                className={`dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
                     isShowRetryButton ? 'dc__content-space' : 'right'
                 }`}
-                style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 <button className="cta cancel flex h-36" onClick={closePopup}>
                     Cancel

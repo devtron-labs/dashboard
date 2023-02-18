@@ -7,29 +7,27 @@ import {
     PipelineType,
     WorkflowNodeType,
 } from '../app/details/triggerView/types'
-import { WebhookDetailsType, WebhookListResponse } from '../ciPipeline/Webhook/types'
+import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { Routes, URLS } from '../../config'
 import { get } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
+import { WorkflowsResponseType } from './Environments.types'
 
-export function getEnvWorkflowList(envId) {
-    const URL = `${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`
-    return get(URL)
+export function getEnvWorkflowList(envId: string) {
+    return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`)
 }
 
-export function getCIConfig(envID: number): Promise<ResponseType> {
-    const URL = `${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}`
-    return get(URL)
+export function getCIConfig(envID: string): Promise<ResponseType> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}`)
 }
 
-export function getCDConfig(envID: number | string): Promise<ResponseType> {
-    const URL = `${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CD_CONFIG}`
-    return get(URL)
+export function getCDConfig(envID: string): Promise<ResponseType> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CD_CONFIG}`)
 }
 
-export function getExternalCIList(envID: number | string): Promise<WebhookListResponse> {
+export function getExternalCIList(envID: string): Promise<WebhookListResponse> {
     return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_EXTERNAL_CI_CONFIG}`)
 }
 
@@ -37,16 +35,16 @@ export const getWorkflowStatus = (envID: string) => {
     return get(`${Routes.ENV_WORKFLOW}/${envID}/${Routes.WORKFLOW_STATUS}`)
 }
 
-export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filteredCIPipelines }> => {
+export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
     const _workflows: WorkflowType[] = []
-    const _filteredCIPipelines = new Map()
+    const _filteredCIPipelines: Map<string, any> = new Map()
     return Promise.all([
         getEnvWorkflowList(envID),
         getCIConfig(envID),
         getCDConfig(envID),
         getExternalCIList(envID),
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig]) => {
-        let _ciConfigMap = new Map<number, CiPipelineResult>()
+        const _ciConfigMap = new Map<number, CiPipelineResult>()
         for (const _ciConfig of ciConfig.result) {
             _ciConfigMap.set(_ciConfig.appId, _ciConfig)
         }
@@ -70,13 +68,11 @@ export const getWorkflows = (envID): Promise<{ workflows: WorkflowType[]; filter
     })
 }
 
-const filterChildAndSiblingCD = function (envID: number): (workflows: WorkflowType[]) => WorkflowType[] {
+const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowType[]) => WorkflowType[] {
     return (workflows: WorkflowType[]): WorkflowType[] => {
         workflows.forEach((wf) => {
-            let nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
-            // const finalNodes = wf.nodes.filter(node => !node.parentPipelineId)
-
-            let node = wf.nodes.find((node) => node.environmentId == envID)
+            const nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
+            let node = wf.nodes.find((node) => node.environmentId === +envID)
             if (!node) {
                 wf.nodes = []
                 return wf
@@ -113,7 +109,7 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
     if (!!parentNode) {
-        ;(parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
+        (parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
         parentNode.downstreamNodes = [node]
     }
     return parentNode

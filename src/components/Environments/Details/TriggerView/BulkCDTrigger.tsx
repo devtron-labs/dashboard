@@ -8,7 +8,7 @@ import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../Environments.types'
-import { ButtonTitle } from '../../Constants'
+import { BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 
 export default function BulkCDTrigger({
@@ -20,10 +20,11 @@ export default function BulkCDTrigger({
     changeTab,
     toggleSourceInfo,
     selectImage,
-    responseList
+    responseList,
+    isLoading,
+    setLoading,
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
-    const [isLoading, setLoading] = useState(true)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.notFoundMessage) || appList[0],
     )
@@ -83,7 +84,12 @@ export default function BulkCDTrigger({
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy to {appList[0].envName}</h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePopup}>
+                <button
+                    type="button"
+                    className="dc__transparent flex icon-dim-24"
+                    disabled={isLoading}
+                    onClick={closePopup}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -157,15 +163,12 @@ export default function BulkCDTrigger({
     }
 
     const onClickStartDeploy = (): void => {
-      onClickTriggerBulkCD()
+        onClickTriggerBulkCD()
     }
 
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div
-                className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
-                style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
-            >
+            <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
                 <button className="cta flex h-36" onClick={onClickStartDeploy}>
                     {isLoading ? (
                         <Progressing />
@@ -176,7 +179,7 @@ export default function BulkCDTrigger({
                             ) : (
                                 <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
                             )}
-                            {ButtonTitle[stage]}
+                            {BUTTON_TITLE[stage]}
                         </>
                     )}
                 </button>
