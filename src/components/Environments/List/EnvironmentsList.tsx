@@ -191,7 +191,7 @@ export default function EnvironmentsList() {
 
     return (
         <div>
-            <PageHeader headerName="Environments" />
+            <PageHeader headerName="Application Groups" />
             <div className="env-list bcn-0">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}

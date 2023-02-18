@@ -111,7 +111,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                         </div>
                         <div>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>
-                        <div>{envData.appCount || 0} running</div>
+                        <div>{envData.appCount || 0} Applications</div>
                     </div>
                 ))}
             </div>
