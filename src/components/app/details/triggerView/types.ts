@@ -19,7 +19,7 @@ export interface CDMaterialProps {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy: (stageType: DeploymentNodeType, deploymentWithConfig?: string, wfrId?: number) => void
+    triggerDeploy: (stageType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number) => void
     selectImage: (
         index: number,
         materialType: string,
@@ -272,7 +272,7 @@ export interface TriggerViewContextType {
     invalidateCache: boolean
     refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
     onClickTriggerCINode: () => void
-    onClickTriggerCDNode: (nodeType: DeploymentNodeType) => void
+    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
     onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void

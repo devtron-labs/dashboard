@@ -479,6 +479,7 @@ export default function EnvTriggerView() {
 
     const onClickTriggerCDNode = (
         nodeType: DeploymentNodeType,
+        _appId: number,
         deploymentWithConfig?: string,
         wfrId?: number,
     ): void => {
@@ -492,8 +493,8 @@ export default function EnvTriggerView() {
 
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
-        if (selectedAppID && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, selectedAppID.toString(), nodeType, deploymentWithConfig, wfrId)
+        if (_appId && pipelineId && ciArtifact.id) {
+            triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
                         const msg =
@@ -514,7 +515,7 @@ export default function EnvTriggerView() {
                     setErrorCode(errors.code)
                 })
         } else {
-            let message = selectedAppID ? '' : 'app id missing '
+            let message = _appId ? '' : 'app id missing '
             message += pipelineId ? '' : 'pipeline id missing '
             message += ciArtifact.id ? '' : 'Artifact id missing '
             toast.error(message)

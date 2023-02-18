@@ -785,9 +785,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         if (this.state.isRollbackTrigger) {
-            this.props.triggerDeploy(this.props.stageType, this.state.selectedConfigToDeploy?.value, this.getWfrId())
+            this.props.triggerDeploy(
+                this.props.stageType,
+                this.props.appId,
+                this.state.selectedConfigToDeploy?.value,
+                this.getWfrId(),
+            )
         } else {
-            this.props.triggerDeploy(this.props.stageType)
+            this.props.triggerDeploy(this.props.stageType, this.props.appId)
         }
     }
 

@@ -465,10 +465,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickTriggerCDNode = (nodeType: DeploymentNodeType, deploymentWithConfig?: string, wfrId?: number): void => {
+    onClickTriggerCDNode = (nodeType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
-        const appId = this.props.match.params.appId
         let node
         for (let i = 0; i < this.state.workflows.length; i++) {
             let workflow = this.state.workflows[i]
@@ -478,8 +477,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         const pipelineId = node.id
         const ciArtifact = node[this.state.materialType].find((artifact) => artifact.isSelected == true)
-        if (appId && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, appId, nodeType, deploymentWithConfig, wfrId)
+        if (_appId && pipelineId && ciArtifact.id) {
+            triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
                         const msg =
@@ -505,7 +504,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     this.setState({ code: errors.code, isLoading: false })
                 })
         } else {
-            let message = appId ? '' : 'app id missing '
+            let message = _appId ? '' : 'app id missing '
             message += pipelineId ? '' : 'pipeline id missing '
             message += ciArtifact.id ? '' : 'Artifact id missing '
             toast.error(message)
