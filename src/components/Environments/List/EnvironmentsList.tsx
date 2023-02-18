@@ -50,7 +50,7 @@ export default function EnvironmentsList() {
         }
     }, [clusterListRes, location.search])
 
-    const handleSearch = (text) => {
+    const handleSearch = (text: string): void => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('search', text)
         queryParams.set('offset', '0')
@@ -90,8 +90,7 @@ export default function EnvironmentsList() {
             queryParams.set(type, ids.toString())
         }
         queryParams.set('offset', '0')
-        let url = `${match.path}?${queryParams.toString()}`
-        history.push(url)
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const removeFilter = (filter): void => {
@@ -121,7 +120,7 @@ export default function EnvironmentsList() {
         history.push(`${match.path}?${queryParams.toString()}`)
     }
 
-    const handleSearchText = (event) => {
+    const handleSearchText = (event): void => {
         setSearchText(event.target.value)
     }
 
@@ -146,9 +145,9 @@ export default function EnvironmentsList() {
         )
     }
 
-    function renderAppliedFilters() {
+    function renderAppliedFilters(): JSX.Element {
         let count = 0
-        let appliedFilters = (
+        const appliedFilters = (
             <div className="saved-env-filters__wrap dc__position-rel mb-12">
                 {clusterfilter.map((filter) => {
                     if (filter.isChecked) {
@@ -180,7 +179,7 @@ export default function EnvironmentsList() {
             </div>
         )
 
-        return <>{count > 0 ? appliedFilters : null}</>
+        return count > 0 && appliedFilters
     }
 
     if (loading) {

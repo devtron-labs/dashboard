@@ -6,13 +6,14 @@ import AppStatus from '../../app/AppStatus'
 import { StatusConstants } from '../../app/list-new/Constants'
 import { getAppList } from '../../app/service'
 import { Progressing, processDeployedTime, useAsync } from '../../common'
-import { AppListDataType } from '../EnvironmentGroup.types'
+import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../Constants'
+import { AppInfoListType, AppListDataType } from '../EnvironmentGroup.types'
 import { getDeploymentStatus } from '../EnvironmentListService'
 import './envOverview.scss'
 
 export default function EnvironmentOverview() {
     const { envId } = useParams<{ envId }>()
-    const [appListData, SetAppListData] = useState<AppListDataType>()
+    const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, response] = useAsync(
         () => Promise.all([getAppList({ environments: [+envId], size: 20 }), getDeploymentStatus(+envId)]),
         [envId],
@@ -28,7 +29,7 @@ export default function EnvironmentOverview() {
         }
     }, [response])
 
-    const parseAppListData = (data, statusRecord) => {
+    const parseAppListData = (data , statusRecord: Record<string, string>): void => {
         const parsedData = {
             environment: '',
             namespace: '',
@@ -55,7 +56,7 @@ export default function EnvironmentOverview() {
             })
         })
 
-        SetAppListData(parsedData)
+        setAppListData(parsedData)
     }
 
     if (loading) {
@@ -66,7 +67,7 @@ export default function EnvironmentOverview() {
         )
     }
 
-    const renderAppInfoRow = (item, index) => {
+    const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         return (
             <div
                 key={`${item.application}-${index}`}
@@ -86,29 +87,29 @@ export default function EnvironmentOverview() {
         <div className="env-overview-container display-grid bcn-0 dc__overflow-hidden">
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">Environment</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.ENVIRONMENT}</div>
                     <div className="fs-13 fw-4 lh-20 cn-9">{appListData.environment}</div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">Namespace</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.NAMESPACE}</div>
                     <div className="fs-13 fw-4 lh-20 cn-9">{appListData.namespace} </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">Cluster</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.CLUSTER}</div>
                     <div className="fs-13 fw-4 lh-20 cn-9">{appListData.cluster}</div>
                 </div>
             </div>
             <div className="dc__overflow-scroll">
                 <div className="flex column left pt-16 pb-16 pl-20 pr-20">
                     <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                        <GridIcon className="icon-dim-20 mr-8 scn-9" /> Applications
+                        <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                     </div>
                     <div className="app-deployments-info-wrapper w-100">
                         <div className="app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
-                            <span>Application</span>
-                            <span>APP STATUS</span>
-                            <span>Deployment STATUS</span>
-                            <span>Last deployed</span>
+                            <span>{OVERVIEW_HEADER.APPLICATION}</span>
+                            <span>{OVERVIEW_HEADER.APP_STATUS}</span>
+                            <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
+                            <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                         </div>
                         <div className="app-deployments-info-body">
                             {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}

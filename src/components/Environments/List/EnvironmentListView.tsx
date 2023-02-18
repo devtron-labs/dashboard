@@ -6,7 +6,7 @@ import { Pagination, Progressing, useAsync } from '../../common'
 import { getEnvAppList } from '../EnvironmentListService'
 import { EnvAppList, EnvironmentsListViewType } from '../EnvironmentGroup.types'
 import { toast } from 'react-toastify'
-import { NO_ACCESS_TOAST_MESSAGE } from '../Constants'
+import { GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 
 export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsListViewType) {
     const match = useRouteMatch()
@@ -50,7 +50,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
         history.push(`${match.url}?${params.toString()}`)
     }
 
-    const changePageSize = (size: number) => {
+    const changePageSize = (size: number): void => {
         params.set('pageSize', size.toString())
         params.set('offset', '0')
         history.push(`${match.url}?${params.toString()}`)
@@ -94,10 +94,10 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
             <div className="dc__overflow-scroll">
                 <div className="env-list-row fw-6 cn-7 fs-12 pt-8 pb-8 pr-20 pl-20 dc__uppercase bc-n50">
                     <div></div>
-                    <div>Environments</div>
-                    <div>Namespace</div>
-                    <div>Cluster</div>
-                    <div>Applications</div>
+                    <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
+                    <div>{GROUP_LIST_HEADER.NAMESPACE}</div>
+                    <div>{GROUP_LIST_HEADER.CLUSTER}</div>
+                    <div>{GROUP_LIST_HEADER.APPLICATIONS}</div>
                 </div>
                 {filteredEnvList?.map((envData) => (
                     <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
@@ -114,7 +114,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                         </div>
                         <div>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>
-                        <div>{envData.appCount || 0} Applications</div>
+                        <div>{envData.appCount || 0} {GROUP_LIST_HEADER.APPLICATIONS}</div>
                     </div>
                 ))}
             </div>

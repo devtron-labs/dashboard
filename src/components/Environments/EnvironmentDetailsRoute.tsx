@@ -12,7 +12,7 @@ import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
-import { EMPTY_LIST_MESSAGING } from './Constants'
+import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
@@ -129,24 +129,15 @@ export function EnvHeader({
     )
 
     const handleOverViewClick = () => {
-        ReactGA.event({
-            category: 'Environment',
-            action: 'Overview Clicked',
-        })
+        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
     }
 
     const handleBuildClick = () => {
-        ReactGA.event({
-            category: 'Environment',
-            action: 'Build & Deploy Clicked',
-        })
+        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
     }
 
     const handleConfigClick = () => {
-        ReactGA.event({
-            category: 'Configuration',
-            action: 'Configuration Clicked',
-        })
+        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
     }
 
     const renderEnvDetailsTabs = () => {
