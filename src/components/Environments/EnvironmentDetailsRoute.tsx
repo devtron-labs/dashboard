@@ -1,54 +1,88 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError } from '../common'
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError, useAsync } from '../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
-import { AppSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
+import EnvConfig from './EnvironmentConfig/EnvConfig'
+import { getEnvAppList } from './EnvironmentListService'
+import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
+import { EnvSelector } from './EnvSelector'
+import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
+import EmptyFolder from '../../assets/img/Empty-folder.png'
+import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
+import { EnvHeaderType } from './EnvironmentGroup.types'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
+    const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
+    const [showEmpty, setShowEmpty] = useState<boolean>(true)
+    const [loading, envList] = useAsync(() => getEnvAppList({ size: '1000' }), [])
 
     useEffect(() => {
-        getEnvMetaInfoRes()
-    }, [appId])
-
-    const getEnvMetaInfoRes = async (): Promise<void> => {
-        try {
-        } catch (err) {
-            showError(err)
+        if (envList?.result) {
+            const environment = envList.result.envList?.find((env) => env.id === +envId)
+            setEnvName(environment.environment_name)
+            setShowEmpty(!environment.appCount)
         }
-    }
+    }, [envList])
 
-    return (
-        <div className="app-details-page">
-            <EnvHeader envName={envName} />
+    const renderRoute = () => {
+        if (showEmpty)
+            return (
+                <div className="empty-state flex w-100">
+                    {loading ? (
+                        <Progressing pageLoader />
+                    ) : (
+                        <ResourceListEmptyState
+                            imgSource={EmptyFolder}
+                            title={EMPTY_LIST_MESSAGING.TITLE}
+                            subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+                        />
+                    )}
+                </div>
+            )
+        return (
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}>
+                        <Route path={`${path}/${URLS.APP_DETAILS}`}>
                             <div>Env detail</div>
                         </Route>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <div>Env Overview</div>
+                            <EnvironmentOverview />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <EnvTriggerView />
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                            <EnvConfig />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
                 </Suspense>
             </ErrorBoundary>
+        )
+    }
+
+    return (
+        <div className="env-details-page">
+            <EnvHeader envName={envName} setEnvName={setEnvName} setShowEmpty={setShowEmpty} showEmpty={showEmpty} />
+            {renderRoute()}
         </div>
     )
 }
 
-export function EnvHeader({ envName }: { envName: string }) {
-    const { envId } = useParams<{ envId }>()
+export function EnvHeader({
+    envName,
+    setEnvName,
+    setShowEmpty,
+    showEmpty,
+}: EnvHeaderType ) {
+    const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -59,14 +93,16 @@ export function EnvHeader({ envName }: { envName: string }) {
     }, [location.pathname])
 
     const handleEnvChange = useCallback(
-        ({ label, value }) => {
+        ({ label, value, appCount }) => {
+            setEnvName(label)
+            setShowEmpty(!appCount)
             const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-            const newUrl = generatePath(match.path, { appId: value })
+            const newUrl = generatePath(match.path, { envId: value })
             history.push(`${newUrl}/${tab}`)
             ReactGA.event({
                 category: 'Env Selector',
                 action: 'Env Selection Changed',
-                label: tab,
+                label: label,
             })
         },
         [location.pathname],
@@ -75,8 +111,8 @@ export function EnvHeader({ envName }: { envName: string }) {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ':envId(\\d+)': {
-                    component: <AppSelector onChange={handleEnvChange} appId={envId} appName={envName} />,
+                ':envId': {
+                    component: <EnvSelector onChange={handleEnvChange} envId={+envId} envName={envName} />,
                     linked: false,
                 },
                 environment: {
@@ -88,6 +124,18 @@ export function EnvHeader({ envName }: { envName: string }) {
         [envId, envName],
     )
 
+    const handleOverViewClick = (): void => {
+        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
+    }
+
+    const handleBuildClick = (): void => {
+        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
+    }
+
+    const handleConfigClick = (): void => {
+        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
+    }
+
     const renderEnvDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
@@ -96,12 +144,7 @@ export function EnvHeader({ envName }: { envName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'Environment',
-                                action: 'Overview Clicked',
-                            })
-                        }}
+                        onClick={handleOverViewClick}
                     >
                         Overview
                     </NavLink>
@@ -111,14 +154,19 @@ export function EnvHeader({ envName }: { envName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'Environment',
-                                action: 'Build & Deploy Clicked',
-                            })
-                        }}
+                        onClick={handleBuildClick}
                     >
                         Build & Deploy
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_CONFIG}`}
+                        className="tab-list__tab-link"
+                        onClick={handleConfigClick}
+                    >
+                        Configuration
                     </NavLink>
                 </li>
             </ul>
@@ -133,7 +181,7 @@ export function EnvHeader({ envName }: { envName: string }) {
         <PageHeader
             breadCrumbs={renderBreadcrumbs}
             isBreadcrumbs={true}
-            showTabs={true}
+            showTabs={!showEmpty}
             renderHeaderTabs={renderEnvDetailsTabs}
         />
     )
