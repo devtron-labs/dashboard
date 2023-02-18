@@ -77,3 +77,42 @@ export const BULK_CI_MESSAGING = {
         subTitle: 'Cache will be used in future runs to reduce build time.',
     },
 }
+
+export const EMPTY_LIST_MESSAGING = {
+    TITLE: 'No applications available',
+    SUBTITLE: 'You don’t have access to any application in this app group.',
+    NO_MATCHING_ENV: 'No matching env',
+    NO_MATCHING_RESULT: 'We couldn’t find any matching results',
+    EMPTY_ENV: 'Empty environment',
+}
+
+export const NO_ACCESS_TOAST_MESSAGE = 'You don’t have access to any application in this app group'
+
+export const OVERVIEW_HEADER = {
+    APPLICATION: 'application',
+    APP_STATUS: 'app status',
+    DEPLOYMENT_STATUS: 'deployment status',
+    LAST_DEPLOYED: 'last deployed',
+}
+
+export const ENV_APP_GROUP_GA_EVENTS = {
+    OverviewClicked: {
+        category: 'Environment',
+        action: 'Overview Clicked',
+    },
+    BuildDeployClicked: {
+        category: 'Environment',
+        action: 'Build & Deploy Clicked',
+    },
+    ConfigurationClicked: {
+        category: 'Configuration',
+        action: 'Configuration Clicked',
+    }
+}
+
+export const GROUP_LIST_HEADER = {
+    ENVIRONMENT: 'Environment',
+    NAMESPACE: 'Namespace',
+    CLUSTER: 'Cluster',
+    APPLICATIONS: 'Applications'
+}

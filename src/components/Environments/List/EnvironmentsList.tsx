@@ -1,56 +1,127 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-environment.svg'
-import EnvEmptyStates from '../EnvEmptyStates'
 import './EnvironmentsList.scss'
 import PageHeader from '../../common/header/PageHeader'
-import { Progressing } from '../../common'
-import { URLS } from '../../../config'
+import { Filter, FilterOption, Progressing, useAsync } from '../../common'
+import EnvironmentsListView from './EnvironmentListView'
+import { getClusterListMinWithoutAuth } from '../../../services/service'
+import { Cluster } from '../../../services/service.types'
+import { AppListConstants } from '../../../config'
+import { useHistory, useLocation } from 'react-router-dom'
 
 export default function EnvironmentsList() {
     const match = useRouteMatch()
-    const [loader, setLoader] = useState(false)
-    const [noResults, setNoResults] = useState(false)
+    const location = useLocation()
+    const history = useHistory()
     const [searchText, setSearchText] = useState('')
-    const [filteredEnvList, setFilteredEnvList] = useState([])
     const [searchApplied, setSearchApplied] = useState(false)
-    const [envList, setEnvList] = useState([])
-
-    const getData = () => {
-        setLoader(true)
-        setEnvList([])
-        setLoader(false)
-    }
+    const [clusterfilter, setClusterFilter] = useState<FilterOption[]>([])
+    const [loading, clusterListRes] = useAsync(() => getClusterListMinWithoutAuth())
 
     useEffect(() => {
-        getData()
-    }, [])
+        if (clusterListRes) {
+            const queryParams = new URLSearchParams(location.search)
+            const clusters = queryParams.get('cluster') || ''
+            const search = queryParams.get('search') || ''
+            if (search) {
+                setSearchApplied(true)
+            }
+            const clusterStatus = clusters
+                .toString()
+                .split(',')
+                .filter((status) => status != '')
+                .map((status) => status)
+            const clusterList = new Set<string>(clusterStatus)
+            const clustersfilter: FilterOption[] = []
+            if (clusterListRes?.result && Array.isArray(clusterListRes.result)) {
+                clusterListRes.result.forEach((cluster: Cluster) => {
+                    clustersfilter.push({
+                        key: cluster.id,
+                        label: cluster.cluster_name.toLocaleLowerCase(),
+                        isSaved: true,
+                        isChecked: clusterList.has(cluster.id.toString()),
+                    })
+                })
+                setClusterFilter(clustersfilter)
+                setSearchText(search)
+            }
+        }
+    }, [clusterListRes, location.search])
 
-    const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = envList.filter((env) => env.name.indexOf(_searchText) >= 0)
-        setFilteredEnvList(_filteredData)
-        setNoResults(_filteredData.length === 0)
+    const handleSearch = (text: string): void => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('search', text)
+        queryParams.set('offset', '0')
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('')
-            setSearchApplied(false)
-        }
-        setSearchText('')
+        setSearchApplied(false)
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.delete('search')
+        queryParams.set('offset', '0')
+        history.push(`${match.path}?${queryParams.toString()}`)
     }
 
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
+            if (searchText.length) {
+                handleSearch(event.target.value)
+                setSearchApplied(true)
+            }
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         }
+    }
+    const applyFilter = (type: string, list: FilterOption[], selectedAppTab?: string): void => {
+        const queryParams = new URLSearchParams(location.search)
+        const ids = []
+        list.forEach((option) => {
+            if (option.isChecked) {
+                ids.push(option.key)
+            }
+        })
+        if (!ids.length) {
+            queryParams.delete(type)
+        } else {
+            queryParams.set(type, ids.toString())
+        }
+        queryParams.set('offset', '0')
+        history.push(`${match.path}?${queryParams.toString()}`)
+    }
+
+    const removeFilter = (filter): void => {
+        const queryParams = new URLSearchParams(location.search)
+        const cluster = queryParams.get('cluster')
+        const clusterValues = cluster
+            .toString()
+            .split(',')
+            .map((status) => status)
+
+        const key = clusterValues.filter((value) => value != filter.key)
+        if (key.length) {
+            queryParams.set('cluster', key.toString())
+        } else {
+            queryParams.delete('cluster')
+        }
+        queryParams.set('offset', '0')
+        history.push(`${match.path}?${queryParams.toString()}`)
+    }
+
+    const removeAllFilters = (): void => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.delete('cluster')
+        queryParams.delete('search')
+        setSearchApplied(false)
+        setSearchText('')
+        history.push(`${match.path}?${queryParams.toString()}`)
+    }
+
+    const handleSearchText = (event): void => {
+        setSearchText(event.target.value)
     }
 
     const renderSearch = (): JSX.Element => {
@@ -62,9 +133,7 @@ export default function EnvironmentsList() {
                     placeholder="Search env"
                     value={searchText}
                     className="search__input"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
-                    }}
+                    onChange={handleSearchText}
                     onKeyDown={handleFilterKeyPress}
                 />
                 {searchApplied && (
@@ -76,48 +145,64 @@ export default function EnvironmentsList() {
         )
     }
 
-    if (loader) {
+    function renderAppliedFilters(): JSX.Element {
+        const isApplied = clusterfilter.some((filter) => filter.isChecked)
+        return (
+            isApplied && (
+                <div className="saved-env-filters__wrap dc__position-rel mb-12">
+                    {clusterfilter.map((filter) => {
+                        if (filter.isChecked) {
+                            return (
+                                <div key={filter.key} className="saved-env-filter">
+                                    <span className="fw-6 mr-5">{'Cluster'}</span>
+                                    <span className="saved-env-filter-divider"></span>
+                                    <span className="ml-5">{filter.label}</span>
+                                    <button
+                                        type="button"
+                                        className="saved-env-filter__close-btn"
+                                        onClick={() => removeFilter(filter)}
+                                    >
+                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            )
+                        }
+                    })}
+                    <button
+                        type="button"
+                        className="saved-env-filters__clear-btn flex fs-13"
+                        onClick={removeAllFilters}
+                    >
+                        Clear All Filters
+                    </button>
+                </div>
+            )
+        )
+    }
+
+    if (loading) {
         return <Progressing pageLoader />
     }
 
     return (
         <div>
-            <PageHeader headerName="Environments" />
-            <div className={`env-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
-                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">{renderSearch()}</div>
-                {noResults ? (
-                    <EnvEmptyStates actionHandler={clearSearch} />
-                ) : (
-                    <div className="dc__overflow-scroll" style={{ height: `calc(100vh - 125px)` }}>
-                        <div className="env-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                            <div></div>
-                            <div>Environments</div>
-                            <div>Namespace</div>
-                            <div>Cluster</div>
-                            <div>Applications</div>
-                        </div>
-                        {filteredEnvList?.map((envData) => (
-                            <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
-                                <EnvIcon className="icon-dim-20" />
-                                <div className="cb-5 dc__ellipsis-right">
-                                    <NavLink to={`${match.url}/${envData.id}`}>{envData.name}</NavLink>
-                                </div>
-                                <div>{envData.namespace}</div>
-                                <div>{envData.cluster}</div>
-                                <div>{envData.applications}</div>
-                            </div>
-                        ))}
-                        <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
-                            <EnvIcon className="icon-dim-20" />
-                            <div className="cb-5 dc__ellipsis-right">
-                                <NavLink to={`${URLS.ENVIRONMENT}/2`}>devtron-demo1</NavLink>
-                            </div>
-                            <div>devtron-demo1</div>
-                            <div>default_cluster</div>
-                            <div>10</div>
-                        </div>
-                    </div>
-                )}
+            <PageHeader headerName="Application Groups" />
+            <div className="env-list bcn-0">
+                <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
+                    {renderSearch()}
+                    <Filter
+                        list={clusterfilter}
+                        labelKey="label"
+                        buttonText="Cluster"
+                        searchable
+                        multi
+                        placeholder="Search Cluster"
+                        type={AppListConstants.FilterType.CLUTSER}
+                        applyFilter={applyFilter}
+                    />
+                </div>
+                {renderAppliedFilters()}
+                <EnvironmentsListView removeAllFilters={removeAllFilters} />
             </div>
         </div>
     )
