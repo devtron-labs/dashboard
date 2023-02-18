@@ -11,7 +11,7 @@ import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
-import { EMPTY_LIST_MESSAGING } from './constants'
+import { EMPTY_LIST_MESSAGING } from './Constants'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
