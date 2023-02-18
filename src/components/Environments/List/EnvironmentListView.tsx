@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import EnvEmptyStates from '../EnvEmptyStates'
-import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-environment-list.svg'
+import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { Pagination, Progressing, useAsync } from '../../common'
 import { getEnvAppList } from '../EnvironmentListService'
@@ -101,7 +101,9 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                 </div>
                 {filteredEnvList?.map((envData) => (
                     <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
-                        <EnvIcon className="icon-dim-20" />
+                        <span className="icon-dim-24 bcb-1 flex br-6">
+                            <EnvIcon className="icon-dim-16 scb-4" />
+                        </span>
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
                                 to={`/environment/${envData.id}`}
