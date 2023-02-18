@@ -13,7 +13,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, noop } from '../common'
+import { getCIPipelineURL, stopPropagation } from '../common'
 import { useHistory } from 'react-router'
 import { useParams } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
@@ -31,8 +31,11 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     onClickShowBranchRegexModal,
+    fromAppGrouping,
+    appId,
+    fromBulkCITrigger,
+    hideSearchHeader,
 }) {
-    const { appId } = useParams<{ appId: string }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const { push } = useHistory()
@@ -55,7 +58,7 @@ export default function GitInfoMaterial({
 
     function renderMaterialHeader() {
         return (
-            <div className="trigger-modal__header">
+            <div className={`trigger-modal__header ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
                 <h1 className="modal__title flex left fs-16">
                     {showWebhookModal ? (
                         <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
@@ -100,8 +103,11 @@ export default function GitInfoMaterial({
         )
     }
 
-    const showBranchRegexModal = (): void => {
-        onClickChangebranch(true)
+    const onClickHeader = (e): void => {
+        stopPropagation(e)
+        if (selectedMaterial.regex) {
+            onClickShowBranchRegexModal(true)
+        }
     }
 
     const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
@@ -111,7 +117,7 @@ export default function GitInfoMaterial({
                     selectedMaterial.regex ? 'cursor' : ''
                 } cn-9`}
                 style={{ background: 'var(--window-bg)' }}
-                onClick={selectedMaterial.regex ? showBranchRegexModal : noop}
+                onClick={onClickHeader}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
                 {showWebhookModal ? (
@@ -164,7 +170,12 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        push(getCIPipelineURL(appId, workflowId, true, pipelineId))
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
+        if (fromAppGrouping) {
+            window.open(ciPipelineURL, '_blank', 'noreferrer')
+        } else {
+            push(ciPipelineURL)
+        }
     }
 
     const renderSearch = (): JSX.Element => {
@@ -202,7 +213,7 @@ export default function GitInfoMaterial({
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
         return (
             <div className="select-material select-material--trigger-view">
-                {!isWebhook && (
+                {!isWebhook && !hideSearchHeader && (
                     <div
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
@@ -258,6 +269,7 @@ export default function GitInfoMaterial({
                         <MaterialHistory
                             material={selectedMaterial}
                             pipelineName={pipelineName}
+                            ciPipelineId={pipelineId}
                             selectCommit={triggerViewContext.selectCommit}
                             toggleChanges={triggerViewContext.toggleChanges}
                         />
@@ -269,7 +281,7 @@ export default function GitInfoMaterial({
 
     const renderWebhookModal = () => {
         return (
-            <div>
+            <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
                 <CiWebhookModal
                     context={triggerViewContext}
                     webhookPayloads={webhookPayloads}
@@ -278,24 +290,23 @@ export default function GitInfoMaterial({
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     hideWebhookModal={hideWebhookModal}
                     workflowId={workflowId}
+                    fromAppGrouping={fromAppGrouping}
+                    fromBulkCITrigger={fromBulkCITrigger}
+                    appId={appId}
                 />
             </div>
         )
     }
 
-    const onClickChangebranch = (isBranchChangedClicked) => {
-        onClickShowBranchRegexModal(isBranchChangedClicked)
-    }
-
     return (
         <>
-            {renderMaterialHeader()}
-            <div className={`m-lr-0 ${showWebhookModal ? null : 'flexbox'}`}>
+            {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
+            <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
                 {showWebhookModal == true ? (
                     renderWebhookModal()
                 ) : (
                     <>
-                        {renderMaterialSource()}
+                        {!fromBulkCITrigger && renderMaterialSource()}
                         {renderMaterialHistory(selectedMaterial ?? material)}
                     </>
                 )}

@@ -14,9 +14,17 @@ import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 export class Workflow extends Component<WorkflowProps> {
     goToWorkFlowEditor = (node: NodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(
-                getCIPipelineURL(this.props.match.params.appId, this.props.id, true, node.downstreams[0].split('-')[1]),
+            const ciPipelineURL = getCIPipelineURL(
+                this.props.appId?.toString() ?? this.props.match.params.appId,
+                this.props.id,
+                true,
+                node.downstreams[0].split('-')[1],
             )
+            if (this.props.fromAppGrouping) {
+                window.open(ciPipelineURL, '_blank', 'noreferrer')
+            } else {
+                this.props.history.push(ciPipelineURL)
+            }
         }
     }
 
@@ -99,6 +107,7 @@ export class Workflow extends Component<WorkflowProps> {
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
+                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         } else if (node.isExternalCI) {
@@ -149,6 +158,7 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     branch={node.branch}
+                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         }
@@ -180,6 +190,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineId={node.parentPipelineId}
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -205,6 +216,7 @@ export class Workflow extends Component<WorkflowProps> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -242,9 +254,28 @@ export class Workflow extends Component<WorkflowProps> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
         return (
-            <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
+            <div
+                className={`workflow workflow--trigger mb-20 ${this.props.isSelected ? 'eb-5' : ''}`}
+                style={{ minWidth: `${this.props.width}px` }}
+            >
                 <div className="workflow__header">
-                    <span className="workflow__name">{this.props.name}</span>
+                    {this.props.fromAppGrouping ? (
+                        <>
+                            <input
+                                type="checkbox"
+                                className="mt-0-imp cursor"
+                                data-app-id={this.props.appId}
+                                checked={this.props.isSelected}
+                                onChange={this.props.handleSelectionChange}
+                                id={`chkValidate-${this.props.appId}`}
+                            />
+                            <label className="pt-4 ml-4 cursor" htmlFor={`chkValidate-${this.props.appId}`}>
+                                {this.props.name}
+                            </label>
+                        </>
+                    ) : (
+                        <span className="workflow__name">{this.props.name}</span>
+                    )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">
