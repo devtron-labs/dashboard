@@ -55,8 +55,15 @@ import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-
 import './EnvTriggerView.scss'
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
-import { BulkCDDetailType, BulkCIDetailType, ResponseRowType } from '../../Environments.types'
+import {
+    BulkCDDetailType,
+    BulkCIDetailType,
+    ResponseRowType,
+    WorkflowAppSelectionType,
+    WorkflowNodeSelectionType,
+} from '../../Environments.types'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGrouping.utils'
+import Tippy from '@tippyjs/react'
 
 let timerRef
 let inprogressStatusTimer
@@ -68,6 +75,8 @@ export default function EnvTriggerView() {
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [loader, setLoader] = useState(false)
     const [isLoading, setLoading] = useState(false)
+    const [showPreDeployment, setShowPreDeployment] = useState(false)
+    const [showPostDeployment, setShowPostDeployment] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
     const [showCIModal, setShowCIModal] = useState(false)
     const [showCDModal, setShowCDModal] = useState(false)
@@ -82,10 +91,10 @@ export default function EnvTriggerView() {
     const [showMaterialRegexModal, setShowMaterialRegexModal] = useState(false)
     const [workflowID, setWorkflowID] = useState<number>()
     const [selectedAppID, setSelectedAppID] = useState<number>()
-    const [selectedAppList, setSelectedAppList] = useState<{ id: number; name: string }[]>([])
+    const [selectedAppList, setSelectedAppList] = useState<WorkflowAppSelectionType[]>([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
-    const [selectedCDNode, setSelectedCDNode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
-    const [selectedCINode, setSelectedCINode] = useState<{ id: number; name: string; type: WorkflowNodeType }>(null)
+    const [selectedCDNode, setSelectedCDNode] = useState<WorkflowNodeSelectionType>(null)
+    const [selectedCINode, setSelectedCINode] = useState<WorkflowNodeSelectionType>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
@@ -169,22 +178,46 @@ export default function EnvTriggerView() {
     const handleSelectionChange = (e): void => {
         const _appId = Number(e.currentTarget.dataset.appId)
         const _selectedAppList = [...selectedAppList]
+        let _preNodeExist, _postNodeExist
         const _workflows = workflows.map((wf) => {
             if (_appId === wf.appId) {
                 const selectedAppIndex = selectedAppList.findIndex((app) => app.id === _appId)
                 if (wf.isSelected) {
                     _selectedAppList.splice(selectedAppIndex, 1)
                     wf.isSelected = false
+                    for (const app of _selectedAppList) {
+                        if (!_preNodeExist && app.preNodeAvailable) {
+                            _preNodeExist = true
+                        }
+                        if (!_postNodeExist && app.preNodeAvailable) {
+                            _postNodeExist = true
+                        }
+                        if (_preNodeExist && _postNodeExist) {
+                            break
+                        }
+                    }
                 } else {
-                    _selectedAppList.push({
+                    const _currentAppDetail = {
                         id: _appId,
                         name: wf.name,
-                    })
+                        preNodeAvailable: false,
+                        postNodeAvailable: false,
+                    }
+                    for (const node of wf.nodes) {
+                        if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
+                            _preNodeExist = !!node.preNode
+                            _postNodeExist = !!node.postNode
+                            break
+                        }
+                    }
+                    _selectedAppList.push(_currentAppDetail)
                     wf.isSelected = true
                 }
             }
             return wf
         })
+        setShowPreDeployment(_preNodeExist)
+        setShowPostDeployment(_postNodeExist)
         setWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
     }
@@ -1177,8 +1210,8 @@ export default function EnvTriggerView() {
                 if (_ciNode) {
                     const configuredMaterialList = new Map<number, Set<number>>()
                     configuredMaterialList[wf.name] = new Set<number>()
-                    if(!_ciNode[MATERIAL_TYPE.inputMaterialList]){
-                      _ciNode[MATERIAL_TYPE.inputMaterialList] = []
+                    if (!_ciNode[MATERIAL_TYPE.inputMaterialList]) {
+                        _ciNode[MATERIAL_TYPE.inputMaterialList] = []
                     }
                     handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
                     _selectedAppWorkflowList.push({
@@ -1360,45 +1393,50 @@ export default function EnvTriggerView() {
             <PopupMenu autoClose>
                 <PopupMenu.Button
                     isKebab
-                    rootClassName="h-36 popup-button-kebab dc__border-left-n3 pl-4 pr-4 dc__no-left-radius flex bcb-5"
+                    rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
                 </PopupMenu.Button>
-                <PopupMenu.Body>
+                <PopupMenu.Body rootClassName=" dc__border pt-4 pb-4 mb-8">
+                    {showPreDeployment && (
+                        <div
+                            className="flex left p-10 dc__hover-n50 pointer fs-13"
+                            data-trigger-type={'PRECD'}
+                            onClick={onShowBulkCDModal}
+                        >
+                            Trigger Pre-deployment stage
+                        </div>
+                    )}
                     <div
-                        className="flex left p-10 dc__hover-n50 pointer"
-                        data-trigger-type={'PRECD'}
-                        onClick={onShowBulkCDModal}
-                    >
-                        Trigger Pre-deployment stage
-                    </div>
-                    <div
-                        className="flex left p-10 dc__hover-n50 pointer"
+                        className="flex left p-10 dc__hover-n50 pointer fs-13"
                         data-trigger-type={'CD'}
                         onClick={onShowBulkCDModal}
                     >
                         Trigger Deployment
                     </div>
-                    <div
-                        className="flex left p-10 dc__hover-n50 pointer"
-                        data-trigger-type={'POSTCD'}
-                        onClick={onShowBulkCDModal}
-                    >
-                        Trigger Post-deployment stage
-                    </div>
+                    {showPostDeployment && (
+                        <div
+                            className="flex left p-10 dc__hover-n50 pointer fs-13"
+                            data-trigger-type={'POSTCD'}
+                            onClick={onShowBulkCDModal}
+                        >
+                            Trigger Post-deployment stage
+                        </div>
+                    )}
                 </PopupMenu.Body>
             </PopupMenu>
         )
     }
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {
+        const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
             <div className="flex dc__min-width-fit-content">
                 <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
                     {isLoading ? <Progressing /> : 'Build image'}
                 </button>
                 <button
-                    className="cta flex h-36 dc__no-right-radius"
+                    className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                     data-trigger-type={'CD'}
                     onClick={onShowBulkCDModal}
                 >
@@ -1411,7 +1449,7 @@ export default function EnvTriggerView() {
                         </>
                     )}
                 </button>
-                {renderDeployPopupMenu()}
+                {_showPopupMenu && renderDeployPopupMenu()}
             </div>
         )
     }
@@ -1419,7 +1457,9 @@ export default function EnvTriggerView() {
     const renderSelectedApps = (): JSX.Element => {
         return (
             <div className="flex">
-                <Close className="icon-dim-18 scr-5 mr-8 cursor mw-18" onClick={clearAppList} />
+                <Tippy className="default-tt" arrow={false} placement="top" content="Clear selection">
+                    <Close className="icon-dim-18 scr-5 mr-16 cursor mw-18" onClick={clearAppList} />
+                </Tippy>
                 <div>
                     <div className="fs-13 fw-6 cn-9">
                         {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
@@ -1463,8 +1503,8 @@ export default function EnvTriggerView() {
                 })}
                 {!!selectedAppList.length && (
                     <div
-                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20"
-                        style={{ paddingLeft: '90px', right: 0 }}
+                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20 dc__right-0"
+                        style={{ width: 'calc(100vw - 56px)' }}
                     >
                         {renderSelectedApps()}
                         {renderBulkTriggerActionButtons()}

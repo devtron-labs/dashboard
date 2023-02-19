@@ -263,13 +263,13 @@ export class Workflow extends Component<WorkflowProps> {
                         <>
                             <input
                                 type="checkbox"
-                                className="mt-0-imp cursor"
+                                className="mt-0-imp cursor icon-dim-16"
                                 data-app-id={this.props.appId}
                                 checked={this.props.isSelected}
                                 onChange={this.props.handleSelectionChange}
                                 id={`chkValidate-${this.props.appId}`}
                             />
-                            <label className="pt-4 ml-4 cursor" htmlFor={`chkValidate-${this.props.appId}`}>
+                            <label className="ml-12 cursor fs-13 mb-0-imp lh-20" htmlFor={`chkValidate-${this.props.appId}`}>
                                 {this.props.name}
                             </label>
                         </>

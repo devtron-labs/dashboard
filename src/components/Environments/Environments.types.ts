@@ -119,3 +119,6 @@ export interface TriggerResponseModalType {
     isLoading: boolean
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
 }
+
+export interface WorkflowNodeSelectionType { id: number; name: string; type: WorkflowNodeType }
+export interface WorkflowAppSelectionType { id: number; name: string; preNodeAvailable: boolean; postNodeAvailable: boolean }

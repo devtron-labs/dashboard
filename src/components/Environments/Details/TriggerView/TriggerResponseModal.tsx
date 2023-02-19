@@ -40,7 +40,7 @@ export default function TriggerResponseModal({
                 {responseList.map((response) => (
                     <div className="response-row pt-8 pb-8" key={`response-${response.appId}`}>
                         <div className="fs-13 fw-4 cn-9">{response.appName}</div>
-                        <div className="flex left fs-13 fw-4 cn-9">
+                        <div className="flex left top fs-13 fw-4 cn-9">
                             {renderStatusIcon(response)}
                             <span>{response.statusText}</span>
                         </div>
@@ -69,7 +69,7 @@ export default function TriggerResponseModal({
                 }`}
             >
                 <button className="cta cancel flex h-36" onClick={closePopup}>
-                    Cancel
+                    Close
                 </button>
                 {isShowRetryButton && (
                     <button className="cta flex h-36" onClick={handleRetryBuild}>

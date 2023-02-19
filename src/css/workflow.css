@@ -40,7 +40,7 @@
 }
 
 .workflow__header {
-    padding: 16px 20px;
+    padding: 8px 20px;
     border-radius: 8px 8px 0 0;
     border-bottom: solid 1px #d6dbdf;
     display: flex;
@@ -53,9 +53,9 @@
 }
 
 .workflow__name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    line-height: 1.43;
+    line-height: 1.5;
     letter-spacing: normal;
     color: var(--N900);
 }
