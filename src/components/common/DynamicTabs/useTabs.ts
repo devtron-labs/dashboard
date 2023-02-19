@@ -1,26 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState([])
 
-    // useEffect(() => {
-    //     try {
-    //         const persistedTabs = localStorage.getItem('persisted-tabs-data')
-    //         if (persistedTabs) {
-    //             setTabs(JSON.parse(persistedTabs).data)
-    //         }
-    //     } catch (err) {
-    //         console.error(err)
-    //     }
-    // }, [])
-
-    const populateTabData = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
+    const populateTabData = (
+        tabName: string,
+        tabUrl: string,
+        isSelected: boolean,
+        title?: string,
+        positionFixed?: boolean,
+    ) => {
         let tab = {} as any
         tab.name = tabName
         tab.url = tabUrl
         tab.isSelected = isSelected
         tab.title = title || tabName
         tab.isDeleted = false
+        tab.positionFixed = positionFixed
         return tab
     }
 
@@ -31,7 +27,7 @@ export function useTabs(persistanceKey: string) {
         })
     }
 
-    const initTabs = (tabName: string, _url: string) => {
+    const initTabs = (tabName: string, _url: string, positionFixed: boolean) => {
         const url = `${_url}${_url.endsWith('/') ? '' : '/'}`
         let _tabs
         try {
@@ -42,7 +38,7 @@ export function useTabs(persistanceKey: string) {
         }
 
         if (!_tabs.length) {
-            _tabs.push(populateTabData(tabName, url, true, tabName))
+            _tabs.push(populateTabData(tabName, url, true, tabName, positionFixed))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -65,7 +61,7 @@ export function useTabs(persistanceKey: string) {
         })
 
         if (!alreadyAdded) {
-            _tabs.push(populateTabData(`${objectKind}/${objectName}`, tabURL, true, title))
+            _tabs.push(populateTabData(`${objectKind}/${objectName}`, tabURL, true, title, false))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))

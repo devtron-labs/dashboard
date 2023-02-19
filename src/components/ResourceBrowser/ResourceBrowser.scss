@@ -2,16 +2,13 @@
 
 .resource-browser-container {
     .resource-browser-tab {
-        :not(.resource-tree__tab-hover).active {
-            border: 1px solid var(--N200);
-            border-bottom: 1px solid #fff;
-            border-top-right-radius: 8px;
-            border-top-left-radius: 8px;
-        }
+        max-width: calc(100% - 275px);
 
-        .resource-tree-wrapper {
-            .resource-tree-tab {
-                border-bottom: none;
+        .dynamic-tabs-wrapper  {
+            .dynamic-tab-selected {
+                border-top: none;
+                border-radius: 0;
+                padding-bottom: 7px;
             }
         }
     }

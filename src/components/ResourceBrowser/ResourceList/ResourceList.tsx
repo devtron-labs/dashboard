@@ -120,6 +120,7 @@ export default function ResourceList() {
         initTabs(
             AppDetailsTabs.k8s_Resources,
             `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+            true,
         )
         return (): void => {
             if (typeof window['crate']?.show === 'function') {
@@ -753,12 +754,12 @@ export default function ResourceList() {
         return (
             <div>
                 <div
-                    className="h-44 flexbox dc__content-space pr-20"
+                    className="h-36 flexbox dc__content-space pr-20"
                     style={{
                         boxShadow: 'inset 0 -1px 0 0 var(--N200)',
                     }}
                 >
-                    <div className="resource-browser-tab flex left pt-10">
+                    <div className="resource-browser-tab flex left">
                         <DynamicTabs
                             tabs={tabs}
                             removeTabByIdentifier={removeTabByIdentifier}
