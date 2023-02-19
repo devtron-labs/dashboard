@@ -93,7 +93,7 @@ export const handleSourceNotConfigured = (
             branchErrorMsg: SOURCE_NOT_CONFIGURED,
             regex: '',
             history: [],
-            isSelected: false,
+            isSelected: _materialList.length === 0,
             lastFetchTime: '',
             isRegex: false,
         }

@@ -477,7 +477,12 @@ export default function BulkCITrigger({
     }
 
     const isStartBuildDisabled = (): boolean => {
-        return appList.some((app) => app.errorMessage && app.errorMessage!=='Source not configured')
+        return appList.some(
+            (app) =>
+                app.errorMessage &&
+                (app.errorMessage !== 'Source not configured' ||
+                    !app.material.some((_mat) => !_mat.isBranchError && !_mat.isRepoError)),
+        )
     }
 
     const renderFooterSection = (): JSX.Element => {
