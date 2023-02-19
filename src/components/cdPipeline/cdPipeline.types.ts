@@ -46,7 +46,7 @@ export interface Environment {
     clusterName: string
     isClusterCdActive: boolean;
 }
-export interface commonError {
+export interface regExpressionerror {
     isValid: boolean
     message: string
 }
@@ -65,9 +65,9 @@ export interface CDPipelineState {
     showForceDeleteDialog: boolean
     showError: boolean
     errorForm: {
-        pipelineNameError: commonError
-        envNameError: commonError
-        nameSpaceError: commonError
+        pipelineNameError: regExpressionerror
+        envNameError: regExpressionerror
+        nameSpaceError: regExpressionerror
     }
     showPreStage: boolean
     showDeploymentStage: boolean

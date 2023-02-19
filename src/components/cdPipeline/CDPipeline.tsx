@@ -571,14 +571,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             !!this.state.pipelineConfig.namespace &&
             !!this.state.pipelineConfig.triggerType &&
             !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
-
-        if (!valid) {
-            this.setState({ loadingData: false })
             if (this.state.pipelineConfig.name === '' || !this.state.pipelineConfig.namespace) {
                 toast.error('Some required fields are missing')
+                return
             }
-            return
-        }
+            if (!valid) {
+                this.setState({ loadingData: false })
+                return
+            }
 
         
         this.setState({ loadingData: true })
@@ -603,7 +603,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
-        
+
         let msg
         if (!this.props.match.params.cdPipelineId) {
             request['pipelines'] = [pipeline]
