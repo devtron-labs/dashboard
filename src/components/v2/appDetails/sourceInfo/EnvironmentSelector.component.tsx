@@ -23,7 +23,6 @@ import { toast } from 'react-toastify';
 import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
 import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
-import { LOCAL_STORAGE } from '../../../../config/constantMessaging';
 import  BinWithDots from '../../../../assets/img/delete-bin-with-dots.png'
 
 function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
@@ -86,17 +85,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     }
 
     //Local storage for the first time empty state show
-
-    useEffect(() => {
-      if (
-          location.pathname.includes(`/details}/`) &&
-          typeof Storage !== 'undefined' &&
-          localStorage.getItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)
-      )
-      return() =>{
-          localStorage.removeItem(LOCAL_STORAGE.ISDELTEDAPPFIRSTTIME)
-      }
-  }, [location.pathname])
 
     const Popup = () => {
         return (
