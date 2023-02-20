@@ -43,6 +43,7 @@
         }
     }
     .response-list-container {
+        max-height: calc(100vh - 120px);
         .response-row {
             display: grid;
             grid-template-columns: repeat(2, 200px) auto;
