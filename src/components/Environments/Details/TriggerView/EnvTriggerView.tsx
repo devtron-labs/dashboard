@@ -1216,7 +1216,9 @@ export default function EnvTriggerView() {
                     if (!_ciNode[MATERIAL_TYPE.inputMaterialList]) {
                         _ciNode[MATERIAL_TYPE.inputMaterialList] = []
                     }
-                    handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
+                    if (!_ciNode.isLinkedCI || _ciNode.type !== WorkflowNodeType.WEBHOOK) {
+                        handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
+                    }
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
@@ -1467,7 +1469,7 @@ export default function EnvTriggerView() {
                     <div className="fs-13 fw-6 cn-9">
                         {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
                     </div>
-                    <div className="fs-13 fw-4 cn-7">
+                    <div className="fs-13 fw-4 cn-7 dc__ellipsis-right__2nd-line">
                         {selectedAppList.map((app, index) => (
                             <span key={`selected-app-${app.id}`}>
                                 {app.name}
@@ -1517,10 +1519,7 @@ export default function EnvTriggerView() {
         )
     }
     return (
-        <div
-            className="svg-wrapper-trigger"
-            style={{ paddingBottom: selectedAppList.length ? '68px' : '16px', minHeight: 'calc( 100vh - 77px)' }}
-        >
+        <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}>
             <TriggerViewContext.Provider
                 value={{
                     invalidateCache: invalidateCache,
