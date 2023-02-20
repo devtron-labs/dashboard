@@ -48,7 +48,6 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 
-
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { SourceInfo } from './SourceInfo'
@@ -82,7 +81,7 @@ import {
     unhibernateApp,
 } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.service'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
-import {AppDetailsEmptyState} from "../../../common/AppDetailsEmptyState";
+import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
@@ -94,6 +93,7 @@ export default function AppDetail() {
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
+    const [isValidEnvironmentId, setValidEnvironmentId] = useState<boolean>(false)
 
     useEffect(() => {
         if (otherEnvsLoading) return
@@ -115,6 +115,35 @@ export default function AppDetail() {
         setEnvironmentId(Number(params.envId))
         setIsAppDeleted(false)
     }, [params.envId])
+
+    useEffect(() => {
+        if (otherEnvsResult?.result) {
+            const _isValidEnvironmentId =
+                otherEnvsResult?.result?.find((_env) => _env.environmentId === Number(params.envId))?.environmentId ===
+                Number(params.envId)
+            setValidEnvironmentId(_isValidEnvironmentId)
+        }
+    }, [otherEnvsResult?.result])
+
+    const renderAppNotConfigured = () => {
+        return (
+            <>
+                {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && isValidEnvironmentId && (
+                    <AppNotConfigured
+                        style={{ height: 'calc(100vh - 150px)' }}
+                        image={noGroups}
+                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                        subtitle={'Once deployed, details for the deployment will be available here.'}
+                        buttonTitle={'Go to deploy'}
+                        appConfigTabs={URLS.APP_TRIGGER}
+                    />
+                )}
+                {!params.envId && otherEnvsResult?.result?.length > 0 && (
+                    <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
+                )}
+            </>
+        )
+    }
 
     return (
         <div className="app-details-page-wrapper">
@@ -140,6 +169,7 @@ export default function AppDetail() {
                 />
             </Route>
 
+            {otherEnvsResult && !otherEnvsLoading && renderAppNotConfigured()}
         </div>
     )
 }
@@ -169,7 +199,7 @@ export const Details: React.FC<{
     showCommitInfo,
     isAppDeleted,
     otherEnvsLoading,
-    otherEnvsResult
+    otherEnvsResult,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -241,6 +271,10 @@ export const Details: React.FC<{
             clearTimeout(deploymentStatusTimer)
         }
     }
+
+    const isValidEnvironmentId =
+        environments?.find((_env) => _env.environmentId === Number(params.envId))?.environmentId ===
+        Number(params.envId)
 
     useEffect(() => {
         return () => {
@@ -425,43 +459,19 @@ export const Details: React.FC<{
         toggleDetailedStatus(false)
     }
 
-    const getNotConfigured = () => {
-      return otherEnvsResult && !otherEnvsLoading && (
-        <>
-            {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&  <AppNotConfigured
-                        style={{ height: 'calc(100vh - 150px)' }}
-                        image={noGroups}
-                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                        subtitle={'Once deployed, details for the deployment will be available here.'}
-                        buttonTitle={'Go to deploy'}
-                        appConfigTabs={URLS.APP_TRIGGER}
-                    />}
-            {!params.envId && otherEnvsResult?.result?.length > 0 && (
-                <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
-            )}
-        </>
-    )
-    }
-
-    const isValidEnvironmentId = environments?.find(_env => _env.environmentId === Number(params.envId))?.environmentId === Number(params.envId)
     if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) {
         return (
             <>
-               {
-                 environments?.length > 0 &&
-               <div className="flex left ml-20 mt-16">
-                    <EnvSelector
-                        environments={environments}
-                        disabled={params.envId && !showCommitInfo}
-                        controlStyleOverrides={{ backgroundColor: 'white' }}
-                    />
-                </div>
-               }
-                {isAppDeleted && !isValidEnvironmentId ? (
-                    <AppDetailsEmptyState />
-                ) :(
-                  getNotConfigured()
-                ) }
+                {environments?.length > 0 && (
+                    <div className="flex left ml-20 mt-16">
+                        <EnvSelector
+                            environments={environments}
+                            disabled={params.envId && !showCommitInfo}
+                            controlStyleOverrides={{ backgroundColor: 'white' }}
+                        />
+                    </div>
+                )}
+                {isAppDeleted && !isValidEnvironmentId && params.envId && <AppDetailsEmptyState />}
             </>
         )
     }
@@ -477,7 +487,7 @@ export const Details: React.FC<{
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
                     environments={environments}
-                    showCommitInfo={isAppDeployment && appDetails.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
+                    showCommitInfo={isAppDeployment && appDetails?.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                     deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
@@ -490,6 +500,7 @@ export const Details: React.FC<{
                 showApplicationDetailedModal={showApplicationDetailedModal}
                 appStreamData={streamData}
             />
+
             {!appDetails?.deploymentAppDeleteRequest && (
                 <>
                     <SecurityVulnerabilitites
@@ -1315,15 +1326,15 @@ const getOperationStateTitle = (app: Application) => {
                     return 'Terminated'
             }
     }
-    return 'Unknown';
-};
+    return 'Unknown'
+}
 
 export const getAppOperationState = (app: Application) => {
     if (app.metadata.deletionTimestamp) {
         return {
             phase: 'Running',
             startedAt: app.metadata.deletionTimestamp,
-        };
+        }
     } else if (app.operation) {
         return {
             phase: 'Running',
@@ -1331,11 +1342,11 @@ export const getAppOperationState = (app: Application) => {
             operation: {
                 sync: {},
             },
-        };
+        }
     } else {
-        return app.status.operationState;
+        return app.status.operationState
     }
-};
+}
 export function getOperationType(application: Application) {
     if (application.metadata.deletionTimestamp) {
         return 'Delete'
