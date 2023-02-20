@@ -655,8 +655,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteCD = (force) => {
+        let isPartialDelete = this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps && this.state.pipelineConfig.deploymentAppCreated && !force
         let payload = {
-            action: this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps && this.state.pipelineConfig.deploymentAppCreated ? CD_PATCH_ACTION.DEPLOYMENT_DELETE : CD_PATCH_ACTION.DELETE,
+            action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id,
