@@ -55,7 +55,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
     }, [appDetails.environmentId]);
 
     useEffect(() => {
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART && appDetails.resourceTree?.nodes) {
+        if (appDetails.resourceTree?.nodes) {
             setCanScaleWorkloads(
                 appDetails.resourceTree.nodes.some(
                     (node) => node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing',
@@ -222,7 +222,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                     Urls
                 </button>
-                {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
+                {!showWorkloadsModal && (
                     <>
                         {canScaleWorkloads ? (
                             <button

@@ -15,6 +15,7 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
+import { AppType } from '../../appDetails.type'
 
 export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
@@ -233,12 +234,16 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         const _nameSelectionKey = isHibernateReq ? 'scaleDown' : 'restore'
 
         try {
+            let payloadAppId = appId;
+            if(appDetails.appType != AppType.EXTERNAL_HELM_CHART){
+                payloadAppId=appDetails.clusterId+"|"+appDetails.namespace+"|"+appDetails.appName;
+            }
             setScalingInProgress(true)
             const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
             const _setWorkloadsList = isHibernateReq ? setWorkloadsToScaleDown : setWorkloadsToRestore
             const requestPayload: HibernateRequest = {
-                appId,
+                appId:payloadAppId,
                 resources: Array.from(_workloadsList.values())
                     .filter((workload) => workload.isChecked)
                     .map((workload) => ({
