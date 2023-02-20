@@ -8,8 +8,8 @@ export const nodes = [
         uid: '87bcb4e8-a188-11ea-9e9f-02d9ecfd9bc6',
         networkingInfo: {
             targetRefs: [{ kind: 'Service', namespace: 'amit-dev', name: 'colorful-pod-logs-amit-dev-service' }],
-            ingress: [{ ip: '3.12.107.88' }],
-            externalURLs: ['http://3.12.107.88'],
+            ingress: [{ ip: '127.0.0.1' }],
+            externalURLs: ['http://127.0.0.1'],
         },
         resourceVersion: '3654649',
         health: { status: 'Healthy' },

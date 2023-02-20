@@ -30,8 +30,8 @@
 
     &.full-view {
         position: absolute;
-        left: 64px;
-        width: calc(100% - 64px);
+        left: 56px;
+        width: calc(100% - 56px);
         height: calc(100% - 75px);
 
         .white-card__deployment-config {
@@ -181,6 +181,10 @@
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
             margin: 0;
+        }
+
+        .compare-template-values-select__option--is-disabled {
+            color: var(--N500);
         }
     }
 }

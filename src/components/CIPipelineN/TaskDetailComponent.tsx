@@ -158,9 +158,9 @@ export function TaskDetailComponent() {
         <div>
             <div>
                 <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 ">
-                        Task name <span className="cr-5">*</span>
-                    </div>{' '}
+                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
+                        Task name
+                    </div>
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
