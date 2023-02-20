@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ReactComponent as GridIcon } from '../../../assets/icons/ic-grid-view.svg'
 import { URLS } from '../../../config'
@@ -14,20 +14,34 @@ import './envOverview.scss'
 export default function EnvironmentOverview() {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
-    const [loading, response] = useAsync(
-        () => Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)]),
-        [envId],
-    )
+    const [loading, setLoading] = useState<boolean>()
+    const timerId = useRef(null)
+
+    async function fetchDeployments() {
+        try {
+            Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)]).then((response) => {
+                if (response?.[0]?.result && response[1]?.result) {
+                    let statusRecord = {}
+                    response[1].result.forEach((item) => {
+                        statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
+                    })
+                    setLoading(false)
+                    parseAppListData(response[0]?.result, statusRecord)
+                }
+            })
+        } catch (err) {
+
+        }
+    }
 
     useEffect(() => {
-        if (response?.[0]?.result && response[1]?.result) {
-            let statusRecord = {}
-            response[1].result.forEach((item) => {
-                statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
-            })
-            parseAppListData(response[0]?.result, statusRecord)
+        setLoading(true)
+        fetchDeployments()
+        timerId.current = setInterval(fetchDeployments, 30000)
+        return () => {
+            if (timerId.current) clearInterval(timerId.current)
         }
-    }, [response])
+    }, [envId])
 
     const parseAppListData = (data: any, statusRecord: Record<string, string>): void => {
         const parsedData = {
