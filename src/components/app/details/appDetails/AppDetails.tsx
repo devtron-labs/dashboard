@@ -93,7 +93,6 @@ export default function AppDetail() {
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
-    const [isValidEnvironmentId, setValidEnvironmentId] = useState<boolean>(false)
 
     useEffect(() => {
         if (otherEnvsLoading) return
@@ -116,14 +115,6 @@ export default function AppDetail() {
         setIsAppDeleted(false)
     }, [params.envId])
 
-    useEffect(() => {
-        if (otherEnvsResult?.result) {
-            const _isValidEnvironmentId =
-                otherEnvsResult?.result?.find((_env) => _env.environmentId === Number(params.envId))?.environmentId ===
-                Number(params.envId)
-            setValidEnvironmentId(_isValidEnvironmentId)
-        }
-    }, [otherEnvsResult?.result])
 
     const renderAppNotConfigured = () => {
         return (
