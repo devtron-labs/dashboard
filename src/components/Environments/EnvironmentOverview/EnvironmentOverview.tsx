@@ -15,7 +15,7 @@ export default function EnvironmentOverview() {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, response] = useAsync(
-        () => Promise.all([getAppList({ environments: [+envId]}), getDeploymentStatus(+envId)]),
+        () => Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)]),
         [envId],
     )
 

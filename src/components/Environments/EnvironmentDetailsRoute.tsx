@@ -31,23 +31,20 @@ export default function EnvironmentDetailsRoute() {
     }, [envList])
 
     const renderEmptyAndLoading = () => {
-        if(loading){
+        if (loading) {
             return <Progressing pageLoader />
         }
-        return <ResourceListEmptyState
-        imgSource={EmptyFolder}
-        title={EMPTY_LIST_MESSAGING.TITLE}
-        subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
-    />
+        return (
+            <ResourceListEmptyState
+                imgSource={EmptyFolder}
+                title={EMPTY_LIST_MESSAGING.TITLE}
+                subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+            />
+        )
     }
 
     const renderRoute = () => {
-        if (showEmpty)
-            return (
-                <div className="env-empty-state flex w-100">
-                   {renderEmptyAndLoading()}
-                </div>
-            )
+        if (showEmpty) return <div className="env-empty-state flex w-100">{renderEmptyAndLoading()}</div>
         return (
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
@@ -79,12 +76,7 @@ export default function EnvironmentDetailsRoute() {
     )
 }
 
-export function EnvHeader({
-    envName,
-    setEnvName,
-    setShowEmpty,
-    showEmpty,
-}: EnvHeaderType ) {
+export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
