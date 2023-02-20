@@ -44,7 +44,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
 
     const changePage = (pageNo: number): void => {
         const pageSize = params.get('pageSize') || '20'
-        const newOffset = (+pageSize) * (pageNo - 1)
+        const newOffset = +pageSize * (pageNo - 1)
         params.set('pageSize', pageSize)
         params.set('offset', newOffset.toString())
         history.push(`${match.url}?${params.toString()}`)
@@ -78,14 +78,16 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
     }
 
     const renderEmptyLoader = () => {
-        if(loading){
-            return  <Progressing pageLoader />
+        if (loading) {
+            return <Progressing pageLoader />
         }
-        return <EnvEmptyStates
+        return (
+            <EnvEmptyStates
                 title={emptyStateData.title}
                 subTitle={emptyStateData.subTitle}
                 actionHandler={removeAllFilters}
             />
+        )
     }
 
     return filteredEnvList.length === 0 || loading ? (
@@ -118,7 +120,9 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                         </div>
                         <div>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>
-                        <div>{envData.appCount || 0} {GROUP_LIST_HEADER.APPLICATIONS}</div>
+                        <div>
+                            {envData.appCount || 0} {GROUP_LIST_HEADER.APPLICATIONS}
+                        </div>
                     </div>
                 ))}
             </div>
