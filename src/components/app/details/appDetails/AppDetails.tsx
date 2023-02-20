@@ -164,8 +164,6 @@ export default function AppDetail() {
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
                     isAppDeleted={isAppDeleted}
-                    otherEnvsResult={otherEnvsResult}
-                    otherEnvsLoading={otherEnvsLoading}
                 />
             </Route>
 
@@ -185,8 +183,6 @@ export const Details: React.FC<{
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-    otherEnvsResult?
-    otherEnvsLoading?: boolean
 }> = ({
     appDetailsAPI,
     setAppDetailResultInParent,
@@ -198,8 +194,6 @@ export const Details: React.FC<{
     commitInfo,
     showCommitInfo,
     isAppDeleted,
-    otherEnvsLoading,
-    otherEnvsResult,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -471,7 +465,8 @@ export const Details: React.FC<{
                         />
                     </div>
                 )}
-                {isAppDeleted && !isValidEnvironmentId && params.envId && <AppDetailsEmptyState />}
+                {console.log(isAppDeleted)}
+                {isAppDeleted && <AppDetailsEmptyState />}
             </>
         )
     }
