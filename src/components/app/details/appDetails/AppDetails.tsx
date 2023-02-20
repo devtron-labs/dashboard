@@ -118,16 +118,10 @@ export default function AppDetail() {
 
     const renderAppNotConfigured = () => {
         return (
+          otherEnvsResult && !otherEnvsLoading &&
             <>
                 {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && (
-                    <AppNotConfigured
-                        style={{ height: 'calc(100vh - 150px)' }}
-                        image={noGroups}
-                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                        subtitle={'Once deployed, details for the deployment will be available here.'}
-                        buttonTitle={'Go to deploy'}
-                        appConfigTabs={URLS.APP_TRIGGER}
-                    />
+                    <AppNotConfigured/>
                 )}
                 {!params.envId && otherEnvsResult?.result?.length > 0 && (
                     <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
@@ -456,7 +450,14 @@ export const Details: React.FC<{
                         />
                     </div>
                 )}
-                {console.log(isAppDeleted)}
+                {!isAppDeleted  && <AppNotConfigured
+                    style={{ height: 'calc(100vh - 150px)' }}
+                    image={noGroups}
+                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                    subtitle={'Once deployed, details for the deployment will be available here.'}
+                    buttonTitle={'Go to deploy'}
+                    appConfigTabs={URLS.APP_TRIGGER}
+                />}
                 {isAppDeleted && <AppDetailsEmptyState />}
             </>
         )
