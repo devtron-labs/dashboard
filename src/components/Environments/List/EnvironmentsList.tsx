@@ -131,7 +131,7 @@ export default function EnvironmentsList() {
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
-                    placeholder="Search env"
+                    placeholder="Search environment"
                     value={searchText}
                     className="search__input"
                     onChange={handleSearchText}

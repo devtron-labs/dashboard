@@ -149,3 +149,14 @@
 .env-details-page .tab-list__tab-link {
     padding: 0 0 8px 0;
 }
+
+.tab-list__tab-link.active .tab-list__icon path {
+    fill: var(--B500);
+
+}
+
+.tab-list__tab-link:hover path {
+    color: var(--B500);
+    text-decoration: none;
+    fill: var(--B500);
+}

@@ -118,7 +118,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                                 {envData.environment_name}
                             </NavLink>
                         </div>
-                        <div>{envData.namespace}</div>
+                        <div className='dc__truncate-text'>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>
                         <div>
                             {envData.appCount || 0} {GROUP_LIST_HEADER.APPLICATIONS}

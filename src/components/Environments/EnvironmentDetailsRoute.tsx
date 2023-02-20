@@ -14,6 +14,7 @@ import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceList
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
 import { EnvHeaderType } from './EnvironmentGroup.types'
+import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
@@ -111,7 +112,7 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                     linked: false,
                 },
                 environment: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Environments</span>,
+                    component: <span className="cb-5 fs-16 dc__capitalize">Application Groups</span>,
                     linked: true,
                 },
             },
@@ -158,10 +159,11 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={handleConfigClick}
                     >
-                        Configuration
+                        <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
+                        Configurations
                     </NavLink>
                 </li>
             </ul>
