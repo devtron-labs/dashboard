@@ -1135,7 +1135,7 @@ export default function EnvTriggerView() {
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
                     _selectedNode = _cdNode
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.preNode
+                    _selectedNode = _cdNode.postNode
                 }
                 if (_selectedNode) {
                     _selectedAppWorkflowList.push({
@@ -1216,7 +1216,7 @@ export default function EnvTriggerView() {
                     if (!_ciNode[MATERIAL_TYPE.inputMaterialList]) {
                         _ciNode[MATERIAL_TYPE.inputMaterialList] = []
                     }
-                    if (!_ciNode.isLinkedCI || _ciNode.type !== WorkflowNodeType.WEBHOOK) {
+                    if (!_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
                         handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
                     }
                     _selectedAppWorkflowList.push({
