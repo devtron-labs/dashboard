@@ -158,6 +158,7 @@ export default function EnvTriggerView() {
     useEffect(() => {
         if (envId) {
             setPageViewType(ViewType.LOADING)
+            setSelectedAppList([])
             getWorkflowsData()
         }
         return () => {
