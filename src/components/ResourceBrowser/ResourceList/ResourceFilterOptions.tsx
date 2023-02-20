@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { Option } from '../../../components/v2/common/ReactSelect.utils'
@@ -6,11 +6,13 @@ import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, CLUSTER_SELECT_STYLE, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
+import { withShortcut, IWithShortcut } from 'react-keybind'
+import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 
-export default function ResourceFilterOptions({
+function ResourceFilterOptions({
     selectedResource,
     resourceList,
     clusterOptions,
@@ -28,20 +30,41 @@ export default function ResourceFilterOptions({
     clearSearch,
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
-}: ResourceFilterOptionsProps) {
+    shortcut,
+    isCreateModalOpen,
+}: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
     const location = useLocation()
     const { namespace } = useParams<{
         namespace: string
     }>()
+    const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
+    const searchInputRef = useRef<HTMLInputElement>(null)
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Backspace' && searchText.length === 1) {
+    useEffect(() => {
+        if (!isCreateModalOpen) {
+            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
+        }
+
+        return (): void => {
+            shortcut.unregisterShortcut(['r'])
+        }
+    }, [isCreateModalOpen])
+
+    const handleInputShortcut = () => {
+        searchInputRef.current?.focus()
+        setShowShortcutKey(false)
+    }
+
+    const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
+        const _key = e.key
+        if (_key === 'Escape' || _key === 'Esc') {
+            searchInputRef.current?.blur()
+        } else if (_key === 'Backspace' && searchText.length === 0) {
             clearSearch()
         } else {
-            handleFilterChanges(event.target.value, resourceList)
-            setSearchApplied(true)
+            handleFilterChanges(e.currentTarget.value, resourceList)
+            setSearchApplied(!!e.currentTarget.value)
         }
     }
 
@@ -63,39 +86,65 @@ export default function ResourceFilterOptions({
         })
     }
 
+    const focusHandler = (e) => {
+        setShowShortcutKey(e.type === 'focus' ? false : !searchText)
+
+        if (searchInputRef.current?.parentElement) {
+            searchInputRef.current.parentElement.style.border =
+                e.type === 'focus' ? '1px solid var(--B500)' : '1px solid var(--N200)'
+        }
+    }
+
+    const clearSearchInput = () => {
+        clearSearch()
+        searchInputRef.current?.focus()
+    }
+
     return (
         <div
-            className={`flexbox ${
+            className={`resource-filter-options-container flexbox ${
                 hideSearchInput ? 'dc__content-end' : 'dc__content-space'
             } pt-16 pr-20 pb-12 pl-20 w-100`}
         >
             {!hideSearchInput && (
-                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                    <Search className="search__icon icon-dim-18" />
+                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
+                    <Search className="search__icon icon-dim-16" onClick={handleInputShortcut} />
                     <input
+                        ref={searchInputRef}
                         type="text"
                         placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
                         value={searchText}
                         className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
                         onChange={handleOnChangeSearchText}
                         onKeyUp={handleFilterKeyPress}
+                        onFocus={focusHandler}
+                        onBlur={focusHandler}
                         disabled={isSearchInputDisabled}
                     />
                     {searchApplied && (
-                        <button className="search__clear-button" type="button" onClick={clearSearch}>
+                        <button className="search__clear-button" type="button" onClick={clearSearchInput}>
                             <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                         </button>
                     )}
+                    {showShortcutKey && (
+                        <ShortcutKeyBadge
+                            shortcutKey="R"
+                            rootClassName="resource-search-shortcut-key"
+                            onClick={handleInputShortcut}
+                        />
+                    )}
                 </div>
             )}
-            <div className="flex">
+            <div className="resource-filter-options-wrapper flex">
                 <ReactSelect
                     className="w-220"
+                    classNamePrefix="resource-filter-select"
                     placeholder="Select Cluster"
                     options={clusterOptions}
                     value={selectedCluster}
                     onChange={handleClusterChange}
-                    styles={CLUSTER_SELECT_STYLE}
+                    blurInputOnSelect={true}
+                    styles={FILTER_SELECT_COMMON_STYLES}
                     components={{
                         IndicatorSeparator: null,
                         Option: ClusterOptionWithIcon,
@@ -106,6 +155,7 @@ export default function ResourceFilterOptions({
                     <ReactSelect
                         placeholder="Select Namespace"
                         className="w-220 ml-8"
+                        classNamePrefix="resource-filter-select"
                         options={namespaceOptions}
                         value={
                             isNamespaceSelectDisabled
@@ -115,8 +165,9 @@ export default function ResourceFilterOptions({
                                 : NAMESPACE_NOT_APPLICABLE_OPTION
                         }
                         onChange={handleNamespaceChange}
+                        blurInputOnSelect={true}
                         isDisabled={isNamespaceSelectDisabled ?? !selectedResource?.namespaced}
-                        styles={CLUSTER_SELECT_STYLE}
+                        styles={FILTER_SELECT_COMMON_STYLES}
                         components={{
                             IndicatorSeparator: null,
                             Option,
@@ -128,3 +179,5 @@ export default function ResourceFilterOptions({
         </div>
     )
 }
+
+export default withShortcut(ResourceFilterOptions)
