@@ -128,7 +128,7 @@ export default function AppDetail() {
     const renderAppNotConfigured = () => {
         return (
             <>
-                {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && isValidEnvironmentId && (
+                {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && (
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
                         image={noGroups}
