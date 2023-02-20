@@ -36,7 +36,7 @@ export default function EnvConfig() {
         <div className="env-compose">
             <div className="env-compose__nav flex column left top dc__position-rel dc__overflow-scroll">
                 <div className="pt-4 pb-4 w-100">
-                    <div className="cn-6 pl-8 pr-8  fs-12 fw-6 w-100">APPLICATION</div>
+                    <div className="cn-6 pl-8 pr-8 pt-4 pb-4 fs-12 fw-6 w-100">APPLICATIONS</div>
                     {envAppList.map((envData) => (
                         <ApplicationRoute envListData={envData} />
                     ))}
