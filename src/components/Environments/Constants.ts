@@ -117,4 +117,4 @@ export const GROUP_LIST_HEADER = {
     APPLICATIONS: 'Applications'
 }
 
-export const UNAUTHORIZED_CD_MESSAGE = `You don't have access to deploy`
+export const UNAUTHORIZED_CD_MESSAGE = `Not authorized`

@@ -63,14 +63,14 @@ export default function BulkCDTrigger({
 
     const getMaterialData = (): void => {
         const _unauthorizedAppList: Record<number, boolean> = []
-        const _CIMaterialPromiseList = []
+        const _CDMaterialPromiseList = []
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
-                _CIMaterialPromiseList.push(
+                _CDMaterialPromiseList.push(
                     getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
                         .then((r) => {
-                            return { materialList: [], appId: appDetails.appId }
+                            return { materialList: r, appId: appDetails.appId }
                         })
                         .catch((e) => {
                             throw { response: e.response, appId: appDetails.appId }
@@ -78,21 +78,8 @@ export default function BulkCDTrigger({
                 )
             }
         }
-        // const _CIMaterialPromiseList = appList.map((appDetails) => {
-        //     if (!appDetails.warningMessage) {
-        //         _unauthorizedAppList[appDetails.appId] = false
-        //         return getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
-        //             .then((r) => {
-        //                 return { materialList: r, appId: appDetails.appId }
-        //             })
-        //             .catch((e) => {
-        //                 throw [appDetails.appId, e.response]
-        //             })
-        //     }
-        //     return null
-        // })
         const _materialListMap: Record<string, any[]> = {}
-        Promise.allSettled(_CIMaterialPromiseList)
+        Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
@@ -211,7 +198,7 @@ export default function BulkCDTrigger({
     }
 
     const isDeployDisabled = (): boolean => {
-        return appList.every((app) => app.warningMessage)
+        return appList.every((app) => app.warningMessage || !app.material.length)
     }
 
     const renderFooterSection = (): JSX.Element => {
