@@ -7,10 +7,15 @@ import {
 } from '../app/details/triggerView/types'
 import { BulkResponseStatus } from './Constants'
 
-export interface BulkCIDetailType {
+interface BulkTriggerAppDetailType {
     workFlowId: string
     appId: number
     name: string
+    material?: any[]
+    warningMessage?: string
+}
+
+export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     ciPipelineName: string
     ciPipelineId: string
     isFirstTrigger: boolean
@@ -19,17 +24,12 @@ export interface BulkCIDetailType {
     isWebhookCI: boolean
     parentAppId: number
     parentCIPipelineId: number
-    material: any[]
-    warningMessage: string
     errorMessage: string
     hideSearchHeader: boolean
     filteredCIPipelines: any
 }
 
-export interface BulkCDDetailType {
-    workFlowId: string
-    appId: number
-    name: string
+export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
@@ -37,8 +37,6 @@ export interface BulkCDDetailType {
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
-    material?: any[]
-    notFoundMessage?: string
 }
 
 export interface ResponseRowType {
@@ -120,5 +118,14 @@ export interface TriggerResponseModalType {
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
 }
 
-export interface WorkflowNodeSelectionType { id: number; name: string; type: WorkflowNodeType }
-export interface WorkflowAppSelectionType { id: number; name: string; preNodeAvailable: boolean; postNodeAvailable: boolean }
+export interface WorkflowNodeSelectionType {
+    id: number
+    name: string
+    type: WorkflowNodeType
+}
+export interface WorkflowAppSelectionType {
+    id: number
+    name: string
+    preNodeAvailable: boolean
+    postNodeAvailable: boolean
+}

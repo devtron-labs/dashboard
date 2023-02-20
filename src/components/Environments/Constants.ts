@@ -116,3 +116,5 @@ export const GROUP_LIST_HEADER = {
     CLUSTER: 'Cluster',
     APPLICATIONS: 'Applications'
 }
+
+export const UNAUTHORIZED_CD_MESSAGE = `You don't have access to deploy`

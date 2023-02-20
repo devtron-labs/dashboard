@@ -4,11 +4,12 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../Environments.types'
-import { BUTTON_TITLE } from '../../Constants'
+import { BUTTON_TITLE, UNAUTHORIZED_CD_MESSAGE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 
 export default function BulkCDTrigger({
@@ -26,8 +27,10 @@ export default function BulkCDTrigger({
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
-        appList.find((app) => !app.notFoundMessage) || appList[0],
+        appList.find((app) => !app.warningMessage) || appList[0],
     )
+    const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
+
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
@@ -59,16 +62,51 @@ export default function BulkCDTrigger({
     }, [outsideClickHandler])
 
     const getMaterialData = (): void => {
-        const _CIMaterialPromiseList = appList.map((appDetails) =>
-            appDetails.notFoundMessage ? null : getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType),
-        )
+        const _unauthorizedAppList: Record<number, boolean> = []
+        const _CIMaterialPromiseList = []
+        for (const appDetails of appList) {
+            if (!appDetails.warningMessage) {
+                _unauthorizedAppList[appDetails.appId] = false
+                _CIMaterialPromiseList.push(
+                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
+                        .then((r) => {
+                            return { materialList: [], appId: appDetails.appId }
+                        })
+                        .catch((e) => {
+                            throw { response: e.response, appId: appDetails.appId }
+                        }),
+                )
+            }
+        }
+        // const _CIMaterialPromiseList = appList.map((appDetails) => {
+        //     if (!appDetails.warningMessage) {
+        //         _unauthorizedAppList[appDetails.appId] = false
+        //         return getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
+        //             .then((r) => {
+        //                 return { materialList: r, appId: appDetails.appId }
+        //             })
+        //             .catch((e) => {
+        //                 throw [appDetails.appId, e.response]
+        //             })
+        //     }
+        //     return null
+        // })
         const _materialListMap: Record<string, any[]> = {}
-        Promise.all(_CIMaterialPromiseList)
+        Promise.allSettled(_CIMaterialPromiseList)
             .then((responses) => {
-                responses.forEach((res, index) => {
-                    _materialListMap[appList[index]?.appId] = res
+                responses.forEach((response, index) => {
+                    if (response.status === 'fulfilled') {
+                        _materialListMap[response.value['appId']] = response.value['materialList']
+                        delete _unauthorizedAppList[response.value['appId']]
+                    } else {
+                        const errorReason = response.reason
+                        if (errorReason.code === 403) {
+                            _unauthorizedAppList[errorReason['appId']] = true
+                        }
+                    }
                 })
                 updateBulkInputMaterial(_materialListMap)
+                setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
             })
             .catch((error) => {
@@ -98,7 +136,7 @@ export default function BulkCDTrigger({
 
     const changeApp = (e): void => {
         const _selectedApp = appList[e.currentTarget.dataset.index]
-        if (_selectedApp.notFoundMessage) {
+        if (_selectedApp.warningMessage) {
             return
         }
         setSelectedApp(_selectedApp)
@@ -123,15 +161,21 @@ export default function BulkCDTrigger({
                             key={`app-${app.appId}`}
                             className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 ${
                                 app.appId === selectedApp.appId ? 'dc__window-bg' : ''
-                            } ${!app.notFoundMessage && app.appId !== selectedApp.appId ? 'cursor' : ''}`}
+                            } ${!app.warningMessage && app.appId !== selectedApp.appId ? 'cursor' : ''}`}
                             data-index={index}
                             onClick={changeApp}
                         >
                             {app.name}
-                            {app.notFoundMessage && (
+                            {app.warningMessage && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <Error className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {app.notFoundMessage}
+                                    {app.warningMessage}
+                                </span>
+                            )}
+                            {unauthorizedAppList[app.appId] && (
+                                <span className="flex left cy-7 fw-4 fs-12">
+                                    <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
+                                    {UNAUTHORIZED_CD_MESSAGE}
                                 </span>
                             )}
                         </div>
@@ -166,10 +210,14 @@ export default function BulkCDTrigger({
         onClickTriggerBulkCD()
     }
 
+    const isDeployDisabled = (): boolean => {
+        return appList.every((app) => app.warningMessage)
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button className="cta flex h-36" onClick={onClickStartDeploy}>
+                <button className="cta flex h-36" onClick={onClickStartDeploy} disabled={isDeployDisabled()}>
                     {isLoading ? (
                         <Progressing />
                     ) : (

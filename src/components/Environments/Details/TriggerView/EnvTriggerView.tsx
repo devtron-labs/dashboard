@@ -205,8 +205,10 @@ export default function EnvTriggerView() {
                     }
                     for (const node of wf.nodes) {
                         if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
-                            _preNodeExist = !!node.preNode
-                            _postNodeExist = !!node.postNode
+                            _preNodeExist = showPreDeployment || !!node.preNode
+                            _postNodeExist = showPostDeployment || !!node.postNode
+                            _currentAppDetail.preNodeAvailable = !!node.preNode
+                            _currentAppDetail.postNodeAvailable = !!node.postNode
                             break
                         }
                     }
@@ -1149,19 +1151,19 @@ export default function EnvTriggerView() {
                         material: _selectedNode.inputMaterialList,
                     })
                 } else {
-                    let notFoundMessage = ''
+                    let warningMessage = ''
                     if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                        notFoundMessage = 'No pre-deployment stage'
+                        warningMessage = 'No pre-deployment stage'
                     } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                        notFoundMessage = 'No deployment stage'
+                        warningMessage = 'No deployment stage'
                     } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                        notFoundMessage = 'No post-deployment stage'
+                        warningMessage = 'No post-deployment stage'
                     }
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
                         appId: wf.appId,
                         name: wf.name,
-                        notFoundMessage: notFoundMessage,
+                        warningMessage: warningMessage,
                         envName: _cdNode.environmentName,
                     })
                 }
@@ -1514,7 +1516,10 @@ export default function EnvTriggerView() {
         )
     }
     return (
-        <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px', minHeight: 'calc( 100vh - 77px)' }}>
+        <div
+            className="svg-wrapper-trigger"
+            style={{ paddingBottom: selectedAppList.length ? '68px' : '16px', minHeight: 'calc( 100vh - 77px)' }}
+        >
             <TriggerViewContext.Provider
                 value={{
                     invalidateCache: invalidateCache,
