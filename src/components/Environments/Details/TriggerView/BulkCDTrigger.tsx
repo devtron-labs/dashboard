@@ -65,7 +65,7 @@ export default function BulkCDTrigger({
     }, [outsideClickHandler])
 
     const getMaterialData = (): void => {
-        const _unauthorizedAppList: Record<number, boolean> = []
+        const _unauthorizedAppList: Record<number, boolean> = {}
         const _CDMaterialPromiseList = []
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
