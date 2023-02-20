@@ -374,7 +374,7 @@ export default function BulkCITrigger({
                             type="checkbox"
                             className="mt-0-imp cursor"
                             data-app-id={selectedApp.appId}
-                            checked={appIgnoreCache?.[selectedApp.appId]}
+                            checked={appIgnoreCache?.[selectedApp.ciPipelineId]}
                             id={`chkValidate-${selectedApp.appId}`}
                             onChange={handleChange}
                         />

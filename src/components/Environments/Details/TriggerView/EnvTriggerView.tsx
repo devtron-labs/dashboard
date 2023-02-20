@@ -905,14 +905,14 @@ export default function EnvTriggerView() {
     }
 
     const hideBulkCIModal = () => {
-        if (!isLoading) {
+        if (!loader) {
             setShowBulkCIModal(false)
             setResponseList([])
         }
     }
 
     const onShowBulkCIModal = () => {
-        setLoading(true)
+        setLoader(true)
         setShowBulkCIModal(true)
     }
 
@@ -1346,8 +1346,8 @@ export default function EnvTriggerView() {
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
                 responseList={responseList}
-                isLoading={isLoading}
-                setLoading={setLoading}
+                isLoading={loader}
+                setLoading={setLoader}
             />
         )
     }
@@ -1436,7 +1436,7 @@ export default function EnvTriggerView() {
         return (
             <div className="flex dc__min-width-fit-content">
                 <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
-                    {isLoading ? <Progressing /> : 'Build image'}
+                    {loader ? <Progressing /> : 'Build image'}
                 </button>
                 <button
                     className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
