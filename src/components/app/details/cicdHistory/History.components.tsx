@@ -111,7 +111,7 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
                 <img src={imgSrc ?? AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4>{title}</h4>
+                <h4 className="fw-6 w-300 dc__text-center lh-1-4">{title}</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
             {link && (

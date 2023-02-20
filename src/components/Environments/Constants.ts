@@ -78,6 +78,21 @@ export const BULK_CI_MESSAGING = {
     },
 }
 
+export const BULK_CD_MESSAGING = {
+    emptyPreDeploy: {
+        title: 'does not have a pre-deployment stage',
+        subTitle: 'This app does not have a pre-deployment stage',
+    },
+    emptyPostDeploy: {
+        title: 'does not have a post-deployment stage',
+        subTitle: 'This app does not have a post-deployment stage',
+    },
+    unauthorized: {
+        title: 'Not authorized',
+        subTitle: `You don't have permission to perform this action`,
+    },
+}
+
 export const EMPTY_LIST_MESSAGING = {
     TITLE: 'No applications available',
     SUBTITLE: 'You don’t have access to any application in this app group.',
@@ -107,14 +122,12 @@ export const ENV_APP_GROUP_GA_EVENTS = {
     ConfigurationClicked: {
         category: 'Configuration',
         action: 'Configuration Clicked',
-    }
+    },
 }
 
 export const GROUP_LIST_HEADER = {
     ENVIRONMENT: 'Environment',
     NAMESPACE: 'Namespace',
     CLUSTER: 'Cluster',
-    APPLICATIONS: 'Applications'
+    APPLICATIONS: 'Applications',
 }
-
-export const UNAUTHORIZED_CD_MESSAGE = `Not authorized`

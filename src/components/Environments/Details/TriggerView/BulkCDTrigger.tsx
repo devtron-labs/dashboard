@@ -5,12 +5,15 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
+import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
+import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../Environments.types'
-import { BUTTON_TITLE, UNAUTHORIZED_CD_MESSAGE } from '../../Constants'
+import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
+import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 
 export default function BulkCDTrigger({
     stage,
@@ -122,11 +125,26 @@ export default function BulkCDTrigger({
     }
 
     const changeApp = (e): void => {
-        const _selectedApp = appList[e.currentTarget.dataset.index]
-        if (_selectedApp.warningMessage) {
-            return
+        setSelectedApp(appList[e.currentTarget.dataset.index])
+    }
+
+    const renderEmptyView = (): JSX.Element => {
+        if (unauthorizedAppList[selectedApp.appId]) {
+            return (
+                <EmptyView
+                    imgSrc={notAuthorized}
+                    title={BULK_CD_MESSAGING.unauthorized.title}
+                    subTitle={BULK_CD_MESSAGING.unauthorized.subTitle}
+                />
+            )
         }
-        setSelectedApp(_selectedApp)
+        return (
+            <EmptyView
+                imgSrc={emptyPreDeploy}
+                title={`${selectedApp.name}  ${BULK_CD_MESSAGING.emptyPreDeploy.title}`}
+                subTitle={BULK_CD_MESSAGING.emptyPreDeploy.subTitle}
+            />
+        )
     }
 
     const renderBodySection = (): JSX.Element => {
@@ -146,9 +164,9 @@ export default function BulkCDTrigger({
                     {appList.map((app, index) => (
                         <div
                             key={`app-${app.appId}`}
-                            className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 ${
+                            className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor ${
                                 app.appId === selectedApp.appId ? 'dc__window-bg' : ''
-                            } ${!app.warningMessage && app.appId !== selectedApp.appId ? 'cursor' : ''}`}
+                            }`}
                             data-index={index}
                             onClick={changeApp}
                         >
@@ -162,32 +180,36 @@ export default function BulkCDTrigger({
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {UNAUTHORIZED_CD_MESSAGE}
+                                    {BULK_CD_MESSAGING.emptyPreDeploy.title}
                                 </span>
                             )}
                         </div>
                     ))}
                 </div>
                 <div className="main-content dc__window-bg dc__height-inherit">
-                    <CDMaterial
-                        appId={selectedApp.appId}
-                        pipelineId={+selectedApp.cdPipelineId}
-                        stageType={selectedApp.stageType}
-                        material={_material}
-                        materialType={MATERIAL_TYPE.inputMaterialList}
-                        envName={selectedApp.envName}
-                        isLoading={isLoading}
-                        changeTab={changeTab}
-                        triggerDeploy={onClickStartDeploy}
-                        onClickRollbackMaterial={noop}
-                        closeCDModal={closePopup}
-                        selectImage={selectImage}
-                        toggleSourceInfo={toggleSourceInfo}
-                        parentPipelineId={selectedApp.parentPipelineId}
-                        parentPipelineType={selectedApp.parentPipelineType}
-                        parentEnvironmentName={selectedApp.parentEnvironmentName}
-                        isFromBulkCD={true}
-                    />
+                    {selectedApp.warningMessage || unauthorizedAppList[selectedApp.appId] ? (
+                        renderEmptyView()
+                    ) : (
+                        <CDMaterial
+                            appId={selectedApp.appId}
+                            pipelineId={+selectedApp.cdPipelineId}
+                            stageType={selectedApp.stageType}
+                            material={_material}
+                            materialType={MATERIAL_TYPE.inputMaterialList}
+                            envName={selectedApp.envName}
+                            isLoading={isLoading}
+                            changeTab={changeTab}
+                            triggerDeploy={onClickStartDeploy}
+                            onClickRollbackMaterial={noop}
+                            closeCDModal={closePopup}
+                            selectImage={selectImage}
+                            toggleSourceInfo={toggleSourceInfo}
+                            parentPipelineId={selectedApp.parentPipelineId}
+                            parentPipelineType={selectedApp.parentPipelineType}
+                            parentEnvironmentName={selectedApp.parentEnvironmentName}
+                            isFromBulkCD={true}
+                        />
+                    )}
                 </div>
             </div>
         )
