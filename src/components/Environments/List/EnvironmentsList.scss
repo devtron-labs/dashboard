@@ -146,6 +146,9 @@
     }
 }
 
-.env-details-page .tab-list__tab-link {
+.env-details-page {
+  height: calc(100vh - 77px);
+  .tab-list__tab-link {
     padding: 0 0 8px 0;
+}
 }

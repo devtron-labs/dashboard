@@ -1514,7 +1514,7 @@ export default function EnvTriggerView() {
         )
     }
     return (
-        <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}>
+        <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px', minHeight: 'calc( 100vh - 77px)' }}>
             <TriggerViewContext.Provider
                 value={{
                     invalidateCache: invalidateCache,
