@@ -73,9 +73,7 @@ export default function EnvironmentOverview() {
                 key={`${item.application}-${index}`}
                 className="app-deployments-info-row display-grid dc__align-items-center"
             >
-                <Link to={`${URLS.APP}/${item.appId}/details/${envId}/`} target="_blank" className="fs-13">
-                    {item.application}
-                </Link>
+                <span className="fs-13 fw-4 cn-7">{item.application}</span>
                 <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
                 <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} />
                 <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>

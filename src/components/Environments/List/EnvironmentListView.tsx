@@ -90,6 +90,17 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
         )
     }
 
+    const renderApplicationCount = (envData) => {
+        return (
+            <div>
+                {envData.appCount || 0}&nbsp;
+                {envData.appCount == 0 || envData.appCount == 1
+                    ? GROUP_LIST_HEADER.APPLICATION
+                    : GROUP_LIST_HEADER.APPLICATIONS}
+            </div>
+        )
+    }
+
     return filteredEnvList.length === 0 || loading ? (
         <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
             {renderEmptyLoader()}
@@ -120,9 +131,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                         </div>
                         <div className='dc__truncate-text'>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>
-                        <div>
-                            {envData.appCount || 0} {GROUP_LIST_HEADER.APPLICATIONS}
-                        </div>
+                        {renderApplicationCount(envData)}
                     </div>
                 ))}
             </div>
