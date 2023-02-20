@@ -4,7 +4,7 @@ import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 
 import ReactSelect from 'react-select'
 import { Option, DropdownIndicator } from '../../../v2/common/ReactSelect.utils'
 import moment from 'moment'
-import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
+import { Moment12HourFormat, SourceTypeMap, URLS } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import {
     CICDSidebarFilterOptionType,
@@ -27,6 +27,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
+
     const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
         if (type === HistoryComponentType.CI) {
             setPagination({ offset: 0, size: 20 })
@@ -45,7 +46,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
-    const selectedFilter = filterOptions?.find(
+    const selectedFilter = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest )?.find(
         (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
     )
 
@@ -110,16 +111,17 @@ const HistorySummaryCard = React.memo(
         type,
         stage,
     }: HistorySummaryCardType): JSX.Element => {
-        const { path, url } = useRouteMatch()
+        const match = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
-        const { triggerId, ...rest } = useParams<{ triggerId: string }>()
+        const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
 
         const getPath = (): string => {
             if (type === HistoryComponentType.CD) {
-                return generatePath(path, { ...rest, triggerId: id }) + '/' + currentTab
-            } else {
-                return generatePath(path, { ...rest, buildId: id }) + '/' + currentTab
+                return generatePath(match.path, { ...rest, triggerId: id }) + '/' + currentTab
+              }
+             else {
+                return generatePath(match.path, { ...rest, buildId: id }) + '/' + currentTab
             }
         }
 
