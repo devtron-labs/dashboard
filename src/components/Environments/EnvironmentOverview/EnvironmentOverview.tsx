@@ -15,7 +15,7 @@ export default function EnvironmentOverview() {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, response] = useAsync(
-        () => Promise.all([getAppList({ environments: [+envId], size: 20 }), getDeploymentStatus(+envId)]),
+        () => Promise.all([getAppList({ environments: [+envId]}), getDeploymentStatus(+envId)]),
         [envId],
     )
 
@@ -55,7 +55,7 @@ export default function EnvironmentOverview() {
                 parsedData.appInfoList.push(appInfo)
             })
         })
-
+        parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
         setAppListData(parsedData)
     }
 
@@ -73,7 +73,7 @@ export default function EnvironmentOverview() {
                 key={`${item.application}-${index}`}
                 className="app-deployments-info-row display-grid dc__align-items-center"
             >
-                <Link to={`${URLS.APP}/${item.appId}/details/${envId}/`} className="fs-13">
+                <Link to={`${URLS.APP}/${item.appId}/details/${envId}/`} target="_blank" className="fs-13">
                     {item.application}
                 </Link>
                 <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />

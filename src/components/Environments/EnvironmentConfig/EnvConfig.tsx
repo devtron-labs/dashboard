@@ -27,7 +27,7 @@ export default function EnvConfig() {
     if (loading) {
         return (
             <div className="loading-state">
-                <Progressing />
+                <Progressing pageLoader />
             </div>
         )
     }

@@ -20,7 +20,7 @@ export default function EnvironmentDetailsRoute() {
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
     const [showEmpty, setShowEmpty] = useState<boolean>(true)
-    const [loading, envList] = useAsync(() => getEnvAppList({ size: '1000' }), [])
+    const [loading, envList] = useAsync(getEnvAppList, [])
 
     useEffect(() => {
         if (envList?.result) {
@@ -30,19 +30,22 @@ export default function EnvironmentDetailsRoute() {
         }
     }, [envList])
 
+    const renderEmptyAndLoading = () => {
+        if(loading){
+            return <Progressing pageLoader />
+        }
+        return <ResourceListEmptyState
+        imgSource={EmptyFolder}
+        title={EMPTY_LIST_MESSAGING.TITLE}
+        subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+    />
+    }
+
     const renderRoute = () => {
         if (showEmpty)
             return (
-                <div className="empty-state flex w-100">
-                    {loading ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <ResourceListEmptyState
-                            imgSource={EmptyFolder}
-                            title={EMPTY_LIST_MESSAGING.TITLE}
-                            subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
-                        />
-                    )}
+                <div className="env-empty-state flex w-100">
+                   {renderEmptyAndLoading()}
                 </div>
             )
         return (

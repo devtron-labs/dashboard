@@ -77,17 +77,20 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
         }
     }
 
+    const renderEmptyLoader = () => {
+        if(loading){
+            return  <Progressing pageLoader />
+        }
+        return <EnvEmptyStates
+                title={emptyStateData.title}
+                subTitle={emptyStateData.subTitle}
+                actionHandler={removeAllFilters}
+            />
+    }
+
     return filteredEnvList.length === 0 || loading ? (
         <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
-            {loading ? (
-                <Progressing />
-            ) : (
-                <EnvEmptyStates
-                    title={emptyStateData.title}
-                    subTitle={emptyStateData.subTitle}
-                    actionHandler={removeAllFilters}
-                />
-            )}
+            {renderEmptyLoader()}
         </div>
     ) : (
         <>

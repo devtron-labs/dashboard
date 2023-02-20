@@ -115,6 +115,7 @@ export default function EnvironmentsList() {
         const queryParams = new URLSearchParams(location.search)
         queryParams.delete('cluster')
         queryParams.delete('search')
+        queryParams.set('offset', '0')
         setSearchApplied(false)
         setSearchText('')
         history.push(`${match.path}?${queryParams.toString()}`)

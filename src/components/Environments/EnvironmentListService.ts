@@ -24,11 +24,14 @@ export const getEnvAppList = (params?: {
     offset?: string
     size?: string
 }): Promise<EnvAppType> => {
-    const urlParams = Object.entries(params).map(([key, value]) => {
-        if (!value) return
-        return `${key}=${value}`
-    })
-    return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
+    if(params){
+        const urlParams = Object.entries(params).map(([key, value]) => {
+            if (!value) return
+            return `${key}=${value}`
+        })
+        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
+    }
+    return  get(Routes.ENVIRONMENT_APPS)
 }
 
 export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusType> => {
