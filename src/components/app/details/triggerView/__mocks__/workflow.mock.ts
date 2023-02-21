@@ -496,6 +496,7 @@ export const workflow = {
 export const workflowsTrigger = [
     {
         id: '92',
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -536,7 +537,7 @@ export const workflowsTrigger = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -564,8 +565,8 @@ export const workflowsTrigger = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -585,6 +586,7 @@ export const workflowsTrigger = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -625,7 +627,7 @@ export const workflowsTrigger = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -653,8 +655,8 @@ export const workflowsTrigger = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -682,8 +684,8 @@ export const workflowsTrigger = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 175,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -691,7 +693,7 @@ export const workflowsTrigger = [
         ],
         startX: 0,
         startY: 0,
-        height: 325,
+        height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -707,6 +709,7 @@ export const workflowsCreate = [
     {
         id: '92',
         name: 'first',
+        appId: 80,
         nodes: [
             {
                 parents: [],
@@ -746,7 +749,7 @@ export const workflowsCreate = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -774,8 +777,8 @@ export const workflowsCreate = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -795,6 +798,7 @@ export const workflowsCreate = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -835,7 +839,7 @@ export const workflowsCreate = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -863,8 +867,8 @@ export const workflowsCreate = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 postNode: undefined,
                 preNode: undefined,
@@ -892,8 +896,8 @@ export const workflowsCreate = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 113,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -901,7 +905,7 @@ export const workflowsCreate = [
         ],
         startX: 0,
         startY: 0,
-        height: 201,
+        height: 112,
         width: 840,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -916,6 +920,7 @@ export const workflowsCreate = [
 export const workflowsTriggerPrePostCD = [
     {
         id: '92',
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -956,7 +961,7 @@ export const workflowsTriggerPrePostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['PRECD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -981,8 +986,8 @@ export const workflowsTriggerPrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
             },
             {
@@ -1008,8 +1013,8 @@ export const workflowsTriggerPrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 2,
-                x: 800,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: {
                     parents: ['96'],
@@ -1031,8 +1036,8 @@ export const workflowsTriggerPrePostCD = [
                     inputMaterialList: [],
                     rollbackMaterialList: [],
                     stageIndex: 1,
-                    x: 540,
-                    y: 24,
+                    x: 0,
+                    y: 0,
                     isRoot: false,
                 },
                 postNode: {
@@ -1055,8 +1060,8 @@ export const workflowsTriggerPrePostCD = [
                     inputMaterialList: [],
                     rollbackMaterialList: [],
                     stageIndex: 3,
-                    x: 1060,
-                    y: 24,
+                    x: 0,
+                    y: 0,
                     isRoot: false,
                 },
             },
@@ -1080,8 +1085,8 @@ export const workflowsTriggerPrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 3,
-                x: 1060,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
             },
         ],
@@ -1099,6 +1104,7 @@ export const workflowsTriggerPrePostCD = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -1139,7 +1145,7 @@ export const workflowsTriggerPrePostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -1167,8 +1173,8 @@ export const workflowsTriggerPrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1196,8 +1202,8 @@ export const workflowsTriggerPrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 175,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1205,7 +1211,7 @@ export const workflowsTriggerPrePostCD = [
         ],
         startX: 0,
         startY: 0,
-        height: 325,
+        height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -1220,6 +1226,7 @@ export const workflowsTriggerPrePostCD = [
 export const workflowsCreatePrePostCD = [
     {
         id: '92',
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -1260,7 +1267,7 @@ export const workflowsCreatePrePostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -1288,8 +1295,8 @@ export const workflowsCreatePrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 2,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1309,6 +1316,7 @@ export const workflowsCreatePrePostCD = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -1349,7 +1357,7 @@ export const workflowsCreatePrePostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -1377,8 +1385,8 @@ export const workflowsCreatePrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1406,8 +1414,8 @@ export const workflowsCreatePrePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 113,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1415,7 +1423,7 @@ export const workflowsCreatePrePostCD = [
         ],
         startX: 0,
         startY: 0,
-        height: 201,
+        height: 112,
         width: 840,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -1654,6 +1662,7 @@ export const cdConfigPreResp = {
 export const workflowsTriggerPreCDResp = [
     {
         id: '92',
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -1694,7 +1703,7 @@ export const workflowsTriggerPreCDResp = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['PRECD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -1719,8 +1728,8 @@ export const workflowsTriggerPreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
             },
             {
@@ -1746,8 +1755,8 @@ export const workflowsTriggerPreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 2,
-                x: 800,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: {
                     parents: ['96'],
@@ -1769,8 +1778,8 @@ export const workflowsTriggerPreCDResp = [
                     inputMaterialList: [],
                     rollbackMaterialList: [],
                     stageIndex: 1,
-                    x: 540,
-                    y: 24,
+                    x: 0,
+                    y: 0,
                     isRoot: false,
                 },
                 postNode: undefined,
@@ -1790,6 +1799,7 @@ export const workflowsTriggerPreCDResp = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -1830,7 +1840,7 @@ export const workflowsTriggerPreCDResp = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -1858,8 +1868,8 @@ export const workflowsTriggerPreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1887,8 +1897,8 @@ export const workflowsTriggerPreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 175,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -1896,7 +1906,7 @@ export const workflowsTriggerPreCDResp = [
         ],
         startX: 0,
         startY: 0,
-        height: 325,
+        height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -1911,6 +1921,7 @@ export const workflowsTriggerPreCDResp = [
 export const workflowsCreatePreCDResp = [
     {
         id: '92',
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -1951,7 +1962,7 @@ export const workflowsCreatePreCDResp = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -1979,8 +1990,8 @@ export const workflowsCreatePreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 2,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2000,6 +2011,7 @@ export const workflowsCreatePreCDResp = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -2040,7 +2052,7 @@ export const workflowsCreatePreCDResp = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -2068,8 +2080,8 @@ export const workflowsCreatePreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2097,8 +2109,8 @@ export const workflowsCreatePreCDResp = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 113,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2106,7 +2118,7 @@ export const workflowsCreatePreCDResp = [
         ],
         startX: 0,
         startY: 0,
-        height: 201,
+        height: 112,
         width: 840,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -2121,6 +2133,7 @@ export const workflowsCreatePreCDResp = [
 export const workflowsCreatePostCD = [
     {
         id: '92',
+        appId:80,
         name: 'first',
         nodes: [
             {
@@ -2161,7 +2174,7 @@ export const workflowsCreatePostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -2189,8 +2202,8 @@ export const workflowsCreatePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2210,6 +2223,7 @@ export const workflowsCreatePostCD = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -2250,7 +2264,7 @@ export const workflowsCreatePostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -2278,8 +2292,8 @@ export const workflowsCreatePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2307,8 +2321,8 @@ export const workflowsCreatePostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 580,
-                y: 113,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2316,7 +2330,7 @@ export const workflowsCreatePostCD = [
         ],
         startX: 0,
         startY: 0,
-        height: 201,
+        height: 112,
         width: 840,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [
@@ -2331,6 +2345,7 @@ export const workflowsCreatePostCD = [
 export const workflowsTriggerPostCD = [
     {
         id: '92',
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -2371,7 +2386,7 @@ export const workflowsTriggerPostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-79'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -2399,8 +2414,8 @@ export const workflowsTriggerPostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: {
@@ -2423,8 +2438,8 @@ export const workflowsTriggerPostCD = [
                     inputMaterialList: [],
                     rollbackMaterialList: [],
                     stageIndex: 2,
-                    x: 800,
-                    y: 24,
+                    x: 0,
+                    y: 0,
                     isRoot: false,
                 },
             },
@@ -2448,8 +2463,8 @@ export const workflowsTriggerPostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 2,
-                x: 800,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
             },
         ],
@@ -2467,6 +2482,7 @@ export const workflowsTriggerPostCD = [
     },
     {
         id: '93',
+        appId: 80,
         name: 'external ci',
         nodes: [
             {
@@ -2507,7 +2523,7 @@ export const workflowsTriggerPostCD = [
                 status: DEFAULT_STATUS,
                 type: 'CI',
                 inputMaterialList: [],
-                downstreams: ['CD-92', 'CD-94'],
+                downstreams: [],
                 isExternalCI: false,
                 isLinkedCI: false,
                 linkedCount: 0,
@@ -2535,8 +2551,8 @@ export const workflowsTriggerPostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 24,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2564,8 +2580,8 @@ export const workflowsTriggerPostCD = [
                 inputMaterialList: [],
                 rollbackMaterialList: [],
                 stageIndex: 1,
-                x: 540,
-                y: 175,
+                x: 0,
+                y: 0,
                 isRoot: false,
                 preNode: undefined,
                 postNode: undefined,
@@ -2573,7 +2589,7 @@ export const workflowsTriggerPostCD = [
         ],
         startX: 0,
         startY: 0,
-        height: 325,
+        height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: 80,
         gitMaterials: [

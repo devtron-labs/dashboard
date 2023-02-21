@@ -122,7 +122,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                         </span>
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
-                                to={`/environment/${envData.id}`}
+                                to={`/application-group/${envData.id}`}
                                 data-noapp={!envData.appCount}
                                 onClick={handleClusterClick}
                             >

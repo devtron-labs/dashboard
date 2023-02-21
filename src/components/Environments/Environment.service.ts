@@ -81,6 +81,7 @@ const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowTy
             node.downstreams = []
             if (!!node.postNode) {
                 node.downstreams = [`${WorkflowNodeType.POST_CD}-${node.id}`]
+                node.postNode.downstreams = []
             }
             const finalNodes = [node]
             while (node) {

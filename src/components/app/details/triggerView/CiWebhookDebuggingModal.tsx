@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service';
 import { getCIPipelineURL, Pagination, Progressing, showError, sortCallback, stopPropagation } from '../../../common';
 import { Moment12HourFormat } from '../../../../config';
@@ -18,11 +18,19 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
     const [expandIncomingPayload, setExpandedIncomingPayload] = useState(false)
     const [webhookIncomingPayloadRes, setWebhookIncomingPayloadRes] = useState(undefined)
     const [parsedDataId, setParsedDataId] = useState(0)
+    const location = useLocation()
 
     const history = useHistory()
     const onEditShowEditableCiModal = (ciPipelineId, workflowId) => {
         if (fromAppGrouping) {
-            window.open(getCIPipelineURL(appId, workflowId, true, ciPipelineId), '_blank', 'noreferrer')
+            window.open(
+                window.location.href.replace(
+                    location.pathname,
+                    getCIPipelineURL(appId, workflowId, true, ciPipelineId),
+                ),
+                '_blank',
+                'noreferrer',
+            )
         } else {
             history.push(`edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}`)
         }

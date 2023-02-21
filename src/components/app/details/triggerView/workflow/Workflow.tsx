@@ -21,7 +21,11 @@ export class Workflow extends Component<WorkflowProps> {
                 node.downstreams[0].split('-')[1],
             )
             if (this.props.fromAppGrouping) {
-                window.open(ciPipelineURL, '_blank', 'noreferrer')
+                window.open(
+                    window.location.href.replace(this.props.location.pathname, ciPipelineURL),
+                    '_blank',
+                    'noreferrer',
+                )
             } else {
                 this.props.history.push(ciPipelineURL)
             }
