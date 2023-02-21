@@ -1,38 +1,33 @@
 import { TabsDataType } from './DynamicTabs.type'
 
 export const COMMON_TABS_SELECT_STYLES = {
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        padding: 0,
-        marginRight: '1px',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    }),
-    container: (base) => ({
-        ...base,
-        marginLeft: '8px',
-    }),
-    valueContainer: () => ({
-        height: '0px',
-    }),
-    singleValue: () => ({
-        display: 'none',
-    }),
     control: (base) => ({
         ...base,
-        cursor: 'pointer',
-        width: '24px',
-        minHeight: '24px',
+        borderRadius: '4px 4px 0 0',
+        borderBottom: 'none',
+        boxShadow: 'none',
+        cursor: 'text',
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: '2px 32px',
     }),
     menu: (base) => ({
         ...base,
-        width: '300px',
-        zIndex: 9,
+        marginTop: 0,
+        borderRadius: '0 0 4px 4px',
+        width: '298px',
+        marginLeft: '1px',
+        overflow: 'hidden',
     }),
     menuList: (base) => ({
         ...base,
-        width: '300px',
-        zIndex: 9,
+        maxHeight: 'calc(100vh - 200px)',
+        paddingTop: 0,
+    }),
+    noOptionsMessage: (base) => ({
+        ...base,
+        color: 'var(--N600)',
     }),
 }
 
@@ -75,14 +70,16 @@ export const computeAndToggleMoreOptions = (
     tabsSectionRef: React.MutableRefObject<HTMLDivElement>,
     fixedContainerRef: React.MutableRefObject<HTMLDivElement>,
     dynamicWrapperRef: React.MutableRefObject<HTMLUListElement>,
+    isMenuOpen: boolean,
+    setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-    const moreButtonEle = tabsSectionRef.current?.querySelector('.more-tabs-option')
+    const moreButtonEle = tabsSectionRef.current?.querySelector('.more-tabs-wrapper')
     if (!tabsSectionRef.current || !fixedContainerRef.current || !dynamicWrapperRef.current || !moreButtonEle) {
         return
     }
 
     const primaryItems = dynamicWrapperRef.current.querySelectorAll('li') as NodeListOf<HTMLLIElement>
-    let stopWidth = 0
+    let stopWidth = 0 // init with more options button width
     const hiddenItems = []
     const primaryWidth = tabsSectionRef.current.offsetWidth - fixedContainerRef.current.offsetWidth
 
@@ -100,5 +97,9 @@ export const computeAndToggleMoreOptions = (
         moreButtonEle.classList.add('hide-more-tabs-option')
     } else {
         moreButtonEle.classList.remove('hide-more-tabs-option')
+
+        if (isMenuOpen) {
+            setIsMenuOpen(false)
+        }
     }
 }

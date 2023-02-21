@@ -1,10 +1,12 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, stopPropagation } from '../helpers/Helpers'
 import './DynamicTabs.scss'
-import ReactSelect, { components } from 'react-select'
+import ReactSelect, { components, GroupBase, InputActionMeta } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import {
     COMMON_TABS_SELECT_STYLES,
@@ -12,7 +14,9 @@ import {
     EMPTY_TABS_DATA,
     initTabsData,
 } from './DynamicTabs.utils'
-import { TabsDataType } from './DynamicTabs.type'
+import { DynamicTabsProps, DynamicTabType, TabsDataType } from './DynamicTabs.type'
+import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
+import Select from 'react-select/dist/declarations/src/Select'
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -23,18 +27,21 @@ import { TabsDataType } from './DynamicTabs.type'
  *
  * Note: To be used with useTabs hook
  */
-export function DynamicTabs({ tabs, removeTabByIdentifier }) {
+export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     const { push } = useHistory()
-    const [selectedTab, setSelectedTab] = useState(null)
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
     const dynamicWrapperRef = useRef<HTMLUListElement>(null)
+    const moreButtonRef = useRef<Select<DynamicTabType, false, GroupBase<DynamicTabType>>>(null)
     const tabRef = useRef<HTMLAnchorElement>(null)
     const [tabsData, setTabsData] = useState<TabsDataType>(EMPTY_TABS_DATA)
+    const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
+    const [tabSearchText, setTabSearchText] = useState('')
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     useEffect(() => {
         const resizeHandler = () => {
-            computeAndToggleMoreOptions(tabsSectionRef, fixedContainerRef, dynamicWrapperRef)
+            computeAndToggleMoreOptions(tabsSectionRef, fixedContainerRef, dynamicWrapperRef, isMenuOpen, setIsMenuOpen)
         }
 
         window.addEventListener('resize', resizeHandler)
@@ -49,7 +56,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
 
     useEffect(() => {
         if (tabsData.fixedTabs.length > 0 || tabsData.dynamicTabs.length > 0) {
-            computeAndToggleMoreOptions(tabsSectionRef, fixedContainerRef, dynamicWrapperRef)
+            computeAndToggleMoreOptions(tabsSectionRef, fixedContainerRef, dynamicWrapperRef, isMenuOpen, setIsMenuOpen)
         }
     }, [tabsData])
 
@@ -152,6 +159,8 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
         )
     }
 
+    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+
     const TabsOption = (props) => {
         const { selectProps, data } = props
         selectProps.styles.option = getCustomOptionSelectionStyle({
@@ -160,7 +169,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
         })
 
         const splittedLabel = data.label.split('/')
-        const regex = new RegExp(splittedLabel[0], 'gi')
+        const regex = new RegExp(tabSearchText, 'gi')
 
         return (
             <div onClick={stopPropagation}>
@@ -169,16 +178,14 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
                         <small
                             className="cn-7"
                             dangerouslySetInnerHTML={{
-                                // __html: splittedLabel[0].replace(regex, highLightText),
-                                __html: splittedLabel[0],
+                                __html: splittedLabel[0].replace(regex, highLightText),
                             }}
                         />
                         {splittedLabel[1] && (
                             <div
                                 className="w-100 dc__ellipsis-right"
                                 dangerouslySetInnerHTML={{
-                                    // __html: splittedLabel[1].replace(regex, highLightText),
-                                    __html: splittedLabel[1],
+                                    __html: splittedLabel[1].replace(regex, highLightText),
                                 }}
                             />
                         )}
@@ -191,9 +198,45 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
         )
     }
 
-    const onChangeTab = (option): void => {
-        setSelectedTab(option)
-        push(option.url)
+    const handleOnChangeSearchText = (newValue: string, actionMeta: InputActionMeta) => {
+        if ((actionMeta.action === 'input-blur' || actionMeta.action === 'menu-close') && actionMeta.prevInputValue) {
+            setTabSearchText(actionMeta.prevInputValue)
+        } else {
+            setTabSearchText(newValue)
+        }
+    }
+
+    const focusSearchTabInput = () => {
+        moreButtonRef.current?.inputRef?.focus()
+    }
+
+    const clearSearchInput = () => {
+        setTabSearchText('')
+        focusSearchTabInput()
+    }
+
+    const onChangeTab = (option: DynamicTabType): void => {
+        if (option) {
+            setSelectedTab(option)
+            setIsMenuOpen(false)
+            push(option.url)
+        }
+    }
+
+    const toggleMenu = () => {
+        setIsMenuOpen((isOpen) => !isOpen)
+
+        if (isMenuOpen && tabSearchText) {
+            setTabSearchText('')
+        }
+    }
+
+    const closeMenu = () => {
+        setIsMenuOpen(false)
+
+        if (tabSearchText) {
+            setTabSearchText('')
+        }
     }
 
     return (
@@ -219,20 +262,40 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
                     {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                 </ul>
             </div>
-            <ReactSelect
-                className="more-tabs-option"
-                value={selectedTab}
-                placeholder=""
-                options={tabsData.dynamicTabs}
-                isSearchable={false}
-                onChange={onChangeTab}
-                blurInputOnSelect={true}
-                components={{
-                    IndicatorSeparator: null,
-                    Option: TabsOption,
-                }}
-                styles={COMMON_TABS_SELECT_STYLES}
-            />
+            <MoreButtonWrapper isMenuOpen={isMenuOpen} onClose={closeMenu} toggleMenu={toggleMenu}>
+                <div className="more-tabs__search-icon icon-dim-16 cursor-text" onClick={focusSearchTabInput}>
+                    <SearchIcon className="icon-dim-16" />
+                </div>
+                <ReactSelect
+                    ref={moreButtonRef}
+                    placeholder="Search tabs"
+                    classNamePrefix="tab-search-select"
+                    options={tabsData.dynamicTabs}
+                    value={selectedTab}
+                    inputValue={tabSearchText}
+                    onChange={onChangeTab}
+                    onInputChange={handleOnChangeSearchText}
+                    tabSelectsValue={false}
+                    backspaceRemovesValue={false}
+                    controlShouldRenderValue={false}
+                    hideSelectedOptions={false}
+                    menuIsOpen
+                    autoFocus
+                    noOptionsMessage={noMatchingTabs}
+                    components={{
+                        IndicatorSeparator: null,
+                        DropdownIndicator: null,
+                        Option: TabsOption,
+                        Menu: TabsMenu,
+                    }}
+                    styles={COMMON_TABS_SELECT_STYLES}
+                />
+                <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
+                    {tabSearchText && (
+                        <ClearIcon className="clear-tab-search-icon icon-dim-16" onClick={clearSearchInput} />
+                    )}
+                </div>
+            </MoreButtonWrapper>
         </div>
     )
 }

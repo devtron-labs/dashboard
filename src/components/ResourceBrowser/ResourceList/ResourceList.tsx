@@ -119,8 +119,9 @@ export default function ResourceList() {
         // Initialize tabs on load
         initTabs([
             {
-                tabName: AppDetailsTabs.k8s_Resources,
+                name: AppDetailsTabs.k8s_Resources,
                 url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                isSelected: true,
                 positionFixed: true,
             },
         ])
