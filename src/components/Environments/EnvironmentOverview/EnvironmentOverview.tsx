@@ -5,7 +5,7 @@ import { URLS } from '../../../config'
 import AppStatus from '../../app/AppStatus'
 import { StatusConstants } from '../../app/list-new/Constants'
 import { getAppList } from '../../app/service'
-import { Progressing, processDeployedTime, useAsync } from '../../common'
+import { Progressing, processDeployedTime, showError } from '../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../Constants'
 import { AppInfoListType, AppListDataType } from '../EnvironmentGroup.types'
 import { getDeploymentStatus } from '../EnvironmentListService'
@@ -19,18 +19,17 @@ export default function EnvironmentOverview() {
 
     async function fetchDeployments() {
         try {
-            Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)]).then((response) => {
-                if (response?.[0]?.result && response[1]?.result) {
-                    let statusRecord = {}
-                    response[1].result.forEach((item) => {
-                        statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
-                    })
-                    setLoading(false)
-                    parseAppListData(response[0]?.result, statusRecord)
-                }
-            })
+            const response = await Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)])
+            if (response?.[0]?.result && response[1]?.result) {
+                let statusRecord = {}
+                response[1].result.forEach((item) => {
+                    statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
+                })
+                setLoading(false)
+                parseAppListData(response[0]?.result, statusRecord)
+            }
         } catch (err) {
-
+            showError(err)
         }
     }
 
